@@ -73,13 +73,6 @@ class BoundSessionRegistrationFetcherImpl
   template <class Result>
   using RegistrationErrorOr = base::expected<Result, RegistrationError>;
 
-  FRIEND_TEST_ALL_PREFIXES(BoundSessionRegistrationFetcherImplTest,
-                           ParseCredentials);
-  FRIEND_TEST_ALL_PREFIXES(BoundSessionRegistrationFetcherImplTest,
-                           ParseCredentialsError);
-  FRIEND_TEST_ALL_PREFIXES(BoundSessionRegistrationFetcherImplTest,
-                           ParseCredentialsSkipsExtraFields);
-
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
   void OnRegistrationTokenCreated(
       base::ElapsedTimer generate_registration_token_timer,
@@ -94,9 +87,6 @@ class BoundSessionRegistrationFetcherImpl
   RegistrationErrorOr<bound_session_credentials::BoundSessionParams>
   ParseJsonResponse(const GURL& request_url,
                     std::unique_ptr<std::string> response_body);
-
-  RegistrationErrorOr<std::vector<bound_session_credentials::Credential>>
-  ParseCredentials(const base::Value::List& credentials_list);
 
   BoundSessionRegistrationFetcherParam registration_params_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;

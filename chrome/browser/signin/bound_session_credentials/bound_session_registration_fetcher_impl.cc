@@ -28,6 +28,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/register_bound_session_payload.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -37,9 +38,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
-constexpr char kSessionIdentifier[] = "session_identifier";
-constexpr char kCredentials[] = "credentials";
-constexpr char kRefreshUrl[] = "refresh_url";
 const char kXSSIPrefix[] = ")]}'";
 
 bound_session_credentials::Credential CreateCookieCredential(
@@ -292,66 +290,36 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
     return base::unexpected(RegistrationError::kParseJsonFailed);
   }
 
-  std::string* session_id = maybe_root->FindString(kSessionIdentifier);
-  base::Value::List* credentials_list = maybe_root->FindList(kCredentials);
-  std::string* refresh_url = maybe_root->FindString(kRefreshUrl);
-  if (!session_id || !credentials_list || !refresh_url) {
-    // Incorrect registration params.
-    return base::unexpected(RegistrationError::kRequiredFieldMissing);
+  const base::expected<RegisterBoundSessionPayload,
+                       RegisterBoundSessionPayload::ParserError>
+      payload = RegisterBoundSessionPayload::ParseFromJson(*maybe_root);
+  if (!payload.has_value()) {
+    switch (payload.error()) {
+      case RegisterBoundSessionPayload::ParserError::kRequiredFieldMissing:
+        return base::unexpected(RegistrationError::kRequiredFieldMissing);
+      case RegisterBoundSessionPayload::ParserError::
+          kRequiredCredentialFieldMissing:
+        return base::unexpected(
+            RegistrationError::kRequiredCredentialFieldMissing);
+    }
   }
 
   bound_session_credentials::BoundSessionParams params;
-  params.set_session_id(*session_id);
+  params.set_session_id(payload->session_id);
 
-  RegistrationErrorOr<std::vector<bound_session_credentials::Credential>>
-      credentials_or_error = ParseCredentials(*credentials_list);
-  if (!credentials_or_error.has_value()) {
-    return base::unexpected(credentials_or_error.error());
-  }
-
-  for (auto& credential : credentials_or_error.value()) {
-    *params.add_credentials() = std::move(credential);
+  for (const RegisterBoundSessionPayload::Credential& credential :
+       payload->credentials) {
+    *params.add_credentials() = CreateCookieCredential(
+        credential.name, credential.scope.domain, credential.scope.path);
   }
 
   // The refresh URL must be a correct, same-site URL.
-  GURL refresh_endpoint =
-      bound_session_credentials::ResolveEndpointPath(request_url, *refresh_url);
+  const GURL refresh_endpoint = bound_session_credentials::ResolveEndpointPath(
+      request_url, payload->refresh_url);
   if (!refresh_endpoint.is_valid()) {
     return base::unexpected(RegistrationError::kInvalidSessionParams);
   }
   params.set_refresh_url(refresh_endpoint.spec());
 
   return params;
-}
-
-BoundSessionRegistrationFetcherImpl::RegistrationErrorOr<
-    std::vector<bound_session_credentials::Credential>>
-BoundSessionRegistrationFetcherImpl::ParseCredentials(
-    const base::Value::List& credentials_list) {
-  std::vector<bound_session_credentials::Credential> cookie_credentials;
-  for (const auto& credential : credentials_list) {
-    const base::Value::Dict* credential_dict = credential.GetIfDict();
-    if (!credential_dict) {
-      // The parser ignores unknown dictionary entries and so we can do the same
-      // for unknown list entries.
-      continue;
-    }
-    const std::string* name = credential_dict->FindString("name");
-    const base::Value::Dict* scope = credential_dict->FindDict("scope");
-    if (!name || !scope) {
-      // Invalid credential.
-      return base::unexpected(
-          RegistrationError::kRequiredCredentialFieldMissing);
-    }
-    const std::string* domain = scope->FindString("domain");
-    const std::string* path = scope->FindString("path");
-    if (!domain || !path) {
-      // Invalid credential.
-      return base::unexpected(
-          RegistrationError::kRequiredCredentialFieldMissing);
-    }
-    cookie_credentials.emplace_back(
-        CreateCookieCredential(*name, *domain, *path));
-  }
-  return cookie_credentials;
 }
