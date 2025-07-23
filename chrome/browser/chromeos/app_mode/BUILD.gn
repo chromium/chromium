@@ -44,6 +44,8 @@ static_library("app_mode") {
     "kiosk_web_app_install_util.h",
     "kiosk_web_app_update_observer.cc",
     "kiosk_web_app_update_observer.h",
+    "kiosk_web_contents_logs_collector.cc",
+    "kiosk_web_contents_logs_collector.h",
     "startup_app_launcher_update_checker.cc",
     "startup_app_launcher_update_checker.h",
     "web_kiosk_browser_controller_base.cc",
@@ -111,6 +113,7 @@ source_set("unit_tests") {
     "kiosk_browser_session_unittest.cc",
     "kiosk_policies_unittest.cc",
     "kiosk_service_workers_logs_collector_unittest.cc",
+    "kiosk_web_contents_logs_collector_unittest.cc",
   ]
 
   if (enable_plugins) {

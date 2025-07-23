@@ -125,6 +125,14 @@ class WebContentsTester {
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) = 0;
 
+  // Simulates a console message event and notifies web contents observers.
+  virtual bool TestDidAddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel log_level,
+      const std::u16string& message,
+      int32_t line_no,
+      const std::u16string& source_id,
+      const std::optional<std::u16string>& untrusted_stack_trace) = 0;
+
   // Simulates initial favicon urls set.
   virtual void TestSetFaviconURL(
       const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) = 0;

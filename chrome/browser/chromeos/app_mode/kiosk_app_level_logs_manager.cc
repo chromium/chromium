@@ -24,6 +24,10 @@ KioskAppLevelLogsManager::KioskAppLevelLogsManager(
     : service_workers_logs_collector_(
           profile,
           base::BindRepeating(&KioskAppLevelLogsManager::SaveLog,
+                              base::Unretained(this))),
+      kiosk_web_contents_logs_collector_(
+          profile,
+          base::BindRepeating(&KioskAppLevelLogsManager::SaveLog,
                               base::Unretained(this))) {
   SYSLOG(INFO) << "Starting log collection for kiosk app: " << app_id;
 }

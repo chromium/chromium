@@ -203,6 +203,17 @@ bool TestWebContents::TestDidDownloadImage(
   return true;
 }
 
+bool TestWebContents::TestDidAddMessageToConsole(
+    blink::mojom::ConsoleMessageLevel log_level,
+    const std::u16string& message,
+    int32_t line_no,
+    const std::u16string& source_id,
+    const std::optional<std::u16string>& untrusted_stack_trace) {
+  return WebContentsImpl::DidAddMessageToConsole(
+      /*source_frame=*/nullptr, log_level, message, line_no, source_id,
+      untrusted_stack_trace);
+}
+
 void TestWebContents::TestSetFaviconURL(
     const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
   GetPrimaryPage().set_favicon_urls(mojo::Clone(favicon_urls));
