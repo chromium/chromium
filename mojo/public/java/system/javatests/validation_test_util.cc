@@ -39,7 +39,7 @@ ScopedJavaLocalRef<jobject> JNI_ValidationTestUtil_ParseData(
     DCHECK(!data.size());
     data_ptr = &data;
   }
-  ScopedJavaLocalRef<jobject> byte_buffer(
+  auto byte_buffer = ScopedJavaLocalRef<jobject>::Adopt(
       env, env->NewDirectByteBuffer(data_ptr, data.size()));
   base::android::CheckException(env);
   return Java_ValidationTestUtil_buildData(env, byte_buffer, num_handles,

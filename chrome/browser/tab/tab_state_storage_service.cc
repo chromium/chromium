@@ -29,10 +29,11 @@ void RunJavaCallbackLoadAllTabs(
     std::string web_contents_state_bytes = tab_state.web_contents_state_bytes();
     std::string* heap_web_contents_state_bytes =
         new std::string(web_contents_state_bytes);
-    base::android::ScopedJavaLocalRef<jobject> j_web_contents_state_buffer(
-        env, env->NewDirectByteBuffer(
-                 static_cast<void*>(heap_web_contents_state_bytes->data()),
-                 heap_web_contents_state_bytes->size()));
+    auto j_web_contents_state_buffer =
+        base::android::ScopedJavaLocalRef<jobject>::Adopt(
+            env, env->NewDirectByteBuffer(
+                     static_cast<void*>(heap_web_contents_state_bytes->data()),
+                     heap_web_contents_state_bytes->size()));
 
     base::Token tab_group_token(tab_state.tab_group_id_high(),
                                 tab_state.tab_group_id_low());

@@ -47,7 +47,7 @@ bool PaymentRequestUpdateEventListener::ChangeShippingAddress(
   std::vector<uint8_t> byte_vector =
       mojom::PaymentAddress::Serialize(&shipping_address);
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> obj(
+  auto obj = base::android::ScopedJavaLocalRef<jobject>::Adopt(
       env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
   base::android::CheckException(env);
   return Java_PaymentRequestUpdateEventListener_changeShippingAddress(

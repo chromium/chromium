@@ -85,18 +85,19 @@ void SelectPopup::ShowMenu(
         native_selected_array[selected_count++] = i;
     }
 
-    selected_array =
-        ScopedJavaLocalRef<jintArray>(env, env->NewIntArray(selected_count));
+    selected_array = ScopedJavaLocalRef<jintArray>::Adopt(
+        env, env->NewIntArray(selected_count));
     env->SetIntArrayRegion(selected_array.obj(), 0, selected_count,
                            native_selected_array.data());
   } else {
-    selected_array = ScopedJavaLocalRef<jintArray>(env, env->NewIntArray(1));
+    selected_array =
+        ScopedJavaLocalRef<jintArray>::Adopt(env, env->NewIntArray(1));
     jint value = selected_item;
     env->SetIntArrayRegion(selected_array.obj(), 0, 1, &value);
   }
 
-  ScopedJavaLocalRef<jintArray> enabled_array(env,
-                                              env->NewIntArray(items.size()));
+  auto enabled_array =
+      ScopedJavaLocalRef<jintArray>::Adopt(env, env->NewIntArray(items.size()));
   std::vector<std::string> labels;
   labels.reserve(items.size());
   for (size_t i = 0; i < items.size(); ++i) {

@@ -219,7 +219,7 @@ jboolean CronetBidirectionalStreamAdapter::WritevData(
       new PendingWriteData(env, jbyte_buffers, jbyte_buffers_pos,
                            jbyte_buffers_limit, jend_of_stream));
   for (size_t i = 0; i < buffers_array_size; ++i) {
-    ScopedJavaLocalRef<jobject> jbuffer(
+    auto jbuffer = ScopedJavaLocalRef<jobject>::Adopt(
         env, env->GetObjectArrayElement(
                  pending_write_data->jwrite_buffer_list.obj(), i));
     void* data = env->GetDirectBufferAddress(jbuffer.obj());

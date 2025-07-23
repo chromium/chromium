@@ -383,7 +383,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(
       "(II)V",
       &cached_method_id);
   auto _ret = env->NewObject(clazz, call_context.method_id(), as_jint(foo), as_jint(bar));
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_addStructA(
@@ -401,7 +401,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_addStructA(
       "(Lorg/jni_zero/SampleForTests$InnerStructA;)Lorg/jni_zero/SampleForTests$InnerStructA;",
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), a.obj());
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(
@@ -420,7 +420,7 @@ static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), arg0.obj());
   jclass _ret2 = static_cast<jclass>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jclass>(env, _ret2);
+  return jni_zero::ScopedJavaLocalRef<jclass>::Adopt(env, _ret2);
 }
 
 static std::string Java_SampleForTests_getFirstString(
@@ -448,7 +448,9 @@ static std::string Java_SampleForTests_getFirstString(
       call_context.method_id(),
       converted_array.obj(),
       converted_finalArg.obj());
-  return jni_zero::FromJniType<std::string>(env, jni_zero::ScopedJavaLocalRef<jobject>(env, _ret));
+  return jni_zero::FromJniType<std::string>(
+      env,
+      jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret));
 }
 
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
@@ -463,7 +465,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JN
       "()Lorg/jni_zero/SampleForTests$InnerEnum;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(
@@ -480,7 +482,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(
       "(I)Lorg/jni_zero/SampleForTests$InnerEnum;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), as_jint(a));
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env) {
@@ -495,7 +497,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterfa
       "()Lorg/jni_zero/SampleForTests$InnerInterface;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id());
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(
@@ -514,7 +516,7 @@ static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), arg0.obj());
   jthrowable _ret2 = static_cast<jthrowable>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jthrowable>(env, _ret2);
+  return jni_zero::ScopedJavaLocalRef<jthrowable>::Adopt(env, _ret2);
 }
 
 static void Java_SampleForTests_iterateAndDoSomething(
@@ -585,7 +587,7 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
       converted_bat);
   return jni_zero::FromJniArray<std::vector<int32_t>>(
       env,
-      jni_zero::ScopedJavaLocalRef<jintArray>(env, static_cast<jintArray>(_ret)));
+      jni_zero::ScopedJavaLocalRef<jintArray>::Adopt(env, static_cast<jintArray>(_ret)));
 }
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> Java_SampleForTests_listTest1(
@@ -605,7 +607,7 @@ static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> Java_SampleForTests_li
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), converted_items.obj());
   return jni_zero::FromJniCollection<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>(
       env,
-      jni_zero::ScopedJavaLocalRef<jobject>(env, _ret));
+      jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret));
 }
 
 static std::map<std::string, std::string> Java_SampleForTests_mapTest1(
@@ -625,7 +627,7 @@ static std::map<std::string, std::string> Java_SampleForTests_mapTest1(
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), converted_arg0.obj());
   return jni_zero::FromJniType<std::map<std::string, std::string>>(
       env,
-      jni_zero::ScopedJavaLocalRef<jobject>(env, _ret));
+      jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret));
 }
 
 static void Java_SampleForTests_methodThatThrowsException(
@@ -733,7 +735,7 @@ static std::vector<bool> Java_SampleForTests_primitiveArrays(
       converted_d.obj());
   return jni_zero::FromJniArray<std::vector<bool>>(
       env,
-      jni_zero::ScopedJavaLocalRef<jbooleanArray>(env, static_cast<jbooleanArray>(_ret)));
+      jni_zero::ScopedJavaLocalRef<jbooleanArray>::Adopt(env, static_cast<jbooleanArray>(_ret)));
 }
 
 static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
@@ -767,7 +769,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(
       "(JILjava/lang/String;)Lorg/jni_zero/SampleForTests$InnerStructA;",
       &cached_method_id);
   auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), l, as_jint(i), s.obj());
-  return jni_zero::ScopedJavaLocalRef<jobject>(env, _ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
 static jlong Java_InnerStructB_getKey(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj) {
@@ -800,7 +802,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
       &cached_method_id);
   auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
   jstring _ret2 = static_cast<jstring>(_ret);
-  return jni_zero::ScopedJavaLocalRef<jstring>(env, _ret2);
+  return jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
 }
 
 

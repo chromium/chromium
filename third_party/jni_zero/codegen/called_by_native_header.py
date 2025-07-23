@@ -139,5 +139,5 @@ def method_definition(sb, cbn):
         sb(f'{jobject_type} _ret2 = static_cast<{jobject_type}>(_ret);\n')
 
       with sb.statement():
-        sb(f'return jni_zero::ScopedJavaLocalRef<{jobject_type}>(env, '
+        sb(f'return jni_zero::ScopedJavaLocalRef<{jobject_type}>::Adopt(env, '
            f'{return_rvalue})')

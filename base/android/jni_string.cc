@@ -94,7 +94,7 @@ ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
   // it gets here, so constructing via UTF16 side-steps this issue.
   // (Dalvik stores strings internally as UTF16 anyway, so there shouldn't be
   // a significant performance hit by doing it this way).
-  return ScopedJavaLocalRef<jstring>(
+  return ScopedJavaLocalRef<jstring>::Adopt(
       env, ConvertUTF16ToJavaStringImpl(env, UTF8ToUTF16(str)));
 }
 
@@ -155,8 +155,8 @@ ScopedJavaLocalRef<jstring> ConvertUTF16ToJavaString(JNIEnv* env,
   if (str.empty()) {
     return jni_zero::g_empty_string.AsLocalRef(env);
   }
-  return ScopedJavaLocalRef<jstring>(env,
-                                     ConvertUTF16ToJavaStringImpl(env, str));
+  return ScopedJavaLocalRef<jstring>::Adopt(
+      env, ConvertUTF16ToJavaStringImpl(env, str));
 }
 
 }  // namespace android

@@ -487,7 +487,7 @@ IdentityManager::GetAccountsWithRefreshTokens(JNIEnv* env) const {
   base::android::ScopedJavaLocalRef<jclass> coreaccountinfo_clazz =
       base::android::GetClass(
           env, "org/chromium/components/signin/base/CoreAccountInfo");
-  base::android::ScopedJavaLocalRef<jobjectArray> array(
+  auto array = base::android::ScopedJavaLocalRef<jobjectArray>::Adopt(
       env, env->NewObjectArray(accounts.size(), coreaccountinfo_clazz.obj(),
                                nullptr));
   base::android::CheckException(env);

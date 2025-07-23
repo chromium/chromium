@@ -305,7 +305,7 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
   }
 
   auto* model = TabModelList::FindNativeTabModelForJavaObject(
-      ScopedJavaLocalRef<jobject>(env, jtab_model.obj()));
+      ScopedJavaLocalRef<jobject>::Adopt(env, jtab_model.obj()));
   if (model == nullptr) {
     return false;
   }
@@ -329,7 +329,7 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
   }
 
   auto* model = TabModelList::FindNativeTabModelForJavaObject(
-      ScopedJavaLocalRef<jobject>(env, jtab_model.obj()));
+      ScopedJavaLocalRef<jobject>::Adopt(env, jtab_model.obj()));
   if (model == nullptr) {
     return false;
   }
@@ -352,7 +352,7 @@ jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
   }
 
   auto* model = TabModelList::FindNativeTabModelForJavaObject(
-      ScopedJavaLocalRef<jobject>(env, jtab_model.obj()));
+      ScopedJavaLocalRef<jobject>::Adopt(env, jtab_model.obj()));
   if (model == nullptr) {
     return false;
   }

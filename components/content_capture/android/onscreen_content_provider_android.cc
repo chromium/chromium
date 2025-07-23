@@ -86,7 +86,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureFrame(
         ToJavaObjectOfContentCaptureFrame(env, session[i], offset_y);
     env->SetObjectArrayElement(joa, i, item.obj());
   }
-  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
 
 }  // namespace

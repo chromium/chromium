@@ -76,7 +76,7 @@ ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, jint size) {
   if (base::android::ClearException(env)) {
     return {};
   }
-  return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+  return base::android::ScopedJavaLocalRef<jobject>::Adopt(env, ret);
 }
 
 void WriteStateHeaderToPickle(bool off_the_record,

@@ -88,13 +88,13 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
   jsize length = env->GetArrayLength(filepaths.obj());
   DCHECK(length == env->GetArrayLength(display_names.obj()));
   for (int i = 0; i < length; ++i) {
-    ScopedJavaLocalRef<jstring> path_ref(
+    auto path_ref = ScopedJavaLocalRef<jstring>::Adopt(
         env,
         static_cast<jstring>(env->GetObjectArrayElement(filepaths.obj(), i)));
     base::FilePath file_path =
         base::FilePath(ConvertJavaStringToUTF8(env, path_ref));
 
-    ScopedJavaLocalRef<jstring> display_name_ref(
+    auto display_name_ref = ScopedJavaLocalRef<jstring>::Adopt(
         env, static_cast<jstring>(
                  env->GetObjectArrayElement(display_names.obj(), i)));
     std::string display_name =

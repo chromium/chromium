@@ -31,7 +31,7 @@ namespace jni_zero {
     CheckException(env);                                                  \
     env->Set##J##ArrayRegion(arr, 0, array_jsize,                         \
                              reinterpret_cast<const JTYPE*>(vec.data())); \
-    return ScopedJavaLocalRef<jarray>(env, arr);                          \
+    return ScopedJavaLocalRef<jarray>::Adopt(env, arr);                   \
   }
 
 PRIMITIVE_ARRAY_CONVERSIONS(int64_t, jlong, Long)
@@ -77,7 +77,7 @@ ScopedJavaLocalRef<jarray> ToJniArray<std::vector<bool>>(
   jbooleanArray j_array = env->NewBooleanArray(array_jsize);
   CheckException(env);
   env->SetBooleanArrayRegion(j_array, 0, array_jsize, arr.get());
-  return ScopedJavaLocalRef<jarray>(env, j_array);
+  return ScopedJavaLocalRef<jarray>::Adopt(env, j_array);
 }
 }  // namespace jni_zero
 #endif  // JNI_ZERO_ENABLE_TYPE_CONVERSIONS

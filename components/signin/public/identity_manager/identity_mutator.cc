@@ -78,7 +78,7 @@ void JniIdentityMutator::SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
   std::vector<AccountInfo> accounts;
   for (size_t i = 0;
        i < base::android::SafeGetArrayLength(env, j_account_infos); i++) {
-    base::android::ScopedJavaLocalRef<jobject> account_info_java(
+    auto account_info_java = base::android::ScopedJavaLocalRef<jobject>::Adopt(
         env, env->GetObjectArrayElement(j_account_infos.obj(), i));
     accounts.push_back(ConvertFromJavaAccountInfo(env, account_info_java));
   }

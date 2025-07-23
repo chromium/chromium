@@ -142,7 +142,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     float device_scale_factor) {
   ScopedJavaLocalRef<jclass> account_clazz = base::android::GetClass(
       env, "org/chromium/chrome/browser/ui/android/webid/data/Account");
-  ScopedJavaLocalRef<jobjectArray> array(
+  auto array = ScopedJavaLocalRef<jobjectArray>::Adopt(
       env, env->NewObjectArray(accounts.size(), account_clazz.obj(), nullptr));
 
   base::android::CheckException(env);
@@ -193,7 +193,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProvidersList(
   ScopedJavaLocalRef<jclass> identity_provider_clazz = base::android::GetClass(
       env,
       "org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderData");
-  ScopedJavaLocalRef<jobjectArray> array(
+  auto array = ScopedJavaLocalRef<jobjectArray>::Adopt(
       env, env->NewObjectArray(identity_providers_map.size(),
                                identity_provider_clazz.obj(), nullptr));
 

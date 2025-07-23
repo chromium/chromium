@@ -365,7 +365,7 @@ TemplateUrlServiceAndroid::GetSearchEngineUrlFromTemplateUrl(
   TemplateURL* template_url =
       template_url_service_->GetTemplateURLForKeyword(keyword);
   if (!template_url)
-    return base::android::ScopedJavaLocalRef<jstring>(env, nullptr);
+    return base::android::ScopedJavaLocalRef<jstring>::Adopt(env, nullptr);
   std::string url(template_url->url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(u"query"),
       template_url_service_->search_terms_data()));
@@ -510,7 +510,7 @@ TemplateUrlServiceAndroid::GetDefaultSearchEngine(JNIEnv* env) {
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();
   if (default_search_provider == nullptr) {
-    return base::android::ScopedJavaLocalRef<jobject>(env, nullptr);
+    return base::android::ScopedJavaLocalRef<jobject>::Adopt(env, nullptr);
   }
   return CreateTemplateUrlAndroid(env, default_search_provider);
 }

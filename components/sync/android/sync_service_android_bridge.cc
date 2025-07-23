@@ -108,7 +108,7 @@ void NativeGetLocalDataDescriptionsCallback(
   base::android::ScopedJavaLocalRef<jclass> localdatadescription_clazz =
       base::android::GetClass(
           env, "org/chromium/components/sync/LocalDataDescription");
-  base::android::ScopedJavaLocalRef<jobjectArray> array(
+  auto array = base::android::ScopedJavaLocalRef<jobjectArray>::Adopt(
       env, env->NewObjectArray(local_data_descriptions.size(),
                                localdatadescription_clazz.obj(), nullptr));
   base::android::CheckException(env);

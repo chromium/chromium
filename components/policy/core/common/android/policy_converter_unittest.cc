@@ -84,7 +84,7 @@ class PolicyConverterTest : public testing::Test {
           base::android::ConvertUTF8ToJavaString(env, values[i]).obj());
     }
 
-    return ScopedJavaLocalRef<jobjectArray>(env, java_array);
+    return ScopedJavaLocalRef<jobjectArray>::Adopt(env, java_array);
   }
 
   Schema schema_;

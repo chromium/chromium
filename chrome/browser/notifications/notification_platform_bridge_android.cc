@@ -112,7 +112,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaActionInfos(
     env->SetObjectArrayElement(actions, i, action_info.obj());
   }
 
-  return ScopedJavaLocalRef<jobjectArray>(env, actions);
+  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, actions);
 }
 
 constexpr jint NotificationTypeToJava(

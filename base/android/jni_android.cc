@@ -49,7 +49,8 @@ jclass GetClassFromSplit(JNIEnv* env,
                          const char* class_name,
                          const char* split_name) {
   DCHECK(IsStringASCII(class_name));
-  ScopedJavaLocalRef<jstring> j_class_name(env, env->NewStringUTF(class_name));
+  auto j_class_name =
+      ScopedJavaLocalRef<jstring>::Adopt(env, env->NewStringUTF(class_name));
   return static_cast<jclass>(env->CallObjectMethod(
       GetSplitClassLoader(env, split_name), g_class_loader_load_class_method_id,
       j_class_name.obj()));
@@ -62,7 +63,7 @@ jclass GetClassFromSplit(JNIEnv* env,
 void PrepareClassLoaders(JNIEnv* env) {
   if (g_class_loader_load_class_method_id == nullptr) {
     GetClassLoader(env);
-    ScopedJavaLocalRef<jclass> class_loader_clazz = ScopedJavaLocalRef<jclass>(
+    auto class_loader_clazz = ScopedJavaLocalRef<jclass>::Adopt(
         env, env->FindClass("java/lang/ClassLoader"));
     CHECK(!ClearException(env));
     g_class_loader_load_class_method_id =
