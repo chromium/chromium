@@ -117,7 +117,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenUPMDisabled() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(false, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(false);
 
             new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
                     .fetchPasswordsCount(mTaskFinishedCallback);
@@ -130,7 +130,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenFetchFails() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
             mPasswordCheckupClientHelper.setError(new Exception());
 
             new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
@@ -144,7 +144,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void somePreferencesUpdated_fetchFailsForOneCredentialType() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
             mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
             int breachedCredentialsCount = 5;
             int reusedCredentialsCount = 3;
@@ -164,7 +164,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void preferencesUpdated_whenFetchSucceeds() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
             int breachedCredentialsCount = 5;
             int weakCredentialsCount = 4;
             int reusedCredentialsCount = 3;
@@ -185,7 +185,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenCheckupFails_lastCheckRecently() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
             long twoHoursInMs = 120 * TimeUtils.MILLISECONDS_PER_MINUTE;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
@@ -208,7 +208,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenCheckupFails_lastCheckLongAgo() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
             long twoDaysInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoDaysInMs);
@@ -231,7 +231,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void preferencesUpdated_whenCheckupSucceeds() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
             int breachedCredentialsCount = 5;
             int weakCredentialsCount = 4;
             int reusedCredentialsCount = 3;
@@ -258,7 +258,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenWithinCoolDownPeriod() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
             mockLastCheckTime(TimeUtils.currentTimeMillis());
 
@@ -314,7 +314,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenNoAccountsOnDevice_lastCheckRecently() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
             long twoHoursInMs = 120 * TimeUtils.MILLISECONDS_PER_MINUTE;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
 
@@ -340,7 +340,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenNoAccountsOnDevice_lastCheckLongAgo() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
             long twoDaysInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoDaysInMs);

@@ -84,7 +84,7 @@ public class SafetyHubFetchServiceTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAccountPasswordsFetchJobScheduledImmediately_WhenConditionsMet() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         new SafetyHubFetchService(mProfile).onForegroundSessionStart();
 
@@ -103,7 +103,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
     })
     public void testAccountPasswordsFetchJobCancelled_WhenFlagDisabled() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         new SafetyHubFetchService(mProfile).onForegroundSessionStart();
 
@@ -118,7 +118,7 @@ public class SafetyHubFetchServiceTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAccountPasswordsFetchJobCancelled_WhenSigninStatusChanged_SignOut() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         SafetyHubFetchService fetchService = new SafetyHubFetchService(mProfile);
         mSafetyHubTestRule.setSignedInState(false);
@@ -135,7 +135,7 @@ public class SafetyHubFetchServiceTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAccountPasswordsFetchJobScheduled_WhenSigninStatusChanged_SignIn() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mSafetyHubTestRule.setSignedInState(true);
 
@@ -155,7 +155,7 @@ public class SafetyHubFetchServiceTest {
     })
     public void testAccountPasswordsFetchJobCancelled_WhenPasswordManagerNotAvailable() {
         mSafetyHubTestRule.setSignedInState(true);
-        mSafetyHubTestRule.setPasswordManagerAvailable(false, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(false);
 
         new SafetyHubFetchService(mProfile).onForegroundSessionStart();
 
@@ -173,7 +173,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
     })
     public void testAccountPasswordsFetchJobRescheduled_whenFetchFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setError(new Exception());
 
@@ -191,7 +191,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
     })
     public void testAccountPasswordsFetchJobRescheduled_whenFetchFailsForOneCredentialType() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
         int breachedCredentialsCount = 5;
@@ -215,7 +215,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
     })
     public void testAccountPasswordsNextTaskScheduled_whenFetchSucceeds() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         int breachedCredentialsCount = 5;
         int weakCredentialsCount = 4;
@@ -248,7 +248,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordsFetch_whenFetchFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setError(new Exception());
 
@@ -267,7 +267,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordsFetch_whenFetchFailsForOneCredentialType() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
         int breachedCredentialsCount = 5;
@@ -291,7 +291,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordsFetch_whenFetchSucceeds() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         int breachedCredentialsCount = 5;
         int weakCredentialsCount = 4;
@@ -317,7 +317,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
     })
     public void testAccountPasswordsCheckup_whenFetchFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setError(new Exception());
 
@@ -335,7 +335,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
     })
     public void testAccountPasswordsCheckup_whenCheckupFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setError(new Exception());
 
@@ -353,7 +353,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordsCheckup_whenFetchFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setError(new Exception());
 
@@ -371,7 +371,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordsCheckup_whenFetchFailsForOneCredentialType() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
         mSafetyHubTestRule.setSignedInState(false);
 
         mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
@@ -396,7 +396,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordsCheckup_whenCheckupFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         mPasswordCheckupClientHelper.setError(new Exception());
 
@@ -415,7 +415,7 @@ public class SafetyHubFetchServiceTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordsCheckup_whenCheckupSucceeds() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
         mSafetyHubTestRule.setSignedInState(false);
 
         int breachedCredentialsCount = 5;

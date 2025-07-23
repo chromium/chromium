@@ -232,7 +232,7 @@ public class SafetyHubMagicStackMediatorTest {
 
     @Test
     public void testCompromisedPasswordsDisplayed() throws PendingIntent.CanceledException {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
         MagicStackEntry entry =
                 MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.PASSWORDS);
         doReturn(entry).when(mMagicStackBridge).getModuleToShow();

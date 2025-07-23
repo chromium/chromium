@@ -82,7 +82,7 @@ public class SafetyHubModuleDelegateTest {
     @Test
     public void testOpenPasswordCheckUi() throws PendingIntent.CanceledException {
         mSafetyHubTestRule.setSignedInState(true);
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         Context context = ContextUtils.getApplicationContext();
         mSafetyHubModuleDelegate.showPasswordCheckUi(context);
@@ -92,7 +92,7 @@ public class SafetyHubModuleDelegateTest {
     @Test
     public void testOpenLocalPasswordCheckUi() throws PendingIntent.CanceledException {
         mSafetyHubTestRule.setSignedInState(true);
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         Context context = ContextUtils.getApplicationContext();
         mSafetyHubModuleDelegate.showLocalPasswordCheckUi(context);
