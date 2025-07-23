@@ -1645,7 +1645,8 @@
     ],
     "bases": [
       "external/wpt/IndexedDB",
-      "storage/indexeddb"
+      "storage/indexeddb",
+      "wpt_internal/IndexedDB"
     ],
     "args": [
       "--enable-features=IdbSqliteBackingStore"

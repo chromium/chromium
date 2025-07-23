@@ -240,6 +240,14 @@ class DatabaseConnection {
   // when `ActiveBlobStreamer` in `active_blobs_` no longer has connections.
   void OnBlobBecameInactive(int64_t blob_number);
 
+  // These methods add or remove rows to the `blob_references` table. The rows
+  // correspond to active blobs, i.e. the `record_row_id` will be null. These
+  // updates are made right away when `active_blobs_` is updated (an element is
+  // added or removed), and also after a transaction is rolled back which may
+  // have caused the loss of a `blob_references` update.
+  void AddActiveBlobReference(int64_t blob_number);
+  void RemoveActiveBlobReference(int64_t blob_number);
+
   // The connection needs to be held open when there are active blobs or an
   // active BackingStore::Database referencing it. This will return false if
   // that's the case.
@@ -247,6 +255,7 @@ class DatabaseConnection {
 
   // The expected path for `db_`, or empty for in-memory DBs.
   const base::FilePath path_;
+
   std::unique_ptr<sql::Database> db_;
   std::unique_ptr<sql::MetaTable> meta_table_;
   blink::IndexedDBDatabaseMetadata metadata_;
@@ -293,6 +302,13 @@ class DatabaseConnection {
   // blob has a corresponding entry in this map. These blobs must keep `this`
   // alive since they're backed by the SQLite database.
   std::map<int64_t, std::unique_ptr<ActiveBlobStreamer>> active_blobs_;
+
+  // Used to track when rolling back a transaction necessitates updating
+  // `blob_references`. Transaction rollback will affect `blob_references`
+  // updates that have been made since the transaction started, but we need that
+  // table to stay in sync with `active_blobs_` regardless of whether the
+  // transaction is ultimately committed or rolled back.
+  bool sync_active_blobs_after_transaction_ = false;
 
   // TODO(crbug.com/419203257): this should invalidate its weak pointers when
   // `db_` is closed.

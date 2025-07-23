@@ -868,6 +868,8 @@ Status DatabaseConnection::CommitTransactionPhaseTwo(
     // Nothing to do.
     return Status::OK();
   }
+  // No need to sync active blobs when the transaction successfully commits.
+  sync_active_blobs_after_transaction_ = false;
   TRANSIENT_CHECK(active_rw_transaction_->Commit());
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
@@ -910,6 +912,38 @@ void DatabaseConnection::EndTransaction(
   // there were no statements executed anyway.
   CHECK(active_rw_transaction_);
   active_rw_transaction_.reset();
+
+  // If the transaction is rolled back, recent changes to the blob_references
+  // table may be lost. Make sure that table is up to date with memory state.
+  if (sync_active_blobs_after_transaction_) {
+    sql::Transaction sql_transaction(db_.get());
+    TRANSIENT_CHECK(sql_transaction.Begin());
+
+    // Step 1, mark existing active references with an invalid (but not null)
+    // row id. This can't immediately remove them as that could trigger cleanup
+    // of the underlying blob.
+    {
+      sql::Statement statement(
+          db_->GetCachedStatement(SQL_FROM_HERE,
+                                  "UPDATE blob_references SET record_row_id = 0"
+                                  "   WHERE record_row_id IS NULL"));
+      TRANSIENT_CHECK(statement.Run());
+    }
+    // Step 2, make add all the active references.
+    for (auto& [blob_number, _] : active_blobs_) {
+      AddActiveBlobReference(blob_number);
+    }
+    // Step 3, remove the old references.
+    {
+      sql::Statement statement(db_->GetCachedStatement(
+          SQL_FROM_HERE,
+          "DELETE FROM blob_references WHERE record_row_id = 0"));
+      TRANSIENT_CHECK(statement.Run());
+    }
+
+    TRANSIENT_CHECK(sql_transaction.Commit());
+    sync_active_blobs_after_transaction_ = false;
+  }
 }
 
 Status DatabaseConnection::SetDatabaseVersion(
@@ -1442,14 +1476,7 @@ DatabaseConnection::CreateAllExternalObjects(
                          base::Unretained(this), object.blob_number()));
       it = active_blobs_.insert({object.blob_number(), std::move(streamer)})
                .first;
-
-      {
-        sql::Statement statement(db_->GetCachedStatement(
-            SQL_FROM_HERE,
-            "INSERT INTO blob_references (blob_row_id) VALUES (?)"));
-        statement.BindInt64(0, object.blob_number());
-        TRANSIENT_CHECK(statement.Run());
-      }
+      AddActiveBlobReference(object.blob_number());
     }
     it->second->AddReceiver(std::move(receiver),
                             backing_store_->blob_storage_context());
@@ -1493,11 +1520,26 @@ void DatabaseConnection::DeleteIdbDatabase(
 void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {
   CHECK_EQ(active_blobs_.erase(blob_number), 1U);
 
+  RemoveActiveBlobReference(blob_number);
+}
+
+void DatabaseConnection::AddActiveBlobReference(int64_t blob_number) {
+  if (active_rw_transaction_) {
+    sync_active_blobs_after_transaction_ = true;
+  }
+
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE, "INSERT INTO blob_references (blob_row_id) VALUES (?)"));
+  statement.BindInt64(0, blob_number);
+  TRANSIENT_CHECK(statement.Run());
+}
+
+void DatabaseConnection::RemoveActiveBlobReference(int64_t blob_number) {
+  if (active_rw_transaction_) {
+    sync_active_blobs_after_transaction_ = true;
+  }
+
   {
-    // TODO(crbug.com/419208485): If this operation happens in the middle of a
-    // r/w txn that is not committed (Chromium crashes or txn gets rolled back),
-    // the blob will come back from the dead! `this` should run this statement
-    // after any active r/w txn.
     sql::Statement statement(
         db_->GetCachedStatement(SQL_FROM_HERE,
                                 "DELETE FROM blob_references "
