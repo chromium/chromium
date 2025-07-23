@@ -66,6 +66,7 @@
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/gpu/gpu_main_thread_factory.h"
+#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/scheduler/browser_task_executor.h"
 #include "content/browser/service_host/utility_process_host.h"
@@ -73,6 +74,7 @@
 #include "content/browser/startup_helper.h"
 #include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/child/field_trial.h"
+#include "content/child/memory_coordinator/child_memory_consumer_registry.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/common/url_schemes.h"
@@ -720,6 +722,10 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
       {switches::kGpuProcess, GpuMain},
   });
 
+  // Create the memory consumer registry as early as possible.
+  base::ScopedMemoryConsumerRegistry<ChildMemoryConsumerRegistry>
+      child_memory_consumer_registry;
+
   // The hang watcher needs to be started once the feature list is available
   // but before the IO thread is started.
   base::ScopedClosureRunner unregister_thread_closure;
@@ -1151,6 +1157,9 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     if (delegate_->ShouldInitializeMojo(invoked_in_browser)) {
       InitializeMojoCore();
     }
+
+    browser_memory_consumer_registry_ = std::make_unique<
+        base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry>>();
 
     std::optional<int> pre_browser_main_exit_code = delegate_->PreBrowserMain();
     if (pre_browser_main_exit_code.has_value())

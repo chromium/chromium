@@ -105,10 +105,12 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
+#include "base/memory_coordinator/memory_consumer_registry.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"  // nogncheck
 #include "content/app/content_main_runner_impl.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/app/mojo_ipc_support.h"
+#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/common/content_paths.h"
 #include "testing/android/native_test/native_browser_test_support.h"
@@ -607,6 +609,8 @@ void BrowserTestBase::SetUp() {
   // Android's equivalent of ContentMain is in Java so browser tests must set
   // things up manually. A meager re-implementation of ContentMainRunnerImpl
   // follows.
+
+  base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry;
 
   // Unlike other platforms, android_browsertests can reuse the same process for
   // multiple tests. Need to reset startup metrics to allow recording them
