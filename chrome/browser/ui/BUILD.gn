@@ -670,10 +670,16 @@ static_library("ui") {
   ]
 
   if (!is_android || is_desktop_android) {
+    # Cross-platform dependencies.
     deps += [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window/internal",
     ]
+
+    # Desktop-Android-only dependencies.
+    if (is_desktop_android) {
+      deps += [ "//chrome/browser/ui/android/extensions/windowing/internal" ]
+    }
   }
 
   # TODO(crbug.com/413572035): Move into build files of the actual

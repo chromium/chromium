@@ -942,7 +942,10 @@ if (_is_default_toolchain) {
     ]
 
     if (is_desktop_android) {
-      deps += [ "//chrome/browser/ui/browser_window/internal:java" ]
+      deps += [
+        "//chrome/browser/ui/android/extensions/windowing/internal:java",
+        "//chrome/browser/ui/browser_window/internal:java",
+      ]
     }
   }
 

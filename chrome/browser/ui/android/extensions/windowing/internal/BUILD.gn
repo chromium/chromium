@@ -1,0 +1,52 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/chrome_build.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+assert(is_desktop_android)
+
+source_set("internal") {
+  sources = [ "extension_window_controller_bridge.cc" ]
+  deps = [
+    ":jni",
+    "//base",
+  ]
+}
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+    "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java",
+  ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/ui/android/extensions/windowing:java",
+    "//chrome/browser/ui/browser_window:java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni" ]
+}
+
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "extension_window_controller_bridge_unittest.cc" ]
+  deps = [
+    ":internal",
+    "//base",
+    "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
+    "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_jni",
+    "//testing/gtest",
+  ]
+}
