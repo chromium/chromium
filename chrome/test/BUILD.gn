@@ -11273,6 +11273,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:interactive_ui_tests",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/alert:interactive_ui_tests",
       "//chrome/browser/ui/thumbnails:interactive_ui_tests",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",

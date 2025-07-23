@@ -79,12 +79,21 @@ TabAlertController::TabAlertController(
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_keyed_service) {
+    callback_subscriptions_.push_back(
+        glic_keyed_service->AddContextAccessIndicatorStatusChangedCallback(
+            base::BindRepeating(
+                &TabAlertController::OnGlicContextAccessIndicatorStatusChanged,
+                base::Unretained(this))));
     glic::GlicSharingManager& glic_sharing_manager =
         glic_keyed_service->sharing_manager();
-    glic_sharing_status_changed_subscription_ =
+    callback_subscriptions_.emplace_back(
+        glic_sharing_manager.AddFocusedTabChangedCallback(base::BindRepeating(
+            &TabAlertController::OnGlicSharingFocusedTabChanged,
+            base::Unretained(this))));
+    callback_subscriptions_.emplace_back(
         glic_sharing_manager.AddTabPinningStatusChangedCallback(
             base::BindRepeating(&TabAlertController::OnGlicTabPinningChanged,
-                                base::Unretained(this)));
+                                base::Unretained(this))));
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
@@ -206,6 +215,24 @@ void TabAlertController::OnIsContentDisplayedInHeadsetChanged(bool state) {
   UpdateAlertState(TabAlert::VR_PRESENTING_IN_HEADSET, state);
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
+void TabAlertController::OnGlicContextAccessIndicatorStatusChanged(
+    bool is_accessing) {
+  UpdateAlertState(TabAlert::GLIC_ACCESSING,
+                   GetGlicKeyedService(tab().GetBrowserWindowInterface())
+                       ->IsContextAccessIndicatorShown(tab().GetContents()));
+}
+
+void TabAlertController::OnGlicSharingFocusedTabChanged(
+    const glic::FocusedTabData& focused_tab_data) {
+  const bool is_alert_active =
+      focused_tab_data.focus() != &tab()
+          ? false
+          : GetGlicKeyedService(tab().GetBrowserWindowInterface())
+                ->IsContextAccessIndicatorShown(tab().GetContents());
+  UpdateAlertState(TabAlert::GLIC_ACCESSING, is_alert_active);
+}
+
 void TabAlertController::OnGlicTabPinningChanged(
     tabs::TabInterface* tab_interface,
     bool is_sharing) {
@@ -213,6 +240,7 @@ void TabAlertController::OnGlicTabPinningChanged(
     UpdateAlertState(TabAlert::GLIC_SHARING, is_sharing);
   }
 }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {
   std::optional<TabAlert> previous_alert = GetAlertToShow();

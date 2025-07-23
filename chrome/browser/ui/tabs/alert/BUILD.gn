@@ -70,3 +70,32 @@ source_set("unit_tests") {
     ]
   }
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  if (enable_glic) {
+    sources = [ "tab_alert_controller_interactive_uitest.cc" ]
+  }
+
+  deps = [
+    ":impl",
+    ":tab_alert",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings_shared_cpp_sources",
+      "//chrome/browser/glic/test_support",
+    ]
+  }
+}
