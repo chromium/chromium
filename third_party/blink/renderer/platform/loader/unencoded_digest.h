@@ -32,7 +32,7 @@ class PLATFORM_EXPORT UnencodedDigest {
 
   // Validates |data| against all parsed digests, returning `true` if all match,
   // and `false` otherwise.
-  bool DoesMatch(WTF::SegmentedBuffer* data);
+  bool DoesMatch(SegmentedBuffer* data);
 
  private:
   UnencodedDigest() = default;

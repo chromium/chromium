@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // This class is designed to store and manage large amounts of data that may be
 // split into multiple segments.
@@ -252,7 +252,7 @@ inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
 
 // This is a RefCounted version of the SegmentedBuffer class.
 class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
-                                public blink::RefCounted<SharedBuffer> {
+                                public RefCounted<SharedBuffer> {
  public:
   static scoped_refptr<SharedBuffer> Create() {
     return base::AdoptRef(new SharedBuffer);
@@ -274,7 +274,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
   static scoped_refptr<SharedBuffer> Create(Vector<char>&&);
 
  private:
-  friend class blink::RefCounted<SharedBuffer>;
+  friend class RefCounted<SharedBuffer>;
   ~SharedBuffer();
 
   SharedBuffer();
@@ -284,6 +284,6 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
   explicit SharedBuffer(SegmentedBuffer&&);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_

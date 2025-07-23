@@ -195,7 +195,7 @@ void ParkableImageSegmentReader::UnlockData() {
 
 constexpr base::TimeDelta ParkableImageImpl::kParkingDelay;
 
-void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
+void ParkableImageImpl::Append(SharedBuffer* buffer, size_t offset) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoLock lock(lock_);
   DCHECK(!is_frozen());
@@ -532,7 +532,7 @@ scoped_refptr<SharedBuffer> ParkableImage::Data() {
   return impl_->Data();
 }
 
-void ParkableImage::Append(WTF::SharedBuffer* buffer, size_t offset) {
+void ParkableImage::Append(SharedBuffer* buffer, size_t offset) {
   DCHECK(impl_);
   impl_->Append(buffer, offset);
 }

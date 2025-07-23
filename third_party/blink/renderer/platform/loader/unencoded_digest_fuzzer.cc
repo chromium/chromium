@@ -35,7 +35,7 @@ void MatchFuzzer(const std::string& arbitrary) {
   headers.Set(blink::http_names::kUnencodedDigest, valid_header_value);
   auto unencoded_digest = blink::UnencodedDigest::Create(headers);
 
-  WTF::SegmentedBuffer buffer;
+  blink::SegmentedBuffer buffer;
   buffer.Append(base::span(arbitrary));
   unencoded_digest->DoesMatch(&buffer);
 }

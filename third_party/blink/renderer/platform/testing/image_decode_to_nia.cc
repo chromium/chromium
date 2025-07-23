@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
   }
   static constexpr bool data_complete = true;
   std::unique_ptr<blink::ImageDecoder> decoder = blink::ImageDecoder::Create(
-      WTF::SharedBuffer::Create(src), data_complete,
+      blink::SharedBuffer::Create(src), data_complete,
       blink::ImageDecoder::kAlphaNotPremultiplied,
       blink::ImageDecoder::kDefaultBitDepth, blink::ColorBehavior::kIgnore,
       cc::AuxImage::kDefault, blink::Platform::GetMaxDecodedImageBytes());

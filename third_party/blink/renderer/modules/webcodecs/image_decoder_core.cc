@@ -231,7 +231,7 @@ ImageDecoderCore::ImageDecoderCore(
       data_complete_(data_complete),
       segment_reader_(std::move(data)) {
   if (!segment_reader_) {
-    stream_buffer_ = WTF::SharedBuffer::Create();
+    stream_buffer_ = SharedBuffer::Create();
     segment_reader_ = SegmentReader::CreateFromSharedBuffer(stream_buffer_);
   }
 

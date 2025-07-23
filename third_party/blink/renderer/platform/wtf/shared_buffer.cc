@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 SegmentedBuffer::Iterator& SegmentedBuffer::Iterator::operator++() {
   DCHECK(!IsEnd());
@@ -180,4 +180,4 @@ scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
   return buffer;
 }
 
-}  // namespace WTF
+}  // namespace blink

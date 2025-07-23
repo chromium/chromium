@@ -1271,7 +1271,7 @@ TEST(CrabbyStaticAVIFTests, YUV) {
 }
 
 TEST(CrabbyStaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
-  scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
+  scoped_refptr<SharedBuffer> stream_buffer = SharedBuffer::Create();
   scoped_refptr<SegmentReader> segment_reader =
       SegmentReader::CreateFromSharedBuffer(stream_buffer);
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
@@ -1297,7 +1297,7 @@ TEST(CrabbyStaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
 
 TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
   base::HistogramTester histogram_tester;
-  scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
+  scoped_refptr<SharedBuffer> stream_buffer = SharedBuffer::Create();
   scoped_refptr<SegmentReader> segment_reader =
       SegmentReader::CreateFromSharedBuffer(stream_buffer);
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
@@ -1364,7 +1364,7 @@ TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
 
 TEST(CrabbyStaticAVIFTests, IncrementalDecoding) {
   base::HistogramTester histogram_tester;
-  scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
+  scoped_refptr<SharedBuffer> stream_buffer = SharedBuffer::Create();
   scoped_refptr<SegmentReader> segment_reader =
       SegmentReader::CreateFromSharedBuffer(stream_buffer);
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(

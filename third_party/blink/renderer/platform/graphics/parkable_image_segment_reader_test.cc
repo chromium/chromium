@@ -41,8 +41,7 @@ TEST_F(ParkableImageSegmentReaderTest, NonEmpty) {
   ASSERT_EQ(pi->size(), 0u);  // ParkableImage is empty when created.
 
   pi->Append(
-      WTF::SharedBuffer::Create(base::span_with_nul_from_cstring(g_abc)).get(),
-      0);
+      SharedBuffer::Create(base::span_with_nul_from_cstring(g_abc)).get(), 0);
   ASSERT_EQ(pi->size(),
             sizeof(g_abc));  // ParkableImage is larger after Append.
 
@@ -59,11 +58,10 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
   ASSERT_EQ(pi->size(), 0u);  // ParkableImage is empty when created.
 
   const size_t shared_buffer_size = sizeof(g_123) / 2;
-  pi->Append(
-      WTF::SharedBuffer::Create(
-          base::span_with_nul_from_cstring(g_123).first(shared_buffer_size))
-          .get(),
-      0);
+  pi->Append(SharedBuffer::Create(base::span_with_nul_from_cstring(g_123).first(
+                                      shared_buffer_size))
+                 .get(),
+             0);
   ASSERT_EQ(pi->size(),
             shared_buffer_size);  // ParkableImage is larger after Append.
 
@@ -72,7 +70,7 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
   EXPECT_EQ(segment_reader->size(), shared_buffer_size);
 
   pi->Append(
-      WTF::SharedBuffer::Create(base::span_with_nul_from_cstring(g_123)).get(),
+      SharedBuffer::Create(base::span_with_nul_from_cstring(g_123)).get(),
       pi->size());
   ASSERT_EQ(pi->size(),
             sizeof(g_123));  // ParkableImage is larger after Append.

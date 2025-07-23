@@ -33,6 +33,8 @@ namespace blink {
 
 class AtomicString;
 class PartitionAllocator;
+class SegmentedBuffer;
+class SharedBuffer;
 class String;
 class StringBuilder;
 class StringImpl;
@@ -54,8 +56,6 @@ class Vector;
 namespace WTF {
 
 class OrdinalNumber;
-class SegmentedBuffer;
-class SharedBuffer;
 class TextPosition;
 
 // TODO(crbug.com/422768753): Remove these `using` directives.
@@ -63,8 +63,5 @@ using blink::String;
 using blink::Vector;
 
 }  // namespace WTF
-
-using WTF::SegmentedBuffer;
-using WTF::SharedBuffer;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FORWARD_H_

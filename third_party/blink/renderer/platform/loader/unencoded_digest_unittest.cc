@@ -240,7 +240,7 @@ TEST(UnencodedDigestMatchingTest, MatchingSingleDigests) {
     auto unencoded_digest = UnencodedDigest::Create(headers);
     ASSERT_TRUE(unencoded_digest.has_value());
 
-    WTF::SegmentedBuffer buffer;
+    SegmentedBuffer buffer;
     buffer.Append(kHelloWorld);
     EXPECT_TRUE(unencoded_digest->DoesMatch(&buffer));
 
@@ -271,7 +271,7 @@ TEST(UnencodedDigestMatchingTest, OneMatchingOneMismatching) {
       auto unencoded_digest = UnencodedDigest::Create(headers);
       ASSERT_TRUE(unencoded_digest.has_value());
 
-      WTF::SegmentedBuffer buffer;
+      SegmentedBuffer buffer;
       buffer.Append(kHelloWorld);
       EXPECT_FALSE(unencoded_digest->DoesMatch(&buffer));
 

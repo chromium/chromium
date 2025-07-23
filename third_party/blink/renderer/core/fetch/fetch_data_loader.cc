@@ -146,7 +146,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
     DCHECK(!buffer_);
     client_ = client;
     consumer_ = consumer;
-    buffer_ = WTF::SharedBuffer::Create();
+    buffer_ = SharedBuffer::Create();
     consumer_->SetClient(this);
     OnStateChange();
   }

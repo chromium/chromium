@@ -106,7 +106,7 @@ std::optional<UnencodedDigest> UnencodedDigest::Create(
   return UnencodedDigest(integrity_metadata);
 }
 
-bool UnencodedDigest::DoesMatch(WTF::SegmentedBuffer* data) {
+bool UnencodedDigest::DoesMatch(SegmentedBuffer* data) {
   for (const IntegrityMetadata& digest : integrity_metadata_.hashes) {
     HashAlgorithm algorithm = GetHashAlgorithm(digest.algorithm);
     DigestValue computed_digest;
