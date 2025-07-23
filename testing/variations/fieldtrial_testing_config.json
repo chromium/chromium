@@ -22214,6 +22214,24 @@
             ]
         }
     ],
+    "SearchPrefetchAndroidInIncognito": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_INCOGNITO_STABLE",
+                    "params": {
+                        "allow_incognito": "true"
+                    },
+                    "enable_features": [
+                        "SearchNavigationPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchPrefetchHighPriorityPrefetches": [
         {
             "platforms": [
