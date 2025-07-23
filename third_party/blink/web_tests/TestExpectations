@@ -1458,6 +1458,9 @@ crbug.com/379516109 external/wpt/ai/language_detection/* [ Failure Timeout ]
 # Failing on Win ARM
 crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout ]
 
+# Disabled due to misconfigured PHP on win11-arm64 bots.
+crbug.com/433756870 [ Win11-arm64 ] http/tests/inspector-protocol/fetch/compressed-response-body.js [ Failure ]
+
 ### sheriff 2018-05-28
 
 crbug.com/767269 [ Win ] inspector-protocol/layout-fonts/cjk-ideograph-fallback-by-lang.js [ Failure Pass ]
