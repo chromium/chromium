@@ -317,6 +317,8 @@ extern const base::FeatureParam<std::string> kGlicTabAccessToggleLearnMoreURL;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kGlicTabAccessToggleLearnMoreURLDataProtected;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGlicExtensionsManagementUrl;
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicCSPConfig);
 COMPONENT_EXPORT(CHROME_FEATURES)

@@ -556,6 +556,16 @@ BASE_FEATURE_PARAM(std::string,
                    &kGlicLearnMoreURLConfig,
                    "glic-settings-page-learn-more-url",
                    "");
+BASE_FEATURE_PARAM(std::string,
+                   kGlicExtensionsManagementUrl,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-extensions-management-url",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                   "https://gemini.google.com/apps"
+#else
+                   ""
+#endif
+);
 
 BASE_FEATURE(kGlicCSPConfig, "GlicCSPConfig", base::FEATURE_ENABLED_BY_DEFAULT);
 // TODO(crbug.com/378951332): Set appropriate default.
