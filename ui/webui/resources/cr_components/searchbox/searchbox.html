@@ -164,9 +164,6 @@
     background-color: var(--color-bubble-searchbox-results-input-background, --color-searchbox-results-background);
   }
 
-  /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
-  /* When input is focused and dropdown is not visible, switch searchbox background
-   * to steady state color because side panel doesn't have box shadow. */
   :host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
     background-color: var(--color-searchbox-background);
   }
