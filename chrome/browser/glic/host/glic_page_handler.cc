@@ -56,6 +56,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
@@ -403,12 +404,22 @@ class JournalHandler {
 
     // TODO(b/430054430): Fetch and include system data to the feedback.
     feedback_data->set_description(
-        reason + "\n\n" + base::Uuid::GenerateRandomV4().AsLowercaseString());
+        reason + " - " + base::Uuid::GenerateRandomV4().AsLowercaseString());
     feedback_data->set_product_id(feedback::kGeminiWebProductId);
     feedback_data->set_category_tag(
         std::string(feedback::kGeminiWebJournalCategoryTag));
     feedback_data->set_is_offensive_or_unsafe(false);
     feedback_data->AddFile("actor-journal", journal);
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(
+            actor_keyed_service_->GetProfile());
+    if (identity_manager &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      feedback_data->set_user_email(
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email);
+    }
 
     feedback_data->CompressSystemInfo();
     feedback_data->OnFeedbackPageDataComplete();
