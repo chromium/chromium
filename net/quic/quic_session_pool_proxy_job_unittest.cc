@@ -5,12 +5,16 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/session_usage.h"
+#include "net/base/test_completion_callback.h"
 #include "net/cert/x509_certificate.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
@@ -21,6 +25,7 @@
 #include "net/quic/quic_socket_data_provider.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -644,6 +649,113 @@ TEST_P(QuicSessionPoolProxyJobTest,
   EXPECT_NE(peer_address, server_preferred_address);
 
   EXPECT_TRUE(socket_data.AllDataConsumed());
+}
+
+// Regression test for crbug.com/404586727.
+TEST_P(QuicSessionPoolProxyJobTest, RequestSessionAgainInCallback) {
+  Initialize();
+
+  GURL url("https://www.example.org/");
+  GURL proxy(kProxy1Url);
+  auto origin = url::SchemeHostPort(url);
+  auto proxy_origin = url::SchemeHostPort(proxy);
+  auto nak = NetworkAnonymizationKey();
+
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+  ASSERT_TRUE(cert->VerifyNameMatch(origin.host()));
+  ASSERT_TRUE(cert->VerifyNameMatch(proxy_origin.host()));
+  ASSERT_FALSE(cert->VerifyNameMatch(kDifferentHostname));
+
+  ProofVerifyDetailsChromium verify_details;
+  verify_details.cert_verify_result.verified_cert = cert;
+  verify_details.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // QUIC proxies do not use priority header.
+  client_maker_.set_use_priority_header(false);
+
+  // Use a separate packet maker for the connection to the endpoint.
+  QuicTestPacketMaker endpoint_maker =
+      MakePacketMaker(origin.host(), quic::Perspective::IS_CLIENT,
+                      /*client_priority_uses_incremental=*/true,
+                      /*use_priority_header=*/true);
+
+  QuicSocketDataProvider failing_request_socket_data(version_);
+  failing_request_socket_data
+      .AddWriteError("write_error", ERR_ADDRESS_UNREACHABLE)
+      .Sync();
+  socket_factory_->AddSocketDataProvider(&failing_request_socket_data);
+
+  // Add a second data provider for the second request.
+  QuicSocketDataProvider successful_request_socket_data(version_);
+  const uint64_t kStreamId = GetNthClientInitiatedBidirectionalStreamId(0);
+  successful_request_socket_data
+      .AddWrite("initial-settings", ConstructInitialSettingsPacket(1))
+      .Sync();
+  successful_request_socket_data
+      .AddWrite("connect-udp",
+                ConstructConnectUdpRequestPacket(
+                    2, kStreamId, proxy.host(),
+                    "/.well-known/masque/udp/www.example.org/443/", false))
+      .Sync();
+  successful_request_socket_data.AddRead("server-settings",
+                                         ConstructServerSettingsPacket(3));
+  successful_request_socket_data.AddRead(
+      "ok-response", ConstructOkResponsePacket(4, kStreamId, true));
+  successful_request_socket_data.AddWrite(
+      "ack", client_maker_.Packet(3).AddAckFrame(3, 4, 3).Build());
+  successful_request_socket_data.AddWrite(
+      "endpoint-initial-settings",
+      ConstructClientH3DatagramPacket(
+          4, kStreamId, kConnectUdpContextId,
+          endpoint_maker.MakeInitialSettingsPacket(1)));
+  socket_factory_->AddSocketDataProvider(&successful_request_socket_data);
+
+  auto proxy_chain = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                         proxy.host_piece(), 443),
+  });
+  ASSERT_TRUE(proxy_chain.IsValid());
+
+  // Second request which will be made synchronously after the failing request
+  // below finishes.
+  RequestBuilder successful_request_builder(this);
+  successful_request_builder.destination = origin;
+  successful_request_builder.proxy_chain = proxy_chain;
+  successful_request_builder.http_user_agent_settings =
+      &http_user_agent_settings_;
+  successful_request_builder.url = url;
+  TestCompletionCallback successful_callback;
+  successful_request_builder.callback = successful_callback.callback();
+
+  base::RunLoop run_loop;
+  // Failing request which will make the above request synchronously when its
+  // callback runs.
+  RequestBuilder failing_request_builder(this);
+  failing_request_builder.destination = origin;
+  failing_request_builder.proxy_chain = proxy_chain;
+  failing_request_builder.http_user_agent_settings = &http_user_agent_settings_;
+  failing_request_builder.url = url;
+  failing_request_builder.callback =
+      base::BindLambdaForTesting([&](int result) {
+        EXPECT_THAT(result, IsError(ERR_QUIC_HANDSHAKE_FAILED));
+        EXPECT_THAT(successful_request_builder.CallRequest(),
+                    IsError(ERR_IO_PENDING));
+        run_loop.Quit();
+      });
+
+  EXPECT_THAT(failing_request_builder.CallRequest(), IsError(ERR_IO_PENDING));
+  run_loop.Run();
+
+  EXPECT_THAT(successful_callback.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream =
+      CreateStream(&successful_request_builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Verify the second request is successful.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return successful_request_socket_data.AllDataConsumed(); }));
 }
 
 }  // namespace net::test
