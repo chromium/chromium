@@ -391,14 +391,18 @@ ExperimentalActorPerformActionsFunction::Run() {
       case optimization_guide::proto::Action::kAttemptLogin:
         ConvertActionTabId(action.mutable_attempt_login(), browser_context());
         break;
+      case optimization_guide::proto::Action::kScriptTool:
+        ConvertActionTabId(action.mutable_script_tool(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kScrollTo:
+        ConvertActionTabId(action.mutable_scroll_to(), browser_context());
+        break;
       case optimization_guide::proto::Action::kWait:
       case optimization_guide::proto::Action::kCreateTab:
       case optimization_guide::proto::Action::kCreateWindow:
       case optimization_guide::proto::Action::kCloseWindow:
       case optimization_guide::proto::Action::kActivateWindow:
       case optimization_guide::proto::Action::kYieldToUser:
-      case optimization_guide::proto::Action::kScriptTool:
-      case optimization_guide::proto::Action::kScrollTo:
       case optimization_guide::proto::Action::ACTION_NOT_SET:
         // No tab id to convert.
         break;
