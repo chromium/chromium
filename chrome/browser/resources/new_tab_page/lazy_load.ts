@@ -57,6 +57,7 @@ export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEven
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';
 export {MostRelevantTabResumptionProxyImpl} from './modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
 export {ModuleElement as TabGroupsModuleElement, tabGroupsDescriptor} from './modules/v2/tab_groups/module.js';
+export {TabGroupsProxyImpl} from './modules/v2/tab_groups/tab_groups_proxy.js';
 export {NtpPromoProxy, NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';
 export {NtpSinglePromoElement} from './ntp_promo/ntp_single_promo.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

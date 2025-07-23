@@ -4,3 +4,16 @@
     more-actions-text="${this.i18nRecursive(
         '', 'modulesMoreActions', 'modulesTabGroupsTitle')}">
 </ntp-module-header-v2>
+<div id="tabGroups">
+  ${this.getTabGroups_().map(item => html`
+    <a class="tab-group" href="${item.url.url}">
+      <div id="hoverLayer"></div>
+      <icon-container class="icon-container">
+        <img is="cr-auto-img" class="tab-group-icon" draggable="false">
+      </icon-container>
+      <div class="tab-group-info">
+        <div class="tab-group-title">${item.title}</div>
+      </div>
+    </a>
+  `)}
+</div>

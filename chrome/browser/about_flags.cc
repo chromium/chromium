@@ -2430,6 +2430,14 @@ const FeatureEntry::FeatureVariation kNtpSharepointModuleVariations[] = {
     {"- Combined Suggestions", kNtpSharepointModuleCombinedSuggestions,
      std::size(kNtpSharepointModuleCombinedSuggestions), nullptr}};
 
+const FeatureEntry::FeatureParam kNtpTabGroupsModuleFakeData[] = {
+    {ntp_features::kNtpTabGroupsModuleDataParam, "Fake Data"}};
+
+const FeatureEntry::FeatureVariation kNtpTabGroupsModuleVariations[] = {
+    {"- Fake Data", kNtpTabGroupsModuleFakeData,
+     std::size(kNtpTabGroupsModuleFakeData), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpMostRelevantTabResumptionModuleFakeData[] =
     {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "Fake Data"}};
 const FeatureEntry::FeatureParam
@@ -7496,7 +7504,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-tab-groups-module", flag_descriptions::kNtpTabGroupsModuleName,
      flag_descriptions::kNtpTabGroupsModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpTabGroupsModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpTabGroupsModule,
+                                    kNtpTabGroupsModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-wallpaper-search-button",
      flag_descriptions::kNtpWallpaperSearchButtonName,

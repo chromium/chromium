@@ -356,6 +356,7 @@ const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[] =
     "NtpMostRelevantTabResumptionModuleMaxVisitsParam";
+const char kNtpTabGroupsModuleDataParam[] = "NtpTabGroupsModuleDataParam";
 const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
     "NtpTabResumptionModuleCategoriesBlocklistParam";
 const char kNtpTabResumptionModuleDismissalDurationParam[] =

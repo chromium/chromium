@@ -18,6 +18,7 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -87,6 +88,7 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 class RealboxHandler;
+class TabGroupsPageHandler;
 class NewTabPageUI;
 
 class NewTabPageUIConfig : public content::DefaultWebUIConfig<NewTabPageUI> {
@@ -213,6 +215,9 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<foo::mojom::FooHandler> pending_receiver);
 #endif
+
+  void BindInterface(mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>
+                         pending_page_handler);
 
   void BindInterface(mojo::PendingReceiver<
                      ntp::most_relevant_tab_resumption::mojom::PageHandler>
@@ -349,6 +354,7 @@ class NewTabPageUI
   std::unique_ptr<MicrosoftAuthPageHandler> microsoft_auth_handler_;
   std::unique_ptr<MicrosoftFilesPageHandler> microsoft_files_handler_;
   std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
+  std::unique_ptr<TabGroupsPageHandler> tab_groups_handler_;
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};

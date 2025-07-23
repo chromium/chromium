@@ -64,6 +64,7 @@ if (optimize_webui) {
     "new_tab_page.mojom-webui.js",
     "ntp_microsoft_auth_shared_ui.mojom-webui.js",
     "outlook_calendar.mojom-webui.js",
+    "tab_groups.mojom-webui.js",
     "url_visit_types.mojom-webui.js",
   ]
 

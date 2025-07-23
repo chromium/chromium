@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '/strings.m.js';
 import '../module_header.js';
@@ -10,11 +9,15 @@ import '../module_header.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit} from '../../../i18n_setup.js';
+import type {TabGroup} from '../../../tab_groups.mojom-webui.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem} from '../module_header.js';
 
 import {getCss} from './module.css.js';
 import {getHtml} from './module.html.js';
+import {TabGroupsProxyImpl} from './tab_groups_proxy.js';
+
+export const MAX_TAB_GROUPS = 4;
 
 const ModuleElementBase = I18nMixinLit(CrLitElement);
 
@@ -34,6 +37,14 @@ export class ModuleElement extends ModuleElementBase {
   override render() {
     return getHtml.bind(this)();
   }
+
+  static override get properties() {
+    return {
+      tabGroups: {type: Object},
+    };
+  }
+
+  accessor tabGroups: TabGroup[] = [];
 
   protected getMenuItemGroups_(): MenuItem[][] {
     return [
@@ -65,12 +76,26 @@ export class ModuleElement extends ModuleElementBase {
       ],
     ];
   }
+
+  protected getTabGroups_(): TabGroup[] {
+    return this.tabGroups.slice(0, MAX_TAB_GROUPS);
+  }
 }
 
 customElements.define(ModuleElement.is, ModuleElement);
 
-async function createElement(): Promise<HTMLElement> {
-  return new Promise<ModuleElement>((resolve) => resolve(new ModuleElement()));
+async function createElement(): Promise<ModuleElement|null> {
+  const {tabGroups} =
+      await TabGroupsProxyImpl.getInstance().handler.getTabGroups();
+  if (!tabGroups || tabGroups.length === 0) {
+    // TODO(crbug.com/431278744): Show zero-state card.
+    return null;
+  }
+
+  const element = new ModuleElement();
+  element.tabGroups = tabGroups;
+
+  return element;
 }
 
 export const tabGroupsDescriptor: ModuleDescriptor = new ModuleDescriptor(
