@@ -319,9 +319,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
     EXPECT_EQ(1u, sii_->shared_image_count());
 
     // Y plane = 9x9, U and V plan = 5x5.
-    EXPECT_EQ(kYValue, software_frame->visible_data(VideoFrame::Plane::kY)[80]);
-    EXPECT_EQ(kUValue, software_frame->visible_data(VideoFrame::Plane::kU)[24]);
-    EXPECT_EQ(kVValue, software_frame->visible_data(VideoFrame::Plane::kV)[24]);
+    ASSERT_EQ(kYValue, software_frame->visible_data(VideoFrame::Plane::kY)[80]);
+    ASSERT_EQ(kUValue, software_frame->visible_data(VideoFrame::Plane::kU)[24]);
+    ASSERT_EQ(kVValue, software_frame->visible_data(VideoFrame::Plane::kV)[24]);
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
@@ -396,9 +396,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
         software_frame->visible_data(VideoFrame::Plane::kV));
 
     // Y plane = 17x17 = 289, U and V plan = 9x9.
-    EXPECT_EQ(kYValue, y_plane_data[288]);
-    EXPECT_EQ(kUValue, u_plane_data[80]);
-    EXPECT_EQ(kVValue, v_plane_data[80]);
+    ASSERT_EQ(kYValue, y_plane_data[288]);
+    ASSERT_EQ(kUValue, u_plane_data[80]);
+    ASSERT_EQ(kVValue, v_plane_data[80]);
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
@@ -504,9 +504,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
     EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
     // Y plane = 5x5, U and V plan = 3x3.
-    EXPECT_EQ(kYValue, software_frame->visible_data(VideoFrame::Plane::kY)[24]);
-    EXPECT_EQ(kUValue, software_frame->visible_data(VideoFrame::Plane::kU)[8]);
-    EXPECT_EQ(kVValue, software_frame->visible_data(VideoFrame::Plane::kV)[8]);
+    ASSERT_EQ(kYValue, software_frame->visible_data(VideoFrame::Plane::kY)[24]);
+    ASSERT_EQ(kUValue, software_frame->visible_data(VideoFrame::Plane::kU)[8]);
+    ASSERT_EQ(kVValue, software_frame->visible_data(VideoFrame::Plane::kV)[8]);
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
@@ -548,11 +548,11 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
     EXPECT_EQ(1u, sii_->shared_image_count());
 
     // Y plane = 135x135 = 18225, UV plan = 136x68 = 9248.
-    EXPECT_EQ(kYValue,
+    ASSERT_EQ(kYValue,
               software_frame->visible_data(VideoFrame::Plane::kY)[18224]);
-    EXPECT_EQ(kUValue,
+    ASSERT_EQ(kUValue,
               software_frame->visible_data(VideoFrame::Plane::kUV)[9246]);
-    EXPECT_EQ(kVValue,
+    ASSERT_EQ(kVValue,
               software_frame->visible_data(VideoFrame::Plane::kUV)[9247]);
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
@@ -625,9 +625,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
         software_frame->visible_data(VideoFrame::Plane::kV));
 
     // Y plane = 7x7 = 49, U and V plan = 4x4 = 16.
-    EXPECT_EQ(kYValue, y_plane_data[48]);
-    EXPECT_EQ(kUValue, u_plane_data[15]);
-    EXPECT_EQ(kVValue, v_plane_data[15]);
+    ASSERT_EQ(kYValue, y_plane_data[48]);
+    ASSERT_EQ(kUValue, u_plane_data[15]);
+    ASSERT_EQ(kVValue, v_plane_data[15]);
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
