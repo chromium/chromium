@@ -9,6 +9,7 @@
 
 #include "components/reporting/encryption/primitives.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>

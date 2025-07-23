@@ -5,6 +5,7 @@
 #ifndef CRYPTO_KEYPAIR_H_
 #define CRYPTO_KEYPAIR_H_
 
+#include <array>
 #include <vector>
 
 #include "base/containers/span.h"
