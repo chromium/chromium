@@ -83,20 +83,20 @@ component("crypto") {
 
   if (is_apple) {
     sources += [
-      "apple_keychain.cc",
-      "apple_keychain.h",
-      "apple_keychain_secitem.h",
-      "apple_keychain_secitem.mm",
-      "apple_keychain_util.h",
-      "apple_keychain_util.mm",
-      "apple_keychain_v2.h",
-      "apple_keychain_v2.mm",
+      "apple/keychain.cc",
+      "apple/keychain.h",
+      "apple/keychain_secitem.h",
+      "apple/keychain_secitem.mm",
+      "apple/keychain_util.h",
+      "apple/keychain_util.mm",
+      "apple/keychain_v2.h",
+      "apple/keychain_v2.mm",
     ]
 
     if (is_mac) {
       sources += [
-        "apple_keychain_seckeychain.cc",
-        "apple_keychain_seckeychain.h",
+        "apple/keychain_seckeychain.cc",
+        "apple/keychain_seckeychain.h",
         "mac_security_services_lock.cc",
         "mac_security_services_lock.h",
         "scoped_lacontext.h",
@@ -158,10 +158,11 @@ component("crypto") {
 }
 
 if (is_apple) {
+  # TODO(https://crbug.com/431952820): move this into a crypto/apple/BUILD.gn
   source_set("mock_apple_keychain") {
     sources = [
-      "mock_apple_keychain.cc",
-      "mock_apple_keychain.h",
+      "apple/mock_keychain.cc",
+      "apple/mock_keychain.h",
     ]
 
     deps = [
@@ -198,16 +199,16 @@ test("crypto_unittests") {
   }
 
   if (is_apple) {
-    sources += [ "mock_apple_keychain_unittest.cc" ]
+    sources += [ "apple/mock_keychain_unittest.cc" ]
   }
 
   if (is_ios) {
-    sources += [ "apple_keychain_secitem_ios_unittest.mm" ]
+    sources += [ "apple/keychain_secitem_ios_unittest.mm" ]
   }
 
   if (is_mac) {
     sources += [
-      "apple_keychain_util_unittest.mm",
+      "apple/keychain_util_unittest.mm",
       "unexportable_key_mac_unittest.mm",
       "user_verifying_key_mac_unittest.mm",
     ]
@@ -275,10 +276,10 @@ static_library("test_support") {
 
   if (is_mac) {
     sources += [
-      "fake_apple_keychain_v2.h",
-      "fake_apple_keychain_v2.mm",
-      "scoped_fake_apple_keychain_v2.h",
-      "scoped_fake_apple_keychain_v2.mm",
+      "apple/fake_keychain_v2.h",
+      "apple/fake_keychain_v2.mm",
+      "apple/scoped_fake_keychain_v2.h",
+      "apple/scoped_fake_keychain_v2.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",

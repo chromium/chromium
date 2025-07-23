@@ -21,7 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 #include "crypto/scoped_lacontext.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_mac.h"
@@ -239,7 +239,7 @@ void AreMacUnexportableKeysAvailable(UserVerifyingKeyProvider::Config config,
     return;
   }
   std::move(callback).Run(
-      AppleKeychainV2::GetInstance().LAContextCanEvaluatePolicy(
+      crypto::apple::KeychainV2::GetInstance().LAContextCanEvaluatePolicy(
           LAPolicyDeviceOwnerAuthentication, /*error=*/nil));
 }
 

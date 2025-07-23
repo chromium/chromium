@@ -7,7 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -43,7 +43,7 @@ class TouchIdAuthenticatorTest : public testing::Test {
   fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};
-  crypto::ScopedFakeAppleKeychainV2 keychain_{config_.keychain_access_group};
+  crypto::apple::ScopedFakeKeychainV2 keychain_{config_.keychain_access_group};
   fido::mac::TouchIdCredentialStore store_{config_};
 
   std::unique_ptr<fido::mac::TouchIdAuthenticator> authenticator_ =

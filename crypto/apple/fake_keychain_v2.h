@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CRYPTO_FAKE_APPLE_KEYCHAIN_V2_H_
-#define CRYPTO_FAKE_APPLE_KEYCHAIN_V2_H_
+#ifndef CRYPTO_APPLE_FAKE_KEYCHAIN_V2_H_
+#define CRYPTO_APPLE_FAKE_KEYCHAIN_V2_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,24 +11,24 @@
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "crypto/crypto_export.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
 
-namespace crypto {
+namespace crypto::apple {
 
-// FakeAppleKeychainV2 is an implementation of AppleKeychainV2 for testing. It
-// works around behavior that can't be relied on in tests, such as writing to
-// the actual Keychain or using functionality that requires code-signed,
-// entitled builds.
-class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
+// FakeKeychainV2 is an implementation of KeychainV2 for testing. It works
+// around behavior that can't be relied on in tests, such as writing to the
+// actual Keychain or using functionality that requires code-signed, entitled
+// builds.
+class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
  public:
-  using UVMethod = ScopedFakeAppleKeychainV2::UVMethod;
+  using UVMethod = ScopedFakeKeychainV2::UVMethod;
 
-  explicit FakeAppleKeychainV2(const std::string& keychain_access_group);
-  FakeAppleKeychainV2(const FakeAppleKeychainV2&) = delete;
-  FakeAppleKeychainV2& operator=(const FakeAppleKeychainV2&) = delete;
-  ~FakeAppleKeychainV2() override;
+  explicit FakeKeychainV2(const std::string& keychain_access_group);
+  FakeKeychainV2(const FakeKeychainV2&) = delete;
+  FakeKeychainV2& operator=(const FakeKeychainV2&) = delete;
+  ~FakeKeychainV2() override;
 
   const std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>& items() {
     return items_;
@@ -40,7 +40,7 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
 
   void set_uv_method(UVMethod uv_method) { uv_method_ = uv_method; }
 
-  // AppleKeychainV2:
+  // KeychainV2:
   NSArray* GetTokenIDs() override;
   base::apple::ScopedCFTypeRef<SecKeyRef> KeyCreateRandomKey(
       CFDictionaryRef params,
@@ -75,6 +75,6 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
   base::apple::ScopedCFTypeRef<CFStringRef> keychain_access_group_;
 };
 
-}  // namespace crypto
+}  // namespace crypto::apple
 
-#endif  // CRYPTO_FAKE_APPLE_KEYCHAIN_V2_H_
+#endif  // CRYPTO_APPLE_FAKE_KEYCHAIN_V2_H_

@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -94,7 +94,7 @@ class UnexportableKeySigningTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_MAC)
-  crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain_{
       kTestKeychainAccessGroup};
 #endif  // BUILDFLAG(IS_MAC)
 };

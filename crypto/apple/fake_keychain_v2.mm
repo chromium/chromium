@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/fake_apple_keychain_v2.h"
+#include "crypto/apple/fake_keychain_v2.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -20,19 +20,18 @@
 #include "base/memory/scoped_policy.h"
 #include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
 #endif
 
-namespace crypto {
+namespace crypto::apple {
 
-FakeAppleKeychainV2::FakeAppleKeychainV2(
-    const std::string& keychain_access_group)
+FakeKeychainV2::FakeKeychainV2(const std::string& keychain_access_group)
     : keychain_access_group_(
           base::SysUTF8ToCFStringRef(keychain_access_group)) {}
-FakeAppleKeychainV2::~FakeAppleKeychainV2() {
+FakeKeychainV2::~FakeKeychainV2() {
   // Avoid shutdown leak of error string in Security.framework.
   // See
   // https://github.com/apple-oss-distributions/Security/blob/Security-60158.140.3/OSX/libsecurity_keychain/lib/SecBase.cpp#L88
@@ -41,14 +40,14 @@ FakeAppleKeychainV2::~FakeAppleKeychainV2() {
 #endif
 }
 
-NSArray* FakeAppleKeychainV2::GetTokenIDs() {
+NSArray* FakeKeychainV2::GetTokenIDs() {
   if (is_secure_enclave_available_) {
     return @[ base::apple::CFToNSPtrCast(kSecAttrTokenIDSecureEnclave) ];
   }
   return @[];
 }
 
-base::apple::ScopedCFTypeRef<SecKeyRef> FakeAppleKeychainV2::KeyCreateRandomKey(
+base::apple::ScopedCFTypeRef<SecKeyRef> FakeKeychainV2::KeyCreateRandomKey(
     CFDictionaryRef params,
     CFErrorRef* error) {
   // Validate certain fields that we always expect to be set.
@@ -129,8 +128,8 @@ base::apple::ScopedCFTypeRef<SecKeyRef> FakeAppleKeychainV2::KeyCreateRandomKey(
   return private_key;
 }
 
-base::apple::ScopedCFTypeRef<CFDictionaryRef>
-FakeAppleKeychainV2::KeyCopyAttributes(SecKeyRef key) {
+base::apple::ScopedCFTypeRef<CFDictionaryRef> FakeKeychainV2::KeyCopyAttributes(
+    SecKeyRef key) {
   const auto& it = std::ranges::find_if(items_, [&key](const auto& item) {
     return CFEqual(key, CFDictionaryGetValue(item.get(), kSecValueRef));
   });
@@ -145,8 +144,8 @@ FakeAppleKeychainV2::KeyCopyAttributes(SecKeyRef key) {
   return result;
 }
 
-OSStatus FakeAppleKeychainV2::ItemAdd(CFDictionaryRef attributes,
-                                      CFTypeRef* result) {
+OSStatus FakeKeychainV2::ItemAdd(CFDictionaryRef attributes,
+                                 CFTypeRef* result) {
   CFStringRef keychain_access_group =
       base::apple::GetValueFromDictionary<CFStringRef>(attributes,
                                                        kSecAttrAccessGroup);
@@ -159,8 +158,8 @@ OSStatus FakeAppleKeychainV2::ItemAdd(CFDictionaryRef attributes,
   return errSecSuccess;
 }
 
-OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
-                                               CFTypeRef* result) {
+OSStatus FakeKeychainV2::ItemCopyMatching(CFDictionaryRef query,
+                                          CFTypeRef* result) {
   // In practice we don't need to care about limit queries, or leaving out the
   // SecKeyRef or attributes from the result set.
   DCHECK_EQ(
@@ -239,7 +238,7 @@ OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
   return errSecSuccess;
 }
 
-OSStatus FakeAppleKeychainV2::ItemDelete(CFDictionaryRef query) {
+OSStatus FakeKeychainV2::ItemDelete(CFDictionaryRef query) {
   // Validate certain fields that we always expect to be set.
   DCHECK_EQ(base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass),
             kSecClassKey);
@@ -266,8 +265,8 @@ OSStatus FakeAppleKeychainV2::ItemDelete(CFDictionaryRef query) {
   return errSecItemNotFound;
 }
 
-OSStatus FakeAppleKeychainV2::ItemUpdate(CFDictionaryRef query,
-                                         CFDictionaryRef attributes_to_update) {
+OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
+                                    CFDictionaryRef attributes_to_update) {
   DCHECK_EQ(base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass),
             kSecClassKey);
   DCHECK(CFEqual(base::apple::GetValueFromDictionary<CFStringRef>(
@@ -299,9 +298,9 @@ OSStatus FakeAppleKeychainV2::ItemUpdate(CFDictionaryRef query,
 
 #if !BUILDFLAG(IS_IOS)
 base::apple::ScopedCFTypeRef<CFTypeRef>
-FakeAppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
-                                                 CFStringRef entitlement,
-                                                 CFErrorRef* error) {
+FakeKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
+                                            CFStringRef entitlement,
+                                            CFErrorRef* error) {
   CHECK(task);
   CHECK(CFEqual(entitlement,
                 base::SysUTF8ToCFStringRef("keychain-access-groups").get()))
@@ -317,7 +316,7 @@ FakeAppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
 #endif  // !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_IOS_TVOS)
-BOOL FakeAppleKeychainV2::LAContextCanEvaluatePolicy(
+BOOL FakeKeychainV2::LAContextCanEvaluatePolicy(
     LAPolicy policy,
     NSError* __autoreleasing* error) {
   switch (policy) {
@@ -336,4 +335,4 @@ BOOL FakeAppleKeychainV2::LAContextCanEvaluatePolicy(
 }
 #endif  // !BUILDFLAG(IS_IOS_TVOS)
 
-}  // namespace crypto
+}  // namespace crypto::apple

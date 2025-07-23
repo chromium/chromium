@@ -5,15 +5,15 @@
 #ifndef CRYPTO_APPLE_KEYCHAIN_SECITEM_H_
 #define CRYPTO_APPLE_KEYCHAIN_SECITEM_H_
 
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/keychain.h"
 
-namespace crypto {
+namespace crypto::apple {
 
-// An implementation of AppleKeychain on top of the SecItem API.
-class CRYPTO_EXPORT AppleKeychainSecItem : public AppleKeychain {
+// An implementation of Keychain on top of the SecItem API.
+class CRYPTO_EXPORT KeychainSecItem : public Keychain {
  public:
-  AppleKeychainSecItem();
-  ~AppleKeychainSecItem() override;
+  KeychainSecItem();
+  ~KeychainSecItem() override;
 
   base::expected<std::vector<uint8_t>, OSStatus> FindGenericPassword(
       std::string_view service_name,
@@ -25,6 +25,6 @@ class CRYPTO_EXPORT AppleKeychainSecItem : public AppleKeychain {
       base::span<const uint8_t> password) const override;
 };
 
-}  // namespace crypto
+}  // namespace crypto::apple
 
 #endif  // CRYPTO_APPLE_KEYCHAIN_SECITEM_H_

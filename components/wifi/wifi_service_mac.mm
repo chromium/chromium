@@ -25,7 +25,7 @@
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "components/wifi/network_properties.h"
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/keychain.h"
 
 namespace wifi {
 
@@ -355,7 +355,7 @@ void WiFiServiceMac::GetKeyFromSystem(const std::string& network_guid,
                                       std::string* error) {
   static const char kAirPortServiceName[] = "AirPort";
 
-  auto keychain = crypto::AppleKeychain::DefaultKeychain();
+  auto keychain = crypto::apple::Keychain::DefaultKeychain();
   auto password =
       keychain->FindGenericPassword(kAirPortServiceName, network_guid);
   if (!password.has_value()) {

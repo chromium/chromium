@@ -103,7 +103,7 @@
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/mac/fake_icloud_keychain.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -2847,7 +2847,7 @@ constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
 
 class EnclaveICloudRecoveryKeyTest : public EnclaveAuthenticatorBrowserTest {
  protected:
-  crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain_{
       kICloudKeychainRecoveryKeyAccessGroup};
 };
 

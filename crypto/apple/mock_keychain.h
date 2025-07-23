@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CRYPTO_MOCK_APPLE_KEYCHAIN_H_
-#define CRYPTO_MOCK_APPLE_KEYCHAIN_H_
+#ifndef CRYPTO_APPLE_MOCK_KEYCHAIN_H_
+#define CRYPTO_APPLE_MOCK_KEYCHAIN_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,27 +15,26 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/keychain.h"
 
-namespace crypto {
+namespace crypto::apple {
 
 // Mock Keychain wrapper for testing code that interacts with the OS X
 // Keychain.
 //
 // Note that "const" is pretty much meaningless for this class; the const-ness
-// of AppleKeychain doesn't apply to the actual keychain data, so all of the
-// Mock data is mutable; don't assume that it won't change over the life of
-// tests.
-class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
+// of Keychain doesn't apply to the actual keychain data, so all of the Mock
+// data is mutable; don't assume that it won't change over the life of tests.
+class CRYPTO_EXPORT MockKeychain : public Keychain {
  public:
-  MockAppleKeychain();
+  MockKeychain();
 
-  MockAppleKeychain(const MockAppleKeychain&) = delete;
-  MockAppleKeychain& operator=(const MockAppleKeychain&) = delete;
+  MockKeychain(const MockKeychain&) = delete;
+  MockKeychain& operator=(const MockKeychain&) = delete;
 
-  ~MockAppleKeychain() override;
+  ~MockKeychain() override;
 
-  // AppleKeychain implementation.
+  // Keychain implementation.
   base::expected<std::vector<uint8_t>, OSStatus> FindGenericPassword(
       std::string_view service_name,
       std::string_view account_name) const override;
@@ -68,6 +67,6 @@ class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
   mutable bool called_add_generic_ = false;
 };
 
-}  // namespace crypto
+}  // namespace crypto::apple
 
-#endif  // CRYPTO_MOCK_APPLE_KEYCHAIN_H_
+#endif  // CRYPTO_APPLE_MOCK_KEYCHAIN_H_

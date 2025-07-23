@@ -15,10 +15,10 @@
 #include "base/rand_util.h"
 #include "base/strings/string_view_util.h"
 #include "build/branding_buildflags.h"
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/keychain.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
-using crypto::AppleKeychain;
+using crypto::apple::Keychain;
 
 #if defined(ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE)
 using KeychainNameContainerType = base::NoDestructor<std::string>;
@@ -51,7 +51,7 @@ enum class FindGenericPasswordResult {
 // Generates a random password and adds it to the Keychain.  The added password
 // is returned from the function.  If an error occurs, an empty password is
 // returned.
-std::string AddRandomPasswordToKeychain(const AppleKeychain& keychain,
+std::string AddRandomPasswordToKeychain(const Keychain& keychain,
                                         const std::string& service_name,
                                         const std::string& account_name) {
   // Generate a password with 128 bits of randomness.
@@ -83,7 +83,7 @@ KeychainPassword::KeychainNameType& KeychainPassword::GetAccountName() {
   return *account_name;
 }
 
-KeychainPassword::KeychainPassword(const AppleKeychain& keychain)
+KeychainPassword::KeychainPassword(const Keychain& keychain)
     : keychain_(keychain) {}
 
 KeychainPassword::~KeychainPassword() = default;

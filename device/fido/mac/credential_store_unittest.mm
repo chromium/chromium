@@ -11,7 +11,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -72,7 +72,7 @@ class CredentialStoreTest : public testing::Test {
   AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};
-  crypto::ScopedFakeAppleKeychainV2 keychain_{config_.keychain_access_group};
+  crypto::apple::ScopedFakeKeychainV2 keychain_{config_.keychain_access_group};
   TouchIdCredentialStore store_{config_};
 };
 

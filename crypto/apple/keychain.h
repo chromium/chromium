@@ -16,9 +16,9 @@
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 
-namespace crypto {
+namespace crypto::apple {
 
-// DEPRECATED: use `AppleKeychainV2` instead.
+// DEPRECATED: use `KeychainV2` instead.
 // Wraps the KeychainServices API in a very thin layer, to allow it to be
 // mocked out for testing.
 
@@ -26,20 +26,20 @@ namespace crypto {
 // through directly to their Keychain Services equivalents (Foo ->
 // SecKeychainFoo).
 //
-// New code should use AppleKeychainV2.
-class CRYPTO_EXPORT AppleKeychain {
+// New code should use KeychainV2.
+class CRYPTO_EXPORT Keychain {
  public:
   // Returns an object suitable for accessing the platform's default type of
   // keychain.
   //
   // On macOS, this will access the default file-based keychain. On
   // iOS, this will access the application's data protection keychain.
-  static std::unique_ptr<AppleKeychain> DefaultKeychain();
+  static std::unique_ptr<Keychain> DefaultKeychain();
 
-  AppleKeychain(const AppleKeychain&) = delete;
-  AppleKeychain& operator=(const AppleKeychain&) = delete;
+  Keychain(const Keychain&) = delete;
+  Keychain& operator=(const Keychain&) = delete;
 
-  virtual ~AppleKeychain();
+  virtual ~Keychain();
 
   // Note that even though OSStatus has a noError value, that can never be
   // returned in the OSStatus arm of FindGenericPassword() - in that case, the
@@ -54,7 +54,7 @@ class CRYPTO_EXPORT AppleKeychain {
       base::span<const uint8_t> password) const = 0;
 
  protected:
-  AppleKeychain();
+  Keychain();
 };
 
 #if BUILDFLAG(IS_MAC)
@@ -85,6 +85,6 @@ class CRYPTO_EXPORT ScopedKeychainUserInteractionAllowed {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-}  // namespace crypto
+}  // namespace crypto::apple
 
 #endif  // CRYPTO_APPLE_KEYCHAIN_H_

@@ -4,8 +4,8 @@
 
 #include "crypto/unexportable_key.h"
 
-#include "crypto/fake_apple_keychain_v2.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,14 +25,13 @@ const UnexportableKeyProvider::Config config = {
 // keys.
 class UnexportableKeyMacTest : public testing::Test {
  protected:
-  ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain_{
       kTestKeychainAccessGroup};
 };
 
 TEST_F(UnexportableKeyMacTest, SecureEnclaveAvailability) {
   for (bool available : {true, false}) {
-    scoped_fake_apple_keychain_.keychain()->set_secure_enclave_available(
-        available);
+    scoped_fake_keychain_.keychain()->set_secure_enclave_available(available);
     EXPECT_EQ(GetUnexportableKeyProvider(config) != nullptr, available);
   }
 }
@@ -46,7 +45,7 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
   ASSERT_TRUE(provider->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
   EXPECT_TRUE(provider->DeleteSigningKeySlowly(key->GetWrappedKey()));
   EXPECT_FALSE(provider->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
-  EXPECT_TRUE(scoped_fake_apple_keychain_.keychain()->items().empty());
+  EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
 }
 
 TEST_F(UnexportableKeyMacTest, DeleteUnknownSigningKey) {

@@ -138,7 +138,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/icloud_keychain.h"
@@ -9530,7 +9530,7 @@ TEST_F(TouchIdAuthenticatorImplTest, OptionalUv) {
   // Disable biometrics to verify that requests without uv required do not
   // prompt the user for their macOS password.
   touch_id_test_environment_.keychain()->SetUVMethod(
-      crypto::ScopedFakeAppleKeychainV2::UVMethod::kPasswordOnly);
+      crypto::apple::ScopedFakeKeychainV2::UVMethod::kPasswordOnly);
   for (const auto uv : {device::UserVerificationRequirement::kDiscouraged,
                         device::UserVerificationRequirement::kPreferred,
                         device::UserVerificationRequirement::kRequired}) {

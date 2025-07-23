@@ -18,8 +18,8 @@
 #include "crypto/subtle_passkey.h"
 
 #if BUILDFLAG(IS_APPLE)
-namespace crypto {
-class AppleKeychain;
+namespace crypto::apple {
+class Keychain;
 }
 #endif
 
@@ -234,7 +234,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
  private:
 #if BUILDFLAG(IS_APPLE)
   // Return the keychain to use for accessing the encryption key.
-  std::unique_ptr<crypto::AppleKeychain> GetKeychain() const;
+  std::unique_ptr<crypto::apple::Keychain> GetKeychain() const;
 
   // Derives an encryption key from data stored in the keychain if necessary.
   // Returns true if there is an encryption key available and false otherwise.

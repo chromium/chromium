@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/mock_apple_keychain.h"
+#include "crypto/apple/mock_keychain.h"
 
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(MockAppleKeychain, Basic) {
-  crypto::MockAppleKeychain keychain;
+  crypto::apple::MockKeychain keychain;
   const auto password = keychain.GetEncryptionPassword();
   ASSERT_FALSE(password.empty());
 }

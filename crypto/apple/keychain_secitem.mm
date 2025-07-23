@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/apple_keychain_secitem.h"
+#include "crypto/apple/keychain_secitem.h"
 
 #import <Foundation/Foundation.h>
 
@@ -128,13 +128,13 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeGenericPasswordUpdateQuery(
 
 }  // namespace
 
-namespace crypto {
+namespace crypto::apple {
 
-AppleKeychainSecItem::AppleKeychainSecItem() = default;
+KeychainSecItem::KeychainSecItem() = default;
 
-AppleKeychainSecItem::~AppleKeychainSecItem() = default;
+KeychainSecItem::~KeychainSecItem() = default;
 
-OSStatus AppleKeychainSecItem::AddGenericPassword(
+OSStatus KeychainSecItem::AddGenericPassword(
     std::string_view service_name,
     std::string_view account_name,
     base::span<const uint8_t> password) const {
@@ -160,8 +160,8 @@ OSStatus AppleKeychainSecItem::AddGenericPassword(
 }
 
 base::expected<std::vector<uint8_t>, OSStatus>
-AppleKeychainSecItem::FindGenericPassword(std::string_view service_name,
-                                          std::string_view account_name) const {
+KeychainSecItem::FindGenericPassword(std::string_view service_name,
+                                     std::string_view account_name) const {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> query =
       MakeGenericPasswordQuery(service_name, account_name);
 
@@ -203,4 +203,4 @@ AppleKeychainSecItem::FindGenericPassword(std::string_view service_name,
   return base::ToVector(base::apple::CFDataToSpan(password_data));
 }
 
-}  // namespace crypto
+}  // namespace crypto::apple

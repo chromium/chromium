@@ -34,8 +34,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "crypto/apple_keychain_util.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_util.h"
+#include "crypto/apple/keychain_v2.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key_mac.h"
 #include "crypto/unexportable_key_metrics.h"
@@ -130,9 +130,9 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
                 key_attributes,
                 kSecAttrApplicationLabel))) {
     base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
-        AppleKeychainV2::GetInstance().KeyCopyPublicKey(key_.get()));
+        crypto::apple::KeychainV2::GetInstance().KeyCopyPublicKey(key_.get()));
     base::apple::ScopedCFTypeRef<CFDataRef> x962_bytes(
-        AppleKeychainV2::GetInstance().KeyCopyExternalRepresentation(
+        crypto::apple::KeychainV2::GetInstance().KeyCopyExternalRepresentation(
             public_key.get(), /*error=*/nil));
     CHECK(x962_bytes);
     base::span<const uint8_t> x962_span =
@@ -168,7 +168,7 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
     NSData* nsdata = [NSData dataWithBytes:data.data() length:data.size()];
     base::apple::ScopedCFTypeRef<CFErrorRef> error;
     base::apple::ScopedCFTypeRef<CFDataRef> signature(
-        AppleKeychainV2::GetInstance().KeyCreateSignature(
+        crypto::apple::KeychainV2::GetInstance().KeyCreateSignature(
             key_.get(), algorithm, NSToCFPtrCast(nsdata),
             error.InitializeInto()));
     if (!signature) {
@@ -292,7 +292,7 @@ UnexportableKeyProviderMac::GenerateSigningKeySlowly(
 
   base::apple::ScopedCFTypeRef<CFErrorRef> error;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key(
-      AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateRandomKey(
           NSToCFPtrCast(attributes), error.InitializeInto()));
   if (!private_key) {
     LOG(ERROR) << "Could not create private key: " << error.get();
@@ -300,7 +300,8 @@ UnexportableKeyProviderMac::GenerateSigningKeySlowly(
     return nullptr;
   }
   base::apple::ScopedCFTypeRef<CFDictionaryRef> key_metadata =
-      AppleKeychainV2::GetInstance().KeyCopyAttributes(private_key.get());
+      crypto::apple::KeychainV2::GetInstance().KeyCopyAttributes(
+          private_key.get());
   return std::make_unique<UnexportableSigningKeyMac>(std::move(private_key),
                                                      key_metadata.get());
 }
@@ -330,7 +331,7 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
   if (lacontext) {
     query[CFToNSPtrCast(kSecUseAuthenticationContext)] = lacontext;
   }
-  OSStatus status = AppleKeychainV2::GetInstance().ItemCopyMatching(
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
       NSToCFPtrCast(query), key_data.InitializeInto());
   CFDictionaryRef key_attributes =
       base::apple::CFCast<CFDictionaryRef>(key_data.get());
@@ -360,7 +361,7 @@ bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
         [NSData dataWithBytes:wrapped_key.data() length:wrapped_key.size()],
   };
   OSStatus result =
-      AppleKeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
+      crypto::apple::KeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
   return result == errSecSuccess;
 }
 
@@ -369,14 +370,14 @@ std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
   CHECK(!config.keychain_access_group.empty())
       << "A keychain access group must be set when using unexportable keys on "
          "macOS";
-  if (![AppleKeychainV2::GetInstance().GetTokenIDs()
+  if (![crypto::apple::KeychainV2::GetInstance().GetTokenIDs()
           containsObject:CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]) {
     return nullptr;
   }
   // Inspecting the binary for the entitlement is not available on iOS, assume
   // it is available.
 #if !BUILDFLAG(IS_IOS)
-  if (!ExecutableHasKeychainAccessGroupEntitlement(
+  if (!crypto::apple::ExecutableHasKeychainAccessGroupEntitlement(
           config.keychain_access_group)) {
     return nullptr;
   }

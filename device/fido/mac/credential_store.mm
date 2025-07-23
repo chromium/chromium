@@ -23,7 +23,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 #include "crypto/random.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -103,7 +103,7 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
 
   base::apple::ScopedCFTypeRef<CFArrayRef> keychain_items;
   {
-    OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
+    OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
         NSToCFPtrCast(query),
         reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
     if (status == errSecItemNotFound) {
@@ -262,14 +262,14 @@ TouchIdCredentialStore::CreateCredential(
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key =
-      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateRandomKey(
           NSToCFPtrCast(params), cferr.InitializeInto());
   if (!private_key) {
     FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr.get();
     return std::nullopt;
   }
   base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
-      crypto::AppleKeychainV2::GetInstance().KeyCopyPublicKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCopyPublicKey(
           private_key.get()));
   if (!public_key) {
     FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
@@ -338,14 +338,14 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key =
-      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateRandomKey(
           NSToCFPtrCast(params), cferr.InitializeInto());
   if (!private_key) {
     FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr.get();
     return std::nullopt;
   }
   base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
-      crypto::AppleKeychainV2::GetInstance().KeyCopyPublicKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCopyPublicKey(
           private_key.get()));
   if (!public_key) {
     FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
@@ -503,7 +503,7 @@ TouchIdCredentialStore::FindCredentialsImpl(
   query[CFToNSPtrCast(kSecMatchLimit)] = CFToNSPtrCast(kSecMatchLimitAll);
 
   base::apple::ScopedCFTypeRef<CFArrayRef> keychain_items;
-  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
       NSToCFPtrCast(query),
       reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
   if (status == errSecItemNotFound) {
@@ -611,7 +611,7 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   //     CFToNSPtrCast(kSecValueRef) : (__bridge id)sec_key_ref,
   //   };
   //   OSStatus status =
-  //       AppleKeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
+  //       KeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
   //
   // But on macOS that looks for `sec_key_ref` in the legacy keychain instead of
   // the "iOS" keychain that secure enclave credentials live in, and so the call
@@ -630,7 +630,7 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   };
 
   OSStatus status =
-      crypto::AppleKeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
+      crypto::apple::KeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
     return false;
@@ -676,7 +676,7 @@ bool TouchIdCredentialStore::UpdateCredential(
   };
   NSDictionary* params =
       @{CFToNSPtrCast(kSecAttrApplicationTag) : sealed_metadata_data};
-  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemUpdate(
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemUpdate(
       NSToCFPtrCast(query), NSToCFPtrCast(params));
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemUpdate failed";

@@ -9,25 +9,25 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
-#include "crypto/crypto_export.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/no_destructor.h"
+#include "crypto/crypto_export.h"
 
 #if !BUILDFLAG(IS_IOS_TVOS)
 #import <LocalAuthentication/LocalAuthentication.h>
 #endif
 
-namespace crypto {
+namespace crypto::apple {
 
-// AppleKeychainV2 wraps iOS-style operations from the macOS Security framework
+// KeychainV2 wraps iOS-style operations from the macOS Security framework
 // to work with keys and keychain items. These functions are grouped here so
 // they can be mocked out in testing.
-class CRYPTO_EXPORT AppleKeychainV2 {
+class CRYPTO_EXPORT KeychainV2 {
  public:
-  static AppleKeychainV2& GetInstance();
+  static KeychainV2& GetInstance();
 
-  AppleKeychainV2(const AppleKeychainV2&) = delete;
-  AppleKeychainV2& operator=(const AppleKeychainV2&) = delete;
+  KeychainV2(const KeychainV2&) = delete;
+  KeychainV2& operator=(const KeychainV2&) = delete;
 
   // Wraps the |TKTokenWatcher.tokenIDs| property.
   virtual NSArray* GetTokenIDs();
@@ -79,21 +79,21 @@ class CRYPTO_EXPORT AppleKeychainV2 {
 #endif  // !BUILDFLAG(IS_IOS_TVOS)
 
  protected:
-  AppleKeychainV2();
-  virtual ~AppleKeychainV2();
+  KeychainV2();
+  virtual ~KeychainV2();
 
  protected:
-  friend class base::NoDestructor<AppleKeychainV2>;
+  friend class base::NoDestructor<KeychainV2>;
   friend class ScopedTouchIdTestEnvironment;
-  friend class ScopedFakeAppleKeychainV2;
+  friend class ScopedFakeKeychainV2;
 
   // Set an override to the singleton instance returned by |GetInstance|. The
   // caller keeps ownership of the injected keychain and must remove the
   // override by calling |ClearInstanceOverride| before deleting it.
-  static void SetInstanceOverride(AppleKeychainV2* keychain);
+  static void SetInstanceOverride(KeychainV2* keychain);
   static void ClearInstanceOverride();
 };
 
-}  // namespace crypto
+}  // namespace crypto::apple
 
 #endif  // CRYPTO_APPLE_KEYCHAIN_V2_H_

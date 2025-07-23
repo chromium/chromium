@@ -20,9 +20,9 @@
 #include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "components/os_crypt/sync/os_crypt_switches.h"
 #include "crypto/aes_cbc.h"
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/keychain.h"
+#include "crypto/apple/mock_keychain.h"
 #include "crypto/kdf.h"
-#include "crypto/mock_apple_keychain.h"
 #include "crypto/subtle_passkey.h"
 
 namespace os_crypt {
@@ -82,13 +82,13 @@ OSCryptImpl* OSCryptImpl::GetInstance() {
 OSCryptImpl::OSCryptImpl() = default;
 OSCryptImpl::~OSCryptImpl() = default;
 
-std::unique_ptr<crypto::AppleKeychain> OSCryptImpl::GetKeychain() const {
+std::unique_ptr<crypto::apple::Keychain> OSCryptImpl::GetKeychain() const {
   if (use_mock_keychain_ || base::CommandLine::ForCurrentProcess()->HasSwitch(
                                 os_crypt::switches::kUseMockKeychain)) {
-    return std::make_unique<crypto::MockAppleKeychain>();
+    return std::make_unique<crypto::apple::MockKeychain>();
   }
 
-  return crypto::AppleKeychain::DefaultKeychain();
+  return crypto::apple::Keychain::DefaultKeychain();
 }
 
 bool OSCryptImpl::DeriveKey() {

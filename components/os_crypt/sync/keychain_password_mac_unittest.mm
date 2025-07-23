@@ -5,12 +5,12 @@
 #include "components/os_crypt/sync/keychain_password_mac.h"
 
 #include "build/build_config.h"
-#include "crypto/mock_apple_keychain.h"
+#include "crypto/apple/mock_keychain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-using crypto::MockAppleKeychain;
+using crypto::apple::MockKeychain;
 
 // An environment for KeychainPassword which initializes mock keychain with
 // the given value that is going to be returned when accessing the Keychain.
@@ -24,12 +24,12 @@ class KeychainPasswordEnvironment {
   KeychainPasswordEnvironment(KeychainPasswordEnvironment&) = delete;
   KeychainPasswordEnvironment& operator=(KeychainPasswordEnvironment&) = delete;
 
-  MockAppleKeychain& keychain() { return keychain_; }
+  MockKeychain& keychain() { return keychain_; }
 
   std::string GetPassword() const { return keychain_password_->GetPassword(); }
 
  private:
-  MockAppleKeychain keychain_;
+  MockKeychain keychain_;
   std::unique_ptr<KeychainPassword> keychain_password_;
 };
 

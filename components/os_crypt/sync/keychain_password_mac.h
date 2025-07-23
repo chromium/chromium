@@ -10,8 +10,8 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 
-namespace crypto {
-class AppleKeychain;
+namespace crypto::apple {
+class Keychain;
 }
 
 class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
   using KeychainNameType = const std::string;
 #endif
 
-  KeychainPassword(const crypto::AppleKeychain& keychain);
+  KeychainPassword(const crypto::apple::Keychain& keychain);
 
   KeychainPassword(const KeychainPassword&) = delete;
   KeychainPassword& operator=(const KeychainPassword&) = delete;
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
   static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetAccountName();
 
  private:
-  const raw_ref<const crypto::AppleKeychain> keychain_;
+  const raw_ref<const crypto::apple::Keychain> keychain_;
 };
 
 #endif  // COMPONENTS_OS_CRYPT_SYNC_KEYCHAIN_PASSWORD_MAC_H_

@@ -10,7 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/fake_touch_id_context.h"
 
@@ -21,7 +21,7 @@ static ScopedTouchIdTestEnvironment* g_current_environment = nullptr;
 ScopedTouchIdTestEnvironment::ScopedTouchIdTestEnvironment(
     AuthenticatorConfig config)
     : config_(std::move(config)),
-      keychain_(std::make_unique<crypto::ScopedFakeAppleKeychainV2>(
+      keychain_(std::make_unique<crypto::apple::ScopedFakeKeychainV2>(
           config_.keychain_access_group)) {
   DCHECK(!g_current_environment);
   g_current_environment = this;

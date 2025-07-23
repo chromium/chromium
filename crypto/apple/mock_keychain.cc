@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/mock_apple_keychain.h"
+#include "crypto/apple/mock_keychain.h"
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -14,8 +14,8 @@ namespace {
 
 constexpr char kPassword[] = "mock_password";
 
-// Adds an entry to a local histogram to indicate that the Apple Keychain would
-// have been accessed, if this class were not a mock of the Apple Keychain.
+// Adds an entry to a local histogram to indicate that the Keychain would have
+// been accessed, if this class were not a mock of the Keychain.
 void IncrementKeychainAccessHistogram() {
   // This local histogram is accessed by Telemetry to track the number of times
   // the keychain is accessed, since keychain access is known to be synchronous
@@ -25,14 +25,14 @@ void IncrementKeychainAccessHistogram() {
 
 }  // namespace
 
-namespace crypto {
+namespace crypto::apple {
 
-MockAppleKeychain::MockAppleKeychain() = default;
-MockAppleKeychain::~MockAppleKeychain() = default;
+MockKeychain::MockKeychain() = default;
+MockKeychain::~MockKeychain() = default;
 
 base::expected<std::vector<uint8_t>, OSStatus>
-MockAppleKeychain::FindGenericPassword(std::string_view service_name,
-                                       std::string_view account_name) const {
+MockKeychain::FindGenericPassword(std::string_view service_name,
+                                  std::string_view account_name) const {
   IncrementKeychainAccessHistogram();
 
   // When simulating |noErr|, return canned |passwordData| and
@@ -44,7 +44,7 @@ MockAppleKeychain::FindGenericPassword(std::string_view service_name,
   return base::unexpected(find_generic_result_);
 }
 
-OSStatus MockAppleKeychain::AddGenericPassword(
+OSStatus MockKeychain::AddGenericPassword(
     std::string_view service_name,
     std::string_view account_name,
     base::span<const uint8_t> password) const {
@@ -56,9 +56,9 @@ OSStatus MockAppleKeychain::AddGenericPassword(
   return noErr;
 }
 
-std::string MockAppleKeychain::GetEncryptionPassword() const {
+std::string MockKeychain::GetEncryptionPassword() const {
   IncrementKeychainAccessHistogram();
   return kPassword;
 }
 
-}  // namespace crypto
+}  // namespace crypto::apple

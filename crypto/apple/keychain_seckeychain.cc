@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/apple_keychain_seckeychain.h"
+#include "crypto/apple/keychain_seckeychain.h"
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -17,16 +17,15 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-namespace crypto {
+namespace crypto::apple {
 
-AppleKeychainSecKeychain::AppleKeychainSecKeychain() = default;
+KeychainSecKeychain::KeychainSecKeychain() = default;
 
-AppleKeychainSecKeychain::~AppleKeychainSecKeychain() = default;
+KeychainSecKeychain::~KeychainSecKeychain() = default;
 
 base::expected<std::vector<uint8_t>, OSStatus>
-AppleKeychainSecKeychain::FindGenericPassword(
-    std::string_view service_name,
-    std::string_view account_name) const {
+KeychainSecKeychain::FindGenericPassword(std::string_view service_name,
+                                         std::string_view account_name) const {
   base::AutoLock lock(GetMacSecurityServicesLock());
   uint32_t password_length = 0;
   void* password_data = nullptr;
@@ -47,7 +46,7 @@ AppleKeychainSecKeychain::FindGenericPassword(
   return result;
 }
 
-OSStatus AppleKeychainSecKeychain::AddGenericPassword(
+OSStatus KeychainSecKeychain::AddGenericPassword(
     std::string_view service_name,
     std::string_view account_name,
     base::span<const uint8_t> password) const {
@@ -61,4 +60,4 @@ OSStatus AppleKeychainSecKeychain::AddGenericPassword(
 
 #pragma clang diagnostic pop
 
-}  // namespace crypto
+}  // namespace crypto::apple

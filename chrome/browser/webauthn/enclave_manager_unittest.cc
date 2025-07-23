@@ -81,7 +81,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -1834,8 +1834,8 @@ class EnclaveUVTest : public EnclaveManagerTest {
  protected:
   void SetUp() override {
 #if BUILDFLAG(IS_MAC)
-    scoped_fake_apple_keychain_.SetUVMethod(
-        crypto::ScopedFakeAppleKeychainV2::UVMethod::kPasswordOnly);
+    scoped_fake_keychain_.SetUVMethod(
+        crypto::apple::ScopedFakeKeychainV2::UVMethod::kPasswordOnly);
 #endif  // BUILDFLAG(IS_MAC)
   }
 
@@ -1869,7 +1869,7 @@ class EnclaveUVTest : public EnclaveManagerTest {
       fake_provider_;
 
 #if BUILDFLAG(IS_MAC)
-  crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain_{
       "test-keychain-access-group"};
 #endif  // BUILDFLAG(IS_MAC)
 };
@@ -2075,13 +2075,13 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
 
-  scoped_fake_apple_keychain_.SetUVMethod(
-      crypto::ScopedFakeAppleKeychainV2::UVMethod::kBiometrics);
+  scoped_fake_keychain_.SetUVMethod(
+      crypto::apple::ScopedFakeKeychainV2::UVMethod::kBiometrics);
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/true),
             EnclaveManager::UvKeyState::kUsesChromeUI);
 
-  scoped_fake_apple_keychain_.SetUVMethod(
-      crypto::ScopedFakeAppleKeychainV2::UVMethod::kPasswordOnly);
+  scoped_fake_keychain_.SetUVMethod(
+      crypto::apple::ScopedFakeKeychainV2::UVMethod::kPasswordOnly);
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUI);
 }

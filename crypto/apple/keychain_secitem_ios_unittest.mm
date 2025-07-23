@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "crypto/apple_keychain_secitem.h"
+#import "crypto/apple/keychain_secitem.h"
 
 #import <Foundation/Foundation.h>
 
@@ -85,7 +85,7 @@ class KeychainAccessibilityMigrationIOSTest : public PlatformTest {
     SecItemDelete(base::apple::NSToCFPtrCast(query));
   }
 
-  crypto::AppleKeychainSecItem keychain_;
+  crypto::apple::KeychainSecItem keychain_;
   base::test::ScopedFeatureList feature_list_;
 };
 

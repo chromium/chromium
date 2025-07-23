@@ -13,8 +13,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "crypto/apple_keychain_v2.h"
-#include "crypto/fake_apple_keychain_v2.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 #include "device/base/features.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
@@ -72,7 +72,7 @@ NSDictionary* BaseQuery() {
 // occurred.
 base::apple::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
   base::apple::ScopedCFTypeRef<CFArrayRef> items;
-  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
       NSToCFPtrCast(BaseQuery()),
       reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
   if (status == errSecItemNotFound) {
@@ -94,7 +94,7 @@ ssize_t KeychainItemCount() {
 }
 
 bool ResetKeychain() {
-  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemDelete(
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemDelete(
       NSToCFPtrCast(BaseQuery()));
   if (status != errSecSuccess && status != errSecItemNotFound) {
     OSSTATUS_DLOG(ERROR, status);

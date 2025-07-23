@@ -21,9 +21,9 @@
 #include "base/test/test_future.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
-#include "crypto/apple_keychain_v2.h"
-#include "crypto/fake_apple_keychain_v2.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -75,7 +75,7 @@ class ICloudRecoveryKeyTest : public testing::Test {
   }
 
  protected:
-  crypto::ScopedFakeAppleKeychainV2 fake_keychain_{kKeychainAccessGroup};
+  crypto::apple::ScopedFakeKeychainV2 fake_keychain_{kKeychainAccessGroup};
   base::test::TaskEnvironment task_environment_;
 };
 

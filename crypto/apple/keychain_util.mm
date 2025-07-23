@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/apple_keychain_util.h"
-
-#include <string>
+#include "crypto/apple/keychain_util.h"
 
 #import <Security/Security.h>
+
+#include <string>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 
-namespace crypto {
+namespace crypto::apple {
 
 #if !BUILDFLAG(IS_IOS)
 bool ExecutableHasKeychainAccessGroupEntitlement(
@@ -25,7 +25,7 @@ bool ExecutableHasKeychainAccessGroupEntitlement(
   }
 
   base::apple::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
-      AppleKeychainV2::GetInstance().TaskCopyValueForEntitlement(
+      KeychainV2::GetInstance().TaskCopyValueForEntitlement(
           task.get(), CFSTR("keychain-access-groups"), nullptr));
   if (!entitlement_value_cftype) {
     return false;
@@ -42,4 +42,4 @@ bool ExecutableHasKeychainAccessGroupEntitlement(
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
-}  // namespace crypto
+}  // namespace crypto::apple

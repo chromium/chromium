@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/keychain.h"
 
 #include <memory>
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "crypto/apple_keychain_secitem.h"
+#include "crypto/apple/keychain_secitem.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "crypto/apple_keychain_seckeychain.h"
+#include "crypto/apple/keychain_seckeychain.h"
 #endif
 
-namespace crypto {
+namespace crypto::apple {
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kAppleKeychainUseSecItem,
@@ -24,20 +24,20 @@ BASE_FEATURE(kAppleKeychainUseSecItem,
 #endif
 
 // static
-std::unique_ptr<AppleKeychain> AppleKeychain::DefaultKeychain() {
+std::unique_ptr<Keychain> Keychain::DefaultKeychain() {
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(kAppleKeychainUseSecItem)) {
-    return std::make_unique<AppleKeychainSecItem>();
+    return std::make_unique<KeychainSecItem>();
   }
 
-  return std::make_unique<AppleKeychainSecKeychain>();
+  return std::make_unique<KeychainSecKeychain>();
 #else
-  return std::make_unique<AppleKeychainSecItem>();
+  return std::make_unique<KeychainSecItem>();
 #endif
 }
 
-AppleKeychain::AppleKeychain() = default;
-AppleKeychain::~AppleKeychain() = default;
+Keychain::Keychain() = default;
+Keychain::~Keychain() = default;
 
 #if BUILDFLAG(IS_MAC)
 
@@ -89,4 +89,4 @@ ScopedKeychainUserInteractionAllowed::~ScopedKeychainUserInteractionAllowed() {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-}  // namespace crypto
+}  // namespace crypto::apple
