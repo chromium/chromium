@@ -64,7 +64,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
       .handoff_button = HandoffButtonState(),
   };
   // The current active status of the tab.
-  bool current_tab_active_status_;
+  bool current_tab_active_status_ = false;
   // The last active task id actuating on this tab.
   TaskId active_task_id_;
 
