@@ -12,6 +12,7 @@ source_set("browser_ui") {
     "glic_button_controller.cc",
     "glic_iph_controller.cc",
     "glic_tab_indicator_helper.cc",
+    "glic_tab_underline_view.cc",
     "glic_vector_icon_manager.cc",
     "scoped_glic_button_indicator.cc",
     "theme_util.cc",

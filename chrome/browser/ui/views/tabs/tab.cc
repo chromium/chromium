@@ -103,6 +103,10 @@
 #include "ui/aura/env.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_tab_underline_view.h"
+#endif
+
 using base::UserMetricsAction;
 namespace {
 
@@ -250,6 +254,21 @@ Tab::Tab(TabSlotController* controller)
   alert_indicator_button_ =
       AddChildView(std::make_unique<AlertIndicatorButton>(this));
 
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines)) {
+    glic_tab_underline_view_ = AddChildView(
+        views::Builder<glic::GlicTabUnderlineView>(
+            std::make_unique<glic::GlicTabUnderlineView>(
+                controller->GetBrowser(), this))
+            // Needed so that expectations of visibility that
+            // inform underline updates are correct on first show.
+            .SetVisible(false)
+            // `glic_tab_underline_view_` should never receive input events.
+            .SetCanProcessEventsWithinSubtree(false)
+            .Build());
+  }
+#endif
+
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
   close_button_ = AddChildView(std::make_unique<TabCloseButton>(
@@ -330,6 +349,13 @@ void Tab::Layout(PassKey) {
   UpdateIconVisibility();
 
   const int start = contents_rect.x();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_tab_underline_view_) {
+    gfx::Rect glic_bounds = contents_rect + gfx::Vector2d(0, 9);
+    glic_tab_underline_view_->SetBoundsRect(glic_bounds);
+  }
+#endif
 
   // The bounds for the favicon will include extra width for the attention
   // indicator, but visually it will be smaller at kFaviconSize wide.
