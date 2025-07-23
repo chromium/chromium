@@ -524,6 +524,7 @@ class MetaBuildWrapper:
     ]
     cmd.extend(targets)
     cmd.extend(['--sts-config-file', self.args.sts_config_file])
+    cmd.extend(['--test-selection-phase', 'TRIGGER'])
 
     ret, _, _ = self.Run(cmd, force_verbose=True, capture_output=True)
     if ret:
