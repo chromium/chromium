@@ -29,6 +29,38 @@ using base::android::ScopedJavaLocalRef;
 namespace ui {
 namespace {
 
+base::TimeTicks FromAndroidTime(base::TimeTicks time) {
+  ValidateEventTimeClock(&time);
+  return time;
+}
+
+float ToValidFloat(float x) {
+  if (std::isnan(x)) {
+    return 0.f;
+  }
+
+  // Wildly large orientation values have been observed in the wild after device
+  // rotation. There's not much we can do in that case other than simply
+  // sanitize results beyond an absurd and arbitrary threshold.
+  if (std::abs(x) > 1e5f) {
+    return 0.f;
+  }
+
+  return x;
+}
+
+// Convert tilt and orientation to tilt_x and tilt_y. Tilt_x and tilt_y will lie
+// in [-90, 90].
+void ConvertTiltOrientationToTiltXY(float tilt_rad,
+                                    float orientation_rad,
+                                    float* tilt_x,
+                                    float* tilt_y) {
+  float r = sinf(tilt_rad);
+  float z = cosf(tilt_rad);
+  *tilt_x = base::RadToDeg(atan2f(sinf(-orientation_rad) * r, z));
+  *tilt_y = base::RadToDeg(atan2f(cosf(-orientation_rad) * r, z));
+}
+
 #define ACTION_REVERSE_CASE(x)        \
   case MotionEventAndroid::Action::x: \
     return JNI_MotionEvent::ACTION_##x
@@ -480,38 +512,6 @@ MotionEvent::ToolType MotionEventAndroid::GetCachedPointerToolType(
     size_t pointer_index) const {
   CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].tool_type;
-}
-
-base::TimeTicks MotionEventAndroid::FromAndroidTime(base::TimeTicks time) {
-  ValidateEventTimeClock(&time);
-  return time;
-}
-
-float MotionEventAndroid::ToValidFloat(float x) {
-  if (std::isnan(x)) {
-    return 0.f;
-  }
-
-  // Wildly large orientation values have been observed in the wild after device
-  // rotation. There's not much we can do in that case other than simply
-  // sanitize results beyond an absurd and arbitrary threshold.
-  if (std::abs(x) > 1e5f) {
-    return 0.f;
-  }
-
-  return x;
-}
-
-// Convert tilt and orientation to tilt_x and tilt_y. Tilt_x and tilt_y will lie
-// in [-90, 90].
-void MotionEventAndroid::ConvertTiltOrientationToTiltXY(float tilt_rad,
-                                                        float orientation_rad,
-                                                        float* tilt_x,
-                                                        float* tilt_y) {
-  float r = sinf(tilt_rad);
-  float z = cosf(tilt_rad);
-  *tilt_x = base::RadToDeg(atan2f(sinf(-orientation_rad) * r, z));
-  *tilt_y = base::RadToDeg(atan2f(cosf(-orientation_rad) * r, z));
 }
 
 MotionEventAndroid::CachedPointer MotionEventAndroid::FromAndroidPointer(

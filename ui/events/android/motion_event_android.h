@@ -190,12 +190,6 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
 
  private:
   float ToDips(float pixels) const;
-  static base::TimeTicks FromAndroidTime(base::TimeTicks time);
-  static float ToValidFloat(float x);
-  static void ConvertTiltOrientationToTiltXY(float tilt_rad,
-                                             float orientation_rad,
-                                             float* tilt_x,
-                                             float* tilt_y);
   struct CachedPointer {
     CachedPointer();
     int id = 0;
