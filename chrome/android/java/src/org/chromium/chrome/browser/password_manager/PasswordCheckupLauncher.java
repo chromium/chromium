@@ -15,15 +15,11 @@ import org.jni_zero.JniType;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -47,37 +43,16 @@ public class PasswordCheckupLauncher {
         assert profile != null;
 
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
-            // This is invoked from the leak dialog if the compromised password is saved for other
-            // sites. After the login DB deprecation, this code path is guaranteed to only be
-            // executed for users with access to UPM, since they are the only ones with saved
-            // passwords.
-            passwordManagerHelper.showPasswordCheckup(
-                    windowAndroid.getContext().get(),
-                    passwordCheckReferrer,
-                    getModalDialogManagerSupplier(windowAndroid),
-                    accountEmail,
-                    new SettingsCustomTabLauncherImpl());
-            return;
-        }
-
-        // Force instantiation of GMSCore password check if GMSCore update is required. Password
-        // check launch will fail and instead show the blocking dialog with the suggestion to
-        // update.
-        if (passwordManagerHelper.canUseUpm()
-                || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        UserPrefs.get(profile), SyncServiceFactory.getForProfile(profile))) {
-            passwordManagerHelper.showPasswordCheckup(
-                    windowAndroid.getContext().get(),
-                    passwordCheckReferrer,
-                    getModalDialogManagerSupplier(windowAndroid),
-                    accountEmail,
-                    new SettingsCustomTabLauncherImpl());
-            return;
-        }
-
-        PasswordCheckFactory.getOrCreate()
-                .showUi(windowAndroid.getContext().get(), passwordCheckReferrer);
+        // This is invoked from the leak dialog if the compromised password is saved for other
+        // sites. After the login DB deprecation, this code path is guaranteed to only be
+        // executed for users with access to UPM, since they are the only ones with saved
+        // passwords.
+        passwordManagerHelper.showPasswordCheckup(
+                windowAndroid.getContext().get(),
+                passwordCheckReferrer,
+                getModalDialogManagerSupplier(windowAndroid),
+                accountEmail,
+                new SettingsCustomTabLauncherImpl());
     }
 
     @CalledByNative

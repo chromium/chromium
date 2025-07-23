@@ -28,12 +28,12 @@ public class PasswordCheckControllerFactory {
             // This means that UPM is completely available.
             assert PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService);
             return new GmsCorePasswordCheckController(
-                    syncService, prefService, passwordStoreBridge, passwordManagerHelper);
+                    syncService, passwordStoreBridge, passwordManagerHelper);
         }
         if (passwordManagerHelper.canUseUpm()
                 || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(prefService, syncService)) {
             return new GmsCorePasswordCheckController(
-                    syncService, prefService, passwordStoreBridge, passwordManagerHelper);
+                    syncService, passwordStoreBridge, passwordManagerHelper);
         }
         return new ChromeNativePasswordCheckController();
     }

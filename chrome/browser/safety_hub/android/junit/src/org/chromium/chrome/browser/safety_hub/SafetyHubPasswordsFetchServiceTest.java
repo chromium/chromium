@@ -26,10 +26,10 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -43,7 +43,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 /** Unit tests for SafetyHubPasswordsFetchService. */
 @RunWith(Enclosed.class)
@@ -58,15 +57,9 @@ public class SafetyHubPasswordsFetchServiceTest {
         private static final String TEST_EMAIL_ADDRESS = "test@email.com";
 
         /** Returns all possible combinations for test parameterization. */
-        @Parameters(name = "{0}, {1}")
-        public static Collection<Object[]> data() {
-            Collection<Object[]> data = new ArrayList<>();
-            for (boolean hasAccount : List.of(true, false)) {
-                for (boolean isLoginDbDeprecationEnabled : List.of(true, false)) {
-                    data.add(new Object[] {hasAccount, isLoginDbDeprecationEnabled});
-                }
-            }
-            return data;
+        @Parameters
+        public static Collection<Object> data() {
+            return Arrays.asList(new Object[] {true, false});
         }
 
         @Rule(order = -2)
@@ -79,9 +72,6 @@ public class SafetyHubPasswordsFetchServiceTest {
         @Parameter(0)
         public boolean hasAccount;
 
-        @Parameter(1)
-        public boolean mIsLoginDbDeprecationEnabled;
-
         private PrefService mPrefService;
         private FakePasswordCheckupClientHelper mPasswordCheckupClientHelper;
         private PasswordManagerHelper mPasswordManagerHelper;
@@ -90,12 +80,6 @@ public class SafetyHubPasswordsFetchServiceTest {
         public void setUp() {
             // Needed because of BaseRobolectricTestRule.
             MockitoAnnotations.openMocks(this);
-
-            if (mIsLoginDbDeprecationEnabled) {
-                FeatureOverrides.enable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
-            } else {
-                FeatureOverrides.disable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
-            }
 
             mPrefService = mSafetyHubTestRule.getPrefService();
             mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
@@ -133,7 +117,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenUPMDisabled() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(false, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(false, true);
 
             new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
                     .fetchPasswordsCount(mTaskFinishedCallback);
@@ -146,7 +130,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenFetchFails() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
             mPasswordCheckupClientHelper.setError(new Exception());
 
             new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
@@ -160,7 +144,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void somePreferencesUpdated_fetchFailsForOneCredentialType() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
             mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
             int breachedCredentialsCount = 5;
             int reusedCredentialsCount = 3;
@@ -180,7 +164,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void preferencesUpdated_whenFetchSucceeds() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
             int breachedCredentialsCount = 5;
             int weakCredentialsCount = 4;
             int reusedCredentialsCount = 3;
@@ -201,7 +185,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenCheckupFails_lastCheckRecently() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
 
             long twoHoursInMs = 120 * TimeUtils.MILLISECONDS_PER_MINUTE;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
@@ -224,7 +208,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenCheckupFails_lastCheckLongAgo() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
 
             long twoDaysInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoDaysInMs);
@@ -247,7 +231,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void preferencesUpdated_whenCheckupSucceeds() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
             int breachedCredentialsCount = 5;
             int weakCredentialsCount = 4;
             int reusedCredentialsCount = 3;
@@ -274,7 +258,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenWithinCoolDownPeriod() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
 
             mockLastCheckTime(TimeUtils.currentTimeMillis());
 
@@ -291,23 +275,13 @@ public class SafetyHubPasswordsFetchServiceTest {
         }
     }
 
-    @RunWith(ParameterizedRobolectricTestRunner.class)
+    @RunWith(BaseRobolectricTestRunner.class)
     @Batch(Batch.UNIT_TESTS)
     @Features.EnableFeatures({
         ChromeFeatureList.SAFETY_HUB,
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
     })
     public static class SafetyHubPasswordsFetchServiceSingleTests {
-        @Parameters
-        public static Collection<Object> data() {
-            return Arrays.asList(new Object[] {true, false});
-        }
-
-        @Parameter public boolean mIsLoginDbDeprecationEnabled;
-
-        @Rule(order = -2)
-        public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
-
         @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
         @Mock private Callback<Boolean> mTaskFinishedCallback;
@@ -320,12 +294,6 @@ public class SafetyHubPasswordsFetchServiceTest {
         @Before
         public void setUp() {
             MockitoAnnotations.openMocks(this);
-
-            if (mIsLoginDbDeprecationEnabled) {
-                FeatureOverrides.enable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
-            } else {
-                FeatureOverrides.disable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
-            }
 
             mPrefService = mSafetyHubTestRule.getPrefService();
             mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
@@ -346,7 +314,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenNoAccountsOnDevice_lastCheckRecently() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
             long twoHoursInMs = 120 * TimeUtils.MILLISECONDS_PER_MINUTE;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
 
@@ -372,7 +340,7 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Test
         public void noPreferencesUpdated_whenNoAccountsOnDevice_lastCheckLongAgo() {
-            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, true);
 
             long twoDaysInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
             mockLastCheckTime(TimeUtils.currentTimeMillis() - twoDaysInMs);
