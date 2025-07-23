@@ -57,17 +57,17 @@ export function getHtml(this: ComposeboxElement) {
       </div>
     </div>
     <cr-icon-button
-        class="action-icon icon-clear"
-        id="cancelIcon"
-        title="${this.computeCancelButtonTitle_()}"
-        @click="${this.onCancelClick_}">
-    </cr-icon-button>
-    <cr-icon-button
       class="action-icon icon-arrow-upward"
       id="submitIcon"
       title="$i18n{composeboxSubmitButtonTitle}"
       @click="${this.onSubmitClick_}"
       ?disabled="${!this.submitEnabled_}">
+    </cr-icon-button>
+    <cr-icon-button
+        class="action-icon icon-clear"
+        id="cancelIcon"
+        title="${this.computeCancelButtonTitle_()}"
+        @click="${this.onCancelClick_}">
     </cr-icon-button>
   </div>
   <input type="file"
