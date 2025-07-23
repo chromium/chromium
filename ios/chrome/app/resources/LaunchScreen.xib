@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14865.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14819.2"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <viewController id="Ssz-5V-cv2">
+            <layoutGuides>
+                <viewControllerLayoutGuide type="top" id="cfQ-4H-yja"/>
+                <viewControllerLayoutGuide type="bottom" id="TrJ-rv-PCn"/>
+            </layoutGuides>
+            <view key="view" contentMode="scaleToFill" id="tRS-Cx-RH3">
+                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_app_logo" translatesAutoresizingMaskIntoConstraints="NO" id="K7H-Iv-QNk">
+                        <rect key="frame" x="128" y="369" width="158" height="158"/>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="192" id="Ybu-iB-Ad4"/>
+                            <constraint firstAttribute="height" relation="lessThanOrEqual" constant="192" id="gGV-z8-zNx"/>
+                            <constraint firstAttribute="width" secondItem="K7H-Iv-QNk" secondAttribute="height" multiplier="1:1" id="ion-RZ-6NS"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_brand_name" translatesAutoresizingMaskIntoConstraints="NO" id="bAU-qs-X5w">
+                        <rect key="frame" x="153.5" y="807" width="107" height="35"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="107" id="0Mf-i7-mvo"/>
+                            <constraint firstAttribute="height" constant="35" id="7Gs-G7-OR2"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+                <color key="backgroundColor" name="background_color"/>
+                <constraints>
+                    <constraint firstItem="K7H-Iv-QNk" firstAttribute="width" secondItem="tRS-Cx-RH3" secondAttribute="width" multiplier="0.381966" id="3hJ-Yo-1Tg"/>
+                    <constraint firstItem="K7H-Iv-QNk" firstAttribute="height" secondItem="tRS-Cx-RH3" secondAttribute="height" multiplier="0.381966" id="962-tL-cOd"/>
+                    <constraint firstItem="K7H-Iv-QNk" firstAttribute="centerY" secondItem="tRS-Cx-RH3" secondAttribute="centerY" id="N7G-n6-9nU">
+                        <variation key="heightClass=compact" constant="-10"/>
+                    </constraint>
+                    <constraint firstItem="K7H-Iv-QNk" firstAttribute="centerX" secondItem="tRS-Cx-RH3" secondAttribute="centerX" id="V5t-fF-KbQ"/>
+                    <constraint firstItem="bAU-qs-X5w" firstAttribute="centerX" secondItem="K7H-Iv-QNk" secondAttribute="centerX" id="f8n-OV-luE"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="bAU-qs-X5w" secondAttribute="bottom" constant="20" id="p2z-ft-dzH"/>
+                </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="3hJ-Yo-1Tg"/>
+                        <exclude reference="962-tL-cOd"/>
+                    </mask>
+                </variation>
+                <variation key="heightClass=compact">
+                    <mask key="constraints">
+                        <include reference="962-tL-cOd"/>
+                    </mask>
+                </variation>
+                <variation key="heightClass=regular-widthClass=compact">
+                    <mask key="constraints">
+                        <include reference="3hJ-Yo-1Tg"/>
+                    </mask>
+                </variation>
+            </view>
+            <point key="canvasLocation" x="548" y="1086"/>
+        </viewController>
+    </objects>
+    <resources>
+        <image name="launchscreen_app_logo" width="192" height="192"/>
+        <image name="launchscreen_brand_name" width="107" height="35"/>
+        <namedColor name="background_color">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

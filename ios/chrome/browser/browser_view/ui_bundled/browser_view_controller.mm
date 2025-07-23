@@ -1142,10 +1142,12 @@ const CGFloat kTopDynamicIslandInset = 24;
 
       // Load view from Launch Screen and add it to window.
       NSBundle* mainBundle = base::apple::FrameworkBundle();
-      UIStoryboard* storyboard =
-          [UIStoryboard storyboardWithName:@"LaunchScreen" bundle:mainBundle];
+      NSArray* topObjects = [mainBundle loadNibNamed:@"LaunchScreen"
+                                               owner:self
+                                             options:nil];
       UIViewController* launchScreenController =
-          [storyboard instantiateInitialViewController];
+          base::apple::ObjCCastStrict<UIViewController>(
+              [topObjects lastObject]);
       // `launchScreenView` is loaded as an autoreleased object, and is retained
       // by the `completion` block below.
       UIView* launchScreenView = launchScreenController.view;
