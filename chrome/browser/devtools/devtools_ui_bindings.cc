@@ -1915,6 +1915,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       base::FeatureList::IsEnabled(::features::kDevToolsVerticalDrawer));
   response_dict.Set("devToolsFlexibleLayout", std::move(flexible_layout_dict));
 
+  base::Value::Dict ai_submenu_prompts_dict;
+  ai_submenu_prompts_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsAiSubmenuPrompts));
+  response_dict.Set("devToolsAiSubmenuPrompts",
+                    std::move(ai_submenu_prompts_dict));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }

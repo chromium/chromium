@@ -99,6 +99,8 @@ BASE_DECLARE_FEATURE(kDevToolsVerticalDrawer);
 BASE_DECLARE_FEATURE(kDevToolsPwaHandler);
 #endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
 
+BASE_DECLARE_FEATURE(kDevToolsAiSubmenuPrompts);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

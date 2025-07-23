@@ -170,4 +170,10 @@ BASE_FEATURE(kDevToolsPwaHandler,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
 
+// Whether DevTools shows submenu example prompts for the AI Assistance panel
+// in context menus.
+BASE_FEATURE(kDevToolsAiSubmenuPrompts,
+             "DevToolsAiSubmenuPrompts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
