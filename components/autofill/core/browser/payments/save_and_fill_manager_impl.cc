@@ -20,11 +20,6 @@ namespace autofill::payments {
 
 namespace {
 
-using CardSaveAndFillDialogUserDecision =
-    PaymentsAutofillClient::CardSaveAndFillDialogUserDecision;
-using UserProvidedCardSaveAndFillDetails =
-    PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails;
-
 // If set, overrides the return value of IsCreditCardUploadEnabled() for tests.
 std::optional<bool> credit_card_upload_enabled_override_;
 
@@ -141,8 +136,22 @@ void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
-  // TODO(crbug.com/378164165): Implement logic to handle the preflight call
-  // response.
+  if (result == PaymentsRpcResult::kSuccess) {
+    LegalMessageLines parsed_legal_message_lines;
+    LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
+                            /*escape_apostrophes=*/true);
+    if (parsed_legal_message_lines.empty()) {
+      // If parsing the legal messages fails, upload Save and Fill should not be
+      // offered. Offer local Save and Fill instead.
+      OfferLocalSaveAndFill();
+      return;
+    }
+    upload_details_.context_token = context_token;
+    OfferUploadSaveAndFill(parsed_legal_message_lines);
+  } else {
+    // If the pre-flight call fails, fall back to offering local Save and Fill.
+    OfferLocalSaveAndFill();
+  }
 }
 
 void SaveAndFillManagerImpl::PopulateInitialUploadDetails() {
@@ -167,6 +176,22 @@ void SaveAndFillManagerImpl::PopulateInitialUploadDetails() {
   // addresses. Can be empty if there is none.
   // TODO(crbug.com/378164165): This part is rather complex. Do it in a
   // separate CL.
+}
+
+void SaveAndFillManagerImpl::OfferUploadSaveAndFill(
+    const LegalMessageLines& parsed_legal_message_lines) {
+  payments_autofill_client()->ShowCreditCardUploadSaveAndFillDialog(
+      std::move(parsed_legal_message_lines),
+      base::BindOnce(&SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
+    CardSaveAndFillDialogUserDecision user_decision,
+    const UserProvidedCardSaveAndFillDetails&
+        user_provided_card_save_and_fill_details) {
+  // TODO(crbug.com/378164165): Implement logic to handle user decision for
+  // upload Save and Fill dialog.
 }
 
 }  // namespace autofill::payments

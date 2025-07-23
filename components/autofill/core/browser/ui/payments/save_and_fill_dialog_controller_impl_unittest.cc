@@ -30,8 +30,8 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
     EXPECT_CALL(create_and_show_view_callback, Run())
         .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
 
-    controller_->ShowDialog(create_and_show_view_callback.Get(),
-                            card_save_and_fill_dialog_callback_.Get());
+    controller_->ShowLocalDialog(create_and_show_view_callback.Get(),
+                                 card_save_and_fill_dialog_callback_.Get());
   }
 
   SaveAndFillDialogControllerImpl* controller() const {

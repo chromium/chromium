@@ -627,6 +627,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void ShowCreditCardLocalSaveAndFillDialog(
       CardSaveAndFillDialogCallback callback);
 
+  // Shows the upload `Save and Fill` modal dialog.
+  virtual void ShowCreditCardUploadSaveAndFillDialog(
+      const LegalMessageLines& legal_message_lines,
+      CardSaveAndFillDialogCallback callback);
+
   // Gets the payments Save and Fill manager owned by the client. This will be
   // used to handle the Save and Fill dialog.
   virtual payments::SaveAndFillManager* GetSaveAndFillManager();

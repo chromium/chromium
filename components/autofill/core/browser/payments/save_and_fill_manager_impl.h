@@ -28,12 +28,12 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       FillCardCallback fill_card_callback) override;
   void OfferLocalSaveAndFill() override;
   void OnUserDidDecideOnLocalSave(
-      PaymentsAutofillClient::CardSaveAndFillDialogUserDecision user_decision,
-      const PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
+      CardSaveAndFillDialogUserDecision user_decision,
+      const UserProvidedCardSaveAndFillDetails&
           user_provided_card_save_and_fill_details) override;
   void PopulateCreditCardInfo(
       CreditCard& card,
-      const PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
+      const UserProvidedCardSaveAndFillDetails&
           user_provided_card_save_and_fill_details) override;
 
   PaymentsAutofillClient* payments_autofill_client() const {
@@ -57,6 +57,17 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   // If server upload is enabled, populate info to the `upload_details_` for
   // server communication.
   void PopulateInitialUploadDetails();
+
+  // Begins the process to show the upload Save and Fill dialog.
+  void OfferUploadSaveAndFill(
+      const LegalMessageLines& parsed_legal_message_lines);
+
+  // The callback that is invoked after the user makes a decision on the
+  // upload Save and Fill dialog.
+  void OnUserDidDecideOnUploadSave(
+      CardSaveAndFillDialogUserDecision user_decision,
+      const UserProvidedCardSaveAndFillDetails&
+          user_provided_card_save_and_fill_details);
 
   // Reference to the AutofillClient. `autofill_client_` outlives `this`.
   const raw_ref<AutofillClient> autofill_client_;

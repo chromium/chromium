@@ -25,7 +25,14 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
       const SaveAndFillDialogControllerImpl&) = delete;
   ~SaveAndFillDialogControllerImpl() override;
 
-  void ShowDialog(
+  void ShowLocalDialog(
+      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
+          create_and_show_view_callback,
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+          card_save_and_fill_dialog_callback);
+
+  void ShowUploadDialog(
+      const LegalMessageLines& legal_message_lines,
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
           create_and_show_view_callback,
       payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
@@ -72,6 +79,8 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   // Determines whether the local or upload save version of the UI should be
   // shown.
   bool is_upload_save_and_fill_ = false;
+
+  LegalMessageLines legal_message_lines_;
 
   payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
       card_save_and_fill_dialog_callback_;

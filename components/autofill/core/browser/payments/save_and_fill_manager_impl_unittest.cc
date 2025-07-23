@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 
+#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -27,6 +28,30 @@ using CardSaveAndFillDialogUserDecision =
 using UserProvidedCardSaveAndFillDetails =
     PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails;
 
+constexpr char kLegalMessageLines[] =
+    "{"
+    "  \"line\" : [ {"
+    "     \"template\": \"The legal documents are: {0} and {1}.\","
+    "     \"template_parameter\" : [ {"
+    "        \"display_text\" : \"Terms of Service\","
+    "        \"url\": \"http://www.example.com/tos\""
+    "     }, {"
+    "        \"display_text\" : \"Privacy Policy\","
+    "        \"url\": \"http://www.example.com/pp\""
+    "     } ]"
+    "  } ]"
+    "}";
+
+constexpr char kInvalidLegalMessageLines[] =
+    "{"
+    "  \"line\" : [ {"
+    "     \"template\": \"Panda {0}.\","
+    "     \"template_parameter\": [ {"
+    "        \"display_text\": \"bear\""
+    "     } ]"
+    "  } ]"
+    "}";
+
 class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
  public:
   explicit TestPaymentsAutofillClientMock(autofill::AutofillClient* client)
@@ -40,6 +65,11 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
       (base::OnceCallback<void(CardSaveAndFillDialogUserDecision,
                                const UserProvidedCardSaveAndFillDetails&)>),
       (override));
+
+  MOCK_METHOD(void,
+              ShowCreditCardUploadSaveAndFillDialog,
+              (const LegalMessageLines&, CardSaveAndFillDialogCallback),
+              (override));
 };
 
 }  // namespace
@@ -69,6 +99,31 @@ class SaveAndFillManagerImplTest : public testing::Test {
 
     save_and_fill_manager_impl_ =
         std::make_unique<SaveAndFillManagerImpl>(autofill_client_.get());
+  }
+
+  void SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      bool create_valid_legal_message) {
+    ON_CALL(*mock_network_interface_,
+            GetDetailsForCreateCard(testing::_, testing::_))
+        .WillByDefault([result, create_valid_legal_message](
+                           const auto& /*request_details*/,
+                           base::OnceCallback<void(
+                               PaymentsAutofillClient::PaymentsRpcResult,
+                               const std::u16string&,
+                               std::unique_ptr<base::Value::Dict>,
+                               std::vector<std::pair<int, int>>)> callback) {
+          std::move(callback).Run(
+              result, u"context_token",
+              create_valid_legal_message
+                  ? std::make_unique<base::Value::Dict>(
+                        base::JSONReader::ReadDict(kLegalMessageLines).value())
+                  : std::make_unique<base::Value::Dict>(
+                        base::JSONReader::ReadDict(kInvalidLegalMessageLines)
+                            .value()),
+              {});
+          return RequestId("11223344");
+        });
   }
 
  protected:
@@ -264,6 +319,62 @@ TEST_F(SaveAndFillManagerImplTest,
   EXPECT_EQ(base::FeatureList::IsEnabled(
                 features::kAutofillEnableCvcStorageAndFilling),
             !details.client_behavior_signals.empty());
+}
+
+// Test that the server dialog is shown when the preflight call succeeds and
+// legal messages are parsed correctly.
+TEST_F(SaveAndFillManagerImplTest,
+       OnDidGetDetailsForCreateCard_Success_OfferUploadSaveAndFill) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+
+  EXPECT_CALL(*mock_network_interface_,
+              GetDetailsForCreateCard(testing::_, testing::_));
+  EXPECT_CALL(*payments_autofill_client_,
+              ShowCreditCardUploadSaveAndFillDialog);
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+}
+
+// Test that local Save and Fill is offered as a fallback when legal message
+// parsing fails.
+TEST_F(
+    SaveAndFillManagerImplTest,
+    OnDidGetDetailsForCreateCard_LegalMessageFails_FallbackToLocalSaveAndFill) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/false);
+
+  EXPECT_CALL(*mock_network_interface_,
+              GetDetailsForCreateCard(testing::_, testing::_));
+  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardLocalSaveAndFillDialog);
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+}
+
+// Test that local Save and Fill is offered as a fallback when the preflight RPC
+// fails.
+TEST_F(SaveAndFillManagerImplTest,
+       OnDidGetDetailsForCreateCard_RpcFailure_FallbackToLocalSaveAndFill) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      /*create_valid_legal_message=*/true);
+
+  EXPECT_CALL(*mock_network_interface_,
+              GetDetailsForCreateCard(testing::_, testing::_));
+  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardLocalSaveAndFillDialog);
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
 }
 
 }  // namespace autofill::payments

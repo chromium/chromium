@@ -267,6 +267,10 @@ PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails::
 void PaymentsAutofillClient::ShowCreditCardLocalSaveAndFillDialog(
     CardSaveAndFillDialogCallback callback) {}
 
+void PaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
+    const LegalMessageLines& legal_message_lines,
+    CardSaveAndFillDialogCallback callback) {}
+
 payments::SaveAndFillManager* PaymentsAutofillClient::GetSaveAndFillManager() {
   return nullptr;
 }
