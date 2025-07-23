@@ -10,6 +10,7 @@
 #include "base/strings/escape.h"
 #include "base/types/expected_macros.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_params.h"
@@ -301,7 +302,9 @@ bool Session::ShouldDeferRequest(
         return dict;
       });
 
-  if (!AllowedToInitiateRefresh(request->initiator())) {
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsOriginTrialFeedback) &&
+      !AllowedToInitiateRefresh(request->initiator())) {
     request->net_log().AddEvent(
         net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
         [&](NetLogCaptureMode capture_mode) {
