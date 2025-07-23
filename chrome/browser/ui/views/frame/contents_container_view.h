@@ -46,9 +46,16 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
                               bool show_scrim);
 
  private:
+  void UpdateContentsViewRoundedCorners();
+
+  // View:
+  void ChildVisibilityChanged(View* child) override;
+
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+  bool is_in_split_ = false;
 
   raw_ptr<ContentsWebView> contents_view_;
   // The scrim view that covers the content area when a tab-modal dialog is

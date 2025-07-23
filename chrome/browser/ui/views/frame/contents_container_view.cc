@@ -34,7 +34,12 @@
 #endif
 
 namespace {
-constexpr gfx::RoundedCornersF kContentCornerRadius{6};
+constexpr float kContentCornerRadius = 6;
+constexpr gfx::RoundedCornersF kContentRoundedCorners{kContentCornerRadius};
+constexpr gfx::RoundedCornersF kContentUpperRoundedCorners =
+    gfx::RoundedCornersF{kContentCornerRadius, kContentCornerRadius, 0, 0};
+constexpr gfx::RoundedCornersF kContentLowerRoundedCorners =
+    gfx::RoundedCornersF{0, 0, kContentCornerRadius, kContentCornerRadius};
 constexpr int kContentOutlineCornerRadius = 8;
 constexpr int kContentOutlineThickness = 1;
 constexpr int kSplitViewContentPadding = 4;
@@ -80,7 +85,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     inactive_split_scrim_view_ =
         AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
-    inactive_split_scrim_view_->SetRoundedCorners(kContentCornerRadius);
+    inactive_split_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
     mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
         browser_view, contents_view_));
   }
@@ -89,6 +94,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
 void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
                                                    bool is_active,
                                                    bool show_scrim) {
+  is_in_split_ = is_in_split;
   // The border, mini toolbar, and scrim should not be visible if not in a
   // split.
   if (!is_in_split) {
@@ -96,6 +102,9 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
     contents_view_->holder()->SetCornerRadii(gfx::RoundedCornersF{0});
     contents_view_->SetBackgroundRadii(gfx::RoundedCornersF{0});
     contents_scrim_view_->SetRoundedCorners(gfx::RoundedCornersF{0});
+    if (new_tab_footer_view_) {
+      new_tab_footer_view_->holder()->SetCornerRadii(gfx::RoundedCornersF{0});
+    }
     mini_toolbar_->SetVisible(false);
     inactive_split_scrim_view_->SetVisible(false);
     return;
@@ -113,13 +122,13 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
                                      kContentOutlineCornerRadius, color),
       gfx::Insets(kSplitViewContentPadding)));
 
-  if (contents_view_->GetBackgroundRadii() != kContentCornerRadius) {
-    contents_view_->holder()->SetCornerRadii(kContentCornerRadius);
-    contents_view_->SetBackgroundRadii(kContentCornerRadius);
-  }
+  UpdateContentsViewRoundedCorners();
   if (contents_scrim_view_->layer()->rounded_corner_radii() !=
-      kContentCornerRadius) {
-    contents_scrim_view_->SetRoundedCorners(kContentCornerRadius);
+      kContentRoundedCorners) {
+    contents_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
+  }
+  if (new_tab_footer_view_) {
+    new_tab_footer_view_->holder()->SetCornerRadii(kContentLowerRoundedCorners);
   }
   // Mini toolbar should only be visible for the inactive contents
   // container view or both depending on configuration.
@@ -127,6 +136,22 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   // Scrim should only be allowed to show the scrim for inactive contents
   // container view.
   inactive_split_scrim_view_->SetVisible(!is_active && show_scrim);
+}
+
+void ContentsContainerView::UpdateContentsViewRoundedCorners() {
+  auto radii = new_tab_footer_view_ && new_tab_footer_view_->GetVisible()
+                   ? kContentUpperRoundedCorners
+                   : kContentRoundedCorners;
+  if (contents_view_->GetBackgroundRadii() != radii) {
+    contents_view_->holder()->SetCornerRadii(radii);
+    contents_view_->SetBackgroundRadii(radii);
+  }
+}
+
+void ContentsContainerView::ChildVisibilityChanged(View* child) {
+  if (child == new_tab_footer_view_ && is_in_split_) {
+    UpdateContentsViewRoundedCorners();
+  }
 }
 
 views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
