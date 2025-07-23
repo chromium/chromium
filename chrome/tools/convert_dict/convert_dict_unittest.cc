@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <map>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -52,7 +48,8 @@ bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
     // Check the individual affix indices.
     for (size_t affix_index = 0; affix_index < org_words[i].second.size();
          affix_index++) {
-      EXPECT_EQ(affix_ids[affix_index], org_words[i].second[affix_index]);
+      UNSAFE_TODO(
+          EXPECT_EQ(affix_ids[affix_index], org_words[i].second[affix_index]));
     }
   }
 
@@ -150,7 +147,7 @@ TEST(ConvertDictTest, English) {
 
   std::map<std::u16string, bool> word_list;
   for (size_t i = 0; i < std::size(kWords); ++i) {
-    word_list.insert({base::WideToUTF16(kWords[i]), true});
+    word_list.insert({base::WideToUTF16(UNSAFE_TODO(kWords[i])), true});
   }
 
   RunDictionaryTest(kCodepage, word_list);
@@ -172,7 +169,7 @@ TEST(ConvertDictTest, Russian) {
 
   std::map<std::u16string, bool> word_list;
   for (size_t i = 0; i < std::size(kWords); ++i) {
-    word_list.insert({base::WideToUTF16(kWords[i]), true});
+    word_list.insert({base::WideToUTF16(UNSAFE_TODO(kWords[i])), true});
   }
 
   RunDictionaryTest(kCodepage, word_list);
@@ -196,7 +193,7 @@ TEST(ConvertDictTest, Hungarian) {
 
   std::map<std::u16string, bool> word_list;
   for (size_t i = 0; i < std::size(kWords); ++i) {
-    word_list.insert({base::WideToUTF16(kWords[i]), true});
+    word_list.insert({base::WideToUTF16(UNSAFE_TODO(kWords[i])), true});
   }
 
   RunDictionaryTest(kCodepage, word_list);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/devtools/device/android_device_manager.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -205,7 +201,7 @@ class HttpRequest {
     std::string request = base::StrCat(pieces);
     auto base_buffer =
         base::MakeRefCounted<net::IOBufferWithSize>(request.size());
-    memcpy(base_buffer->data(), request.data(), request.size());
+    UNSAFE_TODO(memcpy(base_buffer->data(), request.data(), request.size()));
     request_ = base::MakeRefCounted<net::DrainableIOBuffer>(
         std::move(base_buffer), request.size());
     timeout_timer_.Start(

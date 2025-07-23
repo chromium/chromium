@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <cmath>
 #include <string>
 
@@ -86,7 +81,7 @@ class PipeReaderPosixTest : public testing::Test {
         break;
       }
       received_message.insert(received_message.end(), buffer->data(),
-                              buffer->data() + rv);
+                              UNSAFE_TODO(buffer->data() + rv));
     }
     return std::make_pair(std::move(received_message), rv);
   }

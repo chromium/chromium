@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/devtools/device/usb/android_usb_socket.h"
 
 #include <stddef.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "net/base/io_buffer.h"
@@ -130,7 +126,7 @@ int AndroidUsbSocket::Read(net::IOBuffer* buffer,
 
   size_t bytes_to_copy = static_cast<size_t>(length) > read_buffer_.length() ?
       read_buffer_.length() : static_cast<size_t>(length);
-  memcpy(buffer->data(), read_buffer_.data(), bytes_to_copy);
+  UNSAFE_TODO(memcpy(buffer->data(), read_buffer_.data(), bytes_to_copy));
   if (read_buffer_.length() > bytes_to_copy)
     read_buffer_ = read_buffer_.substr(bytes_to_copy);
   else
@@ -241,7 +237,8 @@ void AndroidUsbSocket::RespondToReader(bool disconnect) {
   size_t bytes_to_copy =
       static_cast<size_t>(read_length_) > read_buffer_.length() ?
           read_buffer_.length() : static_cast<size_t>(read_length_);
-  memcpy(read_io_buffer_->data(), read_buffer_.data(), bytes_to_copy);
+  UNSAFE_TODO(
+      memcpy(read_io_buffer_->data(), read_buffer_.data(), bytes_to_copy));
   if (read_buffer_.length() > bytes_to_copy)
     read_buffer_ = read_buffer_.substr(bytes_to_copy);
   else

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
 
 #include <cstdint>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -67,9 +63,9 @@ bool MediaEngagementPreloadedList::LoadFromFile(const base::FilePath& path) {
   }
 
   // Copy data from the protobuf message.
-  dafsa_ =
-      std::vector<uint8_t>(message.dafsa().c_str(),
-                           message.dafsa().c_str() + message.dafsa().length());
+  dafsa_ = std::vector<uint8_t>(
+      message.dafsa().c_str(),
+      UNSAFE_TODO(message.dafsa().c_str() + message.dafsa().length()));
 
   is_loaded_ = true;
   return true;

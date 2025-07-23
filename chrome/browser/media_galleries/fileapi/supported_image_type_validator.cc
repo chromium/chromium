@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/fileapi/supported_image_type_validator.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -49,7 +45,8 @@ std::unique_ptr<std::string> ReadOnFileThread(const base::FilePath& path) {
 
   result = std::make_unique<std::string>();
   result->resize(file_info.size);
-  if (file.Read(0, std::data(*result), file_info.size) != file_info.size) {
+  if (UNSAFE_TODO(file.Read(0, std::data(*result), file_info.size)) !=
+      file_info.size) {
     result.reset();
   }
 

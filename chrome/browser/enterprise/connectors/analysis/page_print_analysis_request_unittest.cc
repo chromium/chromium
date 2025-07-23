@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
@@ -24,7 +20,7 @@ namespace enterprise_connectors {
 static base::ReadOnlySharedMemoryRegion CreateFakePage(size_t page_size) {
   base::MappedReadOnlyRegion page =
       base::ReadOnlySharedMemoryRegion::Create(page_size);
-  memset(page.mapping.memory(), 'a', page_size);
+  UNSAFE_TODO(memset(page.mapping.memory(), 'a', page_size));
   return std::move(page.region);
 }
 

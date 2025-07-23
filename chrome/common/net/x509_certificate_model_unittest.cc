@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/net/x509_certificate_model.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_view_util.h"
 #include "net/cert/qwac.h"
 #include "net/cert/x509_util.h"
@@ -327,7 +323,7 @@ TEST(X509CertificateModel, CertificatePoliciesInvalidUtf8UserNotice) {
       0x74, 0x20, 0xa1, 0x20, 0x54, 0x65, 0x78, 0x74};
   builder->SetExtension(
       bssl::der::Input(bssl::kCertificatePoliciesOid),
-      std::string(kExtension, kExtension + sizeof(kExtension)));
+      std::string(kExtension, UNSAFE_TODO(kExtension + sizeof(kExtension))));
 
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(builder->GetCertBuffer()));
@@ -510,8 +506,9 @@ TEST(X509CertificateModel, CrlDpCrlIssuerAndRelativeName) {
       0x63, 0x74, 0x43, 0x52, 0x4c, 0x20, 0x43, 0x41, 0x33, 0x20, 0x63, 0x52,
       0x4c, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72};
 
-  builder->SetExtension(bssl::der::Input(bssl::kCrlDistributionPointsOid),
-                        std::string(kCrldp, kCrldp + sizeof(kCrldp)));
+  builder->SetExtension(
+      bssl::der::Input(bssl::kCrlDistributionPointsOid),
+      std::string(kCrldp, UNSAFE_TODO(kCrldp + sizeof(kCrldp))));
 
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(builder->GetCertBuffer()));
@@ -579,8 +576,9 @@ TEST(X509CertificateModel, CrlDpReasons) {
       0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13, 0x04, 0x43, 0x52, 0x4c,
       0x32, 0x81, 0x03, 0x07, 0x9f, 0x80};
 
-  builder->SetExtension(bssl::der::Input(bssl::kCrlDistributionPointsOid),
-                        std::string(kCrldp, kCrldp + sizeof(kCrldp)));
+  builder->SetExtension(
+      bssl::der::Input(bssl::kCrlDistributionPointsOid),
+      std::string(kCrldp, UNSAFE_TODO(kCrldp + sizeof(kCrldp))));
 
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(builder->GetCertBuffer()));
@@ -614,7 +612,7 @@ TEST(X509CertificateModel, AuthorityInfoAccessNonstandardOidAndLocationType) {
                           0x81, 0x0f, 0x66, 0x6f, 0x6f, 0x40, 0x65, 0x78, 0x61,
                           0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d};
   builder->SetExtension(bssl::der::Input(bssl::kAuthorityInfoAccessOid),
-                        std::string(kAIA, kAIA + sizeof(kAIA)));
+                        std::string(kAIA, UNSAFE_TODO(kAIA + sizeof(kAIA))));
 
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(builder->GetCertBuffer()));

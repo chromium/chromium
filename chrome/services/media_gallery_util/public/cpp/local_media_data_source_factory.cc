@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -51,7 +47,7 @@ void ReadFile(const base::FilePath& file_path,
   }
 
   auto buffer = std::vector<char>(length);
-  int bytes_read = file.Read(position, buffer.data(), length);
+  int bytes_read = UNSAFE_TODO(file.Read(position, buffer.data(), length));
   if (bytes_read == -1) {
     OnReadComplete(main_task_runner, std::move(cb), false /*success*/,
                    std::vector<char>());

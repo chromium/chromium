@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/util.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -139,7 +135,7 @@ class DataOutputStream {
       return;
     size_t next = buffer_.length();
     buffer_.resize(next + size);
-    memcpy(&buffer_[next], bytes, size);
+    UNSAFE_TODO(memcpy(&buffer_[next], bytes, size));
   }
 
   const std::string& buffer() const { return buffer_; }
@@ -174,7 +170,7 @@ class DataInputStream {
   bool ReadBytes(void* bytes, int size) {
     if (iter_ + size > size_)
       return false;
-    memcpy(bytes, &data_[iter_], size);
+    UNSAFE_TODO(memcpy(bytes, &data_[iter_], size));
     iter_ += size;
     return true;
   }

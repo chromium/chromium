@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/unexpire_flags.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
@@ -33,9 +29,9 @@ int ExpirationMilestoneForFlag(const char* flag) {
     return GetFlagExpirationOverrideMap()->at(flag);
   }
 
-  for (int i = 0; kExpiredFlags[i].name; ++i) {
-    const ExpiredFlag* f = &kExpiredFlags[i];
-    if (strcmp(f->name, flag)) {
+  for (int i = 0; UNSAFE_TODO(kExpiredFlags[i]).name; ++i) {
+    const ExpiredFlag* f = &UNSAFE_TODO(kExpiredFlags[i]);
+    if (UNSAFE_TODO(strcmp(f->name, flag))) {
       continue;
     }
 
@@ -63,7 +59,8 @@ std::set<int> UnexpiredMilestonesFromStorage(
   std::set<int> unexpired;
   for (const auto& f : storage->GetFlags()) {
     int mstone;
-    if (sscanf(f.c_str(), "temporary-unexpire-flags-m%d@1", &mstone) == 1) {
+    if (UNSAFE_TODO(sscanf(f.c_str(), "temporary-unexpire-flags-m%d@1",
+                           &mstone)) == 1) {
       unexpired.insert(mstone);
     }
   }

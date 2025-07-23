@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
@@ -131,7 +127,7 @@ SkBitmap ReadBitmap(FileUtilsWrapper* utils, const base::FilePath& file_path) {
 }
 
 base::span<const int> GetIconSizes() {
-  return base::span<const int>(kIconSizes, std::size(kIconSizes));
+  return UNSAFE_TODO(base::span<const int>(kIconSizes, std::size(kIconSizes)));
 }
 
 bool ContainsOneIconOfEachSize(

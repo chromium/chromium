@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/media/webrtc/webrtc_rtp_dump_writer.h"
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
@@ -89,7 +85,7 @@ class WebRtcRtpDumpWriter::FileWorker {
   explicit FileWorker(const base::FilePath& dump_path) : dump_path_(dump_path) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
 
-    memset(&stream_, 0, sizeof(stream_));
+    UNSAFE_TODO(memset(&stream_, 0, sizeof(stream_)));
     int result = deflateInit2(&stream_,
                               Z_DEFAULT_COMPRESSION,
                               Z_DEFLATED,
@@ -219,7 +215,7 @@ class WebRtcRtpDumpWriter::FileWorker {
 
     output_buffer.resize(output_buffer.size() - stream_.avail_out);
 
-    memset(&stream_, 0, sizeof(z_stream));
+    UNSAFE_TODO(memset(&stream_, 0, sizeof(z_stream)));
 
     DCHECK(!output_buffer.empty());
     return base::AppendToFile(dump_path_, output_buffer);

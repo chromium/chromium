@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/devtools/devtools_file_system_indexer.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -108,7 +104,7 @@ TrigramChar TrigramCharForChar(char c) {
     trigram_chars = new TrigramChar[256];
     for (size_t i = 0; i < 256; ++i) {
       if (i > 127) {
-        trigram_chars[i] = kUndefinedTrigramChar;
+        UNSAFE_TODO(trigram_chars[i]) = kUndefinedTrigramChar;
         continue;
       }
       char ch = static_cast<char>(i);
@@ -119,12 +115,12 @@ TrigramChar TrigramCharForChar(char c) {
 
       bool is_binary_char = ch < 9 || (ch >= 14 && ch < 32) || ch == 127;
       if (is_binary_char) {
-        trigram_chars[i] = kBinaryTrigramChar;
+        UNSAFE_TODO(trigram_chars[i]) = kBinaryTrigramChar;
         continue;
       }
 
       if (ch < ' ') {
-        trigram_chars[i] = kUndefinedTrigramChar;
+        UNSAFE_TODO(trigram_chars[i]) = kUndefinedTrigramChar;
         continue;
       }
 
@@ -133,11 +129,11 @@ TrigramChar TrigramCharForChar(char c) {
       ch -= ' ';
       char signed_trigram_count = static_cast<char>(kTrigramCharacterCount);
       CHECK(ch >= 0 && ch < signed_trigram_count);
-      trigram_chars[i] = ch;
+      UNSAFE_TODO(trigram_chars[i]) = ch;
     }
   }
   unsigned char uc = static_cast<unsigned char>(c);
-  return trigram_chars[uc];
+  return UNSAFE_TODO(trigram_chars[uc]);
 }
 
 Trigram TrigramAtIndex(const vector<TrigramChar>& trigram_chars, size_t index) {
@@ -204,10 +200,10 @@ vector<FilePath> Index::Search(const string& query) {
   vector<TrigramChar> trigram_chars;
   trigram_chars.reserve(query.size());
   for (size_t i = 0; i < query.size(); ++i) {
-      TrigramChar trigram_char = TrigramCharForChar(data[i]);
-      if (trigram_char == kBinaryTrigramChar)
-        trigram_char = kUndefinedTrigramChar;
-      trigram_chars.push_back(trigram_char);
+    TrigramChar trigram_char = TrigramCharForChar(UNSAFE_TODO(data[i]));
+    if (trigram_char == kBinaryTrigramChar)
+      trigram_char = kUndefinedTrigramChar;
+    trigram_chars.push_back(trigram_char);
   }
   vector<Trigram> trigrams;
   for (size_t i = 0; i + 2 < query.size(); ++i) {

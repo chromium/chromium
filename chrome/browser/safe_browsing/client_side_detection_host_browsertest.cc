@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -114,8 +110,8 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion() override {
     base::MappedReadOnlyRegion mapped_region =
         base::ReadOnlySharedMemoryRegion::Create(client_side_model_.length());
-    memcpy(mapped_region.mapping.memory(), client_side_model_.data(),
-           client_side_model_.length());
+    UNSAFE_TODO(memcpy(mapped_region.mapping.memory(),
+                       client_side_model_.data(), client_side_model_.length()));
     return mapped_region.region.Duplicate();
   }
 

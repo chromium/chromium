@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/download/download_browsertest_utils.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -479,7 +475,8 @@ bool DownloadTestBase::VerifyFile(const base::FilePath& path,
 
   // Check the contents.
   EXPECT_EQ(value, file_contents);
-  if (memcmp(file_contents.c_str(), value.c_str(), expected_size) != 0) {
+  if (UNSAFE_TODO(
+          memcmp(file_contents.c_str(), value.c_str(), expected_size)) != 0) {
     return false;
   }
 

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/support_tool/screenshot_data_collector.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_memory.h"
@@ -63,8 +59,8 @@ class ScreenshotDataCollectorTest : public ::testing::Test {
 
     webrtc::DesktopSize size(bitmap_.width(), bitmap_.height());
     frame_ = std::make_unique<webrtc::BasicDesktopFrame>(std::move(size));
-    std::memcpy(frame_->data(), bitmap_.getAddr32(0, 0),
-                bitmap_.rowBytes() * bitmap_.height());
+    UNSAFE_TODO(std::memcpy(frame_->data(), bitmap_.getAddr32(0, 0),
+                            bitmap_.rowBytes() * bitmap_.height()));
     jpeg_data_ = base::MakeRefCounted<base::RefCountedString>(std::move(data));
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

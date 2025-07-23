@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <set>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -256,8 +252,8 @@ bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
   EXPECT_TRUE(node_pixel_addr_a);
   void* node_pixel_addr_b = bitmap_b.getPixels();
   EXPECT_TRUE(node_pixel_addr_b);
-  if (memcmp(node_pixel_addr_a, node_pixel_addr_b,
-             bitmap_a.computeByteSize()) != 0) {
+  if (UNSAFE_TODO(memcmp(node_pixel_addr_a, node_pixel_addr_b,
+                         bitmap_a.computeByteSize())) != 0) {
     LOG(ERROR) << "Favicon bitmap mismatch";
     return false;
   } else {

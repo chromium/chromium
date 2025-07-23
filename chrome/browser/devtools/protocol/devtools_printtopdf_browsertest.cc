@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_span.h"
@@ -96,8 +92,8 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
         break;
     }
 
-    pdf_span_ = base::span<const uint8_t>(
-        reinterpret_cast<const uint8_t*>(pdf_data_.data()), pdf_data_.size());
+    pdf_span_ = UNSAFE_TODO(base::span<const uint8_t>(
+        reinterpret_cast<const uint8_t*>(pdf_data_.data()), pdf_data_.size()));
 
     ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span_, &pdf_num_pages_, nullptr));
     ASSERT_GE(pdf_num_pages_, 1);

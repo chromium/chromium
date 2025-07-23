@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -462,7 +458,8 @@ class AdbParser : public SimpleHttpServer::Parser,
       EXPECT_TRUE(base::HexStringToUInt(message_header, &message_size));
 
       if (size >= message_size + kAdbMessageHeaderSize) {
-        std::string message_body(data + kAdbMessageHeaderSize, message_size);
+        std::string message_body(UNSAFE_TODO(data + kAdbMessageHeaderSize),
+                                 message_size);
         ProcessCommand(message_body);
         return kAdbMessageHeaderSize + message_size;
       }

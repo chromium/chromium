@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
 
 #include <optional>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -60,7 +56,8 @@ base::MappedReadOnlyRegion GetPdfRegion(const char* file_name) {
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  memcpy(pdf_region.mapping.memory(), pdf_str.data(), pdf_str.size());
+  UNSAFE_TODO(
+      memcpy(pdf_region.mapping.memory(), pdf_str.data(), pdf_str.size()));
   return pdf_region;
 }
 
@@ -71,7 +68,8 @@ base::MappedReadOnlyRegion GetBadDataRegion() {
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  memcpy(pdf_region.mapping.memory(), kBadData, std::size(kBadData));
+  UNSAFE_TODO(
+      memcpy(pdf_region.mapping.memory(), kBadData, std::size(kBadData)));
   return pdf_region;
 }
 

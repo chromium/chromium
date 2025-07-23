@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/file_util/single_file_tar_file_extractor.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/single_file_tar_reader.h"
@@ -71,8 +67,8 @@ class TarExtractorInner {
   // Returned vector is resized to actual bytes read.
   std::vector<uint8_t> ReadTarFile() {
     std::vector<uint8_t> tar_buffer(kTarBufferSize);
-    const int bytes_read = src_file_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(tar_buffer.data()), kTarBufferSize);
+    const int bytes_read = UNSAFE_TODO(src_file_.ReadAtCurrentPos(
+        reinterpret_cast<char*>(tar_buffer.data()), kTarBufferSize));
 
     if (bytes_read < 0)
       return std::vector<uint8_t>();

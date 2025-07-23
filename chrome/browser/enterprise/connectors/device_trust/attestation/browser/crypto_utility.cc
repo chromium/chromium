@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/crypto_utility.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -72,7 +68,7 @@ bool CreatePubKeyFromHex(const std::string& public_key_modulus_hex,
       !CBB_finish(cbb.get(), &der, &der_len)) {
     return false;
   }
-  public_key_info.assign(der, der + der_len);
+  public_key_info.assign(der, UNSAFE_TODO(der + der_len));
   OPENSSL_free(der);
 
   return true;

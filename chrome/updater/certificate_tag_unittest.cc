@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/updater/certificate_tag.h"
 
 #include <cstdint>
@@ -49,7 +44,7 @@ TEST(CertificateTag, RoundTrip) {
   std::optional<std::vector<uint8_t>> parsed_tag(bin2->tag());
   ASSERT_TRUE(parsed_tag);
   ASSERT_EQ(parsed_tag->size(), sizeof(kTag));
-  EXPECT_TRUE(memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
+  UNSAFE_TODO(EXPECT_TRUE(memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0));
 
   // Update an existing tag.
   static constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
@@ -61,7 +56,8 @@ TEST(CertificateTag, RoundTrip) {
   std::optional<std::vector<uint8_t>> parsed_tag2(bin3->tag());
   ASSERT_TRUE(parsed_tag2);
   ASSERT_EQ(parsed_tag2->size(), sizeof(kTag2));
-  EXPECT_TRUE(memcmp(kTag2, parsed_tag2->data(), sizeof(kTag2)) == 0);
+  UNSAFE_TODO(
+      EXPECT_TRUE(memcmp(kTag2, parsed_tag2->data(), sizeof(kTag2)) == 0));
 
   // Updating an existing tag with a tag of the same size should not have grown
   // the binary, i.e. the old tag should have been erased first.
@@ -486,7 +482,8 @@ void Validate(const MSIBinary& bin,
     for (i = 0; i < bin.sector_format_.size / kNumDirEntryBytes; ++i) {
       uint64_t offset =
           dir_sector * bin.sector_format_.size + i * kNumDirEntryBytes;
-      std::memcpy(&entry, &bin.contents_[offset], sizeof(MSIDirEntry));
+      UNSAFE_TODO(
+          std::memcpy(&entry, &bin.contents_[offset], sizeof(MSIDirEntry)));
 
       // Skip the mini stream and signature entries.
       // SAFETY: byte manipulation of a C data structure.
@@ -533,7 +530,7 @@ struct CertificateTagMsiValidateTestCase {
 class CertificateTagMsiValidateTest
     : public ::testing::TestWithParam<CertificateTagMsiValidateTestCase> {};
 
-INSTANTIATE_TEST_SUITE_P(
+UNSAFE_TODO(INSTANTIATE_TEST_SUITE_P(
     CertificateTagMsiValidateTestCases,
     CertificateTagMsiValidateTest,
     ::testing::ValuesIn(std::vector<CertificateTagMsiValidateTestCase>{
@@ -570,7 +567,7 @@ INSTANTIATE_TEST_SUITE_P(
            new_tag.resize(8206);
            return new_tag;
          }()},
-    }));
+    })));
 
 TEST_P(CertificateTagMsiValidateTest, TestCases) {
   base::MemoryMappedFile mapped_file;

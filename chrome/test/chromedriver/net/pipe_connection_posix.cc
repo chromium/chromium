@@ -4,17 +4,13 @@
 
 #include "chrome/test/chromedriver/net/pipe_connection_posix.h"
 
-#include "base/functional/callback_forward.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <list>
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -291,7 +287,7 @@ class PipeWriter {
 
     // enqueue with the trailing zero character
     queued_.insert(queued_.end(), message.c_str(),
-                   message.c_str() + message.size() + 1);
+                   UNSAFE_TODO(message.c_str() + message.size() + 1));
     if (!write_buffer_->BytesRemaining()) {
       const size_t queued_size = queued_.size();
       write_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(

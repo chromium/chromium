@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 
 #include <memory>
 #include <queue>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -125,7 +121,7 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
       futures;
 
   for (size_t i = 0; i < futures.size(); ++i) {
-    manager()->HandleRequestBlockedOnCookie(kRequestGURLs[i],
+    manager()->HandleRequestBlockedOnCookie(UNSAFE_TODO(kRequestGURLs[i]),
                                             futures[i].GetCallback());
   }
 

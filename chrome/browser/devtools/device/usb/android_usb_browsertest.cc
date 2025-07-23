@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,6 +9,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
@@ -251,10 +247,11 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
       // A new message, parse header first.
       DCHECK_GE(buffer.size(), 6u);
       const auto* header = reinterpret_cast<const uint32_t*>(buffer.data());
-      current_message_ = std::make_unique<AdbMessage>(header[0], header[1],
-                                                      header[2], std::string());
-      remaining_body_length_ = header[3];
-      uint32_t magic = header[5];
+      current_message_ =
+          std::make_unique<AdbMessage>(header[0], UNSAFE_TODO(header[1]),
+                                       UNSAFE_TODO(header[2]), std::string());
+      remaining_body_length_ = UNSAFE_TODO(header[3]);
+      uint32_t magic = UNSAFE_TODO(header[5]);
       if ((current_message_->command ^ 0xffffffff) != magic) {
         DCHECK(false) << "Header checksum error";
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -284,7 +281,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
   template <class D>
   void append(D data) {
     std::copy(reinterpret_cast<uint8_t*>(&data),
-              (reinterpret_cast<uint8_t*>(&data)) + sizeof(D),
+              UNSAFE_TODO((reinterpret_cast<uint8_t*>(&data)) + sizeof(D)),
               std::back_inserter(output_buffer_));
   }
 
@@ -294,7 +291,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
     int count = data.length();
     uint32_t sum = 0;
     while (count-- > 0)
-      sum += *x++;
+      sum += *UNSAFE_TODO(x++);
     return sum;
   }
 

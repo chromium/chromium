@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
@@ -137,7 +133,7 @@ void V8CompileHintsTabHelper::SendDataToRenderer(const proto::Model& model) {
   int64_t* memory = shared_memory_mapping.GetMemoryAs<int64_t>();
 
   for (size_t i = 0; i < kModelInt64Count; ++i) {
-    memory[i] = model.bloom_filter().Get(i);
+    UNSAFE_TODO(memory[i]) = model.bloom_filter().Get(i);
   }
 
   base::ReadOnlySharedMemoryRegion read_only_region =

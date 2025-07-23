@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/apps/icon_standardizer.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -31,7 +27,7 @@ bool AreBitmapsEqual(const SkBitmap& first_bitmap,
   uint8_t* first_data = reinterpret_cast<uint8_t*>(first_bitmap.getPixels());
   uint8_t* second_data = reinterpret_cast<uint8_t*>(second_bitmap.getPixels());
   for (size_t i = 0; i < size; ++i) {
-    if (first_data[i] != second_data[i]) {
+    if (UNSAFE_TODO(first_data[i]) != UNSAFE_TODO(second_data[i])) {
       bitmaps_equal = false;
       break;
     }
@@ -44,7 +40,7 @@ bool DoesIconHaveWhiteBackgroundCircle(const SkBitmap& bitmap) {
   const int y = kIconSize / 2;
   SkColor* src_color = reinterpret_cast<SkColor*>(bitmap.getAddr32(0, y));
   for (int x = 0; x < bitmap.width(); ++x) {
-    if (src_color[x] == SK_ColorWHITE) {
+    if (UNSAFE_TODO(src_color[x]) == SK_ColorWHITE) {
       return true;
     }
   }

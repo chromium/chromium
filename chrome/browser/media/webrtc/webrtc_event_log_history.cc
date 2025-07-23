@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/webrtc/webrtc_event_log_history.h"
 
 #include <limits>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -314,7 +310,8 @@ bool WebRtcEventLogHistoryFileReader::Init() {
 
   std::string file_contents;
   file_contents.resize(kMaxHistoryFileSizeBytes);
-  const int read_bytes = file.Read(0, &file_contents[0], file_contents.size());
+  const int read_bytes =
+      UNSAFE_TODO(file.Read(0, &file_contents[0], file_contents.size()));
   if (read_bytes < 0) {
     LOG(WARNING) << "Couldn't read contents of history file.";
     return false;

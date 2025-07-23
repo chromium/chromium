@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/fileapi/native_media_file_util.h"
 
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
@@ -199,7 +195,7 @@ base::File::Error NativeMediaFileUtil::IsMediaFile(
   char buffer[net::kMaxBytesToSniff];
 
   // Read as much as net::SniffMimeTypeFromLocalData() will bother looking at.
-  int64_t len = file.Read(0, buffer, net::kMaxBytesToSniff);
+  int64_t len = UNSAFE_TODO(file.Read(0, buffer, net::kMaxBytesToSniff));
   if (len < 0)
     return base::File::FILE_ERROR_FAILED;
 

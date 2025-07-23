@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 
@@ -268,8 +264,8 @@ void MediaRouterMojoTest::TestSendRouteBinaryMessage() {
   EXPECT_CALL(mock_cast_provider_, SendRouteBinaryMessage(kRouteId, _))
       .WillOnce([](const MediaRoute::Id& route_id,
                    const std::vector<uint8_t>& data) {
-        EXPECT_EQ(
-            0, memcmp(kBinaryMessage, &(data[0]), std::size(kBinaryMessage)));
+        UNSAFE_TODO(EXPECT_EQ(
+            0, memcmp(kBinaryMessage, &(data[0]), std::size(kBinaryMessage))));
       });
 
   router()->SendRouteBinaryMessage(kRouteId, std::move(expected_binary_data));

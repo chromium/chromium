@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_span.h"
@@ -54,11 +50,13 @@ class MockSocket : public net::MockClientSocket {
     }
     int chunk_length = return_values_array.front().length();
     if (chunk_length > buf_len) {
-      strncpy(buf->data(), return_values_array.front().data(), buf_len);
+      UNSAFE_TODO(
+          strncpy(buf->data(), return_values_array.front().data(), buf_len));
       return_values_array.front() = return_values_array.front().substr(buf_len);
       return buf_len;
     }
-    strncpy(buf->data(), return_values_array.front().data(), chunk_length);
+    UNSAFE_TODO(
+        strncpy(buf->data(), return_values_array.front().data(), chunk_length));
     return_values_array = return_values_array.subspan<1>();
     if (chunk_length == 0) {
       return net::ERR_IO_PENDING;
@@ -110,7 +108,7 @@ class AdbClientSocketTest : public testing::Test {
     scoped_refptr<net::GrowableIOBuffer> buffer =
         base::MakeRefCounted<net::GrowableIOBuffer>();
     buffer->SetCapacity(100);
-    strcpy(buffer->data(), data_on_buffer);
+    UNSAFE_TODO(strcpy(buffer->data(), data_on_buffer));
     buffer->set_offset(strlen(data_on_buffer));
 
     adb_socket.ReadUntilEOF(parse_callback.Get(), response_callback.Get(),
@@ -180,7 +178,7 @@ class AdbClientSocketTest : public testing::Test {
     int initial_capacity = 100;
     buffer->SetCapacity(initial_capacity);
     if (result > 0) {
-      strncpy(buffer->data(), buffer_data, result);
+      UNSAFE_TODO(strncpy(buffer->data(), buffer_data, result));
     }
     AdbClientSocket::ReadStatusOutput(response_callback.Get(), buffer, result);
   }

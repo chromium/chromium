@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -82,8 +78,8 @@ void HandleCapturedBitmap(
   gfx::ImageSkia image;
 
   // Only scale and update if the frame appears to be new.
-  const uint32_t hash = base::FastHash(base::span(
-      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
+  const uint32_t hash = base::FastHash(UNSAFE_TODO(base::span(
+      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize())));
   if (!last_hash.has_value() || hash != last_hash.value()) {
     image = ScaleBitmap(bitmap, desktopcapture::kPreviewSize);
   }

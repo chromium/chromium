@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/file_util/single_file_tar_reader.h"
 
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -44,8 +40,8 @@ TEST_F(SingleFileTarReaderTest, ExtractTarFile) {
   std::vector<uint8_t> tar_buffer(kTarBufferSize);
   std::vector<uint8_t> contents;
   while (!tar_reader.IsComplete()) {
-    const int bytes_read = src_file.ReadAtCurrentPos(
-        reinterpret_cast<char*>(tar_buffer.data()), tar_buffer.size());
+    const int bytes_read = UNSAFE_TODO(src_file.ReadAtCurrentPos(
+        reinterpret_cast<char*>(tar_buffer.data()), tar_buffer.size()));
     ASSERT_GE(bytes_read, 0);
 
     base::span<const uint8_t> bin_buffer;
@@ -87,8 +83,8 @@ TEST_F(SingleFileTarReaderTest, EmptyFile) {
 
   SingleFileTarReader tar_reader;
   std::vector<uint8_t> tar_buffer(kTarBufferSize);
-  const int bytes_read = src_file.ReadAtCurrentPos(
-      reinterpret_cast<char*>(tar_buffer.data()), tar_buffer.size());
+  const int bytes_read = UNSAFE_TODO(src_file.ReadAtCurrentPos(
+      reinterpret_cast<char*>(tar_buffer.data()), tar_buffer.size()));
   ASSERT_GE(bytes_read, 0);
 
   base::span<const uint8_t> bin_buffer;

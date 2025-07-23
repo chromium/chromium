@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/fileapi/readahead_file_stream_reader.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
@@ -81,8 +77,8 @@ int ReadaheadFileStreamReader::FinishReadFromCacheOrStoredError(
 
     int copy_len = std::min(source_buffer->BytesRemaining(),
                             sink->BytesRemaining());
-    std::copy(source_buffer->data(), source_buffer->data() + copy_len,
-              sink->data());
+    std::copy(source_buffer->data(),
+              UNSAFE_TODO(source_buffer->data() + copy_len), sink->data());
 
     source_buffer->DidConsume(copy_len);
     sink->DidConsume(copy_len);
