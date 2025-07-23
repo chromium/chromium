@@ -234,6 +234,12 @@ enum LicenseKind {
 
     /// https://spdx.org/licenses/Unicode-3.0.html
     Unicode3,
+
+    /// https://spdx.org/licenses/NCSA.html
+    NCSA,
+
+    /// https://spdx.org/licenses/BSL-1.0.html
+    BSL,
 }
 
 impl Display for LicenseKind {
@@ -247,8 +253,10 @@ impl Display for LicenseKind {
             LicenseKind::MIT => write!(f, "MIT"),
             LicenseKind::MPL2 => write!(f, "MPL-2.0"),
             LicenseKind::ISC => write!(f, "ISC"),
+            LicenseKind::NCSA => write!(f, "NCSA"),
             LicenseKind::Zlib => write!(f, "Zlib"),
             LicenseKind::Unicode3 => write!(f, "Unicode-3.0"),
+            LicenseKind::BSL => write!(f, "BSL-1.0"),
         }
     }
 }
@@ -273,6 +281,7 @@ static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<Licens
             ("Apache-2.0/MIT", vec![LicenseKind::Apache2]),
             ("(Apache-2.0 OR MIT) AND BSD-3-Clause", vec![LicenseKind::Apache2, LicenseKind::BSD3]),
             ("MIT OR Apache-2.0 OR Zlib", vec![LicenseKind::Apache2]),
+            ("(MIT OR Apache-2.0) AND NCSA", vec![LicenseKind::Apache2, LicenseKind::NCSA]),
             ("MIT", vec![LicenseKind::MIT]),
             ("MPL-2.0", vec![LicenseKind::MPL2]),
             ("Unlicense OR MIT", vec![LicenseKind::MIT]),
@@ -290,8 +299,12 @@ static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<Licens
             ("MIT AND (MIT OR Apache-2.0)", vec![LicenseKind::Apache2]),
             ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
             ("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
+            ("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
+            ("BSD-2-Clause OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
+            ("BSD-3-Clause OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
             ("Unicode-3.0", vec![LicenseKind::Unicode3]),
             ("Zlib", vec![LicenseKind::Zlib]),
+            ("BSL-1.0", vec![LicenseKind::BSL]),
         ])
     });
 
