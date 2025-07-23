@@ -16165,7 +16165,8 @@
     "OmniboxMobileParityUpdateV2": [
         {
             "platforms": [
-                "android"
+                "android",
+                "ios"
             ],
             "experiments": [
                 {
