@@ -79,6 +79,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Content.SharedWorker.Host.DestructionSource"
+    enum="SharedWorkerHostDestructionSource" expires_after="2026-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.org</owner>
+  <summary>
+    Records the reason why a SharedWorkerHost is destroyed. This is to
+    investigate why a shared worker is terminated unexpectedly. This is also
+    used for understanding the ratio of destruction cases.
+  </summary>
+</histogram>
+
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
     expires_after="2025-12-01">
   <owner>elabadysayed@chromium.org</owner>

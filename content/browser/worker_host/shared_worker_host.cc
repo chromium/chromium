@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
@@ -71,6 +71,24 @@ namespace {
 // Also, we may want to use the same constant we use for service workers.
 // Current value come from `ServiceWorkerVersion::kRequestTimeout`.
 constexpr base::TimeDelta kSharedWorkerDestructionDelay = base::Minutes(5);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SharedWorkerHostDestructionSource)
+enum class SharedWorkerHostDestructionSource {
+  kUnknown = 0,
+  kOnContextClosed = 1,
+  kRenderProcessHostDestroyed = 2,
+  kNoClients = 3,
+  kWorkerConnectionLost = 4,
+  kMaxValue = kWorkerConnectionLost,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:SharedWorkerHostDestructionSource)
+
+void RecordDestructionSource(SharedWorkerHostDestructionSource source) {
+  base::UmaHistogramEnumeration("Content.SharedWorker.Host.DestructionSource",
+                                source);
+}
 
 }  // namespace
 
@@ -730,6 +748,7 @@ void SharedWorkerHost::OnContextClosed() {
   // be called.
   DCHECK(started_);
 
+  RecordDestructionSource(SharedWorkerHostDestructionSource::kOnContextClosed);
   Destruct();
 }
 
@@ -788,6 +807,8 @@ void SharedWorkerHost::RenderProcessHostDestroyed(RenderProcessHost* host) {
   // also calls RemoveObserver, but the process may be cleared by the time that
   // call is reached, so call it here first.
   host->RemoveObserver(this);
+  RecordDestructionSource(
+      SharedWorkerHostDestructionSource::kRenderProcessHostDestroyed);
   Destruct();
 }
 
@@ -974,6 +995,7 @@ void SharedWorkerHost::OnClientConnectionLost() {
 void SharedWorkerHost::DestructIfNoClients() {
   // If there are no clients left, then it's cleanup time.
   if (clients_.empty()) {
+    RecordDestructionSource(SharedWorkerHostDestructionSource::kNoClients);
     Destruct();
   }
 }
@@ -981,6 +1003,8 @@ void SharedWorkerHost::DestructIfNoClients() {
 void SharedWorkerHost::OnWorkerConnectionLost() {
   // This will destroy |this| resulting in client's observing their mojo
   // connection being dropped.
+  RecordDestructionSource(
+      SharedWorkerHostDestructionSource::kWorkerConnectionLost);
   Destruct();
 }
 

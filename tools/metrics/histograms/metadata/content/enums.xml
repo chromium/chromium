@@ -488,6 +488,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Popup clicked through (abusive)"/>
 </enum>
 
+<!-- LINT.IfChange(SharedWorkerHostDestructionSource) -->
+
+<enum name="SharedWorkerHostDestructionSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Context closed"/>
+  <int value="2" label="Render process host destroyed"/>
+  <int value="3" label="No clients left"/>
+  <int value="4" label="Worker connection lost"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/worker_host/shared_worker_host.cc:SharedWorkerHostDestructionSource) -->
+
 <enum name="SingleWebFeedEntryPoint">
   <int value="0" label="Menu"/>
   <int value="1" label="Attribtuion"/>
