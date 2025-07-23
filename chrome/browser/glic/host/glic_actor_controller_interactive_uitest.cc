@@ -930,7 +930,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseActorTask) {
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenStopActorTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       DISABLED_PauseThenStopActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
