@@ -81,6 +81,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /** Unit tests for {@link InstantMessageDelegateImpl}. */
@@ -387,5 +389,42 @@ public class InstantMessageDelegateImplUnitTest {
         verify(mDataSharingNotificationManager)
                 .showOtherJoinedNotification(any(), eq(SYNC_GROUP_ID1), eq(9));
         verify(mSuccessCallback).onResult(true);
+    }
+
+    @Test
+    public void testHideInstantMessage_MessageIsShowing() {
+        String messageIdToHide = "1";
+        InstantMessage message = newInstantMessage(CollaborationEvent.TAB_REMOVED);
+        message.attributions.get(0).id = messageIdToHide;
+
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel displayedModel = mPropertyModelCaptor.getValue();
+
+        Set<String> idsToHide = new HashSet<>();
+        idsToHide.add(messageIdToHide);
+        mDelegate.hideInstantaneousMessage(idsToHide);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mManagedMessageDispatcher)
+                .dismissMessage(displayedModel, DismissReason.DISMISSED_BY_FEATURE);
+    }
+
+    @Test
+    public void testHideInstantMessage_MessageNotShowing() {
+        InstantMessage messageToShow = newInstantMessage(CollaborationEvent.TAB_REMOVED);
+        messageToShow.attributions.get(0).id = "1";
+        mDelegate.displayInstantaneousMessage(messageToShow, mSuccessCallback);
+        verify(mManagedMessageDispatcher).enqueueWindowScopedMessage(any(), anyBoolean());
+
+        // Attempt to hide a message ID that was never displayed.
+        Set<String> idsToHide = new HashSet<>();
+        idsToHide.add("2");
+        mDelegate.hideInstantaneousMessage(idsToHide);
+        ShadowLooper.runUiThreadTasks();
+
+        // This should have noop-ed.
+        verify(mManagedMessageDispatcher, never()).dismissMessage(any(), anyInt());
     }
 }
