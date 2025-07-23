@@ -19,7 +19,10 @@
 namespace {
 
 // The duration of the animation when exiting the selection UI.
-const CGFloat kSelectionViewAnimationDuration = 0.2f;
+const CGFloat kSelectionViewExitAnimationDuration = 0.2f;
+
+// The duration of the animation when changing the opacity of the selection UI.
+const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
 
 }  // namespace
 
@@ -108,7 +111,7 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 
   _containerViewController.view.alpha = 0;
   __weak UIViewController* weakContainer = _containerViewController;
-  [UIView animateWithDuration:kSelectionViewAnimationDuration
+  [UIView animateWithDuration:kSelectionViewExitAnimationDuration
                    animations:^{
                      weakContainer.view.alpha = 1.0;
                    }
@@ -147,8 +150,34 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 
 - (void)fadeSelectionUIWithCompletion:(void (^)())completion {
   [_containerViewController
-      fadeSelectionUIWithDuration:kSelectionViewAnimationDuration
+      fadeSelectionUIWithDuration:kSelectionViewExitAnimationDuration
                        completion:completion];
+}
+
+- (void)setContainerHidden:(BOOL)hidden animated:(BOOL)animated {
+  CGFloat alpha = hidden ? 0 : 1;
+
+  if (!animated) {
+    _containerViewController.view.hidden = hidden;
+    _containerViewController.view.alpha = alpha;
+    return;
+  }
+
+  if (hidden && _containerViewController.view.hidden) {
+    return;
+  }
+
+  _containerViewController.view.hidden = NO;
+
+  __weak __typeof(_containerViewController) weakContainerVC =
+      _containerViewController;
+  [UIView animateWithDuration:kSelectionViewOpacityAnimationDuration
+      animations:^{
+        weakContainerVC.view.alpha = alpha;
+      }
+      completion:^(BOOL) {
+        weakContainerVC.view.hidden = hidden;
+      }];
 }
 
 #pragma mark - LensOverlayContainerDelegate
