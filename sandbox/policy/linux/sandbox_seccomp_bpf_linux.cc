@@ -216,6 +216,8 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kScreenAI:
       return std::make_unique<ScreenAIProcessPolicy>();
+    case sandbox::mojom::Sandbox::kShapeDetection:
+      return std::make_unique<UtilityProcessPolicy>();
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       return std::make_unique<HardwareVideoDecodingProcessPolicy>(
@@ -241,8 +243,6 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<TtsProcessPolicy>();
     case sandbox::mojom::Sandbox::kNearby:
       return std::make_unique<NearbyProcessPolicy>();
-    case sandbox::mojom::Sandbox::kShapeDetection:
-      return std::make_unique<UtilityProcessPolicy>();
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::mojom::Sandbox::kLibassistant:
       return std::make_unique<LibassistantProcessPolicy>();
@@ -302,12 +302,12 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kIme:
     case sandbox::mojom::Sandbox::kTts:
     case sandbox::mojom::Sandbox::kNearby:
-    case sandbox::mojom::Sandbox::kShapeDetection:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::mojom::Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    case sandbox::mojom::Sandbox::kShapeDetection:
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif
 #if BUILDFLAG(IS_LINUX)
