@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
@@ -35,6 +36,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
+import org.chromium.net.test.ServerCertificate;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -513,12 +515,77 @@ public class ProxyTest {
             reason =
                     "This feature flag has not reached platform Cronet yet. Fallback provides no"
                             + " ProxyOptions support.")
-    @DisabledTest(
-            message =
-                    "TODO(https://crbug.com/424790520): Enable this once we can craft a proper"
-                            + " response. This might require extending NativeTestServer to support"
-                            + " CONNECT.")
-    public void testConnectResponse_successIsReported() {}
+    // Mockito fails on Marshmallow with NoClassDefFoundError:
+    // org.mockito.internal.invocation.TypeSafeMatching$$ExternalSyntheticLambda0
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testConnectResponse_successIsReported() {
+        try (NativeTestServer proxyServer = mNativeTestServer;
+                NativeTestServer originServer =
+                        NativeTestServer.createNativeTestServerWithHTTPS(
+                                mTestRule.getTestFramework().getContext(),
+                                ServerCertificate.CERT_OK)) {
+            originServer.start();
+            proxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
+            proxyServer.start();
+            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Mockito.when(proxyCallback.onBeforeTunnelRequest()).thenReturn(Collections.emptyList());
+            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
+                    .thenReturn(true);
+            mTestRule
+                    .getTestFramework()
+                    .applyEngineBuilderPatch(
+                            (builder) ->
+                                    builder.setProxyOptions(
+                                            new ProxyOptions(
+                                                    Arrays.asList(
+                                                            new Proxy(
+                                                                    /* scheme= */ Proxy.HTTP,
+                                                                    /* host= */ "localhost",
+                                                                    /* port= */ proxyServer
+                                                                            .getPort(),
+                                                                    /* callback= */ proxyCallback)))));
+            ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+            TestUrlRequestCallback callback = new TestUrlRequestCallback();
+            UrlRequest.Builder urlRequestBuilder =
+                    cronetEngine.newUrlRequestBuilder(
+                            originServer.getSuccessURL(), callback, callback.getExecutor());
+            urlRequestBuilder.build().start();
+            callback.blockForDone();
+            assertThat(callback.mError).isNull();
+            assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+            // The exact values of these headers is not that important. We are just confirming we
+            // don't receive the tunnel response heeaders here.
+            assertThat(callback.getResponseInfoWithChecks())
+                    .hasHeadersListThat()
+                    .containsExactlyElementsIn(
+                            Arrays.asList(
+                                    new AbstractMap.SimpleEntry<>("Content-Type", "text/plain"),
+                                    new AbstractMap.SimpleEntry<>(
+                                            "Access-Control-Allow-Origin", "*"),
+                                    new AbstractMap.SimpleEntry<>("header-name", "header-value"),
+                                    new AbstractMap.SimpleEntry<>(
+                                            "multi-header-name", "header-value1"),
+                                    new AbstractMap.SimpleEntry<>(
+                                            "multi-header-name", "header-value2")));
+            assertThat(callback.getResponseInfoWithChecks())
+                    .hasProxyServerThat()
+                    .isEqualTo("localhost:" + proxyServer.getPort());
+            assertThat(callback.mResponseAsString).isEqualTo(NativeTestServer.SUCCESS_BODY);
+            Mockito.verify(proxyCallback, times(1)).onBeforeTunnelRequest();
+            ArgumentCaptor<List<Map.Entry<String, String>>> argumentCaptor =
+                    ArgumentCaptor.forClass(List.class);
+            Mockito.verify(proxyCallback, times(1))
+                    .onTunnelHeadersReceived(argumentCaptor.capture(), eq(200));
+            // The exact values of these headers is not that important. We are just confirming we
+            // don't receive the actual response headers here.
+            assertThat(argumentCaptor.getValue())
+                    .containsExactlyElementsIn(
+                            Arrays.asList(
+                                    new AbstractMap.SimpleEntry<>("Connection", "close"),
+                                    new AbstractMap.SimpleEntry<>("Content-Length", "0"),
+                                    new AbstractMap.SimpleEntry<>("Content-Type", "")));
+        }
+    }
 
     static class TestProxyCallback extends Proxy.Callback {
         private final AtomicInteger mOnBeforeTunnelRequestInvocationTimes = new AtomicInteger(0);
