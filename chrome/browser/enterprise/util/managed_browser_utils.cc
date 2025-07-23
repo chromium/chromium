@@ -71,7 +71,7 @@
 
 namespace enterprise_util {
 
-// Enterprise custom labels have a limmit of 16 characters, so they will be cut
+// Enterprise custom labels have a limit of 16 characters, so they will be cut
 // at the 17th characters.
 constexpr int kMaximumEnterpriseCustomLabelLengthCutOff = 17;
 
@@ -306,7 +306,7 @@ bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
     return false;
   }
 
-  // The check for supervised users is here as a precacution since the
+  // The check for supervised users is here as a precaution since the
   // kEnterpriseLogoUrlForProfile should be set by policy.
   return !profile->GetPrefs()
               ->GetString(prefs::kEnterpriseLogoUrlForProfile)
