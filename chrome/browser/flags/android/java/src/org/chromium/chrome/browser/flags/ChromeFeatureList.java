@@ -597,7 +597,6 @@ public abstract class ChromeFeatureList {
     public static final String SHOW_TAB_LIST_ANIMATIONS = "ShowTabListAnimations";
     public static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS =
             "ShowWarningsForSuspiciousNotifications";
-    public static final String SKIP_ISOLATED_SPLIT_PRELOAD = "SkipIsolatedSplitPreload";
     public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
@@ -988,11 +987,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sShowHomeButtonPolicyAndroid =
             newCachedFlag(SHOW_HOME_BUTTON_POLICY_ANDROID, true);
-    public static final CachedFlag sSkipIsolatedSplitPreload =
-            newCachedFlag(
-                    SKIP_ISOLATED_SPLIT_PRELOAD,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
@@ -1173,7 +1167,6 @@ public abstract class ChromeFeatureList {
                     sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
                     sSettingsSingleActivity,
                     sShowHomeButtonPolicyAndroid,
-                    sSkipIsolatedSplitPreload,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,

@@ -23276,16 +23276,16 @@
             ]
         }
     ],
-    "SkipIsolatedSplitPreload": [
+    "SkiaGraphitePrecompilation": [
         {
             "platforms": [
-                "android"
+                "mac"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SkipIsolatedSplitPreload"
+                        "SkiaGraphitePrecompilation"
                     ]
                 }
             ]
