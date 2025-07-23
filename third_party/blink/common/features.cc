@@ -2378,12 +2378,6 @@ BASE_FEATURE(kServiceWorkerUpdateDelay,
              "ServiceWorkerUpdateDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, beacons (and friends) have ResourceLoadPriority::kLow,
-// not ResourceLoadPriority::kVeryLow.
-BASE_FEATURE(kSetLowPriorityForBeacon,
-             "SetLowPriorityForBeacon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, calling setInterval(..., 0) will not clamp to 1ms.
 // Tracking bug: https://crbug.com/402694.
 BASE_FEATURE(kSetIntervalWithoutClamp,

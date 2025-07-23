@@ -600,11 +600,7 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
                  mojom::blink::RequestContextType::PING ||
              resource_request.GetRequestContext() ==
                  mojom::blink::RequestContextType::CSP_REPORT) {
-    if (base::FeatureList::IsEnabled(features::kSetLowPriorityForBeacon)) {
-      priority = ResourceLoadPriority::kLow;
-    } else {
-      priority = ResourceLoadPriority::kVeryLow;
-    }
+    priority = ResourceLoadPriority::kVeryLow;
   }
 
   priority = AdjustPriorityWithPriorityHintAndRenderBlocking(
