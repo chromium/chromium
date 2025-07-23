@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_collection.h"
@@ -37,8 +38,6 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace tabs {
-
-DEFINE_HANDLE_FACTORY(TabInterface);
 
 namespace {
 
@@ -81,6 +80,9 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
   // one place, which is here.
   TabHelpers::AttachTabHelpers(contents_);
   tab_features_ = std::make_unique<TabFeatures>();
+  const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents_);
+  CHECK(session_id.is_valid());
+  SetSessionId(session_id.id());
 
   // Once tabs are pulled into a standalone module, TabFeatures and its
   // initialization will need to be delegated back to the main module.
@@ -420,6 +422,11 @@ std::unique_ptr<content::WebContents> TabModel::DiscardContents(
       std::move(contents_owned_);
   contents_owned_ = std::move(contents);
   contents_ = contents_owned_.get();
+
+  const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents_);
+  CHECK(session_id.is_valid());
+  SetSessionId(session_id.id());
+
   TabLookupFromWebContents::CreateForWebContents(contents_, this);
   return old_contents;
 }

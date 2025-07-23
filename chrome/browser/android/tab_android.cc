@@ -114,8 +114,6 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(TabAndroidHelper);
 
 namespace tabs {
 
-DEFINE_HANDLE_FACTORY(TabInterface);
-
 // static
 TabInterface* TabInterface::GetFromContents(
     content::WebContents* web_contents) {
@@ -408,6 +406,10 @@ void TabAndroid::InitWebContents(
       resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
           web_contents_.get()));
 
+  const SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_.get());
+  CHECK(session_id.is_valid());
+  SetSessionId(session_id.id());
   SetWindowSessionID(session_window_id_);
 
   ContextMenuHelper::FromWebContents(web_contents())
@@ -517,6 +519,7 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env) {
   // Remove the link from the native WebContents to |this|, since the
   // lifetimes of the two objects are no longer intertwined.
   TabAndroidHelper::SetTabForWebContents(released_contents, nullptr);
+  ClearSessionId();
 
   synced_tab_delegate_->ResetWebContents();
 }

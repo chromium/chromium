@@ -7,10 +7,14 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -95,6 +99,59 @@ TEST_F(TabModelTest, IsSelected) {
   tab_strip.DeselectTabAt(1);
   EXPECT_TRUE(tab0->IsSelected());
   EXPECT_FALSE(tab1->IsSelected());
+}
+
+TEST_F(TabModelTest, HandleAndSessionIdAreMapped) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  tabs::TabModel* tab_model =
+      static_cast<tabs::TabModel*>(tab_strip.GetTabAtIndex(0));
+
+  // The handle should be valid.
+  EXPECT_NE(tab_model->GetHandle().raw_value(), tabs::TabHandle::NullValue);
+
+  // The factory should be able to map the handle back to the session ID.
+  auto* factory = &tabs::SessionMappedTabHandleFactory::GetInstance();
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(tab_model->GetContents());
+  EXPECT_EQ(session_tab_helper->session_id().id(),
+            factory->GetSessionIdForHandle(tab_model->GetHandle().raw_value()));
+}
+
+TEST_F(TabModelTest, DiscardContentsUpdatesSessionIdMapping) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  tabs::TabModel* tab_model =
+      static_cast<tabs::TabModel*>(tab_strip.GetTabAtIndex(0));
+  auto* factory = &tabs::SessionMappedTabHandleFactory::GetInstance();
+
+  const int32_t original_session_id =
+      sessions::SessionTabHelper::FromWebContents(tab_model->GetContents())
+          ->session_id()
+          .id();
+  EXPECT_EQ(original_session_id,
+            factory->GetSessionIdForHandle(tab_model->GetHandle().raw_value()));
+
+  // Discard the contents and replace it with a new WebContents.
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  CreateSessionServiceTabHelper(new_contents.get());
+
+  const int32_t new_session_id =
+      sessions::SessionTabHelper::FromWebContents(new_contents.get())
+          ->session_id()
+          .id();
+  ASSERT_NE(original_session_id, new_session_id);
+  tab_model->DiscardContents(std::move(new_contents));
+
+  EXPECT_EQ(new_session_id,
+            factory->GetSessionIdForHandle(tab_model->GetHandle().raw_value()));
+  EXPECT_EQ(tab_model->GetHandle().raw_value(),
+            factory->GetHandleForSessionId(new_session_id));
+  EXPECT_EQ(TabHandle::Null().raw_value(),
+            factory->GetHandleForSessionId(original_session_id));
 }
 
 }  // namespace tabs
