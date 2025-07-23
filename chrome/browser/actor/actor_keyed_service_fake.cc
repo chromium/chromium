@@ -50,7 +50,7 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
   auto execution_engine = ExecutionEngine::CreateForTesting(
       GetProfile(), std::move(ui_event_dispatcher));
   auto actor_task =
-      ActorTask::CreateForTesting(GetProfile(), std::move(execution_engine),
+      std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine),
                                   std::move(task_ui_event_dispatcher));
   return AddActiveTask(std::move(actor_task));
 }

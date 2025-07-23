@@ -36,15 +36,11 @@ class ActorTask {
 
   ActorTask() = delete;
   ActorTask(Profile* profile,
-            std::unique_ptr<ExecutionEngine> execution_engine);
+            std::unique_ptr<ExecutionEngine> execution_engine,
+            std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
   ~ActorTask();
-
-  static std::unique_ptr<ActorTask> CreateForTesting(
-      Profile* profile,
-      std::unique_ptr<ExecutionEngine> execution_engine,
-      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
 
   // Can only be called by ActorKeyedService
   void SetId(base::PassKey<ActorKeyedService>, TaskId id);
@@ -107,10 +103,6 @@ class ActorTask {
   }
 
  private:
-  // Used by tests only.
-  ActorTask(Profile* profile,
-            std::unique_ptr<ExecutionEngine> execution_engine,
-            std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
   void OnFinishedAct(ActCallback callback,
                      mojom::ActionResultPtr result,
                      std::optional<size_t> index_of_failed_action);

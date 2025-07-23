@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -52,8 +53,9 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
   std::unique_ptr<ExecutionEngine> execution_engine =
       std::make_unique<ExecutionEngine>(profile());
-  actor_service->AddActiveTask(
-      std::make_unique<ActorTask>(profile(), std::move(execution_engine)));
+  actor_service->AddActiveTask(std::make_unique<ActorTask>(
+      profile(), std::move(execution_engine),
+      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager())));
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
   EXPECT_EQ(actor_service->GetActiveTasks().begin()->second->GetState(),
             ActorTask::State::kCreated);
@@ -64,8 +66,9 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
   std::unique_ptr<ExecutionEngine> execution_engine =
       std::make_unique<ExecutionEngine>(profile());
-  TaskId id = actor_service->AddActiveTask(
-      std::make_unique<ActorTask>(profile(), std::move(execution_engine)));
+  TaskId id = actor_service->AddActiveTask(std::make_unique<ActorTask>(
+      profile(), std::move(execution_engine),
+      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager())));
 
   // Add a tab to the task
   ActorTask* task = actor_service->GetTask(id);

@@ -220,6 +220,7 @@ source_set("browser_tests") {
     ":actor",
     ":impl",
     ":test_support",
+    "ui:event_dispatcher",
     "//base/test:test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/safe_browsing",

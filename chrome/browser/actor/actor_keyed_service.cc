@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -108,8 +109,9 @@ void ActorKeyedService::ExecuteAction(
 
 TaskId ActorKeyedService::CreateTask() {
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
-  auto actor_task =
-      std::make_unique<ActorTask>(profile_.get(), std::move(execution_engine));
+  auto actor_task = std::make_unique<ActorTask>(
+      profile_.get(), std::move(execution_engine),
+      ui::NewUiEventDispatcher(GetActorUiStateManager()));
   return AddActiveTask(std::move(actor_task));
 }
 

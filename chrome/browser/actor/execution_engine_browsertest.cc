@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,11 +75,12 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     auto execution_engine =
         std::make_unique<ExecutionEngine>(browser()->profile());
     ExecutionEngine* raw_execution_engine = execution_engine.get();
-    auto task =
-        std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
+    auto event_dispatcher = ui::NewUiEventDispatcher(
+        actor_keyed_service()->GetActorUiStateManager());
+    auto task = std::make_unique<ActorTask>(
+        GetProfile(), std::move(execution_engine), std::move(event_dispatcher));
     raw_execution_engine->SetOwner(task.get());
-    task_id_ = ActorKeyedService::Get(browser()->profile())
-                   ->AddActiveTask(std::move(task));
+    task_id_ = actor_keyed_service()->AddActiveTask(std::move(task));
 
     // Optimization guide uses this histogram to signal initialization in tests.
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -97,9 +99,11 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  ActorTask& actor_task() {
-    return *ActorKeyedService::Get(browser()->profile())->GetTask(task_id_);
+  ActorKeyedService* actor_keyed_service() {
+    return ActorKeyedService::Get(browser()->profile());
   }
+
+  ActorTask& actor_task() { return *actor_keyed_service()->GetTask(task_id_); }
 
   void ClickTarget(
       std::string_view query_selector,

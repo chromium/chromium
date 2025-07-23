@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -46,8 +47,11 @@ void ActorToolsTest::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_https_test_server().Start());
   auto execution_engine =
       std::make_unique<ExecutionEngine>(browser()->profile());
+  auto event_dispatcher = ui::NewUiEventDispatcher(
+      ActorKeyedService::Get(browser()->profile())->GetActorUiStateManager());
   auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
-                                                std::move(execution_engine));
+                                                std::move(execution_engine),
+                                                std::move(event_dispatcher));
   task_id_ = ActorKeyedService::Get(browser()->profile())
                  ->AddActiveTask(std::move(actor_task));
 

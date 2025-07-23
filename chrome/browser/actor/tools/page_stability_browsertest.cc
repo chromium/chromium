@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -72,8 +73,10 @@ class ActorPageStabilityTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
     auto execution_engine =
         std::make_unique<ExecutionEngine>(browser()->profile());
-    auto actor_task =
-        std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
+    auto event_dispatcher = ui::NewUiEventDispatcher(
+        actor_keyed_service()->GetActorUiStateManager());
+    auto actor_task = std::make_unique<ActorTask>(
+        GetProfile(), std::move(execution_engine), std::move(event_dispatcher));
     task_id_ = ActorKeyedService::Get(browser()->profile())
                    ->AddActiveTask(std::move(actor_task));
   }
@@ -82,7 +85,7 @@ class ActorPageStabilityTest : public InProcessBrowserTest {
     // The ActorTask owned ExecutionEngine has a pointer to the profile, which
     // must be released before the browser is torn down to avoid a dangling
     // pointer.
-    ActorKeyedService::Get(browser()->profile())->ResetForTesting();
+    actor_keyed_service()->ResetForTesting();
   }
 
   // Pause execution for 300ms - matching the busy work delay in
@@ -107,9 +110,13 @@ class ActorPageStabilityTest : public InProcessBrowserTest {
         .ExtractString();
   }
 
+  ActorKeyedService* actor_keyed_service() {
+    return ActorKeyedService::Get(browser()->profile());
+  }
+
   ActorTask& task() {
     CHECK(task_id_);
-    return *ActorKeyedService::Get(browser()->profile())->GetTask(task_id_);
+    return *actor_keyed_service()->GetTask(task_id_);
   }
 
   net::test_server::ControllableHttpResponse& fetch_response() {
