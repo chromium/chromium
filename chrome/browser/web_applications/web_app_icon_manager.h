@@ -60,6 +60,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   // Writes all data (icons) for an app.
   void WriteData(webapps::AppId app_id,
                  IconBitmaps icon_bitmaps,
+                 IconBitmaps trusted_icon_bitmaps,
                  ShortcutsMenuIconBitmaps shortcuts_menu_icons,
                  IconsMap other_icons_map,
                  WriteDataCallback callback);

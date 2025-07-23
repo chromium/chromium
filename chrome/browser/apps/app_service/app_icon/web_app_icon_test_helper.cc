@@ -52,7 +52,7 @@ void WebAppIconTestHelper::WriteIcons(const std::string& app_id,
   }
 
   base::test::TestFuture<bool> future;
-  icon_manager().WriteData(app_id, std::move(icon_bitmaps), {}, {},
+  icon_manager().WriteData(app_id, std::move(icon_bitmaps), {}, {}, {},
                            future.GetCallback());
   bool success = future.Get();
   EXPECT_TRUE(success);

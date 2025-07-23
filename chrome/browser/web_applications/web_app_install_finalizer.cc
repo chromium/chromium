@@ -565,10 +565,11 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps =
         web_app_info.shortcuts_menu_icon_bitmaps;
     IconsMap other_icon_bitmaps = web_app_info.other_icon_bitmaps;
+    IconBitmaps trusted_icon_bitmaps = web_app_info.trusted_icon_bitmaps;
 
     provider_->icon_manager().WriteData(
-        app_id, std::move(icon_bitmaps), std::move(shortcuts_menu_icon_bitmaps),
-        std::move(other_icon_bitmaps),
+        app_id, std::move(icon_bitmaps), std::move(trusted_icon_bitmaps),
+        std::move(shortcuts_menu_icon_bitmaps), std::move(other_icon_bitmaps),
         std::move(on_icon_write_complete_callback));
   }
 }

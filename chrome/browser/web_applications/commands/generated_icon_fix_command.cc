@@ -76,6 +76,9 @@ void GeneratedIconFixCommand::StartWithLock(
   // Set title and start_url for PopulateProductIcons() in case it tries to
   // generate icons again.
   install_info_->title = base::UTF8ToUTF16(app->untranslated_name());
+  // TODO(crbug.com/427566193) : Populate trusted_icons from the app correctly
+  // if the trusted icons are empty.
+  install_info_->trusted_icons = app->trusted_icons();
   for (const apps::IconInfo& icon_info : install_info_->manifest_icons) {
     icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
   }
@@ -102,7 +105,8 @@ void GeneratedIconFixCommand::OnIconsDownloaded(
 
   // Note: Empty params are noops, WriteData() never deletes icons.
   lock_->icon_manager().WriteData(
-      app_id_, install_info_->icon_bitmaps, /*shortcuts_menu_icons=*/{},
+      app_id_, install_info_->icon_bitmaps, install_info_->trusted_icon_bitmaps,
+      /*shortcuts_menu_icons=*/{},
       /*other_icons_map=*/{},
       base::BindOnce(&GeneratedIconFixCommand::OnIconsWritten,
                      weak_factory_.GetWeakPtr()));
