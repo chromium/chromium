@@ -488,8 +488,8 @@ crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
-crbug.com/425671158 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageImageBitmap [ Failure ]
-crbug.com/425671158 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageImageBitmap [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
 
 # Flaky Timeout on Mac m3
 crbug.com/425739516 [ mac apple-angle-metal-renderer:-apple-m3 	angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
