@@ -22485,12 +22485,14 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "script_checksum_to_bypass": "144B3D5485B621F5896FD51D6A6FE66A07B6DBC3ACF6404748A833C2D592F900",
-                        "use_allowlist": "true"
+                        "enable_only_when_service_worker_not_running": "true",
+                        "enable_subresource_preload": "false",
+                        "has_web_request_api_proxy": "true",
+                        "respect_navigation_preload": "true",
+                        "use_allowlist": "false"
                     },
                     "enable_features": [
-                        "ServiceWorkerAutoPreload",
-                        "ServiceWorkerBypassFetchHandlerHashStrings"
+                        "ServiceWorkerAutoPreload"
                     ]
                 }
             ]
