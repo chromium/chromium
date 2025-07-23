@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
 
-#include <memory>
+#include <string>
+#include <vector>
 
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 
@@ -17,6 +18,16 @@ namespace autofill {
 class AutofillKeyboardAccessoryController
     : public AutofillSuggestionController {
  public:
+  struct RemovalConfirmationText {
+    RemovalConfirmationText();
+    ~RemovalConfirmationText();
+
+    std::u16string title;
+    std::u16string body;
+    std::u16string body_link;
+    std::u16string confirm_button_text;
+  };
+
   // Returns all the labels of the suggestion at the given `row` index. The
   // labels are presented as a N*M matrix, and the position of the text in the
   // matrix decides where the text will be shown on the UI. (e.g. The text
@@ -27,7 +38,7 @@ class AutofillKeyboardAccessoryController
 
   // Checks if the item at `index` can be removed.
   //
-  // If removable, this populates the non-null output parameters with
+  // If removable, this populates the non-null output parameter with
   // user-facing text for a confirmation dialog (e.g., for a "Remove" or
   // "Delete" action).
   //
@@ -35,9 +46,7 @@ class AutofillKeyboardAccessoryController
   // `false` otherwise.
   virtual bool GetRemovalConfirmationText(
       int index,
-      std::u16string* title,
-      std::u16string* body,
-      std::u16string* confirm_button_text) = 0;
+      RemovalConfirmationText* removal_text) = 0;
 };
 
 }  // namespace autofill

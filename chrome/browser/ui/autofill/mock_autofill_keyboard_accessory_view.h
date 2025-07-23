@@ -27,6 +27,7 @@ class MockAutofillKeyboardAccessoryView : public AutofillKeyboardAccessoryView {
               (const std::u16string&,
                const std::u16string&,
                const std::u16string&,
+               const std::u16string&,
                base::OnceCallback<void(bool)>),
               (override));
 };

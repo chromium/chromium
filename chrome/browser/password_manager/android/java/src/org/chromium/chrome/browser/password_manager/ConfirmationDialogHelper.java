@@ -55,13 +55,16 @@ public class ConfirmationDialogHelper {
      * Shows an dialog to confirm the deletion.
      *
      * @param title A {@link String} used as title.
-     * @param message A {@link String} used message body.
+     * @param message A {@link CharSequence} used message body.
      * @param confirmButtonText A {@link String} for confirmation button label.
      * @param confirmedCallback A callback to run when the dialog is accepted.
      * @param declinedCallback A callback to run when the dialog is declined.
      */
     public void showConfirmation(
-            String title, String message, String confirmButtonText, Runnable confirmedCallback) {
+            String title,
+            CharSequence message,
+            String confirmButtonText,
+            Runnable confirmedCallback) {
         showConfirmation(
                 title,
                 message,
@@ -74,14 +77,14 @@ public class ConfirmationDialogHelper {
      * Shows an dialog to confirm the deletion.
      *
      * @param title A {@link String} used as title.
-     * @param message A {@link String} used message body.
+     * @param message A {@link CharSequence} used message body.
      * @param confirmButtonText A {@link String} for confirmation button label.
      * @param confirmedCallback A callback to run when the dialog is accepted.
      * @param declinedCallback A callback to run when the dialog is declined.
      */
     public void showConfirmation(
             String title,
-            String message,
+            CharSequence message,
             String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {

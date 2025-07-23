@@ -130,11 +130,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
         Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestion(
             env, label, sublabel, android_icon_id,
             base::to_underlying(suggestion.type),
-            // These nullptr arguments are passed because pure virtual methods
-            // cannot have default parameters.
-            controller_->GetRemovalConfirmationText(
-                i, /* title= */ nullptr, /* body= */ nullptr,
-                /* confirm_button_text= */ nullptr),
+            controller_->GetRemovalConfirmationText(i, nullptr),
             suggestion.iph_metadata.feature
                 ? suggestion.iph_metadata.feature->name
                 : "",
@@ -155,13 +151,14 @@ void AutofillKeyboardAccessoryViewImpl::AxAnnounce(const std::u16string& text) {
 void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(
     const std::u16string& confirmation_title,
     const std::u16string& confirmation_body,
+    const std::u16string& confirmation_body_link,
     const std::u16string& confirmation_button_text,
     base::OnceCallback<void(bool)> deletion_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   deletion_callback_ = std::move(deletion_callback);
   Java_AutofillKeyboardAccessoryViewBridge_confirmDeletion(
       env, java_object_, confirmation_title, confirmation_body,
-      confirmation_button_text);
+      confirmation_body_link, confirmation_button_text);
 }
 
 void AutofillKeyboardAccessoryViewImpl::SuggestionSelected(JNIEnv* env,

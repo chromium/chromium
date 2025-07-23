@@ -9,9 +9,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
+#include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,6 +31,9 @@ using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::Return;
+
+using RemovalConfirmationText =
+    AutofillKeyboardAccessoryController::RemovalConfirmationText;
 
 std::vector<Suggestion> CreateSuggestionsWithUndoOrClearEntry(
     size_t clear_form_offset) {
@@ -53,8 +58,7 @@ class AutofillKeyboardAccessoryControllerImplTest
     : public AutofillSuggestionControllerTestBase<
           TestAutofillKeyboardAccessoryControllerAutofillClient<>> {
  protected:
-  AutofillProfile ShowAutofillProfileSuggestion() {
-    AutofillProfile complete_profile = test::GetFullProfile();
+  void ShowAutofillProfileSuggestion(AutofillProfile complete_profile) {
     personal_data().address_data_manager().AddProfile(complete_profile);
     ShowSuggestions(
         manager(),
@@ -62,7 +66,6 @@ class AutofillKeyboardAccessoryControllerImplTest
             SuggestionType::kAddressEntry, u"Complete autofill profile",
             Suggestion::AutofillProfilePayload(
                 Suggestion::Guid(complete_profile.guid())))});
-    return complete_profile;
   }
 
   CreditCard ShowLocalCardSuggestion() {
@@ -149,62 +152,55 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, HideDestroysView) {
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_UnrelatedSuggestionType) {
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirmation_button_text;
   ShowSuggestions(
       manager(),
       {Suggestion(u"Entry", SuggestionType::kAddressFieldByFieldFilling)});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body, &confirmation_button_text));
+      0, nullptr));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_InvalidUniqueId) {
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirmation_button_text;
   ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
                                  SuggestionType::kAddressFieldByFieldFilling,
                                  u"Entry", Suggestion::Guid("1111"))});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body, &confirmation_button_text));
+      0, nullptr));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_Autocomplete) {
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirmation_button_text;
+  RemovalConfirmationText confirmation_text;
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
                                          SuggestionType::kAutocompleteEntry)});
 
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body, &confirmation_button_text));
-  EXPECT_EQ(title, u"Autocomplete entry");
-  EXPECT_EQ(body,
+      0, &confirmation_text));
+  EXPECT_EQ(confirmation_text.title, u"Autocomplete entry");
+  EXPECT_EQ(confirmation_text.body,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
-  EXPECT_EQ(confirmation_button_text,
+  EXPECT_TRUE(confirmation_text.body_link.empty());
+
+  EXPECT_EQ(confirmation_text.confirm_button_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_LocalCreditCard) {
   CreditCard local_card = ShowLocalCardSuggestion();
+  RemovalConfirmationText confirmation_text;
 
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirmation_button_text;
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body, &confirmation_button_text));
-  EXPECT_EQ(title, local_card.CardNameAndLastFourDigits());
-  EXPECT_EQ(body,
+      0, &confirmation_text));
+  EXPECT_EQ(confirmation_text.title, local_card.CardNameAndLastFourDigits());
+  EXPECT_EQ(confirmation_text.body,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-  EXPECT_EQ(confirmation_button_text,
+  EXPECT_TRUE(confirmation_text.body_link.empty());
+  EXPECT_EQ(confirmation_text.confirm_button_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
 }
 
@@ -213,33 +209,87 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   CreditCard server_card = test::GetMaskedServerCard();
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
 
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirmation_button_text;
   ShowSuggestions(manager(),
                   {test::CreateAutofillSuggestion(
                       SuggestionType::kCreditCardEntry, u"Server credit card",
                       Suggestion::Guid(server_card.guid()))});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body, &confirmation_button_text));
+      0, nullptr));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_CompleteAutofillProfile) {
-  AutofillProfile complete_profile = ShowAutofillProfileSuggestion();
+  AutofillProfile complete_profile = test::GetFullProfile();
+  ShowAutofillProfileSuggestion(complete_profile);
+  RemovalConfirmationText confirmation_text;
 
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirmation_button_text;
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body, &confirmation_button_text));
-  EXPECT_EQ(title, complete_profile.GetRawInfo(ADDRESS_HOME_CITY));
-  EXPECT_EQ(body,
+      0, &confirmation_text));
+  EXPECT_EQ(confirmation_text.title,
+            complete_profile.GetRawInfo(ADDRESS_HOME_CITY));
+  EXPECT_EQ(confirmation_text.body,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-  EXPECT_EQ(confirmation_button_text,
+  EXPECT_TRUE(confirmation_text.body_link.empty());
+  EXPECT_EQ(confirmation_text.confirm_button_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       GetRemovalConfirmationText_CompleteAutofillHomeProfile) {
+  AutofillProfile complete_profile = test::GetFullProfile();
+  test_api(complete_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  ShowAutofillProfileSuggestion(complete_profile);
+  RemovalConfirmationText confirmation_text;
+
+  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &confirmation_text));
+  EXPECT_EQ(
+      confirmation_text.title,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_TITLE));
+
+  std::u16string email =
+      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
+                            web_contents()->GetBrowserContext())
+                            ->email);
+  EXPECT_EQ(confirmation_text.body,
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+                email));
+  EXPECT_FALSE(confirmation_text.body_link.empty());
+  EXPECT_EQ(confirmation_text.confirm_button_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON));
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       GetRemovalConfirmationText_CompleteAutofillWorkProfile) {
+  AutofillProfile complete_profile = test::GetFullProfile();
+  test_api(complete_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  ShowAutofillProfileSuggestion(complete_profile);
+  RemovalConfirmationText confirmation_text;
+
+  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
+      0, &confirmation_text));
+  EXPECT_EQ(
+      confirmation_text.title,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_TITLE));
+
+  std::u16string email =
+      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
+                            web_contents()->GetBrowserContext())
+                            ->email);
+  EXPECT_EQ(confirmation_text.body,
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+                email));
+  EXPECT_FALSE(confirmation_text.body_link.empty());
+  EXPECT_EQ(confirmation_text.confirm_button_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -247,10 +297,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   AutofillProfile profile = test::GetFullProfile();
   profile.ClearFields({ADDRESS_HOME_CITY});
   personal_data().address_data_manager().AddProfile(profile);
+  RemovalConfirmationText confirmation_text;
 
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirmation_button_text;
   ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
                                  SuggestionType::kAddressEntry,
                                  u"Autofill profile without city",
@@ -258,12 +306,13 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                                      Suggestion::Guid(profile.guid())))});
 
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &title, &body, &confirmation_button_text));
-  EXPECT_EQ(title, u"Autofill profile without city");
-  EXPECT_EQ(body,
+      0, &confirmation_text));
+  EXPECT_EQ(confirmation_text.title, u"Autofill profile without city");
+  EXPECT_EQ(confirmation_text.body,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-  EXPECT_EQ(confirmation_button_text,
+  EXPECT_TRUE(confirmation_text.body_link.empty());
+  EXPECT_EQ(confirmation_text.confirm_button_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
 }
 
@@ -277,7 +326,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
   ASSERT_TRUE(client().popup_view());
 
   EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
-      .WillOnce(base::test::RunOnceCallback<3>(/*confirmed=*/true));
+      .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/true));
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
       .WillOnce(Return(true));
   EXPECT_CALL(*client().popup_view(),

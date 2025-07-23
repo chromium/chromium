@@ -216,7 +216,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @Override
     public void confirmDeletionOperation(
             String title,
-            String message,
+            CharSequence message,
             String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {

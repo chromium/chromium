@@ -165,6 +165,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "autofill_keyboard_accessory_controller.cc",
       "autofill_keyboard_accessory_controller_impl.cc",
       "autofill_snackbar_controller_impl.cc",
     ]

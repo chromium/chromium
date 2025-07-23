@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,9 +45,18 @@ namespace autofill {
 namespace {
 
 using FillingSource = ManualFillingController::FillingSource;
+using RemovalConfirmationText =
+    AutofillKeyboardAccessoryController::RemovalConfirmationText;
 
 constexpr std::u16string_view kLabelSeparator = u" ";
 constexpr size_t kMaxBulletCount = 8;
+
+constexpr std::u16string_view kHomeAddressManagementUrl =
+    u"https://myaccount.google.com/address/"
+    u"home?utm_source=chrome&utm_campaign=manage_addresses";
+constexpr std::u16string_view kWorkAddressManagementUrl =
+    u"https://myaccount.google.com/address/"
+    u"work?utm_source=chrome&utm_campaign=manage_addresses";
 
 // Creates a text label used by the keyboard accessory. For password
 // suggestions, constructs the label from the password stored in
@@ -78,6 +88,119 @@ Suggestion::Text CreateLabel(const Suggestion& suggestion) {
   }
 
   return Suggestion::Text(suggestion.labels[0][0].value);
+}
+
+std::u16string GetAccountEmail(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return {};
+  }
+  const std::optional<AccountInfo> account =
+      GetPrimaryAccountInfoFromBrowserContext(
+          web_contents->GetBrowserContext());
+  return account ? base::UTF8ToUTF16(account->email) : std::u16string();
+}
+
+// Gets the text for a dialog to confirm removing an autocomplete suggestion.
+// Returns `true` if the atucomplete entry can be deleted, `false` otherwise.
+[[nodiscard]] bool GetAutocompleteRemovalText(
+    const std::u16string& value,
+    RemovalConfirmationText* removal_text) {
+  if (removal_text) {
+    removal_text->title = value;
+    removal_text->body = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY);
+    removal_text->confirm_button_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON);
+  }
+  return true;
+}
+
+// Gets the text for a dialog to confirm removing a credit card suggestion.
+// Returns `true` if the card can be deleted, `false` otherwise.
+[[nodiscard]] bool GetCreditCardRemovalText(
+    const Suggestion::Payload& payload,
+    content::WebContents* web_contents,
+    RemovalConfirmationText* removal_text) {
+  if (!std::holds_alternative<Suggestion::Guid>(payload)) {
+    return false;
+  }
+  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+  const CreditCard* credit_card =
+      pdm->payments_data_manager().GetCreditCardByGUID(
+          std::get<Suggestion::Guid>(payload).value());
+  if (!credit_card || !CreditCard::IsLocalCard(credit_card)) {
+    return false;
+  }
+
+  if (removal_text) {
+    removal_text->title = credit_card->CardNameAndLastFourDigits();
+    removal_text->body = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY);
+    removal_text->confirm_button_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON);
+  }
+  return true;
+}
+
+// Gets the text for a dialog to confirm removing an address suggestion.
+// The text varies based on the profile type (e.g., local vs. Home/Work).
+// Returns `true` if the address profile can be deleted, `false` otherwise.
+[[nodiscard]] bool GetAddressRemovalText(
+    const Suggestion::Payload& payload,
+    const std::u16string& value,
+    content::WebContents* web_contents,
+    RemovalConfirmationText* removal_text) {
+  if (!std::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
+    return false;
+  }
+  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+  const AutofillProfile* profile = pdm->address_data_manager().GetProfileByGUID(
+      std::get<Suggestion::AutofillProfilePayload>(payload).guid.value());
+  if (!profile) {
+    return false;
+  }
+
+  if (removal_text) {
+    switch (profile->record_type()) {
+      case AutofillProfile::RecordType::kLocalOrSyncable:
+      case AutofillProfile::RecordType::kAccount:
+        if (std::u16string street_address =
+                profile->GetRawInfo(ADDRESS_HOME_CITY);
+            !street_address.empty()) {
+          removal_text->title = std::move(street_address);
+        } else {
+          removal_text->title = value;
+        }
+        removal_text->body = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY);
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON);
+        break;
+      case AutofillProfile::RecordType::kAccountHome:
+        removal_text->title = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_TITLE);
+        removal_text->body = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+            GetAccountEmail(web_contents));
+        removal_text->body_link = kHomeAddressManagementUrl;
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
+        break;
+      case AutofillProfile::RecordType::kAccountWork:
+        removal_text->title = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_TITLE);
+        removal_text->body = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+            GetAccountEmail(web_contents));
+        removal_text->body_link = kWorkAddressManagementUrl;
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
+        break;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -301,15 +424,14 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {
   CHECK_EQ(removal_method,
            AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
-  std::u16string title;
-  std::u16string body;
-  std::u16string confirm_button_text;
-  if (!GetRemovalConfirmationText(index, &title, &body, &confirm_button_text)) {
+  RemovalConfirmationText removal_text;
+  if (!GetRemovalConfirmationText(index, &removal_text)) {
     return false;
   }
 
   view_->ConfirmDeletion(
-      title, body, confirm_button_text,
+      removal_text.title, removal_text.body, removal_text.body_link,
+      removal_text.confirm_button_text,
       base::BindOnce(
           &AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed,
           GetWeakPtr(), index));
@@ -516,87 +638,26 @@ AutofillKeyboardAccessoryControllerImpl::GetSuggestionLabelsAt(int row) const {
 
 bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     int index,
-    std::u16string* title,
-    std::u16string* body,
-    std::u16string* confirm_button_text) {
+    RemovalConfirmationText* removal_text) {
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const SuggestionType type = suggestions_[index].type;
   const Suggestion::Payload& payload = suggestions_[index].payload;
 
   if (type == SuggestionType::kAutocompleteEntry) {
-    if (title) {
-      title->assign(value);
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
-    }
-    if (confirm_button_text) {
-      confirm_button_text->assign(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
-    }
-    return true;
+    return GetAutocompleteRemovalText(value, removal_text);
   }
 
-  if (type != SuggestionType::kAddressEntry &&
-      type != SuggestionType::kCreditCardEntry) {
-    return false;
-  }
-  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents_->GetBrowserContext());
-
-  if (std::holds_alternative<Suggestion::Guid>(payload)) {
-    if (const CreditCard* credit_card =
-            pdm->payments_data_manager().GetCreditCardByGUID(
-                std::get<Suggestion::Guid>(payload).value())) {
-      if (!CreditCard::IsLocalCard(credit_card)) {
-        return false;
-      }
-      if (title) {
-        title->assign(credit_card->CardNameAndLastFourDigits());
-      }
-      if (body) {
-        body->assign(l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-      }
-      if (confirm_button_text) {
-        confirm_button_text->assign(
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
-      }
-      return true;
-    }
-    return false;
+  if (type == SuggestionType::kCreditCardEntry) {
+    return GetCreditCardRemovalText(payload, web_contents_.get(), removal_text);
   }
 
-  if (std::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
-    if (const AutofillProfile* profile =
-            pdm->address_data_manager().GetProfileByGUID(
-                std::get<Suggestion::AutofillProfilePayload>(payload)
-                    .guid.value())) {
-      if (title) {
-        std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
-        if (!street_address.empty()) {
-          title->swap(street_address);
-        } else {
-          title->assign(value);
-        }
-      }
-      if (body) {
-        body->assign(l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-      }
-      if (confirm_button_text) {
-        confirm_button_text->assign(
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
-      }
-
-      return true;
-    }
-    return false;
+  if (type == SuggestionType::kAddressEntry) {
+    return GetAddressRemovalText(payload, value, web_contents_.get(),
+                                 removal_text);
   }
 
-  return false;  // The ID was valid. The entry may have been deleted in a race.
+  return false;
 }
 
 void AutofillKeyboardAccessoryControllerImpl::

@@ -37,7 +37,22 @@
     <message name="IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY" desc="Text in a dialog to confirm that the user wants to delete an address from Autofill.">
       Remove address from Chromium?
     </message>
-  </if>
+    </if>
+    <message name="IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_TITLE" desc="Title in a dialog to confirm that the user wants to delete their Home address from Autofill.">
+    Remove home address from Chrome autofill?
+    </message>
+    <message name="IDS_AUTOFILL_REMOVE_HOME_PROFILE_SUGGESTION_CONFIRMATION_BODY" desc="Text in a dialog to confirm that the user wants to delete their Home address from Autofill.">
+    Your home address can help you get things done across Google services, like more relevant Search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK">&lt;link&gt;</ph>in your Google Account <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+    <message name="IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_TITLE" desc="Title in a dialog to confirm that the user wants to delete their Work address from Autofill.">
+    Remove work address from Chrome autofill?
+    </message>
+      <message name="IDS_AUTOFILL_REMOVE_WORK_PROFILE_SUGGESTION_CONFIRMATION_BODY" desc="Title in a dialog to confirm that the user wants to delete their Work address from Autofill.">
+    Your work address can help you get things done across Google services, like more relevant Search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK">&lt;link&gt;</ph>in your Google Account <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON" desc="Text in a remove button for Autofill suggestion.">
+    Remove
+  </message>
   <message name="IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON" desc="Text in a delete button for Autofill suggestion.">
     Delete
   </message>
