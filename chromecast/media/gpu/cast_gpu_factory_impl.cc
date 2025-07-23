@@ -222,13 +222,6 @@ CastGpuFactoryImpl::CreateVideoEncodeAccelerator() {
               .video_encode_accelerator_supported_profiles));
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer> CastGpuFactoryImpl::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  return nullptr;
-}
-
 bool CastGpuFactoryImpl::ShouldUseGpuMemoryBuffersForVideoFrames(
     bool for_media_stream) const {
   return false;
