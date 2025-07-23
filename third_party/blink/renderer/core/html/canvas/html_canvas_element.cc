@@ -1780,7 +1780,6 @@ void HTMLCanvasElement::SetNeedsPushProperties() {
 
 void HTMLCanvasElement::DiscardResources() {
   ResetLayer();
-  resource_provider_for_canvas2d_ = nullptr;
   UpdateMemoryUsage();
   dirty_rect_ = gfx::Rect();
 }

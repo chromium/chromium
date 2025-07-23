@@ -242,6 +242,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
               kHibernationEndedWithTeardown);
       GetHibernationHandler()->Clear();
     }
+    resource_provider_ = nullptr;
     element->DiscardResources();
     element->DiscardResourceDispatcher();
 
@@ -1167,6 +1168,7 @@ void CanvasRenderingContext2D::SizeChanged() {
             kHibernationEndedWithTeardown);
     GetHibernationHandler()->Clear();
   }
+  resource_provider_ = nullptr;
   did_fail_to_create_resource_provider_ = false;
 }
 
@@ -1177,6 +1179,7 @@ CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
 
 void CanvasRenderingContext2D::Dispose() {
   hibernation_handler_ = nullptr;
+  resource_provider_ = nullptr;
   CanvasRenderingContext::Dispose();
 }
 
@@ -1283,7 +1286,10 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
 
 CanvasResourceProvider*
 CanvasRenderingContext2D::GetResourceProviderForCanvas2D() const {
-  return canvas() ? canvas()->GetResourceProviderForCanvas2D() : nullptr;
+  if (!canvas()) {
+    return nullptr;
+  }
+  return resource_provider_.get();
 }
 
 CanvasResourceProvider*
@@ -1348,8 +1354,8 @@ std::unique_ptr<CanvasResourceProvider>
 CanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
     std::unique_ptr<CanvasResourceProvider> provider) {
   std::unique_ptr<CanvasResourceProvider> old_resource_provider =
-      canvas()->ReleaseResourceProviderForCanvas2D();
-  canvas()->SetResourceProviderForCanvas2D(std::move(provider));
+      std::move(resource_provider_);
+  resource_provider_ = std::move(provider);
   canvas()->UpdateMemoryUsage();
   if (old_resource_provider) {
     old_resource_provider->SetDelegate(nullptr);
@@ -1402,7 +1408,8 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   auto* resource_provider = GetResourceProviderForCanvas2D();
   if (!resource_provider && !did_fail_to_create_resource_provider_) {
     if (canvas()->IsValidImageSize()) {
-      canvas()->SetResourceProviderForCanvas2D(CreateCanvasResourceProvider());
+      resource_provider_ = CreateCanvasResourceProvider();
+      canvas()->UpdateMemoryUsage();
       resource_provider = GetResourceProviderForCanvas2D();
     }
     if (!resource_provider) {

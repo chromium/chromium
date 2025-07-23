@@ -239,10 +239,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void UnregisterContentsLayer(cc::Layer*) override;
 
   bool IsPageVisible() const override;
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
-    CHECK(IsRenderingContext2D());
-    return resource_provider_for_canvas2d_.get();
-  }
 
   // CanvasResourceProvider::Delegate implementation
   void NotifyGpuContextLost() override;
@@ -361,18 +357,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
   const VectorOf<ElementHitTestRegion>& GetHitTestRegions() const;
 
-  // `resource_provider_` must be null.
-  void SetResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsRenderingContext2D());
-    CHECK(!resource_provider_for_canvas2d_);
-    resource_provider_for_canvas2d_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
-  std::unique_ptr<CanvasResourceProvider> ReleaseResourceProviderForCanvas2D() {
-    return std::move(resource_provider_for_canvas2d_);
-  }
-
   // Updates the preferred 2D raster mode based on the state of the context and
   // GPU acceleration.
   void UpdatePreferred2DRasterMode();
@@ -455,8 +439,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void ChildrenChanged(const ChildrenChange&) override;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
-
-  std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
