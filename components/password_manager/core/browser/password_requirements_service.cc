@@ -124,6 +124,12 @@ void PasswordRequirementsService::AddSpec(
 void PasswordRequirementsService::FetchPasswordRequirementsSpec(
     const GURL& main_frame_domain,
     FetchPasswordRequirementsSpecCallback callback) {
+  if (!main_frame_domain.is_valid()) {
+    PasswordRequirementsSpec default_spec;
+    std::move(callback).Run(default_spec);
+    return;
+  }
+
   auto iter_by_domain = specs_for_domains_.Get(main_frame_domain);
   if (iter_by_domain != specs_for_domains_.end()) {
     std::move(callback).Run(iter_by_domain->second);
