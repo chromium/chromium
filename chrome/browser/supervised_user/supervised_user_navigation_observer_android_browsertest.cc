@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -16,9 +15,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
@@ -49,22 +45,14 @@ class MockUrlCheckerClient : public URLCheckerClient {
 class SupervisedUserNavigationObserverAndroidBrowserTest
     : public AndroidBrowserTest {
  protected:
-  // Create a new tab (about:blank). The most recently added tab constitutes the
-  // current web contents of this test fixture.
-  void AddTab() {
-    TabModel* tab_model =
-        TabModelList::GetTabModelForWebContents(web_contents());
-    TabAndroid* new_tab = TabAndroid::FromWebContents(web_contents());
-    std::unique_ptr<content::WebContents> contents =
-        content::WebContents::Create(content::WebContents::CreateParams(
-            Profile::FromBrowserContext(web_contents()->GetBrowserContext())));
-
-    content::NavigationController::LoadURLParams params(GURL("about:blank"));
-    params.transition_type =
-        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
-    params.has_user_gesture = true;
-    contents->GetController().LoadURLWithParams(params);
-    tab_model->CreateTab(new_tab, contents.release(), /*select=*/true);
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AndroidBrowserTest::SetUpBrowserContextKeyedServices(context);
+    SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(
+                     &SupervisedUserNavigationObserverAndroidBrowserTest::
+                         BuildSupervisedUserService,
+                     base::Unretained(this)));
   }
 
   content::WebContents* web_contents() {
@@ -81,19 +69,6 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
  private:
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
-
-    // TODO(crbug.com/426773953): Set testing factory takes browser context
-    // before its substitution, meaning that services are already created and
-    // attached to the navigation in the default tab. Replacing the factory will
-    // yield new services but the navigation observer will still refer to the
-    // old service, so all current tabs are of no use in the context of this
-    // test.
-    SupervisedUserServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        web_contents()->GetBrowserContext(),
-        base::BindRepeating(
-            &SupervisedUserNavigationObserverAndroidBrowserTest::
-                BuildSupervisedUserService,
-            base::Unretained(this)));
 
     // Will resolve google.com to localhost, so the embedded test server can
     // serve a valid content for it.
@@ -221,11 +196,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // triggers the page reload.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        ReloadSearchResultAfterSearchContentFilterIsEnabled) {
-  // Creating new tab will bootstrap it with the navigation observer with a
-  // supervised user service from the replaced factory. It becomes the current
-  // tab and web contents.
-  AddTab();
-
   // Verify that the observer is attached.
   ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
             nullptr);
@@ -270,11 +240,6 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     ShowInterstitialPage) {
-  // Creating new tab will bootstrap it with the navigation observer with a
-  // supervised user service from the replaced factory. It becomes the current
-  // tab and web contents.
-  AddTab();
-
   // Verify that the observer is attached.
   ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
             nullptr);
@@ -306,11 +271,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     GoToHelpCenterPage) {
-  // Creating new tab will bootstrap it with the navigation observer with a
-  // supervised user service from the replaced factory. It becomes the current
-  // tab and web contents.
-  AddTab();
-
   // Verify that the observer is attached.
   ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
             nullptr);
@@ -355,11 +315,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     GoBack) {
-  // Creating new tab will bootstrap it with the navigation observer with a
-  // supervised user service from the replaced factory. It becomes the current
-  // tab and web contents.
-  AddTab();
-
   // Verify that the observer is attached.
   ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
             nullptr);

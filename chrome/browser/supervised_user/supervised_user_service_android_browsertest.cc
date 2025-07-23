@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -29,6 +30,7 @@
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -48,36 +50,6 @@ class MockUrlCheckerClient : public URLCheckerClient {
   MOCK_METHOD(void, CheckURL, (const GURL& url, ClientCheckCallback callback));
 };
 
-struct BootstrapServiceTestCase {
-  std::string test_name;
-  // If true, the browser will start with values of preferences set to values
-  // indicating the user turned off the browser when both device filters were
-  // on.
-  bool hot_start;
-  // Determines the value of browser device filter on browser startup.
-  bool initial_browser_content_filters_value;
-  // Determines the value of search device filter on browser startup.
-  bool initial_search_content_filters_value;
-
-  // Returns the initial value for the given content filters setting.
-  bool ResolveInitialValueForFilter(std::string_view setting_name) const {
-    if (setting_name == kBrowserContentFiltersSettingName) {
-      return initial_browser_content_filters_value;
-    }
-    if (setting_name == kSearchContentFiltersSettingName) {
-      return initial_search_content_filters_value;
-    }
-    NOTREACHED() << "Unsupported setting name: " << setting_name;
-  }
-
-  // Returns true if incognito should be blocked based on the initial values of
-  // the content filters settings.
-  bool ShouldBlockIncognito() const {
-    return initial_browser_content_filters_value ||
-           initial_search_content_filters_value;
-  }
-};
-
 // Covers extra behaviors available only in Clank (Android) related to
 // bootstrapping the supervised user service with Content Filters Observer (how
 // the browser behaves after init, with no further manipulation of the content
@@ -86,43 +58,39 @@ struct BootstrapServiceTestCase {
 // supervised. To see tests that assert dynamic behaviors (when the filters are
 // altered after the browser starts and urls are loaded), see
 // supervised_user_navigation_observer_android_browsertest.cc
-class SupervisedUserServiceBootstrapAndroidBrowserTest
-    : public AndroidBrowserTest,
-      public testing::WithParamInterface<BootstrapServiceTestCase> {
+class SupervisedUserServiceBootstrapAndroidBrowserTestBase
+    : public AndroidBrowserTest {
  protected:
+  // Creates a fake content filters observer bridge for testing, and binds it to
+  // this test fixture.
+  virtual std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled) = 0;
+
+  // Called just before supervised user service is created. Much like
+  // SetUpLocalStatePrefService, but called after prefs are registered.
+  virtual void SetUpPrefs(PrefService* local_state) = 0;
+
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
   MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AndroidBrowserTest::SetUpBrowserContextKeyedServices(context);
+    SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(
+                     &SupervisedUserServiceBootstrapAndroidBrowserTestBase::
+                         BuildSupervisedUserService,
+                     base::Unretained(this)));
+  }
+
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
-
-    if (GetParam().hot_start) {
-      Profile* profile =
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-
-      // Before re-creating the service, set all on device prefs to enabled,
-      // to see how the browser behaves after init even if some settings had
-      // values inconsistent with the current device filters state.
-      profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, true);
-      profile->GetPrefs()->SetInteger(
-          prefs::kDefaultSupervisedUserFilteringBehavior,
-          static_cast<int>(FilteringBehavior::kAllow));
-      EnableSearchContentFilters(*profile->GetPrefs());
-      DisableIncognitoMode(*profile->GetPrefs());
-    }
-
-    // Note: this substitutions is fine for *new* navigations, but are not
-    // enough for the *existing* navigation cases (which are typically handled
-    // by a navigation observer). However, this test is not asserting on
-    // existing navigations and creates new ones at all times.
-    SupervisedUserServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        web_contents()->GetBrowserContext(),
-        base::BindRepeating(&SupervisedUserServiceBootstrapAndroidBrowserTest::
-                                BuildSupervisedUserService,
-                            base::Unretained(this)));
 
     // Will resolve google.com to localhost, so the embedded test server can
     // serve some valid content for it.
@@ -153,6 +121,8 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
       content::BrowserContext* browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
 
+    SetUpPrefs(profile->GetPrefs());
+
     std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
 
@@ -173,24 +143,75 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
             std::move(url_checker_client)),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
         base::BindRepeating(
-            &SupervisedUserServiceBootstrapAndroidBrowserTest::CreateBridge,
+            &SupervisedUserServiceBootstrapAndroidBrowserTestBase::CreateBridge,
             base::Unretained(this)));
   }
 
-  // Creates a fake content filters observer bridge for testing, and binds it to
-  // this test fixture.
+  base::HistogramTester histogram_tester_;
+  raw_ptr<MockUrlCheckerClient> url_checker_client_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kPropagateDeviceContentFiltersToSupervisedUser};
+};
+
+struct BootstrapServiceTestCase {
+  std::string test_name;
+  // If true, the browser will start with values of preferences set to values
+  // indicating the user turned off the browser when both device filters were
+  // on.
+  bool set_up_hot_local_state;
+  // Determines the value of browser device filter on browser startup.
+  bool initial_browser_content_filters_value;
+  // Determines the value of search device filter on browser startup.
+  bool initial_search_content_filters_value;
+
+  // Returns the initial value for the given content filters setting.
+  bool ResolveInitialValueForFilter(std::string_view setting_name) const {
+    if (setting_name == kBrowserContentFiltersSettingName) {
+      return initial_browser_content_filters_value;
+    }
+    if (setting_name == kSearchContentFiltersSettingName) {
+      return initial_search_content_filters_value;
+    }
+    NOTREACHED() << "Unsupported setting name: " << setting_name;
+  }
+
+  // Returns true if incognito should be blocked based on the initial values of
+  // the content filters settings.
+  bool ShouldBlockIncognito() const {
+    return initial_browser_content_filters_value ||
+           initial_search_content_filters_value;
+  }
+};
+
+// Tests the aspect where the Family Link supervision is not enabled, but the
+// content filters are set.
+class SupervisedUserServiceBootstrapAndroidBrowserTest
+    : public SupervisedUserServiceBootstrapAndroidBrowserTestBase,
+      public ::testing::WithParamInterface<BootstrapServiceTestCase> {
+ protected:
+  void SetUpPrefs(PrefService* local_state) override {
+    if (!GetParam().set_up_hot_local_state) {
+      return;
+    }
+
+    // Before re-creating the service, set all on device prefs to enabled, to
+    // see how the browser behaves after init even if some settings had values
+    // inconsistent with the current device filters state.
+    local_state->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+    local_state->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                            static_cast<int>(FilteringBehavior::kAllow));
+    EnableSearchContentFilters(*local_state);
+    DisableIncognitoMode(*local_state);
+  }
+
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled) {
+      base::RepeatingClosure on_disabled) override {
     return std::make_unique<FakeContentFiltersObserverBridge>(
         setting_name, on_enabled, on_disabled,
         GetParam().ResolveInitialValueForFilter(setting_name));
   }
-
-  raw_ptr<MockUrlCheckerClient> url_checker_client_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kPropagateDeviceContentFiltersToSupervisedUser};
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
@@ -279,37 +300,47 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   ASSERT_EQ(web_contents()->GetTitle(), u"Site blocked");
 }
 
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
+                       WebFilterTypeIsRecordedOnceWhenBrowserFilterIsEnabled) {
+  if (GetParam().initial_browser_content_filters_value) {
+    histogram_tester().ExpectBucketCount(
+        "FamilyUser.WebFilterType", WebFilterType::kTryToBlockMatureSites, 1);
+  } else {
+    histogram_tester().ExpectTotalCount("FamilyUser.WebFilterType", 0);
+  }
+}
+
 const BootstrapServiceTestCase kBootstrapServiceTestCases[] = {
     {.test_name = "AllFiltersDisabledColdStart",
-     .hot_start = false,
+     .set_up_hot_local_state = false,
      .initial_browser_content_filters_value = false,
      .initial_search_content_filters_value = false},
     {.test_name = "AllFiltersEnabledColdStart",
-     .hot_start = false,
+     .set_up_hot_local_state = false,
      .initial_browser_content_filters_value = true,
      .initial_search_content_filters_value = true},
     {.test_name = "SearchFilterEnabledColdStart",
-     .hot_start = false,
+     .set_up_hot_local_state = false,
      .initial_browser_content_filters_value = false,
      .initial_search_content_filters_value = true},
     {.test_name = "BrowserFilterEnabledColdStart",
-     .hot_start = false,
+     .set_up_hot_local_state = false,
      .initial_browser_content_filters_value = true,
      .initial_search_content_filters_value = false},
     {.test_name = "AllFiltersDisabledHotStart",
-     .hot_start = true,
+     .set_up_hot_local_state = true,
      .initial_browser_content_filters_value = false,
      .initial_search_content_filters_value = false},
     {.test_name = "AllFiltersEnabledHotStart",
-     .hot_start = true,
+     .set_up_hot_local_state = true,
      .initial_browser_content_filters_value = true,
      .initial_search_content_filters_value = true},
     {.test_name = "SearchFilterEnabledHotStart",
-     .hot_start = true,
+     .set_up_hot_local_state = true,
      .initial_browser_content_filters_value = false,
      .initial_search_content_filters_value = true},
     {.test_name = "BrowserFilterEnabledHotStart",
-     .hot_start = true,
+     .set_up_hot_local_state = true,
      .initial_browser_content_filters_value = true,
      .initial_search_content_filters_value = false},
 };
@@ -321,5 +352,119 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<BootstrapServiceTestCase>& info) {
       return info.param.test_name;
     });
+
+// Tests the aspect where the Family Link supervision is enabled, but the
+// content filters are not set.
+class SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest
+    : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
+ protected:
+  void SetUpPrefs(PrefService* local_state) override {
+    EnableParentalControls(*local_state);
+  }
+
+  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled) override {
+    return std::make_unique<FakeContentFiltersObserverBridge>(
+        setting_name, on_enabled, on_disabled, /*initial_value=*/false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
+    IngognitoIsBlocked) {
+  // TODO(http://crbug.com/433234589): this test could actually try to open
+  // incognito (to no avail).
+  EXPECT_EQ(static_cast<policy::IncognitoModeAvailability>(
+                GetProfile()->GetPrefs()->GetInteger(
+                    policy::policy_prefs::kIncognitoModeAvailability)),
+            policy::IncognitoModeAvailability::kDisabled);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
+    SafeSitesBlocksPages) {
+  GURL request_url =
+      embedded_test_server()->GetURL("/supervised_user/simple.html");
+
+  EXPECT_CALL(*url_checker_client(),
+              CheckURL(url_matcher::util::Normalize(request_url), _))
+      .WillOnce(
+          [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
+            std::move(callback).Run(url, ClientClassification::kRestricted);
+          });
+
+  // We assert here (rather than expect) because url checker mock declares the
+  // requested url as blocked. What we do care about is that the classification
+  // was requested.
+  ASSERT_FALSE(content::NavigateToURL(web_contents(), request_url));
+  ASSERT_EQ(web_contents()->GetTitle(), u"Site blocked");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
+    WebFilterTypeIsRecordedOnce) {
+  histogram_tester().ExpectBucketCount(
+      "FamilyUser.WebFilterType", WebFilterType::kTryToBlockMatureSites, 1);
+}
+
+// Tests the aspect where the Family Link supervision is disabled and the
+// content filters are not set.
+class SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest
+    : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
+ protected:
+  void SetUpPrefs(PrefService* local_state) override {}
+
+  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled) override {
+    return std::make_unique<FakeContentFiltersObserverBridge>(
+        setting_name, on_enabled, on_disabled, /*initial_value=*/false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest,
+    IngognitoIsBlocked) {
+  // TODO(http://crbug.com/433234589): this test could actually try to open
+  // incognito (to no avail).
+  EXPECT_EQ(static_cast<policy::IncognitoModeAvailability>(
+                GetProfile()->GetPrefs()->GetInteger(
+                    policy::policy_prefs::kIncognitoModeAvailability)),
+            policy::IncognitoModeAvailability::kEnabled);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest,
+    SafeSitesIsNotUsed) {
+  GURL request_url =
+      embedded_test_server()->GetURL("/supervised_user/simple.html");
+  EXPECT_CALL(*url_checker_client(),
+              CheckURL(url_matcher::util::Normalize(request_url), _))
+      .Times(0);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), request_url));
+  ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest,
+    WebFilterTypeIsNotRecorded) {
+  histogram_tester().ExpectTotalCount("FamilyUser.WebFilterType", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest,
+    SafeSearchIsNotEnforcedAtBrowserLevel) {
+  GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
+
+  EXPECT_CALL(*url_checker_client(),
+              CheckURL(url_matcher::util::Normalize(url), _))
+      .Times(0);
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+}
+
 }  // namespace
 }  // namespace supervised_user
