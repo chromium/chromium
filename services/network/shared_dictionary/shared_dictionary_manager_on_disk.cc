@@ -504,6 +504,9 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
                          std::move(file_operations_factory));
   MaybePostExpiredDictionaryDeletionTask();
   if (cache_max_size_ != 0u) {
+    base::UmaHistogramMemoryMB(
+        "Net.SharedDictionaryManagerOnDisk.PolicySpecifiedCacheMaxSize",
+        cache_max_size_ / (1000 * 1000));
     MaybePostCacheEvictionTask();
   }
 }
@@ -522,6 +525,8 @@ SharedDictionaryManagerOnDisk::CreateStorage(
 }
 
 void SharedDictionaryManagerOnDisk::SetCacheMaxSize(uint64_t cache_max_size) {
+  base::UmaHistogramMemoryMB("Net.SharedDictionaryManagerOnDisk.CacheMaxSize",
+                             cache_max_size_ / (1000 * 1000));
   cache_max_size_ = cache_max_size;
   MaybePostExpiredDictionaryDeletionTask();
   MaybePostCacheEvictionTask();
