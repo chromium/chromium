@@ -90,10 +90,10 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   /** Waits for the tutorial to load. */
   async waitForTutorial_() {
     return new Promise(resolve => {
-      const intervalId = setTimeout(async () => {
+      const intervalId = setInterval(async () => {
         const ready = await PanelBridge.getTutorialReadyForTest();
         if (ready) {
-          clearTimeout(intervalId);
+          clearInterval(intervalId);
           resolve();
         }
       }, 500);
