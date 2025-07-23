@@ -57,10 +57,6 @@ void ForwardVizInputTransferToken(
       surface_handle, viz_input_token_java);
 }
 
-void DestroyReceiverData(
-    std::unique_ptr<input::InputReceiverData> receiver_data) {
-  receiver_data.reset();
-}
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -274,12 +270,12 @@ void InputManager::OnDestroyedCompositorFrameSink(
   }
 
   if (receiver_data_ && receiver_data_->root_frame_sink_id() == frame_sink_id) {
-    receiver_data_->OnDestroyedCompositorFrameSink();
     if (base::android::android_info::sdk_int() >=
         base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DestroyReceiverData, std::move(receiver_data_)));
+      input::InputReceiverData* receiver = receiver_data_.get();
+      receiver->OnDestroyedCompositorFrameSink(std::move(receiver_data_));
+    } else {
+      receiver_data_->OnDestroyedCompositorFrameSink(nullptr);
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

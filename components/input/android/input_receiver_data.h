@@ -18,7 +18,8 @@
 namespace input {
 
 // Store all the obects that are required throughout input receiver lifecycle
-class COMPONENT_EXPORT(INPUT) InputReceiverData {
+class COMPONENT_EXPORT(INPUT) InputReceiverData
+    : public AndroidInputCallback::Observer {
  public:
   InputReceiverData(
       scoped_refptr<gfx::SurfaceControl::Surface> parent_input_sc,
@@ -29,9 +30,17 @@ class COMPONENT_EXPORT(INPUT) InputReceiverData {
       ScopedInputReceiver receiver,
       ScopedInputTransferToken viz_input_token);
 
-  ~InputReceiverData();
+  ~InputReceiverData() override;
 
-  void OnDestroyedCompositorFrameSink();
+  // AndroidInputCallback::Observer:
+  void OnMotionEvent(
+      const base::android::ScopedInputEvent& input_event) override;
+
+  // `receiver` is only set for Android 16+, where the receiver could be either
+  // destroyed right away or waits for touch sequence to have finished before
+  // destroying receiver.
+  void OnDestroyedCompositorFrameSink(
+      std::unique_ptr<InputReceiverData> receiver);
 
   const viz::FrameSinkId& root_frame_sink_id() {
     return android_input_callback_->root_frame_sink_id();
@@ -54,6 +63,7 @@ class COMPONENT_EXPORT(INPUT) InputReceiverData {
 
  private:
   void DetachInputSurface();
+  void TryDestroySelf(std::unique_ptr<InputReceiverData> receiver_data);
 
   scoped_refptr<gfx::SurfaceControl::Surface> parent_input_sc_;
   scoped_refptr<gfx::SurfaceControl::Surface> input_sc_;
@@ -63,6 +73,8 @@ class COMPONENT_EXPORT(INPUT) InputReceiverData {
   ScopedInputReceiver receiver_;
   ScopedInputTransferToken viz_input_token_;
   bool pending_destruction_ = false;
+  int last_motion_event_action_ = -1;
+  base::TimeTicks last_motion_event_ts_;
   base::WeakPtrFactory<InputReceiverData> weak_ptr_factory_{this};
 };
 

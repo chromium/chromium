@@ -15,6 +15,8 @@ AndroidInputCallback::AndroidInputCallback(
   CHECK(client_ != nullptr);
 }
 
+AndroidInputCallback::~AndroidInputCallback() = default;
+
 // static
 bool AndroidInputCallback::OnMotionEventThunk(void* context,
                                               AInputEvent* input_event) {
@@ -26,7 +28,18 @@ bool AndroidInputCallback::OnMotionEventThunk(void* context,
 
 bool AndroidInputCallback::OnMotionEvent(
     base::android::ScopedInputEvent input_event) {
+  for (auto& observer : observers_) {
+    observer.OnMotionEvent(input_event);
+  }
   return client_->OnMotionEvent(std::move(input_event), root_frame_sink_id_);
+}
+
+void AndroidInputCallback::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void AndroidInputCallback::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
 }
 
 }  // namespace input
