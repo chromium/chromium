@@ -10,7 +10,6 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
-#include "gin/handle.h"
 #include "gin/public/wrapper_info.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -107,12 +106,12 @@ void Mojo::BindInterface(gin::Arguments* arguments) {
   std::string interface_name;
   gin::ConvertFromV8(isolate, v8_interface_name, &interface_name);
 
-  gin::Handle<MojoHandle> gin_handle;
-  if (!gin::ConvertFromV8(isolate, args[1], &gin_handle)) {
+  MojoHandle* mojo_handle;
+  if (!gin::ConvertFromV8(isolate, args[1], &mojo_handle)) {
     LOG(ERROR) << "Failed to get handle from Mojo::BindInterface";
     return;
   }
-  auto handle = mojo::ScopedMessagePipeHandle::From(gin_handle->TakeHandle());
+  auto handle = mojo::ScopedMessagePipeHandle::From(mojo_handle->TakeHandle());
 
   mojo::GenericPendingReceiver receiver(interface_name, std::move(handle));
 
