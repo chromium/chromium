@@ -131,6 +131,17 @@ class TabDialogManager : public content::WebContentsObserver,
   // call this when the dialog's preferred size changes.
   void UpdateModalDialogBounds();
 
+  // Trigger the dialog manager to re-evaluate the dialog's visibility.
+  // Optionally pass in a `requested_visibility` which is the state the client
+  // thinks the dialog should be in, assuming the tab is visible and the window
+  // is not minimized. This will also make sure the `should_show_callback` is
+  // properly invoked and update the widget's visibility accordingly. Clients
+  // should call this when their internal state has changed which may affect the
+  // currently showing dialog's visibility. Function returns the new visibility
+  // state of the dialog.
+  bool UpdateDialogVisibility(
+      std::optional<bool> requested_visibility = std::nullopt);
+
   // Overridden from gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;

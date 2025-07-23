@@ -308,7 +308,7 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
       std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
                                                     widget_.get());
   widget_->Show();
-  widget_->SetVisible(GetDialogWidgetVisibility());
+  UpdateDialogVisibility();
 }
 
 std::unique_ptr<views::Widget> TabDialogManager::CreateAndShowDialog(
@@ -338,7 +338,7 @@ bool TabDialogManager::MaybeActivateDialog() {
     return false;
   }
 
-  if (GetDialogWidgetVisibility()) {
+  if (UpdateDialogVisibility()) {
     widget_->Activate();
     return true;
   }
@@ -417,6 +417,16 @@ void TabDialogManager::UpdateModalDialogBounds() {
   }
 }
 
+bool TabDialogManager::UpdateDialogVisibility(
+    std::optional<bool> requested_visibility) {
+  if (widget_) {
+    widget_->SetVisible(GetDialogWidgetVisibility() &&
+                        requested_visibility.value_or(true));
+    return widget_->IsVisible();
+  }
+  return false;
+}
+
 void TabDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!widget_) {
@@ -460,7 +470,7 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
     if (parent_widget != widget_->parent()) {
       widget_->Reparent(parent_widget);
     }
-    widget_->SetVisible(GetDialogWidgetVisibility());
+    UpdateDialogVisibility();
     UpdateModalDialogBounds();
   }
 }
