@@ -43,7 +43,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
@@ -239,12 +238,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierTestCrsConstraintsSwitchTest,
 
 class CertVerifierUserSettingsTest : public PlatformBrowserTest {
  public:
-  CertVerifierUserSettingsTest() {
-    feature_list_.InitWithFeatures({features::kEnableCertManagementUIV2,
-                                    features::kEnableCertManagementUIV2Write},
-                                   {});
-  }
-
   testing::AssertionResult AddCertificateToDatabaseAndWaitForVerifierUpdate(
       net::ServerCertificateDatabase::CertInformation cert_info) {
     return AddCertificateToProfileDatabaseAndWaitForVerifierUpdate(
@@ -274,9 +267,6 @@ class CertVerifierUserSettingsTest : public PlatformBrowserTest {
     }
     return testing::AssertionSuccess();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest, TestUserSettingsUsed) {

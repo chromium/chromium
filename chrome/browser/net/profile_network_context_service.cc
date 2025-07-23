@@ -466,22 +466,20 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
-    // Register observer to update certificates when changes are made to the
-    // server cert database. Unretained is safe as the
-    // `server_cert_database_observer_` is a CallbackListSubscription which
-    // will unregister the observer once the ProfileNetworkContextService is
-    // destroyed.
-    net::ServerCertificateDatabaseService* server_cert_db_service =
-        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-            profile_);
-    // The service can be null for AshInternals profiles.
-    if (server_cert_db_service) {
-      server_cert_database_observer_ =
-          server_cert_db_service->AddObserver(base::BindRepeating(
-              &ProfileNetworkContextService::UpdateAdditionalCertificates,
-              base::Unretained(this)));
-    }
+  // Register observer to update certificates when changes are made to the
+  // server cert database. Unretained is safe as the
+  // `server_cert_database_observer_` is a CallbackListSubscription which
+  // will unregister the observer once the ProfileNetworkContextService is
+  // destroyed.
+  net::ServerCertificateDatabaseService* server_cert_db_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          profile_);
+  // The service can be null for AshInternals profiles.
+  if (server_cert_db_service) {
+    server_cert_database_observer_ =
+        server_cert_db_service->AddObserver(base::BindRepeating(
+            &ProfileNetworkContextService::UpdateAdditionalCertificates,
+            base::Unretained(this)));
   }
 #endif
 
@@ -843,19 +841,17 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
   CHECK(!is_shutting_down_);
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
-    net::ServerCertificateDatabaseService* cert_db_service =
-        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-            profile_);
-    // The service can be null for AshInternals profiles. If it's null, fall
-    // through to updating the additional certs without it.
-    if (cert_db_service) {
-      cert_db_service->GetAllCertificates(
-          base::BindOnce(&ProfileNetworkContextService::
-                             UpdateAdditionalCertificatesWithUserAddedCerts,
-                         weak_factory_.GetWeakPtr()));
-      return;
-    }
+  net::ServerCertificateDatabaseService* cert_db_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          profile_);
+  // The service can be null for AshInternals profiles. If it's null, fall
+  // through to updating the additional certs without it.
+  if (cert_db_service) {
+    cert_db_service->GetAllCertificates(
+        base::BindOnce(&ProfileNetworkContextService::
+                           UpdateAdditionalCertificatesWithUserAddedCerts,
+                       weak_factory_.GetWeakPtr()));
+    return;
   }
 #endif
   profile_->ForEachLoadedStoragePartition(
@@ -1141,21 +1137,17 @@ void ProfileNetworkContextService::CreateClientCertIssuerSourcesWithDBCerts(
         std::move(certs)));
   }
 
-  // Intermediates from NSS are used unconditionally. There are 2 reasons why
-  // the NSS source is used:
-  // 1) If the ServerCertificateDatabase feature is not enabled
-  // (kEnableCertManagementUIV2Write is false), user-added intermediates
-  // still come from NSS, so checking NSS is required.
-  // 2) Device-wide ONC intermediate certificates may be needed as well. It's
-  // unclear if the use of device-wide policy in non-signin-profile client cert
-  // verification was intended or just an accidental side effect of NSS state
-  // being global, but enterprises might be depending on it (at least one
-  // browser_test depends on it:
+  // Intermediates from NSS are used unconditionally as device-wide ONC
+  // intermediate certificates may be needed. It's unclear if the use of
+  // device-wide policy in non-signin-profile client cert verification was
+  // intended or just an accidental side effect of NSS state being global, but
+  // enterprises might be depending on it (at least one browser_test depends on
+  // it:
   // SuccessViaCaAndIntermediate/SigninFrameWebviewClientCertsLoginTest.LockscreenTest/0).
-  // TODO(https://crbug.com/40554868): once kEnableCertManagementUIV2Write has
-  // fully launched, consider removing the NSS source and making this read from
-  // the device ONC policy directly (or decide if using the device ONC policy
-  // here is not intended and change the test to not do that).
+  // TODO(https://crbug.com/40554868): consider removing the NSS source and
+  // making this read from the device ONC policy directly, or decide if using
+  // the device ONC policy here is not intended and remove and change the test
+  // to not do that.
   sources.push_back(
       std::make_unique<net::ClientCertStoreNSS::IssuerSourceNSS>());
 
@@ -1164,19 +1156,16 @@ void ProfileNetworkContextService::CreateClientCertIssuerSourcesWithDBCerts(
 
 void ProfileNetworkContextService::CreateClientCertIssuerSources(
     net::ClientCertIssuerSourceGetterCallback callback) {
-  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
-    net::ServerCertificateDatabaseService* cert_db_service =
-        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-            profile_);
-    // The service can be null for AshInternals profiles. If it's null fall
-    // through to creating the ClientCertIssuerSource without it.
-    if (cert_db_service) {
-      cert_db_service->GetAllCertificates(
-          base::BindOnce(&ProfileNetworkContextService::
-                             CreateClientCertIssuerSourcesWithDBCerts,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
-      return;
-    }
+  net::ServerCertificateDatabaseService* cert_db_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          profile_);
+  // The service can be null for AshInternals profiles. If it's null fall
+  // through to creating the ClientCertIssuerSource without it.
+  if (cert_db_service) {
+    cert_db_service->GetAllCertificates(base::BindOnce(
+        &ProfileNetworkContextService::CreateClientCertIssuerSourcesWithDBCerts,
+        weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
   }
 
   CreateClientCertIssuerSourcesWithDBCerts(std::move(callback),
@@ -1500,8 +1489,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // add an isManaged() check here.
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write) &&
-      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+  if (net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_)) {
     cert_verifier_creation_params->wait_for_update = true;
     UpdateAdditionalCertificates();
