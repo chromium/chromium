@@ -1318,9 +1318,12 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->SetIsAccountSignedIn(true);
 
   // Simulates change password.
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   service_->OnGaiaPasswordChanged("foo@example.com", false);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
@@ -1355,14 +1358,17 @@ TEST_F(
 
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_REUSE);
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   NavigateAndCommit(GURL(kPasswordReuseURL));
   PrepareRequest(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                  PasswordType::ENTERPRISE_PASSWORD,
                  /*is_warning_showing=*/false);
   SimulateRequestFinished(LoginReputationClientResponse::SAFE,
                           RequestOutcome::PASSWORD_ALERT_MODE);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1381,13 +1387,16 @@ TEST_F(
 
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_REUSE);
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   service_->MaybeStartProtectedPasswordEntryRequest(
       web_contents(),
       /*main_frame_url=*/GURL("chrome-extension://some-fab-extension"),
       /*username=*/"enterprise_user", PasswordType::ENTERPRISE_PASSWORD,
       /*matching_reused_credentials=*/{}, /*password_field_exists=*/false);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1535,12 +1544,15 @@ TEST_F(ChromePasswordProtectionServiceTest,
   PrepareRequest(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                  PasswordType::SAVED_PASSWORD,
                  /*is_warning_showing=*/false);
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::ENTERPRISE_PASSWORD,
       /*is_phishing_url =*/true,
       /*warning_shown =*/true);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
