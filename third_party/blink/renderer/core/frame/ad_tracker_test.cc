@@ -875,6 +875,183 @@ TEST_F(AdTrackerSimTest, ImageLoadedWhileExecutingAdScriptAsyncEnabled) {
   EXPECT_TRUE(image_element->IsAdRelated());
 }
 
+TEST_F(AdTrackerSimTest, PromiseResolveDetected) {
+  const char kAdScriptUrl[] = "https://example.com/ad_script.js";
+  const char kImageUrl[] = "https://example.com/image.gif";
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+  SimSubresourceRequest ad_script(kAdScriptUrl, "text/javascript");
+
+  main_resource_->Complete("<body></body><script src=ad_script.js></script>");
+
+  ad_script.Complete(R"SCRIPT(
+    Promise.resolve().then( () => {
+      image = document.createElement("img");
+      image.src = "image.gif";
+      document.body.appendChild(image);
+    });
+    )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  // Put the gif bytes in a Vector to avoid difficulty with
+  // non null-terminated char*.
+  Vector<char> gif;
+  gif.AppendSpan(base::span(kSmallGifData));
+
+  image.Complete(gif);
+
+  EXPECT_TRUE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kAdScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kAdScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+}
+
+TEST_F(AdTrackerSimTest, PromiseRejectDetected) {
+  const char kAdScriptUrl[] = "https://example.com/ad_script.js";
+  const char kImageUrl[] = "https://example.com/image.gif";
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+  SimSubresourceRequest ad_script(kAdScriptUrl, "text/javascript");
+
+  main_resource_->Complete("<body></body><script src=ad_script.js></script>");
+
+  ad_script.Complete(R"SCRIPT(
+    Promise.reject().catch( () => {
+      image = document.createElement("img");
+      image.src = "image.gif";
+      document.body.appendChild(image);
+    });
+    )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  // Put the gif bytes in a Vector to avoid difficulty with
+  // non null-terminated char*.
+  Vector<char> gif;
+  gif.AppendSpan(base::span(kSmallGifData));
+
+  image.Complete(gif);
+
+  EXPECT_TRUE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kAdScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kAdScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+}
+
+TEST_F(AdTrackerSimTest, PromiseChain) {
+  const char kAdScriptUrl[] = "https://example.com/ad_script.js";
+  const char kImageUrl[] = "https://example.com/image.gif";
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+  SimSubresourceRequest ad_script(kAdScriptUrl, "text/javascript");
+
+  main_resource_->Complete("<body></body><script src=ad_script.js></script>");
+
+  ad_script.Complete(R"SCRIPT(
+    Promise.resolve().then( () => {
+      return Promise.resolve();
+    }).then( () => {
+      image = document.createElement("img");
+      image.src = "image.gif";
+      document.body.appendChild(image);
+    });
+    )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  // Put the gif bytes in a Vector to avoid difficulty with
+  // non null-terminated char*.
+  Vector<char> gif;
+  gif.AppendSpan(base::span(kSmallGifData));
+
+  image.Complete(gif);
+
+  EXPECT_TRUE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kAdScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kAdScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+}
+
+TEST_F(AdTrackerSimTest, BrokenPromiseScript) {
+  const char kAdScriptUrl[] = "https://example.com/ad_script.js";
+  const char kVanillaScriptUrl[] = "https://example.com/vanilla_script.js";
+
+  const char kImageUrl[] = "https://example.com/image.gif";
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+  SimSubresourceRequest ad_script(kAdScriptUrl, "text/javascript");
+  SimSubresourceRequest vanilla_script(kVanillaScriptUrl, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src='ad_script.js'></script>
+      <script src='vanilla_script.js'></script>
+    </body>
+  )HTML");
+
+  // Run some ad script that fails in the midst of execution. This should
+  // properly clean up in the AdTracker (e.g., the PromiseHook should send a
+  // kAfter) so that the AdTracker doesn't think everything thereafter is ad
+  // related.
+  ad_script.Complete(R"SCRIPT(
+    Promise.resolve().then( () => {
+      asjhdklasjdh();  // this causes an exception
+      return Promise.resolve();
+    });
+    )SCRIPT");
+
+  vanilla_script.Complete(R"SCRIPT(
+    image = document.createElement("img");
+    image.src = "image.gif";
+    document.body.appendChild(image);
+    )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  // Put the gif bytes in a Vector to avoid difficulty with
+  // non null-terminated char*.
+  Vector<char> gif;
+  gif.AppendSpan(base::span(kSmallGifData));
+
+  image.Complete(gif);
+
+  EXPECT_TRUE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kAdScriptUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kAdScriptUrl));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kVanillaScriptUrl));
+
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+}
+
+TEST_F(AdTrackerSimTest, VanillaPromiseNotDetected) {
+  const char kVanillaScriptUrl[] = "https://example.com/vanilla_script.js";
+  const char kImageUrl[] = "https://example.com/image.gif";
+  SimSubresourceRequest image(kImageUrl, "image/gif");
+  SimSubresourceRequest vanilla_script(kVanillaScriptUrl, "text/javascript");
+
+  main_resource_->Complete(
+      "<body></body><script src=vanilla_script.js></script>");
+
+  vanilla_script.Complete(R"SCRIPT(
+    Promise.resolve('Promise.resolve').then( () => {
+      image = document.createElement("img");
+      image.src = "image.gif";
+      document.body.appendChild(image);
+    });
+    )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(kImageUrl);
+
+  // Put the gif bytes in a Vector to avoid difficulty with
+  // non null-terminated char*.
+  Vector<char> gif;
+  gif.AppendSpan(base::span(kSmallGifData));
+
+  image.Complete(gif);
+
+  EXPECT_FALSE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kVanillaScriptUrl));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kVanillaScriptUrl));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kImageUrl));
+}
+
 // Image loaded by ad script is tagged as ad.
 TEST_F(AdTrackerSimTest, DataURLImageLoadedWhileExecutingAdScriptAsyncEnabled) {
   // Reset the AdTracker so that it gets the latest base::Feature value on
