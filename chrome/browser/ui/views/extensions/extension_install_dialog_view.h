@@ -23,7 +23,6 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
 
-class PictureInPictureInputProtector;
 class Profile;
 
 // Modal dialog that shows when the user attempts to install an extension. Also
@@ -61,19 +60,11 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   void AddedToWidget() override;
   bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   std::u16string GetAccessibleWindowTitle() const override;
-  bool ShouldIgnoreButtonPressedEventHandling(
-      View* button,
-      const ui::Event& event) const override;
-  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   ExtensionInstallPromptShowParams* GetShowParamsForTesting();
   void ClickLinkForTesting();
   bool IsJustificationFieldVisibleForTesting();
   void SetJustificationTextForTesting(const std::u16string& new_text);
-  bool ShouldIgnoreButtonPressedEventHandlingForTesting(
-      View* button,
-      const ui::Event& event) const;
-  bool ShouldAllowKeyEventsDuringInputProtectionForTesting() const;
 
  private:
   // Forward-declaration.
@@ -139,12 +130,6 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // The justification text field view where users enter their justification for
   // requesting an extension.
   raw_ptr<ExtensionJustificationView> justification_view_ = nullptr;
-
-  // The PictureInPictureInputProtector tracks dialog occlusions by
-  // Picture-in-Picture windows, to ensure input protection and ignore spurious
-  // interactions.
-  std::unique_ptr<PictureInPictureInputProtector>
-      picture_in_picture_input_protector_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_

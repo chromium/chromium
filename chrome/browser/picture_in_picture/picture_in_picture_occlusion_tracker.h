@@ -115,8 +115,6 @@ class PictureInPictureOcclusionTracker : public views::WidgetObserver {
   void SetWidgetOcclusionStateForTesting(views::Widget* observed_widget,
                                          bool occluded);
 
-  void FireBoundsChangedThrottleTimerForTesting();
-
  private:
   struct ObservedWidgetData {
     // True if the widget associated with this observation is a
