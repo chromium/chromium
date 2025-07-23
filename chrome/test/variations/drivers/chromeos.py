@@ -189,7 +189,11 @@ class CrOSDriverFactory(DriverFactory):
     # This has a side-effect to boot up the VM if not yet already.
     assert self.device, "VM fails to boot."
 
-    browser_args = []
+    browser_args = [
+      # We need debugging connection via WebSocket with the browser. By default
+      # such connection is blocked so we add this flag to allow it.
+      '--remote-allow-origins=*',
+    ]
     if seed_file:
       remote_seed_path = self._copy_seed_file(seed_file)
       browser_args.extend([
