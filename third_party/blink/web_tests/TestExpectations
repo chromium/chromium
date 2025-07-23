@@ -3045,7 +3045,6 @@ crbug.com/430091083 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-
 crbug.com/430091083 [ Win10.20h2 ] external/wpt/bluetooth/bidi/characteristic/readValue/event-is-fired.https.window.html [ Pass Timeout ]
 crbug.com/430091083 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/same-company-identifier.https.window.html [ Pass Timeout ]
 crbug.com/430091083 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/same-company-identifier.https.window.html [ Pass Timeout ]
-crbug.com/430125723 external/wpt/digital-credentials/get.tentative.https.html [ Failure ]
 crbug.com/430091580 [ Linux ] external/wpt/webdriver/tests/bidi/storage/get_cookies/filter.py [ Failure ]
 crbug.com/430091580 external/wpt/webdriver/tests/bidi/storage/set_cookie/cookie_same_site.py [ Failure ]
 crbug.com/430102835 virtual/scalefactor200/external/wpt/css/filter-effects/feconvolve-region-001.html [ Failure ]
