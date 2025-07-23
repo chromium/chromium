@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 22
+version_major: 23
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -336,16 +336,19 @@ trust_anchors {
 # CN=GTS Root R3, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "34d8a73ee208d9bcdb0d956520934b4e40e69482596e8b6f73c8426b010a6f48"
+  trust_anchor_id: "\xd6\x79\x09\x03"  # 11129.9.3
 }
 
 # CN=GTS Root R1, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "d947432abde7b7fa90fc2e6b59101b1280e0e1c7e4e40fa3c6887fff57a7f4cf"
+  trust_anchor_id: "\xd6\x79\x09\x01"  # 11129.9.1
 }
 
 # CN=GTS Root R4, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "349dfa4058c5e263123b398ae795573c4e1313c83fe68f93556cd5e8031b3c7d"
+  trust_anchor_id: "\xd6\x79\x09\x04"  # 11129.9.4
 }
 
 # CN=GlobalSign, O=GlobalSign, OU=GlobalSign ECC Root CA - R4
@@ -356,6 +359,7 @@ trust_anchors {
 # CN=GTS Root R2, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "8d25cd97229dbf70356bda4eb3cc734031e24cf00fafcfd32dc76eb5841c7ea8"
+  trust_anchor_id: "\xd6\x79\x09\x02"  # 11129.9.2
 }
 
 # CN=Hongkong Post Root CA 3, O=Hongkong Post, L=Hong Kong, ST=Hong Kong, C=HK
