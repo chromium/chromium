@@ -129,7 +129,10 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
   }
 }
 
-WaylandScreen::~WaylandScreen() = default;
+WaylandScreen::~WaylandScreen() {
+  // Destroy the idle inhibitor early.  See https://crbug.com/433643249
+  idle_inhibitor_.reset();
+}
 
 void WaylandScreen::OnOutputAddedOrUpdated(
     const WaylandOutput::Metrics& metrics) {
