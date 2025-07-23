@@ -23,11 +23,12 @@
     directory to use, prompt the user with the output of `ls out/`. Once an
     output directory is selected, never look into or use any other output
     directory.
-  * **Building:** You should **never** build with anything except `autoninja -C
-    out/{USERS_OUT_DIR} {REQUESTED_TARGET} > /dev/null ; sed -n
-    '/stdout:/,$p;/stderr:/,$p' out/{USERS_OUT_DIR}/siso_output`. While
-    `{REQUESTED_TARGET}` may be given with preceding `//`, always remove the
-    preceding `//`. Eg. if `//base:base_java` was given, use `base:base_java`.
+  * **Building:**
+    * Always build with: `autoninja --quiet -C out/{USERS_OUT_DIR} {TARGET}`.
+      The `--quiet` parameter is critical, you may never invoke `autoninja`
+      without `--quiet`.
+        * If `{TARGET}` is given with a `//` prefix, remove the prefix.
+            * Eg. if `//base:base_java` was given, use `base:base_java`.
   * When using the ReadFile tool, always set the 'limit' parameter to 20000 to
     prevent truncation for long files.
 

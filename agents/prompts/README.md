@@ -19,9 +19,15 @@ complete a task. Everything is intended to work with gemini-cli.
 Create a local, untracked file `chromium/src/GEMINI.md`. Include the relevant
 prompts using @, for example, a typical desktop developer will use:
 
-```src/GEMINI.md`
+```src/GEMINI.md
 @agents/prompts/common.GEMINI.md
 @agents/prompts/templates/desktop.md
+```
+
+Whereas an Android developer would use:
+```src/GEMINI.md
+@agents/prompts/common.GEMINI.md
+@agents/prompts/templates/android.md
 ```
 
 You can confirm that prompts were successfully imported by running the `/memory
