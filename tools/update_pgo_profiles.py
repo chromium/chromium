@@ -30,10 +30,6 @@ import gn_helpers
 # specifcies which profile to update and use.
 _PGO_DIR = os.path.join(_SRC_ROOT, 'chrome', 'build')
 
-# Absolute path to android-specific pgo files.
-_ANDROID_ARM64_PROFILE_DIR = os.path.join(_SRC_ROOT, 'chrome', 'android',
-                                          'orderfiles', 'arm64')
-
 # Absolute path to the directory that stores pgo profiles.
 _PGO_PROFILE_DIR = os.path.join(_PGO_DIR, 'pgo_profiles')
 
@@ -105,19 +101,8 @@ def _get_profile_path(args):
   Raises:
     RuntimeError: If the current profile is missing.
   """
-  if args.override_filename:
-    profile_name = args.override_filename or _read_profile_name(args.target)
-    profile_path = os.path.join(_PGO_PROFILE_DIR, profile_name)
-  elif args.target == 'android-arm64':
-    # By default on android for arm64 we use the PGO profile that is
-    # generated at the same commit as the orderfile. See
-    # https://crbug.com/372686816 for more context on why this is
-    # necessary.
-    profile_name = 'pgo_profile.arm64.profdata'
-    profile_path = os.path.join(_ANDROID_ARM64_PROFILE_DIR, profile_name)
-  else:
-    profile_name = _read_profile_name(args.target)
-    profile_path = os.path.join(_PGO_PROFILE_DIR, profile_name)
+  profile_name = args.override_filename or _read_profile_name(args.target)
+  profile_path = os.path.join(_PGO_PROFILE_DIR, profile_name)
   if not os.path.isfile(profile_path):
     raise RuntimeError(
         'requested profile "%s" doesn\'t exist, please make sure '
