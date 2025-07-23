@@ -792,9 +792,7 @@ void TabsCaptureVisibleTabFunction::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
 }
 
-ExecuteCodeInTabFunction::ExecuteCodeInTabFunction()
-    : chrome_details_(this), execute_tab_id_(-1) {}
-
+ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
 ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
 
 ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
