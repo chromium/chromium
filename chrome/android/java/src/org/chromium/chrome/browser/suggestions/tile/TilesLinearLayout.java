@@ -112,7 +112,7 @@ public class TilesLinearLayout extends LinearLayout {
         return ViewUtils.dpToPx(getContext(), mNonTileViewsTotalWidthDp);
     }
 
-    private void updateViewStartMargin(View view, @Px int newStartMargin) {
+    protected void updateViewStartMargin(View view, @Px int newStartMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
         if (newStartMargin != layoutParams.getMarginStart()) {
             layoutParams.setMarginStart(newStartMargin);
@@ -120,7 +120,7 @@ public class TilesLinearLayout extends LinearLayout {
         }
     }
 
-    private void updateViewEndMargin(View view, @Px int newEndMargin) {
+    protected void updateViewEndMargin(View view, @Px int newEndMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
         if (newEndMargin != layoutParams.getMarginEnd()) {
             layoutParams.setMarginEnd(newEndMargin);

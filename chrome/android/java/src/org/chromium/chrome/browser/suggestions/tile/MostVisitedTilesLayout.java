@@ -31,13 +31,15 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
 
     private final boolean mIsTablet;
     private final @Px int mTileViewWidthPx;
+    private final @Px int mIntervalPaddingsTablet;
+    private final @Px int mEdgePaddingsTablet;
+    private final @Px int mTileViewDividerWidth;
     private Integer mInitialTileCount;
     private Integer mInitialChildCount;
-    private final int mIntervalPaddingsTablet;
-    private final int mEdgePaddingsTablet;
     private @Nullable Integer mTileToMoveInViewIdx;
     private @Nullable Runnable mTriggerIphTask;
     private @Nullable SuggestionsTileVerticalDivider mDivider;
+    private @Nullable Integer mDividerIndex;
 
     /** Constructor for inflating from XML. */
     public MostVisitedTilesLayout(Context context, AttributeSet attrs) {
@@ -50,12 +52,32 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
                 resources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
         mEdgePaddingsTablet =
                 resources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet);
+        mTileViewDividerWidth = resources.getDimensionPixelSize(R.dimen.tile_view_divider_width);
     }
 
     @Override
     public void removeAllViews() {
         super.removeAllViews();
         mDivider = null;
+        mDividerIndex = null;
+    }
+
+    @Override
+    void setIntervalMargins(@Px int margin) {
+        super.setIntervalMargins(margin);
+
+        if (mDivider != null) {
+            assert mDividerIndex != null;
+            // Let M = margin, W = divider width, A = adjusted margin. Desired apparent margin that
+            // pretends divider absence is M = A + W + A, so A = (M - W) / 2.
+            @Px int adjustedMargin = (margin - mTileViewDividerWidth) / 2;
+            // Update the start margins of the divider and its next sibling.
+            updateViewStartMargin(mDivider, adjustedMargin);
+            View childAfterDivider = getChildAt(mDividerIndex + 1);
+            if (childAfterDivider != null) {
+                updateViewStartMargin(childAfterDivider, adjustedMargin);
+            }
+        }
     }
 
     @Override
@@ -66,6 +88,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
         // Take the first divider found and assume it's the only one.
         if (view instanceof SuggestionsTileVerticalDivider divider) {
             mDivider = divider;
+            mDividerIndex = getChildCount() - 1;
             mDivider.hide(/* isAnimated= */ false);
         }
     }
