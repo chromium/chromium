@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/blob/blob_reader.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -556,9 +552,9 @@ void BlobReader::ReadBytesItem(const BlobDataItem& item, int bytes_to_read) {
   TRACE_EVENT1("Blob", "BlobReader::ReadBytesItem", "uuid", blob_data_->uuid());
   DCHECK_GE(read_buf_->BytesRemaining(), bytes_to_read);
 
-  memcpy(read_buf_->data(),
-         item.bytes().data() + item.offset() + current_item_offset_,
-         bytes_to_read);
+  UNSAFE_TODO(memcpy(read_buf_->data(),
+                     item.bytes().data() + item.offset() + current_item_offset_,
+                     bytes_to_read));
 
   AdvanceBytesRead(bytes_to_read);
 }

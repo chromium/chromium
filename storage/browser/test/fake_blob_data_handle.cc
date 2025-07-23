@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "storage/browser/test/fake_blob_data_handle.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
@@ -57,7 +53,7 @@ void FakeBlobDataHandle::ReadSideData(
   }
 
   mojo_base::BigBuffer buffer(side_data_.size());
-  memcpy(buffer.data(), side_data_.data(), side_data_.size());
+  UNSAFE_TODO(memcpy(buffer.data(), side_data_.data(), side_data_.size()));
 
   std::move(callback).Run(side_data_.size(), std::move(buffer));
 }
