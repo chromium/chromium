@@ -193,7 +193,7 @@ force_enable_raw_ptr_exclusion = true
 EOF
         ;;
 
-    ash)
+    chromeos)
         cat <<EOF
 target_os = "chromeos"
 dcheck_always_on = true
@@ -306,6 +306,9 @@ then
     | tools/clang/scripts/apply_edits.py -p $OUT_DIR $EDIT_DIRS
 else
   echo "*** Skipping edits ***"
+  # For the rewriter to properly know where the files are OUT_DIR has to be
+  # set, to replicate the behaviour we set it to the last platform.
+  OUT_DIR=`echo ${PLATFORMS//,/ } | awk '{print $NF;}'`
 fi
 
 # Format sources, as many lines are likely over 80 chars now.
