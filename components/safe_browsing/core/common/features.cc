@@ -225,7 +225,7 @@ constexpr base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate{
 
 BASE_FEATURE(kLocalIpAddressInEvents,
              "LocalIpAddressInEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLocalListsUseSBv5,
              "SafeBrowsingLocalListsUseSBv5",
