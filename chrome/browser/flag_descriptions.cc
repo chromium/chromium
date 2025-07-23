@@ -1302,6 +1302,12 @@ const char kGlicPanelResetOnSessionTimeoutName[] =
     "Glic Panel Reset On Session Timeout";
 const char kGlicPanelResetOnSessionTimeoutDescription[] =
     "Enables resetting the panel position after a session timeout.";
+const char kGlicWarmingName[] = "Glic Pre-Warming";
+const char kGlicWarmingDescription[] =
+    "Enables the pre-warming of the Glic panel's web client.";
+const char kGlicFreWarmingName[] = "Glic FRE Pre-Warming";
+const char kGlicFreWarmingDescription[] =
+    "Enables the pre-warming of Glic's FRE web page.";
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
