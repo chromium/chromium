@@ -9,7 +9,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom-forward.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
@@ -27,19 +29,21 @@ void CheckController(user_education::NtpPromoController* controller) {
 NtpPromoHandler::NtpPromoHandler(
     mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
+    BrowserWindowInterface* browser,
     user_education::NtpPromoController* promo_controller)
     : remote_client_(std::move(pending_client)),
       receiver_(this, std::move(pending_handler)),
+      browser_(browser),
       promo_controller_(promo_controller) {}
 
 // static
 std::unique_ptr<NtpPromoHandler> NtpPromoHandler::Create(
     mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-    Profile* profile) {
+    BrowserWindowInterface* browser) {
   return base::WrapUnique(new NtpPromoHandler(
-      std::move(pending_client), std::move(pending_handler),
-      UserEducationServiceFactory::GetForBrowserContext(profile)
+      std::move(pending_client), std::move(pending_handler), browser,
+      UserEducationServiceFactory::GetForBrowserContext(browser->GetProfile())
           ->ntp_promo_controller()));
 }
 
@@ -47,22 +51,25 @@ std::unique_ptr<NtpPromoHandler> NtpPromoHandler::Create(
 std::unique_ptr<NtpPromoHandler> NtpPromoHandler::CreateForTesting(
     mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
+    BrowserWindowInterface* browser,
     user_education::NtpPromoController* promo_controller) {
-  return base::WrapUnique(new NtpPromoHandler(
-      std::move(pending_client), std::move(pending_handler), promo_controller));
+  return base::WrapUnique(new NtpPromoHandler(std::move(pending_client),
+                                              std::move(pending_handler),
+                                              browser, promo_controller));
 }
 
 NtpPromoHandler::~NtpPromoHandler() = default;
 
 void NtpPromoHandler::RequestPromos() {
   CheckController(promo_controller_);
-  const auto promos = promo_controller_->GenerateShowablePromos();
+  auto* profile = browser_->GetProfile();
+  const auto promos = promo_controller_->GenerateShowablePromos(profile);
   remote_client_->SetPromos(promos.pending, promos.completed);
 }
 
 void NtpPromoHandler::OnPromoClicked(const std::string& promo_id) {
   CheckController(promo_controller_);
-  promo_controller_->OnPromoClicked(promo_id);
+  promo_controller_->OnPromoClicked(promo_id, browser_);
 }
 
 void NtpPromoHandler::OnPromosShown(

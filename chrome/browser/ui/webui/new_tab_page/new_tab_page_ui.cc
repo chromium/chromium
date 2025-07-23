@@ -943,7 +943,8 @@ void NewTabPageUI::CreateNtpPromoHandler(
     mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler) {
   ntp_promo_handler_ =
-      NtpPromoHandler::Create(std::move(client), std::move(handler), profile_);
+      NtpPromoHandler::Create(std::move(client), std::move(handler),
+                              webui::GetBrowserWindowInterface(web_contents()));
 }
 
 // OnColorProviderChanged can be called during the destruction process and
@@ -1035,7 +1036,7 @@ void NewTabPageUI::OnLoad() {
       !modules_enabled && user_education::features::NtpBrowserPromosEnabled() &&
       UserEducationServiceFactory::GetForBrowserContext(profile_)
           ->ntp_promo_controller()
-          ->HasShowablePromos();
+          ->HasShowablePromos(profile_);
   update.Set("browserPromosEnabled", show_ntp_promos);
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));

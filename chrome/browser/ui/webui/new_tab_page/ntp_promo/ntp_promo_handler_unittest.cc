@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
@@ -60,12 +61,16 @@ class MockController : public user_education::NtpPromoController {
   using user_education::NtpPromoController::NtpPromoController;
   ~MockController() override = default;
 
-  MOCK_METHOD(user_education::NtpShowablePromos, GenerateShowablePromos, ());
+  MOCK_METHOD(user_education::NtpShowablePromos,
+              GenerateShowablePromos,
+              (Profile*));
   MOCK_METHOD(void,
               OnPromosShown,
               (const std::vector<std::string>&,
                const std::vector<std::string>&));
-  MOCK_METHOD(void, OnPromoClicked, (user_education::NtpPromoIdentifier));
+  MOCK_METHOD(void,
+              OnPromoClicked,
+              (user_education::NtpPromoIdentifier, BrowserWindowInterface*));
 };
 
 }  // namespace
@@ -78,6 +83,7 @@ class NtpPromoHandlerTest : public testing::Test {
   MockController& mock_controller() { return mock_controller_; }
   MockClient& mock_client() { return mock_client_; }
   NtpPromoHandler& handler() { return *handler_; }
+  MockBrowserWindowInterface& mock_browser() { return mock_browser_; }
 
   user_education::NtpShowablePromos GetShowablePromos() {
     user_education::NtpShowablePromos promos;
@@ -114,14 +120,16 @@ class NtpPromoHandlerTest : public testing::Test {
   user_education::test::TestUserEducationStorageService storage_service_;
   MockController mock_controller_{promo_registry_, storage_service_};
   MockClient mock_client_;
+  MockBrowserWindowInterface mock_browser_;
   std::unique_ptr<NtpPromoHandler> handler_ = NtpPromoHandler::CreateForTesting(
       mock_client_.BindAndGetRemote(),
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler>(),
+      &mock_browser_,
       &mock_controller_);
 };
 
 TEST_F(NtpPromoHandlerTest, PassesOnClick) {
-  EXPECT_CALL(mock_controller(), OnPromoClicked(kPromo1Id));
+  EXPECT_CALL(mock_controller(), OnPromoClicked(kPromo1Id, &mock_browser()));
   handler().OnPromoClicked(kPromo1Id);
 }
 

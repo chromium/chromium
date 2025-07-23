@@ -47,10 +47,10 @@ NtpPromoController::NtpPromoController(
 
 NtpPromoController::~NtpPromoController() = default;
 
-bool NtpPromoController::HasShowablePromos() const {
+bool NtpPromoController::HasShowablePromos(Profile* profile) const {
   for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
     if (const auto* spec = registry_->GetNtpPromoSpecification(id)) {
-      if (spec->eligibility_callback().Run(nullptr) !=
+      if (spec->eligibility_callback().Run(profile) !=
           NtpPromoSpecification::Eligibility::kIneligible) {
         return true;
       }
@@ -59,7 +59,7 @@ bool NtpPromoController::HasShowablePromos() const {
   return false;
 }
 
-NtpShowablePromos NtpPromoController::GenerateShowablePromos() {
+NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
   NtpShowablePromos showable_promos;
   const auto now = base::Time::Now();
 
@@ -69,7 +69,7 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos() {
     CHECK(spec);
 
     NtpPromoSpecification::Eligibility eligibility =
-        spec->eligibility_callback().Run(nullptr);
+        spec->eligibility_callback().Run(profile);
     if (eligibility == NtpPromoSpecification::Eligibility::kIneligible) {
       continue;
     }
@@ -124,8 +124,9 @@ void NtpPromoController::OnPromosShown(
   }
 }
 
-void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id) {
-  registry_->GetNtpPromoSpecification(id)->action_callback().Run(nullptr);
+void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id,
+                                        BrowserWindowInterface* browser) {
+  registry_->GetNtpPromoSpecification(id)->action_callback().Run(browser);
 
   auto prefs =
       storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());

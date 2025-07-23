@@ -17,7 +17,7 @@
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/user_education_metadata.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace user_education {
@@ -57,7 +57,7 @@ class NtpPromoSpecification {
 
   // Receives a browser in which the action can be taken, and an object
   // to be held by the invoked flow until termination.
-  using ActionCallback = base::RepeatingCallback<void(Browser*)>;
+  using ActionCallback = base::RepeatingCallback<void(BrowserWindowInterface*)>;
 
   NtpPromoSpecification() = delete;
   NtpPromoSpecification(NtpPromoSpecification&&) noexcept;

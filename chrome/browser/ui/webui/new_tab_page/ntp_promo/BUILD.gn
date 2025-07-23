@@ -14,6 +14,8 @@ source_set("ntp_promo") {
   public_deps = [ ":mojo_bindings" ]
   deps = [
     "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/user_education",
     "//ui/base",
   ]

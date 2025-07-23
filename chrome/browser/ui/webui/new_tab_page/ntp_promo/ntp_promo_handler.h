@@ -15,6 +15,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class BrowserWindowInterface;
+
 class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
  public:
   NtpPromoHandler(const NtpPromoHandler&) = delete;
@@ -26,13 +28,14 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   static std::unique_ptr<NtpPromoHandler> Create(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-      Profile* profile);
+      BrowserWindowInterface* browser);
 
   // Used for tests that want to directly inject a `promo_controller`.
   // Otherwise identical to `Create()`.
   static std::unique_ptr<NtpPromoHandler> CreateForTesting(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
+      BrowserWindowInterface* browser,
       user_education::NtpPromoController* promo_controller);
 
   // ntp_promo::mojom::NtpPromoHandler:
@@ -45,10 +48,12 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   NtpPromoHandler(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
+      BrowserWindowInterface* browser,
       user_education::NtpPromoController* promo_controller);
 
   mojo::Remote<ntp_promo::mojom::NtpPromoClient> remote_client_;
   mojo::Receiver<ntp_promo::mojom::NtpPromoHandler> receiver_;
+  raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<user_education::NtpPromoController> promo_controller_;
 };
 
