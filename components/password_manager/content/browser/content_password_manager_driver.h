@@ -74,6 +74,7 @@ class ContentPasswordManagerDriver final
   void GeneratedPasswordRejected() override;
   void FocusNextFieldAfterPasswords() override;
   void FillField(
+      autofill::FieldRendererId triggering_field_id,
       const std::u16string& value,
       autofill::AutofillSuggestionTriggerSource suggestion_source) override;
   void TriggerPasswordRecoverySuggestions(
@@ -210,7 +211,6 @@ class ContentPasswordManagerDriver final
   PasswordAutofillManager password_autofill_manager_;
 
   int id_;
-  autofill::FieldRendererId last_triggering_field_id_;
 
   mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>
       password_autofill_agent_;

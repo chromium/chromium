@@ -239,10 +239,11 @@ void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
 }
 
 void ContentPasswordManagerDriver::FillField(
+    autofill::FieldRendererId triggering_field_id,
     const std::u16string& value,
     autofill::AutofillSuggestionTriggerSource suggestion_source) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->FillField(last_triggering_field_id_, value, suggestion_source);
+    agent->FillField(triggering_field_id, value, suggestion_source);
   }
 }
 
@@ -599,8 +600,6 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
         "username_field_index or password_field_index cannot be greater than "
         "form.fields.size()!");
   }
-
-  last_triggering_field_id_ = request.field.element_id;
 
 #if !BUILDFLAG(IS_ANDROID)
   GetPasswordAutofillManager()->ShowSuggestions(request.field);

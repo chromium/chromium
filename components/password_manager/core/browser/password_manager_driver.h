@@ -91,6 +91,7 @@ class PasswordManagerDriver {
   // Also includes the `suggestion_source`, used to update the
   // `FieldPropertiesMask` of the filled field.
   virtual void FillField(
+      autofill::FieldRendererId triggering_field_id,
       const std::u16string& value,
       autofill::AutofillSuggestionTriggerSource suggestion_source) {}
   // Tells the renderer to open the suggestions popup on the login field

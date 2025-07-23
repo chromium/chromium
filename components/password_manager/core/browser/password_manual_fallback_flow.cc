@@ -279,7 +279,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     }
     case autofill::SuggestionType::kPasswordFieldByFieldFilling:
       password_manager_driver_->FillField(
-          suggestion.main_text.value,
+          field_id_, suggestion.main_text.value,
           autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords);
       break;
     case autofill::SuggestionType::kFillPassword: {
@@ -291,7 +291,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
               weak_ptr_factory_.GetWeakPtr(),
               base::BindOnce(&PasswordManagerDriver::FillField,
                              base::Unretained(password_manager_driver_),
-                             payload.password,
+                             field_id_, payload.password,
                              autofill::AutofillSuggestionTriggerSource::
                                  kManualFallbackPasswords),
               // Request reauth if filling the password on a non password field.

@@ -131,7 +131,8 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (override));
   MOCK_METHOD(void,
               FillField,
-              (const std::u16string&,
+              (autofill::FieldRendererId,
+               const std::u16string&,
                autofill::AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
@@ -621,7 +622,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   EXPECT_CALL(
       driver(),
       FillField(
-          std::u16string(u"username@example.com"),
+          field_id, std::u16string(u"username@example.com"),
           autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   EXPECT_CALL(
       autofill_client(),
@@ -953,7 +954,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
   EXPECT_CALL(
       driver(),
       FillField(
-          std::u16string(u"password"),
+          field_id, std::u16string(u"password"),
           autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
@@ -1072,7 +1073,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(
       driver(),
       FillField(
-          std::u16string(u"password"),
+          field_id, std::u16string(u"password"),
           autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
@@ -1116,7 +1117,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(
       driver(),
       FillField(
-          std::u16string(u"password"),
+          field_id, std::u16string(u"password"),
           autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
