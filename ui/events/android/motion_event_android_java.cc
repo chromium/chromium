@@ -72,50 +72,6 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                          pointer1,
                          std::move(source)) {}
 
-MotionEventAndroidJava::MotionEventAndroidJava(
-    jfloat pix_to_dip,
-    jfloat ticks_x,
-    jfloat ticks_y,
-    jfloat tick_multiplier,
-    base::TimeTicks oldest_event_time,
-    jint android_action,
-    jint pointer_count,
-    jint history_size,
-    jint action_index,
-    jint android_action_button,
-    jint android_gesture_classification,
-    jint android_button_state,
-    jint meta_state,
-    jfloat raw_offset_x_pixels,
-    jfloat raw_offset_y_pixels,
-    jboolean for_touch_handle,
-    const Pointer* const pointer0,
-    const Pointer* const pointer1,
-    std::unique_ptr<MotionEventAndroidSource> source)
-    : MotionEventAndroidJava(pix_to_dip,
-                             ticks_x,
-                             ticks_y,
-                             tick_multiplier,
-                             oldest_event_time,
-                             oldest_event_time,
-                             base::TimeTicks(),
-                             android_action,
-                             pointer_count,
-                             history_size,
-                             action_index,
-                             android_action_button,
-                             android_gesture_classification,
-                             android_button_state,
-                             meta_state,
-                             raw_offset_x_pixels,
-                             raw_offset_y_pixels,
-                             for_touch_handle,
-                             pointer0,
-                             pointer1,
-                             std::move(source)) {
-  DCHECK_EQ(history_size, 0);
-}
-
 MotionEventAndroidJava::MotionEventAndroidJava(const MotionEventAndroidJava& e,
                                                const gfx::PointF& point)
     : MotionEventAndroid(e, point) {}

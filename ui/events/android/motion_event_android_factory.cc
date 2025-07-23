@@ -35,16 +35,14 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromJava(
     jboolean for_touch_handle,
     const MotionEventAndroid::Pointer* const pointer0,
     const MotionEventAndroid::Pointer* const pointer1) {
-  auto source = std::make_unique<MotionEventAndroidSourceJava>(
-      event, /*is_latest_event_time_resampled=*/false);
-  int meta_state = source->GetMetaState();
-  return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroidJava(
-      pix_to_dip, ticks_x, ticks_y, tick_multiplier, oldest_event_time,
-      android_action, pointer_count, history_size, action_index,
-      android_action_button, android_gesture_classification,
-      android_button_state, meta_state, raw_offset_x_pixels,
+  return CreateFromJava(
+      env, event, pix_to_dip, ticks_x, ticks_y, tick_multiplier,
+      oldest_event_time, /*latest_event_time=*/oldest_event_time,
+      /*down_time_ms=*/base::TimeTicks(), android_action, pointer_count,
+      history_size, action_index, android_action_button,
+      android_gesture_classification, android_button_state, raw_offset_x_pixels,
       raw_offset_y_pixels, for_touch_handle, pointer0, pointer1,
-      std::move(source)));
+      /*is_latest_event_time_resampled=*/false);
 }
 
 // static
