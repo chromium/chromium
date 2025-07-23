@@ -16,10 +16,7 @@ static_library("boca") {
     "boca_manager_factory.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui:browser_list",
-  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash/constants",
@@ -28,6 +25,7 @@ static_library("boca") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/boca/babelorca",
     "//chrome/browser/ash/boca/spotlight",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/settings",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
