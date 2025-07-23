@@ -2505,7 +2505,6 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
         ('*_mojom_traits*.*', 'scary_mojom_traits.h'),
         ('*_mojom_traits*.*', 'scary_mojom_traits_mac.h'),
         ('*_type_converter*.*', 'scary_type_converter.h'),
-        ('*_type_converter*.*', 'scary_type_converter_nacl.h'),
         ('*.aidl', 'scary.aidl'),
     ]
 
@@ -4659,42 +4658,6 @@ class CheckForUseOfChromeAppsDeprecationsTest(unittest.TestCase):
                     '--- manifest.json.old  2020-12-02 20:40:54.430676385 +0100',
                     '+++ manifest.json.new  2020-12-02 20:41:02.086700197 +0100',
                     '@@ -1,2 +1,3 @@', ' "app"', '+"Z":"content"', ' B'
-                ]),
-                action='M')
-        ]
-        mock_output_api = MockOutputApi()
-        errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(
-            mock_input_api, mock_output_api)
-        self.assertEqual(0, len(errors))
-
-    def testWarningPPAPI(self):
-        mock_input_api = MockInputApi()
-        mock_input_api.files = [
-            MockAffectedFile(
-                'foo.hpp', ['A', '#include <ppapi.h>', 'B'], ['A', 'B'],
-                scm_diff='\n'.join([
-                    '--- foo.hpp.old  2020-12-02 20:40:54.430676385 +0100',
-                    '+++ foo.hpp.new  2020-12-02 20:41:02.086700197 +0100',
-                    '@@ -1,2 +1,3 @@', ' A', '+#include <ppapi.h>', ' B'
-                ]),
-                action='M')
-        ]
-        mock_output_api = MockOutputApi()
-        errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(
-            mock_input_api, mock_output_api)
-        self.assertEqual(1, len(errors))
-        self.assertTrue(self.ERROR_MSG_PIECE in errors[0].message)
-        self.assertTrue('foo.hpp' in errors[0].message)
-
-    def testNoWarningPPAPI(self):
-        mock_input_api = MockInputApi()
-        mock_input_api.files = [
-            MockAffectedFile(
-                'foo.txt', ['A', 'Peppapig', 'B'], ['A', 'B'],
-                scm_diff='\n'.join([
-                    '--- foo.txt.old  2020-12-02 20:40:54.430676385 +0100',
-                    '+++ foo.txt.new  2020-12-02 20:41:02.086700197 +0100',
-                    '@@ -1,2 +1,3 @@', ' A', '+Peppapig', ' B'
                 ]),
                 action='M')
         ]

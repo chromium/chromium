@@ -180,7 +180,6 @@ per-file third_party/material_design_icons/src=*
 per-file third_party/mingw-w64/mingw/bin=*
 per-file third_party/minigbm/src=*
 per-file third_party/ml=*
-per-file third_party/nacl_sdk_binaries=*
 per-file third_party/nasm=*
 per-file third_party/nearby/src=*
 per-file third_party/neon_2_sse/src=*
