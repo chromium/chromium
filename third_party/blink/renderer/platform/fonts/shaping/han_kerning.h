@@ -71,13 +71,15 @@ class PLATFORM_EXPORT HanKerning {
   }
   void ClearUnsafeToBreakBefore() { unsafe_to_break_before_.Shrink(0); }
 
-  void AppendFontFeatures(const String& text,
+  bool AppendFontFeatures(const String& text,
                           wtf_size_t start,
                           wtf_size_t end,
                           const SimpleFontData& font_data,
                           const LayoutLocale& locale,
                           Options options,
                           FontFeatureRanges& features);
+
+  void PrepareFallback(const String& text);
 
   using CharType = HanKerningCharType;
 
@@ -113,14 +115,30 @@ class PLATFORM_EXPORT HanKerning {
  private:
   FRIEND_TEST_ALL_PREFIXES(HanKerningTest, MayApply);
 
+  enum class Priority : uint8_t { kText, kCache };
+
   static CharType GetCharType(UChar ch, const FontData& font_data);
+  CharType GetCharType(const String& text,
+                       wtf_size_t index,
+                       const FontData& font_data,
+                       Priority priority = Priority::kText);
+  CharType GetCharTypeWithCache(const String& text,
+                                wtf_size_t index,
+                                const FontData& font_data,
+                                Priority priority);
 
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);
 
   bool may_apply_;
+  bool is_start_prev_used_ = false;
+  bool is_end_next_used_ = false;
   wtf_size_t segment_start_;
   wtf_size_t segment_end_;
+  wtf_size_t last_start_ = 0;
+  wtf_size_t last_end_ = 0;
+  const FontData* last_font_data_ = nullptr;
+  Vector<CharType> char_types_;
   Vector<unsigned, 32> unsafe_to_break_before_;
 };
 
