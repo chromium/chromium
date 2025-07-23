@@ -251,6 +251,7 @@ bool DialogDelegate::RunCloseCallback(
   if (std::holds_alternative<base::OnceClosure>(callback)) {
     already_started_close_ = true;
     std::get<base::OnceClosure>(std::move(callback)).Run();
+    return true;
   } else {
     base::WeakPtr<Widget> weak_ptr = GetWidget()->GetWeakPtr();
     bool already_started_close =
@@ -261,9 +262,10 @@ bool DialogDelegate::RunCloseCallback(
       return false;
     }
     already_started_close_ = already_started_close;
+    return already_started_close_;
   }
 
-  return already_started_close_;
+  NOTREACHED();
 }
 
 View* DialogDelegate::GetInitiallyFocusedView() {
