@@ -13143,6 +13143,21 @@
             ]
         }
     ],
+    "IOSTrustedVaultNotification": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSTrustedVaultNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUpdateFirstRunSequence": [
         {
             "platforms": [
