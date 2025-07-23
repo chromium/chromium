@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/raster/raster_buffer_provider.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
@@ -51,11 +47,11 @@ class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   // Overridden from gpu::gles2::GLES2Interface:
   void GenBuffers(GLsizei n, GLuint* buffers) override {
     for (GLsizei i = 0; i < n; ++i)
-      buffers[i] = 1u;
+      UNSAFE_TODO(buffers[i]) = 1u;
   }
   void GenTextures(GLsizei n, GLuint* textures) override {
     for (GLsizei i = 0; i < n; ++i)
-      textures[i] = 1u;
+      UNSAFE_TODO(textures[i]) = 1u;
   }
   void GetIntegerv(GLenum pname, GLint* params) override {
     if (pname == GL_MAX_TEXTURE_SIZE)
@@ -63,7 +59,7 @@ class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   }
   void GenQueriesEXT(GLsizei n, GLuint* queries) override {
     for (GLsizei i = 0; i < n; ++i)
-      queries[i] = 1u;
+      UNSAFE_TODO(queries[i]) = 1u;
   }
   void GetQueryObjectuivEXT(GLuint query,
                             GLenum pname,
@@ -77,7 +73,7 @@ class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
     // Copy the data over after setting the data to ensure alignment.
     gpu::SyncToken sync_token_data(gpu::CommandBufferNamespace::GPU_IO,
                                    gpu::CommandBufferId(), 0);
-    memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+    UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
   }
 };
 

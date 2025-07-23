@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/scheduler/scheduler_state_machine.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "cc/scheduler/scheduler.h"
 
 #include <stddef.h>
@@ -19,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +29,7 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/scheduler/scheduler_state_machine.h"
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -94,8 +90,9 @@ class FakeSchedulerClient : public SchedulerClient,
 
   int ActionIndex(const char* action) const {
     for (size_t i = 0; i < actions_.size(); i++)
-      if (!strcmp(actions_[i], action))
+      if (!UNSAFE_TODO(strcmp(actions_[i], action))) {
         return base::checked_cast<int>(i);
+      }
     return -1;
   }
 

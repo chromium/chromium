@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "cc/base/histograms.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <cstring>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -39,7 +35,7 @@ void SetClientNameForMetrics(const char* client_name) {
 
   // If a different name is set, return nullptr from now on and log a warning.
   const char* old_client_name = g_client_name;
-  if (old_client_name && strcmp(old_client_name, client_name)) {
+  if (old_client_name && UNSAFE_TODO(strcmp(old_client_name, client_name))) {
     g_client_name = nullptr;
     g_multiple_client_names_set = true;
     LOG(WARNING) << "Started multiple compositor clients (" << old_client_name

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/timer/lap_timer.h"
@@ -87,7 +83,7 @@ class PaintOpPerfTest : public testing::Test {
           break;
 
         remaining_read_bytes -= bytes_read;
-        to_read += bytes_read;
+        UNSAFE_TODO(to_read += bytes_read);
       }
 
       timer_.NextLap();
@@ -162,7 +158,7 @@ TEST_F(PaintOpPerfTest, TextOps) {
   SkTextBlobBuilder builder;
   int glyph_count = 5;
   const auto& run = builder.allocRun(font, glyph_count, 1.2f, 2.3f);
-  std::fill(run.glyphs, run.glyphs + glyph_count, 0);
+  std::fill(run.glyphs, UNSAFE_TODO(run.glyphs + glyph_count), 0);
   auto blob = builder.make();
 
   PaintFlags flags;

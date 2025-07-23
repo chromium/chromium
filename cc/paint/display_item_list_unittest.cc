@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "cc/paint/display_item_list.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <array>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -49,8 +45,10 @@ bool CompareN32Pixels(void* actual_pixels,
                       void* expected_pixels,
                       int width,
                       int height) {
-  if (memcmp(actual_pixels, expected_pixels, 4 * width * height) == 0)
+  if (UNSAFE_TODO(memcmp(actual_pixels, expected_pixels, 4 * width * height)) ==
+      0) {
     return true;
+  }
 
   SkImageInfo actual_info = SkImageInfo::MakeN32Premul(width, height);
   SkBitmap actual_bitmap;

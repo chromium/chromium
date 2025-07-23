@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/test/fake_paint_image_generator.h"
 
+#include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 
 namespace cc {
@@ -110,8 +105,9 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
   uint8_t* src_plane_memory = image_backing_memory_.data();
   int num_planes = pixmaps.numPlanes();
   for (int i = 0; i < num_planes; ++i) {
-    memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory, plane_sizes[i]);
-    src_plane_memory += plane_sizes[i];
+    UNSAFE_TODO(memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory,
+                       plane_sizes[i]));
+    UNSAFE_TODO(src_plane_memory += plane_sizes[i]);
   }
   if (!base::Contains(frames_decoded_count_, frame_index)) {
     frames_decoded_count_[frame_index] = 1;
