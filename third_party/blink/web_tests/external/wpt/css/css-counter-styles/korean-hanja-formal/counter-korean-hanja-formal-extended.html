@@ -1,35 +1,16 @@
 <!DOCTYPE html>
-<title>CSS Counter Styles: Longhand East Asian Counter Styles Chinese (required)</title>
-<link rel="help" href="https://drafts.csswg.org/css-counter-styles/#limited-chinese">
+<title>CSS Counter Styles: Longhand East Asian Counter Styles Extended Implementation (optional)</title>
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles/#extended-range-optional">
 <link rel="author" href="mailto:saku@email.sakupi01.com" title="saku">
-<link rel="match" href="counter-simp-chinese-informal-ref.html">
+<link rel="match" href="counter-korean-hanja-formal-extended-ref.html">
 <style>
   div::after {
-    content: counter(n, simp-chinese-informal);
+    content: counter(n, korean-hanja-formal);
   }
 </style>
-<div style="counter-reset: n 0;"></div>
-<div style="counter-reset: n 1;"></div>
-<div style="counter-reset: n 2;"></div>
-<div style="counter-reset: n 3;"></div>
-<div style="counter-reset: n 4;"></div>
-<div style="counter-reset: n 5;"></div>
-<div style="counter-reset: n 6;"></div>
-<div style="counter-reset: n 7;"></div>
-<div style="counter-reset: n 8;"></div>
-<div style="counter-reset: n 9;"></div>
 
-<div style="counter-reset: n 10;"></div>
-<div style="counter-reset: n 100;"></div>
-<div style="counter-reset: n 1000;"></div>
-
-<div style="counter-reset: n 11;"></div>
-<div style="counter-reset: n 99;"></div>
-<div style="counter-reset: n 101;"></div>
-<div style="counter-reset: n 200;"></div>
-<div style="counter-reset: n 6001;"></div>
-
-<!-- Test second group marker (万) - ten-thousands group -->
+<!-- Extended range implementation tests (algorithm step 2: split into 4-digit groups) -->
+<!-- Test second group marker (萬) - ten-thousands group -->
 <div style="counter-reset: n 10000;"></div>
 <div style="counter-reset: n 20000;"></div>
 <div style="counter-reset: n 50000;"></div>
@@ -42,7 +23,7 @@
 <div style="counter-reset: n 10100;"></div>
 <div style="counter-reset: n 11000;"></div>
 
-<!-- Test third group marker (亿) - hundred-millions group -->
+<!-- Test third group marker (億) - hundred-millions group -->
 <div style="counter-reset: n 100000000;"></div>
 <div style="counter-reset: n 200000000;"></div>
 <div style="counter-reset: n 500000000;"></div>
@@ -56,7 +37,7 @@
 <div style="counter-reset: n 101000000;"></div>
 <div style="counter-reset: n 110000000;"></div>
 
-<!-- Test fourth group marker (万亿) - trillions group -->
+<!-- Test fourth group marker (兆) - trillions group -->
 <div style="counter-reset: n 1000000000000;"></div>
 <div style="counter-reset: n 2000000000000;"></div>
 <div style="counter-reset: n 5000000000000;"></div>

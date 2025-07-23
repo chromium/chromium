@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Object attribute setter should treat no arguments as undefined
+  assert_throws_dom: function "() => { setter.call(thisValue); }" threw object "TypeError: Failed to set the 'body' property on 'Document': 1 argument required, but only 0 present." that is not a DOMException HierarchyRequestError: property "code" is equal to undefined, expected 3
+[FAIL] [Replaceable] setter should treat no arguments as undefined
+  Failed to set the 'scrollX' property on 'Window': 1 argument required, but only 0 present.
+[FAIL] [PutForward] setter should treat no arguments as undefined
+  Failed to set the 'relList' property on 'HTMLAnchorElement': 1 argument required, but only 0 present.
+Harness: the test ran to completion.
+
