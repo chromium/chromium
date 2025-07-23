@@ -17,6 +17,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
@@ -74,7 +75,6 @@ const std::string kDummyWindowRestorationData = "e30=";
 @property(readonly, nonatomic) int invalidateShadowCount;
 @property(assign, nonatomic) BOOL fakeOnInactiveSpace;
 @property(assign, nonatomic) bool* deallocFlag;
-+ (void)waitForDealloc;
 @end
 
 // Used to mock BridgedContentView so that calls to drawRect: can be
@@ -951,7 +951,9 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
     EXPECT_TRUE(observer.widget_closed());
   }
 
-  EXPECT_TRUE(window_deallocated);
+  // Since macOS 26 Tahoe the NSWindow may not be sychronously destroyed by
+  // -[NSWindow close].
+  EXPECT_TRUE(base::test::RunUntil([&]() { return window_deallocated; }));
   window_deallocated = false;
 
   NativeWidgetMacTestWindow* __strong last_window_strong = nil;
@@ -973,7 +975,8 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
     Widget::CloseAllSecondaryWidgets();
     last_window_strong = nil;
   }
-  EXPECT_TRUE(window_deallocated);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return window_deallocated; }));
 
   // Repeat, with two Widgets. We can't control the order of window closure.
   // If the parent is closed first, it should tear down the child while
@@ -1028,12 +1031,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
   // As of macOS 13 (Ventura), it seems that exiting the autoreleasepool
   // block does not immediately trigger a release of its contents. Wait
   // here for the deallocations to occur before proceeding.
-  while (!child_dealloced || !native_parent_dealloced) {
-    [NativeWidgetMacTestWindow waitForDealloc];
-  }
-
-  EXPECT_TRUE(child_dealloced);
-  EXPECT_TRUE(native_parent_dealloced);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return child_dealloced; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return native_parent_dealloced; }));
 }
 
 // Tests visibility for a child of a native NSWindow, reshowing after a
@@ -2591,29 +2590,10 @@ TEST_F(NativeWidgetMacTest,
 @synthesize fakeOnInactiveSpace = _fakeOnInactiveSpace;
 @synthesize deallocFlag = _deallocFlag;
 
-+ (base::RunLoop**)runLoop {
-  static base::RunLoop* runLoop = nullptr;
-  return &runLoop;
-}
-
-// Returns once the NativeWidgetMacTestWindow's -dealloc method has been
-// called.
-+ (void)waitForDealloc {
-  base::RunLoop runLoop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, runLoop.QuitClosure(), TestTimeouts::action_timeout());
-  (*[NativeWidgetMacTestWindow runLoop]) = &runLoop;
-  runLoop.Run();
-  (*[NativeWidgetMacTestWindow runLoop]) = nullptr;
-}
-
 - (void)dealloc {
   if (_deallocFlag) {
     DCHECK(!*_deallocFlag);
     *_deallocFlag = true;
-    if (*[NativeWidgetMacTestWindow runLoop]) {
-      (*[NativeWidgetMacTestWindow runLoop])->Quit();
-    }
   }
 }
 
