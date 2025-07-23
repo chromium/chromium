@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
@@ -40,7 +41,7 @@ void RecordAdaptationModelAvailability(
       availability);
 }
 
-base::expected<std::unique_ptr<OnDeviceModelAdaptationMetadata>,
+base::expected<OnDeviceModelAdaptationMetadata,
                OnDeviceModelAdaptationAvailability>
 CreateAdaptatonMetadataFromModelExecutionConfig(
     ModelBasedCapabilityKey feature,
@@ -60,36 +61,61 @@ CreateAdaptatonMetadataFromModelExecutionConfig(
     return base::unexpected(OnDeviceModelAdaptationAvailability::
                                 kAdaptationModelExecutionConfigInvalid);
   }
-  return base::ok(OnDeviceModelAdaptationMetadata::New(
+  return OnDeviceModelAdaptationMetadata(
       asset_paths.get(), version,
-      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config))));
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config)));
 }
 
-std::unique_ptr<OnDeviceModelAdaptationMetadata>
-OnDeviceModelAdaptationMetadataCreated(
+MaybeAdaptationMetadata OnDeviceModelAdaptationMetadataCreated(
     ModelBasedCapabilityKey feature,
-    base::expected<std::unique_ptr<OnDeviceModelAdaptationMetadata>,
+    base::expected<OnDeviceModelAdaptationMetadata,
                    OnDeviceModelAdaptationAvailability> metadata) {
   if (!metadata.has_value()) {
     RecordAdaptationModelAvailability(feature, metadata.error());
-    return nullptr;
+    return base::unexpected(AdaptationUnavailability::kNotSupported);
   }
   RecordAdaptationModelAvailability(
       feature, OnDeviceModelAdaptationAvailability::kAvailable);
   return std::move(metadata.value());
 }
 
-}  // namespace
-
-// static
-std::unique_ptr<OnDeviceModelAdaptationMetadata>
-OnDeviceModelAdaptationMetadata::New(
-    on_device_model::AdaptationAssetPaths* asset_paths,
-    int64_t version,
-    scoped_refptr<OnDeviceModelFeatureAdapter> adapter) {
-  return base::WrapUnique(new OnDeviceModelAdaptationMetadata(
-      asset_paths, version, std::move(adapter)));
+std::optional<OnDeviceModelAdaptationAvailability>
+DetectBaseModelIncompatibility(const optimization_guide::ModelInfo& model_info,
+                               const OnDeviceBaseModelSpec registered_spec) {
+  const std::optional<proto::Any>& metadata = model_info.GetModelMetadata();
+  if (!metadata.has_value()) {
+    return OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid;
+  }
+  auto supported_model_spec =
+      ParsedAnyMetadata<proto::OnDeviceBaseModelMetadata>(metadata.value());
+  if (!supported_model_spec) {
+    return OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid;
+  }
+  // Check for incompatibility when base model override is not specified
+  if (!switches::GetOnDeviceModelExecutionOverride()) {
+    if (supported_model_spec->base_model_name() != registered_spec.model_name ||
+        supported_model_spec->base_model_version() !=
+            registered_spec.model_version) {
+      return OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible;
+    }
+  }
+  return std::nullopt;
 }
+
+std::unique_ptr<on_device_model::AdaptationAssetPaths> MaybeGetAdaptationPaths(
+    const optimization_guide::ModelInfo& model_info) {
+  auto weights_file = model_info.GetAdditionalFileWithBaseName(
+      kOnDeviceModelAdaptationWeightsFile);
+  if (!weights_file) {
+    return nullptr;
+  }
+  auto adaptation_assets =
+      std::make_unique<on_device_model::AdaptationAssetPaths>();
+  adaptation_assets->weights = *weights_file;
+  return adaptation_assets;
+}
+
+}  // namespace
 
 OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
     on_device_model::AdaptationAssetPaths* asset_paths,
@@ -101,7 +127,12 @@ OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
 
 OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
     const OnDeviceModelAdaptationMetadata&) = default;
+OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
+    OnDeviceModelAdaptationMetadata&&) = default;
 OnDeviceModelAdaptationMetadata::~OnDeviceModelAdaptationMetadata() = default;
+
+OnDeviceModelAdaptationMetadata& OnDeviceModelAdaptationMetadata::operator=(
+    OnDeviceModelAdaptationMetadata&&) = default;
 
 bool OnDeviceModelAdaptationMetadata::operator==(
     const OnDeviceModelAdaptationMetadata& other) const {
@@ -163,7 +194,7 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
   CHECK(model_provider_);
   if (!state) {
     Unregister();
-    on_load_fn_.Run(nullptr);
+    on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kUpdatePending));
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
     return;
@@ -173,7 +204,7 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
     return;
   }
   Unregister();
-  on_load_fn_.Run(nullptr);
+  on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kUpdatePending));
   if (!switches::GetOnDeviceModelExecutionOverride()) {
     if (!was_feature_recently_used) {
       RecordAdaptationModelAvailability(
@@ -219,10 +250,22 @@ void OnDeviceModelAdaptationLoader::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {
   CHECK_EQ(optimization_target, target_);
-  on_load_fn_.Run(nullptr);
-  auto result = ProcessModelUpdate(model_info);
-  if (!result.has_value()) {
-    RecordAdaptationModelAvailability(feature_, result.error());
+  CHECK(registered_spec_.has_value());
+  if (!model_info.has_value()) {
+    // The server has indicated no adaptation is available.
+    RecordAdaptationModelAvailability(
+        feature_,
+        OnDeviceModelAdaptationAvailability::kAdaptationModelUnavailable);
+    on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kNotSupported));
+    return;
+  }
+  // The current adaptation's files might get cleaned up, so stop using it.
+  on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kUpdatePending));
+  auto error = DetectBaseModelIncompatibility(*model_info, *registered_spec_);
+  if (error) {
+    RecordAdaptationModelAvailability(feature_, *error);
+    // Likely a stale asset that was on disk, and we haven't fetched yet.
+    // Don't notify the controller yet.
     return;
   }
   auto execution_config_file = model_info->GetAdditionalFileWithBaseName(
@@ -231,7 +274,7 @@ void OnDeviceModelAdaptationLoader::OnModelUpdated(
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::
                       kAdaptationModelExecutionConfigInvalid);
-
+    on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kNotSupported));
     return;
   }
 
@@ -239,56 +282,11 @@ void OnDeviceModelAdaptationLoader::OnModelUpdated(
       FROM_HERE,
       base::BindOnce(&ReadOnDeviceModelExecutionConfig, *execution_config_file),
       base::BindOnce(&CreateAdaptatonMetadataFromModelExecutionConfig, feature_,
-                     std::move(result.value()), model_info->GetVersion())
+                     MaybeGetAdaptationPaths(*model_info),
+                     model_info->GetVersion())
           .Then(
               base::BindOnce(&OnDeviceModelAdaptationMetadataCreated, feature_))
           .Then(on_load_fn_));
-}
-
-base::expected<std::unique_ptr<on_device_model::AdaptationAssetPaths>,
-               OnDeviceModelAdaptationAvailability>
-OnDeviceModelAdaptationLoader::ProcessModelUpdate(
-    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
-  if (!model_info.has_value()) {
-    return base::unexpected(
-        OnDeviceModelAdaptationAvailability::kAdaptationModelUnavailable);
-  }
-  const std::optional<proto::Any>& metadata = model_info->GetModelMetadata();
-  if (!metadata.has_value()) {
-    return base::unexpected(
-        OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid);
-  }
-  auto supported_model_spec =
-      ParsedAnyMetadata<proto::OnDeviceBaseModelMetadata>(metadata.value());
-  if (!supported_model_spec) {
-    return base::unexpected(
-        OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid);
-  }
-  // Check for incompatibility when base model override is not specified
-  if (!switches::GetOnDeviceModelExecutionOverride()) {
-    if (!registered_spec_) {
-      return base::unexpected(
-          OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
-    }
-    if (supported_model_spec->base_model_name() !=
-            registered_spec_->model_name ||
-        supported_model_spec->base_model_version() !=
-            registered_spec_->model_version) {
-      return base::unexpected(
-          OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible);
-    }
-  }
-
-  auto weights_file = model_info->GetAdditionalFileWithBaseName(
-      kOnDeviceModelAdaptationWeightsFile);
-  if (!weights_file) {
-    // Return that the weights file was not provided.
-    return base::ok(nullptr);
-  }
-  auto adaptations_assets =
-      std::make_unique<on_device_model::AdaptationAssetPaths>();
-  adaptations_assets->weights = *weights_file;
-  return base::ok(std::move(adaptations_assets));
 }
 
 }  // namespace optimization_guide

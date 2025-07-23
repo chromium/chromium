@@ -25,18 +25,59 @@ namespace optimization_guide {
 class OnDeviceModelFeatureAdapter;
 class OnDeviceModelMetadata;
 class OptimizationGuideModelProvider;
-enum class OnDeviceModelAdaptationAvailability;
+
+// Detailed availability reason for histograms recording.
+enum class OnDeviceModelAdaptationAvailability {
+  // Adaptation model was available.
+  kAvailable = 0,
+
+  // Base model was not available.
+  kBaseModelUnavailable = 1,
+
+  // Base model spec was invalid, so adaptation model cannot be fetched.
+  kBaseModelSpecInvalid = 2,
+
+  // Adaptation model was not available.
+  kAdaptationModelUnavailable = 3,
+
+  // The received adaptation model was invalid.
+  kAdaptationModelInvalid = 4,
+
+  // The received adaptation model was incompatible with the base model.
+  kAdaptationModelIncompatible = 5,
+
+  // The execution config in the adaptation model was invalid.
+  kAdaptationModelExecutionConfigInvalid = 6,
+
+  // The model execution feature was not recently used.
+  kFeatureNotRecentlyUsed = 7,
+
+  // This must be kept in sync with OnDeviceModelAdaptationAvailability in
+  // optimization/enums.xml.
+  kMaxValue = kFeatureNotRecentlyUsed,
+};
+
+// Indication of why a feature adaptation is not available.
+// Simplification of OnDeviceModelAdaptationAvailability which is for
+// metrics purposes.
+enum class AdaptationUnavailability {
+  // The adaptation is being replaced.
+  kUpdatePending = 0,
+  // No model is expected to be available.
+  kNotSupported = 1,
+};
 
 class OnDeviceModelAdaptationMetadata {
  public:
-  static std::unique_ptr<OnDeviceModelAdaptationMetadata> New(
+  OnDeviceModelAdaptationMetadata(
       on_device_model::AdaptationAssetPaths* asset_paths,
       int64_t version,
       scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
-
   OnDeviceModelAdaptationMetadata(const OnDeviceModelAdaptationMetadata&);
+  OnDeviceModelAdaptationMetadata(OnDeviceModelAdaptationMetadata&&);
   ~OnDeviceModelAdaptationMetadata();
 
+  OnDeviceModelAdaptationMetadata& operator=(OnDeviceModelAdaptationMetadata&&);
   bool operator==(const OnDeviceModelAdaptationMetadata& other) const;
 
   const on_device_model::AdaptationAssetPaths* asset_paths() const;
@@ -48,16 +89,13 @@ class OnDeviceModelAdaptationMetadata {
   int64_t version() const { return version_; }
 
  private:
-  friend class OnDeviceModelServiceControllerTest;
-
-  OnDeviceModelAdaptationMetadata(
-      on_device_model::AdaptationAssetPaths* asset_paths,
-      int64_t version,
-      scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
   std::optional<on_device_model::AdaptationAssetPaths> asset_paths_;
   int64_t version_;
   scoped_refptr<OnDeviceModelFeatureAdapter> adapter_;
 };
+
+using MaybeAdaptationMetadata =
+    base::expected<OnDeviceModelAdaptationMetadata, AdaptationUnavailability>;
 
 // Loads model adaptation assets for a particular feature. Performs adaptation
 // model compatibility checks with the base model and reloads the assets if the
@@ -67,7 +105,8 @@ class OnDeviceModelAdaptationLoader
       public OnDeviceModelComponentStateManager::Observer {
  public:
   using OnLoadFn = base::RepeatingCallback<void(
-      std::unique_ptr<OnDeviceModelAdaptationMetadata>)>;
+      base::expected<OnDeviceModelAdaptationMetadata,
+                     AdaptationUnavailability>)>;
 
   OnDeviceModelAdaptationLoader(
       ModelBasedCapabilityKey feature,
@@ -100,11 +139,6 @@ class OnDeviceModelAdaptationLoader
   // Registers for adaptation model download, if the conditions are right.
   void MaybeRegisterModelDownload(const OnDeviceModelComponentState* state,
                                   bool was_feature_recently_used);
-
-  base::expected<std::unique_ptr<on_device_model::AdaptationAssetPaths>,
-                 OnDeviceModelAdaptationAvailability>
-  ProcessModelUpdate(
-      base::optional_ref<const optimization_guide::ModelInfo> model_info);
 
   ModelBasedCapabilityKey feature_;
   proto::OptimizationTarget target_;

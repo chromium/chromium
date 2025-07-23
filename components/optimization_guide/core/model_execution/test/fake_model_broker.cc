@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -29,7 +31,8 @@ FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
         {{"on_device_model_validation_delay", "0"}}}},
       {});
   model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
-  UpdatePerformanceClassPref(&local_state_, OnDeviceModelPerformanceClass::kHigh);
+  UpdatePerformanceClassPref(&local_state_,
+                             OnDeviceModelPerformanceClass::kHigh);
   auto access_controller =
       std::make_unique<OnDeviceModelAccessController>(local_state_);
   test_controller_ = std::make_unique<OnDeviceModelServiceController>(
@@ -51,9 +54,18 @@ mojo::PendingRemote<mojom::ModelBroker> FakeModelBroker::BindAndPassRemote() {
 void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {
   // First clear the current adaptation, then add the new asset to force an
   // update.
-  test_controller_->MaybeUpdateModelAdaptation(asset.feature(), nullptr);
+  test_controller_->MaybeUpdateModelAdaptation(
+      asset.feature(),
+      base::unexpected(AdaptationUnavailability::kUpdatePending));
   test_controller_->MaybeUpdateModelAdaptation(asset.feature(),
                                                asset.metadata());
+}
+
+std::unique_ptr<OnDeviceAssetManager> FakeModelBroker::CreateAssetManager(
+    OptimizationGuideModelProvider* provider) {
+  return std::make_unique<OnDeviceAssetManager>(
+      &local_state_, test_controller_->GetWeakPtr(),
+      component_manager_.get()->GetWeakPtr(), provider);
 }
 
 }  // namespace optimization_guide

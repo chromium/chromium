@@ -74,7 +74,7 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
     CHECK(base::WriteFile(paths_->weights,
                           base::NumberToString(content.weight.value())));
   }
-  metadata_ = OnDeviceModelAdaptationMetadata::New(
+  metadata_ = std::make_unique<OnDeviceModelAdaptationMetadata>(
       paths_.get(), version(),
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
           std::move(content.config)));

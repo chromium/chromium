@@ -194,8 +194,8 @@ OnDeviceModelServiceController::CreateSession(
 
   CHECK(base_model_controller_->model_metadata());
   CHECK(features::internal::GetOptimizationTargetForCapability(feature));
-  auto* adaptation_metadata = GetFeatureMetadata(feature);
-  CHECK(adaptation_metadata);
+  MaybeAdaptationMetadata adaptation_metadata = GetFeatureMetadata(feature);
+  CHECK(adaptation_metadata.has_value());
 
   OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
@@ -247,21 +247,15 @@ void OnDeviceModelServiceController::UpdateModel(
 
 void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
     ModelBasedCapabilityKey feature,
-    std::unique_ptr<OnDeviceModelAdaptationMetadata> adaptation_metadata) {
-  if (!adaptation_metadata) {
-    model_adaptation_metadata_.erase(feature);
-    base_model_controller_->EraseController(feature);
-    UpdateSolutionProvider(feature);
-    return;
-  }
-  auto it = model_adaptation_metadata_.find(feature);
-  if (it != model_adaptation_metadata_.end() &&
-      it->second == *adaptation_metadata) {
+    base::expected<OnDeviceModelAdaptationMetadata, AdaptationUnavailability>
+        adaptation_metadata) {
+  MaybeAdaptationMetadata& current_metadata = GetFeatureMetadata(feature);
+  if (current_metadata == adaptation_metadata) {
     // Duplicate update (can be caused by multiple profiles).
     // Don't invalidate the existing controller.
     return;
   }
-  model_adaptation_metadata_.emplace(feature, *adaptation_metadata);
+  current_metadata = std::move(adaptation_metadata);
   base_model_controller_->EraseController(feature);
   UpdateSolutionProvider(feature);
 }
@@ -318,14 +312,14 @@ void OnDeviceModelServiceController::OnDeviceModelClient::
   }
 }
 
-OnDeviceModelAdaptationMetadata*
-OnDeviceModelServiceController::GetFeatureMetadata(
+MaybeAdaptationMetadata& OnDeviceModelServiceController::GetFeatureMetadata(
     ModelBasedCapabilityKey feature) {
-  if (auto it = model_adaptation_metadata_.find(feature);
-      it != model_adaptation_metadata_.end()) {
-    return &it->second;
-  }
-  return nullptr;
+  auto it =
+      model_adaptation_metadata_
+          .emplace(feature,
+                   base::unexpected(AdaptationUnavailability::kUpdatePending))
+          .first;
+  return it->second;
 }
 
 void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
@@ -364,8 +358,12 @@ OnDeviceModelServiceController::GetSolution(ModelBasedCapabilityKey feature) {
   }
 
   // Check feature config.
-  auto* metadata = GetFeatureMetadata(feature);
-  if (!metadata) {
+  MaybeAdaptationMetadata metadata = GetFeatureMetadata(feature);
+  if (!metadata.has_value()) {
+    if (metadata.error() == AdaptationUnavailability::kNotSupported) {
+      return base::unexpected(
+          OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable);
+    }
     return base::unexpected(
         OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
   }

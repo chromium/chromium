@@ -71,9 +71,7 @@ class FakeAdaptationAsset {
 
   int64_t version() const { return 12345; }
   ModelBasedCapabilityKey feature() const { return feature_; }
-  std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata() const {
-    return std::make_unique<OnDeviceModelAdaptationMetadata>(*metadata_);
-  }
+  OnDeviceModelAdaptationMetadata metadata() const { return *metadata_; }
 
   void SendTo(OnDeviceModelServiceController& controller) const;
 
