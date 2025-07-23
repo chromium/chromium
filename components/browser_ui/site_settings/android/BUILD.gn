@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("site_settings_jni_headers") {
-  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/site_settings/GeolocationSetting.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
+  ]
 }
 
 source_set("android") {
@@ -72,6 +75,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/DesktopSiteMetrics.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FileEditingInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/GeolocationSetting.java",
     "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/JavascriptOptimizerCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocalStorageInfo.java",

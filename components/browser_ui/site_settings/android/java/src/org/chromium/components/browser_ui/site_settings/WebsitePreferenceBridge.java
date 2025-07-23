@@ -573,6 +573,20 @@ public class WebsitePreferenceBridge {
                 String embedder,
                 @ContentSettingValues int value);
 
+        GeolocationSetting getGeolocationSettingForOrigin(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingsType,
+                String origin,
+                String embedder);
+
+        void setGeolocationSettingForOrigin(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingsType,
+                String origin,
+                String embedder,
+                @ContentSettingValues int approximate,
+                @ContentSettingValues int precise);
+
         void setEphemeralGrantForTesting( // IN-TEST
                 BrowserContextHandle browserContextHandle,
                 @ContentSettingsType.EnumType int contentSettingsType,
