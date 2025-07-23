@@ -5469,7 +5469,6 @@ targets.bundle(
         "ios_chrome_settings_eg2tests_module",
         "ios_chrome_signin_eg2tests_module",
         "ios_chrome_ui_eg2tests_module",
-        "ios_chrome_web_eg2tests_module",
     ],
     per_test_modifications = {
         "ios_chrome_settings_eg2tests_module": [
@@ -5493,11 +5492,6 @@ targets.bundle(
             ),
             "ios_parallel_simulators",
         ],
-        "ios_chrome_web_eg2tests_module": targets.mixin(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
     },
 )
 
@@ -5564,11 +5558,17 @@ targets.bundle(
     targets = [
         "ios_chrome_bookmarks_eg2tests_module",
         "ios_chrome_smoke_eg2tests_module",
+        "ios_chrome_web_eg2tests_module",
     ],
     per_test_modifications = {
         "ios_chrome_bookmarks_eg2tests_module": targets.mixin(
             swarming = targets.swarming(
                 shards = 3,
+            ),
+        ),
+        "ios_chrome_web_eg2tests_module": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
             ),
         ),
     },
