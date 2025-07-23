@@ -228,6 +228,10 @@ if (enable_vulkan) {
       sources += [ "tests/native_window_android.cc" ]
       deps += [ "//ui/gl" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   # TODO(penghuang): support more platforms
@@ -274,6 +278,10 @@ if (enable_vulkan) {
 
         deps += [ "//ui/ozone" ]
       }
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     }
   }
 }

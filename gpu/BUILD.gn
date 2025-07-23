@@ -135,6 +135,10 @@ static_library("test_support") {
     ]
   }
   deps += [ "//third_party/angle:translator" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
@@ -380,6 +384,10 @@ test("gl_tests") {
   if (is_chromeos) {
     deps += [ "//ui/gfx/linux:gbm" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gpu_unittests") {
@@ -676,6 +684,10 @@ test("gpu_unittests") {
   if (is_apple) {
     deps += [ "//ui/accelerated_widget_mac:accelerated_widget_mac" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gpu_perftests") {
