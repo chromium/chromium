@@ -9,7 +9,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "content/common/content_export.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -112,8 +112,8 @@ class CONTENT_EXPORT BluetoothBlocklist final {
   void ResetToDefaultValuesForTest();
 
  private:
-  // friend LazyInstance to permit access to private constructor.
-  friend base::LazyInstanceTraitsBase<BluetoothBlocklist>;
+  // friend NoDestructor to permit access to private constructor.
+  friend class base::NoDestructor<BluetoothBlocklist>;
 
   BluetoothBlocklist();
 

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/constants.mojom.h"
 #include "mojo/core/embedder/configuration.h"
@@ -26,12 +25,11 @@ class MojoInitializer {
   }
 };
 
-base::LazyInstance<MojoInitializer>::Leaky mojo_initializer;
-
-}  //  namespace
+}  // namespace
 
 void InitializeMojo() {
-  mojo_initializer.Get();
+  // Trivially destructible, so no NoDestructor.
+  static MojoInitializer mojo_initializer;
 }
 
 }  // namespace content

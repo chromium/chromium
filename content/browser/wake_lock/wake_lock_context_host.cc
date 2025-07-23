@@ -5,7 +5,7 @@
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -16,19 +16,22 @@ namespace {
 
 base::AtomicSequenceNumber g_unique_id;
 
-base::LazyInstance<std::map<int, WakeLockContextHost*>>::Leaky
-    g_id_to_context_host = LAZY_INSTANCE_INITIALIZER;
+std::map<int, WakeLockContextHost*>& GetIdToContextHostMap() {
+  static base::NoDestructor<std::map<int, WakeLockContextHost*>>
+      id_to_context_host;
+  return *id_to_context_host;
+}
 
 WakeLockContextHost* ContextHostFromId(int id) {
-  auto it = g_id_to_context_host.Get().find(id);
-  return it != g_id_to_context_host.Get().end() ? it->second : nullptr;
+  auto it = GetIdToContextHostMap().find(id);
+  return it != GetIdToContextHostMap().end() ? it->second : nullptr;
 }
 
 }  // namespace
 
 WakeLockContextHost::WakeLockContextHost(WebContents* web_contents)
     : id_(g_unique_id.GetNext()), web_contents_(web_contents) {
-  g_id_to_context_host.Get()[id_] = this;
+  GetIdToContextHostMap()[id_] = this;
 
   // Connect to a WakeLockContext, associating it with |id_|.
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
@@ -39,7 +42,7 @@ WakeLockContextHost::WakeLockContextHost(WebContents* web_contents)
 }
 
 WakeLockContextHost::~WakeLockContextHost() {
-  g_id_to_context_host.Get().erase(id_);
+  GetIdToContextHostMap().erase(id_);
 }
 
 // static

@@ -11,10 +11,10 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/buildflags.h"
@@ -94,16 +94,16 @@ namespace content {
 namespace {
 using RenderFrameDevToolsMap =
     std::map<FrameTreeNode*, RenderFrameDevToolsAgentHost*>;
-base::LazyInstance<RenderFrameDevToolsMap>::Leaky g_agent_host_instances =
-    LAZY_INSTANCE_INITIALIZER;
+RenderFrameDevToolsMap& GetAgentHostInstances() {
+  static base::NoDestructor<RenderFrameDevToolsMap> agent_host_instances;
+  return *agent_host_instances;
+}
 
 static bool g_was_ever_attached_to_any_frame = false;
 
 RenderFrameDevToolsAgentHost* FindAgentHost(FrameTreeNode* frame_tree_node) {
-  if (!g_agent_host_instances.IsCreated())
-    return nullptr;
-  auto it = g_agent_host_instances.Get().find(frame_tree_node);
-  return it == g_agent_host_instances.Get().end() ? nullptr : it->second;
+  auto it = GetAgentHostInstances().find(frame_tree_node);
+  return it == GetAgentHostInstances().end() ? nullptr : it->second;
 }
 
 bool ShouldCreateDevToolsForNode(FrameTreeNode* ftn) {
@@ -264,7 +264,7 @@ void RenderFrameDevToolsAgentHost::UpdateRawHeadersAccess(
   }
   RenderProcessHost* rph = rfh->GetProcess();
   std::set<url::Origin> process_origins;
-  for (const auto& entry : g_agent_host_instances.Get()) {
+  for (const auto& entry : GetAgentHostInstances()) {
     RenderFrameHostImpl* frame_host = entry.second->frame_host_;
     if (!frame_host)
       continue;
@@ -307,7 +307,7 @@ RenderFrameDevToolsAgentHost::RenderFrameDevToolsAgentHost(
 void RenderFrameDevToolsAgentHost::SetFrameTreeNode(
     FrameTreeNode* frame_tree_node) {
   if (frame_tree_node_)
-    g_agent_host_instances.Get().erase(frame_tree_node_);
+    GetAgentHostInstances().erase(frame_tree_node_);
   frame_tree_node_ = frame_tree_node;
   if (frame_tree_node_) {
     DCHECK(web_contents() ==
@@ -316,7 +316,7 @@ void RenderFrameDevToolsAgentHost::SetFrameTreeNode(
     // we may get two agent hosts for the same FrameTreeNode.
     // That is definitely a bug, and we should fix that, and DCHECK
     // here that there is no other agent host.
-    g_agent_host_instances.Get()[frame_tree_node] = this;
+    GetAgentHostInstances()[frame_tree_node] = this;
   }
 }
 
@@ -978,7 +978,7 @@ void RenderFrameDevToolsAgentHost::MainThreadDebuggerPaused() {
 
   bool is_same_origin_debugger_attached_in_another_renderer = false;
   bool is_same_origin_debugger_paused_in_another_renderer = false;
-  for (const auto& entry : g_agent_host_instances.Get()) {
+  for (const auto& entry : GetAgentHostInstances()) {
     RenderFrameDevToolsAgentHost* agent_host = entry.second;
     if (agent_host == this || !agent_host->GetWebContents()) {
       continue;

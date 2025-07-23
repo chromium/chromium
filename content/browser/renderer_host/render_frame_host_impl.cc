@@ -457,8 +457,10 @@ base::LazyInstance<RoutingIDIsolatableSandboxedIframesSet>::DestructorAtExit
 
 using TokenFrameMap =
     absl::flat_hash_map<blink::LocalFrameToken, RenderFrameHostImpl*>;
-base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
-    LAZY_INSTANCE_INITIALIZER;
+TokenFrameMap& GetTokenFrameMap() {
+  static base::NoDestructor<TokenFrameMap> token_frame_map;
+  return *token_frame_map;
+}
 
 BackForwardCacheMetrics::NotRestoredReason
 RendererEvictionReasonToNotRestoredReason(
@@ -562,12 +564,12 @@ RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(
     int process_id,
     const blink::FrameToken& frame_token) {
   if (frame_token.Is<blink::LocalFrameToken>()) {
-    auto it = g_token_frame_map.Get().find(
-        frame_token.GetAs<blink::LocalFrameToken>());
+    auto it =
+        GetTokenFrameMap().find(frame_token.GetAs<blink::LocalFrameToken>());
     // The check against |process_id| isn't strictly necessary, but represents
     // an extra level of protection against a renderer trying to force a frame
     // token.
-    if (it == g_token_frame_map.Get().end() ||
+    if (it == GetTokenFrameMap().end() ||
         process_id != it->second->GetProcess()->GetDeprecatedID()) {
       return RenderFrameHostOrProxy(nullptr, nullptr);
     }
@@ -2120,9 +2122,10 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
     const blink::LocalFrameToken& frame_token,
     mojo::ReportBadMessageCallback* process_mismatch_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = g_token_frame_map.Get().find(frame_token);
-  if (it == g_token_frame_map.Get().end())
+  auto it = GetTokenFrameMap().find(frame_token);
+  if (it == GetTokenFrameMap().end()) {
     return nullptr;
+  }
 
   if (it->second->GetProcess()->GetDeprecatedID() != process_id) {
     if (process_mismatch_callback) {
@@ -2181,8 +2184,8 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromAXTreeID(
 RenderFrameHostImpl* RenderFrameHostImpl::FromOverlayRoutingToken(
     const base::UnguessableToken& token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = g_token_frame_map.Get().find(blink::LocalFrameToken(token));
-  return it == g_token_frame_map.Get().end() ? nullptr : it->second;
+  auto it = GetTokenFrameMap().find(blink::LocalFrameToken(token));
+  return it == GetTokenFrameMap().end() ? nullptr : it->second;
 }
 
 // static
@@ -2437,7 +2440,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   g_routing_id_frame_map.Get().emplace(
       GlobalRenderFrameHostId(GetProcess()->GetDeprecatedID(), routing_id_),
       this);
-  g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
+  GetTokenFrameMap().insert(std::make_pair(frame_token_, this));
   site_instance_->group()->AddObserver(this);
   auto* process = GetProcess();
   process->RegisterRenderFrameHost(GetGlobalId(), IsOutermostMainFrame());
@@ -2684,7 +2687,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
         GetNetworkIsolationKey());
   }
 
-  g_token_frame_map.Get().erase(frame_token_);
+  GetTokenFrameMap().erase(frame_token_);
 
   // Ensure that the render process host has been notified that all media
   // streams from this frame have terminated. This is required to ensure the

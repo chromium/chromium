@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -102,8 +101,10 @@ class ProfilingThreadControl {
   base::Lock lock_;
 };
 
-base::LazyInstance<ProfilingThreadControl>::Leaky g_flush_thread_control =
-    LAZY_INSTANCE_INITIALIZER;
+ProfilingThreadControl& GetProfilingThreadControl() {
+  static base::NoDestructor<ProfilingThreadControl> flush_thread_control;
+  return *flush_thread_control;
+}
 
 }  // namespace
 
@@ -132,12 +133,12 @@ void Profiling::Start() {
   // Schedule profile data flushing for single process because it doesn't
   // get written out correctly on exit.
   if (flush)
-    g_flush_thread_control.Get().Start();
+    GetProfilingThreadControl().Start();
 }
 
 // static
 void Profiling::Stop() {
-  g_flush_thread_control.Get().Stop();
+  GetProfilingThreadControl().Stop();
   base::debug::StopProfiling();
 }
 

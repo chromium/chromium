@@ -30,12 +30,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -141,11 +141,11 @@ class InotifyReader {
   bool HasWatches();
 
  private:
-  friend struct base::LazyInstanceTraitsBase<InotifyReader>;
+  friend class base::NoDestructor<InotifyReader>;
 
   InotifyReader();
-  // There is no destructor because |g_inotify_reader| is a
-  // base::LazyInstance::Leaky object. Having a destructor causes build
+  // There is no destructor because |GetInotifyReader()| is a
+  // base::NoDestructor object. Having a destructor causes build
   // issues with GCC 6 (http://crbug.com/636346).
 
   // Returns true on successful thread creation.
@@ -394,8 +394,10 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   base::WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
 
-base::LazyInstance<InotifyReader>::Leaky g_inotify_reader =
-    LAZY_INSTANCE_INITIALIZER;
+InotifyReader& GetInotifyReader() {
+  static base::NoDestructor<InotifyReader> inotify_reader;
+  return *inotify_reader;
+}
 
 void InotifyReaderThreadDelegate::ThreadMain() {
   base::PlatformThread::SetName("file_system_access_inotify_reader");
@@ -461,14 +463,14 @@ void InotifyReaderThreadDelegate::ThreadMain() {
             // Matching IN_MOVED_TO is observed for the existing pending move.
             // Match up the two move events, and reset
             // `pending_move_from_event`.
-            g_inotify_reader.Get().OnInotifyMatchingMoveEvents(
+            GetInotifyReader().OnInotifyMatchingMoveEvents(
                 pending_move_from_event, event);
             pending_move_from_event = nullptr;
             continue;
           }
           // No matching IN_MOVED_TO is observed for `pending_move_from_event`.
           // Flush and reset `pending_move_from_event`.
-          g_inotify_reader.Get().OnInotifyEvent(pending_move_from_event);
+          GetInotifyReader().OnInotifyEvent(pending_move_from_event);
           pending_move_from_event = nullptr;
         }
 
@@ -479,7 +481,7 @@ void InotifyReaderThreadDelegate::ThreadMain() {
           pending_move_from_event = event;
         } else {
           // Process other events as normal.
-          g_inotify_reader.Get().OnInotifyEvent(event);
+          GetInotifyReader().OnInotifyEvent(event);
         }
       }
 
@@ -496,7 +498,7 @@ void InotifyReaderThreadDelegate::ThreadMain() {
       // If we don't have another batch to process, assume any pending move-from
       // event doesn't have a matching move-to event.
       if (!has_batch && pending_move_from_event) {
-        g_inotify_reader.Get().OnInotifyEvent(pending_move_from_event);
+        GetInotifyReader().OnInotifyEvent(pending_move_from_event);
       }
     }
   }
@@ -517,7 +519,7 @@ InotifyReader::InotifyReader()
 }
 
 bool InotifyReader::StartThread() {
-  // This object is LazyInstance::Leaky, so thread_delegate_ will outlive the
+  // This object is base::NoDestructor, so thread_delegate_ will outlive the
   // thread.
   return base::PlatformThread::CreateNonJoinable(0, &thread_delegate_);
 }
@@ -1041,7 +1043,7 @@ void FilePathWatcherImpl::CancelImpl() {
   // We're clearing `watches_` so make sure we're reporting usage changes.
   CHECK(monitoring_usage_changes_);
   for (const auto& watch : watches_) {
-    g_inotify_reader.Get().RemoveWatch(watch.watch, this);
+    GetInotifyReader().RemoveWatch(watch.watch, this);
   }
   watches_.clear();
   target_.clear();
@@ -1062,7 +1064,7 @@ bool FilePathWatcherImpl::UpdateWatches() {
     InotifyReader::Watch old_watch = watch_entry.watch;
     watch_entry.watch = InotifyReader::kInvalidWatch;
     watch_entry.linkname.clear();
-    watch_entry.watch = g_inotify_reader.Get().AddWatch(path, this);
+    watch_entry.watch = GetInotifyReader().AddWatch(path, this);
     if (watch_entry.watch == InotifyReader::kWatchLimitExceeded) {
       return false;
     }
@@ -1078,7 +1080,7 @@ bool FilePathWatcherImpl::UpdateWatches() {
       }
     }
     if (old_watch != watch_entry.watch) {
-      g_inotify_reader.Get().RemoveWatch(old_watch, this);
+      GetInotifyReader().RemoveWatch(old_watch, this);
     }
     path = path.Append(watch_entry.subdir);
   }
@@ -1134,15 +1136,15 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
     // a dir with Chrome OS file manager open for the dir). In such case,
     // `cur_dir` under `changed_dir` could exist in this loop but not in
     // the FileEnumerator loop in the upcoming UpdateRecursiveWatchesForPath(),
-    // As a result, `g_inotify_reader` would have an entry in its `watchers_`
+    // As a result, `GetInotifyReader()` would have an entry in its `watchers_`
     // pointing to `this` but `this` is no longer aware of that. Crash in
     // http://crbug/990004 could happen later.
     //
     // Remove the watcher of `cur_path` regardless of whether it exists
-    // or not to keep `this` and `g_inotify_reader` consistent even when the
+    // or not to keep `this` and `GetInotifyReader()` consistent even when the
     // race happens. The watcher will be added back if `cur_path` exists in
     // the FileEnumerator loop in UpdateRecursiveWatchesForPath().
-    g_inotify_reader.Get().RemoveWatch(end_it->second, this);
+    GetInotifyReader().RemoveWatch(end_it->second, this);
 
     // Keep it in sync with |recursive_watches_by_path_| crbug.com/995196.
     recursive_paths_by_watch_.erase(end_it->second);
@@ -1182,8 +1184,7 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(
     // needs to be an add or update operation.
     if (!Contains(recursive_watches_by_path_, current)) {
       // Try to add new watches.
-      InotifyReader::Watch watch =
-          g_inotify_reader.Get().AddWatch(current, this);
+      InotifyReader::Watch watch = GetInotifyReader().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded) {
         return false;
       }
@@ -1200,13 +1201,12 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(
       // Update existing watches.
       InotifyReader::Watch old_watch = recursive_watches_by_path_[current];
       DUMP_WILL_BE_CHECK_NE(InotifyReader::kInvalidWatch, old_watch);
-      InotifyReader::Watch watch =
-          g_inotify_reader.Get().AddWatch(current, this);
+      InotifyReader::Watch watch = GetInotifyReader().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded) {
         return false;
       }
       if (watch != old_watch) {
-        g_inotify_reader.Get().RemoveWatch(old_watch, this);
+        GetInotifyReader().RemoveWatch(old_watch, this);
         recursive_paths_by_watch_.erase(old_watch);
         recursive_watches_by_path_.erase(current);
         TrackWatchForRecursion(watch, current);
@@ -1244,7 +1244,7 @@ void FilePathWatcherImpl::RemoveRecursiveWatches() {
   }
 
   for (const auto& it : recursive_paths_by_watch_) {
-    g_inotify_reader.Get().RemoveWatch(it.first, this);
+    GetInotifyReader().RemoveWatch(it.first, this);
   }
 
   recursive_paths_by_watch_.clear();
@@ -1269,7 +1269,7 @@ bool FilePathWatcherImpl::AddWatchForBrokenSymlink(const base::FilePath& path,
   // changes to a component "/" which is harmless so no special treatment of
   // this case is required.
   InotifyReader::Watch watch =
-      g_inotify_reader.Get().AddWatch(link->DirName(), this);
+      GetInotifyReader().AddWatch(link->DirName(), this);
   if (watch == InotifyReader::kWatchLimitExceeded) {
     return false;
   }
@@ -1382,7 +1382,7 @@ size_t FilePathWatcher::GetQuotaLimitImpl() {
 
 // static
 bool FilePathWatcher::HasWatchesForTest() {
-  return g_inotify_reader.Get().HasWatches();
+  return GetInotifyReader().HasWatches();
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

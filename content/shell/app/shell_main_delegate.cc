@@ -15,8 +15,8 @@
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/current_process.h"
 #include "base/strings/string_number_conversions.h"
@@ -102,8 +102,11 @@ enum class LoggingDest {
 };
 
 #if !BUILDFLAG(IS_FUCHSIA)
-base::LazyInstance<content::ShellCrashReporterClient>::Leaky
-    g_shell_crash_client = LAZY_INSTANCE_INITIALIZER;
+content::ShellCrashReporterClient& GetShellCrashReporterClient() {
+  static base::NoDestructor<content::ShellCrashReporterClient>
+      shell_crash_client;
+  return *shell_crash_client;
+}
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -282,7 +285,7 @@ void ShellMainDelegate::PreSandboxStartup() {
     std::string process_type =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kProcessType);
-    crash_reporter::SetCrashReporterClient(g_shell_crash_client.Pointer());
+    crash_reporter::SetCrashReporterClient(&GetShellCrashReporterClient());
     // Reporting for sub-processes will be initialized in ZygoteForked.
     if (process_type != switches::kZygoteProcess) {
       crash_reporter::InitializeCrashpad(process_type.empty(), process_type);

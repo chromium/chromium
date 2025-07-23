@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "content/browser/bluetooth/bluetooth_util.h"
 #include "content/public/browser/content_browser_client.h"
@@ -17,20 +18,14 @@
 using device::BluetoothUUID;
 using ManufacturerId = device::BluetoothDevice::ManufacturerId;
 
-namespace {
-
-static base::LazyInstance<content::BluetoothBlocklist>::Leaky g_singleton =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
 namespace content {
 
 BluetoothBlocklist::~BluetoothBlocklist() {}
 
 // static
 BluetoothBlocklist& BluetoothBlocklist::Get() {
-  return g_singleton.Get();
+  static base::NoDestructor<BluetoothBlocklist> singleton;
+  return *singleton;
 }
 
 void BluetoothBlocklist::Add(const BluetoothUUID& uuid, Value value) {

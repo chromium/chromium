@@ -9,10 +9,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/metrics/histogram_delta_serialization.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -86,7 +86,7 @@ class HistogramSynchronizer::RequestContext {
 
     RequestContext* request =
         new RequestContext(std::move(callback), sequence_number);
-    outstanding_requests_.Get()[sequence_number] = request;
+    GetOutstandingRequests()[sequence_number] = request;
   }
 
   // Find the |RequestContext| in |outstanding_requests_| map for the given
@@ -94,9 +94,10 @@ class HistogramSynchronizer::RequestContext {
   static RequestContext* GetRequestContext(int sequence_number) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    auto it = outstanding_requests_.Get().find(sequence_number);
-    if (it == outstanding_requests_.Get().end())
+    auto it = GetOutstandingRequests().find(sequence_number);
+    if (it == GetOutstandingRequests().end()) {
       return nullptr;
+    }
 
     RequestContext* request = it->second;
     DCHECK_EQ(sequence_number, request->sequence_number_);
@@ -109,26 +110,34 @@ class HistogramSynchronizer::RequestContext {
   static void Unregister(int sequence_number) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    auto it = outstanding_requests_.Get().find(sequence_number);
-    if (it == outstanding_requests_.Get().end())
+    auto it = GetOutstandingRequests().find(sequence_number);
+    if (it == GetOutstandingRequests().end()) {
       return;
+    }
 
     RequestContext* request = it->second;
     DCHECK_EQ(sequence_number, request->sequence_number_);
     std::move(request->callback_).Run();
 
     delete request;
-    outstanding_requests_.Get().erase(it);
+    GetOutstandingRequests().erase(it);
   }
 
   // Delete all the entries in |outstanding_requests_| map.
   static void OnShutdown() {
     // Just in case we have any pending tasks, clear them out.
-    while (!outstanding_requests_.Get().empty()) {
-      auto it = outstanding_requests_.Get().begin();
+    while (!GetOutstandingRequests().empty()) {
+      auto it = GetOutstandingRequests().begin();
       delete it->second;
-      outstanding_requests_.Get().erase(it);
+      GetOutstandingRequests().erase(it);
     }
+  }
+
+  // Map of all outstanding RequestContexts, from sequence_number_ to
+  // RequestContext.
+  static RequestContextMap& GetOutstandingRequests() {
+    static base::NoDestructor<RequestContextMap> outstanding_requests;
+    return *outstanding_requests;
   }
 
   // Requests are made to asynchronously send data to the |callback_|.
@@ -144,16 +153,7 @@ class HistogramSynchronizer::RequestContext {
   // The number of pending processes (all renderer processes and browser child
   // processes) that have not yet responded to requests.
   int processes_pending_;
-
-  // Map of all outstanding RequestContexts, from sequence_number_ to
-  // RequestContext.
-  static base::LazyInstance<RequestContextMap>::Leaky outstanding_requests_;
 };
-
-// static
-base::LazyInstance<HistogramSynchronizer::RequestContext::RequestContextMap>::
-    Leaky HistogramSynchronizer::RequestContext::outstanding_requests_ =
-        LAZY_INSTANCE_INITIALIZER;
 
 HistogramSynchronizer::HistogramSynchronizer()
     : lock_(),
