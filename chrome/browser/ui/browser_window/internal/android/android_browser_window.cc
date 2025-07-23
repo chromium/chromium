@@ -4,13 +4,41 @@
 
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 
+#include <jni.h>
+
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindow_jni.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
-AndroidBrowserWindow::AndroidBrowserWindow() = default;
+namespace {
+using base::android::AttachCurrentThread;
+using base::android::JavaParamRef;
+}  // namespace
 
-AndroidBrowserWindow::~AndroidBrowserWindow() = default;
+// Implements Java |AndroidBrowserWindow.Natives#create|.
+static jlong JNI_AndroidBrowserWindow_Create(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& caller) {
+  return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(env, caller));
+}
+
+AndroidBrowserWindow::AndroidBrowserWindow(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_android_browser_window) {
+  java_android_browser_window_.Reset(env, java_android_browser_window);
+}
+
+AndroidBrowserWindow::~AndroidBrowserWindow() {
+  Java_AndroidBrowserWindow_clearNativePtr(AttachCurrentThread(),
+                                           java_android_browser_window_);
+}
+
+void AndroidBrowserWindow::Destroy(JNIEnv* env) {
+  delete this;
+}
 
 ui::UnownedUserDataHost& AndroidBrowserWindow::GetUnownedUserDataHost() {
   NOTREACHED();
@@ -22,7 +50,9 @@ const ui::UnownedUserDataHost& AndroidBrowserWindow::GetUnownedUserDataHost()
 }
 
 ui::BaseWindow* AndroidBrowserWindow::GetWindow() {
-  NOTREACHED();
+  return reinterpret_cast<ui::BaseWindow*>(
+      Java_AndroidBrowserWindow_getOrCreateNativeBaseWindowPtr(
+          AttachCurrentThread(), java_android_browser_window_));
 }
 
 Profile* AndroidBrowserWindow::GetProfile() {

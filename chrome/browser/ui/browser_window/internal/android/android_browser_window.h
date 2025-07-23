@@ -5,15 +5,23 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_H_
 
+#include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 // Android implementation of |BrowserWindowInterface|.
 class AndroidBrowserWindow final : public BrowserWindowInterface {
  public:
-  AndroidBrowserWindow();
+  AndroidBrowserWindow(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_android_browser_window);
   AndroidBrowserWindow(const AndroidBrowserWindow&) = delete;
   AndroidBrowserWindow& operator=(const AndroidBrowserWindow&) = delete;
   ~AndroidBrowserWindow() override;
+
+  // Implements Java |AndroidBrowserWindow.Natives#destroy|.
+  void Destroy(JNIEnv* env);
 
   // Implements |BrowserWindowInterface|.
   ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
@@ -28,6 +36,9 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> java_android_browser_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_H_

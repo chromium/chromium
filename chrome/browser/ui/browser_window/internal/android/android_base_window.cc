@@ -4,12 +4,39 @@
 
 #include "chrome/browser/ui/browser_window/internal/android/android_base_window.h"
 
+#include <jni.h>
+
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
+#include "chrome/browser/ui/browser_window/internal/jni/AndroidBaseWindow_jni.h"
 #include "ui/gfx/geometry/rect.h"
 
-AndroidBaseWindow::AndroidBaseWindow() = default;
+namespace {
+using base::android::AttachCurrentThread;
+using base::android::JavaParamRef;
+}  // namespace
 
-AndroidBaseWindow::~AndroidBaseWindow() = default;
+// Implements Java |AndroidBaseWindow.Natives#create|.
+static jlong JNI_AndroidBaseWindow_Create(JNIEnv* env,
+                                          const JavaParamRef<jobject>& caller) {
+  return reinterpret_cast<intptr_t>(new AndroidBaseWindow(env, caller));
+}
+
+AndroidBaseWindow::AndroidBaseWindow(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_android_base_window) {
+  java_android_base_window_.Reset(env, java_android_base_window);
+}
+
+AndroidBaseWindow::~AndroidBaseWindow() {
+  Java_AndroidBaseWindow_clearNativePtr(AttachCurrentThread(),
+                                        java_android_base_window_);
+}
+
+void AndroidBaseWindow::Destroy(JNIEnv* env) {
+  delete this;
+}
 
 bool AndroidBaseWindow::IsActive() const {
   NOTREACHED();

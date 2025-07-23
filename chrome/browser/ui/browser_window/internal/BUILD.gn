@@ -21,6 +21,7 @@ source_set("internal") {
       "android/android_browser_window.cc",
       "android/browser_window_interface_iterator_android.cc",
     ]
+    deps += [ ":jni" ]
   } else {
     sources += [
       "browser_window_features.cc",
@@ -81,16 +82,40 @@ source_set("internal") {
   }
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":internal",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/android_base_window_unittest.cc",
+      "android/android_browser_window_unittest.cc",
+    ]
+    deps += [
+      "//base",
+      "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
+      "//chrome/browser/ui/browser_window/test:native_unit_test_support_jni",
+      "//ui/base",
+    ]
+  }
+}
+
 # Android targets need to be guarded by is_android because:
 # (1) Android GNI files may assert is_android, and
 # (2) The rest of this file can be included in non-Android builds.
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 
   android_library("java") {
     visibility = [
       ":*",
       "//chrome/android:chrome_all_java",
+      "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
     ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
@@ -102,8 +127,17 @@ if (is_android) {
     deps = [
       "//build/android:build_java",
       "//chrome/browser/ui/browser_window:java",
-      "//ui/android:ui_no_recycler_view_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+    srcjar_deps = [ ":jni" ]
+  }
+
+  generate_jni("jni") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
     ]
   }
 
