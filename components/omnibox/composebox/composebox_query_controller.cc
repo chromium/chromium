@@ -196,6 +196,7 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
 }
 
 GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text) {
+  CHECK(cluster_info_.has_value());
   session_state_ = SessionState::kQuerySubmitted;
   if (!active_files_.empty()) {
     // Since multiple file upload isn't supported right now, use the last file
@@ -204,6 +205,7 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text) {
     const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
     return GetUrlForMultimodalAim(
         template_url_service_, kEntrypointParameterValue,
+        cluster_info_->search_session_id(),
         request_id_generator_.GetNextRequestId(
             lens::RequestIdUpdateMode::kSearchUrl),
         last_file->mime_type_, base::UTF8ToUTF16(query_text));

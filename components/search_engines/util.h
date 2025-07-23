@@ -239,6 +239,8 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 // Retrieves the URL for the AIM web page if the a file was uploaded as part
 // of the input.
 // `aim_entrypoint` (aep) is the source of the request.
+// `search_session_id` (gsessionid) is the search session id from the cluster
+// info.
 // `request_id` (vsrid) is the visual search request id used by lens to obtain
 // the uploaded context.
 // `mime_type` (vit) is the type of the file that has been uploaded.
@@ -247,6 +249,7 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 GURL GetUrlForMultimodalAim(
     TemplateURLService* turl_service,
     const std::string& aim_entrypoint,
+    const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
     const std::u16string& query_text = std::u16string());

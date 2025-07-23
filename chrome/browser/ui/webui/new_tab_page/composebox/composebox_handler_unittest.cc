@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/version_info/channel.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/variations/variations_client.h"
 #include "content/public/browser/navigation_entry.h"
@@ -31,7 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class MockQueryController : public ComposeboxQueryController {
+class MockQueryController : public TestComposeboxQueryController {
  public:
   explicit MockQueryController(
       signin::IdentityManager* identity_manager,
@@ -40,12 +41,12 @@ class MockQueryController : public ComposeboxQueryController {
       std::string locale,
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client)
-      : ComposeboxQueryController(identity_manager,
-                                  url_loader_factory,
-                                  channel,
-                                  locale,
-                                  template_url_service,
-                                  variations_client) {}
+      : TestComposeboxQueryController(identity_manager,
+                                      url_loader_factory,
+                                      channel,
+                                      locale,
+                                      template_url_service,
+                                      variations_client) {}
   ~MockQueryController() override = default;
 
   MOCK_METHOD(void, NotifySessionStarted, ());
@@ -55,6 +56,10 @@ class MockQueryController : public ComposeboxQueryController {
       StartFileUploadFlow,
       (std::unique_ptr<ComposeboxQueryController::FileInfo> file_info_mojom,
        scoped_refptr<base::RefCountedBytes> file_data));
+
+  void NotifySessionStartedBase() {
+    TestComposeboxQueryController::NotifySessionStarted();
+  }
 };
 
 class TestWebContentsDelegate : public content::WebContentsDelegate {
@@ -148,6 +153,23 @@ TEST_F(ComposeboxHandlerTest, NotifySessionAbandoned) {
 }
 
 TEST_F(ComposeboxHandlerTest, SubmitQuery) {
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  query_controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          run_loop.Quit();
+        }
+      }));
+
+  // Start the session.
+  EXPECT_CALL(query_controller(), NotifySessionStarted)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          &query_controller(), &MockQueryController::NotifySessionStartedBase));
+  handler().NotifySessionStarted();
+  run_loop.Run();
+
   const std::string query = "test";
   content::TestNavigationObserver navigation_observer(web_contents());
   handler().SubmitQuery(query, 1, false, false, false, false);
