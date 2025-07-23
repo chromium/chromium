@@ -67,21 +67,18 @@ class ReportingEventRouterTest : public testing::TestWithParam<bool> {
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken("fake-token");
 
-    enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
-        ->SetTestingFactory(
-            profile_, base::BindRepeating([](content::BrowserContext* context) {
-              return std::unique_ptr<KeyedService>(
-                  new enterprise_connectors::RealtimeReportingClient(context));
-            }));
-    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-        profile_)
+    RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
+        profile_, base::BindRepeating([](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(
+              new RealtimeReportingClient(context));
+        }));
+    RealtimeReportingClientFactory::GetForProfile(profile_)
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
     reporting_event_router_ = std::make_unique<ReportingEventRouter>(
         RealtimeReportingClientFactory::GetForProfile(profile_));
 
-    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-        profile_)
+    RealtimeReportingClientFactory::GetForProfile(profile_)
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
     identity_test_environment_.MakePrimaryAccountAvailable(
@@ -89,8 +86,7 @@ class ReportingEventRouterTest : public testing::TestWithParam<bool> {
   }
 
   void TearDown() override {
-    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-        profile_)
+    RealtimeReportingClientFactory::GetForProfile(profile_)
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
   }
 

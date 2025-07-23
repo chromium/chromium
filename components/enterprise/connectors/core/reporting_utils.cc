@@ -252,7 +252,7 @@ std::string MaskUsername(const std::u16string& username) {
 }
 
 std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
-    const enterprise_connectors::ReportingSettings& settings,
+    const ReportingSettings& settings,
     const char* event_type) {
   const auto& it = settings.enabled_opt_in_events.find(event_type);
   if (it == settings.enabled_opt_in_events.end()) {
@@ -338,7 +338,7 @@ void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
 std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities,
-    const enterprise_connectors::ReportingSettings& settings,
+    const ReportingSettings& settings,
     const std::string& profile_identifier,
     const std::string& profile_username) {
   std::unique_ptr<url_matcher::URLMatcher> matcher =
@@ -466,8 +466,7 @@ proto::UrlFilteringInterstitialEvent GetUrlFilteringInterstitialEvent(
   proto::UrlFilteringInterstitialEvent event;
   event.set_url(url.spec());
   EventResult event_result = GetEventResultFromThreatType(threat_type);
-  event.set_clicked_through(event_result ==
-                            enterprise_connectors::EventResult::BYPASSED);
+  event.set_clicked_through(event_result == EventResult::BYPASSED);
   if (!threat_type.empty()) {
     event.set_threat_type(ConvertThreatTypeToProto(threat_type));
   }
@@ -556,8 +555,7 @@ proto::UnscannedFileEvent GetUnscannedFileEvent(
   }
 
   event.set_event_result(GetEventResult(event_result));
-  event.set_clicked_through(event_result ==
-                            enterprise_connectors::EventResult::BYPASSED);
+  event.set_clicked_through(event_result == EventResult::BYPASSED);
 
   return event;
 }
@@ -629,8 +627,7 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
   }
 
   event.set_event_result(GetEventResult(event_result));
-  event.set_clicked_through(event_result ==
-                            enterprise_connectors::EventResult::BYPASSED);
+  event.set_clicked_through(event_result == EventResult::BYPASSED);
 
   return event;
 }

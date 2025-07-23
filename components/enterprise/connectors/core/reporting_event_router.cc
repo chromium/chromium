@@ -93,8 +93,7 @@ void ReportingEventRouter::OnLoginEvent(
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   std::unique_ptr<url_matcher::URLMatcher> matcher =
-      CreateURLMatcherForOptInEvent(settings.value(),
-                                    enterprise_connectors::kKeyLoginEvent);
+      CreateURLMatcherForOptInEvent(settings.value(), kKeyLoginEvent);
   if (!IsUrlMatched(matcher.get(), url)) {
     return;
   }
@@ -260,8 +259,7 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   std::string active_user;
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseActiveUserDetection)) {
+  if (base::FeatureList::IsEnabled(kEnterpriseActiveUserDetection)) {
     active_user = reporting_client_->GetContentAreaAccountEmail(url);
   }
 
@@ -282,8 +280,7 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
     base::Value::Dict event;
     event.Set(kKeyUrl, url.spec());
     EventResult event_result = GetEventResultFromThreatType(threat_type);
-    event.Set(kKeyClickedThrough,
-              event_result == enterprise_connectors::EventResult::BYPASSED);
+    event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
     if (!threat_type.empty()) {
       event.Set(kKeyThreatType, threat_type);
     }
@@ -292,8 +289,7 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
       event.Set(kKeyWebAppSignedInAccount, active_user);
     }
     AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
-    event.Set(kKeyEventResult,
-              enterprise_connectors::EventResultToString(event_result));
+    event.Set(kKeyEventResult, EventResultToString(event_result));
 
     if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
       AddReferrerChainToEvent(referrer_chain, event);
@@ -334,17 +330,15 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
     event.Set(kKeyReason, reason);
     event.Set(kKeyNetErrorCode, net_error_code);
     event.Set(kKeyClickedThrough, true);
-    event.Set(kKeyEventResult,
-              enterprise_connectors::EventResultToString(
-                  enterprise_connectors::EventResult::BYPASSED));
+    event.Set(kKeyEventResult, EventResultToString(EventResult::BYPASSED));
 
     if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
       AddReferrerChainToEvent(referrer_chain, event);
     }
 
     reporting_client_->ReportEventWithTimestampDeprecated(
-        enterprise_connectors::kKeyInterstitialEvent,
-        std::move(settings.value()), std::move(event), base::Time::Now(),
+        kKeyInterstitialEvent, std::move(settings.value()), std::move(event),
+        base::Time::Now(),
         /*include_profile_user_name=*/true);
   }
 }
@@ -361,9 +355,8 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  enterprise_connectors::EventResult event_result =
-      proceed_anyway_disabled ? enterprise_connectors::EventResult::BLOCKED
-                              : enterprise_connectors::EventResult::WARNED;
+  EventResult event_result =
+      proceed_anyway_disabled ? EventResult::BLOCKED : EventResult::WARNED;
 
   if (base::FeatureList::IsEnabled(
           policy::kUploadRealtimeReportingEventsUsingProto)) {
@@ -382,16 +375,15 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
     event.Set(kKeyReason, reason);
     event.Set(kKeyNetErrorCode, net_error_code);
     event.Set(kKeyClickedThrough, false);
-    event.Set(kKeyEventResult,
-              enterprise_connectors::EventResultToString(event_result));
+    event.Set(kKeyEventResult, EventResultToString(event_result));
 
     if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
       AddReferrerChainToEvent(referrer_chain, event);
     }
 
     reporting_client_->ReportEventWithTimestampDeprecated(
-        enterprise_connectors::kKeyInterstitialEvent,
-        std::move(settings.value()), std::move(event), base::Time::Now(),
+        kKeyInterstitialEvent, std::move(settings.value()), std::move(event),
+        base::Time::Now(),
         /*include_profile_user_name=*/true);
   }
 }
@@ -446,17 +438,15 @@ void ReportingEventRouter::OnUnscannedFileEvent(
       event.Set(kKeyContentSize, base::Int64ToValue(content_size));
     }
     event.Set(kKeyTrigger, trigger);
-    event.Set(kKeyEventResult,
-              enterprise_connectors::EventResultToString(event_result));
-    event.Set(kKeyClickedThrough,
-              event_result == enterprise_connectors::EventResult::BYPASSED);
+    event.Set(kKeyEventResult, EventResultToString(event_result));
+    event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
     if (!content_transfer_method.empty()) {
       event.Set(kKeyContentTransferMethod, content_transfer_method);
     }
 
     reporting_client_->ReportEventWithTimestampDeprecated(
-        enterprise_connectors::kKeyUnscannedFileEvent,
-        std::move(settings.value()), std::move(event), base::Time::Now(),
+        kKeyUnscannedFileEvent, std::move(settings.value()), std::move(event),
+        base::Time::Now(),
         /*include_profile_user_name=*/true);
   }
 }
@@ -474,10 +464,10 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     const std::string& content_transfer_method,
     const std::string& source_email,
     const std::string& content_area_account_email,
-    const enterprise_connectors::ContentAnalysisResponse::Result& result,
+    const ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
-    enterprise_connectors::EventResult event_result) {
+    EventResult event_result) {
   if (!IsEventEnabled(kKeySensitiveDataEvent)) {
     return;
   }
@@ -520,13 +510,11 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     event.Set(kKeyTrigger, trigger);
 
     if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
+      AddReferrerChainToEvent(referrer_chain, event);
     }
 
-    event.Set(kKeyEventResult,
-              enterprise_connectors::EventResultToString(event_result));
-    event.Set(kKeyClickedThrough,
-              event_result == enterprise_connectors::EventResult::BYPASSED);
+    event.Set(kKeyEventResult, EventResultToString(event_result));
+    event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
     event.Set(kKeyScanId, scan_id);
 
     if (!content_transfer_method.empty()) {
@@ -542,8 +530,8 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     AddAnalysisConnectorVerdictToEvent(result, event);
 
     reporting_client_->ReportEventWithTimestampDeprecated(
-        enterprise_connectors::kKeySensitiveDataEvent,
-        std::move(settings.value()), std::move(event), base::Time::Now(),
+        kKeySensitiveDataEvent, std::move(settings.value()), std::move(event),
+        base::Time::Now(),
         /*include_profile_user_name=*/true);
   }
 }
@@ -560,7 +548,7 @@ void ReportingEventRouter::OnDangerousDeepScanningResult(
     const std::string& trigger,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
-    enterprise_connectors::EventResult event_result,
+    EventResult event_result,
     const std::string& scan_id,
     const std::string& content_transfer_method) {
   if (!IsEventEnabled(kKeyDangerousDownloadEvent)) {
@@ -587,12 +575,10 @@ void ReportingEventRouter::OnDangerousDeepScanningResult(
   }
   event.Set(kKeyTrigger, trigger);
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
+    AddReferrerChainToEvent(referrer_chain, event);
   }
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
-  event.Set(kKeyClickedThrough,
-            event_result == enterprise_connectors::EventResult::BYPASSED);
+  event.Set(kKeyEventResult, EventResultToString(event_result));
+  event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
   // The scan ID can be empty when the reported dangerous download is from a
   // Safe Browsing verdict.
   if (!scan_id.empty()) {
@@ -603,8 +589,8 @@ void ReportingEventRouter::OnDangerousDeepScanningResult(
   }
 
   reporting_client_->ReportEventWithTimestampDeprecated(
-      enterprise_connectors::kKeyDangerousDownloadEvent,
-      std::move(settings.value()), std::move(event), base::Time::Now(),
+      kKeyDangerousDownloadEvent, std::move(settings.value()), std::move(event),
+      base::Time::Now(),
       /*include_profile_user_name=*/true);
 }
 
@@ -621,10 +607,10 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
     const std::string& content_transfer_method,
     const std::string& source_email,
     const std::string& content_area_account_email,
-    const enterprise_connectors::ContentAnalysisResponse::Result& result,
+    const ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
-    enterprise_connectors::EventResult event_result) {
+    EventResult event_result) {
   if (result.tag() == "malware") {
     DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDeepScanningResult(

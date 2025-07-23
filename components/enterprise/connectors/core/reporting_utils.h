@@ -51,7 +51,7 @@ void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
 // in the opt-in events field and the URL it relates to matches at least one of
 // the event type's filters.
 std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
-    const enterprise_connectors::ReportingSettings& settings,
+    const ReportingSettings& settings,
     const char* event_type);
 
 // PasswordBreachEvent could be empty if none of the `identities` matched a
@@ -60,7 +60,7 @@ std::optional<chrome::cros::reporting::proto::PasswordBreachEvent>
 GetPasswordBreachEvent(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities,
-    const enterprise_connectors::ReportingSettings& settings,
+    const ReportingSettings& settings,
     const std::string& profile_identifier,
     const std::string& profile_username);
 

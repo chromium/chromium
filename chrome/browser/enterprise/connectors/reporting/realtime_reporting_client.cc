@@ -220,8 +220,7 @@ std::string RealtimeReportingClient::GetProfileIdentifier() {
 
 std::string RealtimeReportingClient::GetContentAreaAccountEmail(
     const GURL& url) {
-  return enterprise_connectors::GetActiveContentAreaUser(identity_manager_,
-                                                         url);
+  return GetActiveContentAreaUser(identity_manager_, url);
 }
 
 std::string RealtimeReportingClient::GetBrowserClientId() {
