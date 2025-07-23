@@ -1077,11 +1077,7 @@ class SyncErrorBaseStateProvider : public StateProvider,
     CHECK(error.has_value());
     return l10n_util::GetStringFUTF16(
         IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP, GetShortProfileName(profile()),
-        GetAvatarSyncErrorDescription(
-            error->avatar_error,
-            IdentityManagerFactory::GetForProfile(&profile())
-                ->HasPrimaryAccount(signin::ConsentLevel::kSync),
-            error->email));
+        GetAvatarSyncErrorDescription(error->avatar_error, error->email));
   }
 
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const override {

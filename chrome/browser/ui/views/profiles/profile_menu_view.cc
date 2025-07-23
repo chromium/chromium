@@ -596,8 +596,6 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       GetAvatarSyncErrorType(&profile());
   const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile());
-  const bool is_sync_feature_enabled =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   const CoreAccountInfo primary_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   const AccountInfo primary_extended_account_info =
@@ -655,8 +653,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
 
   // Sync error, including "paused".
   if (error.has_value()) {
-    params.subtitle = GetAvatarSyncErrorDescription(
-        *error, is_sync_feature_enabled, primary_account_info.email);
+    params.subtitle =
+        GetAvatarSyncErrorDescription(*error, primary_account_info.email);
     params.button_text = GetSyncErrorButtonText(error.value());
     params.button_action =
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,

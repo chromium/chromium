@@ -425,7 +425,6 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
 }
 
 std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
-                                             bool is_sync_feature_enabled,
                                              const std::string& user_email) {
   switch (error) {
     case AvatarSyncErrorType::kSyncPaused:
