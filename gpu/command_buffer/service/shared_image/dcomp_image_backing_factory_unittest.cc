@@ -353,32 +353,9 @@ TEST_F(DCompImageBackingFactoryTest, DXGISwapChainAlphaPremultiplied) {
   RunDXGISwapChainAlphaTest(/*has_alpha=*/true);
 }
 
-class DCompImageBackingFactoryBufferCountTest
-    : public DCompImageBackingFactoryTest,
-      public testing::WithParamInterface<bool> {
- public:
-  static const char* GetParamName(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "DCompTripleBufferRootSwapChain" : "default";
-  }
+using DCompImageBackingFactoryBufferCountTest = DCompImageBackingFactoryTest;
 
- protected:
-  void SetUp() override {
-    if (GetParam()) {
-      enabled_features_.InitWithFeatures(
-          {features::kDCompTripleBufferRootSwapChain}, {});
-    } else {
-      enabled_features_.InitWithFeatures(
-          {}, {features::kDCompTripleBufferRootSwapChain});
-    }
-
-    DCompImageBackingFactoryTest::SetUp();
-  }
-
-  base::test::ScopedFeatureList enabled_features_;
-};
-
-TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
+TEST_F(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
   Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
@@ -404,18 +381,8 @@ TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
   ASSERT_HRESULT_SUCCEEDED(content.As(&swap_chain));
   DXGI_SWAP_CHAIN_DESC1 desc;
   ASSERT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
-  if (GetParam()) {
-    EXPECT_EQ(3u, desc.BufferCount);
-  } else {
-    EXPECT_EQ(2u, desc.BufferCount);
-  }
+  EXPECT_EQ(2u, desc.BufferCount);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DCompImageBackingFactoryBufferCountTest,
-    testing::Bool(),
-    &DCompImageBackingFactoryBufferCountTest::GetParamName);
 
 class DCompImageBackingFactoryVisualTreeTest
     : public DCompImageBackingFactoryTest {

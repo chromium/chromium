@@ -217,11 +217,6 @@ BASE_FEATURE(kDCompDebugVisualization,
              "DCompDebugVisualization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use BufferCount of 3 for the direct composition root swap chain.
-BASE_FEATURE(kDCompTripleBufferRootSwapChain,
-             "DCompTripleBufferRootSwapChain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use BufferCount of 3 for direct composition video swap chains.
 BASE_FEATURE(kDCompTripleBufferVideoSwapChain,
              "DCompTripleBufferVideoSwapChain",

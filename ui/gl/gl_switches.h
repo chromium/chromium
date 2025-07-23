@@ -97,7 +97,6 @@ GL_EXPORT extern const char kDisableAndroidNativeFenceSyncForTesting[];
 namespace features {
 
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompDebugVisualization);
-GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferRootSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferVideoSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionSoftwareOverlays);
 GL_EXPORT BASE_DECLARE_FEATURE(kEarlyFullScreenVideoOptimization);

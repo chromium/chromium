@@ -127,9 +127,7 @@ void SetGlWorkarounds(const GlWorkarounds& workarounds) {
 
 #if BUILDFLAG(IS_WIN)
 unsigned int DirectCompositionRootSurfaceBufferCount() {
-  return base::FeatureList::IsEnabled(features::kDCompTripleBufferRootSwapChain)
-             ? 3u
-             : 2u;
+  return 2u;
 }
 
 // Labels swapchain buffers with the string name_prefix + _Buffer_ +
