@@ -4,6 +4,8 @@
 
 #include "services/webnn/ort/environment.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
@@ -130,6 +132,36 @@ OrtLoggingLevel StringToOrtLoggingLevel(std::string_view logging_level) {
   return ORT_LOGGING_LEVEL_ERROR;
 }
 
+std::string_view OrtLoggingLevelToString(OrtLoggingLevel logging_level) {
+  switch (logging_level) {
+    case ORT_LOGGING_LEVEL_VERBOSE:
+      return "VERBOSE";
+    case ORT_LOGGING_LEVEL_INFO:
+      return "INFO";
+    case ORT_LOGGING_LEVEL_WARNING:
+      return "WARNING";
+    case ORT_LOGGING_LEVEL_ERROR:
+      return "ERROR";
+    case ORT_LOGGING_LEVEL_FATAL:
+      return "FATAL";
+  }
+}
+
+// This function is passed to ORT so that it can print logs within the sandbox.
+void ORT_API_CALL OrtCustomLoggingFunction(void* /*param*/,
+                                           OrtLoggingLevel severity,
+                                           const char* category,
+                                           const char* /*logid*/,
+                                           const char* code_location,
+                                           const char* message) {
+  // Here all the logs are treated as errors for simplicity, which will not
+  // cause the spam since the default logging level is set to
+  // ORT_LOGGING_LEVEL_ERROR, and only when the user specifies a lower logging
+  // level via `--webnn-ort-logging-level`, ORT will print the verbose logs.
+  LOG(ERROR) << "[ORT] [" << OrtLoggingLevelToString(severity) << ": "
+             << category << ", " << code_location << "] " << message;
+}
+
 }  // namespace
 
 // static
@@ -153,8 +185,9 @@ base::expected<scoped_refptr<Environment>, mojom::ErrorPtr> Environment::Create(
 
   const OrtApi* ort_api = platform_functions->ort_api();
   ScopedOrtEnv env;
-  if (ORT_CALL_FAILED(ort_api->CreateEnv(ort_logging_level, "WebNN",
-                                         ScopedOrtEnv::Receiver(env).get()))) {
+  if (ORT_CALL_FAILED(ort_api->CreateEnvWithCustomLogger(
+          OrtCustomLoggingFunction, /*logger_param=*/nullptr, ort_logging_level,
+          /*logid=*/"WebNN", ScopedOrtEnv::Receiver(env).get()))) {
     return base::unexpected(
         mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                           "Failed to create the ONNX Runtime environment."));

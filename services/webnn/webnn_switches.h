@@ -28,7 +28,7 @@ inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 
 #if BUILDFLAG(IS_WIN)
 // Configure the logging severity level of ONNX Runtime.
-// Usage: --no-sandbox --enable-logging --webnn-ort-logging-level=VERBOSE
+// Usage: --webnn-ort-logging-level=VERBOSE
 // Other severity levels could be "INFO", "WARNING", "ERROR" (default), and
 // "FATAL".
 inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
