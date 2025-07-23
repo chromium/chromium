@@ -101,8 +101,8 @@ void OnReadBosDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
     return;
   }
 
-  const uint8_t* data = buffer->data();
-  uint16_t new_length = UNSAFE_TODO(data[2]) | (UNSAFE_TODO(data[3]) << 8);
+  base::span<const uint8_t> data = *buffer;
+  uint16_t new_length = data[2] | (data[3] << 8);
   auto new_buffer = base::MakeRefCounted<base::RefCountedBytes>(new_length);
   device_handle->ControlTransfer(
       UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,

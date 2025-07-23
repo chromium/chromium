@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -230,7 +230,7 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
                                  double frequency,
                                  double offset,
                                  double scaling,
-                                 double values[kSensorValuesSize]) {
+                                 base::span<double, kSensorValuesSize> values) {
     SensorPathsLinux data;
     EXPECT_TRUE(InitSensorData(type, &data));
 
@@ -272,7 +272,7 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
         // other entries in any of the existing tests. This could be changed and
         // parameterized in the future if necessary.
         const auto sensor_file = base::FilePath(sensor_dir).Append(paths[0]);
-        WriteValueToFile(sensor_file, UNSAFE_TODO(values[i]));
+        WriteValueToFile(sensor_file, values[i]);
       }
     }
   }
