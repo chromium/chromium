@@ -40,9 +40,7 @@ std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals();
 // Returns the Crowdstrike Falcon agent install path.
 base::FilePath GetCrowdStrikeAgentInstallPath();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 base::FilePath GetCrowdStrikeZtaFilePath();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 std::string GetOsName();
 std::string GetOsVersion();

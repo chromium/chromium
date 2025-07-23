@@ -70,13 +70,18 @@ static_library("browser") {
     sources += [ "android/android_os_signals_collector.cc" ]
   } else if (is_win || is_mac || is_linux) {
     public += [
+      "agent_signals_collector.h",
+      "crowdstrike_client.h",
       "desktop/desktop_os_signals_collector.h",
       "detected_agent_client.h",
     ]
     sources += [
+      "agent_signals_collector.cc",
+      "crowdstrike_client.cc",
       "desktop/desktop_os_signals_collector.cc",
       "detected_agent_client.cc",
     ]
+    deps += [ "//services/data_decoder/public/cpp" ]
   }
 
   if (is_win) {
@@ -95,19 +100,6 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [ "chromeos/browser_utils_chromeos.cc" ]
-  }
-
-  if (is_win || is_mac) {
-    public += [
-      "agent_signals_collector.h",
-      "crowdstrike_client.h",
-    ]
-    sources += [
-      "agent_signals_collector.cc",
-      "crowdstrike_client.cc",
-    ]
-
-    deps += [ "//services/data_decoder/public/cpp" ]
   }
 }
 
@@ -163,15 +155,10 @@ source_set("unit_tests") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "desktop/desktop_os_signals_collector_unittest.cc",
-      "detected_agent_client_unittest.cc",
-    ]
-  }
-
-  if (is_win || is_mac) {
-    sources += [
       "agent_signals_collector_unittest.cc",
       "crowdstrike_client_unittest.cc",
+      "desktop/desktop_os_signals_collector_unittest.cc",
+      "detected_agent_client_unittest.cc",
     ]
     deps += [ "//services/data_decoder/public/cpp:test_support" ]
   }

@@ -6,14 +6,18 @@
 
 #include <utility>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/device_signals/core/browser/crowdstrike_client.h"
+#include "components/device_signals/core/browser/detected_agent_client.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,22 +43,42 @@ class MockCrowdStrikeClient : public CrowdStrikeClient {
 MockCrowdStrikeClient::MockCrowdStrikeClient() = default;
 MockCrowdStrikeClient::~MockCrowdStrikeClient() = default;
 
+class MockDetectedAgentClient : public DetectedAgentClient {
+ public:
+  MockDetectedAgentClient();
+  ~MockDetectedAgentClient() override;
+
+  MOCK_METHOD(void,
+              GetAgents,
+              (base::OnceCallback<void(std::vector<Agents>)>),
+              (override));
+};
+
+MockDetectedAgentClient::MockDetectedAgentClient() = default;
+MockDetectedAgentClient::~MockDetectedAgentClient() = default;
+
 }  // namespace
 
 class AgentSignalsCollectorTest : public testing::Test {
  protected:
-  AgentSignalsCollectorTest() {
+  void CreateCollector() {
+    auto mocked_detected_agent_client =
+        std::make_unique<StrictMock<MockDetectedAgentClient>>();
+    mocked_detected_agent_client_ = mocked_detected_agent_client.get();
+
     auto mocked_crowdstrike_client =
         std::make_unique<StrictMock<MockCrowdStrikeClient>>();
     mocked_crowdstrike_client_ = mocked_crowdstrike_client.get();
 
     collector_ = std::make_unique<AgentSignalsCollector>(
-        std::move(mocked_crowdstrike_client));
+        std::move(mocked_crowdstrike_client),
+        std::move(mocked_detected_agent_client));
   }
 
   void RunTest(
       std::optional<CrowdStrikeSignals> returned_signals,
       std::optional<SignalCollectionError> returned_error = std::nullopt) {
+    CreateCollector();
     EXPECT_CALL(*mocked_crowdstrike_client_, GetIdentifiers(_))
         .WillOnce(Invoke(
             [&returned_signals, &returned_error](
@@ -117,6 +141,8 @@ class AgentSignalsCollectorTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<StrictMock<MockCrowdStrikeClient>, DanglingUntriaged>
       mocked_crowdstrike_client_;
+  raw_ptr<StrictMock<MockDetectedAgentClient>, DanglingUntriaged>
+      mocked_detected_agent_client_;
   std::unique_ptr<AgentSignalsCollector> collector_;
   base::HistogramTester histogram_tester_;
 };
@@ -124,6 +150,7 @@ class AgentSignalsCollectorTest : public testing::Test {
 // Test that runs a sanity check on the set of signals supported by this
 // collector. Will need to be updated if new signals become supported.
 TEST_F(AgentSignalsCollectorTest, SupportedSignalNames) {
+  CreateCollector();
   const std::array<SignalName, 1> supported_signals{{SignalName::kAgent}};
 
   const auto names_set = collector_->GetSupportedSignalNames();
@@ -136,6 +163,7 @@ TEST_F(AgentSignalsCollectorTest, SupportedSignalNames) {
 
 // Tests that an unsupported signal is marked as unsupported.
 TEST_F(AgentSignalsCollectorTest, GetSignal_Unsupported) {
+  CreateCollector();
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
@@ -152,6 +180,7 @@ TEST_F(AgentSignalsCollectorTest, GetSignal_Unsupported) {
 
 // Tests that signal collection is halted if permission is not sufficient.
 TEST_F(AgentSignalsCollectorTest, GetSignal_MissingConsent) {
+  CreateCollector();
   SignalName signal_name = SignalName::kAgent;
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;

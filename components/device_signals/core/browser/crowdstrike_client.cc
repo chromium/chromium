@@ -146,11 +146,7 @@ class CrowdStrikeClientImpl : public CrowdStrikeClient {
 
 // static
 std::unique_ptr<CrowdStrikeClient> CrowdStrikeClient::Create() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return std::make_unique<CrowdStrikeClientImpl>(GetCrowdStrikeZtaFilePath());
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 std::unique_ptr<CrowdStrikeClient> CrowdStrikeClient::CreateForTesting(
@@ -167,6 +163,10 @@ CrowdStrikeClientImpl::~CrowdStrikeClientImpl() = default;
 
 void CrowdStrikeClientImpl::GetIdentifiers(SignalsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (zta_file_path_.empty()) {
+    std::move(callback).Run(/*signals=*/std::nullopt, /*error=*/std::nullopt);
+    return;
+  }
   const auto& cached_values = cached_signals_.Get();
   if (cached_values) {
     std::move(callback).Run(cached_values.value(), /*error=*/std::nullopt);

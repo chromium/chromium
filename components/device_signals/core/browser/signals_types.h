@@ -286,6 +286,7 @@ struct AgentSignalsResponse : BaseSignalResponse {
   ~AgentSignalsResponse() override;
 
   std::optional<CrowdStrikeSignals> crowdstrike_signals = std::nullopt;
+  std::vector<Agents> detected_agents{};
 };
 
 // Request struct containing properties that will be used by the

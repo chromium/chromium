@@ -46,10 +46,14 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "components/device_signals/core/browser/agent_signals_collector.h"
-#include "components/device_signals/core/browser/crowdstrike_client.h"
 #include "components/device_signals/core/browser/settings_client.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/device_signals/core/browser/agent_signals_collector.h"
+#include "components/device_signals/core/browser/crowdstrike_client.h"
+#include "components/device_signals/core/browser/detected_agent_client.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace enterprise_signals {
 
@@ -110,12 +114,16 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
           service_host));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  collectors.push_back(std::make_unique<device_signals::AgentSignalsCollector>(
+      device_signals::CrowdStrikeClient::Create(),
+      device_signals::DetectedAgentClient::Create()));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   collectors.push_back(
       std::make_unique<device_signals::SettingsSignalsCollector>(
           CreateSettingsClient()));
-  collectors.push_back(std::make_unique<device_signals::AgentSignalsCollector>(
-      device_signals::CrowdStrikeClient::Create()));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

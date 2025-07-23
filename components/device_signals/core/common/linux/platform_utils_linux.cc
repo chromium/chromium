@@ -63,6 +63,11 @@ base::FilePath GetCrowdStrikeAgentInstallPath() {
   return base::FilePath(kCrowdstrikeAgentPath);
 }
 
+base::FilePath GetCrowdStrikeZtaFilePath() {
+  // ZTA files currently are not stored locally on linux platforms.
+  return base::FilePath();
+}
+
 // Implements the logic from the native client setup script. It reads the
 // setting value straight from gsettings but picks the schema relevant to the
 // currently active desktop environment.
