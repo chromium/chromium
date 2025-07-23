@@ -315,6 +315,11 @@ std::optional<std::vector<uint32_t>> GetBatchNormalizationPermutation(
     const uint32_t from_axis,
     const uint32_t input_rank,
     const webnn::ContextProperties& context_properties) {
+  if (input_rank < 2) {
+    CHECK_EQ(input_rank, 1u);
+    // It's unnecessary to transform the layout for 1D input.
+    return std::nullopt;
+  }
   if (context_properties.batch_normalization_axis ==
       webnn::BatchNormalizationAxis::kAny) {
     return std::nullopt;
