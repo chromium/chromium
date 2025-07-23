@@ -73,6 +73,16 @@ test("services_unittests") {
       bundle_deps =
           [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
     }
+    if (is_android) {
+      deps += [
+        # The java target is added explicitly because the unit tests below
+        # require connection to the Java classes. Without a direct dependency,
+        # the unit tests will encounter a ClassNotFoundException error at
+        # runtime.
+        "//services/on_device_model/android:java",
+        "//services/on_device_model/android:unit_tests",
+      ]
+    }
   }
 
   if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {

@@ -1,0 +1,23 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef SERVICES_ON_DEVICE_MODEL_ANDROID_ON_DEVICE_MODEL_BRIDGE_H_
+#define SERVICES_ON_DEVICE_MODEL_ANDROID_ON_DEVICE_MODEL_BRIDGE_H_
+
+#include "base/android/scoped_java_ref.h"
+
+namespace on_device_model {
+
+// A static bridge to connect between the native and java code for on-device
+// model.
+class OnDeviceModelBridge {
+ public:
+  // Creates a new AiCoreSession instance. Caller is responsible for
+  // creating a global ref if it needs to be stored.
+  static base::android::ScopedJavaLocalRef<jobject> CreateSession();
+};
+
+}  // namespace on_device_model
+
+#endif  // SERVICES_ON_DEVICE_MODEL_ANDROID_ON_DEVICE_MODEL_BRIDGE_H_

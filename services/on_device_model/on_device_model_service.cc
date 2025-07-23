@@ -26,6 +26,10 @@
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "services/on_device_model/android/backend_impl_android.h"
+#endif
+
 namespace on_device_model {
 namespace {
 
@@ -406,15 +410,19 @@ void SessionWrapper::CloneInternal(
   model_->AddSession(std::move(session), session_->Clone(), priority_);
 }
 
-const ml::ChromeML* DefaultImpl() {
+std::unique_ptr<Backend> DefaultImpl() {
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<BackendImplAndroid>();
+#else
   if (base::FeatureList::IsEnabled(features::kUseFakeChromeML)) {
-    return fake_ml::GetFakeChromeML();
+    return std::make_unique<ml::BackendImpl>(fake_ml::GetFakeChromeML());
   }
 #if defined(ENABLE_ML_INTERNAL)
-  return ::ml::ChromeML::Get();
+  return std::make_unique<ml::BackendImpl>(::ml::ChromeML::Get());
 #else
-  return fake_ml::GetFakeChromeML();
-#endif
+  return std::make_unique<ml::BackendImpl>(fake_ml::GetFakeChromeML());
+#endif  // defined(ENABLE_ML_INTERNAL)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -437,7 +445,7 @@ std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
     std::unique_ptr<Backend> backend) {
   if (!backend) {
-    backend = std::make_unique<ml::BackendImpl>(DefaultImpl());
+    backend = DefaultImpl();
   }
   RETURN_IF_ERROR(backend->CanCreate(),
                   [&](ServiceDisconnectReason reason)
