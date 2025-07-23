@@ -582,6 +582,20 @@ foreach(_target_type,
         deps = []
       }
 
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+
+      if (use_clang_modules) {
+        # When Clang modules are used, libc++ headers must be copied (to the gen
+        # directory) regardless of whether the libc++ module is used in this
+        # target.
+        public_deps += [
+          "//buildtools/third_party/libc++:copy_custom_headers",
+          "//buildtools/third_party/libc++:copy_libcxx_headers",
+        ]
+      }
+
       if (!defined(use_libcxx_modules)) {
         use_libcxx_modules = use_clang_modules
       }
@@ -695,6 +709,20 @@ foreach(_target_type,
         # (This explicit list is so that grepping for these configs finds where
         # they are used.)
         deps += [ "//build/config:${_target_type}_deps" ]
+      }
+
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+
+      if (use_clang_modules) {
+        # When Clang modules are used, libc++ headers must be copied (to the gen
+        # directory) regardless of whether the libc++ module is used in this
+        # target.
+        public_deps += [
+          "//buildtools/third_party/libc++:copy_custom_headers",
+          "//buildtools/third_party/libc++:copy_libcxx_headers",
+        ]
       }
 
       if (!defined(use_libcxx_modules)) {
