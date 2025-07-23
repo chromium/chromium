@@ -842,6 +842,8 @@ PartitionAllocSupport::GetSchedulerLoopQuarantineConfiguration(
       break;
     case features::internal::SchedulerLoopQuarantineBranchType::
         kThreadLocalDefault:
+      config.leak_on_destruction = false;
+      break;
     case features::internal::SchedulerLoopQuarantineBranchType::kMain:
       config.leak_on_destruction = false;
       if (process_type == "") {
@@ -852,6 +854,11 @@ PartitionAllocSupport::GetSchedulerLoopQuarantineConfiguration(
       break;
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  if (config.branch_capacity_in_bytes == 0) {
+    config.enable_quarantine = false;
+    config.enable_zapping = false;
+  }
 
   return config;
 }
