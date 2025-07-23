@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -89,6 +90,10 @@ AISummarizer::ToProtoOptions(
   proto_options->set_output_type(ToProtoType(options->type));
   proto_options->set_output_format(ToProtoFormat(options->format));
   proto_options->set_output_length(ToProtoLength(options->length));
+  if (options->output_language && !options->output_language->code.empty()) {
+    proto_options->set_output_language(
+        language::ExtractBaseLanguage(options->output_language->code));
+  }
   return proto_options;
 }
 

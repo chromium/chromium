@@ -38,6 +38,7 @@ message SummarizeOptions {
   SummarizerOutputType output_type = 1;
   SummarizerOutputFormat output_format = 2;
   SummarizerOutputLength output_length = 3;
+  string output_language = 4;  // BCP 47 base language code for responses.
 }
 
 message SummarizeRequest {
