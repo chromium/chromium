@@ -582,6 +582,8 @@ constexpr CGFloat kBlueDotInset = 1;
 
 // Updates view colors.
 - (void)updateColors {
+  [UIView setAnimationsEnabled:NO];
+
   BOOL isSelected = self.isSelected;
   if (self.focused) {
     _selectedBackground.backgroundColor = [UIColor clearColor];
@@ -617,6 +619,8 @@ constexpr CGFloat kBlueDotInset = 1;
   _faviconView.tintColor = self.selected
                                ? [UIColor colorNamed:kCloseButtonColor]
                                : [UIColor colorNamed:kGrey500Color];
+
+  [UIView setAnimationsEnabled:YES];
 }
 
 // Hides the close button view if the cell is collapsed.
