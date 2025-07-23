@@ -694,11 +694,14 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   base::RunLoop on_head_received_loop;
   OnPrefetchCompleteTestFuture on_complete;
 
+  // `on_complete` and `on_head_received_loop` shouldn't be notified via
+  // `redirect_response_reader`.
   auto [redirect_response_reader, streaming_loader] =
       CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
           shared_test_url_loader_factory(), *prefetch_request,
-          &on_response_received_loop, &on_complete, &on_receive_redirect,
-          &on_head_received_loop);
+          &on_response_received_loop, /*on_complete=*/NotReachedTagForTests(),
+          &on_receive_redirect,
+          /*on_head_received=*/NotReachedTagForTests());
 
   ASSERT_TRUE(test_url_loader_factory()->test_url_loader());
   test_url_loader_factory()->test_url_loader()->SetOnFollowRedirectClosure(
@@ -715,7 +718,11 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   on_follow_redirect_loop.Run();
 
   // Switch to a new ResponseReader.
-  auto final_response_reader = base::MakeRefCounted<PrefetchResponseReader>();
+  // `on_complete` and `on_head_received_loop` should be notified via
+  // `final_response_reader`.
+  auto final_response_reader = base::MakeRefCounted<PrefetchResponseReader>(
+      on_head_received_loop.QuitClosure(),
+      on_complete.GetCallback<const network::URLLoaderCompletionStatus&>());
   ASSERT_TRUE(streaming_loader);
   streaming_loader->SetResponseReader(final_response_reader->GetWeakPtr());
 

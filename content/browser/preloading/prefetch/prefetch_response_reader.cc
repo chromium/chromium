@@ -100,7 +100,12 @@ bool PrefetchResponseReader::MatchesCookieIndices(
   return hash == cookie_indices_->expected_hash;
 }
 
-PrefetchResponseReader::PrefetchResponseReader() {
+PrefetchResponseReader::PrefetchResponseReader(
+    base::OnceClosure on_determined_head_callback,
+    OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback)
+    : on_determined_head_callback_(std::move(on_determined_head_callback)),
+      on_prefetch_response_completed_callback_(
+          std::move(on_prefetch_response_completed_callback)) {
   serving_url_loader_receivers_.set_disconnect_handler(base::BindRepeating(
       &PrefetchResponseReader::OnServingURLLoaderMojoDisconnect,
       weak_ptr_factory_.GetWeakPtr()));
@@ -663,10 +668,54 @@ void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
     AddEventToQueue(std::move(callback));
   }
 
-  // TODO(https://crbug.com/400761083): Notify PrefetchContainer of the state
-  // change, which can eventually trigger `PrefetchContainer::Observer` calls.
-  // This should done after every state changes are done, including
-  // `load_state_` changes and `AddEventToQueue()` above.
+  // Notify PrefetchContainer of the state change, which can eventually trigger
+  // `PrefetchContainer::Observer` calls. This should be done after every state
+  // changes are done, including `load_state_` changes and `AddEventToQueue()`
+  // above.
+
+  // At last, trigger `on_determined_head_callback_` /
+  // `on_prefetch_response_completed_callback_`. This should be after the
+  // `AddEventToQueue()` call because these callbacks can trigger complex logic
+  // like navigation, which can need the `callback` is already added to the
+  // queue.
+  // TODO(https://crbug.com/400761083): Prevent triggering such complex logic
+  // from these callbacks.
+  switch (load_state()) {
+    case LoadState::kStarted:
+      NOTREACHED();
+    case LoadState::kRedirectHandled:
+      break;
+
+    case LoadState::kResponseReceived:
+    case LoadState::kFailedResponseReceived:
+    case LoadState::kFailedRedirect:
+      CHECK(on_determined_head_callback_);
+      std::move(on_determined_head_callback_).Run();
+      break;
+
+    case LoadState::kFailed:
+      if (old_load_state == LoadState::kStarted) {
+        // Directly transitioning to `kFailed`, so
+        // `on_determined_head_callback_` hasn't been notified yet.
+        CHECK(on_determined_head_callback_);
+        std::move(on_determined_head_callback_).Run();
+      } else {
+        // Otherwise, `on_determined_head_callback_` should have already been
+        // notified.
+        CHECK(!on_determined_head_callback_);
+      }
+
+      // Continue to `on_prefetch_response_completed_callback_`.
+      [[fallthrough]];
+
+    case LoadState::kCompleted:
+      CHECK(!on_determined_head_callback_);
+      CHECK(on_prefetch_response_completed_callback_);
+      CHECK(completion_status_);
+      std::move(on_prefetch_response_completed_callback_)
+          .Run(*completion_status_);
+      break;
+  }
 }
 
 PrefetchResponseReader::CookieIndicesInfo::CookieIndicesInfo() = default;

@@ -58,7 +58,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
     : public network::mojom::URLLoader,
       public base::RefCounted<PrefetchResponseReader> {
  public:
-  explicit PrefetchResponseReader();
+  PrefetchResponseReader(base::OnceClosure on_determined_head_callback,
+                         OnPrefetchResponseCompletedCallback
+                             on_prefetch_response_completed_callback);
 
   void SetStreamingURLLoader(
       base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
@@ -239,6 +241,26 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   void SetLoadStateAndAddEventToQueue(LoadState new_load_state,
                                       EventCallback callback);
+
+  // Called when transitioned for the first time to a state other than
+  // `kStarted` nor `kRedirectHandled`.
+  //
+  // This should be always called once for the entire `PrefetchResponseReader`s
+  // for a given `PrefetchContainer`.
+  // TODO(https://crbug.com/400761083): This isn't called for:
+  // - unexpected mojo disconnection cases (See
+  //   `PrefetchStreamingURLLoaderTest.UnexpectedUrlLoaderDisconnect`).
+  base::OnceClosure on_determined_head_callback_;
+
+  // Called when transitioned to `kCompleted` or `kFailed`.
+  // This is called after `on_determined_head_callback_` at most once for the
+  // entire `PrefetchResponseReader`s for a given `PrefetchContainer`.
+  // TODO(https://crbug.com/400761083): This isn't called for:
+  // - `kFailedRedirect` (See
+  //   `PrefetchStreamingURLLoaderTest.IneligibleRedirect`) or
+  // - unexpected mojo disconnection cases (See
+  //   `PrefetchStreamingURLLoaderTest.UnexpectedUrlLoaderDisconnect`).
+  OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback_;
 
   // Used for UMA recording.
   // TODO(crbug.com/40064891): we might want to adapt these flags and UMA

@@ -75,10 +75,8 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const network::ResourceRequest& prefetch_request,
     NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
-    NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
     NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
         on_receive_redirect,
-    NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
     std::optional<PrefetchErrorOnResponseReceived> error_on_response_received =
         std::nullopt,
     base::TimeDelta timeout_duration = {});

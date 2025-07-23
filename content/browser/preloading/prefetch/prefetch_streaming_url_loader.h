@@ -52,10 +52,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       base::TimeDelta timeout_duration,
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
-      OnPrefetchResponseCompletedCallback
-          on_prefetch_response_completed_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-      base::OnceClosure on_determined_head_callback,
       base::WeakPtr<PrefetchResponseReader> response_reader,
       PrefetchServiceWorkerState initial_service_worker_state =
           PrefetchServiceWorkerState::kDisallowed,
@@ -66,10 +63,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // Must be called only from `CreateAndStart()`.
   PrefetchStreamingURLLoader(
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
-      OnPrefetchResponseCompletedCallback
-          on_prefetch_response_completed_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-      base::OnceClosure on_determined_head_callback,
       OnServiceWorkerStateDeterminedCallback
           on_service_worker_state_determined_callback);
 
@@ -178,12 +172,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // Callbacks used to inform the caller of specific events of the prefetch
   // request.
   OnPrefetchResponseStartedCallback on_prefetch_response_started_callback_;
-  OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback_;
   OnPrefetchRedirectCallback on_prefetch_redirect_callback_;
-
-  // Called once non-redirect header is determined, i.e. successfully received
-  // or fetch failed.
-  base::OnceClosure on_determined_head_callback_;
 
   // Called when deletion is scheduled. Only for testing corner cases around
   // deletion.
