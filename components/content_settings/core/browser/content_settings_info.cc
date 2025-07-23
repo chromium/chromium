@@ -98,7 +98,7 @@ bool ContentSettingsInfo::Delegate::ShouldCoalesceEphemeralState() const {
   return false;
 }
 
-bool ContentSettingsInfo::Delegate::CanBeAutoRevoked(
+bool ContentSettingsInfo::Delegate::IsAnyPermissionAllowed(
     PermissionSetting setting) const {
   return std::get<ContentSetting>(setting) == CONTENT_SETTING_ALLOW;
 }

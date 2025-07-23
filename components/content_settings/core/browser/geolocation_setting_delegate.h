@@ -21,7 +21,7 @@ class GeolocationSettingDelegate
   std::optional<PermissionSetting> InheritInIncognito(
       const PermissionSetting& setting) const override;
 
-  bool CanBeAutoRevoked(PermissionSetting setting) const override;
+  bool IsAnyPermissionAllowed(PermissionSetting setting) const override;
   bool CanTrackLastVisit() const override;
 
   bool ShouldCoalesceEphemeralState() const override;

@@ -43,7 +43,7 @@ class ContentSettingsInfo {
     std::optional<PermissionSetting> InheritInIncognito(
         const PermissionSetting& setting) const override;
     bool ShouldCoalesceEphemeralState() const override;
-    bool CanBeAutoRevoked(PermissionSetting setting) const override;
+    bool IsAnyPermissionAllowed(PermissionSetting setting) const override;
     bool CanTrackLastVisit() const override;
     base::Value ToValue(const PermissionSetting& setting) const override;
     std::optional<PermissionSetting> FromValue(

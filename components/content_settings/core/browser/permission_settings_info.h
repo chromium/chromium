@@ -37,8 +37,11 @@ class PermissionSettingsInfo {
     virtual std::optional<PermissionSetting> InheritInIncognito(
         const PermissionSetting& setting) const = 0;
 
-    // Returns whether the permission setting can be auto-revoked by SafetyHub.
-    virtual bool CanBeAutoRevoked(PermissionSetting setting) const = 0;
+    // Returns if at least some of the permission setting is allowed. Used e.g.
+    // to decide whether the permission setting can be auto-revoked by
+    // SafetyHub.
+    virtual bool IsAnyPermissionAllowed(PermissionSetting setting) const = 0;
+
     // Returns whether the permission setting supports expiration tracking.
     virtual bool CanTrackLastVisit() const = 0;
 

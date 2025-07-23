@@ -85,7 +85,7 @@ std::optional<PermissionSetting> GeolocationSettingDelegate::FromValue(
   return setting;
 }
 
-bool GeolocationSettingDelegate::CanBeAutoRevoked(
+bool GeolocationSettingDelegate::IsAnyPermissionAllowed(
     PermissionSetting setting) const {
   return std::get<GeolocationSetting>(setting).approximate ==
          PermissionOption::kAllowed;

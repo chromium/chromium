@@ -242,7 +242,7 @@ bool CanBeAutoRevoked(ContentSettingsType type,
     if (!setting.has_value()) {
       return false;
     }
-    return permission_settings_info->delegate().CanBeAutoRevoked(
+    return permission_settings_info->delegate().IsAnyPermissionAllowed(
                setting.value()) &&
            CanTrackLastVisit(type);
   } else {
