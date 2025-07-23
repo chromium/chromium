@@ -609,7 +609,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // broadcasting this doesn't have those limitations.
        /*tan_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
-       /*elu_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(8)},
+       // TODO(crbug.com/328736354): Consider custom op to support elu alpha for
+       // the rank and performance.
+       /*elu_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(5)},
        /*expand_input=*/
        {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(8)},
        /*gather_input=*/
@@ -4255,13 +4257,9 @@ auto GraphBuilderTflite::SerializeElu(const mojom::Elu& elu)
   CHECK(context_properties_.data_type_limits.elu_input.Supports(
       GetOperand(elu.input_operand_id).descriptor));
 
-  if (elu.alpha != 1.0) {
-    // TODO: crbug.com/328736354 - Support custom alpha values.
-    return base::unexpected(
-        "Setting a custom alpha is not supported in tflite schema.");
-  }
-
-  std::optional<TensorInfo> quantized_output = CanFuseQuantizeAndGetOutput(elu);
+  const bool is_emulated = elu.alpha != 1.0;
+  std::optional<TensorInfo> quantized_output =
+      is_emulated ? std::nullopt : CanFuseQuantizeAndGetOutput(elu);
   const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(
@@ -4272,8 +4270,53 @@ auto GraphBuilderTflite::SerializeElu(const mojom::Elu& elu)
       fuse_dequantize ? quantized_output->index
                       : SerializeOutputTensorInfo(elu.output_operand_id).index;
 
-  return SerializeUnaryOperation(::tflite::BuiltinOperator_ELU,
-                                 input_tensor_info.index, output_tensor_index);
+  if (is_emulated) {
+    // Support alpha option with the expression
+    // `max(0, x) + alpha * (exp(min(0, x)) - 1)`
+    const TensorIndex zero_value_tensor_index =
+        SerializeTensorWithBuffer<float>(
+            /*buffer=*/std::array<float, 1>{0},
+            /*dimensions=*/{});
+    const TensorIndex max_tensor_index = SerializeTemporaryTensor(
+        input_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MAXIMUM, zero_value_tensor_index,
+        input_tensor_info.index, max_tensor_index));
+
+    const TensorIndex min_tensor_index = SerializeTemporaryTensor(
+        input_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MINIMUM, zero_value_tensor_index,
+        input_tensor_info.index, min_tensor_index));
+    const TensorIndex exp_tensor_index = SerializeTemporaryTensor(
+        input_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(SerializeUnaryOperation(
+        ::tflite::BuiltinOperator_EXP, min_tensor_index, exp_tensor_index));
+
+    const TensorIndex one_value_tensor_index = SerializeTensorWithBuffer<float>(
+        /*buffer=*/std::array<float, 1>{1.0},
+        /*dimensions=*/{});
+    const TensorIndex sub_tensor_index = SerializeTemporaryTensor(
+        input_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_SUB, exp_tensor_index, one_value_tensor_index,
+        sub_tensor_index));
+    const TensorIndex alpha_tensor_index = SerializeTensorWithBuffer<float>(
+        /*buffer=*/std::array<float, 1>{elu.alpha},
+        /*dimensions=*/{});
+    const TensorIndex mul_tensor_index = SerializeTemporaryTensor(
+        input_tensor_info.dimensions, input_tensor_info.data_type);
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MUL, sub_tensor_index, alpha_tensor_index,
+        mul_tensor_index));
+    return SerializeBinaryOperation(::tflite::BuiltinOperator_ADD,
+                                    max_tensor_index, mul_tensor_index,
+                                    output_tensor_index);
+  } else {
+    return SerializeUnaryOperation(::tflite::BuiltinOperator_ELU,
+                                   input_tensor_info.index,
+                                   output_tensor_index);
+  }
 }
 
 auto GraphBuilderTflite::SerializeErf(const TensorInfo& input_tensor_info,
