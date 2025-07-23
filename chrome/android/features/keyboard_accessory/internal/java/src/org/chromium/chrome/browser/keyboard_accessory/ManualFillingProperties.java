@@ -38,9 +38,14 @@ class ManualFillingProperties {
     // KEYBOARD_EXTENSION_STATE.
     static final PropertyModel.WritableBooleanPropertyKey SHOULD_EXTEND_KEYBOARD =
             new PropertyModel.WritableBooleanPropertyKey("should_extend_keyboard");
+    static final PropertyModel.WritableBooleanPropertyKey
+            IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS =
+                    new PropertyModel.WritableBooleanPropertyKey(
+                            "is_credential_field_or_has_autofill_suggestions");
 
     /**
      * Properties that a given state enforces. Must be between 0x0 and 0x100.
+     *
      * @see KeyboardExtensionState
      */
     @IntDef({BAR, VISIBLE_SHEET, HIDDEN_SHEET, FLOATING})
@@ -86,13 +91,15 @@ class ManualFillingProperties {
                         PORTRAIT_ORIENTATION,
                         IS_FULLSCREEN,
                         SUPPRESSED_BY_BOTTOM_SHEET,
-                        SHOULD_EXTEND_KEYBOARD)
+                        SHOULD_EXTEND_KEYBOARD,
+                        IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
                 .with(PORTRAIT_ORIENTATION, true)
                 .with(IS_FULLSCREEN, false)
                 .with(SUPPRESSED_BY_BOTTOM_SHEET, false)
                 .with(SHOULD_EXTEND_KEYBOARD, true)
+                .with(IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS, false)
                 .build();
     }
 

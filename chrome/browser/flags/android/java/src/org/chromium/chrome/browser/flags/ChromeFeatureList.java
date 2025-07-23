@@ -223,6 +223,8 @@ public abstract class ChromeFeatureList {
             "AsyncNotificationManagerForDownload";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
             "AutofillAllowNonHttpActivation";
+    public static final String AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY =
+            "AutofillAndroidDesktopSuppressAccessoryOnEmpty";
     public static final String AUTOFILL_DEEP_LINK_AUTOFILL_OPTIONS =
             "AutofillDeepLinkAutofillOptions";
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS =

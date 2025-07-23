@@ -188,8 +188,10 @@ public interface ManualFillingComponent extends BackPressHandler {
      * Signals that the accessory has permission to show.
      *
      * @param waitForKeyboard signals if the keyboard is requested.
+     * @param isCredentialFieldOrHasAutofillSuggestions signals if the form field is either a
+     *     username/password field or it has autofill suggestions.
      */
-    void show(boolean waitForKeyboard);
+    void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions);
 
     /**
      * Requests to close the active tab in the keyboard accessory. If there is no active tab, this

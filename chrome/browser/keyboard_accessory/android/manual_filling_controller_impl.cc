@@ -126,7 +126,7 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
   }
 
   // Whenever the focus changes, reset the accessory.
-  if (ShouldShowAccessory()) {
+  if (ShouldShowAccessoryForLastFocusedFieldType()) {
     view_->SwapSheetWithKeyboard();
   } else {
     view_->CloseAccessorySheet();
@@ -166,7 +166,7 @@ void ManualFillingControllerImpl::UpdateSourceAvailability(
   }
 
   available_sources_.erase(source);
-  if (!ShouldShowAccessory()) {
+  if (!ShouldShowAccessoryForLastFocusedFieldType()) {
     UpdateVisibility();
   }
 }
@@ -326,7 +326,8 @@ bool ManualFillingControllerImpl::OnMemoryDump(
   return true;
 }
 
-bool ManualFillingControllerImpl::ShouldShowAccessory() const {
+bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
+    const {
   switch (last_focused_field_type_) {
     // If there are suggestions, show on usual form fields.
     case FocusedFieldType::kFillablePasswordField:
@@ -354,7 +355,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
 
 void ManualFillingControllerImpl::UpdateVisibility() {
   TRACE_EVENT0("passwords", "ManualFillingControllerImpl::UpdateVisibility");
-  if (ShouldShowAccessory()) {
+  if (ShouldShowAccessoryForLastFocusedFieldType()) {
     for (const FillingSource& source : available_sources_) {
       if (source == FillingSource::AUTOFILL) {
         continue;  // Autofill suggestions have no sheet.
@@ -371,10 +372,16 @@ void ManualFillingControllerImpl::UpdateVisibility() {
     if (plus_profiles_cache_) {
       plus_profiles_cache_->FetchAffiliatedPlusProfiles();
     }
-    view_->Show(ManualFillingViewInterface::WaitForKeyboard(
-        last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&
-        last_focused_field_type_ != FocusedFieldType::kUnknown));
-
+    view_->Show(
+        ManualFillingViewInterface::WaitForKeyboard(
+            last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&
+            last_focused_field_type_ != FocusedFieldType::kUnknown),
+        ManualFillingViewInterface::IsCredentialFieldOrHasAutofillSuggestions(
+            last_focused_field_type_ ==
+                FocusedFieldType::kFillableUsernameField ||
+            last_focused_field_type_ ==
+                FocusedFieldType::kFillablePasswordField ||
+            available_sources_.contains(FillingSource::AUTOFILL)));
   } else {
     if (plus_profiles_cache_) {
       plus_profiles_cache_->ClearCachedPlusProfiles();

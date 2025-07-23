@@ -86,9 +86,10 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
-    void show(boolean waitForKeyboard) {
+    void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions) {
         if (getManualFillingComponent() != null) {
-            getManualFillingComponent().show(waitForKeyboard);
+            getManualFillingComponent()
+                    .show(waitForKeyboard, isCredentialFieldOrHasAutofillSuggestions);
         }
     }
 

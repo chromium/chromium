@@ -169,8 +169,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void show(boolean waitForKeyboard) {
-        mMediator.show(waitForKeyboard);
+    public void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions) {
+        mMediator.show(waitForKeyboard, isCredentialFieldOrHasAutofillSuggestions);
     }
 
     @Override
@@ -247,6 +247,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void forceShowForTesting() {
-        mMediator.show(true);
+        mMediator.show(
+                /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
     }
 }

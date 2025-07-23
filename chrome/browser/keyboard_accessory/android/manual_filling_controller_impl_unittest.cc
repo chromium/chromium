@@ -46,6 +46,8 @@ using testing::SaveArg;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using WaitForKeyboard = ManualFillingViewInterface::WaitForKeyboard;
+using IsCredentialFieldOrHasAutofillSuggestions =
+    ManualFillingViewInterface::IsCredentialFieldOrHasAutofillSuggestions;
 
 AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds",
@@ -152,7 +154,8 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableSearchField);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
@@ -186,7 +189,8 @@ TEST_F(ManualFillingControllerTest,
       .WillRepeatedly(Return(filled_passwords_sheet()));
   EXPECT_CALL(*view(), OnItemsAvailable(filled_passwords_sheet()))
       .Times(AnyNumber());
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
 
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
@@ -217,7 +221,8 @@ TEST_F(ManualFillingControllerTest,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(kTestAddressSheet));
   EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AnyNumber());
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
 
   NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
@@ -250,7 +255,8 @@ TEST_F(ManualFillingControllerTest,
       .WillRepeatedly(Return(kTestCreditCardSheet));
   EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
       .Times(AnyNumber());
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
 
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
@@ -262,7 +268,10 @@ TEST_F(ManualFillingControllerTest,
 TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true))).Times(2);
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
@@ -274,7 +283,9 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
 
   // Hiding just one of two active filling sources won't have any effect at all.
   EXPECT_CALL(*view(), Hide()).Times(0);
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true))).Times(0);
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)))
+      .Times(0);
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/false);
   testing::Mock::VerifyAndClearExpectations(view());
@@ -293,7 +304,8 @@ TEST_F(ManualFillingControllerTest, FetchesAffiliatedPlusProfilesWhenShown) {
       controller()->plus_profiles_cache()->GetAffiliatedPlusProfiles().size(),
       0u);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
   controller()->UpdateSourceAvailability(FillingSource::ADDRESS_FALLBACKS,
                                          /*has_suggestions=*/true);
   EXPECT_EQ(
@@ -328,7 +340,8 @@ TEST_F(ManualFillingControllerTest,
        ShowsAccessoryWhenAutofillSourceAvailableOnUnknownField) {
   FocusFieldAndClearExpectations(FocusedFieldType::kUnknown);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(false)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(false),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/true);
   // Noop duplicate call.
@@ -339,4 +352,35 @@ TEST_F(ManualFillingControllerTest,
   EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryWhenAutofillSourceNotAvailableOnCredentialFields) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryWhenAutofillSourceAvailableOnNonCredentialFields) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryWhenAutofillSourceNotAvailableNonCredentialFields) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
 }

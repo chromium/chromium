@@ -225,11 +225,15 @@ void ManualFillingViewAndroid::SwapSheetWithKeyboard() {
   }
 }
 
-void ManualFillingViewAndroid::Show(WaitForKeyboard wait_for_keyboard) {
+void ManualFillingViewAndroid::Show(
+    WaitForKeyboard wait_for_keyboard,
+    IsCredentialFieldOrHasAutofillSuggestions
+        is_credential_field_or_has_autofill_suggestions) {
   TRACE_EVENT0("passwords", "ManualFillingViewAndroid::Show");
   if (auto obj = GetOrCreateJavaObject()) {
-    Java_ManualFillingComponentBridge_show(base::android::AttachCurrentThread(),
-                                           obj, wait_for_keyboard.value());
+    Java_ManualFillingComponentBridge_show(
+        base::android::AttachCurrentThread(), obj, wait_for_keyboard.value(),
+        is_credential_field_or_has_autofill_suggestions.value());
   }
 }
 

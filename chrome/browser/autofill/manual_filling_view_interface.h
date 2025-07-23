@@ -56,6 +56,9 @@ class ManualFillingViewInterface {
   };
 
   using WaitForKeyboard = base::StrongAlias<struct WaitForKeyboardTag, bool>;
+  using IsCredentialFieldOrHasAutofillSuggestions =
+      base::StrongAlias<struct IsCredentialFieldOrHasAutofillSuggestionsTag,
+                        bool>;
   using ShouldShowAction = base::StrongAlias<struct ShouldShowActionTag, bool>;
 
   virtual ~ManualFillingViewInterface() = default;
@@ -76,8 +79,11 @@ class ManualFillingViewInterface {
   virtual void SwapSheetWithKeyboard() = 0;
 
   // Shows the accessory bar. If `wait_for_keyboard`, shows the bar when the
-  // keyboard is also shown.
-  virtual void Show(WaitForKeyboard wait_for_keyboard) = 0;
+  // keyboard is also shown. On Large Form Factors, shows the accessory when the
+  // field is a credential field or has autofill suggestions.
+  virtual void Show(WaitForKeyboard wait_for_keyboard,
+                    IsCredentialFieldOrHasAutofillSuggestions
+                        is_credential_field_or_has_autofill_suggestions) = 0;
 
   // Hides the accessory bar and the accessory sheet (if open).
   virtual void Hide() = 0;

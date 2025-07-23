@@ -126,8 +126,9 @@ class ManualFillingControllerImpl
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* process_memory_dump) override;
 
-  // Returns true if the keyboard accessory needs to be shown.
-  bool ShouldShowAccessory() const;
+  // Returns true if the keyboard accessory needs to be shown for last focused
+  // field type..
+  bool ShouldShowAccessoryForLastFocusedFieldType() const;
 
   // Adjusts visibility based on focused field type and available suggestions.
   void UpdateVisibility();

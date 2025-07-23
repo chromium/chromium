@@ -114,6 +114,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillRetryImageFetchOnFailure,
     &autofill::features::kAutofillEnableLoyaltyCardsFilling,
     &autofill::features::kAutofillEnableSeparatePixPreferenceItem,
+    &autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty,
     &base::features::kBackgroundThreadPoolFieldTrial,
     &blink::features::kBackForwardTransitions,
     &blink::features::kDynamicSafeAreaInsets,
