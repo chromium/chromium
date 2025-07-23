@@ -36,17 +36,22 @@ enum class SafariDataItemImportStatus : NSUInteger {
 /// One of { kReady, kImporting, kImported }.
 @property(nonatomic, readonly) SafariDataItemImportStatus status;
 
-/// Number of items. Should be updated when status transitions to
-/// `kReadyToImport`.
-@property(nonatomic, assign) int count;
+/// Number of items.
+@property(nonatomic, readonly) int count;
 
-/// Number of invalid items; should be updated when status transitions to
-/// `kImported`. Applicable for passwords only; value will be 0 for other types.
+/// Number of invalid items; Applicable for passwords only; value will be 0 for
+/// other types.
 @property(nonatomic, assign) int invalidCount;
 
 /// Initializer with data item type.
-- (instancetype)initWithType:(SafariDataItemType)type NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithType:(SafariDataItemType)type
+                      status:(SafariDataItemImportStatus)status
+                       count:(size_t)count NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
+
+/// Transition the item to the next import status. Should not be called if the
+/// status is `kImported`.
+- (void)transitionToNextStatus;
 
 @end
 

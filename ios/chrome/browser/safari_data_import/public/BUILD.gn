@@ -11,6 +11,7 @@ source_set("public") {
     "safari_data_item.mm",
     "safari_data_item_consumer.h",
   ]
+  deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }
 

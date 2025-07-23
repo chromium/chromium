@@ -8,6 +8,20 @@
 
 #import "base/check_op.h"
 #import "base/notreached.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_mediator.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
@@ -16,6 +30,8 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @interface SafariDataImportImportCoordinator () <
@@ -26,7 +42,8 @@
   /// The view controller pushed onto the base navigation controller; user
   /// interacts with it to present other views.
   SafariDataImportImportViewController* _containerViewController;
-  /// The mediator handling the interaction with the model.
+  /// The mediator handling the interaction with the model. Lazily loaded with
+  /// `-mediator` method.
   SafariDataImportImportMediator* _mediator;
   /// File picker for the user to select Safari data.
   UIDocumentPickerViewController* _documentProvider;
@@ -54,15 +71,13 @@
   _tableView = [[SafariDataItemTableView alloc] init];
   _tableView.importStageConsumer = _containerViewController;
   _containerViewController.itemTableView = _tableView;
-  _mediator = [[SafariDataImportImportMediator alloc] init];
-  _mediator.importStageConsumer = _containerViewController;
-  _mediator.itemConsumer = _tableView;
   self.baseNavigationController.navigationBarHidden = NO;
   [self.baseNavigationController pushViewController:_containerViewController
                                            animated:YES];
 }
 
 - (void)stop {
+  [[self mediator] disconnect];
   self.delegate = nil;
   _containerViewController = nil;
 }
@@ -100,6 +115,43 @@
 
 #pragma mark - Private
 
+/// Lazily-loaded mediator.
+- (SafariDataImportImportMediator*)mediator {
+  if (!_mediator) {
+    /// Retrieve mediator dependencies.
+    ProfileIOS* profile = self.profile->GetOriginalProfile();
+    std::unique_ptr<password_manager::SavedPasswordsPresenter>
+        savedPasswordsPresenter =
+            std::make_unique<password_manager::SavedPasswordsPresenter>(
+                IOSChromeAffiliationServiceFactory::GetForProfile(profile),
+                IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                    profile, ServiceAccessType::EXPLICIT_ACCESS),
+                IOSChromeAccountPasswordStoreFactory::GetForProfile(
+                    profile, ServiceAccessType::EXPLICIT_ACCESS),
+                /*passkey_model=*/nullptr);
+    autofill::PersonalDataManager* personalDataManager =
+        autofill::PersonalDataManagerFactory::GetForProfile(profile);
+    history::HistoryService* historyService =
+        ios::HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
+    bookmarks::BookmarkModel* bookmarkModel =
+        ios::BookmarkModelFactory::GetForProfile(profile);
+    ReadingListModel* readingListModel =
+        ReadingListModelFactory::GetForProfile(profile);
+    /// Initialize mediator.
+    _mediator = [[SafariDataImportImportMediator alloc]
+        initWithSavedPasswordsPresenter:std::move(savedPasswordsPresenter)
+                    paymentsDataManager:&personalDataManager
+                                             ->payments_data_manager()
+                         historyService:historyService
+                          bookmarkModel:bookmarkModel
+                       readingListModel:readingListModel];
+    _mediator.importStageConsumer = _containerViewController;
+    _mediator.itemConsumer = _tableView;
+  }
+  return _mediator;
+}
+
 /// Displays the document picker so the user could select the Safari data file.
 - (void)showFilePicker {
   if (_documentProvider && (_documentProvider.isBeingPresented ||
@@ -116,7 +168,7 @@
                                                create:NO
                                                 error:nil];
   _documentProvider.allowsMultipleSelection = NO;
-  _documentProvider.delegate = _mediator;
+  _documentProvider.delegate = [self mediator];
   _documentProvider.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
   [_containerViewController presentViewController:_documentProvider

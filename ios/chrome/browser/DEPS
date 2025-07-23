@@ -130,6 +130,7 @@ include_rules = [
   "+components/unified_consent",
   "+components/update_client",
   "+components/upload_list",
+  "+components/user_data_importer",
   "+components/url_formatter",
   "+components/variations",
   "+components/variations/net",
