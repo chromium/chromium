@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
+#include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1886,6 +1887,11 @@ String ContainerNode::getHTML(const GetHTMLOptions* options,
   }
   return CreateMarkup(this, kChildrenOnly, kDoNotResolveURLs,
                       shadow_root_inclusion);
+}
+
+WritableStream* ContainerNode::patchSelf(ScriptState* script_state) {
+  return PatchSupplement::From(GetDocument())
+      ->CreateSinglePatchStream(script_state, *this);
 }
 
 }  // namespace blink

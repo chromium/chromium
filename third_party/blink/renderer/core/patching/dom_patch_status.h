@@ -22,13 +22,14 @@
 namespace blink {
 class HTMLTemplateElement;
 class ScriptState;
+
 class DOMPatchStatus : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMPatchStatus* Start(HTMLTemplateElement& source,
-                               ContainerNode& target);
-  DOMPatchStatus(HTMLTemplateElement& source, ContainerNode& target);
+  static DOMPatchStatus* Create(ContainerNode& target,
+                                HTMLTemplateElement* source = nullptr);
+  DOMPatchStatus(HTMLTemplateElement* source, ContainerNode& target);
   ScriptPromise<IDLUndefined> finished(ScriptState*);
   HTMLTemplateElement* source() { return source_; }
   void Trace(Visitor*) const override;
@@ -37,9 +38,14 @@ class DOMPatchStatus : public ScriptWrappable {
   Document& GetDocument();
   void DispatchPatchEvent();
   void Append(const String&);
+  void Start();
   void Finish();
+  void Terminate(ScriptValue);
+  void AppendBytes(base::span<uint8_t>);
 
  private:
+  enum class State { kPending, kActive, kTerminated, kFinished };
+  State state_ = State::kPending;
   Member<HTMLTemplateElement> source_;
   Member<ContainerNode> target_;
   Member<ScriptPromiseProperty<IDLUndefined, IDLAny>> finished_;

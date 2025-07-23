@@ -88,7 +88,8 @@ void HTMLTemplateElement::Trace(Visitor* visitor) const {
 
 void HTMLTemplateElement::BeginPatch(ContainerNode& target) {
   SetOverrideInsertionTarget(target);
-  patch_status_ = DOMPatchStatus::Start(*this, target);
+  patch_status_ = DOMPatchStatus::Create(target, this);
+  patch_status_->Start();
 }
 
 void HTMLTemplateElement::FinishParsingChildren() {

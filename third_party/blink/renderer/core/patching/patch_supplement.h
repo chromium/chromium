@@ -15,6 +15,9 @@
 
 namespace blink {
 
+class ScriptState;
+class WritableStream;
+
 class PatchSupplement : public GarbageCollected<PatchSupplement>,
                         public Supplement<Document> {
  public:
@@ -30,6 +33,7 @@ class PatchSupplement : public GarbageCollected<PatchSupplement>,
   DOMPatchStatus* CurrentPatchFor(const Node&);
   void DidStart(Node&, DOMPatchStatus*);
   void DidComplete(Node&);
+  WritableStream* CreateSinglePatchStream(ScriptState*, ContainerNode&);
 
  private:
   std::optional<size_t> IndexOfPatch(const Node& target);
