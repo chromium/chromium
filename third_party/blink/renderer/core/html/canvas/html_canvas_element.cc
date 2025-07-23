@@ -1893,20 +1893,22 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source,
                                                 bool image_is_texture_backed) {
   CHECK(IsRenderingContext2D());
 
-  // For images coming from WebGL and WebGPU canvases, use the image itself as
-  // the source of truth for whether the canvas is accelerated as it's more
-  // accurate than IsAccelerated().
+  // For images coming from WebGL/WebGPU/Canvas2D canvases, use the image
+  // itself as the source of truth for whether the canvas is accelerated. For
+  // WebGL/WebGPU it's more accurate than IsAccelerated(), and for canvas2D
+  // it's effectively the same check.
   // TODO(crbug.com/352263194): Do this universally when the source is a
   // canvas, as it's more accurate for all context types than using
   // source->IsAccelerated().
-  bool source_is_webgl_or_webgpu = false;
+  bool source_is_webgl_or_webgpu_or_canvas2d = false;
   if (source->IsCanvasElement() || source->IsOffscreenCanvas()) {
     auto* source_as_host = static_cast<CanvasRenderingContextHost*>(source);
-    source_is_webgl_or_webgpu =
-        source_as_host->IsWebGL() || source_as_host->IsWebGPU();
+    source_is_webgl_or_webgpu_or_canvas2d =
+        source_as_host->IsWebGL() || source_as_host->IsWebGPU() ||
+        source_as_host->IsRenderingContext2D();
   }
 
-  bool source_is_accelerated = source_is_webgl_or_webgpu
+  bool source_is_accelerated = source_is_webgl_or_webgpu_or_canvas2d
                                    ? image_is_texture_backed
                                    : source->IsAccelerated();
 
