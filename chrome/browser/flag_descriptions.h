@@ -2927,9 +2927,6 @@ extern const char kMediaPickerAdoptionStudyDescription[];
 extern const char kNavBarColorAnimationName[];
 extern const char kNavBarColorAnimationDescription[];
 
-extern const char kNavBarColorMatchesTabBackgroundName[];
-extern const char kNavBarColorMatchesTabBackgroundDescription[];
-
 extern const char kNavigationCaptureRefactorAndroidName[];
 extern const char kNavigationCaptureRefactorAndroidDescription[];
 

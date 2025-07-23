@@ -466,8 +466,6 @@ public abstract class ChromeFeatureList {
     public static final String NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE =
             "NativePageTransitionHardwareCapture";
     public static final String NAV_BAR_COLOR_ANIMATION = "NavBarColorAnimation";
-    public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
-            "NavBarColorMatchesTabBackground";
     public static final String NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2 =
             "NewTabPageAndroidTriggerForPrerender2";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION = "NewTabPageCustomization";
@@ -936,8 +934,6 @@ public abstract class ChromeFeatureList {
                     NAV_BAR_COLOR_ANIMATION,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sNavBarColorMatchesTabBackground =
-            newCachedFlag(NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, true);
     public static final CachedFlag sNewTabPageAndroidTriggerForPrerender2 =
             newCachedFlag(NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2, true);
     public static final CachedFlag sNewTabPageCustomization =
@@ -1144,7 +1140,6 @@ public abstract class ChromeFeatureList {
                     sMultiInstanceApplicationStatusCleanup,
                     sMvcUpdateViewWhenModelChanged,
                     sNavBarColorAnimation,
-                    sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,
                     sNewTabPageCustomization,
                     sNewTabPageCustomizationForMvt,
@@ -1608,11 +1603,6 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_query", false);
     public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxPath =
             newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_path", false);
-
-    public static final BooleanCachedFeatureParam
-            sNavBarColorMatchesTabBackgroundColorAnimationDisabled =
-                    newBooleanCachedFeatureParam(
-                            NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, "color_animation_disabled", true);
     public static final IntCachedFeatureParam sNotificationTrampolineLongJobDurationMs =
             newIntCachedFeatureParam(NOTIFICATION_TRAMPOLINE, "long_job_duration_millis", 8 * 1000);
     public static final IntCachedFeatureParam sNotificationTrampolineNormalJobDurationMs =
@@ -1765,7 +1755,6 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesReselectLaxSchemeHost,
                     sNavBarColorAnimationDisableBottomChinColorAnimation,
                     sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
-                    sNavBarColorMatchesTabBackgroundColorAnimationDisabled,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,
                     sNotificationTrampolineNormalJobDurationMs,

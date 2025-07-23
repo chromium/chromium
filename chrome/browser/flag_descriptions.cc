@@ -5061,12 +5061,6 @@ const char kNavBarColorAnimationName[] = "NavBarColorAnimation";
 const char kNavBarColorAnimationDescription[] =
     "Enables animations for color changes to the OS navigation bar.";
 
-const char kNavBarColorMatchesTabBackgroundName[] =
-    "Nav bar color matches tab background";
-const char kNavBarColorMatchesTabBackgroundDescription[] =
-    "Matches the OS navigation bar color to the background color of the "
-    "active tab.";
-
 const char kNavigationCaptureRefactorAndroidName[] =
     "Navigation Capture refactoring for Chrome on Android";
 const char kNavigationCaptureRefactorAndroidDescription[] =
