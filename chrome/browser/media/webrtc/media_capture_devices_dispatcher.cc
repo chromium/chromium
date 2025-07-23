@@ -76,7 +76,7 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       media_stream_capture_indicator_(new MediaStreamCaptureIndicator()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kAndroidMediaPicker)) {
     media_access_handlers_.push_back(
         std::make_unique<DisplayMediaAccessHandler>());
