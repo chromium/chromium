@@ -1551,6 +1551,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
                                              : uchar::kRightToLeftIsolate,
                    nullptr);
       AppendOpaque(InlineItem::kRubyLinePlaceholder, nullptr);
+      is_score_line_break_disabled_ = true;
     } else {
       AppendOpaque(InlineItem::kRubyLinePlaceholder, node->Parent());
     }
@@ -1580,6 +1581,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
       ++ruby_text_nesting_level_;
     }
     AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
+    is_score_line_break_disabled_ = true;
   } else if (node->IsInlineRubyText()) {
     AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
   }
@@ -1680,6 +1682,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
                        : uchar::kRightToLeftIsolate,
                    ruby_container);
       AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
+      is_score_line_break_disabled_ = true;
     } else {
       AppendOpaque(InlineItem::kCloseRubyColumn, uchar::kPopDirectionalIsolate,
                    nullptr);
