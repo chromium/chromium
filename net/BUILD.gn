@@ -3967,6 +3967,15 @@ if (use_fuzzing_engine) {
     testonly = true
     visibility = [
       ":net_web_socket_encoder_fuzzer",
+      ":net_web_socket_encoder_fuzzer__apk__compile_java",
+      ":net_web_socket_encoder_fuzzer__apk__compile_resources",
+      ":net_web_socket_encoder_fuzzer__apk__create",
+      ":net_web_socket_encoder_fuzzer__apk__java",
+      ":net_web_socket_encoder_fuzzer__apk__java__dex",
+      ":net_web_socket_encoder_fuzzer__apk__java__header",
+      ":net_web_socket_encoder_fuzzer__apk__java__validate",
+      ":net_web_socket_encoder_fuzzer__library",
+      ":net_web_socket_encoder_fuzzer__library__jni_registration__native_sources",
       ":net_web_socket_encoder_fuzzer_executable",
       ":run_net_web_socket_encoder_fuzzer",
     ]
