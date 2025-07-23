@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TypeWithNestedEnumTypemap} from './web_ui_mojo_ts_test_converters.js';
 import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
-import {MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestEnum, TestMoreTypemapCallbackRouter, TypeWithNestedEnum_Enum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
 import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
@@ -394,6 +395,32 @@ async function doTest(): Promise<boolean> {
               JSON.stringify(error));
         });
   }
+
+  {
+    const callbacks = new TestMoreTypemapCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testNestedEnum.addListener((req: TypeWithNestedEnumTypemap) => {
+      assert(
+          req.isNativeType,
+          'expected native type for request, this indicates that the type was '
+          + 'not properly typemapped');
+      return {res: req};
+    });
+
+    await client
+        .testNestedEnum(
+            new TypeWithNestedEnumTypemap(TypeWithNestedEnum_Enum.kToTest))
+        .then(resp => {
+          assert(
+              resp.res.isNativeType,
+              'expected native type for response, this indicates that the type '
+              + 'was not properly typemapped');
+          assert(
+              resp.res.value === TypeWithNestedEnum_Enum.kToTest,
+              `Expected kToTest, but got: ${resp.res.value}`);
+        });
+  }
+
   return true;
 }
 

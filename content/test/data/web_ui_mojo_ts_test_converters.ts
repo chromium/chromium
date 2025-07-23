@@ -4,7 +4,10 @@
 
 import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
 import {MappedDictType} from './web_ui_mojo_ts_test_other_mapped_types.js';
-import {NestedMappedTypeDataView, NestedMappedTypeTypeMapper, OptionalTypemapDataView, OptionalTypemapTypeMapper, StringDictDataView, StringDictTypeMapper} from './web_ui_ts_test.test-mojom-converters.js';
+import {NestedMappedTypeDataView, NestedMappedTypeTypeMapper, OptionalTypemapDataView, OptionalTypemapTypeMapper, StringDictDataView, StringDictTypeMapper, TypeWithNestedEnumDataView, TypeWithNestedEnumTypeMapper,
+
+} from './web_ui_ts_test.test-mojom-converters.js';
+import {TypeWithNestedEnum_Enum} from './web_ui_ts_test.test-mojom-webui.js';
 
 export class NestedTypeConverter implements
     NestedMappedTypeTypeMapper<TestNode> {
@@ -54,4 +57,29 @@ export class OptionalTypemapConverter implements
       optionalMap: view.optionalMap,
     };
   }
+}
+
+export class TypeWithNestedEnumTypemap {
+  public readonly isNativeType = true;
+  public readonly value: TypeWithNestedEnum_Enum;
+
+  constructor(value: TypeWithNestedEnum_Enum) {
+    this.value = value;
+  }
+}
+
+export class TypeWithNestedEnumConverter implements
+    TypeWithNestedEnumTypeMapper<TypeWithNestedEnumTypemap> {
+  someField(typemap: TypeWithNestedEnumTypemap): TypeWithNestedEnum_Enum {
+    return typemap.value;
+  }
+
+  convert(view: TypeWithNestedEnumDataView): TypeWithNestedEnumTypemap {
+    return new TypeWithNestedEnumTypemap(view.someField);
+  }
+}
+
+export enum NativeEnum {
+  kNothing,
+  kSomething,
 }

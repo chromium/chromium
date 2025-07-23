@@ -470,6 +470,8 @@ class Generator(generator.Generator):
     if (mojom.IsEnumKind(kind) or mojom.IsStructKind(kind)
         or mojom.IsUnionKind(kind)):
       imports = [make_import(kind.name, 'Spec')]
+      # if the type is typemapped, the typemap import will replace the
+      # mojo type, so no need to import it here.
       if not kind.qualified_name in self.typemap:
         imports += [make_import(kind.name)]
       return imports

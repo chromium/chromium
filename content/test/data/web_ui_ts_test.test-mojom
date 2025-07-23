@@ -92,3 +92,24 @@ struct Result {
 interface MojoResultTest {
   TestResult() => result<Result, mojo_base.mojom.JsError>;
 };
+
+struct TypeWithNestedEnum {
+  enum Enum {
+    kWhatever,
+    // Test with this value to ensure that default value doesn't accidentally
+    // pass the test.
+    kToTest,
+  };
+
+  int32 some_field;
+};
+
+enum TypemappedEnum {
+  kNothing,
+  kSomething,
+};
+
+interface TestMoreTypemap {
+  TestNestedEnum(TypeWithNestedEnum req) => (TypeWithNestedEnum res);
+};
+
