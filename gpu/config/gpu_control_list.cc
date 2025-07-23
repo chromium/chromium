@@ -21,6 +21,10 @@
 #include "gpu/config/gpu_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace gpu {
 namespace {
 
@@ -706,8 +710,17 @@ std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
   if (os == kOsAny)
     os = GetOsType();
   std::string processed_os_version = os_version;
-  if (processed_os_version.empty())
+  if (processed_os_version.empty()) {
+#if BUILDFLAG(IS_WIN)
+    base::win::OSInfo::VersionNumber version_number =
+        base::win::OSInfo::GetInstance()->version_number();
+    processed_os_version = base::StringPrintf(
+        "%d.%d.%d.%d", version_number.major, version_number.minor,
+        version_number.build, version_number.patch);
+#else
     processed_os_version = base::SysInfo::OperatingSystemVersion();
+#endif
+  }
   // Get rid of the non numbers because later processing expects a valid
   // version string in the format of "a.b.c".
   size_t pos = processed_os_version.find_first_not_of("0123456789.");
