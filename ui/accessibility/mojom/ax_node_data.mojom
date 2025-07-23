@@ -7,7 +7,14 @@ module ax.mojom;
 import "ui/accessibility/ax_enums.mojom";
 import "ui/accessibility/mojom/ax_relative_bounds.mojom";
 
+[Stable, Uuid="88b0e7cb-5a53-4993-9967-d33fb50b484b"]
+struct AXBitsetData {
+  uint32 set_bits;
+  uint32 values;
+};
+
 // See ui::AXNodeData for comments / explanations of these fields.
+// Next version: 2
 [Stable, Uuid="5ee2327f-edc3-4d0e-aa96-6f8ce5720390"]
 struct AXNodeData {
   int32 id;
@@ -17,6 +24,8 @@ struct AXNodeData {
   map<ax.mojom.StringAttribute, string> string_attributes;
   map<ax.mojom.IntAttribute, int32> int_attributes;
   map<ax.mojom.FloatAttribute, float> float_attributes;
+  // If bool_attributes_data is present, bool_attributes will be ignored.
+  // TODO: crbug.com/422234724 - Deprecate when the AXBitset experiment is over.
   map<ax.mojom.BoolAttribute, bool> bool_attributes;
   map<ax.mojom.IntListAttribute, array<int32>>
       intlist_attributes;
@@ -25,4 +34,5 @@ struct AXNodeData {
   map<string, string> html_attributes;
   array<int32> child_ids;
   ax.mojom.AXRelativeBounds relative_bounds;
+  [MinVersion=1] AXBitsetData? bool_attributes_data;
 };

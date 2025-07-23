@@ -60,6 +60,8 @@ class AX_BASE_EXPORT AXBoolStore {
   virtual void Merge(const AXBoolStore& other) = 0;
   virtual void ForEach(base::FunctionRef<void(ax::mojom::BoolAttribute, bool)>
                            callback) const = 0;
+  virtual void PopulateFromBitset(
+      const AXBitset<ax::mojom::BoolAttribute>& source_bitset) = 0;
   virtual void PopulateFromMap(
       const base::flat_map<ax::mojom::BoolAttribute, bool>& source_map) = 0;
 
@@ -97,6 +99,8 @@ class AX_BASE_EXPORT AXVectorBoolStore : public AXBoolStore {
   void ForEach(base::FunctionRef<void(ax::mojom::BoolAttribute, bool)> callback)
       const override;
   void Merge(const AXBoolStore& other) override;
+  void PopulateFromBitset(
+      const AXBitset<ax::mojom::BoolAttribute>& source_bitset) override;
   void PopulateFromMap(const base::flat_map<ax::mojom::BoolAttribute, bool>&
                            source_map) override;
   const AXBitset<ax::mojom::BoolAttribute>& GetBitsetStore() const override;
@@ -129,6 +133,8 @@ class AX_BASE_EXPORT AXBitsetBoolStore : public AXBoolStore {
   void Merge(const AXBoolStore& other) override;
   void ForEach(base::FunctionRef<void(ax::mojom::BoolAttribute, bool)> callback)
       const override;
+  void PopulateFromBitset(
+      const AXBitset<ax::mojom::BoolAttribute>& source_bitset) override;
   void PopulateFromMap(const base::flat_map<ax::mojom::BoolAttribute, bool>&
                            source_map) override;
   const AXBitset<ax::mojom::BoolAttribute>& GetBitsetStore() const override;

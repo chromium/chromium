@@ -14,8 +14,8 @@ enum class TestEnum {
   VAL_1 = 1,
   VAL_2 = 2,
   VAL_3 = 3,
-  VAL_63 = 63,
-  kMaxValue = 63,
+  VAL_31 = 31,
+  kMaxValue = 31,
 };
 
 // A macro for testing that a std::optional has both a value and that its value
@@ -26,44 +26,44 @@ enum class TestEnum {
     EXPECT_EQ(expected, actual.value());     \
   }
 
-// Tests a small enum (one that fits inside a single byte (aka kMaxValue <= 63).
+// Tests a small enum (one that fits inside a single byte (aka kMaxValue <= 31).
 TEST(AXBitsetTest, TestEnum) {
   AXBitset<TestEnum> map;
-  EXPECT_FALSE(map.Has(TestEnum::kMinValue));
+  EXPECT_FALSE(map.Get(TestEnum::kMinValue));
   map.Set(TestEnum::kMinValue, true);
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kMinValue));
+  EXPECT_OPTIONAL_EQ(true, map.Get(TestEnum::kMinValue));
   map.Set(TestEnum::kMinValue, false);
-  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::kMinValue));
+  EXPECT_OPTIONAL_EQ(false, map.Get(TestEnum::kMinValue));
   map.Unset(TestEnum::kMinValue);
-  EXPECT_FALSE(map.Has(TestEnum::kMinValue));
+  EXPECT_FALSE(map.Get(TestEnum::kMinValue));
 
-  EXPECT_FALSE(map.Has(TestEnum::VAL_2));
+  EXPECT_FALSE(map.Get(TestEnum::VAL_2));
   map.Set(TestEnum::VAL_2, true);
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_2));
+  EXPECT_OPTIONAL_EQ(true, map.Get(TestEnum::VAL_2));
   map.Set(TestEnum::VAL_2, false);
-  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::VAL_2));
+  EXPECT_OPTIONAL_EQ(false, map.Get(TestEnum::VAL_2));
   map.Unset(TestEnum::VAL_2);
-  EXPECT_FALSE(map.Has(TestEnum::VAL_2));
+  EXPECT_FALSE(map.Get(TestEnum::VAL_2));
 
-  EXPECT_FALSE(map.Has(TestEnum::VAL_63));
-  map.Set(TestEnum::VAL_63, true);
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_63));
-  map.Set(TestEnum::VAL_63, false);
-  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::VAL_63));
-  map.Unset(TestEnum::VAL_63);
-  EXPECT_FALSE(map.Has(TestEnum::VAL_63));
+  EXPECT_FALSE(map.Get(TestEnum::VAL_31));
+  map.Set(TestEnum::VAL_31, true);
+  EXPECT_OPTIONAL_EQ(true, map.Get(TestEnum::VAL_31));
+  map.Set(TestEnum::VAL_31, false);
+  EXPECT_OPTIONAL_EQ(false, map.Get(TestEnum::VAL_31));
+  map.Unset(TestEnum::VAL_31);
+  EXPECT_FALSE(map.Get(TestEnum::VAL_31));
 
   map.Set(TestEnum::kMinValue, true);
   map.Set(TestEnum::VAL_2, true);
-  map.Set(TestEnum::VAL_63, true);
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kMinValue));
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_2));
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_63));
-  map.Set(TestEnum::VAL_63, false);
-  EXPECT_OPTIONAL_EQ(false, map.Has(TestEnum::VAL_63));
+  map.Set(TestEnum::VAL_31, true);
+  EXPECT_OPTIONAL_EQ(true, map.Get(TestEnum::kMinValue));
+  EXPECT_OPTIONAL_EQ(true, map.Get(TestEnum::VAL_2));
+  EXPECT_OPTIONAL_EQ(true, map.Get(TestEnum::VAL_31));
+  map.Set(TestEnum::VAL_31, false);
+  EXPECT_OPTIONAL_EQ(false, map.Get(TestEnum::VAL_31));
   map.Unset(TestEnum::kMinValue);
-  EXPECT_FALSE(map.Has(TestEnum::kMinValue));
-  EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::VAL_2));
+  EXPECT_FALSE(map.Get(TestEnum::kMinValue));
+  EXPECT_OPTIONAL_EQ(true, map.Get(TestEnum::VAL_2));
 }
 
 TEST(AXBitsetTest, ForEach) {
@@ -90,7 +90,7 @@ TEST(AXBitsetTest, Size) {
   EXPECT_EQ(expected_size, map.Size());
 
   map.Set(TestEnum::kMinValue, true);
-  map.Set(TestEnum::VAL_63, false);
+  map.Set(TestEnum::VAL_31, false);
   expected_size = 2;
   EXPECT_EQ(expected_size, map.Size());
 
@@ -99,7 +99,7 @@ TEST(AXBitsetTest, Size) {
   EXPECT_EQ(expected_size, map.Size());
 
   // Unset existing attribute.
-  map.Unset(TestEnum::VAL_63);
+  map.Unset(TestEnum::VAL_31);
   expected_size = 1;
   EXPECT_EQ(expected_size, map.Size());
 }
@@ -114,14 +114,14 @@ TEST(AXBitsetTest, Append) {
   set_b.Set(TestEnum::VAL_1, false);
   set_b.Set(TestEnum::VAL_2, true);
   set_b.Set(TestEnum::VAL_3, true);
-  set_b.Set(TestEnum::VAL_63, false);
+  set_b.Set(TestEnum::VAL_31, false);
 
   set_a.Append(set_b);
 
-  EXPECT_OPTIONAL_EQ(true, set_a.Has(TestEnum::VAL_0));    // No change.
-  EXPECT_OPTIONAL_EQ(false, set_a.Has(TestEnum::VAL_1));   // Overridden.
-  EXPECT_OPTIONAL_EQ(true, set_a.Has(TestEnum::VAL_2));    // Overridden.
-  EXPECT_OPTIONAL_EQ(true, set_a.Has(TestEnum::VAL_3));    // New value.
-  EXPECT_OPTIONAL_EQ(false, set_a.Has(TestEnum::VAL_63));  // New value.
+  EXPECT_OPTIONAL_EQ(true, set_a.Get(TestEnum::VAL_0));    // No change.
+  EXPECT_OPTIONAL_EQ(false, set_a.Get(TestEnum::VAL_1));   // Overridden.
+  EXPECT_OPTIONAL_EQ(true, set_a.Get(TestEnum::VAL_2));    // Overridden.
+  EXPECT_OPTIONAL_EQ(true, set_a.Get(TestEnum::VAL_3));    // New value.
+  EXPECT_OPTIONAL_EQ(false, set_a.Get(TestEnum::VAL_31));  // New value.
 }
 }  // namespace ui

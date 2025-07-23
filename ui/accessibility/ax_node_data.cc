@@ -260,8 +260,8 @@ size_t AXVectorBoolStore::ObjectSize() const {
 
 void AXVectorBoolStore::ForEach(
     base::FunctionRef<void(ax::mojom::BoolAttribute, bool)> callback) const {
-  for (const auto& pair : list_) {
-    callback(pair.first, pair.second);
+  for (const auto& [attr, value] : list_) {
+    callback(attr, value);
   }
 }
 
@@ -296,6 +296,16 @@ bool AXVectorBoolStore::IsEqual(const AXVectorBoolStore& other) const {
   return list_ == other.list_;
 }
 
+void AXVectorBoolStore::PopulateFromBitset(
+    const AXBitset<ax::mojom::BoolAttribute>& source_bitset) {
+  std::vector<std::pair<ax::mojom::BoolAttribute, bool>> pairs;
+  pairs.reserve(source_bitset.Size());
+  source_bitset.ForEach([&pairs](ax::mojom::BoolAttribute attr, bool value) {
+    pairs.emplace_back(attr, value);
+  });
+  list_.container().replace(std::move(pairs));
+}
+
 void AXVectorBoolStore::PopulateFromMap(
     const base::flat_map<ax::mojom::BoolAttribute, bool>& source_map) {
   list_.container() = source_map;
@@ -308,12 +318,11 @@ AXBitsetBoolStore::AXBitsetBoolStore(const AXBitsetBoolStore& other)
     : bitset_(other.bitset_) {}
 
 bool AXBitsetBoolStore::Has(ax::mojom::BoolAttribute attribute) const {
-  return bitset_.Has(attribute).has_value();
+  return bitset_.Get(attribute).has_value();
 }
 
 bool AXBitsetBoolStore::Get(ax::mojom::BoolAttribute attribute) const {
-  std::optional<bool> attr = bitset_.Has(attribute);
-  return attr.has_value() ? attr.value() : false;
+  return bitset_.Get(attribute).value_or(false);
 }
 
 void AXBitsetBoolStore::Set(ax::mojom::BoolAttribute attribute, bool value) {
@@ -380,11 +389,16 @@ const AXBoolAttributes& AXBitsetBoolStore::GetVectorStore() const {
   return vector;
 }
 
+void AXBitsetBoolStore::PopulateFromBitset(
+    const AXBitset<ax::mojom::BoolAttribute>& source_bitset) {
+  bitset_ = source_bitset;
+}
+
 void AXBitsetBoolStore::PopulateFromMap(
     const base::flat_map<ax::mojom::BoolAttribute, bool>& source_map) {
   AXBitset<ax::mojom::BoolAttribute> temp_bitset;
-  for (const auto& pair : source_map) {
-    temp_bitset.Set(pair.first, pair.second);
+  for (const auto& [attr, value] : source_map) {
+    temp_bitset.Set(attr, value);
   }
   bitset_ = temp_bitset;
 }
