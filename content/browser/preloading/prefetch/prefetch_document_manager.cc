@@ -302,6 +302,8 @@ void PrefetchDocumentManager::SetPrefetchServiceForTesting(
 
 void PrefetchDocumentManager::ResetPrefetchAheadOfPrerenderIfExist(
     const GURL& url) {
+  // TODO(https://crbug.com/428500219): Update the logic for
+  // prerender-until-script.
   auto it =
       all_prefetches_.find(std::make_pair(url, PreloadingType::kPrerender));
   if (it == all_prefetches_.end()) {

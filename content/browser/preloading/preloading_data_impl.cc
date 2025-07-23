@@ -399,6 +399,7 @@ void PreloadingDataImpl::ResetRecallStats() {
 
 void PreloadingDataImpl::RecordRecallStatsToUMA(
     NavigationHandle* navigation_handle) {
+  // TODO(https://crbug.com/428500219): Report recall for kPrerenderUntilScript.
   constexpr PreloadingType kPreloadingTypes[] = {PreloadingType::kPreconnect,
                                                  PreloadingType::kPrefetch,
                                                  PreloadingType::kPrerender};

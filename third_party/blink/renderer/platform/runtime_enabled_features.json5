@@ -3685,7 +3685,6 @@
       name: "PrerenderUntilScript",
       public: true,
       status: "test",
-      base_feature: "none",
     },
     {
       name: "Presentation",

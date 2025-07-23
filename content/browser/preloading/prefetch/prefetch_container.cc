@@ -243,6 +243,7 @@ bool CalculateIsLikelyAheadOfPrerender(
     case PreloadingType::kPrefetch:
       return false;
     case PreloadingType::kPrerender:
+    case PreloadingType::kPrerenderUntilScript:
       return true;
     case PreloadingType::kUnspecified:
     case PreloadingType::kPreconnect:
@@ -1943,6 +1944,7 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
       } else {
         return blink::kSecPurposePrefetchHeaderValue;
       }
+    case PreloadingType::kPrerenderUntilScript:
     case PreloadingType::kPrerender:
       if (IsProxyRequiredForURL(request_url)) {
         // Note that this path would be reachable if a prefetch ahead of

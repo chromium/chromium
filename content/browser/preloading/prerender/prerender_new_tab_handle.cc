@@ -81,6 +81,8 @@ FrameTreeNodeId PrerenderNewTabHandle::StartPrerendering(
   ukm::SourceId triggered_primary_page_source_id =
       attributes_.initiator_web_contents->GetPrimaryMainFrame()
           ->GetPageUkmSourceId();
+  // TODO(https://crbug.com/428500219): Update the logic for
+  // prerender-until-script.
   auto* preloading_attempt =
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
           creating_predictor, enacting_predictor, PreloadingType::kPrerender,

@@ -115,6 +115,19 @@ std::string BuildScriptElementSpeculationRules(
                                                {ss.str()}, nullptr);
 }
 
+// TODO(crbug.com/428500219): Move these patterns to preloading_test_util.cc.
+constexpr char kAddSpeculationRulePrerenderUntilScriptScript[] = R"({
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.text = `{
+      "prerender_until_script": [{
+        "source": "list",
+        "urls": [$1]
+      }]
+    }`;
+    document.head.appendChild(script);
+  })";
+
 constexpr char kAddSpeculationRulePrefetchScript[] = R"({
     const script = document.createElement('script');
     script.type = 'speculationrules';
@@ -669,6 +682,19 @@ void PrerenderTestHelper::AddPrerendersAsync(
     GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
         base::UTF8ToUTF16(script), base::NullCallback(), world_id);
   }
+}
+
+void PrerenderTestHelper::AddPrerenderUntilScriptAsync(const GURL& url) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  std::string script =
+      JsReplace(kAddSpeculationRulePrerenderUntilScriptScript, url);
+
+  // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
+  // because some test pages have ContentSecurityPolicy and EvalJs cannot work
+  // with it. See the quick migration guide for EvalJs for more information.
+  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      base::UTF8ToUTF16(script), base::NullCallback(),
+      ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void PrerenderTestHelper::AddPrefetchAsync(const GURL& prefetch_url) {

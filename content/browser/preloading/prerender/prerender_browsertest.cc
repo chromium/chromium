@@ -124,6 +124,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
@@ -15335,6 +15336,34 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintKillSwitchBrowserTest,
   // kPrerender2InNewTab is expected to suppress Prerendering into new tab and
   // the prerendered page is expected to fall back into same tab version.
   ASSERT_EQ(prerender_web_contents, web_contents_impl());
+}
+
+class PrerenderUntilScriptBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderUntilScriptBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerenderUntilScript);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that prerender_until_script action can trigger prerendering
+IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest,
+                       PrerenderUntilScriptTriggering) {
+  // Navigate to an initial page.
+  GURL url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // Start prerender-until-script.
+  GURL prerender_url = GetUrl("/title2.html");
+  prerender_helper()->AddPrerenderUntilScriptAsync(prerender_url);
+
+  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(*web_contents(),
+                                                            prerender_url);
+  FrameTreeNodeId host_id =
+      test::PrerenderTestHelper::GetHostForUrl(*web_contents(), prerender_url);
+  EXPECT_TRUE(host_id) << host_id;
 }
 
 }  // namespace content

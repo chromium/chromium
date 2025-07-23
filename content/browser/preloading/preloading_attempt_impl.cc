@@ -78,6 +78,19 @@ void DCHECKTriggeringOutcomeTransitions(PreloadingTriggeringOutcome old_state,
 #endif  // DCHECK_IS_ON()
 }
 
+void CheckReadyOutcomePreloadingType(PreloadingType type) {
+  switch (type) {
+    case PreloadingType::kPrefetch:
+    case PreloadingType::kPrerender:
+    case PreloadingType::kNoStatePrefetch:
+    case PreloadingType::kLinkPreview:
+    case PreloadingType::kPrerenderUntilScript:
+      return;
+    default:
+      NOTREACHED() << "Unexpected preloading type: " << static_cast<int>(type);
+  }
+}
+
 }  // namespace
 
 void PreloadingAttemptImpl::SetEligibility(PreloadingEligibility eligibility) {
@@ -150,10 +163,7 @@ void PreloadingAttemptImpl::SetTriggeringOutcome(
     // `PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown` is set for
     // those other features.
     case PreloadingTriggeringOutcome::kReady:
-      CHECK(preloading_type_ == PreloadingType::kPrefetch ||
-            preloading_type_ == PreloadingType::kPrerender ||
-            preloading_type_ == PreloadingType::kNoStatePrefetch ||
-            preloading_type_ == PreloadingType::kLinkPreview);
+      CheckReadyOutcomePreloadingType(preloading_type_);
       if (!ready_time_) {
         ready_time_ = elapsed_timer_.Elapsed();
       }

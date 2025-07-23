@@ -57,6 +57,10 @@ enum class PreloadingType {
   // TODO(b:291867362): This is not used by the current implementation,
   // but might be reused in the future.
   kLinkPreview = 6,
+
+  // Like prerendering, it fetches resources in advance; but unlike prerendering
+  // it does not execute JavaScript. It is designed to replace kNoStatePrefetch.
+  kPrerenderUntilScript = 7,
 };
 // LINT.ThenChange()
 

@@ -514,6 +514,8 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
       config.ShouldHoldback(
           PreloadingType::kPrerender,
           content::content_preloading_predictor::kSpeculationRules));
+  // TODO(https://crbug.com/428500219): Set holdback status for
+  // prerender-until-script.
 }
 
 void PreloadHandler::SendCurrentPreloadStatus() {
