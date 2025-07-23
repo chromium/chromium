@@ -13,6 +13,7 @@
 #include <array>
 #include <unordered_set>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/service/error_state.h"
@@ -85,7 +86,7 @@ bool PrecisionMeetsSpecForHighpFloat(GLint rangeMin,
 
 void QueryShaderPrecisionFormat(GLenum shader_type,
                                 GLenum precision_type,
-                                GLint* range,
+                                base::span<GLint> range,
                                 GLint* precision) {
   switch (precision_type) {
     case GL_LOW_INT:
@@ -114,7 +115,8 @@ void QueryShaderPrecisionFormat(GLenum shader_type,
   // On Mac OS with some GPUs, calling this generates a
   // GL_INVALID_OPERATION error. Avoid calling it on non-GLES2
   // platforms.
-  glGetShaderPrecisionFormat(shader_type, precision_type, range, precision);
+  glGetShaderPrecisionFormat(shader_type, precision_type, range.data(),
+                             precision);
 
   // TODO(brianderson): Make the following official workarounds.
 

@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
@@ -869,13 +870,20 @@ GLenum Framebuffer::GetDrawBuffer(GLenum draw_buffer) const {
   return draw_buffers_[index];
 }
 
-void Framebuffer::SetDrawBuffers(GLsizei n, const GLenum* bufs) {
-  DCHECK(n <= static_cast<GLsizei>(manager_->max_draw_buffers_));
-  for (GLsizei ii = 0; ii < n; ++ii) {
-    draw_buffers_[ii] = UNSAFE_TODO(bufs[ii]);
-    adjusted_draw_buffers_[ii] = UNSAFE_TODO(bufs[ii]);
+void Framebuffer::SetDrawBuffers(GLsizei spanification_suspected_redundant_n,
+                                 base::span<const GLenum> bufs) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(static_cast<size_t>(spanification_suspected_redundant_n) == bufs.size(),
+        base::NotFatalUntil::M143);
+  DCHECK(spanification_suspected_redundant_n <=
+         static_cast<GLsizei>(manager_->max_draw_buffers_));
+  for (GLsizei ii = 0; ii < spanification_suspected_redundant_n; ++ii) {
+    draw_buffers_[ii] = bufs[ii];
+    adjusted_draw_buffers_[ii] = bufs[ii];
   }
-  for (uint32_t ii = n; ii < manager_->max_draw_buffers_; ++ii) {
+  for (uint32_t ii = spanification_suspected_redundant_n;
+       ii < manager_->max_draw_buffers_; ++ii) {
     draw_buffers_[ii] = GL_NONE;
     adjusted_draw_buffers_[ii] = GL_NONE;
   }

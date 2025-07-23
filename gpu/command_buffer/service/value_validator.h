@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 
 namespace gpu {
 
@@ -25,8 +26,14 @@ class ValueValidator {
  public:
   ValueValidator() = default;
 
-  ValueValidator(const T* valid_values, int num_values) {
-    AddValues(valid_values, num_values);
+  ValueValidator(base::span<const T> valid_values,
+                 int spanification_suspected_redundant_num_values) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(static_cast<size_t>(spanification_suspected_redundant_num_values) ==
+              valid_values.size(),
+          base::NotFatalUntil::M143);
+    AddValues(valid_values, spanification_suspected_redundant_num_values);
   }
 
   void AddValue(const T value) {
@@ -35,8 +42,14 @@ class ValueValidator {
     }
   }
 
-  void AddValues(const T* valid_values, int num_values) {
-    for (int ii = 0; ii < num_values; ++ii) {
+  void AddValues(base::span<const T> valid_values,
+                 int spanification_suspected_redundant_num_values) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(static_cast<size_t>(spanification_suspected_redundant_num_values) ==
+              valid_values.size(),
+          base::NotFatalUntil::M143);
+    for (int ii = 0; ii < spanification_suspected_redundant_num_values; ++ii) {
       AddValue(valid_values[ii]);
     }
   }

@@ -494,7 +494,7 @@ void TextureManager::Destroy() {
   }
 
   if (have_context_) {
-    glDeleteTextures(std::size(black_texture_ids_), black_texture_ids_);
+    glDeleteTextures(std::size(black_texture_ids_), black_texture_ids_.data());
   }
 
   DCHECK_EQ(0u, memory_type_tracker_->GetMemRepresented());
@@ -1991,9 +1991,9 @@ scoped_refptr<TextureRef>
       target == GL_TEXTURE_2D_ARRAY);
 
   // Make default textures and texture for replacing non-renderable textures.
-  GLuint ids[2];
+  std::array<GLuint, 2> ids;
   const int num_ids = use_default_textures_ ? 2 : 1;
-  glGenTextures(num_ids, ids);
+  glGenTextures(num_ids, ids.data());
   for (int ii = 0; ii < num_ids; ++ii) {
     glBindTexture(target, ids[ii]);
     if (needs_initialization) {

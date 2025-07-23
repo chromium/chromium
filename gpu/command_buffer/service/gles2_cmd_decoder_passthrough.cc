@@ -15,6 +15,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -201,11 +202,15 @@ bool GetClientID(const ClientServiceMap<ClientType, ServiceType>* map,
 
 void RequestExtensions(gl::GLApi* api,
                        const gfx::ExtensionSet& requestable_extensions,
-                       const char* const* extensions_to_request,
-                       size_t count) {
-  for (size_t i = 0; i < count; i++) {
+                       base::span<const char* const> extensions_to_request,
+                       size_t spanification_suspected_redundant_count) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_count == extensions_to_request.size(),
+        base::NotFatalUntil::M143);
+  for (size_t i = 0; i < spanification_suspected_redundant_count; i++) {
     if (gfx::HasExtension(requestable_extensions, extensions_to_request[i])) {
-      // Request the intersection of the two sets
+      // Request the intersection of the two sets │
       api->glRequestExtensionANGLEFn(extensions_to_request[i]);
     }
   }

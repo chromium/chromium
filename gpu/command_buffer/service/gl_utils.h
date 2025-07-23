@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_gles2_export.h"
@@ -66,7 +67,7 @@ bool PrecisionMeetsSpecForHighpFloat(GLint rangeMin,
                                      GLint precision);
 void QueryShaderPrecisionFormat(GLenum shader_type,
                                 GLenum precision_type,
-                                GLint* range,
+                                base::span<GLint> range,
                                 GLint* precision);
 
 // Using the provided feature info, query the numeric limits of the underlying

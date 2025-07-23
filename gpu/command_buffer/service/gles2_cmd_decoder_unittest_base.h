@@ -16,6 +16,7 @@
 #include <array>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -209,7 +210,7 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   // and set |str_end| as 0.
   void SetBucketAsCStrings(uint32_t bucket_id,
                            GLsizei count,
-                           const char** str,
+                           base::span<const char*> str,
                            GLsizei count_in_header,
                            char str_end);
 
@@ -452,12 +453,12 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
                                        GLenum format,
                                        GLenum type,
                                        size_t tex_sub_image_3d_num_calls,
-                                       GLint* xoffset,
-                                       GLint* yoffset,
-                                       GLint* zoffset,
-                                       GLsizei* width,
-                                       GLsizei* height,
-                                       GLsizei* depth,
+                                       base::span<GLint> xoffset,
+                                       base::span<GLint> yoffset,
+                                       base::span<GLint> zoffset,
+                                       base::span<GLsizei> width,
+                                       base::span<GLsizei> height,
+                                       base::span<GLsizei> depth,
                                        GLuint bound_pixel_unpack_buffer);
 
   void SetupExpectationsForRestoreClearState(GLclampf restore_red,

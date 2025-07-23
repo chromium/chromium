@@ -9,6 +9,7 @@
 
 #include "gpu/command_buffer/service/copy_shared_image_helper.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -380,7 +381,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
                             gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                             &paint, SkCanvas::kStrict_SrcRectConstraint);
     } else {
-      SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
+      std::array<SkSurface*, SkYUVAInfo::kMaxPlanes> yuva_sk_surfaces = {};
       for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
            plane_index++) {
         // Get surface per plane from destination scoped write access.
@@ -407,7 +408,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       // (non-multiplanar SI) behavior in RenderableGMBVideoFramePool, so it is
       // not a regression. Nonetheless, this behavior should
       // ideally be changed to that described above for correctness.
-      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces.data(),
+                           yuva_info);
       dest_shared_image->SetCleared();
     }
 

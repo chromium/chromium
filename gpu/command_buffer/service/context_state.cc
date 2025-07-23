@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
@@ -651,14 +652,22 @@ size_t ContextState::GetMaxWindowRectangles() const {
   return size / 4;
 }
 
-void ContextState::SetWindowRectangles(GLenum mode,
-                                       size_t count,
-                                       const volatile GLint* box) {
+void ContextState::SetWindowRectangles(
+    GLenum mode,
+    size_t spanification_suspected_redundant_count,
+    base::span<const volatile GLint> box) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_count == box.size() / 4,
+        base::NotFatalUntil::M143);
+  CHECK(box.size() % 4 == 0, base::NotFatalUntil::M143);
   window_rectangles_mode = mode;
-  num_window_rectangles = count;
-  DCHECK_LE(count, GetMaxWindowRectangles());
-  if (count) {
-    std::copy(box, &UNSAFE_TODO(box[count * 4]), window_rectangles_.begin());
+  num_window_rectangles = spanification_suspected_redundant_count;
+  DCHECK_LE(spanification_suspected_redundant_count, GetMaxWindowRectangles());
+  if (spanification_suspected_redundant_count) {
+    std::copy(box.data(),
+              box.subspan(spanification_suspected_redundant_count * 4).data(),
+              window_rectangles_.begin());
   }
 }
 

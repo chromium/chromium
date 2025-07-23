@@ -21,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -726,7 +727,7 @@ void GLES2DecoderTestBase::SetBucketAsCString(uint32_t bucket_id,
 
 void GLES2DecoderTestBase::SetBucketAsCStrings(uint32_t bucket_id,
                                                GLsizei count,
-                                               const char** str,
+                                               base::span<const char*> str,
                                                GLsizei count_in_header,
                                                char str_end) {
   uint32_t header_size = sizeof(GLint) * (count + 1);
@@ -734,7 +735,7 @@ void GLES2DecoderTestBase::SetBucketAsCStrings(uint32_t bucket_id,
   auto header = base::HeapArray<GLint>::Uninit(count + 1);
   header[0] = static_cast<GLint>(count_in_header);
   for (GLsizei ii = 0; ii < count; ++ii) {
-    header[ii + 1] = str && str[ii] ? strlen(str[ii]) : 0;
+    header[ii + 1] = !str.empty() && str[ii] ? strlen(str[ii]) : 0;
     total_size += header[ii + 1] + 1;
   }
   cmd::SetBucketSize cmd1;
@@ -743,7 +744,7 @@ void GLES2DecoderTestBase::SetBucketAsCStrings(uint32_t bucket_id,
   memcpy(shared_memory_address_, header.data(), header_size);
   uint32_t offset = header_size;
   for (GLsizei ii = 0; ii < count; ++ii) {
-    if (str && str[ii]) {
+    if (!str.empty() && str[ii]) {
       size_t str_len = strlen(str[ii]);
       memcpy(static_cast<char*>(shared_memory_address_) + offset, str[ii],
              str_len);
@@ -810,12 +811,12 @@ void GLES2DecoderTestBase::SetupClearTexture3DExpectations(
     GLenum format,
     GLenum type,
     size_t tex_sub_image_3d_num_calls,
-    GLint* xoffset,
-    GLint* yoffset,
-    GLint* zoffset,
-    GLsizei* width,
-    GLsizei* height,
-    GLsizei* depth,
+    base::span<GLint> xoffset,
+    base::span<GLint> yoffset,
+    base::span<GLint> zoffset,
+    base::span<GLsizei> width,
+    base::span<GLsizei> height,
+    base::span<GLsizei> depth,
     GLuint bound_pixel_unpack_buffer) {
   InSequence seq;
   EXPECT_CALL(*gl_, PixelStorei(GL_UNPACK_ALIGNMENT, 1))
@@ -2043,7 +2044,7 @@ void GLES2DecoderTestBase::SetupShader(
       kOutputVariable1NameESSL3, kOutputVariable1Size, kOutputVariable1Type,
       kOutputVariable1ColorName, kOutputVariable1Index,
   }};
-  TestHelper::ProgramOutputInfo* program_outputs =
+  base::span<TestHelper::ProgramOutputInfo> program_outputs =
       shader_language_version_ == 100 ? kProgramOutputsESSL1
                                       : kProgramOutputsESSL3;
   const size_t kNumProgramOutputs = 1;

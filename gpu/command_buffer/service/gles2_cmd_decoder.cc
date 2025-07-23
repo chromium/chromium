@@ -43,6 +43,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -16304,7 +16305,7 @@ void GLES2DecoderImpl::DoDrawBuffersEXT(GLsizei count,
 
   Framebuffer* framebuffer = GetFramebufferInfoForTarget(GL_FRAMEBUFFER);
   if (framebuffer) {
-    GLenum safe_bufs[16];
+    std::array<GLenum, 16> safe_bufs;
     for (GLsizei i = 0; i < count; ++i) {
       GLenum buf = bufs[i];
       if (buf != static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + i) &&
@@ -16317,8 +16318,9 @@ void GLES2DecoderImpl::DoDrawBuffersEXT(GLsizei count,
       }
       safe_bufs[i] = buf;
     }
-    api()->glDrawBuffersARBFn(count, safe_bufs);
-    framebuffer->SetDrawBuffers(count, safe_bufs);
+    api()->glDrawBuffersARBFn(count, safe_bufs.data());
+    framebuffer->SetDrawBuffers(
+        count, base::span(safe_bufs).first(static_cast<size_t>(count)));
   } else {  // backbuffer
     if (count != 1) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glDrawBuffersEXT",
@@ -16559,19 +16561,19 @@ error::Error GLES2DecoderImpl::HandleGetInternalformativ(
   std::vector<GLint> sample_counts;
 
   GLsizei num_values = 0;
-  GLint* values = nullptr;
+  base::span<GLint> values = {};
   switch (pname) {
     case GL_NUM_SAMPLE_COUNTS:
       num_sample_counts =
           InternalFormatSampleCountsHelper(target, format, nullptr);
       num_values = 1;
-      values = &num_sample_counts;
+      values = base::span_from_ref(num_sample_counts);
       break;
     case GL_SAMPLES:
       num_sample_counts =
           InternalFormatSampleCountsHelper(target, format, &sample_counts);
       num_values = num_sample_counts;
-      values = sample_counts.data();
+      values = sample_counts;
       break;
     default:
       NOTREACHED();
@@ -16593,7 +16595,9 @@ error::Error GLES2DecoderImpl::HandleGetInternalformativ(
     return error::kInvalidArguments;
   }
 
-  std::copy(values, &values[num_values], params);
+  std::copy(values.data(),
+            values.subspan(base::checked_cast<size_t>(num_values)).data(),
+            params);
   result->SetNumResults(num_values);
   return error::kNoError;
 }
@@ -17066,7 +17070,7 @@ void GLES2DecoderImpl::DoWindowRectanglesEXT(GLenum mode,
       return;
     }
   }
-  state_.SetWindowRectangles(mode, n, box_copy.data());
+  state_.SetWindowRectangles(mode, n, box_copy);
   state_.UpdateWindowRectangles();
 }
 
