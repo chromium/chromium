@@ -58,7 +58,12 @@ NSString* kUntrackPriceTitle = @"Untrack price";
 ProfileIOS* GetAnyProfile() {
   std::vector<ProfileIOS*> loaded_profiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-  CHECK(!loaded_profiles.empty());
+
+  // Even if there is only one Profile on disk, it may have not been loaded yet.
+  if (loaded_profiles.empty()) {
+    return nullptr;
+  }
+
   return loaded_profiles.back();
 }
 
@@ -128,21 +133,43 @@ bool CommercePushNotificationClient::HandleNotificationInteraction(
 std::optional<UIBackgroundFetchResult>
 CommercePushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
+  ProfileIOS* profile = GetTargetProfile();
+
+  if (!profile) {
+    // Cannot process the notification without a Profile.
+    return std::nullopt;
+  }
+
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForProfile(GetTargetProfile());
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+
+  if (!optimization_guide_service ||
+      !optimization_guide_service->GetHintsManager()) {
+    return std::nullopt;
+  }
+
   std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
       hint_notification_payload = ParseHintNotificationPayload(
           [notification objectForKey:kSerializedPayloadKey]);
+
   if (hint_notification_payload) {
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceTracking.PushNotification.Received"));
+
     optimization_guide::PushNotificationManager* push_notification_manager =
         optimization_guide_service->GetHintsManager()
             ->push_notification_manager();
+
+    if (!push_notification_manager) {
+      return std::nullopt;
+    }
+
     push_notification_manager->OnNewPushNotification(
         *hint_notification_payload);
+
     return UIBackgroundFetchResultNoData;
   }
+
   return std::nullopt;
 }
 
