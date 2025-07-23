@@ -87,7 +87,7 @@
 
 namespace glic {
 namespace {
-using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using testing::_;
 using testing::Contains;
 using testing::Pair;
@@ -968,9 +968,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
   // Navigate to another page in the existing tab.
   std::vector<std::string> suggestions = {"suggestion1", "suggestion2",
                                           "suggestion3"};
+  // This gets called once for the primary page change and once for the title
+  // change. This is fine. In the actual cueing service implementation, it
+  // coalesces the calls for the same page if there is already an existing
+  // request for the page in flight.
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(suggestions));
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(suggestions));
   RunTestSequence(NavigateWebContents(
       kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
                      "/scrollable_page_with_content.html")));

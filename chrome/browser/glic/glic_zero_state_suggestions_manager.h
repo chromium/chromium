@@ -31,10 +31,10 @@ class GlicZeroStateSuggestionsManager {
   virtual ~GlicZeroStateSuggestionsManager();
 
   // Callback to send zero state suggestions to the webui on tab changes.
-  void NotifyZeroStateSuggestionsOnFocusedTabChanged(
+  void NotifyZeroStateSuggestionsOnFocusedTabDataChanged(
       bool is_first_run,
       const std::vector<std::string>& supported_tools,
-      const glic::FocusedTabData& focused_tab_data);
+      const mojom::TabData* focused_tab_data);
 
   // Callback to send zero state suggestions to the webui on pinned tab changes.
   void NotifyZeroStateSuggestionsOnPinnedTabChanged(

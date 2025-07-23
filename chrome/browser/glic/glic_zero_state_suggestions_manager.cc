@@ -40,18 +40,18 @@ GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
 GlicZeroStateSuggestionsManager::~GlicZeroStateSuggestionsManager() = default;
 
 void GlicZeroStateSuggestionsManager::
-    NotifyZeroStateSuggestionsOnFocusedTabChanged(
+    NotifyZeroStateSuggestionsOnFocusedTabDataChanged(
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
-        const FocusedTabData& focused_tab_data) {
+        const mojom::TabData* focused_tab_data) {
   if (!window_controller_->IsShowing()) {
     return;
   }
 
-  content::WebContents* active_web_contents = nullptr;
-  if (focused_tab_data.GetFocus().has_value()) {
-    active_web_contents = focused_tab_data.GetFocus().value()->GetContents();
-  }
+  content::WebContents* active_web_contents =
+      sharing_manager_->GetFocusedTabData().focus()
+          ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
+          : nullptr;
 
   if (contextual_cueing_service_ && active_web_contents) {
     // Notify host that suggestions are pending.
@@ -122,10 +122,12 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
     }
     // If there were previous subscriptions they will be unsubscribed when the
     // old values are destructed on assignment.
+    // TODO: b/433738020 - Investigate whether we should listen to a different
+    // callback.
     current_zero_state_suggestions_focus_change_subscription_ =
-        sharing_manager_->AddFocusedTabChangedCallback(base::BindRepeating(
+        sharing_manager_->AddFocusedTabDataChangedCallback(base::BindRepeating(
             &GlicZeroStateSuggestionsManager::
-                NotifyZeroStateSuggestionsOnFocusedTabChanged,
+                NotifyZeroStateSuggestionsOnFocusedTabDataChanged,
             GetWeakPtr(), is_first_run, supported_tools));
     current_zero_state_suggestions_pinned_tab_change_subscription_ =
         sharing_manager_->AddPinnedTabsChangedCallback(base::BindRepeating(
