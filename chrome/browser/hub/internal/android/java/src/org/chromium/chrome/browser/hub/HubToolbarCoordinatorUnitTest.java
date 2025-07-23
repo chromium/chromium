@@ -76,6 +76,7 @@ public class HubToolbarCoordinatorUnitTest {
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
     private MenuButton mMenuButton;
+    private ObservableSupplierImpl<Boolean> mBottomToolbarVisibilitySupplier;
 
     @Mock private PaneManager mPaneManager;
     @Mock private PaneOrderController mPaneOrderController;
@@ -92,6 +93,7 @@ public class HubToolbarCoordinatorUnitTest {
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneOrderController.getPaneOrder()).thenReturn(ImmutableSet.of());
+        mBottomToolbarVisibilitySupplier = spy(new ObservableSupplierImpl<>());
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -113,7 +115,8 @@ public class HubToolbarCoordinatorUnitTest {
                         mSearchActivityClient,
                         mHubColorMixer,
                         mUserEducationHelper,
-                        mIsAnimatingSupplier);
+                        mIsAnimatingSupplier,
+                        mBottomToolbarVisibilitySupplier);
     }
 
     @Test
@@ -125,5 +128,17 @@ public class HubToolbarCoordinatorUnitTest {
 
         verify(mUserEducationHelper).requestShowIph(any());
         verify(mIsAnimatingSupplier).removeObserver(any());
+    }
+
+    @Test
+    public void testBottomToolbarVisibilitySupplier() {
+        // Verify that observer was added to the bottom toolbar visibility supplier
+        verify(mBottomToolbarVisibilitySupplier).addObserver(any());
+
+        // Destroy coordinator
+        mCoordinator.destroy();
+
+        // Verify that observer was removed from the bottom toolbar visibility supplier
+        verify(mBottomToolbarVisibilitySupplier).removeObserver(any());
     }
 }

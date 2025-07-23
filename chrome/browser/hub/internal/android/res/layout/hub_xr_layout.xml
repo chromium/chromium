@@ -9,6 +9,7 @@ found in the LICENSE file.
   android:layout_height="match_parent">
 
   <LinearLayout
+    android:id="@+id/hub_main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -19,7 +20,11 @@ found in the LICENSE file.
       android:layout_height="@dimen/hub_xr_vertical_gap_between_toolbar_and_host_pane"
       android:layout_width="0dp" />
 
-    <include layout="@layout/hub_pane_host_layout" />
+    <include
+      layout="@layout/hub_pane_host_layout"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1" />
 
   </LinearLayout>
 

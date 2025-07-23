@@ -41,6 +41,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
     private final ViewGroup mMainHubParent;
     private final PaneManager mPaneManager;
     private final HubToolbarCoordinator mHubToolbarCoordinator;
+    private final @Nullable HubBottomToolbarCoordinator mHubBottomToolbarCoordinator;
     private final HubPaneHostCoordinator mHubPaneHostCoordinator;
     private final SingleChildViewManager mOverlayViewManager;
     private final HubLayoutController mHubLayoutController;
@@ -115,6 +116,15 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
         UserEducationHelper userEducationHelper =
                 new UserEducationHelper(activity, profile, new Handler());
+
+        // Get bottom toolbar delegate and visibility supplier
+        HubBottomToolbarDelegate bottomToolbarDelegate =
+                HubBottomToolbarDelegateFactory.createDelegate();
+        @Nullable ObservableSupplier<Boolean> bottomToolbarVisibilitySupplier =
+                bottomToolbarDelegate != null
+                        ? bottomToolbarDelegate.getBottomToolbarVisibilitySupplier()
+                        : null;
+
         mHubToolbarCoordinator =
                 new HubToolbarCoordinator(
                         activity,
@@ -125,7 +135,22 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                         searchActivityClient,
                         hubColorMixer,
                         userEducationHelper,
-                        hubLayoutController.getIsAnimatingSupplier());
+                        hubLayoutController.getIsAnimatingSupplier(),
+                        bottomToolbarVisibilitySupplier);
+
+        // Dynamically add bottom toolbar if delegate is available and enabled
+        if (bottomToolbarDelegate != null && bottomToolbarDelegate.isBottomToolbarEnabled()) {
+            ViewGroup mainContainer = mContainerView.findViewById(R.id.hub_main_container);
+            mHubBottomToolbarCoordinator =
+                    new HubBottomToolbarCoordinator(
+                            context,
+                            mainContainer,
+                            paneManager,
+                            hubColorMixer,
+                            bottomToolbarDelegate);
+        } else {
+            mHubBottomToolbarCoordinator = null;
+        }
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         hubPaneHostView.setXrSpaceModeObservableSupplier(xrSpaceModeObservableSupplier);
@@ -179,6 +204,9 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         mPaneBackStackHandler.destroy();
 
         mHubToolbarCoordinator.destroy();
+        if (mHubBottomToolbarCoordinator != null) {
+            mHubBottomToolbarCoordinator.destroy();
+        }
         mHubPaneHostCoordinator.destroy();
         mOverlayViewManager.destroy();
 
@@ -280,5 +308,9 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
     private <T> Callback<T> castCallback(Callback callback) {
         return (Callback<T>) callback;
+    }
+
+    @Nullable HubBottomToolbarCoordinator getHubBottomToolbarCoordinatorForTesting() {
+        return mHubBottomToolbarCoordinator;
     }
 }

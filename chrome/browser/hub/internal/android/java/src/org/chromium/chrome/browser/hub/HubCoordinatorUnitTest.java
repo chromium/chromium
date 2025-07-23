@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -341,5 +343,87 @@ public class HubCoordinatorUnitTest {
         int tabId = 5;
         mHubCoordinator.selectTabAndHideHub(tabId);
         verify(mHubLayoutController).selectTabAndHideHubLayout(tabId);
+    }
+
+    @Test
+    public void testBottomToolbarDelegate_Null() {
+        // By default, no bottom toolbar delegate is set.
+        assertNull(mHubCoordinator.getHubBottomToolbarCoordinatorForTesting());
+    }
+
+    @Test
+    public void testBottomToolbarDelegate_EmptyDelegate() {
+        // Set EmptyHubBottomToolbarDelegate for testing
+        EmptyHubBottomToolbarDelegate emptyDelegate = new EmptyHubBottomToolbarDelegate();
+        HubBottomToolbarDelegateFactory.setDelegateForTesting(emptyDelegate);
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            mRootView = new FrameLayout(activity);
+                            activity.setContentView(mRootView);
+
+                            // Create coordinator with empty delegate
+                            HubCoordinator coordinator =
+                                    new HubCoordinator(
+                                            activity,
+                                            mProfileProviderSupplier,
+                                            mRootView,
+                                            mPaneManager,
+                                            mHubLayoutController,
+                                            mTabSupplier,
+                                            mMenuButtonCoordinator,
+                                            mSearchActivityClient,
+                                            mEdgeToEdgeSupplier,
+                                            mHubColorMixer,
+                                            null);
+
+                            // EmptyDelegate.isBottomToolbarEnabled() returns false,
+                            // so no bottom toolbar coordinator should be created
+                            assertNull(coordinator.getHubBottomToolbarCoordinatorForTesting());
+
+                            coordinator.destroy();
+                        });
+    }
+
+    @Test
+    public void testBottomToolbarDelegate_EnabledDelegate() {
+        // Create a custom delegate that reports as enabled
+        HubBottomToolbarDelegate enabledDelegate =
+                new EmptyHubBottomToolbarDelegate() {
+                    @Override
+                    public boolean isBottomToolbarEnabled() {
+                        return true;
+                    }
+                };
+        HubBottomToolbarDelegateFactory.setDelegateForTesting(enabledDelegate);
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            mRootView = new FrameLayout(activity);
+                            activity.setContentView(mRootView);
+
+                            // Create coordinator with enabled delegate
+                            HubCoordinator coordinator =
+                                    new HubCoordinator(
+                                            activity,
+                                            mProfileProviderSupplier,
+                                            mRootView,
+                                            mPaneManager,
+                                            mHubLayoutController,
+                                            mTabSupplier,
+                                            mMenuButtonCoordinator,
+                                            mSearchActivityClient,
+                                            mEdgeToEdgeSupplier,
+                                            mHubColorMixer,
+                                            null);
+
+                            assertNotNull(coordinator.getHubBottomToolbarCoordinatorForTesting());
+
+                            coordinator.destroy();
+                        });
     }
 }
