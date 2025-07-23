@@ -211,6 +211,34 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
+// Tests that the drop target is not shown when a drag is started from a
+// tab that is already in a split view.
+TEST_F(MultiContentsViewDropTargetControllerTest,
+       OnWebContentsDragUpdate_HideDropTargetWhenInSplitView) {
+  controller().OnWebContentsDragUpdate(ValidUrlDropData(),
+                                       kDragPointForStartDropTargetShow, true);
+
+  FastForward();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+}
+
+// Tests that the drop target is not shown when a drag is outside of the
+// contents view.
+TEST_F(MultiContentsViewDropTargetControllerTest,
+       OnWebContentsDragUpdate_HideDropTargetWhenDragIsOutOfBounds) {
+  controller().OnWebContentsDragUpdate(ValidUrlDropData(), gfx::PointF(-1, 250),
+                                       false);
+
+  FastForward();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+
+  controller().OnWebContentsDragUpdate(ValidUrlDropData(), gfx::PointF(1000, 250),
+                                       false);
+
+  FastForward();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+}
+
 // Tests that the drop target timer is cancelled when a drag is not in the
 // "drop area".
 TEST_F(MultiContentsViewDropTargetControllerTest,
