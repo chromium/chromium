@@ -3077,13 +3077,16 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.ReadAloud.HighlightGranularity"
-    enum="ReadAnythingHighlightState" expires_after="2026-06-01">
+    enum="ReadAnythingHighlightGranularity" expires_after="2026-06-01">
   <owner>ajitnarayanan@google.com</owner>
-  <owner>xiangxiao@google.com</owner>
+  <owner>kristislee@google.com</owner>
+  <owner>ammedina@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
     Records the user-chosen highlight granularity for reading aloud in the Read
-    Anything panel.
+    Anything panel. There was an error in the enum before 2025-07-22. This
+    shouldn't affect the release of the feature to stable but use caution when
+    interpreting results before that date.
   </summary>
 </histogram>
 
