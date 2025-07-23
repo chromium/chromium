@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
-#include "build/android_buildflags.h"
 #include "media/audio/android/aaudio_bluetooth_output.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
@@ -148,11 +147,6 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
                 : device_id);
     return Java_AudioManagerAndroid_setCommunicationDevice(
         AttachCurrentThread(), j_audio_manager_, j_device_id);
-  }
-
-  bool IsBluetoothScoOn() override {
-    return Java_AudioManagerAndroid_isBluetoothScoOn(AttachCurrentThread(),
-                                                     j_audio_manager_);
   }
 
   void MaybeSetBluetoothScoState(bool state) override {
@@ -631,19 +625,7 @@ AudioInputStream* AudioManagerAndroid::MakeAudioInputStream(
   // MODE_IN_COMMUNICATION. However, the user might have asked for a special
   // mode where all audio input processing is disabled, and if that is the case
   // we avoid changing the mode.
-
-  // To ensure proper audio routing when a Bluetooth microphone is in use,
-  // Android's audio manager must switch the output from TYPE_BLUETOOTH_A2DP to
-  // TYPE_BLUETOOTH_SCO. This switch is triggered by setting the audio mode to
-  // MODE_IN_COMMUNICATION. Failing to activate communication mode can result
-  // in audio being routed incorrectly, leading to no sound output from the
-  // Bluetooth headset.
-  bool force_communication_mode = false;
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  force_communication_mode = GetJniDelegate().IsBluetoothScoOn();
-#endif
-  if (params.effects() != AudioParameters::NO_EFFECTS ||
-      force_communication_mode) {
+  if (params.effects() != AudioParameters::NO_EFFECTS) {
     communication_mode_is_on_ = true;
     GetJniDelegate().SetCommunicationAudioModeOn(true);
   }

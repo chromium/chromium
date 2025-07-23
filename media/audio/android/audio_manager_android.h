@@ -68,9 +68,6 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
     virtual bool SetCommunicationDevice(std::string_view device_id) = 0;
 
-    // Gets whether Bluetooth SCO is currently enabled.
-    virtual bool IsBluetoothScoOn() = 0;
-
     // Requests for Bluetooth SCO to be enabled or disabled. This request may
     // fail.
     virtual void MaybeSetBluetoothScoState(bool state) = 0;

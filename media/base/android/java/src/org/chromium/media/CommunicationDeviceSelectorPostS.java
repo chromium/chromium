@@ -113,14 +113,6 @@ class CommunicationDeviceSelectorPostS extends CommunicationDeviceSelector {
     }
 
     @Override
-    public boolean isBluetoothScoOn() {
-        // TODO(crbug.com/376166935): Consider BLE headset as well.
-        AudioDeviceInfo currentDevice = mAudioManager.getCommunicationDevice();
-        return currentDevice != null
-                && currentDevice.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
-    }
-
-    @Override
     public void maybeSetBluetoothScoState(boolean state) {
         if (state) {
             AudioDeviceInfo device =

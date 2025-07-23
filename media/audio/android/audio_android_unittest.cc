@@ -188,7 +188,6 @@ class MockJniDelegate : public JniDelegate {
               SetCommunicationDevice,
               (std::string_view device_id),
               (override));
-  MOCK_METHOD(bool, IsBluetoothScoOn, (), (override));
   MOCK_METHOD(void, MaybeSetBluetoothScoState, (bool state), (override));
   MOCK_METHOD(int, GetNativeOutputSampleRate, (), (override));
   MOCK_METHOD(bool, IsAudioLowLatencySupported, (), (override));

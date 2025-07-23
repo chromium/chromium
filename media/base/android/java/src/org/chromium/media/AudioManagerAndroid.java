@@ -362,12 +362,6 @@ class AudioManagerAndroid {
         return mCommunicationDeviceSelector.getDevices();
     }
 
-    /** Gets whether Bluetooth SCO is currently enabled. */
-    @CalledByNative
-    private boolean isBluetoothScoOn() {
-        return mCommunicationDeviceSelector.isBluetoothScoOn();
-    }
-
     /** Requests for Bluetooth SCO to be enabled or disabled. This request may fail. */
     @CalledByNative
     private void maybeSetBluetoothScoState(boolean state) {

@@ -56,9 +56,6 @@ abstract class CommunicationDeviceSelector {
     /** Gets whether the speakerphone is currently active. */
     public abstract boolean isSpeakerphoneOn();
 
-    /** Gets whether Bluetooth SCO is currently enabled. */
-    public abstract boolean isBluetoothScoOn();
-
     /** Requests for Bluetooth SCO to be enabled or disabled. This request may fail. */
     public abstract void maybeSetBluetoothScoState(boolean state);
 
