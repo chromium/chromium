@@ -80,6 +80,7 @@ source_set("bwg_service") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public",
     "//ios/web/util",
   ]

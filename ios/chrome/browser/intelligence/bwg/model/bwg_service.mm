@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/util/content_type_util.h"
 
@@ -22,6 +23,10 @@ BwgService::BwgService(ProfileIOS* profile,
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
   pref_service_ = pref_service;
+
+  ios::provider::CheckGeminiEligibility(auth_service_, ^(BOOL eligible) {
+    is_disabled_by_gemini_policy_ = !eligible;
+  });
 }
 
 BwgService::~BwgService() = default;
@@ -40,9 +45,10 @@ bool BwgService::IsProfileEligibleForBwg() {
                 signin::Tribool::kTrue
           : false;
 
-  // Checks the enterprise policy.
+  // Checks the Chrome and Gemini Enterprise policies.
   bool is_disabled_by_policy =
-      pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1;
+      pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1 ||
+      is_disabled_by_gemini_policy_;
 
   bool is_eligible = can_use_model_execution && !is_disabled_by_policy;
 

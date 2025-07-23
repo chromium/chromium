@@ -12,6 +12,7 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "services/network/public/cpp/resource_request.h"
 
+class AuthenticationService;
 @class BWGConfiguration;
 @protocol BWGGatewayProtocol;
 
@@ -53,6 +54,11 @@ const std::u16string GetPageContextShouldDetachScript();
 
 // Creates a BWG gateway object for relaying internal protocols.
 id<BWGGatewayProtocol> CreateBWGGateway();
+
+// Checks if the feature is disabled through a Gemini Enterprise policy, and
+// returns the result through a `completion` block.
+void CheckGeminiEligibility(AuthenticationService* auth_service,
+                            BWGEligibilityCallback completion);
 
 }  // namespace ios::provider
 

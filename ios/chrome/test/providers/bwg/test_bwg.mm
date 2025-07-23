@@ -31,4 +31,7 @@ id<BWGGatewayProtocol> CreateBWGGateway() {
   return nil;
 }
 
+void CheckGeminiEligibility(AuthenticationService* auth_service,
+                            BWGEligibilityCallback completion) {}
+
 }  // namespace ios::provider

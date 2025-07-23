@@ -45,6 +45,10 @@ class BwgService : public KeyedService {
 
   // The PrefService associated with the Profile.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // Whether the user is ineligible by the Gemini Enterprise policy (not Chrome
+  // Enterprise).
+  bool is_disabled_by_gemini_policy_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_
