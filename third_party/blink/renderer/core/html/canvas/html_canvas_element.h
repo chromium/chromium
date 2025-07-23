@@ -67,7 +67,6 @@ class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasHighDynamicRangeOptions;
 class CanvasRenderingContextFactory;
-class CanvasResourceProvider;
 class Element;
 class GraphicsContext;
 class HTMLCanvasElement;
@@ -361,9 +360,6 @@ class CORE_EXPORT HTMLCanvasElement final
   // GPU acceleration.
   void UpdatePreferred2DRasterMode();
 
-  // Recreates the resource provider.
-  CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
-
   void ResetLayer();
 
  protected:
@@ -378,8 +374,6 @@ class CORE_EXPORT HTMLCanvasElement final
   };
 
   void Dispose();
-
-  void CreateCanvasResourceProviderForCanvas2D();
 
   void ColorSchemeMayHaveChanged();
 
