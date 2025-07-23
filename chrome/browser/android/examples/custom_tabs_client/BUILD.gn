@@ -87,6 +87,10 @@ android_apk("custom_tabs_client_example_apk") {
   android_manifest = "src/AndroidManifest.xml"
   apk_name = "CustomTabsClientExample"
 
+  # TODO(https://crbug.com/433813184): Remove target_sdk_version so sample app
+  # inherits default once sample app supports edge to edge.
+  target_sdk_version = 35
+
   deps = [
     ":chrome_tabs_client_example_apk_resources",
     "//third_party/android_deps:material_design_java",
