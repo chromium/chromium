@@ -18,11 +18,14 @@ export function getHtml(this: ComposeboxElement) {
     <div id="errorScrim">
       <p>${this.errorMessage_}</p>
       <cr-button id="dismissErrorButton"
-        @click="${this.onDismissErrorButtonClick_}">$i18n{dismissButton}
+          @click="${this.onDismissErrorButtonClick_}">
+        <cr-icon icon="cr:close" slot="prefix-icon"></cr-icon>
+        <div>$i18n{dismissButton}</div>
       </cr-button>
     </div>
   `: ''}
-  <div id="composebox" tabindex="-1" @keydown="${this.onKeydown_}">
+  <div id="composebox" tabindex="-1" @keydown="${this.onKeydown_}"
+      ?inert=${this.showErrorScrim_}>
     <div id="inputContainer">
       <ntp-composebox-file-carousel
         id="carousel"

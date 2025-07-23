@@ -189,6 +189,18 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    if ((changedProperties as Map<PropertyKey, unknown>)
+            .has('showErrorScrim_') &&
+        this.showErrorScrim_) {
+      const dismissErrorButton =
+          this.shadowRoot.querySelector<HTMLElement>('#dismissErrorButton');
+      if (dismissErrorButton) {
+        dismissErrorButton.focus();
+      }
+    }
+  }
+
   getText() {
     return this.$.input.value;
   }
@@ -233,6 +245,7 @@ export class ComposeboxElement extends I18nMixinLit
         this.errorMessage_ = file.size === 0 ?
             this.i18n('composeboxFileUploadInvalidEmptySize') :
             this.i18n('composeboxFileUploadInvalidTooLarge');
+        input.value = '';
         return;
       } else {
         const fileBuffer = await file.arrayBuffer();
