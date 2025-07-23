@@ -74,7 +74,16 @@ class ImageAnnotationWorker {
     source_for_test_ = indexing_source;
   }
 
+  void set_optical_character_recognizer_for_testing(
+      scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+          optical_character_recognizer) {
+    optical_character_recognizer_ = optical_character_recognizer;
+    use_ocr_ = true;
+  }
+
  private:
+  friend class ImageAnnotationWorkerTest;
+
   void OnFileChange(const base::FilePath& path, bool error);
 
   // Processes the items from the `files_to_process_` queue. Do it in a
@@ -82,7 +91,6 @@ class ImageAnnotationWorker {
   // result in chrome crash if there a long list of non-image files in the
   // queue.
   void ProcessItems();
-
 
   // Processes the next directory from the `files_to_process_` queue.
   void ProcessNextDirectory(const base::FilePath& directory_path);
@@ -121,6 +129,14 @@ class ImageAnnotationWorker {
   // Disconnects the annotators for ICA and OCR if set.
   void DisconnectAnnotators();
 
+  // Makes a request to `optical_character_recognizer_` to check if ocr service
+  // is busy.
+  void CheckIsOCRBusy();
+
+  // The callback of `OpticalCharacterRecognizer::IsOCRBusy` to indicate if ocr
+  // service is busy.
+  void OnIsOCRBusyResponse(bool is_busy);
+
   std::unique_ptr<base::FilePathWatcher> file_watcher_;
   base::FilePath root_path_;
   // Excludes any path matching the prefixes.
@@ -139,7 +155,7 @@ class ImageAnnotationWorker {
 
   const bool use_file_watchers_;
   const bool use_ica_;
-  const bool use_ocr_;
+  bool use_ocr_;
   base::queue<base::FilePath> files_to_process_;
   int num_retries_passed_ = 0;
 
@@ -153,6 +169,8 @@ class ImageAnnotationWorker {
 
   int num_ica_disconnection_ = 0;
   int num_ocr_disconnection_ = 0;
+
+  int ocr_batch_count_ = 0;
 
   // Fake delay for image processing callback. Used in tests only.
   std::optional<base::TimeDelta> image_processing_delay_for_test_ =
