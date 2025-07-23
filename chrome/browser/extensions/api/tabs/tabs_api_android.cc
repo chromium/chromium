@@ -235,34 +235,6 @@ ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
-  std::optional<tabs::SetZoom::Params> params =
-      tabs::SetZoom::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
-  std::optional<tabs::GetZoom::Params> params =
-      tabs::GetZoom::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
-  std::optional<tabs::SetZoomSettings::Params> params =
-      tabs::SetZoomSettings::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
-  std::optional<tabs::GetZoomSettings::Params> params =
-      tabs::GetZoomSettings::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 TabsDiscardFunction::TabsDiscardFunction() = default;
 TabsDiscardFunction::~TabsDiscardFunction() = default;
 
