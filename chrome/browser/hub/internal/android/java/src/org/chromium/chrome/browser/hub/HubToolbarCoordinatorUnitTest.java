@@ -34,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -73,6 +74,7 @@ public class HubToolbarCoordinatorUnitTest {
 
     private final ObservableSupplierImpl<Pane> mFocusedPaneSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
     private MenuButton mMenuButton;
@@ -85,6 +87,7 @@ public class HubToolbarCoordinatorUnitTest {
     @Mock private SearchActivityClient mSearchActivityClient;
     @Mock private HubColorMixer mHubColorMixer;
     @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private Runnable mExitHubRunnable;
 
     @Before
     public void setUp() {
@@ -116,7 +119,9 @@ public class HubToolbarCoordinatorUnitTest {
                         mHubColorMixer,
                         mUserEducationHelper,
                         mIsAnimatingSupplier,
-                        mBottomToolbarVisibilitySupplier);
+                        mBottomToolbarVisibilitySupplier,
+                        mCurrentTabSupplier,
+                        mExitHubRunnable);
     }
 
     @Test

@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -54,6 +55,8 @@ public class HubToolbarCoordinator {
      * @param userEducationHelper Used to show IPHs.
      * @param isHubAnimatingSupplier Supplies whether a hub layout animation is running.
      * @param bottomToolbarVisibilitySupplier Supplies bottom toolbar visibility state, can be null.
+     * @param currentTabSupplier The supplier of the current {@link Tab}.
+     * @param exitHubRunnable Used to exit the hub.
      */
     public HubToolbarCoordinator(
             Activity activity,
@@ -65,7 +68,9 @@ public class HubToolbarCoordinator {
             HubColorMixer hubColorMixer,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Boolean> isHubAnimatingSupplier,
-            @Nullable ObservableSupplier<Boolean> bottomToolbarVisibilitySupplier) {
+            @Nullable ObservableSupplier<Boolean> bottomToolbarVisibilitySupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            Runnable exitHubRunnable) {
         mUserEducationHelper = userEducationHelper;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsAnimatingSupplier = isHubAnimatingSupplier;
@@ -82,7 +87,14 @@ public class HubToolbarCoordinator {
                         .build();
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);
         mMediator =
-                new HubToolbarMediator(activity, model, paneManager, tracker, searchActivityClient);
+                new HubToolbarMediator(
+                        activity,
+                        model,
+                        paneManager,
+                        tracker,
+                        searchActivityClient,
+                        currentTabSupplier,
+                        exitHubRunnable);
         mHubToolbarView = hubToolbarView;
 
         // Set up bottom toolbar visibility observer

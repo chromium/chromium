@@ -220,6 +220,29 @@ public final class HubColors {
         }
     }
 
+    /**
+     * Adapts the given color to a color state list that supports enabled and disabled states.
+     *
+     * @param context The {@link Context} to use for the color state list.
+     * @param enabledColor The color to use for the enabled state.
+     * @return A {@link ColorStateList} with the given color for the enabled state and a disabled
+     *     state.
+     */
+    public static ColorStateList getButtonColorStateList(
+            Context context, @ColorInt int enabledColor) {
+        @DimenRes int disabledAlpha = R.dimen.default_disabled_alpha;
+        return generateDisabledAndNormalStatesColorStateList(context, enabledColor, disabledAlpha);
+    }
+
+    /**
+     * Adapts the given color to a color state list that supports enabled and disabled states for
+     * the hub action button.
+     *
+     * @param context The {@link Context} to use for the color state list.
+     * @param enabledColor The color to use for the enabled state.
+     * @return A {@link ColorStateList} with the given color for the enabled state and a disabled
+     *     state.
+     */
     public static ColorStateList getActionButtonColor(
             Context context, @ColorInt int enabledColor, boolean isGtsUpdateEnabled) {
         if (isGtsUpdateEnabled) {
@@ -228,10 +251,18 @@ public final class HubColors {
             return generateDisabledAndNormalStatesColorStateList(enabledColor, disabledColor);
         }
 
-        @DimenRes int disabledAlpha = R.dimen.default_disabled_alpha;
-        return generateDisabledAndNormalStatesColorStateList(context, enabledColor, disabledAlpha);
+        return getButtonColorStateList(context, enabledColor);
     }
 
+    /**
+     * Adapts the given color to a color state list that supports enabled and disabled states for
+     * the hub action button background.
+     *
+     * @param context The {@link Context} to use for the color state list.
+     * @param enabledColor The color to use for the enabled state.
+     * @return A {@link ColorStateList} with the given color for the enabled state and a disabled
+     *     state.
+     */
     public static ColorStateList getActionButtonBgColor(Context context, @ColorInt int color) {
         @ColorRes int disabledColorRes = R.color.hub_action_button_disabled_background_color;
         @ColorInt int disabledColor = ContextCompat.getColor(context, disabledColorRes);

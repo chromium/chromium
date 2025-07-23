@@ -13402,6 +13402,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Hub.BackButtonPressed">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <description>The user pressed the back button to close the Hub.</description>
+</action>
+
 <action name="HubSearch.KeyboardEnterPressed">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>

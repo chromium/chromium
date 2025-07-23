@@ -17,6 +17,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_ENABLED;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -35,6 +38,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.core.content.ContextCompat;
@@ -60,7 +64,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -111,6 +116,7 @@ public class HubToolbarViewUnitTest {
     private View mSearchBox;
     private View mSearchLoupe;
     private EditText mSearchBoxText;
+    private ImageButton mBackButton;
     private PropertyModel mPropertyModel;
     private HubColorMixer mColorMixer;
 
@@ -134,6 +140,7 @@ public class HubToolbarViewUnitTest {
         mSearchBox = mToolbarContainer.findViewById(R.id.search_box);
         mSearchLoupe = mToolbarContainer.findViewById(R.id.search_loupe);
         mSearchBoxText = mToolbarContainer.findViewById(R.id.search_box_text);
+        mBackButton = mToolbarContainer.findViewById(R.id.toolbar_back_button);
         mActivity.setContentView(mToolbarContainer);
 
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
@@ -261,6 +268,36 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.HUB_BACK_BUTTON})
+    public void testBackButtonVisibility() {
+        mPropertyModel.set(BACK_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, mBackButton.getVisibility());
+
+        mPropertyModel.set(BACK_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mBackButton.getVisibility());
+    }
+
+    @Test
+    public void testBackButtonEnabled() {
+        mPropertyModel.set(BACK_BUTTON_ENABLED, false);
+        assertFalse(mBackButton.isEnabled());
+
+        mPropertyModel.set(BACK_BUTTON_ENABLED, true);
+        assertTrue(mBackButton.isEnabled());
+    }
+
+    @Test
+    public void testBackButtonListener() {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        Runnable testListener = callbackHelper::notifyCalled;
+
+        assertEquals(0, callbackHelper.getCallCount());
+        mPropertyModel.set(BACK_BUTTON_LISTENER, testListener);
+        mBackButton.performClick();
+        assertEquals(1, callbackHelper.getCallCount());
+    }
+
+    @Test
     public void testSearchBoxListener() {
         CallbackHelper callbackHelper = new CallbackHelper();
         Runnable testListener =
@@ -288,7 +325,7 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({
+    @DisableFeatures({
         ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     })
     public void testUpdateSearchBoxColorScheme() {
@@ -314,7 +351,7 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
+    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testUpdateSearchBoxColorScheme_gtsSurfaceColorUpdateEnabled() {
         forceSetColorScheme(HubColorScheme.INCOGNITO);
 
@@ -344,11 +381,11 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({
+    @DisableFeatures({
         ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     })
     public void testHubColorMixer_searchBoxEnabled() {
-        verify(mColorMixer, times(8)).registerBlend(any());
+        verify(mColorMixer, times(9)).registerBlend(any());
     }
 
     /**

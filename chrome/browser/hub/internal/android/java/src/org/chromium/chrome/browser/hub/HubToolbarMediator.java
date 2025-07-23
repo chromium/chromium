@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_ENABLED;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -30,6 +33,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -72,6 +76,10 @@ public class HubToolbarMediator {
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(Configuration configuration) {
+                    int screenWidthDp = configuration.screenWidthDp;
+                    boolean isTablet = HubUtils.isScreenWidthTablet(screenWidthDp);
+                    mPropertyModel.set(BACK_BUTTON_VISIBLE, isTablet);
+
                     Pane pane = mPaneManager.getFocusedPaneSupplier().get();
                     if (pane == null) return;
 
@@ -82,14 +90,11 @@ public class HubToolbarMediator {
                         mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, true);
                         mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
                         mPropertyModel.set(SEARCH_LOUPE_VISIBLE, false);
-                        return;
+                    } else {
+                        mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, false);
+                        mPropertyModel.set(SEARCH_BOX_VISIBLE, !isTablet);
+                        mPropertyModel.set(SEARCH_LOUPE_VISIBLE, isTablet);
                     }
-
-                    int screenWidthDp = configuration.screenWidthDp;
-                    boolean showLoupe = HubUtils.isScreenWidthTablet(screenWidthDp);
-                    mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, false);
-                    mPropertyModel.set(SEARCH_BOX_VISIBLE, !showLoupe);
-                    mPropertyModel.set(SEARCH_LOUPE_VISIBLE, showLoupe);
                 }
 
                 @Override
@@ -102,6 +107,7 @@ public class HubToolbarMediator {
     private final PaneManager mPaneManager;
     private final Tracker mTracker;
     private final SearchActivityClient mSearchActivityClient;
+    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
     // The order of entries in this map are the order the buttons should appear to the user. A null
     // value should not be shown to the user.
     private final ArrayList<Pair<Integer, @Nullable DisplayButtonData>>
@@ -113,6 +119,7 @@ public class HubToolbarMediator {
     private final Callback<Pane> mOnFocusedPaneChange = this::onFocusedPaneChange;
     private final Callback<Boolean> mOnHubSearchEnabledStateChange =
             this::onHubSearchEnabledStateChange;
+    private final Callback<@Nullable Tab> mOnCurrentTabChange = this::onCurrentTabChange;
 
     private @Nullable PaneButtonLookup mPaneButtonLookup;
 
@@ -122,12 +129,15 @@ public class HubToolbarMediator {
             PropertyModel propertyModel,
             PaneManager paneManager,
             Tracker tracker,
-            SearchActivityClient searchActivityClient) {
+            SearchActivityClient searchActivityClient,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            Runnable exitHubRunnable) {
         mContext = context;
         mPropertyModel = propertyModel;
         mPaneManager = paneManager;
         mTracker = tracker;
         mSearchActivityClient = searchActivityClient;
+        mCurrentTabSupplier = currentTabSupplier;
 
         for (@PaneId int paneId : paneManager.getPaneOrderController().getPaneOrder()) {
             Pane pane = paneManager.getPaneForId(paneId);
@@ -156,6 +166,10 @@ public class HubToolbarMediator {
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
 
         mPropertyModel.set(SEARCH_LISTENER, this::onSearchClicked);
+        mPropertyModel.set(BACK_BUTTON_LISTENER, exitHubRunnable);
+        mPropertyModel.set(BACK_BUTTON_ENABLED, mCurrentTabSupplier.hasValue());
+        mCurrentTabSupplier.addObserver(mOnCurrentTabChange);
+
         // Fire an event for the original setup.
         mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
         mContext.registerComponentCallbacks(mComponentCallbacks);
@@ -167,6 +181,7 @@ public class HubToolbarMediator {
         mRemoveReferenceButtonObservers.clear();
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
         mContext.unregisterComponentCallbacks(mComponentCallbacks);
+        mCurrentTabSupplier.removeObserver(mOnCurrentTabChange);
 
         for (@PaneId int paneId : mPaneManager.getPaneOrderController().getPaneOrder()) {
             @Nullable Pane pane = mPaneManager.getPaneForId(paneId);
@@ -308,6 +323,10 @@ public class HubToolbarMediator {
                         .build());
         recordHubSearchEntrypointHistogram(
                 mPropertyModel.get(SEARCH_BOX_VISIBLE), mPropertyModel.get(IS_INCOGNITO));
+    }
+
+    private void onCurrentTabChange(@Nullable Tab tab) {
+        mPropertyModel.set(BACK_BUTTON_ENABLED, tab != null);
     }
 
     private void recordHubSearchEntrypointHistogram(boolean isSearchBox, boolean isIncognito) {

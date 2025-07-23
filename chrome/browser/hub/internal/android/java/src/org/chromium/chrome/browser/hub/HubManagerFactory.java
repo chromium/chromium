@@ -6,11 +6,10 @@ package org.chromium.chrome.browser.hub;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,6 +40,7 @@ public class HubManagerFactory {
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
      */
+    @SuppressWarnings("NullAway") // https://crbug.com/433562519
     public static HubManager createHubManager(
             Activity activity,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
