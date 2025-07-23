@@ -234,12 +234,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
 
   UpdateFileUploadStatus(file_token, FileUploadStatus::kProcessing,
                          std::nullopt);
-  // Increment the request id sequence and image sequence id, regardless of
-  // whether this is an image or pdf upload.
-  // TODO(crbug.com/426855057): Update the request id generator with more
-  // customized logic for the composebox use case.
+
+  // Unlike image uploads,PDF uploads need to increment the long context id
+  // instead of the image sequence id.
   current_file_info.request_id_ = request_id_generator_.GetNextRequestId(
-      lens::RequestIdUpdateMode::kFullImageRequest);
+      current_file_info.mime_type_ == lens::MimeType::kPdf
+          ? lens::RequestIdUpdateMode::kPageContentRequest
+          : lens::RequestIdUpdateMode::kFullImageRequest);
 
   // Preparing for the file upload request requires multiple async flows to
   // complete before the request is ready to be send to the server. Start the
