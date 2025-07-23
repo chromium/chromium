@@ -1787,6 +1787,11 @@ BASE_FEATURE(kHeadlessLiveCaption,
              "HeadlessLiveCaption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows per-site special processing for media links.
+BASE_FEATURE(kMediaLinkHelpers,
+             "MediaLinkHelpers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation) &&

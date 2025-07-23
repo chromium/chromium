@@ -7877,6 +7877,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableHeadlessLiveCaptionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kHeadlessLiveCaption)},
 
+    {"enable-media-link-helpers",
+     flag_descriptions::kEnableMediaLinkHelpersName,
+     flag_descriptions::kEnableMediaLinkHelpersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kMediaLinkHelpers)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-chromeos-live-translate",
      flag_descriptions::kEnableCrOSLiveTranslateName,

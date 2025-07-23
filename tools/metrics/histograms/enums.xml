@@ -12855,6 +12855,7 @@ from previous Chrome versions.
   <int value="-454362199" label="HelpAppV2:disabled"/>
   <int value="-454359275" label="kQuickAnswersMaterialNextUI:disabled"/>
   <int value="-454246685" label="AndroidAppIntegrationWithFavicon:disabled"/>
+  <int value="-453506590" label="MediaLinkHelpers:disabled"/>
   <int value="-452734575" label="ArcExtendInputAnrTimeout:enabled"/>
   <int value="-451898735" label="private-aggregation-developer-mode"/>
   <int value="-450976085"
@@ -17122,6 +17123,7 @@ from previous Chrome versions.
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>
   <int value="1122327201"
       label="MediaFoundationCameraUsageMonitoring:disabled"/>
+  <int value="1122442180" label="MediaLinkHelpers:enabled"/>
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
   <int value="1122825280" label="FontationsFontBackend:enabled"/>
   <int value="1123140537" label="tab-link-drag-drop:disabled"/>

@@ -5485,6 +5485,10 @@ const char kEnableHeadlessLiveCaptionDescription[] =
     "Enable features related to headless captions exploration. These are "
     "very likely unstable.";
 
+const char kEnableMediaLinkHelpersName[] = "Media Link Helpers";
+const char kEnableMediaLinkHelpersDescription[] =
+    "Enable customized per-site media link processing.";
+
 const char kEnableCrOSLiveTranslateName[] = "Live Translate CrOS";
 const char kEnableCrOSLiveTranslateDescription[] =
     "Enables the live translate feature on ChromeOS which allows for live "

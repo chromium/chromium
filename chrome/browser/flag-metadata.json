@@ -3856,6 +3856,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-media-link-helpers",
+    "owners": [ "liberato@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-missive-storage-config",
     "owners" : [ "chrome-reporting-team@google.com", "lbaraz@chromium.org" ],
     "expiry_milestone": 130

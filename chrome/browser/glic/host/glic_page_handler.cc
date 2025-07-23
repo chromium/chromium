@@ -46,6 +46,7 @@
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/media/glic_media_link_helper.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
@@ -69,6 +70,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "pdf/buildflags.h"
@@ -640,6 +642,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (ShouldDoApiActivationGating()) {
       std::move(callback).Run(nullptr);
       return;
+    }
+    if (base::FeatureList::IsEnabled(media::kMediaLinkHelpers)) {
+      if (auto* tab = glic_sharing_manager_->GetFocusedTabData().focus()) {
+        const bool replaced =
+            GlicMediaLinkHelper(tab->GetContents()).MaybeReplaceNavigation(url);
+        base::UmaHistogramBoolean("Glic.MaybeReplaceNavigation.Result",
+                                  replaced);
+        if (replaced) {
+          std::move(callback).Run(nullptr);
+          return;
+        }
+      }
     }
     glic_service_->CreateTab(url, open_in_background, window_id,
                              std::move(callback));
