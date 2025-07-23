@@ -38,16 +38,22 @@ mojom("mojom") {
           mojom = "tabs_api.mojom.Position"
           cpp = "::tabs_api::Position"
         },
+        {
+          mojom = "tabs_api.mojom.TabGroupVisualData"
+          cpp = "::tab_groups::TabGroupVisualData"
+        },
       ]
       traits_headers = [
         "//chrome/browser/ui/tabs/tab_strip_api/types/node_id.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/position.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/position_traits.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/tab_group_visual_data_traits.h",
       ]
       traits_sources = [
         "//chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.cc",
         "//chrome/browser/ui/tabs/tab_strip_api/types/position_traits.cc",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/tab_group_visual_data_traits.cc",
       ]
       traits_public_deps = [
         "types:types",

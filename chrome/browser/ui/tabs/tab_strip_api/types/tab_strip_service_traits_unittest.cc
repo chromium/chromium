@@ -32,5 +32,19 @@ TEST(TabsStripServiceMojoTraitsTest, ConvertPosition) {
   ASSERT_TRUE(original == deserialized);
 }
 
+TEST(TabsStripServiceMojoTraitsTest, ConvertTabGroupVisualData) {
+  tab_groups::TabGroupVisualData original(
+      u"super_secret_title", tab_groups::TabGroupColorId::kBlue, true);
+
+  std::vector<uint8_t> serialized =
+      mojom::TabGroupVisualData::Serialize(&original);
+
+  tab_groups::TabGroupVisualData deserialized;
+  ASSERT_TRUE(
+      mojom::TabGroupVisualData::Deserialize(serialized, &deserialized));
+
+  ASSERT_TRUE(original == deserialized);
+}
+
 }  // namespace
 }  // namespace tabs_api
