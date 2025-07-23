@@ -2,8 +2,8 @@
 /// Use of this source code is governed by a BSD-style license that can be
 /// found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_ITEM_H_
-#define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_SAFARI_DATA_ITEM_H_
+#define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_SAFARI_DATA_ITEM_H_
 
 #import <Foundation/Foundation.h>
 
@@ -50,4 +50,4 @@ enum class SafariDataItemImportStatus : NSUInteger {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_SAFARI_DATA_ITEM_H_

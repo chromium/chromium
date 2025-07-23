@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_mediator.h"
 
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_consumer.h"
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_item.h"
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_item_consumer.h"
 
 @implementation SafariDataImportImportMediator {
   /// Whether the file loading process has started.

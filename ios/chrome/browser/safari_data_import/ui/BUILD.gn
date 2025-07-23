@@ -4,8 +4,6 @@
 
 source_set("ui") {
   sources = [
-    "password_import_item.h",
-    "password_import_item.mm",
     "safari_data_import_entry_point_view_controller.h",
     "safari_data_import_entry_point_view_controller.mm",
     "safari_data_import_import_stage_consumer.h",
@@ -13,9 +11,6 @@ source_set("ui") {
     "safari_data_import_import_view_controller.mm",
     "safari_data_import_password_conflict_resolution_view_controller.h",
     "safari_data_import_password_conflict_resolution_view_controller.mm",
-    "safari_data_item.h",
-    "safari_data_item.mm",
-    "safari_data_item_consumer.h",
     "safari_data_item_table_view.h",
     "safari_data_item_table_view.mm",
   ]

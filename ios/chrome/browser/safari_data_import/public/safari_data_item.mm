@@ -2,9 +2,7 @@
 /// Use of this source code is governed by a BSD-style license that can be
 /// found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_item.h"
-
-#import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
 
 @implementation SafariDataItem
 

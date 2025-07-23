@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/ui/password_import_item.h"
+#import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 
 @implementation PasswordImportItem {
   /// Indicates whether favicon loading is in progress.

@@ -3,7 +3,15 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = [ "safari_data_import_stage.h" ]
+  sources = [
+    "password_import_item.h",
+    "password_import_item.mm",
+    "safari_data_import_stage.h",
+    "safari_data_item.h",
+    "safari_data_item.mm",
+    "safari_data_item_consumer.h",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("utils") {
