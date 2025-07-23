@@ -576,6 +576,9 @@ constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
 constexpr base::FeatureParam<bool> kOpenAimInSidePanel{
     &kLensSearchAimM3, "open-aim-in-side-panel", true};
 
+constexpr base::FeatureParam<bool> kAimSearchboxEnabled{
+    &kLensSearchAimM3, "aim-searchbox-enabled", true};
+
 const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
     &kLensOverlayEntrypointLabelAlt, "id", 0};
 
@@ -1078,6 +1081,11 @@ bool IsUpdatedClientContextEnabled() {
 bool ShouldShowAimInSidePanel() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kOpenAimInSidePanel.Get();
+}
+
+bool GetAimSearchboxEnabled() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
+         kAimSearchboxEnabled.Get();
 }
 
 bool ShouldUseAltLoadingHintWeb() {

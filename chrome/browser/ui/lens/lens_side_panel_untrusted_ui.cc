@@ -114,6 +114,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
+  html_source->AddBoolean("enableAimSearchbox",
+                          lens::features::GetAimSearchboxEnabled());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

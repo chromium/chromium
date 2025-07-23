@@ -28,6 +28,16 @@
     background-color: #1F1F1F;
   }
 
+  :host([enable-aim-searchbox]) .results-pane {
+    /*
+     * If AIM searchbox is enabled, make the results pane the full height of
+     * the side panel.
+     */
+    height: 100%;
+    inset-block-start: 0;
+    position: absolute;
+  }
+
   /* Set z-index to hide results to prevent ghost frames when reshowing. */
   :host([is-loading-results]) #results {
     z-index: 0;
@@ -70,6 +80,11 @@
     /* Colors for searchbox ghost loader */
     --color-searchbox-ghost-loader-loading-bar-1: #F1F3F4;
     --color-searchbox-ghost-loader-loading-bar-2: #ECEDEF;
+  }
+
+  /* Hide the old searchbox when the AIM searchbox is enabled. */
+  :host([enable-aim-searchbox]) #searchboxContainer {
+    display: none;
   }
 
   :host([dark-mode]) #searchboxContainer {

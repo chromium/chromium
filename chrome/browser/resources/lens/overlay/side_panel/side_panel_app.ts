@@ -78,6 +78,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Boolean,
         value: false,
       },
+      enableAimSearchbox: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAimSearchbox'),
+      },
       enableCsbMotionTweaks: {
         reflectToAttribute: true,
         type: Boolean,
@@ -209,6 +214,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare private pageContentType: PageContentType;
   // Whether this is an in flight request to autocomplete.
   declare private autocompleteRequestStarted: boolean;
+  // Whether the AIM searchbox is enabled via feature flag.
+  declare private enableAimSearchbox: boolean;
   declare private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side

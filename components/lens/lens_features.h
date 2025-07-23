@@ -835,6 +835,10 @@ extern bool IsUpdatedClientContextEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldShowAimInSidePanel();
 
+// Whether the AIM searchbox is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetAimSearchboxEnabled();
+
 // Whether to use the alt loading hint when overlay is opened on web pages.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldUseAltLoadingHintWeb();
