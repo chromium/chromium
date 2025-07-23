@@ -238,7 +238,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // If the active item is the last inserted item, it needs to be animated
     // differently.
     if (selectedCell.pinnedItemIdentifier == _lastInsertedItemID) {
-      activeItem.isAppearing = YES;
+      activeItem.shouldUseBVCSnapshot = YES;
     }
 
     selectionItem = [LegacyGridTransitionItem

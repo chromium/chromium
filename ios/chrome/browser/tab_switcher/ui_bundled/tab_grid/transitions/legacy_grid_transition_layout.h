@@ -78,8 +78,9 @@
 // The size of `cell` in the grid.
 @property(nonatomic, readonly) CGSize size;
 
-// YES if the item is "appearing" in the grid as part of this animation.
-@property(nonatomic, assign) BOOL isAppearing;
+// YES if the active item is an NTP, indicating that the BVC's snapshot
+// should be used for the transition animation instead of the cell's snapshot.
+@property(nonatomic, assign) BOOL shouldUseBVCSnapshot;
 
 // Creates a new active item instance with `cell`, `center` and `size`.
 + (instancetype)itemWithCell:(UIView<LegacyGridToTabTransitionView>*)cell
