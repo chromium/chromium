@@ -119,7 +119,7 @@ public class HistoryPaneStation extends HubBaseStation {
         }
 
         public void typeSearchTerm(String text) {
-            editTextElement.getTypeTextTrigger(text).triggerTransition();
+            editTextElement.typeTextTo(text).executeTriggerWithoutTransition();
         }
     }
 }
