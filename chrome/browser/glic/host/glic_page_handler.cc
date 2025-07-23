@@ -21,6 +21,7 @@
 #include "base/uuid.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
 #include "chrome/browser/actor/task_id.h"
@@ -528,6 +529,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         system_permission_settings::Observe(base::BindRepeating(
             &GlicWebClientHandler::OnOsPermissionSettingChanged,
             base::Unretained(this)));
+
+    if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+      if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+        actor_task_state_changed_subscription_ =
+            actor_service->AddTaskStateChangedCallback(base::BindRepeating(
+                &GlicWebClientHandler::NotifyActorTaskStateChanged,
+                base::Unretained(this)));
+      }
+    }
 
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
@@ -1364,6 +1374,23 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyFocusedTabChanged(std::move(data));
   }
 
+  void NotifyActorTaskStateChanged(const actor::ActorTask& task) {
+    const mojom::ActorTaskState state = [&]() {
+      switch (task.GetState()) {
+        case actor::ActorTask::State::kCreated:
+        case actor::ActorTask::State::kReflecting:
+          return mojom::ActorTaskState::kIdle;
+        case actor::ActorTask::State::kActing:
+          return mojom::ActorTaskState::kActing;
+        case actor::ActorTask::State::kPausedByClient:
+          return mojom::ActorTaskState::kPaused;
+        case actor::ActorTask::State::kFinished:
+          return mojom::ActorTaskState::kStopped;
+      }
+    }();
+    web_client_->NotifyActorTaskStateChanged(task.id().value(), state);
+  }
+
   glic::mojom::FocusedTabDataPtr cached_focused_tab_data_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
@@ -1378,6 +1405,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription pinned_tab_data_changed_subscription_;
   base::CallbackListSubscription focus_data_changed_subscription_;
+  base::CallbackListSubscription actor_task_state_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;

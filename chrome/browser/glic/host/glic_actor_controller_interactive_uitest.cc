@@ -445,6 +445,23 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         expected)));
   }
 
+  auto WaitForActorTaskState(mojom::ActorTaskState expected_state) {
+    return Steps(InAnyContext(WithElement(
+        kGlicContentsElementId,
+        [&task_id = task_id_, expected_state](ui::TrackedElement* el) {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          std::string script = content::JsReplace(
+              R"js(
+              client.browser.getActorTaskState($1).waitUntil((state) => {
+                return state == $2;
+              });
+              )js",
+              task_id.value(), base::to_underlying(expected_state));
+          ASSERT_TRUE(content::ExecJs(glic_contents, script));
+        })));
+  }
+
   // Returns a callback that returns the given string as the action proto. Meant
   // for testing error handling since this allows providing an invalid proto.
   ActionProtoProvider ArbitraryStringProvider(std::string_view str) {
@@ -928,12 +945,15 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenStopActorTask) {
     GetPageContextFromFocusedTab(),
     ClickAction(kClickableButtonLabel),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
+    WaitForActorTaskState(mojom::ActorTaskState::kIdle),
 
     PauseActorTask(),
     CheckIsActingOnTab(kNewActorTabId, true),
+    WaitForActorTaskState(mojom::ActorTaskState::kPaused),
 
     StopActorTask(),
-    CheckIsActingOnTab(kNewActorTabId, false)
+    CheckIsActingOnTab(kNewActorTabId, false),
+    WaitForActorTaskState(mojom::ActorTaskState::kStopped)
       // clang-format on
   );
 }

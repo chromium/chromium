@@ -70,6 +70,7 @@ void ActorTask::SetState(State state) {
       ui::UiEventDispatcher::ChangeTaskState{
           .task_id = id_, .old_state = state_, .new_state = state});
   state_ = state;
+  actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
 }
 
 void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,

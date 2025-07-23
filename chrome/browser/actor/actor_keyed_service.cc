@@ -57,6 +57,8 @@ TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   last_created_task_id_ = task_id;
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
   task->GetExecutionEngine()->SetOwner(task.get());
+  // Notify of task creation now that the task id is set.
+  NotifyTaskStateChanged(*task);
   active_tasks_[task_id] = std::move(task);
   return task_id;
 }
@@ -113,6 +115,15 @@ TaskId ActorKeyedService::CreateTask() {
       profile_.get(), std::move(execution_engine),
       ui::NewUiEventDispatcher(GetActorUiStateManager()));
   return AddActiveTask(std::move(actor_task));
+}
+
+base::CallbackListSubscription ActorKeyedService::AddTaskStateChangedCallback(
+    TaskStateChangedCallback callback) {
+  return tab_state_change_callback_list_.Add(std::move(callback));
+}
+
+void ActorKeyedService::NotifyTaskStateChanged(const ActorTask& task) {
+  tab_state_change_callback_list_.Notify(task);
 }
 
 void ActorKeyedService::RequestTabObservation(

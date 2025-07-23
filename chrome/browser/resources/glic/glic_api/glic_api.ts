@@ -272,6 +272,15 @@ export declare interface GlicBrowserHost {
       Promise<TabContextResult>;
 
   /**
+   * Returns the observable state of the actor task with the given ID. Updates
+   * are sent whenever:
+   * - The task is created, paused, resumed or stopped.
+   * - The task is performing an action.
+   * - The task is going away.
+   */
+  getActorTaskState?(taskId: number): ObservableValue<ActorTaskState>;
+
+  /**
    * Requests the host to capture a screenshot. The choice of the screenshot
    * target is made by the host, possibly allowing the user to choose between a
    * desktop, window or arbitrary region.
@@ -1207,6 +1216,19 @@ export enum CreateTaskErrorReason {
   TASK_SYSTEM_UNAVAILABLE = 1,
 }
 
+/** The state of the actor task. */
+export enum ActorTaskState {
+  UNKNOWN = 0,
+  /** The actor task is idle and waiting for the next action instruction. */
+  IDLE = 1,
+  /** The actor task is performing an action. */
+  ACTING = 2,
+  /** The actor task is paused and waiting to be resumed or stopped. */
+  PAUSED = 3,
+  /** The actor task is stopped and going away. */
+  STOPPED = 4,
+}
+
 export enum PerformActionsErrorReason {
   UNKNOWN = 0,
 
@@ -1606,4 +1628,5 @@ export interface ExtensibleEnums {
   performActionsErrorReason: typeof PerformActionsErrorReason;
   settingsPageField: typeof SettingsPageField;
   hostCapability: typeof HostCapability;
+  actorTaskState: typeof ActorTaskState;
 }

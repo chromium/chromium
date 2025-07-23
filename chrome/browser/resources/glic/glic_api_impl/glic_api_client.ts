@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import {ActorTaskState} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -187,6 +188,11 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     });
     this.host.pinnedTabs.assignAndSignal(this.cachedPinnedTabs);
   }
+
+  glicWebClientNotifyActorTaskStateChanged(
+      payload: {taskId: number, state: ActorTaskState}): void {
+    this.host.setActorTaskState(payload.taskId, payload.state);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -222,6 +228,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   currentZeroStateObserver =
       ObservableValueImpl.withNoValue<ZeroStateSuggestionsV2>();
   private hostCapabilities: Set<HostCapability> = new Set();
+  private actorTaskState =
+      new Map<number, ObservableValueImpl<ActorTaskState>>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -351,6 +359,14 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return {payload: response};
   }
 
+  setActorTaskState(taskId: number, state: ActorTaskState): void {
+    this.getActorTaskState(taskId).assignAndSignal(state);
+
+    if (state === ActorTaskState.STOPPED) {
+      this.actorTaskState.delete(taskId);
+    }
+  }
+
   onRequestReceived(_type: string): void {}
   onRequestHandlerException(_type: string): void {}
   onRequestCompleted(_type: string): void {}
@@ -465,6 +481,20 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const response = await this.sender.requestWithResponse(
         'glicBrowserResumeActorTask', {taskId, tabContextOptions});
     return convertTabContextResultFromPrivate(response.tabContextResult);
+  }
+
+  getActorTaskState(taskId: number): ObservableValueImpl<ActorTaskState> {
+    const stateObs = this.actorTaskState.get(taskId);
+    if (stateObs) {
+      return stateObs;
+    }
+    // TODO(mcnee): The client could pass an id that will never have
+    // state updates (e.g. the task already finished and we cleared the old
+    // observable in setActorTaskState). Consider removing these cases from the
+    // map when all subscribers are removed.
+    const newObs = ObservableValueImpl.withNoValue<ActorTaskState>();
+    this.actorTaskState.set(taskId, newObs);
+    return newObs;
   }
 
   async resizeWindow(

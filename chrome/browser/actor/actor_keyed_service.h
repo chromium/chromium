@@ -116,6 +116,13 @@ class ActorKeyedService : public KeyedService {
       const tabs::TabInterface& tab,
       base::OnceCallback<void(TabObservationResult)> callback);
 
+  using TaskStateChangedCallback =
+      base::RepeatingCallback<void(const ActorTask&)>;
+  base::CallbackListSubscription AddTaskStateChangedCallback(
+      TaskStateChangedCallback callback);
+
+  void NotifyTaskStateChanged(const ActorTask& task);
+
  private:
   // Called when the actor coordinator has finished an action which required
   // task creation.
@@ -155,6 +162,9 @@ class ActorKeyedService : public KeyedService {
   TaskId::Generator next_task_id_;
 
   AggregatedJournal journal_;
+
+  base::RepeatingCallbackList<void(const ActorTask&)>
+      tab_state_change_callback_list_;
 
   // TODO(crbug.com/411462297): Remove
   TaskId last_created_task_id_;

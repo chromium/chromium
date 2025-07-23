@@ -90,3 +90,5 @@ assertNever<CheckEnumCompatibility<
     typeof api.SettingsPageField>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.HostCapability, typeof api.HostCapability>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.ActorTaskState, typeof api.ActorTaskState>>();

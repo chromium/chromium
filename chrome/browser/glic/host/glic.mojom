@@ -175,6 +175,17 @@ enum ActInFocusedTabErrorReason {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActInFocusedTabErrorReason)
 
+// The state of an actor task. This MUST be kept in sync with the glic_api.ts
+// enum.
+[Stable, Extensible]
+enum ActorTaskState {
+  [Default] kUnknown = 0,
+  kIdle = 1,
+  kActing = 2,
+  kPaused = 3,
+  kStopped = 4,
+};
+
 // Reason why capturing desktop screenshot failed. This MUST be kept in sync
 // with the glic_api.ts enum.
 [Stable, Extensible]
@@ -909,6 +920,10 @@ interface WebClient {
   NotifyZeroStateSuggestionsChanged(
     ZeroStateSuggestionsV2? suggestions,
     ZeroStateSuggestionsOptions options);
+
+  // Notify that the actor task with the given id has changed to the indicated
+  // state.
+  NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
 };
 
 // Information extracted from a tab.
