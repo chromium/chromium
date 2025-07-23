@@ -100,10 +100,18 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
   pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
   pending_back_forward_cache_controller_host_ =
       std::move(back_forward_cache_controller_host);
-  InitializeWorkerThread(
+  bool initialized = InitializeWorkerThread(
       std::move(creation_params),
       CreateBackingThreadStartupData(GetExecutionContext()->GetIsolate()),
       token);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWorkerThreadRespectTermRequest) &&
+      !initialized) {
+    virtual_time_pauser_.UnpauseVirtualTime();
+    // if the current thread (i.e. parent thread) has been asked to terminate,
+    // we do not start the child thread.
+    return;
+  }
 
   // Step 13: "Obtain script by switching on the value of options's type
   // member:"

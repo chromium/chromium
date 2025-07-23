@@ -84,7 +84,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   // where the original Window context isn't directly accessible,
   // `client_provided_devtools_params` will be pre-calculated and passed to this
   // function, and this param will be used directly to start the worklet thread.
-  void InitializeWorkerThread(
+  bool InitializeWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
       const std::optional<WorkerBackingThreadStartupData>&,
       const std::optional<const blink::DedicatedWorkerToken>&,

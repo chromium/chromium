@@ -237,7 +237,9 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // queued tasks. This function can be called from any threads.
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType type);
 
-  void ChildThreadStartedOnWorkerThread(WorkerThread*);
+  void ChildThreadStartedOnWorkerThreadLegacy(WorkerThread*);
+  // Returns false if the thread is shutting down.
+  bool ChildThreadStartedOnWorkerThread(WorkerThread*);
   void ChildThreadTerminatedOnWorkerThread(WorkerThread*);
 
   // Changes the lifecycle state of the associated execution context for
@@ -259,6 +261,9 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // Decrements |pause_or_freeze_count_| and if count is zero then
   // it will exit the entered nested run loop. Might be called from any thread.
   void Resume();
+
+  // True if the thread was asked to terminate.
+  bool IsRequestedToTerminate() LOCKS_EXCLUDED(lock_);
 
  protected:
   explicit WorkerThread(WorkerReportingProxy&);
@@ -406,8 +411,6 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
 
   void SetThreadState(ThreadState) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void SetExitCode(ExitCode) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  bool CheckRequestedToTerminate() LOCKS_EXCLUDED(lock_);
 
   class InterruptData;
   void PauseOrFreeze(mojom::blink::FrameLifecycleState state,
