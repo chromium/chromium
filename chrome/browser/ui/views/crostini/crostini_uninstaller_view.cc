@@ -36,10 +36,6 @@ void crostini::ShowCrostiniUninstallerView(Profile* profile) {
 }
 
 void CrostiniUninstallerView::Show(Profile* profile) {
-  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
-    return;
-  }
-
   if (!g_crostini_uninstaller_view) {
     g_crostini_uninstaller_view = new CrostiniUninstallerView(profile);
     views::DialogDelegate::CreateDialogWidget(g_crostini_uninstaller_view,
