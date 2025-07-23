@@ -25,7 +25,6 @@ component("prefs") {
     "pref_notifier.h",
     "pref_notifier_impl.cc",
     "pref_notifier_impl.h",
-    "pref_observer.h",
     "pref_registry.cc",
     "pref_registry.h",
     "pref_registry_simple.cc",

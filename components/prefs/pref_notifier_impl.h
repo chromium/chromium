@@ -11,21 +11,27 @@
 #include <string_view>
 #include <unordered_map>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/prefs/pref_notifier.h"
-#include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
 #include "components/prefs/transparent_unordered_string_map.h"
 
 class PrefService;
+namespace base {
+class CallbackListSubscription;
+}
 
 // The PrefNotifier implementation used by the PrefService.
 class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
  public:
+  using PrefChangedCallback =
+      base::RepeatingCallback<void(PrefService*, std::string_view)>;
+
   PrefNotifierImpl();
   explicit PrefNotifierImpl(PrefService* pref_service);
 
@@ -34,17 +40,19 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
 
   ~PrefNotifierImpl() override;
 
-  // If the pref at the given path changes, we call the observer's
-  // OnPreferenceChanged method.
-  void AddPrefObserver(std::string_view path, PrefObserver* observer);
-  void RemovePrefObserver(std::string_view path, PrefObserver* observer);
+  // Registers the callback to be invoked if the pref at the given path
+  // changes. The callback is automatically unregistered if the returned
+  // CallbackListSubscription is destroyed.
+  base::CallbackListSubscription AddPrefChangedCallback(
+      std::string_view path,
+      PrefChangedCallback callback);
 
-  // These observers are called for any pref changes.
+  // These callbacks are called for any pref changes.
   //
   // AVOID ADDING THESE. See the long comment in the identically-named
   // functions on PrefService for background.
-  void AddPrefObserverAllPrefs(PrefObserver* observer);
-  void RemovePrefObserverAllPrefs(PrefObserver* observer);
+  base::CallbackListSubscription AddAllPrefsChangedCallback(
+      PrefChangedCallback callback);
 
   // We run the callback once, when initialization completes. The bool
   // parameter will be set to true for successful initialization,
@@ -60,28 +68,30 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   // PrefNotifier overrides.
   void OnInitializationCompleted(bool succeeded) override;
 
-  // A map from pref names to a list of observers. Observers get fired in the
-  // order they are added. These should only be accessed externally for unit
-  // testing.
-  using PrefObserverList = base::ObserverList<PrefObserver>::Unchecked;
-  using PrefObserverMap = TransparentUnorderedStringMap<PrefObserverList>;
+ private:
+  // A map from pref names to the list of registered callbacks. Callbacks get
+  // fired in the order they are added.
+  using PrefChangedCallbackList =
+      base::RepeatingCallbackList<void(PrefService*, std::string_view)>;
+  using PrefChangedCallbackMap =
+      TransparentUnorderedStringMap<PrefChangedCallbackList>;
   using PrefInitObserverList = std::list<base::OnceCallback<void(bool)>>;
 
-  const PrefObserverMap* pref_observers() const { return &pref_observers_; }
+  // For the given pref_name, notify any callbacks of the pref. Virtual so it
+  // can be mocked for unit testing.
+  virtual void NotifyCallbacks(std::string_view path);
 
- private:
-  // For the given pref_name, fire any observer of the pref. Virtual so it can
-  // be mocked for unit testing.
-  virtual void FireObservers(std::string_view path);
+  // Invoked when callbacks are removed for `path`.
+  void OnCallbacksRemoved(const std::string& path);
 
   // Weak reference; the notifier is owned by the PrefService.
   raw_ptr<PrefService> pref_service_;
 
-  PrefObserverMap pref_observers_;
+  PrefChangedCallbackMap pref_changed_callbacks_;
   PrefInitObserverList init_observers_;
 
   // Observers for changes to any preference.
-  PrefObserverList all_prefs_pref_observers_;
+  PrefChangedCallbackList all_prefs_changed_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

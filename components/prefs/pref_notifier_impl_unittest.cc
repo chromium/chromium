@@ -9,8 +9,8 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "components/prefs/mock_pref_change_callback.h"
-#include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_store.h"
@@ -53,33 +53,16 @@ class MockPrefNotifier : public PrefNotifierImpl {
       : PrefNotifierImpl(pref_service) {}
   ~MockPrefNotifier() override = default;
 
-  MOCK_METHOD(void, FireObservers, (std::string_view path), (override));
-
-  size_t CountObserver(const std::string& path, PrefObserver* obs) {
-    auto observer_iterator = pref_observers()->find(path);
-    if (observer_iterator == pref_observers()->end())
-      return false;
-
-    size_t count = 0;
-    for (PrefObserver& existing_obs : observer_iterator->second) {
-      if (&existing_obs == obs)
-        count++;
-    }
-
-    return count;
-  }
+  MOCK_METHOD(void, NotifyCallbacks, (std::string_view path), (override));
 
   // Make public for tests below.
   using PrefNotifierImpl::OnPreferenceChanged;
   using PrefNotifierImpl::OnInitializationCompleted;
 };
 
-class PrefObserverMock : public PrefObserver {
+class PrefObserverMock {
  public:
-  MOCK_METHOD(void,
-              OnPreferenceChanged,
-              (PrefService*, std::string_view),
-              (override));
+  MOCK_METHOD2(OnPreferenceChanged, void(PrefService*, std::string_view));
 };
 
 // Test fixture class.
@@ -98,7 +81,7 @@ class PrefNotifierTest : public testing::Test {
 
 TEST_F(PrefNotifierTest, OnPreferenceChanged) {
   MockPrefNotifier notifier(&pref_service_);
-  EXPECT_CALL(notifier, FireObservers(kChangedPref)).Times(1);
+  EXPECT_CALL(notifier, NotifyCallbacks(kChangedPref)).Times(1);
   notifier.OnPreferenceChanged(kChangedPref);
 }
 
@@ -112,73 +95,15 @@ TEST_F(PrefNotifierTest, OnInitializationCompleted) {
   notifier.OnInitializationCompleted(true);
 }
 
-TEST_F(PrefNotifierTest, AddAndRemovePrefObservers) {
-  const char pref_name[] = "homepage";
-  const char pref_name2[] = "proxy";
-
-  MockPrefNotifier notifier(&pref_service_);
-  notifier.AddPrefObserver(pref_name, &obs1_);
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-
-  // Re-adding the same observer for the same pref doesn't change anything.
-  // This hits a DUMP_WILL_BE_NOTREACHED() which is fatal in non-official
-  // builds.
-#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
-  notifier.AddPrefObserver(pref_name, &obs1_);
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-#endif
-
-  // Ensure that we can add the same observer to a different pref.
-  notifier.AddPrefObserver(pref_name2, &obs1_);
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-
-  // Ensure that we can add another observer to the same pref.
-  notifier.AddPrefObserver(pref_name, &obs2_);
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-
-  // Ensure that we can remove all observers, and that removing a non-existent
-  // observer is harmless.
-  notifier.RemovePrefObserver(pref_name, &obs1_);
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-
-  notifier.RemovePrefObserver(pref_name, &obs2_);
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-
-  notifier.RemovePrefObserver(pref_name, &obs1_);
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(1u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-
-  notifier.RemovePrefObserver(pref_name2, &obs1_);
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs1_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
-  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
-}
-
-TEST_F(PrefNotifierTest, FireObservers) {
+TEST_F(PrefNotifierTest, NotifyCallbacks) {
   TestingPrefNotifierImpl notifier(&pref_service_);
-  notifier.AddPrefObserver(kChangedPref, &obs1_);
-  notifier.AddPrefObserver(kUnchangedPref, &obs1_);
+  base::CallbackListSubscription sub1_1 = notifier.AddPrefChangedCallback(
+      kChangedPref, base::BindRepeating(&PrefObserverMock::OnPreferenceChanged,
+                                        base::Unretained(&obs1_)));
+  base::CallbackListSubscription sub1_2 = notifier.AddPrefChangedCallback(
+      kUnchangedPref,
+      base::BindRepeating(&PrefObserverMock::OnPreferenceChanged,
+                          base::Unretained(&obs1_)));
 
   EXPECT_CALL(obs1_, OnPreferenceChanged(&pref_service_, kChangedPref));
   EXPECT_CALL(obs2_, OnPreferenceChanged(_, _)).Times(0);
@@ -186,8 +111,13 @@ TEST_F(PrefNotifierTest, FireObservers) {
   Mock::VerifyAndClearExpectations(&obs1_);
   Mock::VerifyAndClearExpectations(&obs2_);
 
-  notifier.AddPrefObserver(kChangedPref, &obs2_);
-  notifier.AddPrefObserver(kUnchangedPref, &obs2_);
+  base::CallbackListSubscription sub2_1 = notifier.AddPrefChangedCallback(
+      kChangedPref, base::BindRepeating(&PrefObserverMock::OnPreferenceChanged,
+                                        base::Unretained(&obs2_)));
+  base::CallbackListSubscription sub2_2 = notifier.AddPrefChangedCallback(
+      kUnchangedPref,
+      base::BindRepeating(&PrefObserverMock::OnPreferenceChanged,
+                          base::Unretained(&obs2_)));
 
   EXPECT_CALL(obs1_, OnPreferenceChanged(&pref_service_, kChangedPref));
   EXPECT_CALL(obs2_, OnPreferenceChanged(&pref_service_, kChangedPref));
@@ -196,7 +126,7 @@ TEST_F(PrefNotifierTest, FireObservers) {
   Mock::VerifyAndClearExpectations(&obs2_);
 
   // Make sure removing an observer from one pref doesn't affect anything else.
-  notifier.RemovePrefObserver(kChangedPref, &obs1_);
+  sub1_1 = base::CallbackListSubscription();
 
   EXPECT_CALL(obs1_, OnPreferenceChanged(_, _)).Times(0);
   EXPECT_CALL(obs2_, OnPreferenceChanged(&pref_service_, kChangedPref));
@@ -205,16 +135,13 @@ TEST_F(PrefNotifierTest, FireObservers) {
   Mock::VerifyAndClearExpectations(&obs2_);
 
   // Make sure removing an observer entirely doesn't affect anything else.
-  notifier.RemovePrefObserver(kUnchangedPref, &obs1_);
+  sub1_2 = base::CallbackListSubscription();
 
   EXPECT_CALL(obs1_, OnPreferenceChanged(_, _)).Times(0);
   EXPECT_CALL(obs2_, OnPreferenceChanged(&pref_service_, kChangedPref));
   notifier.OnPreferenceChanged(kChangedPref);
   Mock::VerifyAndClearExpectations(&obs1_);
   Mock::VerifyAndClearExpectations(&obs2_);
-
-  notifier.RemovePrefObserver(kChangedPref, &obs2_);
-  notifier.RemovePrefObserver(kUnchangedPref, &obs2_);
 }
 
 }  // namespace

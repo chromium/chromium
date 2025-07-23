@@ -325,12 +325,10 @@ const base::Value* PrefService::GetDefaultPrefValue(
   return value;
 }
 
-void PrefService::AddPrefObserver(std::string_view path, PrefObserver* obs) {
-  pref_notifier_->AddPrefObserver(path, obs);
-}
-
-void PrefService::RemovePrefObserver(std::string_view path, PrefObserver* obs) {
-  pref_notifier_->RemovePrefObserver(path, obs);
+base::CallbackListSubscription PrefService::AddPrefChangedCallback(
+    std::string_view path,
+    PrefChangedCallback callback) {
+  return pref_notifier_->AddPrefChangedCallback(path, std::move(callback));
 }
 
 void PrefService::AddPrefInitObserver(base::OnceCallback<void(bool)> obs) {
@@ -360,12 +358,9 @@ void PrefService::OnStoreDeletionFromDisk() {
   user_pref_store_->OnStoreDeletionFromDisk();
 }
 
-void PrefService::AddPrefObserverAllPrefs(PrefObserver* obs) {
-  pref_notifier_->AddPrefObserverAllPrefs(obs);
-}
-
-void PrefService::RemovePrefObserverAllPrefs(PrefObserver* obs) {
-  pref_notifier_->RemovePrefObserverAllPrefs(obs);
+base::CallbackListSubscription PrefService::AddAllPrefsChangedCallback(
+    PrefChangedCallback callback) {
+  return pref_notifier_->AddAllPrefsChangedCallback(std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)

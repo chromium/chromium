@@ -41,7 +41,6 @@
 
 class PrefNotifier;
 class PrefNotifierImpl;
-class PrefObserver;
 class PrefRegistry;
 class PrefStore;
 #if BUILDFLAG(IS_ANDROID)
@@ -49,6 +48,7 @@ class PrefServiceAndroid;
 #endif
 
 namespace base {
+class CallbackListSubscription;
 class FilePath;
 }
 
@@ -87,6 +87,9 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     base::Value value;
     PrefValueStore::PrefStoreType store;
   };
+
+  using PrefChangedCallback =
+      base::RepeatingCallback<void(PrefService*, std::string_view)>;
 
   // A helper class to store all the information associated with a preference.
   class COMPONENTS_PREFS_EXPORT Preference {
@@ -376,10 +379,9 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // to tangentially cleanup data it may have saved outside the store.
   void OnStoreDeletionFromDisk();
 
-  // A low level function for registering an observer for every single
-  // preference changed notification. The caller must ensure that the observer
-  // remains valid as long as it is registered. Pointer ownership is not
-  // transferred.
+  // A low level function for registering a callback called for every single
+  // preference changed notification. The callback will be unregistered when
+  // the returned CallbackListSubscription is destroyed.
   //
   // Almost all calling code should use a PrefChangeRegistrar instead.
   //
@@ -388,8 +390,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // of a "registrar" model makes it easy to forget to unregister. It is
   // really designed for integrating other notification systems, not for normal
   // observation.
-  void AddPrefObserverAllPrefs(PrefObserver* obs);
-  void RemovePrefObserverAllPrefs(PrefObserver* obs);
+  base::CallbackListSubscription AddAllPrefsChangedCallback(
+      PrefChangedCallback callback);
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -428,26 +430,24 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   friend class PrefServiceTest_WriteablePrefStoreFlags_Test;
   friend class prefs::ScopedDictionaryPrefUpdate;
 
-  // Registration of pref change observers must be done using the
+  // Registration of pref changed callbacks must be done using the
   // PrefChangeRegistrar, which is declared as a friend here to grant it
-  // access to the otherwise protected members Add/RemovePrefObserver.
+  // access to the otherwise protected member AddPrefChangedCallback.
   // PrefMember registers for preferences changes notification directly to
   // avoid the storage overhead of the registrar, so its base class must be
   // declared as a friend, too.
   friend class PrefChangeRegistrar;
   friend class subtle::PrefMemberBase;
 
-  // These are protected so they can only be accessed by the friend
+  // This method is protected so it can only be accessed by the friend
   // classes listed above.
   //
-  // If the pref at the given path changes, we call the observer's
-  // OnPreferenceChanged method. Note that observers should not call
-  // these methods directly but rather use a PrefChangeRegistrar to
-  // make sure the observer gets cleaned up properly.
-  //
-  // Virtual for testing.
-  virtual void AddPrefObserver(std::string_view path, PrefObserver* obs);
-  virtual void RemovePrefObserver(std::string_view path, PrefObserver* obs);
+  // Registers the callback to be invoked if the pref at the given path
+  // changes. The callback is automatically unregistered if the returned
+  // CallbackListSubscription is destroyed.
+  base::CallbackListSubscription AddPrefChangedCallback(
+      std::string_view path,
+      PrefChangedCallback callback);
 
   // A PrefStore::Observer which reports loading errors from
   // PersistentPrefStores after they are loaded. Usually this is only

@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,22 +22,6 @@ using testing::Mock;
 const char kHomePage[] = "homepage";
 const char kHomePageIsNewTabPage[] = "homepage_is_newtabpage";
 const char kApplicationLocale[] = "intl.app_locale";
-
-// A mock provider that allows us to capture pref observer changes.
-class MockPrefService : public TestingPrefServiceSimple {
- public:
-  MockPrefService() = default;
-  ~MockPrefService() override = default;
-
-  MOCK_METHOD(void,
-              AddPrefObserver,
-              (std::string_view, PrefObserver*),
-              (override));
-  MOCK_METHOD(void,
-              RemovePrefObserver,
-              (std::string_view, PrefObserver*),
-              (override));
-};
 
 // Due to overloads, base::DoNothing() cannot be passed directly to
 // PrefChangeRegistrar::Add() as it is convertible to all callbacks.
@@ -56,14 +39,14 @@ class PrefChangeRegistrarTest : public testing::Test {
  protected:
   void SetUp() override;
 
-  MockPrefService* service() const { return service_.get(); }
+  TestingPrefServiceSimple* service() const { return service_.get(); }
 
  private:
-  std::unique_ptr<MockPrefService> service_;
+  std::unique_ptr<TestingPrefServiceSimple> service_;
 };
 
 void PrefChangeRegistrarTest::SetUp() {
-  service_ = std::make_unique<MockPrefService>();
+  service_ = std::make_unique<TestingPrefServiceSimple>();
 }
 
 TEST_F(PrefChangeRegistrarTest, AddAndRemove) {
@@ -71,23 +54,14 @@ TEST_F(PrefChangeRegistrarTest, AddAndRemove) {
   registrar.Init(service());
 
   // Test adding.
-  EXPECT_CALL(*service(), AddPrefObserver("test.pref.1", &registrar));
-  EXPECT_CALL(*service(), AddPrefObserver("test.pref.2", &registrar));
   registrar.Add("test.pref.1", DoNothingClosure());
   registrar.Add("test.pref.2", DoNothingClosure());
   EXPECT_FALSE(registrar.IsEmpty());
 
   // Test removing.
-  Mock::VerifyAndClearExpectations(service());
-  EXPECT_CALL(*service(), RemovePrefObserver("test.pref.1", &registrar));
-  EXPECT_CALL(*service(), RemovePrefObserver("test.pref.2", &registrar));
   registrar.Remove("test.pref.1");
   registrar.Remove("test.pref.2");
   EXPECT_TRUE(registrar.IsEmpty());
-
-  // Explicitly check the expectations now to make sure that the Removes
-  // worked (rather than the registrar destructor doing the work).
-  Mock::VerifyAndClearExpectations(service());
 }
 
 TEST_F(PrefChangeRegistrarTest, AutoRemove) {
@@ -95,33 +69,19 @@ TEST_F(PrefChangeRegistrarTest, AutoRemove) {
   registrar.Init(service());
 
   // Setup of auto-remove.
-  EXPECT_CALL(*service(), AddPrefObserver("test.pref.1", &registrar));
   registrar.Add("test.pref.1", DoNothingClosure());
-  Mock::VerifyAndClearExpectations(service());
   EXPECT_FALSE(registrar.IsEmpty());
-
-  // Test auto-removing.
-  EXPECT_CALL(*service(), RemovePrefObserver("test.pref.1", &registrar));
 }
 
 TEST_F(PrefChangeRegistrarTest, RemoveAll) {
   PrefChangeRegistrar registrar;
   registrar.Init(service());
 
-  EXPECT_CALL(*service(), AddPrefObserver("test.pref.1", &registrar));
-  EXPECT_CALL(*service(), AddPrefObserver("test.pref.2", &registrar));
   registrar.Add("test.pref.1", DoNothingClosure());
   registrar.Add("test.pref.2", DoNothingClosure());
-  Mock::VerifyAndClearExpectations(service());
 
-  EXPECT_CALL(*service(), RemovePrefObserver("test.pref.1", &registrar));
-  EXPECT_CALL(*service(), RemovePrefObserver("test.pref.2", &registrar));
   registrar.RemoveAll();
   EXPECT_TRUE(registrar.IsEmpty());
-
-  // Explicitly check the expectations now to make sure that the RemoveAll
-  // worked (rather than the registrar destructor doing the work).
-  Mock::VerifyAndClearExpectations(service());
 }
 
 class ObserveSetOfPreferencesTest : public testing::Test {

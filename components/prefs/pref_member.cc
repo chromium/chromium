@@ -40,13 +40,17 @@ void PrefMemberBase::Init(const std::string& pref_name, PrefService* prefs) {
   DCHECK(prefs_->FindPreference(pref_name_)) << pref_name << " not registered.";
 
   // Add ourselves as a pref observer so we can keep our local value in sync.
-  prefs_->AddPrefObserver(pref_name, this);
+  // Using base::Unretained(this) is safe since the callback won't be called
+  // after the returned subscription has been destroyed, and it is destroyed
+  // in PrefMemberBase's destructor.
+  subscription_ = prefs_->AddPrefChangedCallback(
+      pref_name,
+      base::IgnoreArgs<PrefService*>(base::BindRepeating(
+          &PrefMemberBase::OnPreferenceChanged, base::Unretained(this))));
 }
 
 void PrefMemberBase::Destroy() {
-  if (prefs_ && !pref_name_.empty()) {
-    prefs_->RemovePrefObserver(pref_name_, this);
-  }
+  subscription_ = base::CallbackListSubscription();
   prefs_ = nullptr;
 }
 
@@ -59,8 +63,7 @@ void PrefMemberBase::MoveToSequence(
   internal()->MoveToSequence(std::move(task_runner));
 }
 
-void PrefMemberBase::OnPreferenceChanged(PrefService* service,
-                                         std::string_view pref_name) {
+void PrefMemberBase::OnPreferenceChanged(std::string_view pref_name) {
   VerifyValuePrefName();
   UpdateValueFromPref((!setting_value_ && !observer_.is_null())
                           ? base::BindOnce(observer_, std::string(pref_name))
