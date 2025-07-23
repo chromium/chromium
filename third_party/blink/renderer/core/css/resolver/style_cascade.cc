@@ -320,31 +320,6 @@ void StyleCascade::Apply(CascadeFilter filter) {
     state_.SetRejectedLegacyOverlapping();
   }
 
-  // TOOD(crbug.com/1334570):
-  //
-  // Count applied H1 font-size from html.css UA stylesheet where H1 is inside
-  // a sectioning element matching selectors like:
-  //
-  // :-webkit-any(article,aside,nav,section) h1 { ... }
-  //
-  if (state_.GetElement().HasTagName(html_names::kH1Tag)) {
-    if (CascadePriority* priority =
-            map_.Find(GetCSSPropertyFontSize().GetCSSPropertyName())) {
-      if (priority->GetOrigin() != CascadeOrigin::kUserAgent) {
-        return;
-      }
-      const CSSValue* value = ValueAt(match_result_, priority->GetPosition());
-      if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
-        DCHECK(numeric->GetType() == CSSNumericLiteralValue::UnitType::kEms);
-        if (numeric->DoubleValue() != 2.0) {
-          Deprecation::CountDeprecation(
-              GetDocument().GetExecutionContext(),
-              WebFeature::kH1UserAgentFontSizeInSectionApplied);
-        }
-      }
-    }
-  }
-
   ApplyUnresolvedEnv(resolver);
 }
 

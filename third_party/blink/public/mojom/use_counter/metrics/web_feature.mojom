@@ -3538,7 +3538,7 @@ enum WebFeature {
   kSharedStorageAPI_SelectURL_Method = 4269,
   kSharedStorageAPI_Run_Method = 4270,
   kViewTimelineConstructor = 4271,
-  kH1UserAgentFontSizeInSectionApplied = 4272,
+  kOBSOLETE_H1UserAgentFontSizeInSectionApplied = 4272,
   kOBSOLETE_kV8PendingBeacon_Constructor = 4273,
   kOBSOLETE_kV8PendingBeacon_Url_AttributeGetter = 4274,
   kOBSOLETE_kV8PendingBeacon_Url_AttributeSetter = 4275,
