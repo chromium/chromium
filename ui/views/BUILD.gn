@@ -1427,6 +1427,7 @@ test("views_unittests") {
       "accessibility/test_list_grid_view.cc",
       "accessibility/test_list_grid_view.h",
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",
+      "win/hwnd_message_handler_unittest.cc",
       "win/pen_event_processor_unittest.cc",
       "win/pen_id_handler_unittest.cc",
     ]
