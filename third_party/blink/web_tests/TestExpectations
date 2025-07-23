@@ -45,6 +45,7 @@ external/wpt/infrastructure/reftest/reftest_mismatch_fail.html [ Failure ]
 external/wpt/infrastructure/reftest/reftest_multiple_mismatch-0.html [ Failure ]
 external/wpt/infrastructure/reftest/reftest_multiple_mismatch-1.html [ Failure ]
 accessibility/slot-poison.html [ Failure ]
+editing/input/selectall-in-input-with-text-security.html [ Crash Failure ]
 wpt_internal/infrastructure/fail-with-nonexistent-subtest.html [ Failure ]
 
 # Expected to time out.
