@@ -73,24 +73,50 @@ class ByteCount {
 
   // Math operations.
 
-  constexpr ByteCount operator+(ByteCount other) const {
-    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) +
-                                  other.bytes_);
+  constexpr ByteCount& operator+=(const ByteCount& other) {
+    *this =
+        ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) + other.bytes_);
+    return *this;
   }
 
-  constexpr ByteCount operator-(ByteCount other) const {
-    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) -
-                                  other.bytes_);
+  friend constexpr ByteCount operator+(ByteCount left, const ByteCount& right) {
+    left += right;
+    return left;
+  }
+
+  constexpr ByteCount& operator-=(const ByteCount& other) {
+    *this =
+        ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) - other.bytes_);
+    return *this;
+  }
+
+  friend constexpr ByteCount operator-(ByteCount left, const ByteCount& right) {
+    left -= right;
+    return left;
   }
 
   template <typename T>
-  constexpr ByteCount operator*(T value) const {
-    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) * value);
+  constexpr ByteCount& operator*=(const T& value) {
+    *this = ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) * value);
+    return *this;
   }
 
   template <typename T>
-  constexpr ByteCount operator/(T value) const {
-    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) / value);
+  friend constexpr ByteCount operator*(ByteCount left, const T& right) {
+    left *= right;
+    return left;
+  }
+
+  template <typename T>
+  constexpr ByteCount& operator/=(const T& value) {
+    *this = ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) / value);
+    return *this;
+  }
+
+  template <typename T>
+  friend constexpr ByteCount operator/(ByteCount left, const T& right) {
+    left /= right;
+    return left;
   }
 
   constexpr friend bool operator==(const ByteCount& a,

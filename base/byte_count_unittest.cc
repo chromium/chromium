@@ -160,6 +160,22 @@ TEST(ByteCount, Arithmetic) {
   EXPECT_EQ(21, div.InBytes());
 }
 
+TEST(ByteCount, ArithmeticCompound) {
+  ByteCount bytes(42);
+
+  bytes += ByteCount(10);
+  EXPECT_EQ(52, bytes.InBytes());
+
+  bytes -= ByteCount(10);
+  EXPECT_EQ(42, bytes.InBytes());
+
+  bytes *= 10;
+  EXPECT_EQ(420, bytes.InBytes());
+
+  bytes /= 2;
+  EXPECT_EQ(210, bytes.InBytes());
+}
+
 TEST(ByteCountDeathTest, ArithmeticInvalid) {
   ByteCount max_bytes(std::numeric_limits<int64_t>::max());
 
