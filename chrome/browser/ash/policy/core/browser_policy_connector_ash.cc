@@ -94,7 +94,7 @@
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/proxy_policy_provider.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -245,15 +245,16 @@ void BrowserPolicyConnectorAsh::Init(
             [policy::kPolicyInvalidationProjectNumber]
                 .get());
 
+    invalidation::InvalidationListener* remote_commands_invalidation_listener =
+        invalidation_listener_per_project_
+            [policy::kRemoteCommandsInvalidationsProjectNumber]
+                .get();
     device_remote_commands_invalidator_ =
-        std::make_unique<RemoteCommandsInvalidatorImpl>(
+        std::make_unique<RemoteCommandsInvalidator>(
+            remote_commands_invalidation_listener,
             device_cloud_policy_manager_->core(),
             base::DefaultClock::GetInstance(),
             PolicyInvalidationScope::kDevice);
-    device_remote_commands_invalidator_->Initialize(
-        invalidation_listener_per_project_
-            [policy::kRemoteCommandsInvalidationsProjectNumber]
-                .get());
 
     for (const auto& [project_number, invalidation_listener] :
          invalidation_listener_per_project_) {
@@ -392,9 +393,6 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   }
   device_cloud_policy_invalidator_.reset();
 
-  if (device_remote_commands_invalidator_) {
-    device_remote_commands_invalidator_->Shutdown();
-  }
   device_remote_commands_invalidator_.reset();
 
   device_fm_registration_token_uploaders_.clear();

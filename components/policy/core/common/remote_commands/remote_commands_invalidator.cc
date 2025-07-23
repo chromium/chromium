@@ -6,15 +6,19 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/time/clock.h"
 #include "build/build_config.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
+#include "components/policy/core/common/remote_commands/remote_commands_service.h"
 
 namespace policy {
 
@@ -37,26 +41,53 @@ constexpr char kUserRemoteCommandsInvalidatorTypeName[] =
     "PROFILE_REMOTE_COMMAND";
 #endif
 
+const char* GetInvalidationMetricName(PolicyInvalidationScope scope) {
+  switch (scope) {
+    case PolicyInvalidationScope::kUser:
+      return kMetricUserRemoteCommandInvalidations;
+    case PolicyInvalidationScope::kDevice:
+      return kMetricDeviceRemoteCommandInvalidations;
+    case PolicyInvalidationScope::kCBCM:
+      return kMetricCBCMRemoteCommandInvalidations;
+    case PolicyInvalidationScope::kDeviceLocalAccount:
+      NOTREACHED() << "Unexpected instance of remote commands invalidator with "
+                      "device local account scope.";
+  }
+}
+
 }  // namespace
 
 RemoteCommandsInvalidator::RemoteCommandsInvalidator(
+    invalidation::InvalidationListener* invalidation_listener,
+    CloudPolicyCore* core,
+    const base::Clock* clock,
     PolicyInvalidationScope scope)
-    : scope_(scope) {}
+    : scope_(scope),
+      invalidation_listener_(invalidation_listener),
+      core_(core),
+      clock_(clock) {
+  CHECK(invalidation_listener_);
+  CHECK(core_);
+  CHECK(clock_);
+  Initialize();
+}
 
 RemoteCommandsInvalidator::~RemoteCommandsInvalidator() {
+  Shutdown();
   CHECK_EQ(SHUT_DOWN, state_);
 }
 
-void RemoteCommandsInvalidator::Initialize(
-    invalidation::InvalidationListener* invalidation_listener) {
+void RemoteCommandsInvalidator::Initialize() {
   CHECK_EQ(SHUT_DOWN, state_);
-  CHECK(invalidation_listener);
+  CHECK(invalidation_listener_);
   CHECK(thread_checker_.CalledOnValidThread());
-  invalidation_listener_ = invalidation_listener;
 
   state_ = STOPPED;
 
-  OnInitialize();
+  core_observation_.Observe(core_);
+  if (core_->remote_commands_service()) {
+    OnRemoteCommandsServiceStarted(core_);
+  }
 }
 
 void RemoteCommandsInvalidator::Shutdown() {
@@ -65,9 +96,8 @@ void RemoteCommandsInvalidator::Shutdown() {
 
   Stop();
 
-  invalidation_listener_ = nullptr;
   state_ = SHUT_DOWN;
-  OnShutdown();
+  core_observation_.Reset();
 }
 
 void RemoteCommandsInvalidator::Start() {
@@ -78,7 +108,8 @@ void RemoteCommandsInvalidator::Start() {
 
   invalidation_listener_observation_.Observe(invalidation_listener_);
 
-  OnStart();
+  store_observation_.Observe(core_->store());
+  OnStoreLoaded(core_->store());
 }
 
 void RemoteCommandsInvalidator::Stop() {
@@ -88,7 +119,7 @@ void RemoteCommandsInvalidator::Stop() {
   if (state_ == STARTED) {
     invalidation_listener_observation_.Reset();
     state_ = STOPPED;
-    OnStop();
+    store_observation_.Reset();
   }
 }
 
@@ -140,6 +171,56 @@ bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
 
   return are_invalidations_expected_ ==
          invalidation::InvalidationsExpected::kYes;
+}
+
+void RemoteCommandsInvalidator::DoRemoteCommandsFetch(
+    const invalidation::DirectInvalidation& invalidation) {
+  DCHECK(core_->remote_commands_service());
+
+  RecordInvalidationMetric(invalidation);
+
+  core_->remote_commands_service()->FetchRemoteCommands(
+      RemoteCommandsFetchReason::kInvalidation);
+}
+
+void RemoteCommandsInvalidator::DoInitialRemoteCommandsFetch() {
+  CHECK(core_->remote_commands_service());
+
+  core_->remote_commands_service()->FetchRemoteCommands(
+      RemoteCommandsFetchReason::kStartup);
+}
+
+void RemoteCommandsInvalidator::OnCoreConnected(CloudPolicyCore* core) {}
+
+void RemoteCommandsInvalidator::OnRefreshSchedulerStarted(
+    CloudPolicyCore* core) {}
+
+void RemoteCommandsInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
+  Stop();
+}
+
+void RemoteCommandsInvalidator::OnRemoteCommandsServiceStarted(
+    CloudPolicyCore* core) {
+  Start();
+}
+
+void RemoteCommandsInvalidator::OnStoreLoaded(CloudPolicyStore* core) {}
+
+void RemoteCommandsInvalidator::OnStoreError(CloudPolicyStore* core) {}
+
+void RemoteCommandsInvalidator::RecordInvalidationMetric(
+    const invalidation::DirectInvalidation& invalidation) const {
+  const auto last_fetch_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      core_->store()->policy()->timestamp());
+  const auto current_time = clock_->Now();
+  const bool is_expired =
+      IsInvalidationExpired(invalidation, last_fetch_time, current_time);
+  const bool is_missing_payload = invalidation.payload().empty();
+
+  base::UmaHistogramEnumeration(
+      GetInvalidationMetricName(scope_),
+      GetInvalidationMetric(is_missing_payload, is_expired),
+      POLICY_INVALIDATION_TYPE_SIZE);
 }
 
 }  // namespace policy

@@ -58,7 +58,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 #include "components/policy/policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
@@ -807,12 +807,11 @@ void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
   core()->StartRemoteCommandsService(
       std::make_unique<UserCommandsFactoryAsh>(profile_),
       PolicyInvalidationScope::kUser);
-  invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
+  invalidator_ = std::make_unique<RemoteCommandsInvalidator>(
+      invalidation_provider->GetInvalidationListener(
+          kRemoteCommandsInvalidationsProjectNumber),
       core(), base::DefaultClock::GetInstance(),
       PolicyInvalidationScope::kUser);
-
-  invalidator_->Initialize(invalidation_provider->GetInvalidationListener(
-      kRemoteCommandsInvalidationsProjectNumber));
 
   shutdown_subscription_ =
       UserCloudPolicyManagerAshNotifierFactory::GetInstance()
@@ -823,8 +822,6 @@ void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
 }
 
 void UserCloudPolicyManagerAsh::ShutdownRemoteCommands() {
-  // Unregister the RemoteCommandsInvalidatorImpl from the InvalidatorRegistrar.
-  invalidator_->Shutdown();
   invalidator_.reset();
   shutdown_subscription_ = {};
 }

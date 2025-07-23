@@ -37,7 +37,7 @@
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -205,9 +205,6 @@ void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
   if (policy_invalidator_) {
     policy_invalidator_->Shutdown();
   }
-  if (commands_invalidator_) {
-    commands_invalidator_->Shutdown();
-  }
 
   policy_invalidator_.reset();
   commands_invalidator_.reset();
@@ -362,12 +359,13 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
       std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
       PolicyInvalidationScope::kCBCM);
 
-  commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
-      core, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
-  commands_invalidator_->Initialize(
+  invalidation::InvalidationListener* remote_commands_invalidation_listener =
       invalidation_listener_per_project_
           [policy::kRemoteCommandsInvalidationsProjectNumber]
-              .get());
+              .get();
+  commands_invalidator_ = std::make_unique<RemoteCommandsInvalidator>(
+      remote_commands_invalidation_listener, core,
+      base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
 
   for (const auto& [project_number, invalidation_listener] :
        invalidation_listener_per_project_) {

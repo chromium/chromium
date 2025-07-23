@@ -199,8 +199,6 @@ source_set("internal") {
     "remote_commands/remote_commands_fetch_reason.h",
     "remote_commands/remote_commands_invalidator.cc",
     "remote_commands/remote_commands_invalidator.h",
-    "remote_commands/remote_commands_invalidator_impl.cc",
-    "remote_commands/remote_commands_invalidator_impl.h",
     "remote_commands/remote_commands_queue.cc",
     "remote_commands/remote_commands_queue.h",
     "remote_commands/remote_commands_service.cc",

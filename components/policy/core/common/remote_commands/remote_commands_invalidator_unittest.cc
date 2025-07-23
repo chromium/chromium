@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
+
 #include <memory>
 #include <string>
 
@@ -15,7 +17,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 #include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,10 +48,7 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
               /*settings_entity_id=*/std::string(),
               &mock_store_,
               task_environment_.GetMainThreadTaskRunner(),
-              network::TestNetworkConnectionTracker::CreateGetter()),
-        invalidator_(&core_,
-                     task_environment_.GetMockClock(),
-                     kInvalidationScope) {}
+              network::TestNetworkConnectionTracker::CreateGetter()) {}
 
   RemoteCommandsInvalidatorTest(const RemoteCommandsInvalidatorTest&) = delete;
   RemoteCommandsInvalidatorTest& operator=(
@@ -90,6 +88,12 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<RemoteCommandsInvalidator> CreateInvalidator() {
+    return std::make_unique<RemoteCommandsInvalidator>(
+        &fake_invalidation_listener_, &core_, task_environment_.GetMockClock(),
+        kInvalidationScope);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -97,7 +101,6 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
   CloudPolicyCore core_;
 
   invalidation::FakeInvalidationListener fake_invalidation_listener_;
-  RemoteCommandsInvalidatorImpl invalidator_;
 };
 
 // Tests that remote commands invalidator is correctly initialized and shut
@@ -105,25 +108,23 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
 TEST_F(RemoteCommandsInvalidatorTest, StartsWhenInvalidationListenerStarts) {
   PrepareCoreForRemoteCommands();
 
-  invalidator_.Initialize(&fake_invalidation_listener_);
+  auto invalidator = CreateInvalidator();
 
-  EXPECT_FALSE(invalidator_.invalidations_enabled())
+  EXPECT_FALSE(invalidator->invalidations_enabled())
       << "Invalidator is enabled before invalidation listener is started";
 
   fake_invalidation_listener_.Start();
 
-  EXPECT_TRUE(invalidator_.invalidations_enabled());
+  EXPECT_TRUE(invalidator->invalidations_enabled());
 
   fake_invalidation_listener_.Shutdown();
 
-  EXPECT_FALSE(invalidator_.invalidations_enabled())
+  EXPECT_FALSE(invalidator->invalidations_enabled())
       << "Invalidator is enabled after invalidation listener is shut down";
 
   fake_invalidation_listener_.Start();
 
-  EXPECT_TRUE(invalidator_.invalidations_enabled());
-
-  invalidator_.Shutdown();
+  EXPECT_TRUE(invalidator->invalidations_enabled());
 }
 
 // Tests that remote commands invalidator is correctly initialized and shut
@@ -131,16 +132,14 @@ TEST_F(RemoteCommandsInvalidatorTest, StartsWhenInvalidationListenerStarts) {
 TEST_F(RemoteCommandsInvalidatorTest, StartsWhenRemoteCommandsServiceStarts) {
   fake_invalidation_listener_.Start();
 
-  invalidator_.Initialize(&fake_invalidation_listener_);
+  auto invalidator = CreateInvalidator();
 
-  EXPECT_FALSE(invalidator_.invalidations_enabled())
+  EXPECT_FALSE(invalidator->invalidations_enabled())
       << "Invalidator is enabled before remote commands service is started";
 
   PrepareCoreForRemoteCommands();
 
-  EXPECT_TRUE(invalidator_.invalidations_enabled());
-
-  invalidator_.Shutdown();
+  EXPECT_TRUE(invalidator->invalidations_enabled());
 }
 
 // Tests that remote commands invalidtor does initial fetch request when
@@ -157,12 +156,10 @@ TEST_F(RemoteCommandsInvalidatorTest,
       FetchRemoteCommands(_, _, _, _, RemoteCommandsFetchReason::kStartup, _))
       .Times(2);
 
-  invalidator_.Initialize(&fake_invalidation_listener_);
+  auto invalidator = CreateInvalidator();
 
   fake_invalidation_listener_.Shutdown();
   fake_invalidation_listener_.Start();
-
-  invalidator_.Shutdown();
 }
 
 // Tests that remote commands invalidator receives invalidation and initiates
@@ -175,10 +172,10 @@ TEST_F(RemoteCommandsInvalidatorTest, FetchesRemoteCommandsOnInvalidation) {
       *mock_client,
       FetchRemoteCommands(_, _, _, _, RemoteCommandsFetchReason::kStartup, _));
 
-  invalidator_.Initialize(&fake_invalidation_listener_);
+  auto invalidator = CreateInvalidator();
   fake_invalidation_listener_.Start();
 
-  EXPECT_TRUE(invalidator_.invalidations_enabled());
+  EXPECT_TRUE(invalidator->invalidations_enabled());
   testing::Mock::VerifyAndClearExpectations(mock_client);
 
   // Fire two invalidations and check two fetch requests happened.
@@ -194,18 +191,18 @@ TEST_F(RemoteCommandsInvalidatorTest, FetchesRemoteCommandsOnInvalidation) {
   fake_invalidation_listener_.FireInvalidation(invalidation::DirectInvalidation(
       kRemoteCommandsInvalidationType, /*version=*/100,
       /*payload=*/"foo_bar"));
-
-  invalidator_.Shutdown();
 }
 
 TEST_F(RemoteCommandsInvalidatorTest, HasCorrectInvalidationType) {
-  RemoteCommandsInvalidatorImpl device_invalidator(
-      &core_, task_environment_.GetMockClock(),
+  RemoteCommandsInvalidator device_invalidator(
+      &fake_invalidation_listener_, &core_, task_environment_.GetMockClock(),
       PolicyInvalidationScope::kDevice);
-  RemoteCommandsInvalidatorImpl browser_invalidator(
-      &core_, task_environment_.GetMockClock(), PolicyInvalidationScope::kCBCM);
-  RemoteCommandsInvalidatorImpl user_invalidator(
-      &core_, task_environment_.GetMockClock(), PolicyInvalidationScope::kUser);
+  RemoteCommandsInvalidator browser_invalidator(
+      &fake_invalidation_listener_, &core_, task_environment_.GetMockClock(),
+      PolicyInvalidationScope::kCBCM);
+  RemoteCommandsInvalidator user_invalidator(
+      &fake_invalidation_listener_, &core_, task_environment_.GetMockClock(),
+      PolicyInvalidationScope::kUser);
 
   EXPECT_EQ(device_invalidator.GetType(), "DEVICE_REMOTE_COMMAND");
   EXPECT_EQ(browser_invalidator.GetType(), "BROWSER_REMOTE_COMMAND");
