@@ -113,6 +113,7 @@ class LoadingPredictor : public KeyedService,
   void PreconnectInitiated(const GURL& url,
                            const GURL& preconnect_url) override;
   void PreconnectFinished(std::unique_ptr<PreconnectStats> stats) override;
+  bool IsPreconnectEnabled() override;
 
   // PrefetchManager::Delegate:
   void PrefetchInitiated(const GURL& url, const GURL& prefetch_url) override;

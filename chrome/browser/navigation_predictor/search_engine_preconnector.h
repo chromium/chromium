@@ -92,6 +92,8 @@ class SearchEnginePreconnector
   void PreconnectFinished(
       std::unique_ptr<predictors::PreconnectStats> stats) override {}
 
+  bool IsPreconnectEnabled() override;
+
   // network::mojom::ConnectionChangeObserverClient
   void OnSessionClosed() override;
   void OnNetworkEvent(net::NetworkChangeEvent event) override;

@@ -39,6 +39,7 @@
 using content::PreconnectRequest;
 using testing::_;
 using testing::Mock;
+using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 
@@ -68,6 +69,7 @@ class MockPreconnectManagerDelegate : public PreconnectManager::Delegate {
   MOCK_METHOD1(PreconnectFinishedProxy, void(const GURL& url));
   MOCK_METHOD2(PreconnectInitiated,
                void(const GURL& url, const GURL& preconnect_url));
+  MOCK_METHOD0(IsPreconnectEnabled, bool());
 
   base::WeakPtr<MockPreconnectManagerDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -249,6 +251,7 @@ TEST_F(PreconnectManagerImplTest, TestStartOneUrlPreresolve) {
   url::Origin origin_to_preresolve =
       url::Origin::Create(GURL("http://cdn.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preresolve.GetURL()));
@@ -272,6 +275,7 @@ TEST_F(PreconnectManagerImplTest, TestStartOneUrlPreconnect) {
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
@@ -304,6 +308,7 @@ TEST_F(PreconnectManagerImplTest, TestLimitPreconnectCount) {
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
@@ -333,6 +338,7 @@ TEST_F(PreconnectManagerImplTest,
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
@@ -371,6 +377,8 @@ TEST_F(PreconnectManagerImplTest, TestStartOneUrlPreconnect_MultipleTimes) {
     requests.emplace_back(url::Origin::Create(GURL(url)), 1,
                           network_anonymization_key);
   }
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   for (size_t i = 0; i < count; ++i) {
     // Exactly PreconnectManagerImpl::kMaxInflightPreresolves should be
     // initiated and preresolved.
@@ -419,6 +427,7 @@ TEST_F(PreconnectManagerImplTest, TestStartOneUrlPreconnect_MultipleTimes) {
   }
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   preconnect_manager_->Start(main_frame_url, requests,
                              TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -449,6 +458,8 @@ TEST_F(PreconnectManagerImplTest,
   // would, in real usage, have the same NetworkAnonymizationKey.
   GURL main_frame_url_2("http://google.com/2");
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url_1, requests[0].origin.GetURL()));
@@ -497,6 +508,7 @@ TEST_F(PreconnectManagerImplTest,
   VerifyAndClearExpectations();
 
   // Now, restart the preconnect request.
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(*mock_delegate_,
               PreconnectInitiated(main_frame_url_2,
                                   requests[count - 1].origin.GetURL()));
@@ -551,6 +563,8 @@ TEST_F(PreconnectManagerImplTest,
       CreateNetworkAnonymizationKey(main_frame_url_1);
   size_t count = PreconnectManagerImpl::kMaxInflightPreresolves;
   std::vector<PreconnectRequest> requests;
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
   for (size_t i = 0; i < count - 1; ++i) {
     std::string url =
         base::StringPrintf("http://hanging.cdn%" PRIuS ".google.com", i);
@@ -600,6 +614,7 @@ TEST_F(PreconnectManagerImplTest,
   VerifyAndClearExpectations();
 
   // Request preconnect for |main_frame_url_2| again.
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url_2, origin_to_preconnect_1.GetURL()));
@@ -650,6 +665,7 @@ TEST_F(PreconnectManagerImplTest,
   url::Origin origin_to_preconnect_2 =
       url::Origin::Create(GURL("http://cdn.google2.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect_1.GetURL()));
@@ -676,6 +692,7 @@ TEST_F(PreconnectManagerImplTest,
   VerifyAndClearExpectations();
 
   // Now, start the preconnect request again.
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect_1.GetURL()));
@@ -719,6 +736,8 @@ TEST_F(PreconnectManagerImplTest, TestStopOneUrlBeforePreconnect) {
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
@@ -743,6 +762,7 @@ TEST_F(PreconnectManagerImplTest, TestGetCallbackAfterDestruction) {
       CreateNetworkAnonymizationKey(main_frame_url);
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
@@ -765,6 +785,7 @@ TEST_F(PreconnectManagerImplTest, TestUnqueuedPreresolvesCanceled) {
       CreateNetworkAnonymizationKey(main_frame_url);
   size_t count = PreconnectManagerImpl::kMaxInflightPreresolves;
   std::vector<PreconnectRequest> requests;
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   for (size_t i = 0; i < count; ++i) {
     // Exactly PreconnectManagerImpl::kMaxInflightPreresolves should be
     // preresolved.
@@ -798,6 +819,7 @@ TEST_F(PreconnectManagerImplTest, TestQueueingMetricsRecorded) {
       CreateNetworkAnonymizationKey(main_frame_url);
   size_t num_preresolves = PreconnectManagerImpl::kMaxInflightPreresolves;
   std::vector<PreconnectRequest> requests;
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   for (size_t i = 0; i < num_preresolves; ++i) {
     // Exactly PreconnectManagerImpl::kMaxInflightPreresolves should be
     // preresolved.
@@ -843,6 +865,8 @@ TEST_F(PreconnectManagerImplTest, TestTwoConcurrentMainFrameUrls) {
   url::Origin origin_to_preconnect2 =
       url::Origin::Create(GURL("http://cdn.facebook.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url1, origin_to_preconnect1.GetURL()));
@@ -896,6 +920,8 @@ TEST_F(PreconnectManagerImplTest, TestTwoConcurrentSameHostMainFrameUrls) {
   url::Origin origin_to_preconnect2 =
       url::Origin::Create(GURL("http://dogs.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url1, origin_to_preconnect1.GetURL()));
@@ -943,6 +969,8 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHost) {
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(origin);
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
   // PreconnectFinished shouldn't be called.
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
   preconnect_manager_->StartPreresolveHost(
@@ -958,13 +986,14 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHost) {
       /*storage_partition_config=*/nullptr);
 }
 
-TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostDisabledViaUI) {
-  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
-                                 prefetch::PreloadPagesState::kNoPreloading);
+TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostDisabled) {
   GURL url("http://cdn.google.com/script.js");
   GURL origin("http://cdn.google.com");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(origin);
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillOnce(testing::Return(false));
 
   // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
   // will raise an error if it happens.
@@ -979,6 +1008,7 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHosts) {
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(cdn);
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(cdn.host()));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.host()));
   preconnect_manager_->StartPreresolveHosts(
@@ -990,13 +1020,14 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHosts) {
                                             network_anonymization_key, net::OK);
 }
 
-TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostsDisabledViaUI) {
-  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
-                                 prefetch::PreloadPagesState::kNoPreloading);
+TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostsDisabled) {
   GURL cdn("http://cdn.google.com");
   GURL fonts("http://fonts.google.com");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(cdn);
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillOnce(testing::Return(false));
 
   // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
   // will raise an error if it happens.
@@ -1012,6 +1043,8 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
   GURL origin("http://cdn.google.com");
   bool allow_credentials = false;
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
@@ -1038,14 +1071,15 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
-TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlDisabledViaUI) {
-  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
-                                 prefetch::PreloadPagesState::kNoPreloading);
+TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlDisabled) {
   GURL url("http://cdn.google.com/script.js");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(url);
   GURL origin("http://cdn.google.com");
   bool allow_credentials = false;
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillOnce(testing::Return(false));
 
   // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
   // will raise an error if it happens.
@@ -1066,6 +1100,7 @@ TEST_F(PreconnectManagerImplTest,
   auto network_anonymization_key =
       net::NetworkAnonymizationKey::CreateSameSite(requesting_site);
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
@@ -1090,6 +1125,9 @@ TEST_F(PreconnectManagerImplTest, TestDetachedRequestHasHigherPriority) {
       CreateNetworkAnonymizationKey(main_frame_url);
   size_t count = PreconnectManagerImpl::kMaxInflightPreresolves;
   std::vector<PreconnectRequest> requests;
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
+
   // Create enough asynchronous jobs to leave the last one in the queue.
   for (size_t i = 0; i < count; ++i) {
     std::string url = base::StringPrintf("http://cdn%" PRIuS ".google.com", i);
@@ -1145,6 +1183,7 @@ TEST_F(PreconnectManagerImplTest, TestSuccessfulProxyLookup) {
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
@@ -1165,15 +1204,16 @@ TEST_F(PreconnectManagerImplTest, TestSuccessfulProxyLookup) {
                                              GetIndirectProxyInfo());
 }
 
-TEST_F(PreconnectManagerImplTest, TestStartDisabledViaUI) {
-  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
-                                 prefetch::PreloadPagesState::kNoPreloading);
+TEST_F(PreconnectManagerImplTest, TestStartDisabled) {
   mock_network_context_->EnableProxyTesting();
   GURL main_frame_url("http://google.com");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(main_frame_url);
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillOnce(testing::Return(false));
 
   // mock_delegate_.PreconnectInitiated shouldn't be called. The StrictMock
   // will raise an error if it happens.
@@ -1194,6 +1234,7 @@ TEST_F(PreconnectManagerImplTest,
   url::Origin origin_to_preconnect2 =
       url::Origin::Create(GURL("http://ads.google.com"));
 
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, origin_to_preconnect.GetURL()));
@@ -1245,6 +1286,8 @@ TEST_F(PreconnectManagerImplTest, TestBothProxyAndHostLookupFailed) {
       CreateNetworkAnonymizationKey(main_frame_url);
   url::Origin origin_to_preconnect =
       url::Origin::Create(GURL("http://cdn.google.com"));
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
 
   EXPECT_CALL(
       *mock_delegate_,

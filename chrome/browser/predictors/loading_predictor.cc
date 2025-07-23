@@ -231,8 +231,9 @@ bool LoadingPredictor::PrepareForPageLoad(
 
   ++total_hints_activated_;
   active_hints_.emplace(url, base::TimeTicks::Now());
-  if (IsPreconnectAllowed(profile_))
+  if (IsPreconnectEnabled()) {
     MaybeAddPreconnect(url, std::move(prediction));
+  }
   return has_local_preconnect_prediction || preconnect_prediction;
 }
 
@@ -392,7 +393,7 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
                                           bool preconnectable,
                                           bool only_allow_https,
                                           PreconnectData& preconnect_data) {
-  if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_) ||
+  if (!url.is_valid() || !url.has_host() || !IsPreconnectEnabled() ||
       (only_allow_https && url.scheme() != url::kHttpsScheme)) {
     return false;
   }
@@ -465,6 +466,10 @@ void LoadingPredictor::PreconnectFinished(
   active_hints_.erase(stats->url);
 }
 
+bool LoadingPredictor::IsPreconnectEnabled() {
+  return IsPreconnectAllowed(profile_);
+}
+
 void LoadingPredictor::PrefetchInitiated(const GURL& url,
                                          const GURL& prefetch_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -493,8 +498,9 @@ void LoadingPredictor::PreconnectURLIfAllowed(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const content::StoragePartitionConfig* storage_partition_config) {
-  if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_))
+  if (!url.is_valid() || !url.has_host() || !IsPreconnectEnabled()) {
     return;
+  }
 
   preconnect_manager()->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key, traffic_annotation,

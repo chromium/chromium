@@ -66,6 +66,9 @@ class PreconnectManager {
     // fire-and-forget.
     // Is called on the UI thread.
     virtual void PreconnectFinished(std::unique_ptr<PreconnectStats> stats) = 0;
+
+    // Returns true if the preconnect functionality is enabled.
+    virtual bool IsPreconnectEnabled() = 0;
   };
 
   // An observer for testing.

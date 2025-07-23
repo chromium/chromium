@@ -174,9 +174,6 @@ class PreconnectManagerImpl : public PreconnectManager {
       const content::StoragePartitionConfig* storage_partition_config,
       ProxyLookupCallback callback) const;
 
-  // Whether the PreconnectManager should be performing preloading operations
-  // or if preloading is disabled.
-  bool IsEnabled();
   void TryToLaunchPreresolveJobs();
   void OnPreresolveFinished(PreresolveJobId job_id, bool success);
   void OnProxyLookupFinished(PreresolveJobId job_id, bool success);
