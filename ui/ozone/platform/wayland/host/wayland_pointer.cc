@@ -55,9 +55,6 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
 }
 
 WaylandPointer::~WaylandPointer() {
-  // If a cursor already exists, we need to reset it first before
-  // destroying the pointer to prevent dangling references.
-  connection_->ResetCursor();
   // Even though, WaylandPointer::Leave is always called when Wayland destroys
   // wl_pointer, it's better to be explicit as some Wayland compositors may have
   // bugs.

@@ -89,7 +89,7 @@ class WaylandCursor {
                        uint32_t hotspot_x_dip,
                        uint32_t hotspot_y_dip);
 
-  const raw_ptr<WaylandPointer> pointer_;
+  const raw_ptr<WaylandPointer, DanglingUntriaged> pointer_;
   const raw_ptr<WaylandConnection> connection_;
   const wl::Object<wl_surface> pointer_surface_;
 

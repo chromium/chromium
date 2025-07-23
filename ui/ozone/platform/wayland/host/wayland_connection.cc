@@ -305,11 +305,6 @@ void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
   cursor_->UpdateBitmap(bitmaps, hotspot_in_dips, buffer_scale);
 }
 
-void WaylandConnection::ResetCursor() {
-  cursor_.reset();
-  cursor_position_.reset();
-}
-
 bool WaylandConnection::IsDragInProgress() const {
   // An active drag requires a seat exist.
   return seat_ && data_device_manager_ &&
@@ -431,7 +426,8 @@ void WaylandConnection::UpdateCursor() {
       zwp_pointer_gestures_->Init();
     }
   } else {
-    ResetCursor();
+    cursor_.reset();
+    cursor_position_.reset();
   }
 }
 
