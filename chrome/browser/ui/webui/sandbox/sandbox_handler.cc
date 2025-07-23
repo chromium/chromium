@@ -95,8 +95,6 @@ base::Value::List FetchSandboxFeatures() {
       sandbox::policy::features::kWinSboxRestrictCoreSharingOnRenderer));
   features.Append(
       FeatureToValue(sandbox::policy::features::kEnableCsrssLockdown));
-  features.Append(FeatureToValue(
-      sandbox::policy::features::kWinSboxFilterServiceEnvironment));
   return features;
 }
 

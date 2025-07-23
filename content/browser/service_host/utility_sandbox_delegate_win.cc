@@ -358,8 +358,7 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
       return false;
     }
 
-    config->SetFilterEnvironment(base::FeatureList::IsEnabled(
-        sandbox::policy::features::kWinSboxFilterServiceEnvironment));
+    config->SetFilterEnvironment(true);
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kService) {
