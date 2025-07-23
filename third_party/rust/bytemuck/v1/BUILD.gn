@@ -37,6 +37,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Lokathor <zefria@gmail.com>"
   cargo_pkg_name = "bytemuck"
   cargo_pkg_description = "A crate for mucking around with piles of bytes."
+  cargo_pkg_repository = "https://github.com/Lokathor/bytemuck"
   cargo_pkg_version = "1.23.1"
 
   allow_unsafe = true

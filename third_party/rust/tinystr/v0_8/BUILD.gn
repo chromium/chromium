@@ -34,6 +34,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "tinystr"
   cargo_pkg_description =
       "A small ASCII-only bounded length string representation."
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "0.8.1"
 
   allow_unsafe = true

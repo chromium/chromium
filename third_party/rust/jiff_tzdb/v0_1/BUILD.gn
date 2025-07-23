@@ -31,6 +31,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "jiff-tzdb"
   cargo_pkg_description =
       "The entire Time Zone Database embedded into your binary."
+  cargo_pkg_repository = "https://github.com/BurntSushi/jiff"
   cargo_pkg_version = "0.1.4"
 
   allow_unsafe = false

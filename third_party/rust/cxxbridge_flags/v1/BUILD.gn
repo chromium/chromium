@@ -25,6 +25,7 @@ cargo_crate("buildrs_support") {
   cargo_pkg_name = "cxxbridge-flags"
   cargo_pkg_description =
       "Compiler configuration of the `cxx` crate (implementation detail)"
+  cargo_pkg_repository = "https://github.com/dtolnay/cxx"
   cargo_pkg_version = "1.0.160"
 
   allow_unsafe = false

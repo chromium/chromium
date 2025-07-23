@@ -25,6 +25,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "yoke-derive"
   cargo_pkg_description = "Custom derive for the yoke crate"
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "0.8.0"
 
   allow_unsafe = false

@@ -42,6 +42,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde"
   cargo_pkg_description = "A generic serialization/deserialization framework"
+  cargo_pkg_repository = "https://github.com/serde-rs/serde"
   cargo_pkg_version = "1.0.219"
 
   allow_unsafe = true

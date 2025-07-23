@@ -24,6 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "zerofrom-derive"
   cargo_pkg_description = "Custom derive for the zerofrom crate"
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "0.1.6"
 
   allow_unsafe = false

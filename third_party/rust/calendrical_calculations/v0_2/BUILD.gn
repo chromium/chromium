@@ -36,6 +36,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "calendrical_calculations"
   cargo_pkg_description = "Calendrical calculations in Rust"
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "0.2.0"
 
   allow_unsafe = false

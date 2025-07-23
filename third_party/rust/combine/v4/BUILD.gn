@@ -48,6 +48,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "combine"
   cargo_pkg_description =
       "Fast parser combinators on arbitrary streams with zero-copy support."
+  cargo_pkg_repository = "https://github.com/Marwes/combine"
   cargo_pkg_version = "4.6.7"
 
   allow_unsafe = true

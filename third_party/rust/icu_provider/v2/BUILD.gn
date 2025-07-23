@@ -42,6 +42,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "icu_provider"
   cargo_pkg_description =
       "Trait and struct definitions for the ICU data provider"
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "2.0.0"
 
   allow_unsafe = true

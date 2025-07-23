@@ -38,6 +38,7 @@ pub struct Package {
     pub description: Option<String>,
     pub authors: Vec<String>,
     pub edition: String,
+    pub repository: Option<String>,
     /// This package's dependencies. Each element cross-references another
     /// `Package` by name and version.
     pub dependencies: Vec<DepOfDep>,
@@ -314,6 +315,7 @@ pub fn collect_dependencies(
                 description: package.description().map(|s| s.to_string()),
                 authors: package.authors().to_vec(),
                 edition: package.edition().to_string(),
+                repository: package.repository().map(|s| s.to_string()),
                 dependencies,
                 build_dependencies,
                 dependency_kinds,

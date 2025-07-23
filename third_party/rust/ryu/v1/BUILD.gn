@@ -38,6 +38,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "ryu"
   cargo_pkg_description = "Fast floating point to string conversion"
+  cargo_pkg_repository = "https://github.com/dtolnay/ryu"
   cargo_pkg_version = "1.0.20"
 
   allow_unsafe = true

@@ -29,6 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "foldhash"
   cargo_pkg_description =
       "A fast, non-cryptographic, minimally DoS-resistant hashing algorithm."
+  cargo_pkg_repository = "https://github.com/orlp/foldhash"
   cargo_pkg_version = "0.1.5"
 
   allow_unsafe = true

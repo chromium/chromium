@@ -23,6 +23,7 @@ cargo_crate("lib") {
   edition = "2015"
   cargo_pkg_name = "equivalent"
   cargo_pkg_description = "Traits for key comparison in maps."
+  cargo_pkg_repository = "https://github.com/indexmap-rs/equivalent"
   cargo_pkg_version = "1.0.2"
 
   allow_unsafe = false

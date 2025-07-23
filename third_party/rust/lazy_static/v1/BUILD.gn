@@ -27,6 +27,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "lazy_static"
   cargo_pkg_description =
       "A macro for declaring lazily evaluated statics in Rust."
+  cargo_pkg_repository = "https://github.com/rust-lang-nursery/lazy-static.rs"
   cargo_pkg_version = "1.5.0"
 
   allow_unsafe = true

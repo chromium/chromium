@@ -179,6 +179,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "read-fonts"
   cargo_pkg_description = "Reading OpenType font files."
+  cargo_pkg_repository = "https://github.com/googlefonts/fontations"
   cargo_pkg_version = "0.30.1"
 
   allow_unsafe = false

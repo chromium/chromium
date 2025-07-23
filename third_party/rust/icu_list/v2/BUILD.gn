@@ -30,6 +30,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_list"
   cargo_pkg_description = "ECMA-402 ListFormatter"
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "2.0.0"
 
   allow_unsafe = false

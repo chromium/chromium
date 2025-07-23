@@ -60,6 +60,7 @@ cargo_crate("lib") {
   edition = "2024"
   cargo_pkg_name = "fend-core"
   cargo_pkg_description = "Arbitrary-precision unit-aware calculator"
+  cargo_pkg_repository = "https://github.com/printfn/fend"
   cargo_pkg_version = "1.5.7"
 
   allow_unsafe = false

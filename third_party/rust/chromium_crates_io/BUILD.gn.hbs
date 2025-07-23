@@ -46,6 +46,11 @@ cargo_crate("{{this.name}}") {
       cargo_pkg_description = "{{gn_escape this}}"
     {{/with}}
   {{/if}}
+  {{#if cargo_pkg_repository}}
+    {{#with cargo_pkg_repository}}
+      cargo_pkg_repository = "{{this}}"
+    {{/with}}
+  {{/if}}
   cargo_pkg_version = "{{cargo_pkg_version}}"
 
   {{! `cargo_pkg_version` changes during minor version updates, so (to help

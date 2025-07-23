@@ -67,6 +67,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "boa-dev"
   cargo_pkg_name = "temporal_rs"
   cargo_pkg_description = "Temporal in Rust is an implementation of the TC39 Temporal Builtin Proposal in Rust."
+  cargo_pkg_repository = "https://github.com/boa-dev/temporal"
   cargo_pkg_version = "0.0.11"
 
   allow_unsafe = true

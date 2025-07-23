@@ -32,6 +32,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "writeable"
   cargo_pkg_description = "A more efficient alternative to fmt::Display"
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "0.6.1"
 
   allow_unsafe = true

@@ -27,6 +27,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "hex"
   cargo_pkg_description =
       "Encoding and decoding data into/from hexadecimal representation."
+  cargo_pkg_repository = "https://github.com/KokaKiwi/rust-hex"
   cargo_pkg_version = "0.4.3"
 
   allow_unsafe = false

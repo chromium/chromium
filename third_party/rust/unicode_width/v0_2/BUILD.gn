@@ -25,6 +25,7 @@ cargo_crate("lib") {
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
   cargo_pkg_description = "Determine displayed width of `char` and `str` types according to Unicode Standard Annex #11 rules."
+  cargo_pkg_repository = "https://github.com/unicode-rs/unicode-width"
   cargo_pkg_version = "0.2.1"
 
   allow_unsafe = false

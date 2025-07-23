@@ -91,6 +91,7 @@ import("//build/rust/rust_static_library.gni")
 #  cargo_pkg_version
 #  cargo_pkg_name
 #  cargo_pkg_description
+#  cargo_pkg_repository
 #    Strings as found within 'version' and similar fields within Cargo.toml.
 #    Converted to environment variables passed to rustc, in case the crate
 #    uses clap `crate_version!` or `crate_authors!` macros (fairly common in
@@ -153,6 +154,9 @@ template("cargo_crate") {
   }
   if (defined(invoker.cargo_pkg_description)) {
     _rustenv += [ "CARGO_PKG_DESCRIPTION=${invoker.cargo_pkg_description}" ]
+  }
+  if (defined(invoker.cargo_pkg_repository)) {
+    _rustenv += [ "CARGO_PKG_REPOSITORY=${invoker.cargo_pkg_repository}" ]
   }
 
   # Try to determine the CARGO_MANIFEST_DIR, preferring the directory

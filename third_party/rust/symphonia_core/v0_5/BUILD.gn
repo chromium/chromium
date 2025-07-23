@@ -51,6 +51,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "symphonia-core"
   cargo_pkg_description =
       "Project Symphonia shared structs, traits, and features."
+  cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
   cargo_pkg_version = "0.5.4"
 
   allow_unsafe = false

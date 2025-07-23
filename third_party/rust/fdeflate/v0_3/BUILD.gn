@@ -29,6 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The image-rs Developers"
   cargo_pkg_name = "fdeflate"
   cargo_pkg_description = "Fast specialized deflate implementation"
+  cargo_pkg_repository = "https://github.com/image-rs/fdeflate"
   cargo_pkg_version = "0.3.7"
 
   allow_unsafe = false

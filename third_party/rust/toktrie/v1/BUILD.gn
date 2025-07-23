@@ -29,6 +29,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "toktrie"
   cargo_pkg_description = "LLM Token Trie library"
+  cargo_pkg_repository = "https://github.com/guidance-ai/llguidance"
   cargo_pkg_version = "1.0.1"
 
   allow_unsafe = false

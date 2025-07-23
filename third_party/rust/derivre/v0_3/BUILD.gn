@@ -37,6 +37,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Michal Moskal <michal@moskal.me>"
   cargo_pkg_name = "derivre"
   cargo_pkg_description = "A derivative-based regular expression engine"
+  cargo_pkg_repository = "https://github.com/microsoft/derivre"
   cargo_pkg_version = "0.3.8"
 
   allow_unsafe = false

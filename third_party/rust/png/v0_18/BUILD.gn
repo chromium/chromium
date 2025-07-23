@@ -42,6 +42,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The image-rs Developers"
   cargo_pkg_name = "png"
   cargo_pkg_description = "PNG decoding and encoding library in pure Rust"
+  cargo_pkg_repository = "https://github.com/image-rs/image-png"
   cargo_pkg_version = "0.18.0-rc"
 
   allow_unsafe = false

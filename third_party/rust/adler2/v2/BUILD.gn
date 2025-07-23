@@ -26,6 +26,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "adler2"
   cargo_pkg_description =
       "A simple clean-room implementation of the Adler-32 checksum"
+  cargo_pkg_repository = "https://github.com/oyvindln/adler2"
   cargo_pkg_version = "2.0.1"
 
   allow_unsafe = false

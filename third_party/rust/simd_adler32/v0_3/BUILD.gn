@@ -33,6 +33,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "simd-adler32"
   cargo_pkg_description =
       "A SIMD-accelerated Adler-32 hash algorithm implementation."
+  cargo_pkg_repository = "https://github.com/mcountryman/simd-adler32"
   cargo_pkg_version = "0.3.7"
 
   allow_unsafe = true

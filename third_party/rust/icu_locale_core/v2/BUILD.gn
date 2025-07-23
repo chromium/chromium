@@ -86,6 +86,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "icu_locale_core"
   cargo_pkg_description =
       "API for managing Unicode Language and Locale Identifiers"
+  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
   cargo_pkg_version = "2.0.0"
 
   allow_unsafe = true

@@ -37,6 +37,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "font-types"
   cargo_pkg_description = "Scalar types used in fonts."
+  cargo_pkg_repository = "https://github.com/googlefonts/fontations"
   cargo_pkg_version = "0.9.0"
 
   allow_unsafe = true

@@ -30,6 +30,7 @@ cargo_crate("addr2line") {
   cargo_pkg_name = "addr2line"
   cargo_pkg_description =
       "A cross-platform symbolication library written in Rust, using `gimli`"
+  cargo_pkg_repository = "https://github.com/gimli-rs/addr2line"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -91,6 +92,7 @@ cargo_crate("adler2") {
   cargo_pkg_name = "adler2"
   cargo_pkg_description =
       "A simple clean-room implementation of the Adler-32 checksum"
+  cargo_pkg_repository = "https://github.com/oyvindln/adler2"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -212,6 +214,7 @@ cargo_crate("alloc") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "alloc"
   cargo_pkg_description = "The Rust core allocation and collections library"
+  cargo_pkg_repository = "https://github.com/rust-lang/rust.git"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -254,6 +257,7 @@ cargo_crate("cfg_if") {
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "cfg-if"
   cargo_pkg_description = "A macro to ergonomically define an item depending on a large number of #[cfg] parameters. Structured like an if-else chain, the first matching branch is the item that gets emitted."
+  cargo_pkg_repository = "https://github.com/rust-lang/cfg-if"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -493,6 +497,7 @@ cargo_crate("compiler_builtins") {
   cargo_pkg_authors = "Jorge Aparicio <japaricious@gmail.com>"
   cargo_pkg_name = "compiler_builtins"
   cargo_pkg_description = "Compiler intrinsics used by the Rust compiler."
+  cargo_pkg_repository = "https://github.com/rust-lang/compiler-builtins"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1040,6 +1045,7 @@ cargo_crate("core") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "core"
   cargo_pkg_description = "The Rust Core Library"
+  cargo_pkg_repository = "https://github.com/rust-lang/rust.git"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1084,6 +1090,7 @@ cargo_crate("getopts") {
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "getopts"
   cargo_pkg_description = "getopts-like option parsing"
+  cargo_pkg_repository = "https://github.com/rust-lang/getopts"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1183,6 +1190,7 @@ cargo_crate("gimli") {
   cargo_pkg_name = "gimli"
   cargo_pkg_description =
       "A library for reading and writing the DWARF debugging format."
+  cargo_pkg_repository = "https://github.com/gimli-rs/gimli"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1266,6 +1274,7 @@ cargo_crate("hashbrown") {
   cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"
+  cargo_pkg_repository = "https://github.com/rust-lang/hashbrown"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1501,6 +1510,7 @@ cargo_crate("libc") {
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "libc"
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."
+  cargo_pkg_repository = "https://github.com/rust-lang/libc"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1596,6 +1606,7 @@ cargo_crate("memchr") {
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>, bluss"
   cargo_pkg_name = "memchr"
   cargo_pkg_description = "Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) routines for 1, 2 or 3 byte search and single substring search."
+  cargo_pkg_repository = "https://github.com/BurntSushi/memchr"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1662,6 +1673,8 @@ cargo_crate("miniz_oxide") {
   cargo_pkg_authors = "Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>, Rich Geldreich richgel99@gmail.com"
   cargo_pkg_name = "miniz_oxide"
   cargo_pkg_description = "DEFLATE compression and decompression library rewritten in Rust based on miniz"
+  cargo_pkg_repository =
+      "https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1800,6 +1813,7 @@ cargo_crate("object") {
   cargo_pkg_name = "object"
   cargo_pkg_description =
       "A unified interface for reading and writing object file formats."
+  cargo_pkg_repository = "https://github.com/gimli-rs/object"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1869,6 +1883,7 @@ cargo_crate("panic_abort") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "panic_abort"
   cargo_pkg_description = "Implementation of Rust panics via process aborts"
+  cargo_pkg_repository = "https://github.com/rust-lang/rust.git"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -1924,6 +1939,7 @@ cargo_crate("panic_unwind") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "panic_unwind"
   cargo_pkg_description = "Implementation of Rust panics via stack unwinding"
+  cargo_pkg_repository = "https://github.com/rust-lang/rust.git"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -2074,6 +2090,7 @@ cargo_crate("rustc_demangle") {
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "rustc-demangle"
   cargo_pkg_description = "Rust compiler symbol demangling."
+  cargo_pkg_repository = "https://github.com/rust-lang/rustc-demangle"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -2124,6 +2141,7 @@ cargo_crate("rustc_literal_escaper") {
   cargo_pkg_version = "0.0.2"
   cargo_pkg_name = "rustc-literal-escaper"
   cargo_pkg_description = "Provides code to unescape string literals"
+  cargo_pkg_repository = "https://github.com/rust-lang/literal-escaper"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -2952,6 +2970,7 @@ cargo_crate("std") {
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "std"
   cargo_pkg_description = "The Rust Standard Library"
+  cargo_pkg_repository = "https://github.com/rust-lang/rust.git"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -3069,6 +3088,7 @@ cargo_crate("std_detect") {
   cargo_pkg_name = "std_detect"
   cargo_pkg_description =
       "`std::detect` - Rust's standard library run-time CPU feature detection."
+  cargo_pkg_repository = "https://github.com/rust-lang/stdarch"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -3255,6 +3275,7 @@ cargo_crate("unicode_width") {
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
   cargo_pkg_description = "Determine displayed width of `char` and `str` types according to Unicode Standard Annex #11 rules."
+  cargo_pkg_repository = "https://github.com/unicode-rs/unicode-width"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",
@@ -3311,6 +3332,7 @@ cargo_crate("unwind") {
   edition = "2024"
   cargo_pkg_version = "0.0.0"
   cargo_pkg_name = "unwind"
+  cargo_pkg_repository = "https://github.com/rust-lang/rust.git"
   library_configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:disallow_unstable_features",

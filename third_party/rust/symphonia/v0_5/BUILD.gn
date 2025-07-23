@@ -25,6 +25,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "symphonia"
   cargo_pkg_description =
       "Pure Rust media container and audio decoding library."
+  cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
   cargo_pkg_version = "0.5.4"
 
   allow_unsafe = false

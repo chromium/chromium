@@ -60,6 +60,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde_json"
   cargo_pkg_description = "A JSON serialization file format"
+  cargo_pkg_repository = "https://github.com/serde-rs/json"
   cargo_pkg_version = "1.0.140"
 
   allow_unsafe = true

@@ -43,6 +43,7 @@ cargo_crate("lib") {
       "Carl Lerche <me@carllerche.com>, Sean McArthur <sean@seanmonstar.com>"
   cargo_pkg_name = "bytes"
   cargo_pkg_description = "Types and traits for working with bytes"
+  cargo_pkg_repository = "https://github.com/tokio-rs/bytes"
   cargo_pkg_version = "1.10.1"
 
   allow_unsafe = true

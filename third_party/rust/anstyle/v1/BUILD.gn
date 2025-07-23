@@ -28,6 +28,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "anstyle"
   cargo_pkg_description = "ANSI text styling"
+  cargo_pkg_repository = "https://github.com/rust-cli/anstyle.git"
   cargo_pkg_version = "1.0.11"
 
   allow_unsafe = true

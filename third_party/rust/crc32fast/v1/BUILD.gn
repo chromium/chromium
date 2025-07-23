@@ -32,6 +32,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "crc32fast"
   cargo_pkg_description =
       "Fast, SIMD-accelerated CRC32 (IEEE) checksum computation"
+  cargo_pkg_repository = "https://github.com/srijs/rust-crc32fast"
   cargo_pkg_version = "1.5.0"
 
   allow_unsafe = true

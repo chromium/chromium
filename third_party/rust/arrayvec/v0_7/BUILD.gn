@@ -30,6 +30,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "bluss"
   cargo_pkg_name = "arrayvec"
   cargo_pkg_description = "A vector with fixed capacity, backed by an array (it can be stored on the stack too). Implements fixed capacity ArrayVec and ArrayString."
+  cargo_pkg_repository = "https://github.com/bluss/arrayvec"
   cargo_pkg_version = "0.7.6"
 
   allow_unsafe = true
