@@ -921,6 +921,12 @@ targets.binaries.console_test_launcher(
     label = "//device:device_unittests",
 )
 
+targets.binaries.console_test_launcher(
+    name = "device_realtarget_browsertests",
+    label = "//chrome/test:device_realtarget_browsertests",
+    skip_usage_check = True,
+)
+
 targets.binaries.generated_script(
     name = "disk_usage_tast_test",
     label = "//chromeos:disk_usage_tast_test",
