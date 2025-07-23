@@ -148,13 +148,13 @@
 
 #define PACKAGE_NAME "fontconfig"
 
-#define PACKAGE_STRING "fontconfig 2.16.2"
+#define PACKAGE_STRING "fontconfig 2.17.1"
 
 #define PACKAGE_TARNAME "fontconfig"
 
 #define PACKAGE_URL ""
 
-#define PACKAGE_VERSION "2.16.2"
+#define PACKAGE_VERSION "2.17.1"
 
 #define SIZEOF_VOID_P 8
 

@@ -1,5 +1,5 @@
-/* ANSI-C code produced by gperf version 3.1 */
-/* Command-line: /usr/bin/gperf --pic -m 100 --output-file src/fcobjshash.h src/fcobjshash.gperf  */
+/* ANSI-C code produced by gperf version 3.2.1 */
+/* Command-line: gperf --pic -m 100 --output-file src/fcobjshash.h src/fcobjshash.gperf  */
 /* Computed positions: -k'3,5' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -84,6 +84,11 @@ FcObjectTypeHash (register const char *str, register size_t len)
     {
       default:
         hval += asso_values[(unsigned char)str[4]];
+#if (defined __cplusplus && (__cplusplus >= 201703L || (__cplusplus >= 201103L && defined __clang__ && __clang_major__ + (__clang_minor__ >= 9) > 3))) || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 202000L && ((defined __GNUC__ && __GNUC__ >= 10) || (defined __clang__ && __clang_major__ >= 9)))
+      [[fallthrough]];
+#elif (defined __GNUC__ && __GNUC__ >= 7) || (defined __clang__ && __clang_major__ >= 10)
+      __attribute__ ((__fallthrough__));
+#endif
       /*FALLTHROUGH*/
       case 4:
       case 3:
@@ -222,6 +227,10 @@ FcObjectTypeLookup (register const char *str, register size_t len)
       MAX_HASH_VALUE = 62
     };
 
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
   static const struct FcObjectTypeInfo wordlist[] =
     {
       {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
@@ -337,6 +346,9 @@ FcObjectTypeLookup (register const char *str, register size_t len)
 #line 72 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str62,FC_FONT_WRAPPER_OBJECT}
     };
+#if (defined __GNUC__ && __GNUC__ + (__GNUC_MINOR__ >= 6) > 4) || (defined __clang__ && __clang_major__ >= 3)
+#pragma GCC diagnostic pop
+#endif
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
@@ -354,5 +366,5 @@ FcObjectTypeLookup (register const char *str, register size_t len)
             }
         }
     }
-  return 0;
+  return (struct FcObjectTypeInfo *) 0;
 }

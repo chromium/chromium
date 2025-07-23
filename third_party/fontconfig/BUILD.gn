@@ -28,6 +28,8 @@ if (use_bundled_fontconfig) {
     bindgen_flags = [
       "merge-extern-blocks",
       "allowlist-item=(FcPattern.*|FcRange.*|FcCharSet.*|FcLangSetFromCharSet|FC_.*_OBJECT)",
+      "blocklist-type=(FcCharSet|FcLangSet)",
+      "raw-line=pub use fontconfig_bindings::FcCharSet; pub use fontconfig_bindings::FcLangSet;",
     ]
     crate_name = "fcint_bindings"
     deps = [ ":fontconfig_h_bindgen" ]
