@@ -1671,6 +1671,9 @@ bool D3DImageBacking::PresentSwapChain() {
     return false;
   }
 
+  // Flush any deferred Graphite submits before presentation.
+  FlushGraphiteCommandsIfNeeded();
+
   TRACE_EVENT1("gpu", "D3DImageBacking::PresentSwapChain", "has_alpha",
                !SkAlphaTypeIsOpaque(alpha_type()));
   constexpr UINT kFlags = DXGI_PRESENT_ALLOW_TEARING;
