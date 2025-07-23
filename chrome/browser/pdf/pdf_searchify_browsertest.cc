@@ -9,6 +9,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "content/public/test/browser_test.h"
@@ -28,17 +31,20 @@ bool IsScreenReaderEnabled() {
 }  // namespace
 
 // Parameter: Searchify (ScreenAI OCR) availability.
-class PDFSearchifyTest : public PDFExtensionTestBase,
-                         public screen_ai::ScreenAIInstallState::Observer,
-                         public ::testing::WithParamInterface<bool> {
+class PDFSearchifyTest
+    : public InteractiveFeaturePromoTestT<PDFExtensionTestBase>,
+      public screen_ai::ScreenAIInstallState::Observer,
+      public ::testing::WithParamInterface<bool> {
  public:
-  PDFSearchifyTest() = default;
+  PDFSearchifyTest()
+      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHPdfSearchifyFeature})) {}
 
   bool IsSearchifyActive() const { return GetParam(); }
 
-  // PDFExtensionTestBase:
+  // InteractiveFeaturePromoTestT:
   void SetUpOnMainThread() override {
-    PDFExtensionTestBase::SetUpOnMainThread();
+    InteractiveFeaturePromoTestT::SetUpOnMainThread();
 
     if (IsSearchifyActive()) {
       screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
@@ -50,10 +56,24 @@ class PDFSearchifyTest : public PDFExtensionTestBase,
     }
   }
 
+  // InteractiveFeaturePromoTestT:
+  void TearDown() override {
+    // `PDFExtensionTestBase`'s feature list is nested in
+    // `InteractiveFeaturePromoTestT`'s feature list and is initialized after
+    // that. `InteractiveFeaturePromoTestT` resets the feature list in
+    // `TearDown` but `PDFExtensionTestBase` does not do so and keeps it until
+    // destruction.
+    // As nested feature lists are expected to be reset in the reverse order of
+    // their initialization, the feature list of `PDFExtensionTestBase` is reset
+    // here.
+    PDFExtensionTestBase::ResetFeatureList();
+    InteractiveFeaturePromoTestT::TearDown();
+  }
+
   // PDFExtensionTestBase:
   void TearDownOnMainThread() override {
     component_download_observer_.Reset();
-    PDFExtensionTestBase::TearDownOnMainThread();
+    InteractiveFeaturePromoTestT::TearDownOnMainThread();
   }
 
   // ScreenAIInstallState::Observer:
@@ -186,6 +206,23 @@ IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, MAYBE_MultiPage) {
   histograms.ExpectUniqueSample(
       "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
       IsScreenReaderEnabled(), IsSearchifyActive() ? 1 : 0);
+}
+
+IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, InProductHelp) {
+  if (!IsSearchifyActive()) {
+    GTEST_SKIP() << "IPH is only shown when searchify is active.";
+  }
+
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf/accessibility/hello-world-in-image.pdf")));
+
+  auto* const user_education = BrowserUserEducationInterface::From(browser());
+  EXPECT_TRUE(base::test::RunUntil([&user_education]() {
+    return user_education->IsFeaturePromoQueued(
+               feature_engagement::kIPHPdfSearchifyFeature) ||
+           user_education->IsFeaturePromoActive(
+               feature_engagement::kIPHPdfSearchifyFeature);
+  }));
 }
 
 // TODO(crbug.com/382610226): Add combined save test for ink and searchify.

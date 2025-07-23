@@ -156,7 +156,7 @@ void PDFDocumentHelper::SetPluginCanSave(bool can_save) {
 void PDFDocumentHelper::OnSearchifyStarted() {
   if (!searchify_started_) {
     searchify_started_ = true;
-    client_->OnSearchifyStarted(&GetWebContents());
+    client_->OnSearchifyStarted(&render_frame_host());
   }
 }
 #endif

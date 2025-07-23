@@ -205,6 +205,10 @@ WebContents* PDFExtensionTestBase::GetActiveWebContents() {
   return browser()->tab_strip_model()->GetActiveWebContents();
 }
 
+void PDFExtensionTestBase::ResetFeatureList() {
+  feature_list_.Reset();
+}
+
 content::WebContents* PDFExtensionTestBase::GetEmbedderWebContents() {
   content::WebContents* contents = GetActiveWebContents();
 

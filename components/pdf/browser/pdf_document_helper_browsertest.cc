@@ -81,7 +81,8 @@ class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
     end_ = end;
   }
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void OnSearchifyStarted(content::WebContents* contents) override {}
+  void OnSearchifyStarted(
+      content::RenderFrameHost* render_frame_host) override {}
 #endif
 
  private:

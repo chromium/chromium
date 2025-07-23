@@ -96,11 +96,10 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
 }
 
 void ChromePDFDocumentHelperClient::OnSearchifyStarted(
-    content::WebContents* contents) {
-  // TODO(crbug.com/401757925): Add test.
+    content::RenderFrameHost* render_frame_host) {
   // Show the promo only when ScreenAI component is available and OCR can be
   // done.
   if (screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
-    MaybeShowFeaturePromo(contents);
+    MaybeShowFeaturePromo(GetWebContentsToUse(render_frame_host));
   }
 }

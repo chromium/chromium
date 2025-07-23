@@ -38,7 +38,8 @@ class PDFDocumentHelperClient {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Notifies that PDF searchifier started processing pages.
-  virtual void OnSearchifyStarted(content::WebContents* contents) = 0;
+  virtual void OnSearchifyStarted(
+      content::RenderFrameHost* render_frame_host) = 0;
 #endif
 };
 

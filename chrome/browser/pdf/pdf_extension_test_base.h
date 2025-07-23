@@ -92,6 +92,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // `WebContents`.
   content::WebContents* GetEmbedderWebContents();
 
+  // Resets the feature list, can be used when nested feature lists exist.
+  void ResetFeatureList();
+
  protected:
   guest_view::TestGuestViewManager* GetGuestViewManager();
   guest_view::TestGuestViewManager* GetGuestViewManagerForProfile(
