@@ -758,9 +758,10 @@ void TabContainerImpl::SetTabSlotVisibility() {
   bool last_tab_visible = false;
   std::optional<tab_groups::TabGroupId> last_tab_group = std::nullopt;
   std::vector<Tab*> tabs = layout_helper_->GetTabs();
-  for (Tab* tab : base::Reversed(tabs)) {
-    std::optional<tab_groups::TabGroupId> current_group = tab->group();
-    if (current_group != last_tab_group && last_tab_group.has_value()) {
+  for (auto it = tabs.rbegin(); true; ++it) {
+    Tab* tab = it != tabs.rend() ? *it : nullptr;
+    if (last_tab_group.has_value() &&
+        (!tab || tab->group() != last_tab_group)) {
       TabGroupViews* group_view = group_views_.at(last_tab_group.value()).get();
 
       // If we change the visibility of a group header, we must recalculate that
@@ -768,14 +769,20 @@ void TabContainerImpl::SetTabSlotVisibility() {
       if (last_tab_visible != group_view->header()->GetVisible()) {
         visibility_changed_groups.insert(last_tab_group.value());
       }
-
       group_view->header()->SetVisible(last_tab_visible);
+
       // Hide underlines if they would underline an invisible tab, but don't
       // show underlines if they're hidden during a header drag session.
       if (!group_view->header()->dragging()) {
         group_view->underline()->MaybeSetVisible(last_tab_visible);
       }
     }
+
+    if (!tab) {
+      break;
+    }
+
+    std::optional<tab_groups::TabGroupId> current_group = tab->group();
     last_tab_visible = ShouldTabBeVisible(tab);
     last_tab_group = tab->closing() ? std::nullopt : current_group;
 
@@ -793,7 +800,6 @@ void TabContainerImpl::SetTabSlotVisibility() {
     if (should_be_visible != tab->GetVisible() && tab->group().has_value()) {
       visibility_changed_groups.insert(tab->group().value());
     }
-
     tab->SetVisible(should_be_visible);
   }
 

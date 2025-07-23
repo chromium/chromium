@@ -1201,3 +1201,29 @@ TEST_F(TabContainerTest, TabGroupHeaderAccessibleProperties) {
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kTabList);
 }
+
+// Regression test for crbug.com/430509117.
+TEST_F(TabContainerTest, GroupHeader) {
+  auto group = tab_groups::TabGroupId::GenerateNew();
+  AddTab(0, std::nullopt);
+  AddTab(1, group, TabActive::kActive);
+
+  tab_container_->CompleteAnimationAndLayout();
+  TabGroupHeader* const group_header =
+      tab_container_->GetGroupViews(group)->header();
+  EXPECT_TRUE(group_header->GetVisible());
+
+  // Simulate entering tablet mode (ChromeOS).
+  SetTabContainerWidthSingleLayout(0);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_FALSE(group_header->GetVisible());
+
+  RemoveTab(0);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_FALSE(group_header->GetVisible());
+
+  // Simulate exiting tablet mode (ChromeOS).
+  SetTabContainerWidthSingleLayout(1000);
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_TRUE(group_header->GetVisible());
+}
