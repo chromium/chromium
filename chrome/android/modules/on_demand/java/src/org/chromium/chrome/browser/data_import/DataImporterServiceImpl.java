@@ -124,12 +124,37 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                             "Invalid or unsupported item type")));
                     return;
             }
-            // TODO(crbug.com/431218724): Parse the data type (bookmarks, reading list, or history)
-            // out of file_metadata.
+
             // TODO(crbug.com/431218724): Parse the file descriptor out of the request metadata.
 
-            // TODO(crbug.com/430254294): Hook up to the actual import logic (i.e. to
-            // StablePortabilityDataImporter from components/user_data_importer/) via JNI.
+            BrowserFileType fileType;
+            try {
+                BrowserFileMetadata fileMetadata =
+                        BrowserFileMetadata.parseFrom(request.getFileMetadata().getValue());
+                fileType = fileMetadata.getFileType();
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                responseObserver.onError(
+                        new StatusRuntimeException(
+                                Status.INVALID_ARGUMENT.withDescription(
+                                        "Invalid or missing file_metadata")));
+                return;
+            }
+            switch (fileType) {
+                case BROWSER_FILE_TYPE_BOOKMARKS:
+                case BROWSER_FILE_TYPE_READING_LIST:
+                case BROWSER_FILE_TYPE_BROWSING_HISTORY:
+                    // TODO(crbug.com/430254294): Hook up to the actual import logic (i.e. to
+                    // StablePortabilityDataImporter from components/user_data_importer/) via JNI.
+                    break;
+                case UNRECOGNIZED:
+                case BROWSER_FILE_TYPE_UNSPECIFIED:
+                    responseObserver.onError(
+                            new StatusRuntimeException(
+                                    Status.INVALID_ARGUMENT.withDescription(
+                                            "Invalid or unrecognized file type")));
+                    return;
+            }
+
             responseObserver.onNext(ImportItemResponse.newBuilder().build());
             responseObserver.onCompleted();
         }

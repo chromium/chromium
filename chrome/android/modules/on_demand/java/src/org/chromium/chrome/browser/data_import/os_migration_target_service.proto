@@ -62,6 +62,19 @@ message Proto3Any {
   bytes value = 2;
 }
 
+// Metadata for a `SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA` file provided in an
+// `ImportItemRequest`. To be parsed from `file_metadata.value`.
+message BrowserFileMetadata {
+  BrowserFileType file_type = 1;
+}
+
+enum BrowserFileType {
+  BROWSER_FILE_TYPE_UNSPECIFIED = 0;
+  BROWSER_FILE_TYPE_BOOKMARKS = 1;
+  BROWSER_FILE_TYPE_READING_LIST = 2;
+  BROWSER_FILE_TYPE_BROWSING_HISTORY = 3;
+}
+
 // Data returned by the ImportItem method in TargetService.
 message ImportItemResponse {
   enum TransferError {
