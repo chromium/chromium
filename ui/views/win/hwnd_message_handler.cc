@@ -297,6 +297,23 @@ int GetFlagsFromRawInputMessage(RAWINPUT* input) {
   return ui::GetModifiersFromKeyState() | flags;
 }
 
+// Maps HWNDs to their owners.
+using WindowOwnerMap = base::flat_map<HWND, std::vector<HWND>>;
+
+// Callback for GetOwnedWindows(). For each window checks for an owner. If an
+// owner exists, it adds the window to the owner's list in the map.
+BOOL CALLBACK EnumOwnedWindowsProc(HWND hwnd, LPARAM l_param) {
+  HWND owner = ::GetWindow(hwnd, GW_OWNER);
+  if (owner) {
+    // The LPARAM is a direct pointer to our flat_map.
+    WindowOwnerMap* window_owner_map =
+        reinterpret_cast<WindowOwnerMap*>(l_param);
+    // Create an entry if it doesn't exist.
+    (*window_owner_map)[owner].push_back(hwnd);
+  }
+  return TRUE;  // Continue enumeration.
+}
+
 constexpr auto kTouchDownContextResetTimeout = base::Milliseconds(500);
 
 // Windows does not flag synthesized mouse messages from touch or pen in all
@@ -613,6 +630,43 @@ void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
     SetWindowLongPtr(hwnd(), GWLP_HWNDPARENT,
                      reinterpret_cast<LONG_PTR>(new_parent));
   }
+}
+
+std::vector<HWND> HWNDMessageHandler::GetOwnedWindows() {
+  std::vector<HWND> owned_windows;
+
+  // Build a map associating owned HWNDs with their owners.
+  WindowOwnerMap window_owner_map;
+  ::EnumThreadWindows(GetCurrentThreadId(), &EnumOwnedWindowsProc,
+                      reinterpret_cast<LPARAM>(&window_owner_map));
+
+  // If this handler's hwnd() is not in the map it doesn't own any windows.
+  if (window_owner_map.find(hwnd()) == window_owner_map.end()) {
+    return owned_windows;
+  }
+
+  // BFS to find all transitively owned windows.
+  base::queue<HWND> to_process;
+  to_process.push(hwnd());
+
+  while (!to_process.empty()) {
+    HWND current_owner = to_process.front();
+    to_process.pop();
+
+    // Find all windows directly owned by the current HWND.
+    auto it = window_owner_map.find(current_owner);
+    if (it != window_owner_map.end()) {
+      for (HWND owned_child : it->second) {
+        // The window could have been destroyed between EnumWindows and now.
+        if (IsWindow(owned_child)) {
+          owned_windows.push_back(owned_child);
+          // Queue the current child for BFS exploration.
+          to_process.push(owned_child);
+        }
+      }
+    }
+  }
+  return owned_windows;
 }
 
 void HWNDMessageHandler::SetDwmFrameExtension(DwmFrameState state) {

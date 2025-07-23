@@ -133,6 +133,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // owner of the HWND.
   virtual void SetParentOrOwner(HWND new_parent);
 
+  // Gets all descendant owned HWNDs of this handler's HWND.
+  std::vector<HWND> GetOwnedWindows();
+
   // Shows the window. If |show_state| is maximized, |pixel_restore_bounds| is
   // the bounds to restore the window to when going back to normal.
   virtual void Show(ui::mojom::WindowShowState show_state,

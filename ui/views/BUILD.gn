@@ -1427,7 +1427,6 @@ test("views_unittests") {
       "accessibility/test_list_grid_view.cc",
       "accessibility/test_list_grid_view.h",
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",
-      "win/hwnd_message_handler_unittest.cc",
       "win/pen_event_processor_unittest.cc",
       "win/pen_id_handler_unittest.cc",
     ]
@@ -1630,7 +1629,10 @@ source_set("views_interactive_ui_tests") {
   public_deps = [ "//ui/base/mojom:mojom" ]
 
   if (is_win) {
-    sources += [ "accessibility/ax_system_caret_win_interactive_uitest.cc" ]
+    sources += [
+      "accessibility/ax_system_caret_win_interactive_uitest.cc",
+      "win/hwnd_message_handler_interactive_uitest.cc",
+    ]
   }
 
   if (is_mac) {

@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/win/hwnd_message_handler.h"
-
+#include <algorithm>
 #include <memory>
 
-#include "base/test/task_environment.h"
+#include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/mock_input_method.h"
-#include "ui/display/screen.h"
-#include "ui/display/test/test_screen.h"
-#include "ui/views/test/test_views_delegate.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/win/hwnd_message_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 
 namespace views {
@@ -125,24 +123,7 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
 
 }  // namespace
 
-class HWNDMessageHandlerTest : public ::testing::Test {
- public:
-  // testing::Test:
-  void SetUp() override {
-    Test::SetUp();
-    display::Screen::SetScreenInstance(&test_screen_);
-  }
-  void TearDown() override {
-    display::Screen::SetScreenInstance(nullptr);
-    Test::TearDown();
-  }
-
- private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
-  TestViewsDelegate test_views_delegate_;
-  display::test::TestScreen test_screen_;
-};
+using HWNDMessageHandlerTest = test::DesktopWidgetTestInteractive;
 
 TEST_F(HWNDMessageHandlerTest, Init) {
   TestHWNDMessageHandlerDelegate delegate;
@@ -151,6 +132,74 @@ TEST_F(HWNDMessageHandlerTest, Init) {
   ASSERT_TRUE(handler);
   handler->Init(nullptr, gfx::Rect(0, 0, 100, 100));
   ASSERT_TRUE(handler->hwnd());
+}
+
+TEST_F(HWNDMessageHandlerTest, GetOwnedWindows) {
+  TestHWNDMessageHandlerDelegate parent_delegate;
+  std::unique_ptr<HWNDMessageHandler> parent_handler(
+      HWNDMessageHandler::Create(&parent_delegate, "parent"));
+  ASSERT_TRUE(parent_handler);
+  parent_handler->Init(nullptr, gfx::Rect(0, 0, 200, 200));
+  ASSERT_TRUE(parent_handler->hwnd());
+
+  TestHWNDMessageHandlerDelegate child_delegate;
+  std::unique_ptr<HWNDMessageHandler> child_handler(
+      HWNDMessageHandler::Create(&child_delegate, "child"));
+  ASSERT_TRUE(child_handler);
+  child_handler->set_window_style(WS_POPUP);
+  child_handler->Init(parent_handler->hwnd(), gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(child_handler->hwnd());
+
+  std::vector<HWND> owned_windows = parent_handler->GetOwnedWindows();
+  ASSERT_EQ(1u, owned_windows.size());
+  EXPECT_TRUE(base::Contains(owned_windows, child_handler->hwnd()));
+
+  child_handler->CloseNow();
+  parent_handler->CloseNow();
+}
+
+TEST_F(HWNDMessageHandlerTest, GetOwnedWindows_Depth3) {
+  TestHWNDMessageHandlerDelegate grandparent_delegate;
+  std::unique_ptr<HWNDMessageHandler> grandparent_handler(
+      HWNDMessageHandler::Create(&grandparent_delegate, "grandparent"));
+  ASSERT_TRUE(grandparent_handler);
+  grandparent_handler->Init(nullptr, gfx::Rect(0, 0, 300, 300));
+  ASSERT_TRUE(grandparent_handler->hwnd());
+
+  TestHWNDMessageHandlerDelegate parent1_delegate;
+  std::unique_ptr<HWNDMessageHandler> parent1_handler(
+      HWNDMessageHandler::Create(&parent1_delegate, "parent1"));
+  ASSERT_TRUE(parent1_handler);
+  parent1_handler->set_window_style(WS_POPUP);
+  parent1_handler->Init(grandparent_handler->hwnd(), gfx::Rect(0, 0, 200, 200));
+  ASSERT_TRUE(parent1_handler->hwnd());
+
+  TestHWNDMessageHandlerDelegate parent2_delegate;
+  std::unique_ptr<HWNDMessageHandler> parent2_handler(
+      HWNDMessageHandler::Create(&parent2_delegate, "parent2"));
+  ASSERT_TRUE(parent2_handler);
+  parent2_handler->set_window_style(WS_POPUP);
+  parent2_handler->Init(grandparent_handler->hwnd(), gfx::Rect(0, 0, 50, 50));
+  ASSERT_TRUE(parent2_handler->hwnd());
+
+  TestHWNDMessageHandlerDelegate child_delegate;
+  std::unique_ptr<HWNDMessageHandler> child_handler(
+      HWNDMessageHandler::Create(&child_delegate, "child"));
+  ASSERT_TRUE(child_handler);
+  child_handler->set_window_style(WS_POPUP);
+  child_handler->Init(parent1_handler->hwnd(), gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(child_handler->hwnd());
+
+  std::vector<HWND> owned_windows = grandparent_handler->GetOwnedWindows();
+  ASSERT_EQ(3u, owned_windows.size());
+  EXPECT_TRUE(base::Contains(owned_windows, parent1_handler->hwnd()));
+  EXPECT_TRUE(base::Contains(owned_windows, parent2_handler->hwnd()));
+  EXPECT_TRUE(base::Contains(owned_windows, child_handler->hwnd()));
+
+  child_handler->CloseNow();
+  parent2_handler->CloseNow();
+  parent1_handler->CloseNow();
+  grandparent_handler->CloseNow();
 }
 
 }  // namespace views
