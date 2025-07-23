@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/h264_decoder.h"
 
 #include <algorithm>
@@ -569,9 +564,9 @@ static void ShiftRightAndInsert(H264Picture::Vector* v,
 bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
                                          int list,
                                          H264Picture::Vector* ref_pic_listx) {
+  base::span<const H264ModificationOfPicNum> list_mod;
   bool ref_pic_list_modification_flag_lX;
   int num_ref_idx_lX_active_minus1;
-  const H264ModificationOfPicNum* list_mod;
 
   // This can process either ref_pic_list0 or ref_pic_list1, depending on
   // the list argument. Set up pointers to proper list to be processed here.
@@ -579,12 +574,12 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
     ref_pic_list_modification_flag_lX =
         slice_hdr->ref_pic_list_modification_flag_l0;
     num_ref_idx_lX_active_minus1 = slice_hdr->num_ref_idx_l0_active_minus1;
-    list_mod = slice_hdr->ref_list_l0_modifications.data();
+    list_mod = slice_hdr->ref_list_l0_modifications;
   } else {
     ref_pic_list_modification_flag_lX =
         slice_hdr->ref_pic_list_modification_flag_l1;
     num_ref_idx_lX_active_minus1 = slice_hdr->num_ref_idx_l1_active_minus1;
-    list_mod = slice_hdr->ref_list_l1_modifications.data();
+    list_mod = slice_hdr->ref_list_l1_modifications;
   }
 
   // Resize the list to the size requested in the slice header.
@@ -606,16 +601,17 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
   int pic_num_lx;
   bool done = false;
   scoped_refptr<H264Picture> pic;
-  for (int i = 0; i < H264SliceHeader::kRefListModSize && !done; ++i) {
-    switch (list_mod->modification_of_pic_nums_idc) {
+  for (size_t i = 0; i < list_mod.size() && !done; ++i) {
+    const auto& mod = list_mod[i];
+    switch (mod.modification_of_pic_nums_idc) {
       case 0:
       case 1:
         // Modify short reference picture position.
-        if (list_mod->modification_of_pic_nums_idc == 0) {
+        if (mod.modification_of_pic_nums_idc == 0) {
           // Subtract given value from predicted PicNum.
           pic_num_lx_no_wrap =
               pic_num_lx_pred -
-              (static_cast<int>(list_mod->abs_diff_pic_num_minus1) + 1);
+              (static_cast<int>(mod.abs_diff_pic_num_minus1) + 1);
           // Wrap around max_pic_num_ if it becomes < 0 as result
           // of subtraction.
           if (pic_num_lx_no_wrap < 0)
@@ -624,7 +620,7 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
           // Add given value to predicted PicNum.
           pic_num_lx_no_wrap =
               pic_num_lx_pred +
-              (static_cast<int>(list_mod->abs_diff_pic_num_minus1) + 1);
+              (static_cast<int>(mod.abs_diff_pic_num_minus1) + 1);
           // Wrap around max_pic_num_ if it becomes >= max_pic_num_ as result
           // of the addition.
           if (pic_num_lx_no_wrap >= max_pic_num_)
@@ -670,10 +666,9 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
         // Modify long term reference picture position.
         DCHECK_LT(num_ref_idx_lX_active_minus1 + 1,
                   H264SliceHeader::kRefListModSize);
-        pic = dpb_.GetLongRefPicByLongTermPicNum(list_mod->long_term_pic_num);
+        pic = dpb_.GetLongRefPicByLongTermPicNum(mod.long_term_pic_num);
         if (!pic) {
-          DVLOG(1) << "Malformed stream, no pic num "
-                   << list_mod->long_term_pic_num;
+          DVLOG(1) << "Malformed stream, no pic num " << mod.long_term_pic_num;
           return false;
         }
         ShiftRightAndInsert(ref_pic_listx, ref_idx_lx,
@@ -683,8 +678,9 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
         for (int src = ref_idx_lx, dst = ref_idx_lx;
              src <= num_ref_idx_lX_active_minus1 + 1; ++src) {
           if (LongTermPicNumF(*(*ref_pic_listx)[src]) !=
-              static_cast<int>(list_mod->long_term_pic_num))
+              static_cast<int>(mod.long_term_pic_num)) {
             (*ref_pic_listx)[dst++] = (*ref_pic_listx)[src];
+          }
         }
         break;
 
@@ -696,12 +692,9 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
       default:
         // May be recoverable.
         DVLOG(1) << "Invalid modification_of_pic_nums_idc="
-                 << list_mod->modification_of_pic_nums_idc << " in position "
-                 << i;
+                 << mod.modification_of_pic_nums_idc << " in position " << i;
         break;
     }
-
-    ++list_mod;
   }
 
   // Per NOTE 2 in 8.2.4.3.2, the ref_pic_listx size in the above loop is
@@ -1484,8 +1477,7 @@ void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
            << " size: " << size;
   stream_id_ = id;
-  current_stream_ = ptr;
-  current_stream_size_ = size;
+  current_stream_ = decoder_buffer_span;
   current_stream_has_been_changed_ = true;
   prior_cencv1_nalus_.clear();
   prior_cencv1_subsamples_.clear();
@@ -1512,9 +1504,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
   if (current_stream_has_been_changed_) {
     // Calling H264Accelerator::SetStream() here instead of when the stream is
     // originally set in case the accelerator needs to return kTryAgain.
-    H264Accelerator::Status result = accelerator_->SetStream(
-        base::span<const uint8_t>(current_stream_.get(), current_stream_size_),
-        current_decrypt_config_.get());
+    H264Accelerator::Status result =
+        accelerator_->SetStream(current_stream_, current_decrypt_config_.get());
     switch (result) {
       case H264Accelerator::Status::kOk:
       case H264Accelerator::Status::kNotSupported:
@@ -1656,9 +1647,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         }
         accelerator_->ProcessSPS(
             parser_.GetSPS(sps_id),
-            base::span<const uint8_t>(
+            // TODO(crbug.com/40285824): H264NALU should use span instead of ptr
+            // + size.
+            UNSAFE_TODO(base::span<const uint8_t>(
                 curr_nalu_->data.get(),
-                base::checked_cast<size_t>(curr_nalu_->size)));
+                base::checked_cast<size_t>(curr_nalu_->size))));
 
         if (state_ == State::kNeedStreamMetadata)
           state_ = State::kAfterReset;
@@ -1684,9 +1677,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           SET_ERROR_AND_RETURN();
         accelerator_->ProcessPPS(
             parser_.GetPPS(last_parsed_pps_id_),
-            base::span<const uint8_t>(
+            // TODO(crbug.com/40285824): H264NALU should use span instead of ptr
+            // + size.
+            UNSAFE_TODO(base::span<const uint8_t>(
                 curr_nalu_->data.get(),
-                base::checked_cast<size_t>(curr_nalu_->size)));
+                base::checked_cast<size_t>(curr_nalu_->size))));
         break;
       }
 

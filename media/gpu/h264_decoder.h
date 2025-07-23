@@ -352,8 +352,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   H264Parser parser_;
 
   // Most recent call to SetStream().
-  raw_ptr<const uint8_t, DanglingUntriaged> current_stream_ = nullptr;
-  size_t current_stream_size_ = 0;
+  base::raw_span<const uint8_t, DanglingUntriaged> current_stream_;
 
   // Decrypting config for the most recent data passed to SetStream().
   std::unique_ptr<DecryptConfig> current_decrypt_config_;
