@@ -27,6 +27,9 @@ class ChromiumDepGraph {
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
+            androidx_datastore_datastore_preferences_external_protobuf: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/refs/heads/main/LICENSE',
+                    licenseName: 'BSD'),
             androidx_multidex_multidex: new PropertyOverride(
                     url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
             com_google_android_datatransport_transport_api: new PropertyOverride(
