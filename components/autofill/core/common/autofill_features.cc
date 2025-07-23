@@ -467,7 +467,7 @@ BASE_FEATURE(kAutofillPreferSavedFormAsSubmittedForm,
 // TODO(crbug.com/395855125): Remove when launched.
 BASE_FEATURE(kAutofillRelaxAddressImport,
              "AutofillRelaxAddressImport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
