@@ -7155,7 +7155,7 @@
             ]
         }
     ],
-    "CrOSLocalImageSearchIca": [
+    "CrOSLocalImageSearchOcr": [
         {
             "platforms": [
                 "chromeos"
@@ -7164,8 +7164,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "LauncherImageSearch",
-                        "LauncherImageSearchIca"
+                        "LauncherImageSearchOcr"
                     ]
                 }
             ]

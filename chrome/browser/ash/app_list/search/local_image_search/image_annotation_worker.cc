@@ -324,7 +324,9 @@ void ImageAnnotationWorker::OnDlcInstalled() {
                        weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(std::pow(kRetryDelay, num_retries_passed_)));
     num_retries_passed_ += 1;
-    image_content_annotator_->set_num_retries_passed(num_retries_passed_);
+    if (use_ica_) {
+      image_content_annotator_->set_num_retries_passed(num_retries_passed_);
+    }
     return;
   }
 
