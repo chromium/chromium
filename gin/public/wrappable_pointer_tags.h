@@ -44,6 +44,7 @@ enum WrappablePointerTag : uint16_t {
   kMojo,                             // ax::Mojo
   kMojoHandle,                       // ax::MojoHandle
   kNetErrorPageController,           // NetErrorPageController
+  kNewTabPageBindings,               // NewTabPageBindings
   kPDFPluginPlaceholder,             // PDFPluginPlaceholder
   kPluginPlaceholder,                // plugins::PluginPlaceholder
   kReadAnythingAppController,        // ReadAnythingAppController
