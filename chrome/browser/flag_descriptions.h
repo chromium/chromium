@@ -844,6 +844,9 @@ extern const char kDesktopPWAsBorderlessDescription[];
 extern const char kDevicePostureName[];
 extern const char kDevicePostureDescription[];
 
+extern const char kDocumentPatchingName[];
+extern const char kDocumentPatchingDescription[];
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
 extern const char kDocumentPictureInPictureAnimateResizeName[];

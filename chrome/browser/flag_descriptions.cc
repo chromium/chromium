@@ -8003,6 +8003,12 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
+const char kDocumentPatchingName[] = "Document patching";
+const char kDocumentPatchingDescription[] =
+    "Allow out-of-order streaming of HTML content using <template patchfor> "
+    "and node.patchSelf(). "
+    "See https://github.com/WICG/declarative-partial-updates";
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 const char kEnableOopPrintDriversName[] =
     "Enables Out-of-Process Printer Drivers";
