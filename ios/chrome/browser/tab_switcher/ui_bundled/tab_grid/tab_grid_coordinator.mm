@@ -402,6 +402,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [_tabGroupsPanelCoordinator stopChildCoordinators];
   }
 
+  [self cancelCollaborationFlows];
+
   [self dismissPopovers];
 
   [self.inactiveTabsCoordinator hide];
@@ -958,6 +960,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
   } else {
     [self exitTabGrid];
+  }
+}
+
+// Cancels all the currently active collaboration flows.
+- (void)cancelCollaborationFlows {
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          self.regularBrowser->GetProfile());
+  if (collaborationService) {
+    collaborationService->CancelAllFlows();
   }
 }
 
