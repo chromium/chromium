@@ -4,6 +4,8 @@
 
 #include "net/device_bound_sessions/host_patterns.h"
 
+#include "url/url_util.h"
+
 namespace net::device_bound_sessions {
 
 bool IsValidHostPattern(std::string_view host_pattern) {
@@ -26,7 +28,7 @@ bool MatchesHostPattern(std::string_view host_pattern, std::string_view host) {
   }
 
   if (host_pattern.starts_with("*.") &&
-      host.ends_with(host_pattern.substr(1))) {
+      host.ends_with(host_pattern.substr(1)) && !url::HostIsIPAddress(host)) {
     return true;
   }
 

@@ -446,8 +446,8 @@ TEST_F(SessionInclusionRulesTest, UrlRuleParsingIPv4Address) {
   CheckAddUrlRuleTestCases(
       {// Exact host is allowed.
        {RuleType::kExclude, "4.31.198.44", "/", true},
-       // Wildcards are permitted only if they can match the origin.
-       {RuleType::kExclude, "*.31.198.44", "/", true},
+       // Wildcards are not permitted for IPv4 addresses.
+       {RuleType::kExclude, "*.31.198.44", "/", false},
        {RuleType::kExclude, "*.4.31.198.44", "/", false},
        // Other hosts with no registrable domain are not allowed.
        {RuleType::kExclude, "[1:abcd::3:4:ff]", "/", false},
