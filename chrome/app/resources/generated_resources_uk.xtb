@@ -5054,7 +5054,7 @@
 <translation id="450867954911715010">Налаштування функцій доступності</translation>
 <translation id="4508765956121923607">Переглянути д&amp;жерело</translation>
 <translation id="4509277363725254222">Якщо ви поділитеся <ph name="BEGIN_BOLD_USERNAME" />іменем користувача<ph name="END_BOLD_USERNAME" /> й <ph name="BEGIN_BOLD_PASSWORD" />паролем<ph name="END_BOLD_PASSWORD" />, учасник вашої сімейної групи зможе заповнювати їх за допомогою Google Менеджера паролів</translation>
-<translation id="4509421746503122514">Перезапустити, щоб оновити дані</translation>
+<translation id="4509421746503122514">Перезапустити, щоб оновити</translation>
 <translation id="4509741852167209430">Сайти обмінюються лише певними типами даних, які дають змогу оцінити ефективність їх оголошень. Наприклад, це може бути інформація про те, чи здійснили ви покупку після відвідування сайту.</translation>
 <translation id="4510195992002502722">Не вдалося надіслати відгук. Повторна спроба…</translation>
 <translation id="4510479820467554003">Список батьківських облікових записів</translation>
@@ -5449,7 +5449,7 @@
 <translation id="4792711294155034829">&amp;Повідомити про проблему...</translation>
 <translation id="4794810983896241342">Оновленнями керує <ph name="BEGIN_LINK" />адміністратор<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Перемістити файли (<ph name="NUM_OF_FILES" />) у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити їх?</translation>
-<translation id="479536056609751218">Веб-сторінка, тільки HTML</translation>
+<translation id="479536056609751218">Вебсторінка, тільки HTML</translation>
 <translation id="4795670271446126525">Бурхливі хвилі</translation>
 <translation id="4797314204379834752">Спробуйте групи вкладок, щоб упорядковувати завдання, здійснювати покупки в Інтернеті тощо</translation>
 <translation id="479863874072008121">Керувати пристроями</translation>
