@@ -93,3 +93,12 @@ PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
 BASE_FEATURE(kExplainGeminiEditMenu,
              "ExplainGeminiEditMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBWGPreciseLocation,
+             "BWGPreciseLocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBWGPreciseLocationEnabled() {
+  CHECK(IsPageActionMenuEnabled());
+  return base::FeatureList::IsEnabled(kBWGPreciseLocation);
+}

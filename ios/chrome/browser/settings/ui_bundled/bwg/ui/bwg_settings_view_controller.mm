@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
@@ -87,11 +88,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 - (void)loadModel {
   [super loadModel];
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierLocation];
-  [model addSectionWithIdentifier:SectionIdentifierPageContent];
-  [model addSectionWithIdentifier:SectionIdentifierActivity];
-
   _preciseLocationItem =
       [self detailItemWithType:ItemTypeLocation
                              text:l10n_util::GetNSString(
@@ -124,16 +120,22 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                                   IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_FOOTER_TEXT)
                        linkURL:GURL()];
 
-  [model addItem:_preciseLocationItem
-      toSectionWithIdentifier:SectionIdentifierLocation];
-  [model setFooter:locationFooterItem
-      forSectionWithIdentifier:SectionIdentifierLocation];
+  TableViewModel* model = self.tableViewModel;
+  if (IsBWGPreciseLocationEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierLocation];
+    [model addItem:_preciseLocationItem
+        toSectionWithIdentifier:SectionIdentifierLocation];
+    [model setFooter:locationFooterItem
+        forSectionWithIdentifier:SectionIdentifierLocation];
+  }
 
+  [model addSectionWithIdentifier:SectionIdentifierPageContent];
   [model addItem:_pageContentSharingItem
       toSectionWithIdentifier:SectionIdentifierPageContent];
   [model setFooter:pageContentSharingFooterItem
       forSectionWithIdentifier:SectionIdentifierPageContent];
 
+  [model addSectionWithIdentifier:SectionIdentifierActivity];
   [model addItem:[self BWGAppActivityItem]
       toSectionWithIdentifier:SectionIdentifierActivity];
   [model setFooter:BWGAppActivityFooterItem

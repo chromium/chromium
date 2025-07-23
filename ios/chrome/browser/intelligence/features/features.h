@@ -66,4 +66,10 @@ PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition();
 // Feature flag to enable Explain Gemini in Edit Menu.
 BASE_DECLARE_FEATURE(kExplainGeminiEditMenu);
 
+// Feature flag to enable Precise Location in BWG Settings Menu.
+BASE_DECLARE_FEATURE(kBWGPreciseLocation);
+
+// Returns true if the precise location setting is enabled.
+bool IsBWGPreciseLocationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
