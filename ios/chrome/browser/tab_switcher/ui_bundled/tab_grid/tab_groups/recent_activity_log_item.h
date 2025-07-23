@@ -22,10 +22,6 @@ enum class RecentActivityAction;
 // `activityMetadata`.
 @interface RecentActivityLogItem : NSObject
 
-// When true, all other values should be ignored. This represents an absence of
-// item.
-@property(nonatomic, assign) BOOL emptyItem;
-
 // Attributes for the favicon.
 @property(nonatomic, strong) FaviconAttributes* attributes;
 
