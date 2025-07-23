@@ -11,6 +11,8 @@
 #include <utility>
 
 #include "base/containers/heap_array.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1012,6 +1014,25 @@ void BackendImpl::ReportError(int error) {
   // We transmit positive numbers, instead of direct error codes.
   DCHECK_LE(error, 0);
   if (GetCacheType() == net::DISK_CACHE) {
+    // TODO(crbug.com/433551601): Remove this once sufficient crash reports have
+    // been gathered, and definitely before stable.
+    if (error == ERR_INIT_FAILED) {
+      static bool has_considered_dumping = false;
+      // We want to DumpWithoutCrashing() only for 0.2% of processes, and only
+      // once per process, to avoid overwhelming the crash service. There are
+      // roughly 8000 ERR_INIT_FAILED logged to UMA per day in Dev and Canary,
+      // so this should yield around 0.002 * 8000 = 16 crash reports per day.
+      if (!has_considered_dumping) {
+        has_considered_dumping = true;
+        if (base::ShouldRecordSubsampledMetric(0.002)) {
+          // Capture the last file error. This may or may not be related to the
+          // reason why init failed.
+          base::File::Error file_error = base::File::GetLastFileError();
+          SCOPED_CRASH_KEY_NUMBER("DiskCache", "file_error", file_error);
+          base::debug::DumpWithoutCrashing();
+        }
+      }
+    }
     base::UmaHistogramExactLinear("DiskCache.0.Error", error * -1, 50);
   }
 }
