@@ -16,6 +16,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1486,11 +1487,15 @@ using CanonFunc8Bit = bool (*)(std::optional<std::string_view>,
 using CanonFunc16Bit = bool (*)(std::optional<std::u16string_view>,
                                 CanonOutput*,
                                 Component*);
-void DoPathTest(const DualComponentCase* path_cases,
-                size_t num_cases,
+void DoPathTest(base::span<const DualComponentCase> path_cases,
+                size_t spanification_suspected_redundant_num_cases,
                 CanonFunc8Bit canon_func_8,
                 CanonFunc16Bit canon_func_16) {
-  for (size_t i = 0; i < num_cases; i++) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_num_cases == path_cases.size(),
+        base::NotFatalUntil::M143);
+  for (size_t i = 0; i < spanification_suspected_redundant_num_cases; i++) {
     testing::Message scope_message;
     scope_message << path_cases[i].input8 << "," << path_cases[i].input16;
     SCOPED_TRACE(scope_message);
