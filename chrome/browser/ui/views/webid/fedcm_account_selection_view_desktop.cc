@@ -81,7 +81,7 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
 }
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
-  Close(/*notify_delegate=*/false);
+  Close(/*notify_delegate=*/false, /*hide_widget=*/false);
 }
 
 void FedCmAccountSelectionView::ShowDialogWidget() {
@@ -192,7 +192,7 @@ bool FedCmAccountSelectionView::Show(
   // and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    Close(/*notify_delegate=*/false);
+    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
   bool create_view = !account_selection_view_;
@@ -342,7 +342,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   // title and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    Close(/*notify_delegate=*/false);
+    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
   bool create_view = !account_selection_view_;
@@ -380,7 +380,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
   // and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    Close(/*notify_delegate=*/false);
+    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
   bool create_view = !account_selection_view_;
@@ -509,7 +509,7 @@ std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
 
 void FedCmAccountSelectionView::PrimaryPageChanged(content::Page& page) {
   // Close the dialog when the user navigates within the same tab.
-  Close(/*notify_delegate=*/true);
+  Close(/*notify_delegate=*/true, /*hide_widget=*/false);
 }
 
 void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
@@ -839,7 +839,7 @@ void FedCmAccountSelectionView::WillDiscardContents(
   // tab and subscription to avoid doing unnecessary work.
   tab_ = nullptr;
   tab_subscriptions_.clear();
-  Close(/*notify_delegate=*/true);
+  Close(/*notify_delegate=*/true, /*hide_widget=*/false);
 }
 
 void FedCmAccountSelectionView::ModalUIChanged(tabs::TabInterface* tab) {
@@ -861,7 +861,7 @@ void FedCmAccountSelectionView::WillDetach(
   }
   // If the tab is going to be detached from the window then we must clear all
   // window-scoped UI.
-  Close(/*notify_delegate=*/true);
+  Close(/*notify_delegate=*/true, /*hide_widget=*/false);
 }
 
 FedCmModalDialogView* FedCmAccountSelectionView::GetPopupWindowForTesting() {
@@ -876,7 +876,7 @@ void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
     UpdateDialogVisibilityAndPosition();
     return;
   }
-  Close(/*notify_delegate=*/true);
+  Close(/*notify_delegate=*/true, /*hide_widget=*/false);
 }
 
 bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
@@ -929,14 +929,15 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
   }
 }
 
-void FedCmAccountSelectionView::Close(bool notify_delegate) {
+void FedCmAccountSelectionView::Close(bool notify_delegate, bool hide_widget) {
   if (!GetDialogWidget()) {
     CHECK(!account_selection_view_);
     return;
   }
 
   // The widget is synchronously destroyed.
-  CloseWidget(notify_delegate, views::Widget::ClosedReason::kUnspecified);
+  CloseWidget(notify_delegate, views::Widget::ClosedReason::kUnspecified,
+              hide_widget);
 }
 
 views::Widget* FedCmAccountSelectionView::GetDialogWidget() {
@@ -1145,9 +1146,9 @@ void FedCmAccountSelectionView::LogDialogDismissal(
   }
 }
 
-void FedCmAccountSelectionView::CloseWidget(
-    bool notify_delegate,
-    views::Widget::ClosedReason reason) {
+void FedCmAccountSelectionView::CloseWidget(bool notify_delegate,
+                                            views::Widget::ClosedReason reason,
+                                            bool hide_widget) {
   DismissReason dismiss_reason =
       reason == views::Widget::ClosedReason::kCloseButtonClicked
           ? DismissReason::kCloseButton
@@ -1176,7 +1177,7 @@ void FedCmAccountSelectionView::OnUserClosedDialog(
   // dialog is just informative.
   bool notify_delegate =
       state_ != State::AUTO_REAUTHN && state_ != State::VERIFYING;
-  CloseWidget(notify_delegate, reason);
+  CloseWidget(notify_delegate, reason, false);
 }
 
 void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {

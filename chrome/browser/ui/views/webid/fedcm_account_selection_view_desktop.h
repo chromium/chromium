@@ -120,8 +120,12 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // this method from being called.
   void OnPopupWindowDestroyed() override;
 
-  // Programmatically closes the widget. This is never from user action.
-  void Close(bool notify_delegate);
+  // Close always destroys the widget. If `hide_widget` is true, the contents
+  // view is extracted from the widget and parked (see comment for
+  // parked_dialog_view_). This view is possibly used later if the dialog is
+  // recreated and shown with the same content. This is never called from a user
+  // action.
+  void Close(bool notify_delegate, bool hide_widget);
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
@@ -397,7 +401,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Synchronously closes dialog_widget_. This method can result in synchronous
   // destruction of `this`.
-  void CloseWidget(bool notify_delegate, views::Widget::ClosedReason reason);
+  void CloseWidget(bool notify_delegate,
+                   views::Widget::ClosedReason reason,
+                   bool hide_widget);
 
   // Called when the user closes the dialog. This is called by
   // OnCloseButtonClicked() if the user clicks the close button, and directly
