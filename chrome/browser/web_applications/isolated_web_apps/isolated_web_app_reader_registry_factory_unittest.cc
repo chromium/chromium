@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
-
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry_factory.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,8 +19,7 @@ class IsolatedWebAppReaderRegistryFactoryTest
 };
 
 TEST_P(IsolatedWebAppReaderRegistryFactoryTest, GuardedBehindFeatureFlag) {
-  auto* registry =
-      IsolatedWebAppReaderRegistryFactory::GetForProfile(profile());
+  auto* registry = IsolatedWebAppReaderRegistryFactory::Get(profile());
   if (IsParamFeatureEnabled()) {
     ASSERT_TRUE(registry);
   } else {

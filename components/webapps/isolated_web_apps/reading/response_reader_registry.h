@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_H_
 
 #include <memory>
 
@@ -23,8 +23,6 @@
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 
-class Profile;
-
 namespace web_package {
 class SignedWebBundleId;
 }  // namespace web_package
@@ -43,7 +41,7 @@ class IsolatedWebAppReaderRegistry
       public IwaKeyDistributionInfoProvider::Observer {
  public:
   IsolatedWebAppReaderRegistry(
-      Profile& profile,
+      content::BrowserContext* browser_context,
       std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory);
   ~IsolatedWebAppReaderRegistry() override;
 
@@ -157,7 +155,7 @@ class IsolatedWebAppReaderRegistry
   // if their corresponding `CacheEntry` is cleaned up and later re-created.
   base::flat_set<base::FilePath> verified_files_;
 
-  const raw_ref<Profile> profile_;
+  const raw_ref<content::BrowserContext> browser_context_;
 
   std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory_;
 
@@ -169,4 +167,4 @@ class IsolatedWebAppReaderRegistry
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_H_

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
-
 #include <memory>
 #include <optional>
 
@@ -39,6 +37,7 @@
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "content/public/common/content_features.h"
@@ -124,7 +123,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-        *profile_,
+        profile_.get(),
         std::make_unique<IsolatedWebAppResponseReaderFactory>(profile_.get()));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());

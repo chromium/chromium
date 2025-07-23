@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
 
 #include <algorithm>
 #include <memory>
@@ -20,12 +20,9 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
@@ -241,9 +238,9 @@ class IsolatedWebAppReaderRegistry::Cache {
 };
 
 IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
-    Profile& profile,
+    content::BrowserContext* browser_context,
     std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory)
-    : profile_(profile),
+    : browser_context_(*browser_context),
       reader_factory_(std::move(reader_factory)),
       cache_(std::make_unique<Cache>()) {
   key_distribution_info_observation_.Observe(
@@ -354,24 +351,12 @@ void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
         entry);
   }
 
-  if (affected_ready_readers.empty()) {
-    return;
-  }
-
-  WebAppUiManager& ui_manager =
-      WebAppProvider::GetForWebApps(&profile_.get())->ui_manager();
   for (const auto& [path, web_bundle_id] : affected_ready_readers) {
-    auto app_id =
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
-            .app_id();
-    if (ui_manager.GetNumWindowsForApp(app_id) == 0) {
-      ClearCacheForPath(path, base::DoNothing());
-      return;
-    }
-    ui_manager.NotifyOnAllAppWindowsClosed(
-        app_id, base::BindOnce(&IsolatedWebAppReaderRegistry::ClearCacheForPath,
-                               weak_ptr_factory_.GetWeakPtr(), path,
-                               base::DoNothing()));
+    IwaClient::GetInstance()->RunWhenAppCloses(
+        &browser_context_.get(), web_bundle_id,
+        base::BindOnce(&IsolatedWebAppReaderRegistry::ClearCacheForPath,
+                       weak_ptr_factory_.GetWeakPtr(), path,
+                       base::DoNothing()));
   }
 }
 

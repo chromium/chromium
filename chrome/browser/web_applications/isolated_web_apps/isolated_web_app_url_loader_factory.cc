@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
@@ -37,8 +36,11 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry_factory.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -587,12 +589,13 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  auto* provider = WebAppProvider::GetForWebApps(profile_);
-  if (!provider) {
-    LogErrorAndFail("Web Apps are not available for this profile.",
+  if (!content::AreIsolatedWebAppsEnabled(profile_)) {
+    LogErrorAndFail("Isolated Web Apps are not available for this profile.",
                     std::move(loader_client));
     return;
   }
+
+  auto* provider = WebAppProvider::GetForWebApps(profile_);
   if (!provider->on_registry_ready().is_signaled()) {
     provider->on_registry_ready().Post(
         FROM_HERE,
@@ -741,13 +744,7 @@ void IsolatedWebAppURLLoaderFactory::HandleSignedBundle(
     const network::ResourceRequest& resource_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client) {
   auto* isolated_web_app_reader_registry =
-      IsolatedWebAppReaderRegistryFactory::GetForProfile(profile_);
-  if (!isolated_web_app_reader_registry) {
-    LogErrorAndFail("Support for Isolated Web Apps is not enabled.",
-                    std::move(loader_client));
-    return;
-  }
-
+      IsolatedWebAppReaderRegistryFactory::Get(profile_);
   auto loader = std::make_unique<IsolatedWebAppURLLoader>(
       isolated_web_app_reader_registry, path, dev_mode, web_bundle_id,
       std::move(loader_client), resource_request, frame_tree_node_id_);

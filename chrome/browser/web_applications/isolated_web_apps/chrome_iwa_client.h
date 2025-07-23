@@ -28,6 +28,10 @@ class ChromeIwaClient : public IwaClient {
   GURL CreateBaseURLForWebBundleId(
       const web_package::SignedWebBundleId& web_bundle_id) override;
 
+  void RunWhenAppCloses(content::BrowserContext* browser_context,
+                        const web_package::SignedWebBundleId& web_bundle_id,
+                        base::OnceClosure callback) override;
+
  private:
   ChromeIwaClient() = default;
   ~ChromeIwaClient() override = default;

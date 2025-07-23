@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_FACTORY_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_FACTORY_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_FACTORY_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-namespace content {
-class BrowserContext;
-}
-
-class Profile;
-
 namespace web_app {
+
+class IsolatedWebAppReaderRegistry;
 
 // Singleton that owns all `IsolatedWebAppReaderRegistry`s and associates them
 // with a `Profile`.
@@ -35,7 +30,7 @@ class IsolatedWebAppReaderRegistryFactory
 
   static IsolatedWebAppReaderRegistryFactory* GetInstance();
 
-  static IsolatedWebAppReaderRegistry* GetForProfile(Profile* profile);
+  static IsolatedWebAppReaderRegistry* Get(content::BrowserContext*);
 
  private:
   friend base::NoDestructor<IsolatedWebAppReaderRegistryFactory>;
@@ -52,4 +47,4 @@ class IsolatedWebAppReaderRegistryFactory
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_FACTORY_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_REGISTRY_FACTORY_H_

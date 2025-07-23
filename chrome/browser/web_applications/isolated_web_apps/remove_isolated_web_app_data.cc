@@ -14,16 +14,17 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry_factory.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
 
@@ -56,17 +57,16 @@ class RemovalObserver : public content::BrowsingDataRemover::Observer {
 void CloseBundle(Profile* profile,
                  const IwaSource& source,
                  base::OnceClosure callback) {
+  if (!content::AreIsolatedWebAppsEnabled(profile)) {
+    // A previously installed IWA can be uninstalled even if the IWA feature
+    // flag is off; in this case the reader registry will not exist.
+    return;
+  }
   std::visit(
       absl::Overload{
           [&](const IwaSourceBundle& bundle) {
-            auto* reader_registry =
-                IsolatedWebAppReaderRegistryFactory::GetForProfile(profile);
-            if (!reader_registry) {
-              std::move(callback).Run();
-              return;
-            }
-            reader_registry->ClearCacheForPath(bundle.path(),
-                                               std::move(callback));
+            IsolatedWebAppReaderRegistryFactory::Get(profile)
+                ->ClearCacheForPath(bundle.path(), std::move(callback));
           },
           [&](const IwaSourceProxy& proxy) { std::move(callback).Run(); },
       },

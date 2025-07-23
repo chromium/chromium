@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry_factory.h"
 
 #include <memory>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
+#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 
 namespace web_app {
 
 // static
-IsolatedWebAppReaderRegistry*
-IsolatedWebAppReaderRegistryFactory::GetForProfile(Profile* profile) {
+IsolatedWebAppReaderRegistry* IsolatedWebAppReaderRegistryFactory::Get(
+    content::BrowserContext* context) {
   return static_cast<IsolatedWebAppReaderRegistry*>(
       IsolatedWebAppReaderRegistryFactory::GetInstance()
-          ->GetServiceForBrowserContext(profile, /*create=*/true));
+          ->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
 // static
@@ -44,22 +44,21 @@ IsolatedWebAppReaderRegistryFactory::~IsolatedWebAppReaderRegistryFactory() =
 std::unique_ptr<KeyedService>
 IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
-
+  CHECK(content::AreIsolatedWebAppsEnabled(context));
   auto reader_factory =
       std::make_unique<IsolatedWebAppResponseReaderFactory>(context);
   return std::make_unique<IsolatedWebAppReaderRegistry>(
-      profile, std::move(reader_factory));
+      context, std::move(reader_factory));
 }
 
 content::BrowserContext*
 IsolatedWebAppReaderRegistryFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  if (!content::AreIsolatedWebAppsEnabled(context)) {
-    return nullptr;
+  if (content::AreIsolatedWebAppsEnabled(context)) {
+    // TODO(crbug.com/433468113): Do we need to support OTR profiles?
+    return context;
   }
-
-  return GetBrowserContextForWebApps(context);
+  return nullptr;
 }
 
 }  // namespace web_app
