@@ -13,7 +13,7 @@
 namespace media {
 
 // alias the name for readability
-using MediaPlayerLoggingID = int32_t;
+using MediaPlayerLoggingID = int64_t;
 
 MEDIA_EXPORT MediaPlayerLoggingID GetNextMediaPlayerLoggingID();
 

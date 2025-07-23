@@ -32,6 +32,7 @@
 #include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_observer.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/media_tracks.h"
 #include "media/base/overlay_info.h"
 #include "media/base/picture_in_picture_events_info.h"
@@ -568,11 +569,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void ReportMemoryUsage();
   void FinishMemoryUsageReport(int64_t demuxer_memory_usage);
 
-  void OnMainThreadMemoryDump(int32_t id,
+  void OnMainThreadMemoryDump(media::MediaPlayerLoggingID id,
                               const base::trace_event::MemoryDumpArgs& args,
                               base::trace_event::ProcessMemoryDump* pmd);
   static void OnMediaThreadMemoryDump(
-      int32_t id,
+      media::MediaPlayerLoggingID id,
       media::Demuxer* demuxer,
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* pmd);

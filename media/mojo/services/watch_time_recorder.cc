@@ -68,7 +68,7 @@ WatchTimeRecorder::WatchTimeRecorder(
     mojom::PlaybackPropertiesPtr properties,
     ukm::SourceId source_id,
     bool is_top_frame,
-    uint64_t player_id)
+    MediaPlayerLoggingID player_id)
     : auto_pip_reason_cb_(std::move(auto_pip_reason_cb)),
       properties_(std::move(properties)),
       source_id_(source_id),

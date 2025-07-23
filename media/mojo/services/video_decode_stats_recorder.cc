@@ -16,7 +16,7 @@ VideoDecodeStatsRecorder::VideoDecodeStatsRecorder(
     ukm::SourceId source_id,
     learning::FeatureValue origin,
     bool is_top_frame,
-    uint64_t player_id)
+    MediaPlayerLoggingID player_id)
     : save_cb_(std::move(save_cb)),
       source_id_(source_id),
       origin_(origin),

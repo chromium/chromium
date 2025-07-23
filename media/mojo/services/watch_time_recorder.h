@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_codecs.h"
@@ -30,7 +31,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
       mojom::PlaybackPropertiesPtr properties,
       ukm::SourceId source_id,
       bool is_top_frame,
-      uint64_t player_id);
+      MediaPlayerLoggingID player_id);
 
   WatchTimeRecorder(const WatchTimeRecorder&) = delete;
   WatchTimeRecorder& operator=(const WatchTimeRecorder&) = delete;
@@ -88,7 +89,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   // The provider ID which constructed this recorder. Used to record a UKM entry
   // at destruction that can be correlated with the final status for the
   // associated WebMediaPlayerImpl instance.
-  const uint64_t player_id_;
+  const MediaPlayerLoggingID player_id_;
 
   // Mapping of WatchTime metric keys to MeanTimeBetweenRebuffers (MTBR), smooth
   // rate (had zero rebuffers), and discard (<7s watch time) keys.
