@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/chrome_features.h"
@@ -85,9 +85,10 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
   }
 
   // Look for a profile to based on most recently used browser windows
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (GlicEnabling::IsEnabledAndConsentForProfile(browser->profile())) {
-      return browser->profile();
+  for (BrowserWindowInterface* browser :
+       GetBrowserWindowInterfacesOrderedByActivation()) {
+    if (GlicEnabling::IsEnabledAndConsentForProfile(browser->GetProfile())) {
+      return browser->GetProfile();
     }
   }
 
