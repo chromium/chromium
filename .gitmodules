@@ -852,8 +852,8 @@
 	path = signing_keys
 	url = https://chrome-internal.googlesource.com/clank/apptestkey
 	gclient-condition = checkout_android and checkout_google_internal and checkout_src_internal
-[submodule "skia/tools/clusterfuzz-data"]
-	path = skia/tools/clusterfuzz-data
+[submodule "clusterfuzz-data"]
+	path = clusterfuzz-data
 	url = https://chrome-internal.googlesource.com/chrome/tools/clusterfuzz-data
 	gclient-condition = checkout_clusterfuzz_data and checkout_src_internal
 [submodule "third_party/android_tools_internal"]

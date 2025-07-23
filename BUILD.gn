@@ -841,6 +841,10 @@ group("gn_all") {
   if (checkout_src_internal) {
     deps += [ "//internal:all" ]
   }
+
+  if (checkout_clusterfuzz_data) {
+    deps += [ "//clusterfuzz-data:all" ]
+  }
 }
 
 # All Rust targets. This is provided for convenience while developing Rust to
