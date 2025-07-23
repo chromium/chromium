@@ -532,6 +532,9 @@ void OnListFamilyMembersResponse(
 @property(nonatomic, strong)
     YoutubeIncognitoCoordinator* youtubeIncognitoCoordinator;
 
+// The profile of the current scene.
+@property(nonatomic, readonly) ProfileIOS* profile;
+
 @end
 
 @implementation SceneController
@@ -588,6 +591,10 @@ void OnListFamilyMembersResponse(
 // TODO(crbug.com/429347474): Get rid of BrowserProviderInterface
 - (WrangledBrowser*)mainInterface {
   return self.browserViewWrangler.mainInterface;
+}
+
+- (ProfileIOS*)profile {
+  return self.sceneState.profileState.profile;
 }
 
 - (WrangledBrowser*)currentInterface {
@@ -991,8 +998,7 @@ void OnListFamilyMembersResponse(
     NSString* newGaiaID = base::SysUTF8ToNSString(newGaia);
 
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(
-            self.sceneState.profileState.profile);
+        AuthenticationServiceFactory::GetForProfile(self.profile);
     id<SystemIdentity> identityOnDevice =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     gaiaInApp = identityOnDevice.gaiaID;
@@ -1193,10 +1199,10 @@ void OnListFamilyMembersResponse(
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
   DCHECK(_sceneURLLoadingService.get());
-  DCHECK(self.sceneState.profileState.profile);
+  DCHECK(self.profile);
 
   SceneState* sceneState = self.sceneState;
-  ProfileIOS* profile = sceneState.profileState.profile;
+  ProfileIOS* profile = self.profile;
 
   self.browserViewWrangler =
       [[BrowserViewWrangler alloc] initWithProfile:profile
@@ -1515,7 +1521,7 @@ void OnListFamilyMembersResponse(
   Browser* browser = self.currentInterface.browser;
   DCHECK(browser);
 
-  if (browser->GetProfile()->IsOffTheRecord()) {
+  if (self.profile->IsOffTheRecord()) {
     return nil;
   }
   web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
@@ -1630,10 +1636,8 @@ void OnListFamilyMembersResponse(
   if (![self isTabAvailableToPresentViewController]) {
     return NO;
   }
-  if (!signin::ShouldPresentUserSigninUpgrade(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile(),
-          version_info::GetVersion())) {
+  if (!signin::ShouldPresentUserSigninUpgrade(self.profile,
+                                              version_info::GetVersion())) {
     return NO;
   }
   // Don't show the promo in Incognito mode.
@@ -1700,9 +1704,7 @@ void OnListFamilyMembersResponse(
 
 - (BOOL)isSignedIn {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   DCHECK(authenticationService);
   DCHECK(authenticationService->initialized());
 
@@ -2226,8 +2228,7 @@ using UserFeedbackDataCallback =
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   SigninNotificationInfoBarDelegate::Create(
-      infoBarManager, self.mainInterface.browser->GetProfile(), settingsHandler,
-      baseViewController);
+      infoBarManager, self.profile, settingsHandler, baseViewController);
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
@@ -2261,8 +2262,7 @@ using UserFeedbackDataCallback =
   Browser* browser = self.mainInterface.browser;
   if (browser) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(
-            browser->GetProfile());
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
     if (tracker) {
       hasDefaultBrowserBlueDot =
           ShouldTriggerDefaultBrowserHighlightFeature(tracker);
@@ -2339,7 +2339,7 @@ using UserFeedbackDataCallback =
       [[UISceneActivationRequestOptions alloc] init];
   options.requestingScene = self.sceneState.scene;
 
-  ProfileIOS* profile = self.sceneState.profileState.profile;
+  ProfileIOS* profile = self.profile;
   if (profile) {
     AttachProfileNameToActivity(userActivity, profile->GetProfileName());
   }
@@ -3166,7 +3166,7 @@ using UserFeedbackDataCallback =
     return;
   }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kPasswordManagerWidgetPromoUsed);
@@ -3944,9 +3944,7 @@ using UserFeedbackDataCallback =
     (SigninCoordinatorCompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   AuthenticationService::ServiceStatus statusService =
       authenticationService->GetServiceStatus();
   switch (statusService) {
@@ -4250,13 +4248,8 @@ using UserFeedbackDataCallback =
 // Clears incognito data that is specific to iOS and won't be cleared by
 // deleting the profile.
 - (void)clearIOSSpecificIncognitoData {
-  DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-             ->GetProfile()
-             ->HasOffTheRecordProfile());
-  ProfileIOS* otrProfile =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetProfile()
-          ->GetOffTheRecordProfile();
+  DCHECK(self.profile->HasOffTheRecordProfile());
+  ProfileIOS* otrProfile = self.profile->GetOffTheRecordProfile();
 
   __weak SceneController* weakSelf = self;
   BrowsingDataRemover* browsingDataRemover =
@@ -4363,8 +4356,7 @@ using UserFeedbackDataCallback =
 // closed (i.e. if there are other incognito tabs open in another Scene, the
 // Profile must not be destroyed).
 - (BOOL)shouldDestroyAndRebuildIncognitoProfile {
-  ProfileIOS* profile = self.sceneState.browserProviderInterface
-                            .mainBrowserProvider.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   if (!profile->HasOffTheRecordProfile()) {
     return NO;
   }
@@ -4395,8 +4387,7 @@ using UserFeedbackDataCallback =
 
   [self clearIOSSpecificIncognitoData];
 
-  ProfileIOS* profile = self.sceneState.browserProviderInterface
-                            .mainBrowserProvider.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   DCHECK(profile->HasOffTheRecordProfile());
   ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
 
