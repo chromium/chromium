@@ -506,7 +506,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
                                          {"#errorPanel:not([hidden])"})));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseWithEsc) {
+// TODO(crbug.com/427261741#comment11) Test is flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DISABLED_CloseWithEsc) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
