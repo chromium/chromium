@@ -12,11 +12,11 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "crypto/hash.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -116,8 +116,7 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 }
 
 std::string GetHashedFileNameForUrl(const std::string& url) {
-  auto hash = base::SHA1Hash(base::as_byte_span(url));
-  return base::HexEncode(hash) + kCacheFileExt;
+  return base::HexEncode(crypto::hash::Sha1(url)) + kCacheFileExt;
 }
 
 std::vector<std::string> GetImageUrlsToProcess(
