@@ -131,7 +131,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
 };
 
 // Forward declare the object array reader for the convenience function.
-template <typename T>
+template <typename T = jobject>
 class JavaObjectArrayReader;
 
 // Generic base class for ScopedJavaLocalRef and ScopedJavaGlobalRef. Useful
