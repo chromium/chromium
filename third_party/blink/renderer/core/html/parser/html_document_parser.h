@@ -61,6 +61,7 @@ namespace blink {
 
 class AtomicHTMLToken;
 class BackgroundHTMLScanner;
+class ContainerNode;
 class Document;
 class DocumentFragment;
 class Element;
@@ -91,7 +92,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   HTMLDocumentParser(HTMLDocument&,
                      ParserSynchronizationPolicy,
                      ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);
-  HTMLDocumentParser(DocumentFragment*,
+  HTMLDocumentParser(ContainerNode* fragment_target,
                      Element* context_element,
                      ParserContentPolicy,
                      ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);

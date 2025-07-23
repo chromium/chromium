@@ -108,7 +108,7 @@ class HTMLConstructionSite final {
   HTMLConstructionSite(HTMLParserReentryPermit*,
                        Document&,
                        ParserContentPolicy,
-                       DocumentFragment*,
+                       ContainerNode*,
                        Element*);
   HTMLConstructionSite(const HTMLConstructionSite&) = delete;
   HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;

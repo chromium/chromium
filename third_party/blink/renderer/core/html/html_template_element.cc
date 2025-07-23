@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/patching/dom_patch_status.h"
 #include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -87,11 +88,7 @@ void HTMLTemplateElement::Trace(Visitor* visitor) const {
 
 void HTMLTemplateElement::BeginPatch(ContainerNode& target) {
   SetOverrideInsertionTarget(target);
-  // A patch replaces the existing children of the target.
-  target.RemoveChildren();
-  patch_status_ = MakeGarbageCollected<DOMPatchStatus>(this, &target);
-  MutationObserver::EnqueuePatch(*patch_status_);
-  PatchSupplement::From(target.GetDocument())->DidStart(target, patch_status_);
+  patch_status_ = DOMPatchStatus::Start(*this, target);
 }
 
 void HTMLTemplateElement::FinishParsingChildren() {
@@ -100,7 +97,7 @@ void HTMLTemplateElement::FinishParsingChildren() {
     return;
   }
   CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-  patch_status_->OnComplete();
+  patch_status_->Finish();
   patch_status_.Release();
 }
 

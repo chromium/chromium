@@ -40,7 +40,7 @@
 namespace blink {
 
 class AtomicHTMLToken;
-class DocumentFragment;
+class ContainerNode;
 class Element;
 class HTMLDocument;
 class HTMLDocumentParser;
@@ -58,7 +58,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   bool include_shadow_roots);
   // This constructor is used for fragment parsing.
   HTMLTreeBuilder(HTMLDocumentParser*,
-                  DocumentFragment*,
+                  ContainerNode*,
                   Element* context_element,
                   ParserContentPolicy,
                   const HTMLParserOptions&,
@@ -70,7 +70,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   ParserContentPolicy,
                   const HTMLParserOptions&,
                   bool include_shadow_roots,
-                  DocumentFragment* for_fragment,
+                  ContainerNode* fragment_target,
                   Element* fragment_context_element);
 
  public:
@@ -81,7 +81,9 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   const HTMLElementStack* OpenElements() const { return tree_.OpenElements(); }
 
-  bool IsParsingFragment() const { return !!fragment_context_.Fragment(); }
+  bool IsParsingFragment() const {
+    return !!fragment_context_.FragmentTarget();
+  }
   bool IsParsingTemplateContents() const {
     return tree_.OpenElements()->HasTemplateInHTMLScope();
   }
@@ -230,22 +232,21 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
     FragmentParsingContext() = default;
     FragmentParsingContext(const FragmentParsingContext&) = delete;
     FragmentParsingContext& operator=(const FragmentParsingContext&) = delete;
-    void Init(DocumentFragment*, Element* context_element);
-
-    DocumentFragment* Fragment() const { return fragment_.Get(); }
+    void Init(ContainerNode*, Element* context_element);
+    ContainerNode* FragmentTarget() const { return fragment_target_.Get(); }
     Element* ContextElement() const {
-      DCHECK(fragment_);
+      DCHECK(fragment_target_);
       return context_element_stack_item_->GetElement();
     }
     HTMLStackItem* ContextElementStackItem() const {
-      DCHECK(fragment_);
+      DCHECK(fragment_target_);
       return context_element_stack_item_.Get();
     }
 
     void Trace(Visitor*) const;
 
    private:
-    Member<DocumentFragment> fragment_;
+    Member<ContainerNode> fragment_target_;
     Member<HTMLStackItem> context_element_stack_item_;
   };
 

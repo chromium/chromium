@@ -380,18 +380,18 @@ HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
 }
 
 HTMLDocumentParser::HTMLDocumentParser(
-    DocumentFragment* fragment,
+    ContainerNode* fragment_target,
     Element* context_element,
     ParserContentPolicy parser_content_policy,
     ParserPrefetchPolicy parser_prefetch_policy)
-    : HTMLDocumentParser(fragment->GetDocument(),
+    : HTMLDocumentParser(fragment_target->GetDocument(),
                          parser_content_policy,
                          kForceSynchronousParsing,
                          parser_prefetch_policy) {
   // Allow declarative shadow DOM for the fragment parser only if explicitly
   // enabled.
   bool include_shadow_roots =
-      fragment->GetDocument().GetDeclarativeShadowRootAllowState() ==
+      fragment_target->GetDocument().GetDeclarativeShadowRootAllowState() ==
       Document::DeclarativeShadowRootAllowState::kAllow;
 
   // For now document fragment parsing never reports errors.
@@ -401,7 +401,7 @@ HTMLDocumentParser::HTMLDocumentParser(
 
   // No script_runner_ in fragment parser.
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
-      this, fragment, context_element, parser_content_policy, options_,
+      this, fragment_target, context_element, parser_content_policy, options_,
       include_shadow_roots);
 }
 

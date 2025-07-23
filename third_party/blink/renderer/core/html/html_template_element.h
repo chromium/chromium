@@ -80,6 +80,7 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   void ResetOverrideInsertionTarget() { override_insertion_target_.Release(); }
 
   void BeginPatch(ContainerNode& target);
+  DOMPatchStatus* OutgoingPatch() { return patch_status_; }
 
  private:
   void CloneNonAttributePropertiesFrom(const Element&,

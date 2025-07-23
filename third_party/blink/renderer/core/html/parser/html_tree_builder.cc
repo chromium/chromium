@@ -288,12 +288,12 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
                                  bool include_shadow_roots,
-                                 DocumentFragment* for_fragment,
+                                 ContainerNode* fragment_target,
                                  Element* fragment_context_element)
     : tree_(parser->ReentryPermit(),
             document,
             parser_content_policy,
-            for_fragment,
+            fragment_target,
             fragment_context_element),
       insertion_mode_(kInitialMode),
       original_insertion_mode_(kInitialMode),
@@ -316,27 +316,27 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                       nullptr,
                       nullptr) {}
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
-                                 DocumentFragment* fragment,
+                                 ContainerNode* fragment_target,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
                                  bool include_shadow_roots)
     : HTMLTreeBuilder(parser,
-                      fragment->GetDocument(),
+                      fragment_target->GetDocument(),
                       parser_content_policy,
                       options,
                       include_shadow_roots,
-                      fragment,
+                      fragment_target,
                       context_element) {
   DCHECK(IsMainThread());
-  fragment_context_.Init(fragment, context_element);
+  fragment_context_.Init(fragment_target, context_element);
 
   // Steps 4.2-4.6 of the HTML5 Fragment Case parsing algorithm:
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#fragment-case
   // For efficiency, we skip step 4.2 ("Let root be a new html element with no
   // attributes") and instead use the DocumentFragment as a root node.
   tree_.OpenElements()->PushRootNode(MakeGarbageCollected<HTMLStackItem>(
-      fragment, HTMLStackItem::kItemForDocumentFragmentNode));
+      fragment_target, HTMLStackItem::kItemForDocumentFragmentNode));
 
   if (IsA<HTMLTemplateElement>(*context_element))
     template_insertion_modes_.push_back(kTemplateContentsMode);
@@ -346,17 +346,18 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
 
 HTMLTreeBuilder::~HTMLTreeBuilder() = default;
 
-void HTMLTreeBuilder::FragmentParsingContext::Init(DocumentFragment* fragment,
-                                                   Element* context_element) {
-  DCHECK(fragment);
-  DCHECK(!fragment->HasChildren());
-  fragment_ = fragment;
+void HTMLTreeBuilder::FragmentParsingContext::Init(
+    ContainerNode* fragment_target,
+    Element* context_element) {
+  DCHECK(fragment_target);
+  DCHECK(!fragment_target->HasChildren());
+  fragment_target_ = fragment_target;
   context_element_stack_item_ = MakeGarbageCollected<HTMLStackItem>(
       context_element, HTMLStackItem::kItemForContextElement);
 }
 
 void HTMLTreeBuilder::FragmentParsingContext::Trace(Visitor* visitor) const {
-  visitor->Trace(fragment_);
+  visitor->Trace(fragment_target_);
   visitor->Trace(context_element_stack_item_);
 }
 
@@ -1115,6 +1116,10 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);
+  if (DynamicTo<HTMLTemplateElement>(tree_.CurrentElement())->OutgoingPatch()) {
+    DCHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+    parser_->tokenizer().SetState(HTMLTokenizer::kRAWTEXTState);
+  }
 }
 
 bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
@@ -1932,9 +1937,10 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
         case HTMLTag::kTable:
           return SetInsertionMode(kInTableMode);
         case HTMLTag::kHead:
-          if (!fragment_context_.Fragment() ||
-              fragment_context_.ContextElement() != item->GetNode())
+          if (!fragment_context_.FragmentTarget() ||
+              fragment_context_.ContextElement() != item->GetNode()) {
             return SetInsertionMode(kInHeadMode);
+          }
           return SetInsertionMode(kInBodyMode);
         case HTMLTag::kBody:
           return SetInsertionMode(kInBodyMode);

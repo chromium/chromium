@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -25,7 +26,9 @@ class DOMPatchStatus : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DOMPatchStatus(HTMLTemplateElement* source, ContainerNode* target);
+  static DOMPatchStatus* Start(HTMLTemplateElement& source,
+                               ContainerNode& target);
+  DOMPatchStatus(HTMLTemplateElement& source, ContainerNode& target);
   ScriptPromise<IDLUndefined> finished(ScriptState*);
   HTMLTemplateElement* source() { return source_; }
   void Trace(Visitor*) const override;
@@ -33,11 +36,14 @@ class DOMPatchStatus : public ScriptWrappable {
   Node& GetTarget() { return *target_; }
   Document& GetDocument();
   void DispatchPatchEvent();
+  void Append(const String&);
+  void Finish();
 
  private:
   Member<HTMLTemplateElement> source_;
   Member<ContainerNode> target_;
   Member<ScriptPromiseProperty<IDLUndefined, IDLAny>> finished_;
+  Member<DocumentParser> parser_;
 };
 }  // namespace blink
 
