@@ -1796,11 +1796,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/search:impl",
 
-      # TODO(crbug.com/364501603): remove this as it depends on
-      # //c/b/ui/tabs/tab_strip_model.h, which is still part of
-      # //c/b/ui.
-      "//chrome/browser/ui/tabs:tab_strip_model_observer_impl",
-
       # TODO(crbug.com/382237520): Remove this once NTP code is modularized.
       "//chrome/browser/ui/lens:impl",
 
