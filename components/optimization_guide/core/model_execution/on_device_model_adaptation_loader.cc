@@ -192,29 +192,31 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
     const OnDeviceModelComponentState* state,
     bool was_feature_recently_used) {
   CHECK(model_provider_);
-  if (!state) {
-    Unregister();
-    on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kUpdatePending));
+
+  std::optional<OnDeviceBaseModelSpec> new_spec =
+      state ? std::make_optional(state->GetBaseModelSpec()) : std::nullopt;
+  if (new_spec && *new_spec == registered_spec_) {
+    return;
+  }
+
+  // The spec has changed, so we need to unregister the old observer.
+  Unregister();
+  on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kUpdatePending));
+
+  if (!new_spec) {
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
     return;
   }
-  auto spec = state->GetBaseModelSpec();
-  if (registered_spec_ == spec) {
+
+  if (!switches::GetOnDeviceModelExecutionOverride() &&
+      !was_feature_recently_used) {
+    RecordAdaptationModelAvailability(
+        feature_, OnDeviceModelAdaptationAvailability::kFeatureNotRecentlyUsed);
     return;
   }
-  Unregister();
-  on_load_fn_.Run(base::unexpected(AdaptationUnavailability::kUpdatePending));
-  if (!switches::GetOnDeviceModelExecutionOverride()) {
-    if (!was_feature_recently_used) {
-      RecordAdaptationModelAvailability(
-          feature_,
-          OnDeviceModelAdaptationAvailability::kFeatureNotRecentlyUsed);
-      return;
-    }
-  }
 
-  registered_spec_ = state->GetBaseModelSpec();
+  registered_spec_ = *new_spec;
   proto::Any any_metadata;
   any_metadata.set_type_url(
       "type.googleapis.com/"
