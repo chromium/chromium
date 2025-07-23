@@ -429,7 +429,8 @@ TEST_F(BrowserUserEducationStorageServiceTest, LegacyDataTest) {
 
 TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoData) {
   user_education::KeyedNtpPromoData data;
-  data.completed = base::Time::FromSecondsSinceUnixEpoch(1);
+  data.last_clicked = base::Time::FromSecondsSinceUnixEpoch(1);
+  data.completed = base::Time::FromSecondsSinceUnixEpoch(2);
   data.last_top_spot_session = 2;
   data.top_spot_session_count = 3;
   service().SaveNtpPromoData(kNtpPromoId, data);

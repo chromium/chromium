@@ -94,6 +94,7 @@ constexpr char kKeyedPromoLastShownTime[] = "last_show_time";
 constexpr char kKeyedNtpPromosPath[] = "in_product_help.ntp_promos.promos";
 
 // NTP keyed promo data elements.
+constexpr char kKeyedNtpPromoLastClicked[] = "last_clicked";
 constexpr char kKeyedNtpPromoCompleted[] = "completed";
 constexpr char kKeyedNtpPromoLastTopSpotSession[] = "last_top_spot_session";
 constexpr char kKeyedNtpPromoTopSpotSessionCount[] = "top_spot_session_count";
@@ -455,10 +456,14 @@ BrowserUserEducationStorageService::ReadNtpPromoData(
 
   user_education::KeyedNtpPromoData data;
 
-  const auto* const time_value = promo_prefs->Find(kKeyedNtpPromoCompleted);
-  const std::optional<base::Time> completed_time =
+  const auto* time_value = promo_prefs->Find(kKeyedNtpPromoLastClicked);
+  std::optional<base::Time> maybe_time =
       time_value ? base::ValueToTime(*time_value) : std::nullopt;
-  data.completed = completed_time.value_or(base::Time());
+  data.last_clicked = maybe_time.value_or(base::Time());
+
+  time_value = promo_prefs->Find(kKeyedNtpPromoCompleted);
+  maybe_time = time_value ? base::ValueToTime(*time_value) : std::nullopt;
+  data.completed = maybe_time.value_or(base::Time());
 
   data.last_top_spot_session =
       promo_prefs->FindInt(kKeyedNtpPromoLastTopSpotSession).value_or(0);
@@ -475,6 +480,8 @@ void BrowserUserEducationStorageService::SaveNtpPromoData(
   base::Value::Dict& pref_data = update.Get();
 
   base::Value::Dict promo_pref;
+  promo_pref.Set(kKeyedNtpPromoLastClicked,
+                 base::TimeToValue(data.last_clicked));
   promo_pref.Set(kKeyedNtpPromoCompleted, base::TimeToValue(data.completed));
   promo_pref.Set(kKeyedNtpPromoLastTopSpotSession, data.last_top_spot_session);
   promo_pref.Set(kKeyedNtpPromoTopSpotSessionCount,

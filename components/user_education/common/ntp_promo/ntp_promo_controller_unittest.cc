@@ -82,13 +82,32 @@ TEST_F(NtpPromoControllerTest, EligiblePromoShows) {
   EXPECT_TRUE(showable_promos.completed.empty());
 }
 
-TEST_F(NtpPromoControllerTest, NewlyCompletedPromoShows) {
+// A promo that reports itself as complete, but was never clicked, should not
+// be shown.
+TEST_F(NtpPromoControllerTest, UnclickedCompletedPromoHidden) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
   RegisterPromo(kPromoId, eligibility_callback.Get(),
                 NtpPromoSpecification::ActionCallback());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kCompleted));
+
+  const auto showable_promos = controller_.GenerateShowablePromos();
+  EXPECT_TRUE(showable_promos.pending.empty());
+  EXPECT_TRUE(showable_promos.completed.empty());
+}
+
+TEST_F(NtpPromoControllerTest, ClickedCompletedPromoShows) {
+  base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
+      eligibility_callback;
+  RegisterPromo(kPromoId, eligibility_callback.Get(),
+                NtpPromoSpecification::ActionCallback());
+  EXPECT_CALL(eligibility_callback, Run(_))
+      .WillOnce(Return(NtpPromoSpecification::Eligibility::kCompleted));
+  // Simulate that the user clicked on the promo.
+  user_education::KeyedNtpPromoData keyed_data;
+  keyed_data.last_clicked = base::Time::Now();
+  storage_service_.SaveNtpPromoData(kPromoId, keyed_data);
 
   const auto showable_promos = controller_.GenerateShowablePromos();
   EXPECT_TRUE(showable_promos.pending.empty());
@@ -99,6 +118,8 @@ TEST_F(NtpPromoControllerTest, NewlyCompletedPromoShows) {
   EXPECT_EQ(prefs.value().completed, base::Time::Now());
 }
 
+// Once a promo has been declared completed, it should continue to show as
+// completed even if the promo reverts to Eligible state (eg. a user signs out).
 TEST_F(NtpPromoControllerTest, PreviouslyCompletedPromoShows) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
@@ -153,12 +174,15 @@ TEST_F(NtpPromoControllerTest, FutureCompletedPromoHidden) {
   EXPECT_TRUE(showable_promos.completed.empty());
 }
 
-TEST_F(NtpPromoControllerTest, ClickInvokesPromoAction) {
+TEST_F(NtpPromoControllerTest, PromoClicked) {
   base::MockRepeatingCallback<void(Browser*)> action_callback;
   RegisterPromo(kPromoId, NtpPromoSpecification::EligibilityCallback(),
                 action_callback.Get());
   EXPECT_CALL(action_callback, Run(_));
   controller_.OnPromoClicked(kPromoId);
+
+  const auto prefs = storage_service_.ReadNtpPromoData(kPromoId);
+  EXPECT_EQ(prefs.value().last_clicked, base::Time::Now());
 }
 
 TEST_F(NtpPromoControllerTest, OnPromosShown_CompletedPromoOnly) {

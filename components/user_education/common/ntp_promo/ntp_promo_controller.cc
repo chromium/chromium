@@ -77,14 +77,22 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos() {
     auto prefs =
         storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
 
+    // If the promo reports itself as complete, but was never invoked by the
+    // user, don't show it (eg. user is already signed in).
+    if (eligibility == Eligibility::kCompleted &&
+        prefs.last_clicked.is_null()) {
+      continue;
+    }
+
     // Record the first evidence of completion. In the future, promos may
     // explicitly notify of completion, but we'll also use this opportunity.
-    if (eligibility == Eligibility::kCompleted && prefs.completed.is_null()) {
+    if (eligibility == Eligibility::kCompleted &&
+        !prefs.last_clicked.is_null() && prefs.completed.is_null()) {
       prefs.completed = now;
       storage_service_->SaveNtpPromoData(id, prefs);
     }
 
-    // If the promo was completed sufficiently long ago, don't show it.
+    // If the promo was marked complete sufficiently long ago, don't show it.
     // Likewise if the completion time is nonsense (in the future).
     if (!prefs.completed.is_null() &&
         ((now - prefs.completed >= kCompletedPromoShowDuration) ||
@@ -118,6 +126,11 @@ void NtpPromoController::OnPromosShown(
 
 void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id) {
   registry_->GetNtpPromoSpecification(id)->action_callback().Run(nullptr);
+
+  auto prefs =
+      storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+  prefs.last_clicked = base::Time::Now();
+  storage_service_->SaveNtpPromoData(id, prefs);
 }
 
 // static

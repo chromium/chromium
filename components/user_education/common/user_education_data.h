@@ -160,6 +160,9 @@ struct KeyedNtpPromoData {
 
   bool operator<=>(const KeyedNtpPromoData& other) const = default;
 
+  // Time at which the promo was most recently clicked.
+  base::Time last_clicked;
+
   // Time at which the promo was first seen to be complete.
   base::Time completed;
 
