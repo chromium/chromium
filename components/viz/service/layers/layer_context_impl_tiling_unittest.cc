@@ -312,5 +312,22 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
   EXPECT_EQ(result3.error(), "Invalid tile resource");
 }
 
+TEST_F(LayerContextImplUpdateDisplayTilingTest,
+       TilingWithInvalidLayerIdIsIgnored) {
+  constexpr int kInvalidLayerId = 999;  // An ID that doesn't exist.
+
+  auto tiling = CreateTiling(kInvalidLayerId, 1.0f, gfx::Size(64, 64),
+                             gfx::Rect(100, 100));
+  tiling->tiles.push_back(
+      CreateSolidColorTile(cc::TileIndex(0, 0), SkColors::kRed));
+
+  // An update for a non-existent layer should be silently ignored and not
+  // cause a crash or return an error.
+  auto result =
+      layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling),
+                                                 /*update_damage=*/true);
+  EXPECT_TRUE(result.has_value());
+}
+
 }  // namespace
 }  // namespace viz
