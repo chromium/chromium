@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.ClientStatus.Enabled.ByProvider"
     enum="Boolean" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The status of the push notifications client toggle for Content.
   </summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.ClientStatus.Sports.ByProvider"
     enum="Boolean" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The status of the push notifications client toggle for Sports.
   </summary>
@@ -130,14 +130,14 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.DismissAction" enum="Boolean"
     expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>The user has dismissed a content notification.</summary>
 </histogram>
 
 <histogram name="ContentNotifications.EligibilityType"
     enum="ContentNotificationEligibilityType" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The Type of elegibility for a given user for the Content Notifications
     feature. Includes details about what UI entrypoint type the user is elegible
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.Notification.Action"
     enum="ContentNotificationActionType" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Reports what actions has the user taken on a notification. This metric
     matches NAUs sent.
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.NotificationActionUpload.Success"
     enum="Boolean" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     After a notification action upload, whether the request succeeded or failed.
   </summary>
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.OpenURLAction.HasURL" enum="Boolean"
     expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     After a notification interaction, if the URL has successfully been parsed or
     if it has failed.
@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.Promo.Prompt.Action"
     enum="ContentNotificationPromptAction" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The action taken by the user in response to the Set Up List Content
     Notification OS notification permission prompt.
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
     enum="ContentNotificationPromoProvisionalEntrypoint"
     expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Provisional notifications were turned on from the Notifications Promo.
   </summary>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.Promo.Snackbar.Event"
     enum="ContentNotificationSnackbarEvent" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Log the Set Up List Content Notification confirmation snackbar events.
   </summary>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.Promo.TopOfFeed.Action"
     enum="ContentNotificationTopOfFeedPromoAction" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The action taken by the user in response to the Top of Feed Content
     Notifications promo.
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.Promo.TopOfFeed.Event"
     enum="ContentNotificationTopOfFeedPromoAction" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     An event from the the Top of Feed Content Notifications promo.
   </summary>
@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.Registration.BrowserStateUnavailable"
     enum="Boolean" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     This logs if a SNo registration has not succeeded due to a BrowserState
     being unavailable at the time due to a Browser not being initialized.
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentNotifications.Settings.Action"
     enum="ContentNotificationSettingsAction" expires_after="2026-01-20">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The action taken by the user in the content notification settings view.
   </summary>

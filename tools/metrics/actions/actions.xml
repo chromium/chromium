@@ -15094,7 +15094,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserFullscreenPromo.Cancel">
   <owner>gayane@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user dismissed the default browser fullscreen promo by pressing on
     secondary button. iOS only.
@@ -15147,7 +15147,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Accepted">
   <owner>rkgibson@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user accepted a non modal promo. This will either take them to the
     settings instructions for default browser ot directly into settings. To
@@ -15158,7 +15158,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Appear">
   <owner>rkgibson@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user triggered a non modal default promo, and it appeared. iOS only.
   </description>
@@ -15166,7 +15166,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Dismiss">
   <owner>rkgibson@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user dismissed explicitly a non modal promo. iOS only.
   </description>
@@ -15174,7 +15174,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Timeout">
   <owner>rkgibson@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     A non modal promo timed out and was dismissed. iOS only.
   </description>
@@ -15182,7 +15182,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.SetUpList.Accepted">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user accepted a Set Up List default browser promo modal, and was taken
     to the Settings app. iOS only.
@@ -15191,7 +15191,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.SetUpList.Appear">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user triggered the SetUpList default browser promo and it appeared, iOS
     only.
@@ -15200,7 +15200,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.SetUpList.Dismiss">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user dismissed a Set Up List default browser promo modal. iOS only.
   </description>
@@ -15208,7 +15208,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted">
   <owner>rkgibson@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user accepted a tailored browser fullscreen promo modal, and was taken
     to the Settings app. iOS only.
@@ -15217,13 +15217,13 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Appear">
   <owner>rkgibson@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>A tailored fullscren promo appeared. iOS only.</description>
 </action>
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Cancel">
   <owner>gayane@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user dismissed a tailored browser fullscreen promo modal using secondary
     action button. iOS only.
@@ -15232,7 +15232,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss">
   <owner>rkgibson@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user dismissed a tailored browser fullscreen promo modal by swiping
     down. iOS only.
@@ -15241,7 +15241,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.MoreInfoTapped">
   <owner>gayane@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user tapped on the more information icon on the tailored browser
     fullscreen promo modal. iOS only.
@@ -15251,7 +15251,7 @@ should be able to be added at any place in this file.
 <action name="IOS.DefaultBrowserVideoPromo.Appear">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user is presented with the default browser video promo. iOS only.
   </description>
@@ -15260,7 +15260,7 @@ should be able to be added at any place in this file.
 <action name="IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user dismissed the full screen default browser video promo. iOS only.
   </description>
@@ -15269,7 +15269,7 @@ should be able to be added at any place in this file.
 <action name="IOS.DefaultBrowserVideoPromo.Fullscreen.Impression">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user is presented with the fullscreen screen arm of the default browser
     video promo. iOS only.
@@ -15279,7 +15279,7 @@ should be able to be added at any place in this file.
 <action name="IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user accepted the full screen default browser video promo, and was taken
     to the Settings app. iOS only.
@@ -15289,7 +15289,7 @@ should be able to be added at any place in this file.
 <action name="IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user asked to be reminded later on the full screen default browser video
     promo. iOS only.
@@ -15300,7 +15300,7 @@ should be able to be added at any place in this file.
   <obsolete>This UI was removed in M123.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user dismissed the half screen default browser video promo. iOS only.
   </description>
@@ -15310,7 +15310,7 @@ should be able to be added at any place in this file.
   <obsolete>This UI was removed in M123.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user is presented with the half screen arm of the default browser video
     promo. iOS only.
@@ -15321,7 +15321,7 @@ should be able to be added at any place in this file.
   <obsolete>This UI was removed in M123.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     The user accepted the half screen default browser video promo, and was taken
     to the full screen default browser video promo. iOS only.
@@ -15462,7 +15462,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Parcel Tracking cell is toggled from the Magic Stack page
     in the Home Customization menu.
@@ -15471,7 +15471,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.HomeCustomization.MagicStackPage.SafetyCheck.Toggled">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Safety Check cell is toggled from the Magic Stack page in
     the Home Customization menu.
@@ -15480,7 +15480,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.HomeCustomization.MagicStackPage.SetUpList.Toggled">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Set Up list cell is toggled from the Magic Stack page in
     the Home Customization menu.
@@ -15512,7 +15512,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.HomeCustomization.MagicStackPage.TabResumption.Toggled">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Tab Resumption cell is toggled from the Magic Stack page
     in the Home Customization menu.
@@ -15522,7 +15522,7 @@ should be able to be added at any place in this file.
 <action name="IOS.HomeCustomization.MagicStackPage.Tips.Toggled">
   <owner>bwwilliams@google.com</owner>
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Tips cell is toggled from the Magic Stack page in the Home
     Customization menu.
@@ -15531,7 +15531,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.HomeCustomization.MainPage.Feed.Toggled">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Feed cell is toggled from the Home Customization menu.
   </description>
@@ -15539,7 +15539,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.HomeCustomization.MainPage.MagicStack.Toggled">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Magic Stack cell is toggled from the Home Customization
     menu.
@@ -15548,7 +15548,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.HomeCustomization.MainPage.MostVisited.Toggled">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when the Most Visited cell is toggled from the Home Customization
     menu.
@@ -15761,7 +15761,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.Notifications.SendTab.Interaction">
   <owner>hiramahmood@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when a user taps on a Send Tab push notification.
   </description>
@@ -15935,7 +15935,7 @@ should be able to be added at any place in this file.
 
 <action name="IOS.PostRestoreDefaultBrowser.Displayed">
   <owner>hiramahmood@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when the Post Restore Default Browser Promo is displayed. iOS only.
   </description>
@@ -16069,13 +16069,13 @@ should be able to be added at any place in this file.
 
 <action name="IOSBookmarksAddedInBulk">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>User added bookmarks in bulk.</description>
 </action>
 
 <action name="IOSBookmarksAddedInBulkSnackbarViewButtonClicked">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when a user clicks the &quot;view&quot; button in the snackbar
     generated from bulk adding bookmarks. iOS-only.
@@ -16336,13 +16336,13 @@ should be able to be added at any place in this file.
 
 <action name="IOSLaunchedByAddBookmarkToChromeIntent">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>User added bookmarks to Chrome via Apple Shortcuts.</description>
 </action>
 
 <action name="IOSLaunchedByAddReadingListItemToChromeIntent">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>User added a reading list item via Apple Shortcuts.</description>
 </action>
 
@@ -16470,7 +16470,7 @@ should be able to be added at any place in this file.
 
 <action name="IOSReadingListItemsAddedInBulk">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when a user bulk adds reading list items (Siri Shortcut). iOS-only.
   </description>
@@ -16478,7 +16478,7 @@ should be able to be added at any place in this file.
 
 <action name="IOSReadingListSnackbarViewButtonClicked">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when a user clicks the &quot;view&quot; button in the snackbar
     generated from bulk adding reading list items. iOS-only.
@@ -22534,7 +22534,7 @@ should be able to be added at any place in this file.
 
 <action name="Mobile.Omnibox.iOS.PastedValidURL">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User tapped the 'paste' iOS/iPadOS button into the Omnibox and the resulting
     text in the Omnibox is a valid URL. iOS and iPadOS only.
@@ -25378,7 +25378,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileNTPCustomizationNewBadgeShown">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when the new feature badge is shown on the Home Customization
     menu's entrypoint.
@@ -25387,7 +25387,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileNTPCustomizationNewBadgeTapped">
   <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when the Home Customization menu's entrypoint is tapped while the
     new feature badge is visible.
@@ -40328,7 +40328,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromPostDeviceRestoreSigninPromo">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when showing sign in after the post restore signin promo.
   </description>
@@ -40399,7 +40399,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromSetUpList">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when showing sign in that originates from the Set Up List on the
     NTP. iOS only.
@@ -41298,7 +41298,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Signin_FromPostDeviceRestoreSigninPromo">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo.
@@ -41386,7 +41386,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Signin_FromSetUpList">
   <owner>scottyoder@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kSetUpList. iOS only.

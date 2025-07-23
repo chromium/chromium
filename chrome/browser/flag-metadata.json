@@ -385,7 +385,7 @@
   },
   {
     "name": "animated-default-browser-promo-in-fre",
-    "owners": [ "bmcclure@google.com", "bling-get-set-up@google.com"],
+    "owners": [ "bmcclure@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 137
   },
   {
@@ -3167,7 +3167,7 @@
     "owners": [
       "tinazwang@chromium.org",
       "sczs@chromium.org",
-      "bling-get-set-up@google.com"
+      "bling-pandamonium@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3404,7 +3404,7 @@
   },
   {
     "name": "enable-feed-ablation",
-    "owners": [ "adamta@chromium.org", "bling-get-set-up@google.com" ],
+    "owners": [ "adamta@chromium.org", "ginnyhuang@chromium.org", "bling-pandamonium@google.com" ],
     // Long expiry to allow us to disable Discover remotely.
     "expiry_milestone": 150
   },
@@ -3581,7 +3581,7 @@
   },
   {
     "name": "enable-ipad-feed-ghost-cards",
-    "owners": [ "adamta@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "adamta@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -4939,7 +4939,7 @@
   },
   {
     "name": "feed-background-refresh-ios",
-    "owners": [ "adamta@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "adamta@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -4984,7 +4984,7 @@
   },
   {
     "name": "feed-swipe-iph",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 139
   },
   {
@@ -5764,7 +5764,7 @@
   },
   {
     "name": "ios-best-features-screen",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 138
   },
   {
@@ -5796,17 +5796,17 @@
   },
   {
     "name": "ios-default-browser-promo-propensity-model",
-    "owners": [ "thegreenfrog@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 145
   },
   {
     "name": "ios-deprecate-feed-header",
-    "owners": [ "ginnyhuang@chromium.org", "bling-get-set-up@google.com" ],
+    "owners": [ "ginnyhuang@chromium.org", "bling-pandamonium@google.com" ],
     "expiry_milestone": 139
   },
   {
     "name": "ios-docking-promo",
-    "owners": ["bwwilliams@google.com", "bling-get-set-up@google.com"],
+    "owners": ["bwwilliams@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 135
   },
   {
@@ -5816,7 +5816,7 @@
   },
   {
     "name": "ios-expanded-tips",
-    "owners": ["scottyoder@google.com", "bwwilliams@google.com", "bling-get-set-up@google.com"],
+    "owners": ["scottyoder@google.com", "bwwilliams@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 142
   },
   {
@@ -5918,7 +5918,7 @@
   },
   {
     "name": "ios-provides-app-notification-settings",
-    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "owners": ["scottyoder@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 141
   },
   {
@@ -5939,12 +5939,12 @@
   },
   {
     "name": "ios-reactivation-notifications",
-    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "owners": ["scottyoder@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 139
   },
   {
     "name": "ios-segmentation-ephemeral-card-ranker",
-    "owners": [ "thegreenfrog@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 136
   },
   {
@@ -5978,12 +5978,12 @@
   },
   {
     "name": "ios-start-time-browser-background-remediations",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@chromium.org"],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 136
   },
   {
     "name": "ios-start-time-startup-remediations",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@chromium.org"],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 136
   },
   {
@@ -5993,7 +5993,7 @@
   },
   {
     "name": "ios-welcome-back-screen",
-    "owners": ["bmcclure@google.com", "hiramahmood@google.com", "bling-get-set-up@google.com"],
+    "owners": ["bmcclure@google.com", "hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 141
   },
   {
@@ -6482,7 +6482,7 @@
   },
   {
     "name": "manual-log-uploads-in-the-fre",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 137
   },
   {
@@ -8762,17 +8762,17 @@
   },
   {
     "name": "segmentation-platform-tips-ephemeral-card",
-    "owners": [ "bmcclure@google.com", "bwwilliams@google.com", "bling-flags@google.com", "bling-get-set-up@google.com"],
+    "owners": [ "bmcclure@google.com", "bwwilliams@google.com", "bling-flags@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 134
   },
   {
     "name": "segmented-default-browser-promo",
-    "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
+    "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 135
   },
   {
     "name": "send-tab-ios-push-notifications",
-    "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
+    "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 137
   },
   {
@@ -8822,17 +8822,17 @@
   },
   {
     "name": "set-up-list-in-first-run",
-    "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
+    "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 135
   },
   {
     "name": "set-up-list-shortened-duration",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 135
   },
   {
     "name": "set-up-list-without-sign-in-item",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 135
   },
   {
@@ -9739,7 +9739,7 @@
   },
   {
     "name": "updated-fre-screens-sequence",
-    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 136
   },
   {
