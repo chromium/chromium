@@ -62,6 +62,9 @@ class SandboxDelegate {
   // Technology (CET) / Hardware-enforced Stack Protection.
   virtual bool CetCompatible() = 0;
 
+  // Determines if the CPU core running this process can be shared with other
+  // processes.
+  virtual bool RestrictCoreSharing() = 0;
 #endif  // BUILDFLAG(IS_WIN)
 };
 

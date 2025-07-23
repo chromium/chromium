@@ -50,6 +50,10 @@ bool SandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
 bool SandboxedProcessLauncherDelegate::CetCompatible() {
   return true;
 }
+
+bool SandboxedProcessLauncherDelegate::RestrictCoreSharing() {
+  return false;
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)

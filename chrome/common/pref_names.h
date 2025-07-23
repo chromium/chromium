@@ -3628,6 +3628,9 @@ inline constexpr char kWebShareVisitedTargets[] =
 inline constexpr char kRendererCodeIntegrityEnabled[] =
     "renderer_code_integrity_enabled";
 
+inline constexpr char kRestrictCoreSharingOnRenderer[] =
+    "restrict_core_sharing_on_renderer";
+
 // A boolean value, controlling whether Chrome renderer processes should have
 // Renderer App Container enabled or not. If this pref is set to false then
 // Renderer App Container is disabled, otherwise Renderer App Container is

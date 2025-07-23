@@ -44,6 +44,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   void PostSpawnTarget(base::ProcessHandle process) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
+  bool RestrictCoreSharing() override;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)

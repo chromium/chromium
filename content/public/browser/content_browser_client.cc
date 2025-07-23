@@ -1051,6 +1051,10 @@ bool ContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
   return false;
 }
 
+bool ContentBrowserClient::ShouldRestrictCoreSharingOnRenderer() {
+  return false;
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

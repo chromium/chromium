@@ -376,6 +376,8 @@ class TestSandboxDelegate : public SandboxDelegate {
 
   bool CetCompatible() override { return true; }
 
+  bool RestrictCoreSharing() override { return false; }
+
  private:
   sandbox::mojom::Sandbox sandbox_type_;
 };

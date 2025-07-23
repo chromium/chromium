@@ -500,6 +500,7 @@ source_set("browser_tests") {
       "test/locale_policy_browsertest.cc",
       "test/printing_lpac_sandbox_enabled_win_browsertest.cc",
       "test/renderer_app_container_enabled_win_browsertest.cc",
+      "test/restrict_core_sharing_policy_browsertest.cc",
     ]
   }
 

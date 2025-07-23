@@ -471,11 +471,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (!delegate->CetCompatible())
     mitigations |= MITIGATION_CET_DISABLED;
 
-  const Sandbox sandbox_type = delegate->GetSandboxType();
-
-  if (sandbox_type == Sandbox::kRenderer &&
-      base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxRestrictCoreSharingOnRenderer)) {
+  if (delegate->RestrictCoreSharing()) {
     mitigations |= MITIGATION_RESTRICT_CORE_SHARING;
   }
 
@@ -485,6 +481,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
 
   // Post-startup mitigations.
   mitigations = MITIGATION_DLL_SEARCH_ORDER;
+  const Sandbox sandbox_type = delegate->GetSandboxType();
   if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
       sandbox_type != Sandbox::kScreenAI &&
       sandbox_type != Sandbox::kSpeechRecognition &&

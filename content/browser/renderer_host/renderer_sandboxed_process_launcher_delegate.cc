@@ -67,7 +67,10 @@ RendererSandboxedProcessLauncherDelegateWin::
       renderer_app_container_disabled_(
           GetContentClient()->browser()->IsAppContainerDisabled(
               sandbox::mojom::Sandbox::kRenderer)),
-      is_pdf_renderer_(is_pdf_renderer) {
+      is_pdf_renderer_(is_pdf_renderer),
+      restrict_core_sharing_(GetContentClient()
+                                 ->browser()
+                                 ->ShouldRestrictCoreSharingOnRenderer()) {
   // PDF renderers must be jitless.
   CHECK(!is_pdf_renderer || is_jit_disabled);
   if (is_jit_disabled) {
@@ -178,6 +181,10 @@ bool RendererSandboxedProcessLauncherDelegateWin::CetCompatible() {
 bool RendererSandboxedProcessLauncherDelegateWin::
     ShouldUseUntrustedMojoInvitation() {
   return true;
+}
+
+bool RendererSandboxedProcessLauncherDelegateWin::RestrictCoreSharing() {
+  return restrict_core_sharing_;
 }
 
 #endif  // BUILDFLAG(IS_WIN)
