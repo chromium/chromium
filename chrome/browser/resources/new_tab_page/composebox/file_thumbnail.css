@@ -19,7 +19,7 @@
 }
 
 #imgChip {
-  border-radius: 0.8px;
+  border-radius: 8px;
   height: 52px;
   overflow: hidden;
   position: relative;
@@ -30,9 +30,9 @@
   background-color: var(--color-new-tab-page-composebox-file-image-overlay);
   height: 100%;
   left: 0;
+  opacity: 0;
   position: absolute;
   top: 0;
-  visibility: hidden;
   width: 100%;
 }
 
@@ -52,7 +52,9 @@
   border-radius: 8px;
   display: flex;
   gap: 8px;
+  height: 36px;
   padding: 8px 16px 8px 12px;
+  width: 153px;
 }
 
 #pdfThumbnail{
@@ -65,23 +67,26 @@
 
 .pdf-icon {
   background-color: var(--color-new-tab-page-composebox-background);
+  box-sizing: border-box;
   border-radius: 4px;
   color: var(--color-new-tab-page-composebox-pdf-chip-icon);
   height: 100%;
-  padding: 6px 0px 0px 6px;
+  padding: 9px;
   width: 100%;
 }
 
 .pdf-overlay {
+  height: 100%;
+  opacity: 0;
   position: absolute;
-  visibility: hidden;
+  width: 100%;
 }
 
 #removePdfButton {
   --cr-icon-button-fill-color:
     var(--color-new-tab-page-composebox-file-chip-text);
   --cr-icon-button-icon-size: 24px;
-  --cr-icon-button-margin-start: 1px;
+  --cr-icon-button-margin-start: 0;
   --cr-icon-button-margin-end: 8px;
   background-color: var(--color-new-tab-page-composebox-background);
   border-radius: 4px;
@@ -103,9 +108,9 @@
   white-space: nowrap;
 }
 
-#imgChip:hover #removeImgButton,
-#pdfChip:hover #removePdfButton,
-:host(:focus-within) #removeImgButton,
-:host(:focus-within) #removePdfButton {
-  visibility: visible;
+#imgChip:hover .img-overlay,
+#imgChip:focus-within .img-overlay,
+#pdfChip:hover .pdf-overlay,
+#pdfChip:focus-within .pdf-overlay {
+  opacity: 1;
 }

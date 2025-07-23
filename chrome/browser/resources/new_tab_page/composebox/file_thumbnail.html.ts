@@ -11,26 +11,26 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
   return html`<!--_html_template_start_-->
 <div id="container">
   ${this.file.objectUrl ? html`
-    <div id="imgChip" tabindex=0>
+    <div id="imgChip" aria-label="${this.file.name}">
       <img class="img-thumbnail"
            src="${this.file.objectUrl}"></img>
         <cr-icon-button
             class="img-overlay"
-            tabindex=0
             id="removeImgButton"
             iron-icon="cr:clear"
+            title="${this.deleteFileButtonTitle}"
             @click="${this.deleteFile_}">
         </cr-icon-button>
     </div>` : html`
     <div id="pdfChip">
-      <div id="pdfThumbnail" tabindex=0>
-        <cr-icon icon="composebox:pdf" class="pdf-icon">
+      <div id="pdfThumbnail">
+        <cr-icon icon="thumbnail:pdf" class="pdf-icon">
         </cr-icon>
         <div class="pdf-overlay">
           <cr-icon-button
               id="removePdfButton"
-              tabindex=0
               iron-icon="cr:clear"
+              title="${this.deleteFileButtonTitle}"
               @click="${this.deleteFile_}">
           </cr-icon-button>
         </div>

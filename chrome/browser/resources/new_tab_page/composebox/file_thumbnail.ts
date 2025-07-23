@@ -5,6 +5,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './file_thumbnail.css.js';
@@ -47,6 +48,10 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     // TODO(crbug.com/422559977): Send call to handler to delete file from
     // cache.
     this.fire('delete-file', {uuid: this.file.uuid});
+  }
+
+  get deleteFileButtonTitle(): string {
+    return loadTimeData.getStringF('composeboxDeleteFileTitle', this.file.name);
   }
 }
 
