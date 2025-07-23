@@ -1360,13 +1360,29 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   web_app->SetRelatedApplications(std::move(related_applications));
 
   if (proto.has_pending_update_info()) {
+    // Exit early if there is a `PendingUpdateInfo` that is completely empty.
     if (!proto.pending_update_info().has_name() &&
-        !proto.pending_update_info().has_short_name() &&
+        proto.pending_update_info().trusted_icons().empty() &&
         proto.pending_update_info().manifest_icons().empty()) {
       return nullptr;
     }
-    if (!proto.pending_update_info().manifest_icons().empty()) {
+
+    // Exit early if trusted icons is populated but manifest icons is not, and
+    // vice versa.
+    if (proto.pending_update_info().trusted_icons().empty() !=
+        proto.pending_update_info().manifest_icons().empty()) {
+      return nullptr;
+    }
+
+    // Populate manifest_icons and trusted_icons only if both are populated.
+    if (!proto.pending_update_info().manifest_icons().empty() &&
+        !proto.pending_update_info().trusted_icons().empty()) {
       for (const auto& icon : proto.pending_update_info().manifest_icons()) {
+        if (!icon.has_url() || !icon.has_size_in_px() || !icon.has_purpose()) {
+          return nullptr;
+        }
+      }
+      for (const auto& icon : proto.pending_update_info().trusted_icons()) {
         if (!icon.has_url() || !icon.has_size_in_px() || !icon.has_purpose()) {
           return nullptr;
         }
@@ -1903,10 +1919,14 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   if (web_app.pending_update_info().has_value()) {
     CHECK(web_app.pending_update_info()->has_name() ||
-          web_app.pending_update_info()->has_short_name() ||
-          !web_app.pending_update_info()->manifest_icons().empty());
-    if (!web_app.pending_update_info()->manifest_icons().empty()) {
+          (!web_app.pending_update_info()->trusted_icons().empty() &&
+           !web_app.pending_update_info()->manifest_icons().empty()));
+    if (!web_app.pending_update_info()->manifest_icons().empty() &&
+        !web_app.pending_update_info()->trusted_icons().empty()) {
       for (const auto& icon : web_app.pending_update_info()->manifest_icons()) {
+        CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+      }
+      for (const auto& icon : web_app.pending_update_info()->trusted_icons()) {
         CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
       }
     }

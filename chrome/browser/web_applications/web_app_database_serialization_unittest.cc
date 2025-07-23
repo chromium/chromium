@@ -575,17 +575,7 @@ TEST_F(WebAppDatabaseSerializationTest,
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
-       ParseWebAppProto_HasPendingUpdateInfo_NewShortName) {
-  proto::WebApp proto =
-      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
-  auto* fix = proto.mutable_pending_update_info();
-  fix->set_short_name("Pending Update Short Name");
-
-  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
-}
-
-TEST_F(WebAppDatabaseSerializationTest,
-       ParseWebAppProto_HasPendingUpdateInfo_NewIcon) {
+       ParseWebAppProto_HasPendingUpdateInfo_NewManifestAndTrustedIcon) {
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
@@ -596,16 +586,23 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   icon1->set_size_in_px(256);
 
+  sync_pb::WebAppIconInfo* icon2 = fix->add_trusted_icons();
+  icon2->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon2->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon2->set_size_in_px(256);
+
   EXPECT_THAT(ParseWebAppProto(proto), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
-       ParseWebAppProto_InvalidPendingUpdateInfo_MissingIconUrl) {
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIcon) {
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
 
   sync_pb::WebAppIconInfo* icon1 = fix->add_manifest_icons();
+  icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
   icon1->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   icon1->set_size_in_px(256);
@@ -614,7 +611,42 @@ TEST_F(WebAppDatabaseSerializationTest,
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
-       ParseWebAppProto_InvalidPendingUpdateInfo_MissingIconPurpose) {
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIcon) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  auto* fix = proto.mutable_pending_update_info();
+
+  sync_pb::WebAppIconInfo* icon1 = fix->add_trusted_icons();
+  icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon1->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon1->set_size_in_px(256);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIconUrl) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  auto* fix = proto.mutable_pending_update_info();
+
+  sync_pb::WebAppIconInfo* icon1 = fix->add_manifest_icons();
+  icon1->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon1->set_size_in_px(256);
+
+  sync_pb::WebAppIconInfo* icon2 = fix->add_trusted_icons();
+  icon2->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon2->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon2->set_size_in_px(256);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIconPurpose) {
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
@@ -623,11 +655,17 @@ TEST_F(WebAppDatabaseSerializationTest,
   icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
   icon1->set_size_in_px(256);
 
+  sync_pb::WebAppIconInfo* icon2 = fix->add_trusted_icons();
+  icon2->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon2->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon2->set_size_in_px(256);
+
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
-       ParseWebAppProto_InvalidPendingUpdateInfo_MissingIconSizeInPx) {
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIconSizeInPx) {
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
@@ -636,6 +674,71 @@ TEST_F(WebAppDatabaseSerializationTest,
   icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
   icon1->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+
+  sync_pb::WebAppIconInfo* icon2 = fix->add_trusted_icons();
+  icon2->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon2->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon2->set_size_in_px(256);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIconUrl) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  auto* fix = proto.mutable_pending_update_info();
+
+  sync_pb::WebAppIconInfo* icon1 = fix->add_trusted_icons();
+  icon1->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon1->set_size_in_px(256);
+
+  sync_pb::WebAppIconInfo* icon2 = fix->add_manifest_icons();
+  icon2->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon2->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon2->set_size_in_px(256);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIconPurpose) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  auto* fix = proto.mutable_pending_update_info();
+
+  sync_pb::WebAppIconInfo* icon1 = fix->add_trusted_icons();
+  icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon1->set_size_in_px(256);
+
+  sync_pb::WebAppIconInfo* icon2 = fix->add_manifest_icons();
+  icon2->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon2->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon2->set_size_in_px(256);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIconSizeInPx) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+  auto* fix = proto.mutable_pending_update_info();
+
+  sync_pb::WebAppIconInfo* icon1 = fix->add_trusted_icons();
+  icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon1->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+
+  sync_pb::WebAppIconInfo* icon2 = fix->add_manifest_icons();
+  icon2->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
+  icon2->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon2->set_size_in_px(256);
 
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
 }

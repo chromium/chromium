@@ -187,8 +187,9 @@ message GeneratedIconFix {
 // the url, size, and purpose must all be populated.
 message PendingUpdateInfo {
   optional string name = 1;
-  optional string short_name = 2;
+  reserved 2;
   repeated sync_pb.WebAppIconInfo manifest_icons = 3;
+  repeated sync_pb.WebAppIconInfo trusted_icons = 4;
 }
 
 // Full WebApp object data. See detailed comments in

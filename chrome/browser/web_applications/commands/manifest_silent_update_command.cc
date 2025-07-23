@@ -125,8 +125,9 @@ std::optional<proto::PendingUpdateInfo> MaybeGetSecuritySensitiveUpdate(
   }
 
   // TODO(msiem): Detect icon changes.
-  if (pending_update_info.has_name() || pending_update_info.has_short_name() ||
-      !pending_update_info.manifest_icons().empty()) {
+  if (pending_update_info.has_name() ||
+      (!pending_update_info.trusted_icons().empty() &&
+       !pending_update_info.manifest_icons().empty())) {
     return pending_update_info;
   }
   return std::nullopt;
