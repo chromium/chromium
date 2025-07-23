@@ -40,13 +40,13 @@ void DCheckNumberOfPartitionPagesInSuperPagePayload(
     size_t number_of_nonempty_slot_spans) PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 
 PA_EXPORT_IF_DCHECK_IS_ON()
-void DCheckIsValidShiftFromSlotStart(const SlotSpanMetadataBase* slot_span,
+void DCheckIsValidShiftFromSlotStart(const SlotSpanMetadata* slot_span,
                                      size_t shift_from_slot_start)
     PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 
 // Checks that the object is a multiple of slot size (i.e. at a slot start).
 PA_EXPORT_IF_DCHECK_IS_ON()
-void DCheckIsValidObjectAddress(const SlotSpanMetadataBase* slot_span,
+void DCheckIsValidObjectAddress(const SlotSpanMetadata* slot_span,
                                 uintptr_t object_addr)
     PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 
@@ -59,7 +59,7 @@ void DCheckRootLockIsAcquired(PartitionRoot* root)
 // `partition_page.h`, and so can't be moved into the latter (layering
 // violation).
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-bool DeducedRootIsValid(SlotSpanMetadataBase* slot_span);
+bool DeducedRootIsValid(SlotSpanMetadata* slot_span);
 
 }  // namespace partition_alloc::internal
 

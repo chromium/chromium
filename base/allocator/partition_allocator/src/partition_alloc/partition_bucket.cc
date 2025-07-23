@@ -173,11 +173,10 @@ uintptr_t ReserveMemoryFromPool(pool_handle pool,
   return reserved_address;
 }
 
-SlotSpanMetadata<MetadataKind::kReadOnly>* PartitionDirectMap(
-    PartitionRoot* root,
-    AllocFlags flags,
-    size_t raw_size,
-    size_t slot_span_alignment) {
+SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
+                                     AllocFlags flags,
+                                     size_t raw_size,
+                                     size_t slot_span_alignment) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             base::bits::HasSingleBit(slot_span_alignment));
 
@@ -390,7 +389,7 @@ SlotSpanMetadata<MetadataKind::kReadOnly>* PartitionDirectMap(
 
     // SlotSpanMetadata must point to the bucket inside the giga cage.
     new (&page_metadata->slot_span_metadata)
-        SlotSpanMetadata<MetadataKind::kWritable>(&direct_map_metadata->bucket);
+        SlotSpanMetadata(&direct_map_metadata->bucket);
 
     // It is typically possible to map a large range of inaccessible pages, and
     // this is leveraged in multiple places, including the pools. However,
@@ -587,8 +586,7 @@ uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
 void PartitionBucket::Init(uint32_t new_slot_size) {
   slot_size = new_slot_size;
   slot_size_reciprocal = kReciprocalMask / new_slot_size + 1;
-  active_slot_spans_head = SlotSpanMetadata<
-      MetadataKind::kReadOnly>::get_sentinel_slot_span_non_const();
+  active_slot_spans_head = SlotSpanMetadata::get_sentinel_slot_span_non_const();
   empty_slot_spans_head = nullptr;
   decommitted_slot_spans_head = nullptr;
   num_full_slot_spans = 0;
@@ -606,10 +604,10 @@ void PartitionBucket::Init(uint32_t new_slot_size) {
   InitCanStoreRawSize();
 }
 
-PA_ALWAYS_INLINE SlotSpanMetadata<MetadataKind::kReadOnly>*
-PartitionBucket::AllocNewSlotSpan(PartitionRoot* root,
-                                  AllocFlags flags,
-                                  size_t slot_span_alignment) {
+PA_ALWAYS_INLINE SlotSpanMetadata* PartitionBucket::AllocNewSlotSpan(
+    PartitionRoot* root,
+    AllocFlags flags,
+    size_t slot_span_alignment) {
   PA_DCHECK(!(root->next_partition_page % PartitionPageSize()));
   PA_DCHECK(!(root->next_partition_page_end % PartitionPageSize()));
 
@@ -658,9 +656,7 @@ PartitionBucket::AllocNewSlotSpan(PartitionRoot* root,
   InitializeSlotSpan(slot_span, root);
 
   // Now that slot span is initialized, it's safe to call FromSlotStart.
-  PA_DCHECK(slot_span ==
-            SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
-                slot_span_start));
+  PA_DCHECK(slot_span == SlotSpanMetadata::FromSlotStart(slot_span_start));
 
   // System pages in the super page come in a decommited state. Commit them
   // before vending them back.
@@ -878,9 +874,9 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
 }
 
 PA_ALWAYS_INLINE void PartitionBucket::InitializeSlotSpan(
-    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+    SlotSpanMetadata* slot_span,
     PartitionRoot* root) {
-  new (slot_span) SlotSpanMetadata<MetadataKind::kWritable>(this);
+  new (slot_span) SlotSpanMetadata(this);
 
   slot_span->Reset();
 
@@ -896,13 +892,11 @@ PA_ALWAYS_INLINE void PartitionBucket::InitializeSlotSpan(
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA) && PA_BUILDFLAG(DCHECKS_ARE_ON)
 }
 
-PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
-    PartitionRoot* root,
-    AllocFlags flags,
-    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
-  PA_DCHECK(
-      slot_span !=
-      SlotSpanMetadata<MetadataKind::kReadOnly>::get_sentinel_slot_span());
+PA_ALWAYS_INLINE uintptr_t
+PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
+                                               AllocFlags flags,
+                                               SlotSpanMetadata* slot_span) {
+  PA_DCHECK(slot_span != SlotSpanMetadata::get_sentinel_slot_span());
   size_t num_slots = slot_span->num_unprovisioned_slots;
   PA_DCHECK(num_slots);
   PA_DCHECK(num_slots <= get_slots_per_span());
@@ -914,8 +908,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
   PA_DCHECK(!slot_span->get_freelist_head());
   PA_DCHECK(!slot_span->is_full());
 
-  uintptr_t slot_span_start =
-      SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(slot_span);
+  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
   // If we got here, the first unallocated slot is either partially or fully on
   // an uncommitted page. If the latter, it must be at the start of that page.
   uintptr_t return_slot =
@@ -1025,13 +1018,12 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
 }
 
 bool PartitionBucket::SetNewActiveSlotSpan(PartitionRoot* root) {
-  SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span = active_slot_spans_head;
-  if (slot_span ==
-      SlotSpanMetadata<MetadataKind::kReadOnly>::get_sentinel_slot_span()) {
+  SlotSpanMetadata* slot_span = active_slot_spans_head;
+  if (slot_span == SlotSpanMetadata::get_sentinel_slot_span()) {
     return false;
   }
 
-  SlotSpanMetadata<MetadataKind::kReadOnly>* next_slot_span;
+  SlotSpanMetadata* next_slot_span;
 
   // The goal here is to find a suitable slot span in the active list. Suitable
   // slot spans are |is_active()|, i.e. they either have (a) freelist entries,
@@ -1063,8 +1055,8 @@ bool PartitionBucket::SetNewActiveSlotSpan(PartitionRoot* root) {
   // Note that in most cases, the whole list will not be walked and maintained
   // at this stage.
 
-  SlotSpanMetadata<MetadataKind::kReadOnly>* to_provision_head = nullptr;
-  SlotSpanMetadata<MetadataKind::kReadOnly>* to_provision_tail = nullptr;
+  SlotSpanMetadata* to_provision_head = nullptr;
+  SlotSpanMetadata* to_provision_tail = nullptr;
 
   for (; slot_span; slot_span = next_slot_span) {
     next_slot_span = slot_span->next_slot_span;
@@ -1128,26 +1120,23 @@ bool PartitionBucket::SetNewActiveSlotSpan(PartitionRoot* root) {
     active_slot_spans_head = to_provision_head;
   } else {
     // Active list is now empty.
-    active_slot_spans_head = SlotSpanMetadata<
-        MetadataKind::kReadOnly>::get_sentinel_slot_span_non_const();
+    active_slot_spans_head =
+        SlotSpanMetadata::get_sentinel_slot_span_non_const();
   }
 
   return usable_active_list_head;
 }
 
 void PartitionBucket::MaintainActiveList(PartitionRoot* root) {
-  SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span = active_slot_spans_head;
-  if (slot_span ==
-      SlotSpanMetadata<MetadataKind::kReadOnly>::get_sentinel_slot_span()) {
+  SlotSpanMetadata* slot_span = active_slot_spans_head;
+  if (slot_span == SlotSpanMetadata::get_sentinel_slot_span()) {
     return;
   }
 
-  SlotSpanMetadata<MetadataKind::kReadOnly>* new_active_slot_spans_head =
-      nullptr;
-  SlotSpanMetadata<MetadataKind::kReadOnly>* new_active_slot_spans_tail =
-      nullptr;
+  SlotSpanMetadata* new_active_slot_spans_head = nullptr;
+  SlotSpanMetadata* new_active_slot_spans_tail = nullptr;
 
-  SlotSpanMetadata<MetadataKind::kReadOnly>* next_slot_span;
+  SlotSpanMetadata* next_slot_span;
   for (; slot_span; slot_span = next_slot_span) {
     next_slot_span = slot_span->next_slot_span;
 
@@ -1181,8 +1170,8 @@ void PartitionBucket::MaintainActiveList(PartitionRoot* root) {
   }
 
   if (!new_active_slot_spans_head) {
-    new_active_slot_spans_head = SlotSpanMetadata<
-        MetadataKind::kReadOnly>::get_sentinel_slot_span_non_const();
+    new_active_slot_spans_head =
+        SlotSpanMetadata::get_sentinel_slot_span_non_const();
   }
   active_slot_spans_head = new_active_slot_spans_head;
 #if PA_CONFIG(ENABLE_SHADOW_METADATA) && PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -1213,9 +1202,8 @@ void PartitionBucket::SortSmallerSlotSpanFreeLists(PartitionRoot* root) {
 }
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-bool CompareSlotSpans(const SlotSpanMetadata<MetadataKind::kReadOnly>* a,
-                      const SlotSpanMetadata<MetadataKind::kReadOnly>* b) {
-  auto criteria_tuple = [](SlotSpanMetadata<MetadataKind::kReadOnly> const* a) {
+bool CompareSlotSpans(const SlotSpanMetadata* a, const SlotSpanMetadata* b) {
+  auto criteria_tuple = [](SlotSpanMetadata const* a) {
     size_t freelist_length = a->GetFreelistLength();
     // The criteria are, in order (hence the lexicographic comparison below):
     // 1. Prefer slot spans with freelist entries. The ones without freelist
@@ -1249,10 +1237,9 @@ void PartitionBucket::SortActiveSlotSpans(PartitionRoot* root) {
   // - Current code cannot allocate.
   //
   // In practice though, it's rare to have that many active slot spans.
-  SlotSpanMetadata<MetadataKind::kReadOnly>*
-      active_spans_array[kMaxSlotSpansToSort];
+  SlotSpanMetadata* active_spans_array[kMaxSlotSpansToSort];
   size_t index = 0;
-  SlotSpanMetadata<MetadataKind::kReadOnly>* overflow_spans_start = nullptr;
+  SlotSpanMetadata* overflow_spans_start = nullptr;
 
   for (auto* slot_span = active_slot_spans_head; slot_span;
        slot_span = slot_span->next_slot_span) {
@@ -1290,8 +1277,7 @@ void PartitionBucket::SortActiveSlotSpans(PartitionRoot* root) {
 
   // Reverse order, since we insert at the head of the list.
   for (int i = index - 1; i >= 0; i--) {
-    if (active_spans_array[i] ==
-        SlotSpanMetadata<MetadataKind::kReadOnly>::get_sentinel_slot_span()) {
+    if (active_spans_array[i] == SlotSpanMetadata::get_sentinel_slot_span()) {
       // The sentinel is const, don't try to write to it.
       PA_DCHECK(active_slot_spans_head == nullptr);
     } else {
@@ -1301,13 +1287,12 @@ void PartitionBucket::SortActiveSlotSpans(PartitionRoot* root) {
   }
 }
 
-uintptr_t PartitionBucket::SlowPathAlloc(
-    PartitionRoot* root,
-    AllocFlags flags,
-    size_t raw_size,
-    size_t slot_span_alignment,
-    SlotSpanMetadata<MetadataKind::kReadOnly>** slot_span,
-    bool* is_already_zeroed) {
+uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
+                                         AllocFlags flags,
+                                         size_t raw_size,
+                                         size_t slot_span_alignment,
+                                         SlotSpanMetadata** slot_span,
+                                         bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             base::bits::HasSingleBit(slot_span_alignment));
 
@@ -1318,7 +1303,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(
   PA_DCHECK(!active_slot_spans_head->get_freelist_head() ||
             allocate_aligned_slot_span);
 
-  SlotSpanMetadata<MetadataKind::kReadOnly>* new_slot_span = nullptr;
+  SlotSpanMetadata* new_slot_span = nullptr;
   // |new_slot_span->bucket| will always be |this|, except when |this| is the
   // sentinel bucket, which is used to signal a direct mapped allocation.  In
   // this case |new_bucket| will be set properly later. This avoids a read for
@@ -1338,9 +1323,8 @@ uintptr_t PartitionBucket::SlowPathAlloc(
   if (is_direct_mapped()) [[unlikely]] {
     PA_DCHECK(raw_size > BucketIndexLookup::kMaxBucketSize);
     PA_DCHECK(this == &root->sentinel_bucket);
-    PA_DCHECK(
-        active_slot_spans_head ==
-        SlotSpanMetadata<MetadataKind::kReadOnly>::get_sentinel_slot_span());
+    PA_DCHECK(active_slot_spans_head ==
+              SlotSpanMetadata::get_sentinel_slot_span());
 
     // No fast path for direct-mapped allocations.
     if (ContainsFlags(flags, AllocFlags::kFastPathOrReturnNull)) {
@@ -1417,8 +1401,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(
         // provisioning slots, in ProvisionMoreSlotsAndAllocOne(), not here.
         if (!kUseLazyCommit) {
           uintptr_t slot_span_start =
-              SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
-                  new_slot_span);
+              SlotSpanMetadata::ToSlotSpanStart(new_slot_span);
           // Since lazy commit isn't used, we have a guarantee that all slot
           // span pages have been previously committed, and then decommitted
           // using PageAccessibilityDisposition::kAllowKeepForPerf, so use the
@@ -1459,9 +1442,8 @@ uintptr_t PartitionBucket::SlowPathAlloc(
 
   // Bail if we had a memory allocation failure.
   if (!new_slot_span) [[unlikely]] {
-    PA_DCHECK(
-        active_slot_spans_head ==
-        SlotSpanMetadata<MetadataKind::kReadOnly>::get_sentinel_slot_span());
+    PA_DCHECK(active_slot_spans_head ==
+              SlotSpanMetadata::get_sentinel_slot_span());
     if (ContainsFlags(flags, AllocFlags::kReturnNull)) {
       return 0;
     }
@@ -1503,9 +1485,8 @@ uintptr_t PartitionBucket::AllocNewSuperPageSpanForGwpAsan(
   return AllocNewSuperPageSpan(root, super_page_count, flags);
 }
 
-void PartitionBucket::InitializeSlotSpanForGwpAsan(
-    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-    PartitionRoot* root) {
+void PartitionBucket::InitializeSlotSpanForGwpAsan(SlotSpanMetadata* slot_span,
+                                                   PartitionRoot* root) {
   InitializeSlotSpan(slot_span, root);
 }
 

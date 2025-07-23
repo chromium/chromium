@@ -64,14 +64,14 @@ namespace partition_alloc::internal {
 //   found, an empty or decommitted slot spans (if one exists) will be pulled
 //   from the empty/decommitted list on to the active list.
 #pragma pack(push, 1)
-struct SlotSpanMetadataBase {
+struct SlotSpanMetadata {
  private:
   FreelistEntry* freelist_head = nullptr;
 
  public:
   // TODO(lizeb): Make as many fields as possible private or const, to
   // encapsulate things more clearly.
-  SlotSpanMetadataBase* next_slot_span = nullptr;
+  SlotSpanMetadata* next_slot_span = nullptr;
   PartitionBucket* const bucket = nullptr;
 
   // CHECK()ed in AllocNewSlotSpan().
@@ -125,10 +125,10 @@ struct SlotSpanMetadataBase {
   PA_ALWAYS_INLINE bool in_empty_cache() const { return in_empty_cache_; }
 
   PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  explicit SlotSpanMetadataBase(PartitionBucket* bucket);
+  explicit SlotSpanMetadata(PartitionBucket* bucket);
 
   // pa_tcache_inspect needs the copy constructor.
-  inline SlotSpanMetadataBase(const SlotSpanMetadataBase&);
+  inline SlotSpanMetadata(const SlotSpanMetadata&);
 
   // Public API
   // Pointer/address manipulation functions. These must be static as the input
@@ -136,15 +136,13 @@ struct SlotSpanMetadataBase {
   // therefore cannot be trusted. The objective of these functions is to
   // sanitize this input.
   PA_ALWAYS_INLINE static uintptr_t ToSlotSpanStart(
-      const SlotSpanMetadataBase* slot_span);
-  PA_ALWAYS_INLINE static SlotSpanMetadataBase* FromAddr(uintptr_t address);
-  PA_ALWAYS_INLINE static SlotSpanMetadataBase* FromSlotStart(
-      uintptr_t slot_start);
-  PA_ALWAYS_INLINE static SlotSpanMetadataBase* FromObject(const void* object);
-  PA_ALWAYS_INLINE static SlotSpanMetadataBase* FromObjectInnerAddr(
+      const SlotSpanMetadata* slot_span);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromAddr(uintptr_t address);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObject(const void* object);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerAddr(
       uintptr_t address);
-  PA_ALWAYS_INLINE static SlotSpanMetadataBase* FromObjectInnerPtr(
-      const void* ptr);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(const void* ptr);
 
   PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* ToSuperPageExtent() const;
 
@@ -179,13 +177,13 @@ struct SlotSpanMetadataBase {
 
   // TODO(ajwong): Can this be made private?  https://crbug.com/787153
   PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  static const SlotSpanMetadataBase* get_sentinel_slot_span();
+  static const SlotSpanMetadata* get_sentinel_slot_span();
   // The sentinel is not supposed to be modified and hence we mark it as const
   // under the hood. However, we often store it together with mutable metadata
   // objects and need a non-const pointer.
   // You can use this function for this case, but you need to ensure that the
   // returned object will not be written to.
-  static SlotSpanMetadataBase* get_sentinel_slot_span_non_const();
+  static SlotSpanMetadata* get_sentinel_slot_span_non_const();
 
   // Slot span state getters.
   PA_ALWAYS_INLINE bool is_active() const;
@@ -203,9 +201,9 @@ struct SlotSpanMetadataBase {
   //
   // Note, this declaration is kept in the header as opposed to an anonymous
   // namespace so the getter can be fully inlined.
-  static const SlotSpanMetadataBase sentinel_slot_span_;
+  static const SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
-  inline constexpr SlotSpanMetadataBase() noexcept;
+  inline constexpr SlotSpanMetadata() noexcept;
 
  public:
   // Note the matching Alloc() functions are in PartitionPage.
@@ -244,10 +242,10 @@ struct SlotSpanMetadataBase {
   PA_ALWAYS_INLINE void set_freelist_sorted() { freelist_is_sorted_ = true; }
 };
 #pragma pack(pop)
-static_assert(sizeof(SlotSpanMetadataBase) <= kPageMetadataSize,
-              "SlotSpanMetadataBase must fit into a Page Metadata slot.");
+static_assert(sizeof(SlotSpanMetadata) <= kPageMetadataSize,
+              "SlotSpanMetadata must fit into a Page Metadata slot.");
 
-inline constexpr SlotSpanMetadataBase::SlotSpanMetadataBase() noexcept
+inline constexpr SlotSpanMetadata::SlotSpanMetadata() noexcept
     : num_allocated_slots(0u),
       num_unprovisioned_slots(0u),
       marked_full(0u),
@@ -256,8 +254,7 @@ inline constexpr SlotSpanMetadataBase::SlotSpanMetadataBase() noexcept
       in_empty_cache_(0u),
       empty_cache_index_(0u) {}
 
-inline SlotSpanMetadataBase::SlotSpanMetadataBase(const SlotSpanMetadataBase&) =
-    default;
+inline SlotSpanMetadata::SlotSpanMetadata(const SlotSpanMetadata&) = default;
 
 // Metadata of a non-first partition page in a slot span.
 struct SubsequentPageMetadata {
@@ -283,7 +280,7 @@ struct SubsequentPageMetadata {
 #pragma pack(push, 1)
 struct PartitionPageMetadata {
   union {
-    SlotSpanMetadataBase slot_span_metadata;
+    SlotSpanMetadata slot_span_metadata;
 
     SubsequentPageMetadata subsequent_page_metadata;
 
@@ -399,7 +396,7 @@ PA_ALWAYS_INLINE size_t SuperPagePayloadSize(uintptr_t super_page) {
 }
 
 PA_ALWAYS_INLINE PartitionSuperPageExtentEntry*
-SlotSpanMetadataBase::ToSuperPageExtent() const {
+SlotSpanMetadata::ToSuperPageExtent() const {
   uintptr_t super_page = reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask;
   return PartitionSuperPageToExtent(super_page);
 }
@@ -449,7 +446,7 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
 // pages's metadata) into a pointer to the beginning of the slot span. This
 // works on direct maps too.
 PA_ALWAYS_INLINE uintptr_t
-SlotSpanMetadataBase::ToSlotSpanStart(const SlotSpanMetadataBase* slot_span) {
+SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
   uintptr_t super_page_offset = (pointer_as_uint & kSuperPageOffsetMask);
 
@@ -477,7 +474,7 @@ SlotSpanMetadataBase::ToSlotSpanStart(const SlotSpanMetadataBase* slot_span) {
 //
 // CAUTION! For direct-mapped allocation, |address| has to be within the first
 // partition page.
-PA_ALWAYS_INLINE SlotSpanMetadataBase* SlotSpanMetadataBase::FromAddr(
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
     uintptr_t address) {
   auto* page_metadata = PartitionPageMetadata::FromAddr(address);
   PA_DCHECK(page_metadata->is_valid);
@@ -500,7 +497,7 @@ PA_ALWAYS_INLINE SlotSpanMetadataBase* SlotSpanMetadataBase::FromAddr(
 // beginning of a slot. It doesn't check if the slot is actually allocated.
 //
 // This works on direct maps too.
-PA_ALWAYS_INLINE SlotSpanMetadataBase* SlotSpanMetadataBase::FromSlotStart(
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
     uintptr_t slot_start) {
   auto* slot_span = FromAddr(slot_start);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -515,7 +512,7 @@ PA_ALWAYS_INLINE SlotSpanMetadataBase* SlotSpanMetadataBase::FromSlotStart(
 // an object. It doesn't check if the object is actually allocated.
 //
 // This works on direct maps too.
-PA_ALWAYS_INLINE SlotSpanMetadataBase* SlotSpanMetadataBase::FromObject(
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObject(
     const void* object) {
   uintptr_t object_addr = ObjectPtr2Addr(object);
   auto* slot_span = FromAddr(object_addr);
@@ -528,8 +525,8 @@ PA_ALWAYS_INLINE SlotSpanMetadataBase* SlotSpanMetadataBase::FromObject(
 //
 // CAUTION! For direct-mapped allocation, |address| has to be within the first
 // partition page.
-PA_ALWAYS_INLINE SlotSpanMetadataBase*
-SlotSpanMetadataBase::FromObjectInnerAddr(uintptr_t address) {
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerAddr(
+    uintptr_t address) {
   auto* slot_span = FromAddr(address);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Checks that the address is within the expected object boundaries.
@@ -541,26 +538,26 @@ SlotSpanMetadataBase::FromObjectInnerAddr(uintptr_t address) {
   return slot_span;
 }
 
-PA_ALWAYS_INLINE SlotSpanMetadataBase* SlotSpanMetadataBase::FromObjectInnerPtr(
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerPtr(
     const void* ptr) {
   return FromObjectInnerAddr(ObjectInnerPtr2Addr(ptr));
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadataBase::SetRawSize(size_t raw_size) {
+PA_ALWAYS_INLINE void SlotSpanMetadata::SetRawSize(size_t raw_size) {
   PA_DCHECK(CanStoreRawSize());
   auto* subsequent_page_metadata =
       GetSubsequentPageMetadata(reinterpret_cast<PartitionPageMetadata*>(this));
   subsequent_page_metadata->raw_size = raw_size;
 }
 
-PA_ALWAYS_INLINE size_t SlotSpanMetadataBase::GetRawSize() const {
+PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
   PA_DCHECK(CanStoreRawSize());
   const auto* subsequent_page_metadata = GetSubsequentPageMetadata(
       reinterpret_cast<const PartitionPageMetadata*>(this));
   return subsequent_page_metadata->raw_size;
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadataBase::SetFreelistHead(
+PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
     FreelistEntry* new_head,
     [[maybe_unused]] PartitionRoot* root) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -577,7 +574,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadataBase::SetFreelistHead(
   freelist_is_sorted_ = false;
 }
 
-PA_ALWAYS_INLINE FreelistEntry* SlotSpanMetadataBase::PopForAlloc(size_t size) {
+PA_ALWAYS_INLINE FreelistEntry* SlotSpanMetadata::PopForAlloc(size_t size) {
   // Not using bucket->slot_size directly as the compiler doesn't know that
   // |bucket->slot_size| is the same as |size|.
   PA_DCHECK(size == bucket->slot_size);
@@ -590,8 +587,8 @@ PA_ALWAYS_INLINE FreelistEntry* SlotSpanMetadataBase::PopForAlloc(size_t size) {
   return result;
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadataBase::Free(uintptr_t slot_start,
-                                                 PartitionRoot* root)
+PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
+                                             PartitionRoot* root)
     // PartitionRootLock() is not defined inside partition_page.h, but
     // static analysis doesn't require the implementation.
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
@@ -619,11 +616,11 @@ PA_ALWAYS_INLINE void SlotSpanMetadataBase::Free(uintptr_t slot_start,
   }
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadataBase::AppendFreeList(
-    FreelistEntry* head,
-    FreelistEntry* tail,
-    size_t number_of_freed,
-    PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
+PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(FreelistEntry* head,
+                                                       FreelistEntry* tail,
+                                                       size_t number_of_freed,
+                                                       PartitionRoot* root)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   DCheckRootLockIsAcquired(root);
   PA_DCHECK(!(tail->GetNext(bucket->slot_size)));
@@ -661,7 +658,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadataBase::AppendFreeList(
   }
 }
 
-PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_active() const {
+PA_ALWAYS_INLINE bool SlotSpanMetadata::is_active() const {
   PA_DCHECK(this != get_sentinel_slot_span());
   bool ret =
       (num_allocated_slots > 0 && (freelist_head || num_unprovisioned_slots));
@@ -672,7 +669,7 @@ PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_active() const {
   return ret;
 }
 
-PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_full() const {
+PA_ALWAYS_INLINE bool SlotSpanMetadata::is_full() const {
   PA_DCHECK(this != get_sentinel_slot_span());
   bool ret = (num_allocated_slots == bucket->get_slots_per_span());
   if (ret) {
@@ -683,7 +680,7 @@ PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_full() const {
   return ret;
 }
 
-PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_empty() const {
+PA_ALWAYS_INLINE bool SlotSpanMetadata::is_empty() const {
   PA_DCHECK(this != get_sentinel_slot_span());
   bool ret = (!num_allocated_slots && freelist_head);
   if (ret) {
@@ -692,7 +689,7 @@ PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_empty() const {
   return ret;
 }
 
-PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_decommitted() const {
+PA_ALWAYS_INLINE bool SlotSpanMetadata::is_decommitted() const {
   PA_DCHECK(this != get_sentinel_slot_span());
   bool ret = (!num_allocated_slots && !freelist_head);
   if (ret) {
@@ -703,7 +700,7 @@ PA_ALWAYS_INLINE bool SlotSpanMetadataBase::is_decommitted() const {
   return ret;
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadataBase::Reset() {
+PA_ALWAYS_INLINE void SlotSpanMetadata::Reset() {
   PA_DCHECK(is_decommitted());
 
   size_t num_slots_per_span = bucket->get_slots_per_span();
@@ -731,7 +728,7 @@ void IterateSlotSpans(uintptr_t super_page, Callback callback) {
   auto* const last_page_metadata = PartitionPageMetadata::FromAddr(
       SuperPagePayloadEnd(super_page) - PartitionPageSize());
   PartitionPageMetadata* page_metadata = nullptr;
-  SlotSpanMetadataBase* slot_span = nullptr;
+  SlotSpanMetadata* slot_span = nullptr;
   for (page_metadata = first_page_metadata;
        page_metadata <= last_page_metadata;) {
     PA_DCHECK(!page_metadata
@@ -796,10 +793,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
 
   PA_ALWAYS_INLINE
   void CheckIsSlotStart() const {
-    auto* slot_span_metadata =
-        SlotSpanMetadataBase::FromAddr(untagged_slot_start_);
-    uintptr_t slot_span =
-        SlotSpanMetadataBase::ToSlotSpanStart(slot_span_metadata);
+    auto* slot_span_metadata = SlotSpanMetadata::FromAddr(untagged_slot_start_);
+    uintptr_t slot_span = SlotSpanMetadata::ToSlotSpanStart(slot_span_metadata);
     PA_CHECK(!((untagged_slot_start_ - slot_span) %
                slot_span_metadata->bucket->slot_size));
   }

@@ -101,8 +101,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
             &page_metadata[partition_page_idx].slot_span_metadata;
         bucket->InitializeSlotSpanForGwpAsan(slot_span_metadata, root);
         auto slot_span_start =
-            internal::SlotSpanMetadata<internal::MetadataKind::kReadOnly>::
-                ToSlotSpanStart(slot_span_metadata);
+            internal::SlotSpanMetadata::ToSlotSpanStart(slot_span_metadata);
 
         for (uintptr_t slot_idx = 0; slot_idx < kSlotsPerSlotSpan; ++slot_idx) {
           auto slot_start = slot_span_start + slot_idx * kSlotSize;

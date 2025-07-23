@@ -270,7 +270,7 @@ class CountDanglingRawPtr {
 namespace partition_alloc::internal {
 
 using BucketDistribution = PartitionRoot::BucketDistribution;
-using SlotSpan = SlotSpanMetadata<MetadataKind::kReadOnly>;
+using SlotSpan = SlotSpanMetadata;
 
 const size_t kTestAllocSize = 16;
 
@@ -2824,8 +2824,7 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookie) {
   const size_t alloc_size = 2 * sizeof(void*);
   char* array = static_cast<char*>(allocator.root()->Alloc(alloc_size));
 
-  auto* slot_span =
-      PartitionRoot::ReadOnlySlotSpanMetadata::FromObjectInnerPtr(array);
+  auto* slot_span = PartitionRoot::SlotSpanMetadata::FromObjectInnerPtr(array);
   size_t usable_size = allocator.root()->GetSlotUsableSize(slot_span);
 
   char previous_value = array[usable_size];
@@ -2852,8 +2851,7 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookieWithRealisticData) {
   void** array = static_cast<void**>(allocator.root()->Alloc(alloc_size));
   char valid;
 
-  auto* slot_span =
-      PartitionRoot::ReadOnlySlotSpanMetadata::FromObjectInnerPtr(array);
+  auto* slot_span = PartitionRoot::SlotSpanMetadata::FromObjectInnerPtr(array);
   size_t usable_size =
       allocator.root()->GetSlotUsableSize(slot_span) / sizeof(void*);
 
@@ -3921,8 +3919,8 @@ TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
   void* ptr =
       root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
   ASSERT_TRUE(ptr);
-  uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
-      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(UntagPtr(ptr)));
+  uintptr_t start = SlotSpanMetadata::ToSlotSpanStart(
+      SlotSpanMetadata::FromAddr(UntagPtr(ptr)));
   uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
 
   std::string proc_maps;
@@ -3976,8 +3974,8 @@ TEST_P(PartitionAllocTest, FewerMemoryRegions) {
   void* ptr =
       root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
   ASSERT_TRUE(ptr);
-  uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
-      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(UntagPtr(ptr)));
+  uintptr_t start = SlotSpanMetadata::ToSlotSpanStart(
+      SlotSpanMetadata::FromAddr(UntagPtr(ptr)));
   uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
 
   std::string proc_maps;
@@ -6057,10 +6055,10 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
       // But slot_spans must contain the readonly slot spans.
       size_t loop_count = std::min(num_slotspans_per_superpage, count);
       for (size_t j = 0; j < loop_count; ++j) {
-        size_t offset = sizeof(SlotSpanMetadata<MetadataKind::kWritable>) * j;
-        SlotSpanMetadata<MetadataKind::kWritable>* writable_slot_span =
+        size_t offset = sizeof(SlotSpanMetadata) * j;
+        SlotSpanMetadata* writable_slot_span =
             new (reinterpret_cast<void*>(writable_metadata + offset))
-                SlotSpanMetadata<MetadataKind::kWritable>(&bucket);
+                SlotSpanMetadata(&bucket);
 
         SlotSpan* slot_span = reinterpret_cast<SlotSpan*>(metadata + offset);
         slot_spans.push_back(slot_span);

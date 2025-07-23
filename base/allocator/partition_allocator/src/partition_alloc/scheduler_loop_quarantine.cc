@@ -116,7 +116,7 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Destroy() {
 template <bool thread_bound>
 void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
     void* object,
-    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+    SlotSpanMetadata* slot_span,
     uintptr_t slot_start) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!being_destructed_);
@@ -195,9 +195,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
       // Assuming that ThreadCache is not available as this is not thread-bound.
       // Going to `RawFree()` directly.
       slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-      auto* slot_span =
-          SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
-              to_free.slot_start);
+      auto* slot_span = SlotSpanMetadata::FromSlotStart(to_free.slot_start);
       allocator_root_->RawFree(to_free.slot_start, slot_span);
     } else {
       // Unless during its destruction, we can assume ThreadCache is valid
@@ -218,9 +216,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
             allocator_root_->AdjustSizeForExtrasSubtract(slot_size);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-        auto* slot_span =
-            SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
-                to_free.slot_start);
+        auto* slot_span = SlotSpanMetadata::FromSlotStart(to_free.slot_start);
         PA_DCHECK(!slot_span->CanStoreRawSize());
         PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
 #endif
@@ -230,9 +226,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
         // ThreadCache refused to take ownership of the allocation, hence we
         // free it.
         slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-        auto* slot_span =
-            SlotSpanMetadata<MetadataKind::kReadOnly>::FromSlotStart(
-                to_free.slot_start);
+        auto* slot_span = SlotSpanMetadata::FromSlotStart(to_free.slot_start);
         size_t usable_size = allocator_root_->GetSlotUsableSize(slot_span);
         tcache_->RecordDeallocation(usable_size);
         allocator_root_->RawFree(to_free.slot_start, slot_span);

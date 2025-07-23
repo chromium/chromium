@@ -148,7 +148,7 @@ class SchedulerLoopQuarantineBranch {
   void SetCapacityInBytes(size_t capacity_in_bytes);
 
   void Quarantine(void* object,
-                  SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+                  SlotSpanMetadata* slot_span,
                   uintptr_t slot_start) PA_LOCKS_EXCLUDED(lock_);
 
   const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();

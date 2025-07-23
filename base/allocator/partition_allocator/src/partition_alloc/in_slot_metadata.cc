@@ -23,7 +23,7 @@ namespace {
 
 // If double-free, the freed `slot` will be a freelist entry.
 bool IsInFreelist(uintptr_t slot_start,
-                  SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+                  SlotSpanMetadata* slot_span,
                   size_t& position) {
   size_t slot_size = slot_span->bucket->slot_size;
 
@@ -98,10 +98,9 @@ PA_NOINLINE PA_NOT_TAIL_CALLED void CorruptionDetected() {
 [[noreturn]]
 #endif  // !PA_BUILDFLAG(IS_IOS)
 PA_NOINLINE PA_NOT_TAIL_CALLED void
-InSlotMetadata::DoubleFreeOrCorruptionDetected(
-    InSlotMetadata::CountType count,
-    uintptr_t slot_start,
-    SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
+InSlotMetadata::DoubleFreeOrCorruptionDetected(InSlotMetadata::CountType count,
+                                               uintptr_t slot_start,
+                                               SlotSpanMetadata* slot_span) {
   // Lock the PartitionRoot here, because to travserse SlotSpanMetadata's
   // freelist, we need PartitionRootLock().
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);

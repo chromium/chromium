@@ -32,7 +32,7 @@ void UnmapNow(uintptr_t reservation_start,
               size_t reservation_size,
               PartitionRoot* root);
 
-PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadataBase* slot_span) {
+PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   PartitionRootLock(root).AssertAcquired();
   auto* extent = PartitionDirectMapExtent::FromSlotSpanMetadata(slot_span);
@@ -57,8 +57,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadataBase* slot_span) {
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= reservation_size);
   root->total_size_of_direct_mapped_pages -= reservation_size;
 
-  uintptr_t reservation_start =
-      SlotSpanMetadataBase::ToSlotSpanStart(slot_span);
+  uintptr_t reservation_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
   // The mapping may start at an unspecified location within a super page, but
   // we always reserve memory aligned to super page size.
   reservation_start = base::bits::AlignDown(reservation_start, kSuperPageSize);
@@ -80,7 +79,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadataBase* slot_span) {
 
 }  // namespace
 
-PA_ALWAYS_INLINE void SlotSpanMetadataBase::RegisterEmpty() {
+PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
   PA_DCHECK(is_empty());
   auto* root = PartitionRoot::FromSlotSpanMetadata(this);
   PartitionRootLock(root).AssertAcquired();
@@ -100,7 +99,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadataBase::RegisterEmpty() {
   PA_DCHECK(root->global_empty_slot_span_ring_index <
             root->global_empty_slot_span_ring_size);
   int16_t current_index = root->global_empty_slot_span_ring_index;
-  SlotSpanMetadataBase* slot_span_to_decommit =
+  SlotSpanMetadata* slot_span_to_decommit =
       root->global_empty_slot_span_ring[current_index];
   // The slot span might well have been re-activated, filled up, etc. before we
   // get around to looking at it here.
@@ -142,19 +141,19 @@ PA_ALWAYS_INLINE void SlotSpanMetadataBase::RegisterEmpty() {
   }
 }
 // static
-const SlotSpanMetadataBase SlotSpanMetadataBase::sentinel_slot_span_;
+const SlotSpanMetadata SlotSpanMetadata::sentinel_slot_span_;
 
 // static
-const SlotSpanMetadataBase* SlotSpanMetadataBase::get_sentinel_slot_span() {
+const SlotSpanMetadata* SlotSpanMetadata::get_sentinel_slot_span() {
   return &sentinel_slot_span_;
 }
 
 // static
-SlotSpanMetadataBase* SlotSpanMetadataBase::get_sentinel_slot_span_non_const() {
-  return const_cast<SlotSpanMetadataBase*>(&sentinel_slot_span_);
+SlotSpanMetadata* SlotSpanMetadata::get_sentinel_slot_span_non_const() {
+  return const_cast<SlotSpanMetadata*>(&sentinel_slot_span_);
 }
 
-SlotSpanMetadataBase::SlotSpanMetadataBase(PartitionBucket* bucket)
+SlotSpanMetadata::SlotSpanMetadata(PartitionBucket* bucket)
     : bucket(bucket),
       num_allocated_slots(0u),
       num_unprovisioned_slots(0u),
@@ -164,7 +163,7 @@ SlotSpanMetadataBase::SlotSpanMetadataBase(PartitionBucket* bucket)
       in_empty_cache_(0u),
       empty_cache_index_(0u) {}
 
-void SlotSpanMetadataBase::FreeSlowPath(size_t number_of_freed) {
+void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(this);
   DCheckRootLockIsAcquired(root);
   PA_DCHECK(this != get_sentinel_slot_span());
@@ -222,11 +221,11 @@ void SlotSpanMetadataBase::FreeSlowPath(size_t number_of_freed) {
   }
 }
 
-void SlotSpanMetadataBase::Decommit(PartitionRoot* root) {
+void SlotSpanMetadata::Decommit(PartitionRoot* root) {
   PartitionRootLock(root).AssertAcquired();
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
-  uintptr_t slot_span_start = SlotSpanMetadataBase::ToSlotSpanStart(this);
+  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(this);
   // If lazy commit is enabled, only provisioned slots are committed.
   size_t dirty_size =
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
@@ -253,7 +252,7 @@ void SlotSpanMetadataBase::Decommit(PartitionRoot* root) {
   PA_DCHECK(bucket);
 }
 
-void SlotSpanMetadataBase::DecommitIfPossible(PartitionRoot* root) {
+void SlotSpanMetadata::DecommitIfPossible(PartitionRoot* root) {
   PartitionRootLock(root).AssertAcquired();
   PA_DCHECK(in_empty_cache_);
   PA_DCHECK(empty_cache_index_ < kMaxEmptySlotSpanRingSize);
@@ -265,7 +264,7 @@ void SlotSpanMetadataBase::DecommitIfPossible(PartitionRoot* root) {
   root->global_empty_slot_span_ring[empty_cache_index_] = nullptr;
 }
 
-void SlotSpanMetadataBase::SortFreelist(PartitionRoot* root) {
+void SlotSpanMetadata::SortFreelist(PartitionRoot* root) {
   std::bitset<kMaxSlotsPerSlotSpan> free_slots;
   uintptr_t slot_span_start = ToSlotSpanStart(this);
 
