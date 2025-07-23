@@ -127,7 +127,7 @@ struct WaylandEventSource::TouchPoint {
   TouchPoint(gfx::PointF location, WaylandWindow* current_window);
   ~TouchPoint() = default;
 
-  raw_ptr<WaylandWindow, DanglingUntriaged> window;
+  raw_ptr<WaylandWindow> window;
   gfx::PointF last_known_location;
 };
 
