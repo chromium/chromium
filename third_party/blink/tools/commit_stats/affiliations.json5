@@ -144,8 +144,8 @@
   },
   "slightlyoff@chromium.org": {
     affiliations: [
-      { start: "2008-12-01", domain: "google.com" },
       { start: "2021-06-21", domain: "microsoft.com" },
+      { start: "2008-12-01", domain: "google.com" },
     ]
   },
   "sohanjg@chromium.org": {
