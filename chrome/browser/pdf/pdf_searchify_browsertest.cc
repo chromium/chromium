@@ -188,6 +188,8 @@ IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, MAYBE_MultiPage) {
       IsScreenReaderEnabled(), IsSearchifyActive() ? 1 : 0);
 }
 
+// TODO(crbug.com/382610226): Add combined save test for ink and searchify.
+
 // TODO(crbug.com/382610226): Add text selection test for PDFs with rotated page
 // or image.
 

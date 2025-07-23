@@ -293,6 +293,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_save_to_drive">
   protected accessor pdfSaveToDriveEnabled_: boolean = false;
   // </if>
+  private pdfSearchifySaveEnabled_: boolean = false;
   private accessor pdfUseShowSaveFilePicker_: boolean = false;
   private pluginController_: PluginController = PluginController.getInstance();
   // <if expr="enable_pdf_ink2">
@@ -943,6 +944,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // <if expr="enable_pdf_save_to_drive">
     this.pdfSaveToDriveEnabled_ = loadTimeData.getBoolean('pdfSaveToDrive');
     // </if>
+    this.pdfSearchifySaveEnabled_ =
+        loadTimeData.getBoolean('pdfSearchifySaveEnabled');
     this.pdfUseShowSaveFilePicker_ =
         loadTimeData.getBoolean('pdfUseShowSaveFilePicker');
     const presetZoomFactors = this.viewport.presetZoomFactors;
@@ -1327,7 +1330,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       saveMode = SaveRequestType.ANNOTATION;
     } else if (this.hasEdits_) {
       saveMode = SaveRequestType.EDITED;
-    } else if (this.hasSearchifyText_) {
+    } else if (this.hasSearchifyText_ && this.pdfSearchifySaveEnabled_) {
       saveMode = SaveRequestType.SEARCHIFIED;
     } else {
       saveMode = SaveRequestType.ORIGINAL;
