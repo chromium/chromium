@@ -599,7 +599,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Profile.PercentageOfManagedProfiles" units="units"
     expires_after="2025-12-07">
-  <owner>agawronska@chromium.org</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Tracks the percentage (0-100) of profiles that are locally managed. Only

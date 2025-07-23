@@ -12,9 +12,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- agawronska@chromium.org
-- danan@chromium.org
-- yilkal@chromium.org
+- zhangwenyu@googe.com
+- longbowei@google.com
 - cros-families-eng@google.com
 schema:
   description: The valid version of Terms of Service derived from Google3 cl that

@@ -18,7 +18,8 @@ items:
 - caption: Disable Screencast dogfood for Family Link users
   value: false
 owners:
-- agawronska@google.com
+- zhangwenyu@google.com
+- longbowei@google.com
 - llin@google.com
 - cros-projector@google.com
 schema:

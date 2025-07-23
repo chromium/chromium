@@ -2289,9 +2289,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.ContentTransfer.AuthenticationResult"
     enum="ContentTransferAuthenticationResult" expires_after="2025-10-07">
-  <owner>courtneywong@chromium.org</owner>
-  <owner>agawronska@chromium.org</owner>
-  <owner>amberhaynes@chromium.org</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the outcome of webview authentication when it finishes. Allows for
@@ -2301,9 +2300,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.ContentTransfer.FlowState" enum="ContentTransferFlowState"
     expires_after="2025-10-07">
-  <owner>courtneywong@chromium.org</owner>
-  <owner>agawronska@chromium.org</owner>
-  <owner>amberhaynes@chromium.org</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the state at which the Content Transfer app was exited by the user.
@@ -2314,9 +2312,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.ContentTransfer.ShowNudgeFailed"
     enum="ContentTransferShowNudgeFailureReason" expires_after="2025-10-07">
-  <owner>courtneywong@chromium.org</owner>
-  <owner>agawronska@chromium.org</owner>
-  <owner>amberhaynes@chromium.org</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Recorded when showing the Content Transfer app nudge to a user has failed.
@@ -4904,7 +4901,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.ShowGaiaSignin.PermanentlyUntrusted" enum="Boolean"
     expires_after="2025-10-01">
-  <owner>agawronska@chromium.org</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records instances of a &quot;PERMANENTLY_UNTRUSTED&quot; result during the
@@ -4915,7 +4913,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.ShowGaiaSignin.WaitTime" units="ms"
     expires_after="2025-11-30">
-  <owner>agawronska@chromium.org</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the amount of time spent waiting for trusted values before showing
