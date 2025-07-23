@@ -859,10 +859,12 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     }
   } else if (IsRenderingContext2D() && LowLatencyEnabled() &&
              frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
-             GetResourceProviderForCanvas2D() &&
-             GetResourceProviderForCanvas2D()->IsValid()) {
+             RenderingContext()->GetResourceProviderForCanvas2D() &&
+             RenderingContext()->GetResourceProviderForCanvas2D()->IsValid()) {
     if (scoped_refptr<CanvasResource> canvas_resource =
-            GetResourceProviderForCanvas2D()->ProduceCanvasResource(reason)) {
+            RenderingContext()
+                ->GetResourceProviderForCanvas2D()
+                ->ProduceCanvasResource(reason)) {
       const gfx::Rect src_rect(Size());
       dirty_rect_.Intersect(src_rect);
       const gfx::Rect int_dirty = dirty_rect_;
@@ -1218,8 +1220,8 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // web test printing/manual/canvas2d-vector-text.html
   // That test should be run manually against CLs that touch this code.
   if (IsPrinting() && IsRenderingContext2D() &&
-      GetResourceProviderForCanvas2D()) {
-    auto* provider = GetResourceProviderForCanvas2D();
+      RenderingContext()->GetResourceProviderForCanvas2D()) {
+    auto* provider = RenderingContext()->GetResourceProviderForCanvas2D();
     provider->FlushCanvas(FlushReason::kPrinting);
     // `FlushRecording` might be a no-op if a flush already happened before.
     // Fortunately, the last flush recording was kept by the context.
@@ -1253,7 +1255,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // all contexts other than canvas 2D, get a snapshot directly from the
   // context.
   if (IsRenderingContext2D()) {
-    if (GetResourceProviderForCanvas2D()) {
+    if (RenderingContext()->GetResourceProviderForCanvas2D()) {
       snapshot = context_->GetImage(FlushReason::kPaint);
     }
   } else {
@@ -1551,11 +1553,13 @@ bool HTMLCanvasElement::IsCompositedForCanvas2D() const {
     return false;
   }
 
-  if (!GetResourceProviderForCanvas2D()) [[unlikely]] {
+  if (!RenderingContext()->GetResourceProviderForCanvas2D()) [[unlikely]] {
     return false;
   }
 
-  return GetResourceProviderForCanvas2D()->SupportsDirectCompositing() &&
+  return RenderingContext()
+             ->GetResourceProviderForCanvas2D()
+             ->SupportsDirectCompositing() &&
          !LowLatencyEnabled();
 }
 
