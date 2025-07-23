@@ -27,7 +27,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "ui/base/scoped_visibility_tracker.h"
 #include "ui/gfx/geometry/size.h"
 

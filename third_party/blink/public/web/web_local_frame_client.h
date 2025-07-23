@@ -51,7 +51,6 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -95,6 +94,7 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
@@ -647,7 +647,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
   // A new soft navigation was observed.
-  virtual void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) {}
+  virtual void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {

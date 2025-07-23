@@ -36,7 +36,7 @@ struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace blink {
-struct SoftNavigationMetrics;
+struct SoftNavigationMetricsForReporting;
 }  // namespace blink
 
 namespace page_load_metrics {
@@ -67,7 +67,8 @@ class PageTimingMetricsSender {
   void DidObserveSubresourceLoad(
       const blink::SubresourceLoadMetrics& subresource_load_metrics);
   void DidObserveNewFeatureUsage(const blink::UseCounterFeature& feature);
-  void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics);
+  void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
 
   void DidStartResponse(const url::SchemeHostPort& final_response_url,

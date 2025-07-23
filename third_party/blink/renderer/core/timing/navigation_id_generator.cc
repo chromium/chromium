@@ -33,7 +33,7 @@ void NavigationIdGenerator::ResetNavigationId() {
 }
 
 void NavigationIdGenerator::IncrementNavigationId() {
-  CHECK_NE(navigation_id_, kNavigationIdDefaultValue);
+  CHECK_NE(navigation_id_, kNavigationIdAbsentValue);
   // Check for overflow, and reset the navigation id if it happens.
   if (navigation_id_ > kMaxNavigationId - kNavigationIdIncrement) {
     ResetNavigationId();

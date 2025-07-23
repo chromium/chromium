@@ -92,7 +92,8 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
       const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) override;
-  void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) override;
+  void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int request_id,

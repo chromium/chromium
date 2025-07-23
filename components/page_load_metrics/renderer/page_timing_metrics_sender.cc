@@ -125,7 +125,7 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 }
 
 void PageTimingMetricsSender::DidObserveSoftNavigation(
-    blink::SoftNavigationMetrics new_metrics) {
+    blink::SoftNavigationMetricsForReporting new_metrics) {
   // The start_time is a TimeDelta, and its resolution is in microseconds.
   // Every time we observe a new soft navigation we expect the total count to
   // increase by one, and the navigation_id to update, however, we have no

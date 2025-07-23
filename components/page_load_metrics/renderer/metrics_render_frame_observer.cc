@@ -183,7 +183,7 @@ void MetricsRenderFrameObserver::DidObserveNewFeatureUsage(
 }
 
 void MetricsRenderFrameObserver::DidObserveSoftNavigation(
-    blink::SoftNavigationMetrics soft_nav_metrics) {
+    blink::SoftNavigationMetricsForReporting soft_nav_metrics) {
   if (page_timing_metrics_sender_) {
     const blink::WebPerformanceMetricsForReporting& metrics =
         render_frame()->GetWebFrame()->PerformanceMetricsForReporting();

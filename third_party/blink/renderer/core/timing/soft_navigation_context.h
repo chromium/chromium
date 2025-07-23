@@ -9,9 +9,10 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -39,7 +40,7 @@ class CORE_EXPORT SoftNavigationContext
   }
 
   bool HasNavigationId() const {
-    return navigation_id_ != kNavigationIdDefaultValue;
+    return navigation_id_ != kNavigationIdAbsentValue;
   }
   uint32_t NavigationId() const { return navigation_id_; }
   void SetNavigationId(uint32_t navigation_id) {
@@ -116,7 +117,7 @@ class CORE_EXPORT SoftNavigationContext
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;
 
-  uint32_t navigation_id_ = kNavigationIdDefaultValue;
+  uint32_t navigation_id_ = kNavigationIdAbsentValue;
   const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
 
   base::TimeTicks user_interaction_timestamp_;

@@ -4,7 +4,7 @@
 
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 
 namespace page_load_metrics {
 
@@ -32,8 +32,7 @@ mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
 
 mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
   return mojom::SoftNavigationMetrics::New(
-      blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-      blink::kNavigationIdDefaultValue, CreateLargestContentfulPaintTiming());
+      0, base::Milliseconds(0), 0, CreateLargestContentfulPaintTiming());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {

@@ -35,14 +35,15 @@
 #include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
+#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -194,7 +195,7 @@ class CORE_EXPORT Performance : public EventTarget {
                                   kResourcetimingbufferfull)
 
   virtual uint32_t NavigationId() const {
-    return blink::kNavigationIdDefaultValue;
+    return blink::kNavigationIdAbsentValue;
   }
 
   void AddLongTaskTiming(base::TimeTicks start_time,

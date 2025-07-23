@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -30,6 +29,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "v8/include/v8-forward.h"
@@ -254,7 +254,8 @@ class CONTENT_EXPORT RenderFrameObserver {
   // - Initiated with the window.history or window.navigation APIs.
   // - Accompanied with a DOM modification of the <main> element during the same
   // or a descendant task.
-  virtual void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) {}
+  virtual void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   // This is called once for each animation frame containing any layout shift,

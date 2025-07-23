@@ -14,7 +14,7 @@ constexpr uint32_t kMaxNavigationIdForReset = 10 * 1000;
 TEST(NavigationIdGeneratorTest, InitialValueIsRandomForHardNavigations) {
   NavigationIdGenerator generator;
   uint32_t id = generator.NavigationId();
-  EXPECT_NE(id, kNavigationIdDefaultValue);
+  EXPECT_NE(id, kNavigationIdAbsentValue);
   EXPECT_GE(id, kMinNavigationId);
   EXPECT_LE(id, kMaxNavigationIdForReset);
 }

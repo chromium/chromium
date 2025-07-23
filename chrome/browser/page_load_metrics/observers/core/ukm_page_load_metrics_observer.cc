@@ -64,7 +64,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/blink/blink_features.h"
@@ -1020,10 +1019,10 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
 
   builder.Record(ukm::UkmRecorder::Get());
 
-  // Record last soft navigation metrics.
-  if (GetDelegate().GetSoftNavigationMetrics().count >= 1 &&
-      GetDelegate().GetSoftNavigationMetrics().navigation_id !=
-          blink::kNavigationIdDefaultValue) {
+  // Record last soft navigation metrics; note that 0 is the absent navigation
+  // id, see third_party/blink/renderer/core/timing/navigation_id_generator.h.
+  if (GetDelegate().GetSoftNavigationMetrics().count &&
+      GetDelegate().GetSoftNavigationMetrics().navigation_id) {
     RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
                                 GetDelegate().GetSoftNavigationMetrics());
   }

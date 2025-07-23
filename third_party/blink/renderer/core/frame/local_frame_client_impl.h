@@ -41,7 +41,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -171,7 +170,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveSubresourceLoad(
       const SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(const UseCounterFeature&) override;
-  void DidObserveSoftNavigation(SoftNavigationMetrics metrics) override;
+  void DidObserveSoftNavigation(
+      SoftNavigationMetricsForReporting metrics) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void SelectorMatchChanged(const Vector<String>& added_selectors,
                             const Vector<String>& removed_selectors) override;

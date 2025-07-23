@@ -538,7 +538,7 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   CHECK(EnsureContextForCurrentWindow(context));
 
   if (LocalFrameClient* frame_client = frame->Client()) {
-    blink::SoftNavigationMetrics metrics = {
+    blink::SoftNavigationMetricsForReporting metrics = {
         .count = soft_navigation_count_,
         .start_time = loader->GetTiming().MonotonicTimeToPseudoWallTime(
             context->UserInteractionTimestamp()),

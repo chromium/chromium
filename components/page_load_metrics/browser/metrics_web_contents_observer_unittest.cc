@@ -19,6 +19,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -33,11 +34,11 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "url/url_constants.h"
 
 using content::NavigationSimulator;
@@ -129,10 +130,7 @@ class MetricsWebContentsObserverTest
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(std::in_place), timing.Clone(),
         mojom::InputTimingPtr(std::in_place), std::nullopt,
-        mojom::SoftNavigationMetrics::New(
-            blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            blink::kNavigationIdDefaultValue,
-            mojom::LargestContentfulPaintTiming::New()));
+        CreateSoftNavigationMetrics());
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -158,10 +156,7 @@ class MetricsWebContentsObserverTest
         mojom::FrameRenderDataUpdatePtr(std::in_place),
         mojom::CpuTimingPtr(std::in_place),
         mojom::InputTimingPtr(std::in_place), std::nullopt,
-        mojom::SoftNavigationMetrics::New(
-            blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            blink::kNavigationIdDefaultValue,
-            mojom::LargestContentfulPaintTiming::New()));
+        CreateSoftNavigationMetrics());
   }
 
   void SimulateCustomUserTimingUpdate(

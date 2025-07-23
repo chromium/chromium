@@ -43,7 +43,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -63,6 +62,7 @@
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/icon_url.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
@@ -243,7 +243,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
   // A new soft navigation was observed.
-  virtual void DidObserveSoftNavigation(SoftNavigationMetrics metrics) {}
+  virtual void DidObserveSoftNavigation(
+      SoftNavigationMetricsForReporting metrics) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
