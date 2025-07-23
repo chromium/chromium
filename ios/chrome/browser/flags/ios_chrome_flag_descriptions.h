@@ -146,6 +146,9 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeName[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 
+extern const char kBeginCursorAtPointTentativeFixName[];
+extern const char kBeginCursorAtPointTentativeFixDescription[];
+
 extern const char kBestFeaturesScreenInFirstRunName[];
 extern const char kBestFeaturesScreenInFirstRunDescription[];
 

@@ -249,6 +249,12 @@ const char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =
     "When enabled, changes the amount of time required for VCN enrollment "
     "prompt strikes to expire.";
 
+const char kBeginCursorAtPointTentativeFixName[] =
+    "Begin cursor at point tentative fix";
+const char kBeginCursorAtPointTentativeFixDescription[] =
+    "A tentative fix for crbug.com/361003475. When enabled, it prevents a call to "
+    "setSelectedTextRange.";
+
 const char kBestFeaturesScreenInFirstRunName[] =
     "Display Best Features screen in the FRE";
 const char kBestFeaturesScreenInFirstRunDescription[] =

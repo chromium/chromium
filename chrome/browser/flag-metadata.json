@@ -1073,6 +1073,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "begin-cursor-at-point-tentative-fix",
+    "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "best-of-app-fre",
     "owners": [ "thegreenfrog@google.com", "bling-gsu-pod@google.com"],
     "expiry_milestone": 146

@@ -15,3 +15,7 @@ bool IsRichAutocompletionEnabled() {
 BASE_FEATURE(kIOSOmniboxAimShortcut,
              "IOSOmniboxAimShortcut",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBeginCursorAtPointTentativeFix,
+             "BeginCursorAtPointTentativeFix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
