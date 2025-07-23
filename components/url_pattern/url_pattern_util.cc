@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_pattern/url_pattern_util.h"
 
 #include <ranges>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -22,7 +18,8 @@ namespace {
 
 std::string StdStringFromCanonOutput(const url::CanonOutput& output,
                                      const url::Component& component) {
-  return std::string(output.data() + component.begin, component.len);
+  return std::string(UNSAFE_TODO(output.data() + component.begin),
+                     component.len);
 }
 
 bool ContainsForbiddenHostnameCodePoint(std::string_view input) {

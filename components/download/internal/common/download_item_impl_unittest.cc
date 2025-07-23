@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/download/public/common/download_item_impl.h"
 
 #include <stdint.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
@@ -2236,7 +2232,7 @@ std::vector<EventList> DistributeObservationsIntoEvents(
     int event_count) {
   std::vector<EventList> all_event_lists;
   for (auto partition = begin;; ++partition) {
-    ObservationList first_group_of_observations(begin, partition);
+    ObservationList UNSAFE_TODO(first_group_of_observations(begin, partition));
     if (event_count > 1) {
       std::vector<EventList> list_of_subsequent_events =
           DistributeObservationsIntoEvents(partition, end, event_count - 1);

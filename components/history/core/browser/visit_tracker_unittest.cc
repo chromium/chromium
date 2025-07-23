@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/history/core/browser/visit_tracker.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -47,7 +43,7 @@ void AddVisitToTracker(const VisitToTest& test_data, VisitTracker* tracker) {
 
 void RunTest(VisitTracker* tracker, VisitToTest* test, int test_count) {
   for (int i = 0; i < test_count; i++)
-    AddVisitToTracker(test[i], tracker);
+    AddVisitToTracker(UNSAFE_TODO(test[i]), tracker);
 }
 
 }  // namespace

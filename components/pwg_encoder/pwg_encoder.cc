@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/pwg_encoder/pwg_encoder.h"
 
 #include <limits.h>
@@ -15,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
@@ -146,14 +142,15 @@ void EncodeRow(RandomAccessIterator pos,
   // smallest number of generic sequences.
   // NOTE: the algorithm is not optimal especially in case of monochrome.
   while (pos != row_end) {
-    RandomAccessIterator it = pos + 1;
-    RandomAccessIterator end = std::min(pos + kPwgMaxPackedPixels, row_end);
+    RandomAccessIterator it = UNSAFE_TODO(pos + 1);
+    RandomAccessIterator end =
+        std::min(UNSAFE_TODO(pos + kPwgMaxPackedPixels), row_end);
 
     // Counts how many identical pixels (up to 128).
     while (it != end && *pos == *it) {
-      ++it;
+      UNSAFE_TODO(++it);
     }
-    if (it != pos + 1) {  // More than one pixel
+    if (it != UNSAFE_TODO(pos + 1)) {  // More than one pixel
       output->push_back(static_cast<char>((it - pos) - 1));
       if (monochrome)
         EncodePixelToMonochrome<InputStruct>(&*pos, output);
@@ -165,15 +162,15 @@ void EncodeRow(RandomAccessIterator pos,
       // IMPORTANT: even if sequences of different pixels can contain as many
       // as 129 pixels, we restrict to 128 because some decoders don't manage
       // it correctly. So iterating until it != end is correct.
-      while (it != end && *it != *(it - 1)) {
-        ++it;
+      while (it != end && *it != *(UNSAFE_TODO(it - 1))) {
+        UNSAFE_TODO(++it);
       }
       // Optimization: ignores the last pixel of the sequence if it is followed
       // by an identical pixel, as it is more convenient for it to be the start
       // of a new sequence of identical pixels. Notice that we don't compare
       // to end, but row_end.
-      if (it != row_end && *it == *(it - 1)) {
-        --it;
+      if (it != row_end && *it == *(UNSAFE_TODO(it - 1))) {
+        UNSAFE_TODO(--it);
       }
       output->push_back(static_cast<char>(1 - (it - pos)));
       while (pos != it) {
@@ -181,7 +178,7 @@ void EncodeRow(RandomAccessIterator pos,
           EncodePixelToMonochrome<InputStruct>(&*pos, output);
         else
           EncodePixelToRGB<InputStruct>(&*pos, output);
-        ++pos;
+        UNSAFE_TODO(++pos);
       }
     }
   }
@@ -210,9 +207,9 @@ std::string EncodePageWithColorspace(const BitmapImage& image,
     // We count how many times the current row is repeated.
     while (num_identical_rows < kPwgMaxPackedRows &&
            row_number < image.size().height() &&
-           !memcmp(current_row,
-                   GetRow(image, row_number, pwg_header_info.flipy),
-                   row_size)) {
+           !UNSAFE_TODO(memcmp(current_row,
+                               GetRow(image, row_number, pwg_header_info.flipy),
+                               row_size))) {
       num_identical_rows++;
       row_number++;
     }
@@ -224,7 +221,7 @@ std::string EncodePageWithColorspace(const BitmapImage& image,
     // Management of the bytes of the pixel is done by pixel_encoder function
     // on the original array to avoid endian problems.
     const uint32_t* pos = reinterpret_cast<const uint32_t*>(current_row);
-    const uint32_t* row_end = pos + image.size().width();
+    const uint32_t* row_end = UNSAFE_TODO(pos + image.size().width());
     if (!pwg_header_info.flipx) {
       EncodeRow<InputStruct>(pos, row_end, monochrome, &output);
     } else {

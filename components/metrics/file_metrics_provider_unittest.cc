@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/file_metrics_provider.h"
 
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -264,7 +260,8 @@ class FileMetricsProviderTestBase : public testing::Test {
     // Use DCHECK so the stack-trace will indicate where this was called.
     DCHECK(writer.IsValid()) << path;
     size_t file_size = create_large_files_ ? metrics->size() : metrics->used();
-    int written = writer.Write(0, (const char*)metrics->data(), file_size);
+    int written =
+        UNSAFE_TODO(writer.Write(0, (const char*)metrics->data(), file_size));
     DCHECK_EQ(static_cast<int>(file_size), written);
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/favicon/core/favicon_database.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -158,8 +154,9 @@ void VerifyDatabaseEmpty(sql::Database* db) {
     return false;
   }
 
-  if (memcmp(favicon_bitmaps[0].bitmap_data->front(), expected_icon_contents,
-             expected_icon_contents_size)) {
+  if (UNSAFE_TODO(memcmp(favicon_bitmaps[0].bitmap_data->front(),
+                         expected_icon_contents,
+                         expected_icon_contents_size))) {
     ADD_FAILURE() << "failed to match `expected_icon_contents`";
     return false;
   }
@@ -237,7 +234,7 @@ TEST_F(FaviconDatabaseTest, AddIconMapping) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
 
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com");
@@ -264,7 +261,7 @@ TEST_F(FaviconDatabaseTest, AddOnDemandFaviconBitmapCreatesCorrectTimestamps) {
   base::Time add_time;
   ASSERT_TRUE(
       base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &add_time));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com");
@@ -291,7 +288,7 @@ TEST_F(FaviconDatabaseTest, AddFaviconBitmapCreatesCorrectTimestamps) {
   base::Time add_time;
   ASSERT_TRUE(
       base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &add_time));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com");
@@ -333,7 +330,7 @@ TEST_F(FaviconDatabaseTest, GetFaviconLastUpdatedTimeReturnsMaxTime) {
   ASSERT_TRUE(
       base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &add_time1));
   base::Time add_time2 = add_time1 - base::Seconds(1);
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com");
@@ -359,7 +356,7 @@ TEST_F(FaviconDatabaseTest, TouchUpdatesOnDemandFavicons) {
 
   base::Time start;
   ASSERT_TRUE(base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &start));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   // Create an on-demand favicon.
@@ -390,7 +387,7 @@ TEST_F(FaviconDatabaseTest, TouchUpdatesOnlyInfrequently) {
 
   base::Time start;
   ASSERT_TRUE(base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &start));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   // Create an on-demand favicon.
@@ -418,7 +415,7 @@ TEST_F(FaviconDatabaseTest, TouchDoesNotUpdateStandardFavicons) {
 
   base::Time start;
   ASSERT_TRUE(base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &start));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   // Create a standard favicon.
@@ -450,7 +447,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsReturnsOld) {
 
   base::Time start;
   ASSERT_TRUE(base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &start));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com/favicon.ico");
@@ -485,7 +482,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotReturnExpired) {
 
   base::Time start;
   ASSERT_TRUE(base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &start));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com/favicon.ico");
@@ -513,7 +510,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotReturnFresh) {
 
   base::Time start;
   ASSERT_TRUE(base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &start));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com/favicon.ico");
@@ -544,7 +541,7 @@ TEST_F(FaviconDatabaseTest, GetOldOnDemandFaviconsDoesNotDeleteStandard) {
 
   base::Time start;
   ASSERT_TRUE(base::Time::FromUTCExploded({2017, 5, 0, 1, 0, 0, 0, 0}, &start));
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   favicon_base::FaviconID icon = db.AddFavicon(
@@ -566,7 +563,7 @@ TEST_F(FaviconDatabaseTest, DeleteIconMappings) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
 
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com");
@@ -601,7 +598,7 @@ TEST_F(FaviconDatabaseTest, GetIconMappingsForPageURL) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
 
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL url("http://google.com");
@@ -734,10 +731,12 @@ TEST_F(FaviconDatabaseTest, DeleteFavicon) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
 
-  std::vector<unsigned char> data1(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data1(kBlob1,
+                                   UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon1(
       new base::RefCountedBytes(data1));
-  std::vector<unsigned char> data2(kBlob2, kBlob2 + sizeof(kBlob2));
+  std::vector<unsigned char> data2(kBlob2,
+                                   UNSAFE_TODO(kBlob2 + sizeof(kBlob2)));
   scoped_refptr<base::RefCountedBytes> favicon2(
       new base::RefCountedBytes(data2));
 
@@ -762,7 +761,7 @@ TEST_F(FaviconDatabaseTest, GetIconMappingsForPageURLForReturnOrder) {
   db.BeginTransaction();
 
   // Add a favicon
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   GURL page_url("http://google.com");
@@ -782,7 +781,8 @@ TEST_F(FaviconDatabaseTest, GetIconMappingsForPageURLForReturnOrder) {
   EXPECT_EQ(icon_url, icon_mappings.front().icon_url);
 
   // Add a touch icon
-  std::vector<unsigned char> data2(kBlob2, kBlob2 + sizeof(kBlob2));
+  std::vector<unsigned char> data2(kBlob2,
+                                   UNSAFE_TODO(kBlob2 + sizeof(kBlob2)));
   scoped_refptr<base::RefCountedBytes> favicon2 =
       new base::RefCountedBytes(data);
 
@@ -945,7 +945,7 @@ TEST_F(FaviconDatabaseTest, HasMappingFor) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
 
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   // Add a favicon which will have icon_mappings
@@ -1389,7 +1389,7 @@ TEST_F(FaviconDatabaseTest, GetFaviconsLastUpdatedBefore) {
   ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
   db.BeginTransaction();
 
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
 
   // Add two favicons, 10 seconds apart. `time1` is after `time2`.
@@ -1439,7 +1439,7 @@ TEST_F(FaviconDatabaseTest, SetFaviconsOutOfDateBetween) {
   base::Time t2 = base::Time::Now() - base::Minutes(2);
   base::Time t3 = base::Time::Now() - base::Minutes(1);
 
-  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  std::vector<unsigned char> data(kBlob1, UNSAFE_TODO(kBlob1 + sizeof(kBlob1)));
   scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
   favicon_base::FaviconID icon1 =
       db.AddFavicon(GURL("http://a.example.com/favicon.ico"),

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/reporting/storage/storage_queue.h"
 
 #include <algorithm>
@@ -22,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -134,9 +130,9 @@ struct RecordHeader {
     if (header.record_sequencing_id < 0) {
       return base::unexpected(Status(error::INTERNAL, "header is corrupt"));
     }
-    p += sizeof(header.record_sequencing_id);
+    UNSAFE_TODO(p += sizeof(header.record_sequencing_id));
     header.record_size = *reinterpret_cast<const int32_t*>(p);
-    p += sizeof(header.record_size);
+    UNSAFE_TODO(p += sizeof(header.record_size));
     header.record_hash = *reinterpret_cast<const int32_t*>(p);
 
     return header;
@@ -793,8 +789,8 @@ Status StorageQueue::ReadMetadata(
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.error().ToString()}));
   }
-  const int64_t generation_id =
-      *reinterpret_cast<const int64_t*>(read_result.value().data());
+  const int64_t generation_id = *UNSAFE_TODO(
+      reinterpret_cast<const int64_t*>(read_result.value().data()));
   if (generation_id <= 0) {
     // Generation is not in [1, max_int64] range - file corrupt or empty.
     base::UmaHistogramEnumeration(
@@ -2460,7 +2456,8 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
   if (data_start_ + size > buffer_.size()) {
     CHECK_GT(data_start_, 0u);  // Cannot happen if 0.
     if (data_end_ > data_start_) {
-      memmove(buffer_.at(0), buffer_.at(data_start_), data_end_ - data_start_);
+      UNSAFE_TODO(memmove(buffer_.at(0), buffer_.at(data_start_),
+                          data_end_ - data_start_));
     }
     data_end_ -= data_start_;
     data_start_ = 0;
@@ -2470,8 +2467,8 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
   while (actual_size < size) {
     // Read as much as possible.
     CHECK_LT(data_end_, buffer_.size());
-    const int32_t result =
-        handle_->Read(pos, buffer_.at(data_end_), buffer_.size() - data_end_);
+    const int32_t result = UNSAFE_TODO(
+        handle_->Read(pos, buffer_.at(data_end_), buffer_.size() - data_end_));
     if (result < 0) {
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                     DataLossErrorReason::FAILED_TO_READ_FILE,
@@ -2523,7 +2520,8 @@ StatusOr<uint32_t> StorageQueue::SingleFile::Append(std::string_view data) {
   }
   size_t actual_size = 0;
   while (data.size() > 0) {
-    const int32_t result = handle_->Write(size_, data.data(), data.size());
+    const int32_t result =
+        UNSAFE_TODO(handle_->Write(size_, data.data(), data.size()));
     if (result < 0) {
       base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                     DataLossErrorReason::FAILED_TO_WRITE_FILE,

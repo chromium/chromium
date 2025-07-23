@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/keyword_provider.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -133,18 +129,20 @@ void KeywordProviderTest::RunTest(TestData<ResultType>* keyword_cases,
                                   ResultType AutocompleteMatch::*member) {
   ACMatches matches;
   for (int i = 0; i < num_cases; ++i) {
-    SCOPED_TRACE(keyword_cases[i].input);
-    AutocompleteInput input(keyword_cases[i].input,
+    UNSAFE_TODO(SCOPED_TRACE(keyword_cases[i].input));
+    AutocompleteInput input(UNSAFE_TODO(keyword_cases[i]).input,
                             metrics::OmniboxEventProto::OTHER,
                             TestingSchemeClassifier());
     kw_provider_->Start(input, false);
     EXPECT_TRUE(kw_provider_->done());
     matches = kw_provider_->matches();
-    ASSERT_EQ(keyword_cases[i].num_results, matches.size());
+    UNSAFE_TODO(ASSERT_EQ(keyword_cases[i].num_results, matches.size()));
     for (size_t j = 0; j < matches.size(); ++j) {
-      EXPECT_EQ(keyword_cases[i].output[j].member, matches[j].*member);
-      EXPECT_EQ(keyword_cases[i].output[j].allowed_to_be_default_match,
-                matches[j].allowed_to_be_default_match);
+      UNSAFE_TODO(
+          EXPECT_EQ(keyword_cases[i].output[j].member, matches[j].*member));
+      UNSAFE_TODO(
+          EXPECT_EQ(keyword_cases[i].output[j].allowed_to_be_default_match,
+                    matches[j].allowed_to_be_default_match));
     }
   }
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gcm_driver/crypto/encryption_header_parsers.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -97,9 +93,12 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueEncryptionHeaders) {
     for (size_t j = 0; j < kNumberOfValues; ++j) {
       ASSERT_TRUE(iterator.GetNext());
 
-      EXPECT_EQ(expected_results[i].parsed_values[j].keyid, iterator.keyid());
-      EXPECT_EQ(expected_results[i].parsed_values[j].salt, iterator.salt());
-      EXPECT_EQ(expected_results[i].parsed_values[j].rs, iterator.rs());
+      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].keyid,
+                            iterator.keyid()));
+      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].salt,
+                            iterator.salt()));
+      UNSAFE_TODO(
+          EXPECT_EQ(expected_results[i].parsed_values[j].rs, iterator.rs()));
     }
 
     EXPECT_FALSE(iterator.GetNext());
@@ -244,10 +243,12 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
     for (size_t j = 0; j < kNumberOfValues; ++j) {
       ASSERT_TRUE(iterator.GetNext());
 
-      EXPECT_EQ(expected_results[i].parsed_values[j].keyid, iterator.keyid());
-      EXPECT_EQ(expected_results[i].parsed_values[j].aesgcm128,
-                iterator.aesgcm128());
-      EXPECT_EQ(expected_results[i].parsed_values[j].dh, iterator.dh());
+      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].keyid,
+                            iterator.keyid()));
+      UNSAFE_TODO(EXPECT_EQ(expected_results[i].parsed_values[j].aesgcm128,
+                            iterator.aesgcm128()));
+      UNSAFE_TODO(
+          EXPECT_EQ(expected_results[i].parsed_values[j].dh, iterator.dh()));
     }
 
     EXPECT_FALSE(iterator.GetNext());

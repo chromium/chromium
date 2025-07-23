@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Implements a custom word iterator used for our spellchecker.
 
 #include "components/spellcheck/renderer/spellcheck_worditerator.h"
@@ -17,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -46,7 +42,7 @@ bool SpellcheckCharAttribute::IsTextInSameScript(
   const size_t length = text.length();
   for (size_t index = 0; index < length; /* U16_NEXT post-increments */) {
     uint32_t code = 0;
-    U16_NEXT(data, index, length, code);
+    UNSAFE_TODO(U16_NEXT(data, index, length, code));
     UErrorCode error = U_ZERO_ERROR;
     UScriptCode script = uscript_getScript(code, &error);
     if (U_SUCCESS(error) && (script != USCRIPT_COMMON) &&
@@ -445,7 +441,7 @@ bool SpellcheckWordIterator::Normalize(size_t input_start,
   // spellchecker and we need manual normalization as well. The normalized
   // text does not have to be NUL-terminated since its characters are copied to
   // string16, which adds a NUL character when we need.
-  icu::UnicodeString input(false, &text_[input_start],
+  icu::UnicodeString input(false, &UNSAFE_TODO(text_[input_start]),
                            base::checked_cast<int32_t>(input_length));
   UErrorCode status = U_ZERO_ERROR;
   icu::UnicodeString output;

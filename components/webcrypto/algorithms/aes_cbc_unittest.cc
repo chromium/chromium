@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
@@ -111,7 +107,7 @@ TEST_F(WebCryptoAesCbcTest, InputTooLarge) {
   // Pretend the input is large. Don't pass data pointer as NULL in case that
   // is special cased; the implementation shouldn't actually dereference the
   // data.
-  base::span<const uint8_t> input(iv.data(), size_t{INT_MAX} - 3);
+  base::span<const uint8_t> UNSAFE_TODO(input(iv.data(), size_t{INT_MAX} - 3));
 
   EXPECT_EQ(
       Status::ErrorDataTooLarge(),

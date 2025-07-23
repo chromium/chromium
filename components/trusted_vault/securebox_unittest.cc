@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/trusted_vault/securebox.h"
 
 #include <cstdint>
@@ -17,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,7 +30,7 @@ using testing::SizeIs;
 
 std::vector<uint8_t> StringToBytes(std::string_view str) {
   const uint8_t* raw_data = reinterpret_cast<const uint8_t*>(str.data());
-  return std::vector<uint8_t>(raw_data, raw_data + str.length());
+  return std::vector<uint8_t>(raw_data, UNSAFE_TODO(raw_data + str.length()));
 }
 
 class SecureBoxTest : public testing::Test {

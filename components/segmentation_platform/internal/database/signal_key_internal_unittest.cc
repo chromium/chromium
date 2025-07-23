@@ -2,35 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/segmentation_platform/internal/database/signal_key_internal.h"
 
 #include <sstream>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
 
 namespace {
 void VerifyEqual(SignalKeyInternal a, SignalKeyInternal b) {
-  ASSERT_EQ(0, memcmp(&a, &b, sizeof(SignalKeyInternal)));
+  UNSAFE_TODO(ASSERT_EQ(0, memcmp(&a, &b, sizeof(SignalKeyInternal))));
 }
 
 void VerifyNotEqual(SignalKeyInternal a, SignalKeyInternal b) {
-  ASSERT_NE(0, memcmp(&a, &b, sizeof(SignalKeyInternal)));
+  UNSAFE_TODO(ASSERT_NE(0, memcmp(&a, &b, sizeof(SignalKeyInternal))));
 }
 
 void VerifyEqual(SignalKeyInternal::Prefix a, SignalKeyInternal::Prefix b) {
-  ASSERT_EQ(0, memcmp(&a, &b, sizeof(SignalKeyInternal::Prefix)));
+  UNSAFE_TODO(ASSERT_EQ(0, memcmp(&a, &b, sizeof(SignalKeyInternal::Prefix))));
 }
 
 void VerifyNotEqual(SignalKeyInternal::Prefix a, SignalKeyInternal::Prefix b) {
-  ASSERT_NE(0, memcmp(&a, &b, sizeof(SignalKeyInternal::Prefix)));
+  UNSAFE_TODO(ASSERT_NE(0, memcmp(&a, &b, sizeof(SignalKeyInternal::Prefix))));
 }
 
 TEST(SignalKeyInternalTest, TestKeyConversionToAndFromBinary) {

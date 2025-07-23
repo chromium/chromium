@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/persistent_system_profile.h"
 
 #include <set>
@@ -15,6 +10,7 @@
 
 #include "base/atomicops.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
@@ -129,8 +125,9 @@ bool PersistentSystemProfile::RecordAllocator::HasMoreData() const {
     return false;
 
   RecordHeader header;
-  header.as_atomic = base::subtle::Acquire_Load(
-      reinterpret_cast<base::subtle::Atomic32*>(block + end_offset_));
+  header.as_atomic =
+      base::subtle::Acquire_Load(reinterpret_cast<base::subtle::Atomic32*>(
+          UNSAFE_TODO(block + end_offset_)));
   return header.as_parts.type != kUnusedSpace;
 }
 
@@ -211,17 +208,18 @@ bool PersistentSystemProfile::RecordAllocator::WriteData(RecordType type,
   DCHECK_GE(alloc_size_, end_offset_);
   if (end_offset_ < alloc_size_) {
     // An empty record header has to be next before this one gets written.
-    base::subtle::NoBarrier_Store(
-        reinterpret_cast<base::subtle::Atomic32*>(block + end_offset_), 0);
+    base::subtle::NoBarrier_Store(reinterpret_cast<base::subtle::Atomic32*>(
+                                      UNSAFE_TODO(block + end_offset_)),
+                                  0);
   }
-  memcpy(block + offset + sizeof(header), *data, write_size);
+  UNSAFE_TODO(memcpy(block + offset + sizeof(header), *data, write_size));
   base::subtle::Release_Store(
-      reinterpret_cast<base::subtle::Atomic32*>(block + offset),
+      reinterpret_cast<base::subtle::Atomic32*>(UNSAFE_TODO(block + offset)),
       header.as_atomic);
 
   // Account for what was stored and prepare for follow-on records with any
   // remaining data.
-  *data += write_size;
+  UNSAFE_TODO(*data += write_size);
   *data_size -= write_size;
 
   return true;
@@ -242,8 +240,9 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
 
   // Get and validate the record header.
   RecordHeader header;
-  header.as_atomic = base::subtle::Acquire_Load(
-      reinterpret_cast<base::subtle::Atomic32*>(block + end_offset_));
+  header.as_atomic =
+      base::subtle::Acquire_Load(reinterpret_cast<base::subtle::Atomic32*>(
+          UNSAFE_TODO(block + end_offset_)));
   bool continued = !!header.as_parts.continued;
   if (header.as_parts.type == kUnusedSpace) {
     *type = kUnusedSpace;
@@ -272,7 +271,7 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
   }
 
   // Append the record data to the output string.
-  record->append(block + end_offset_ + sizeof(header), read_size);
+  record->append(UNSAFE_TODO(block + end_offset_ + sizeof(header)), read_size);
   end_offset_ += CalculateRecordSize(read_size);
   DCHECK_GE(alloc_size_, end_offset_);
 

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "components/os_crypt/sync/key_storage_libsecret.h"
 
 #include <string>
 #include <unordered_map>
 
+#include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "components/os_crypt/sync/key_storage_libsecret.h"
 #include "components/os_crypt/sync/libsecret_util_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -142,7 +139,8 @@ gboolean MockLibsecretLoader::mock_secret_password_store_sync(
     ...) {
   // TODO(crbug.com/40490926) We don't read the dummy we store to unlock
   // keyring.
-  if (strcmp("_chrome_dummy_schema_for_unlocking", schema->name) == 0) {
+  if (UNSAFE_TODO(strcmp("_chrome_dummy_schema_for_unlocking", schema->name)) ==
+      0) {
     return true;
   }
 

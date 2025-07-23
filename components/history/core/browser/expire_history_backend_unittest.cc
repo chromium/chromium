@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/history/core/browser/expire_history_backend.h"
 
 #include <stddef.h>
@@ -238,10 +233,10 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   }
 
   // Four times for each visit.
-  visit_times[3] = PretendNow();
-  visit_times[2] = visit_times[3] - base::Days(1);
-  visit_times[1] = visit_times[3] - base::Days(2);
-  visit_times[0] = visit_times[3] - base::Days(3);
+  UNSAFE_TODO(visit_times[3]) = PretendNow();
+  UNSAFE_TODO(visit_times[2]) = UNSAFE_TODO(visit_times[3]) - base::Days(1);
+  UNSAFE_TODO(visit_times[1]) = UNSAFE_TODO(visit_times[3]) - base::Days(2);
+  visit_times[0] = UNSAFE_TODO(visit_times[3]) - base::Days(3);
 
   // Two favicons. The first two URLs will share the same one, while the last
   // one will have a unique favicon.
@@ -259,17 +254,17 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
                             favicon::PageUrlType::kRegular);
 
   URLRow url_row2(GURL("http://www.google.com/2"));
-  url_row2.set_last_visit(visit_times[2]);
+  url_row2.set_last_visit(UNSAFE_TODO(visit_times[2]));
   url_row2.set_visit_count(2);
   url_row2.set_typed_count(1);
-  url_ids[1] = main_db_->AddURL(url_row2);
+  UNSAFE_TODO(url_ids[1]) = main_db_->AddURL(url_row2);
   thumb_db_->AddIconMapping(url_row2.url(), favicon1,
                             favicon::PageUrlType::kRegular);
 
   URLRow url_row3(GURL("http://www.google.com/3"));
-  url_row3.set_last_visit(visit_times[3]);
+  url_row3.set_last_visit(UNSAFE_TODO(visit_times[3]));
   url_row3.set_visit_count(1);
-  url_ids[2] = main_db_->AddURL(url_row3);
+  UNSAFE_TODO(url_ids[2]) = main_db_->AddURL(url_row3);
   thumb_db_->AddIconMapping(url_row3.url(), favicon2,
                             favicon::PageUrlType::kRegular);
 
@@ -280,16 +275,16 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   main_db_->AddVisit(&visit_row1, SOURCE_BROWSED);
 
   VisitRow visit_row2;
-  visit_row2.url_id = url_ids[1];
-  visit_row2.visit_time = visit_times[1];
+  visit_row2.url_id = UNSAFE_TODO(url_ids[1]);
+  visit_row2.visit_time = UNSAFE_TODO(visit_times[1]);
   if (set_app_id) {
     visit_row2.app_id = kTestAppId;
   }
   main_db_->AddVisit(&visit_row2, SOURCE_BROWSED);
 
   VisitRow visit_row3;
-  visit_row3.url_id = url_ids[1];
-  visit_row3.visit_time = visit_times[2];
+  visit_row3.url_id = UNSAFE_TODO(url_ids[1]);
+  visit_row3.visit_time = UNSAFE_TODO(visit_times[2]);
   visit_row3.transition = ui::PAGE_TRANSITION_TYPED;
   visit_row3.incremented_omnibox_typed_score = true;
   if (set_app_id) {
@@ -298,8 +293,8 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   main_db_->AddVisit(&visit_row3, SOURCE_BROWSED);
 
   VisitRow visit_row4;
-  visit_row4.url_id = url_ids[2];
-  visit_row4.visit_time = visit_times[3];
+  visit_row4.url_id = UNSAFE_TODO(url_ids[2]);
+  visit_row4.visit_time = UNSAFE_TODO(visit_times[3]);
   main_db_->AddVisit(&visit_row4, SOURCE_BROWSED);
 }
 
@@ -614,7 +609,7 @@ TEST_F(ExpireHistoryTest, DeleteURLs) {
   // Push back a bogus URL (which shouldn't change anything).
   urls.push_back(GURL());
   for (size_t i = 0; i < std::size(rows); ++i) {
-    ASSERT_TRUE(main_db_->GetURLRow(url_ids[i], &rows[i]));
+    UNSAFE_TODO(ASSERT_TRUE(main_db_->GetURLRow(url_ids[i], &rows[i])));
     favicon_ids[i] =
         GetFavicon(rows[i].url(), favicon_base::IconType::kFavicon);
     EXPECT_TRUE(HasFavicon(favicon_ids[i]));

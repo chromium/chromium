@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/file_metrics_provider.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -596,12 +592,12 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   if (!read_only) {
     constexpr int kTestSize = 16;
     char header[kTestSize];
-    int amount = file.Read(0, header, kTestSize);
+    int amount = UNSAFE_TODO(file.Read(0, header, kTestSize));
     if (amount != kTestSize)
       return ACCESS_RESULT_INVALID_CONTENTS;
 
     char zeros[kTestSize] = {};
-    file.Write(0, zeros, kTestSize);
+    UNSAFE_TODO(file.Write(0, zeros, kTestSize));
     file.Flush();
 
     // A crash here would be unfortunate as the file would be left invalid
@@ -610,19 +606,21 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
     // can't be written more than justifies the risk.
 
     char check[kTestSize];
-    amount = file.Read(0, check, kTestSize);
+    amount = UNSAFE_TODO(file.Read(0, check, kTestSize));
     if (amount != kTestSize)
       return ACCESS_RESULT_INVALID_CONTENTS;
-    if (memcmp(check, zeros, kTestSize) != 0)
+    if (UNSAFE_TODO(memcmp(check, zeros, kTestSize)) != 0) {
       return ACCESS_RESULT_NOT_WRITABLE;
+    }
 
-    file.Write(0, header, kTestSize);
+    UNSAFE_TODO(file.Write(0, header, kTestSize));
     file.Flush();
-    amount = file.Read(0, check, kTestSize);
+    amount = UNSAFE_TODO(file.Read(0, check, kTestSize));
     if (amount != kTestSize)
       return ACCESS_RESULT_INVALID_CONTENTS;
-    if (memcmp(check, header, kTestSize) != 0)
+    if (UNSAFE_TODO(memcmp(check, header, kTestSize)) != 0) {
       return ACCESS_RESULT_NOT_WRITABLE;
+    }
   }
 
   std::unique_ptr<base::MemoryMappedFile> mapped(new base::MemoryMappedFile());

@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "third_party/boringssl/src/include/openssl/ecdsa.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithms/ec.h"
@@ -28,7 +26,6 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
@@ -153,7 +150,7 @@ Status ConvertWebCryptoSignatureToDerSignature(
   size_t der_len;
   if (!ECDSA_SIG_to_bytes(&der, &der_len, ecdsa_sig.get()))
     return Status::OperationError();
-  der_signature->assign(der, der + der_len);
+  der_signature->assign(der, UNSAFE_TODO(der + der_len));
   OPENSSL_free(der);
 
   return Status::Success();

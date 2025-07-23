@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -133,7 +129,7 @@ class HistoryQueryTest : public testing::Test {
       SCOPED_TRACE(testing::Message() << "i = " << i);
       QueryHistory(query_text, options, &results);
       ASSERT_EQ(1U, results.size());
-      EXPECT_TRUE(NthResultIs(results, 0, expected_results[i]));
+      UNSAFE_TODO(EXPECT_TRUE(NthResultIs(results, 0, expected_results[i])));
       options.end_time = results.back().visit_time();
     }
     QueryHistory(query_text, options, &results);
@@ -146,8 +142,10 @@ class HistoryQueryTest : public testing::Test {
       SCOPED_TRACE(testing::Message() << "i = " << i);
       QueryHistory(query_text, options, &results);
       ASSERT_EQ(2U, results.size());
-      EXPECT_TRUE(NthResultIs(results, 0, expected_results[i * 2]));
-      EXPECT_TRUE(NthResultIs(results, 1, expected_results[i * 2 + 1]));
+      UNSAFE_TODO(
+          EXPECT_TRUE(NthResultIs(results, 0, expected_results[i * 2])));
+      UNSAFE_TODO(
+          EXPECT_TRUE(NthResultIs(results, 1, expected_results[i * 2 + 1])));
       options.end_time = results.back().visit_time();
     }
 

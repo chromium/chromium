@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "gpu/vulkan/buildflags.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -146,16 +142,18 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
       // vkQueue*Hook routes all skia side access to the same
       // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
       // lock.
-      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0) {
+      if (UNSAFE_TODO(std::strcmp("vkCreateGraphicsPipelines", proc_name)) ==
+          0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::CreateGraphicsPipelinesHook);
-      } else if (std::strcmp("vkQueueSubmit", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueueSubmit", proc_name)) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueSubmitHook);
-      } else if (std::strcmp("vkQueueWaitIdle", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueueWaitIdle", proc_name)) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueWaitIdleHook);
-      } else if (std::strcmp("vkQueuePresentKHR", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueuePresentKHR", proc_name)) ==
+                 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueuePresentKHRHook);
       }

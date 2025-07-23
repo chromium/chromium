@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/paint_preview/common/paint_preview_tracker.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
@@ -135,7 +131,7 @@ void PaintPreviewTracker::AddGlyphs(const SkTextBlob* blob) {
     }
     const uint16_t* glyphs = run.fGlyphIndices;
     for (int i = 0; i < run.fGlyphCount; ++i)
-      typeface_glyph_usage_[typeface->uniqueID()]->Set(glyphs[i]);
+      typeface_glyph_usage_[typeface->uniqueID()]->Set(UNSAFE_TODO(glyphs[i]));
   }
 }
 

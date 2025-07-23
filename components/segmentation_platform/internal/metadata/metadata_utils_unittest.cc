@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 
+#include "base/compiler_specific.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
@@ -31,10 +27,10 @@ void AddDiscreteMapping(proto::SegmentationModelMetadata* metadata,
   auto* discrete_mappings_map = metadata->mutable_discrete_mappings();
   auto& discrete_mappings = (*discrete_mappings_map)[discrete_mapping_key];
   for (int i = 0; i < num_pairs; i++) {
-    auto* pair = mappings[i];
+    auto* pair = UNSAFE_TODO(mappings[i]);
     auto* entry = discrete_mappings.add_entries();
     entry->set_min_result(pair[0]);
-    entry->set_rank(pair[1]);
+    entry->set_rank(UNSAFE_TODO(pair[1]));
   }
 }
 

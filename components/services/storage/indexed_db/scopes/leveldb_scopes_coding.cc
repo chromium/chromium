@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 
 #include <sstream>
@@ -15,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -60,7 +56,8 @@ std::tuple<bool, int64_t> ParseScopeMetadataId(
     return std::make_tuple(false, 0);
 
   int64_t scope_id = 0;
-  std::string_view part(key.data() + prefix_size, key.size() - prefix_size);
+  std::string_view part(UNSAFE_TODO(key.data() + prefix_size),
+                        key.size() - prefix_size);
   bool decode_success = DecodeVarInt(&part, &scope_id);
   DCHECK_GE(scope_id, 0);
   return std::make_tuple(decode_success, scope_id);

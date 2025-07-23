@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/disassembler_dex.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <set>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -266,11 +262,12 @@ class InstructionParser {
       std::fill(std::begin(instruction_table), std::end(instruction_table),
                 nullptr);
       for (const dex::Instruction& instr : dex::kByteCode) {
-        std::fill(instruction_table + instr.opcode,
-                  instruction_table + instr.opcode + instr.variant, &instr);
+        std::fill(UNSAFE_TODO(instruction_table + instr.opcode),
+                  UNSAFE_TODO(instruction_table + instr.opcode + instr.variant),
+                  &instr);
       }
     }
-    return instruction_table[opcode];
+    return UNSAFE_TODO(instruction_table[opcode]);
   }
 
   InstructionParser() = default;
@@ -317,8 +314,8 @@ class InstructionParser {
         return false;
       }
       // Update boundary between instructions and payload.
-      const ConstBufferView::const_iterator payload_it =
-          insns_.begin() + unsafe_payload_rel_units * kInstrUnitSize;
+      const ConstBufferView::const_iterator payload_it = UNSAFE_TODO(
+          insns_.begin() + unsafe_payload_rel_units * kInstrUnitSize);
       payload_boundary_ = std::min(payload_boundary_, payload_it);
     }
 
@@ -1813,7 +1810,7 @@ bool DisassemblerDex::ParseHeader() {
   // Read and validate map list, ensuring that required item types are present.
   // GetItemBaseSize() should have an entry for each item.
   for (offset_t i = 0; i < list_size; ++i) {
-    const dex::MapItem* item = &item_list[i];
+    const dex::MapItem* item = &UNSAFE_TODO(item_list[i]);
     // Reject unreasonably large |item->size|.
     size_t item_size = GetItemBaseSize(item->type);
     // Confusing name: |item->size| is actually the number of items.

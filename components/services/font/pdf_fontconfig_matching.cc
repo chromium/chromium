@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/font/pdf_fontconfig_matching.h"
 
 #include <fcntl.h>
@@ -19,6 +14,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
@@ -172,7 +168,7 @@ int MatchFontFaceWithFallback(const std::string& face,
   const std::string sysroot = c_sysroot ? c_sysroot : "";
   if (font_set) {
     for (int i = 0; i < font_set->nfont; ++i) {
-      FcPattern* current = font_set->fonts[i];
+      FcPattern* current = UNSAFE_TODO(font_set->fonts[i]);
 
       // Older versions of fontconfig have a bug where they cannot select
       // only scalable fonts so we have to manually filter the results.
@@ -241,7 +237,7 @@ int MatchFontFaceWithFallback(const std::string& face,
   if (font_fd == -1 && good_enough_index_set) {
     // We didn't find a font that we liked, so we fallback to something
     // acceptable.
-    FcPattern* current = font_set->fonts[good_enough_index];
+    FcPattern* current = UNSAFE_TODO(font_set->fonts[good_enough_index]);
     if (!FcPatternGetString(
             current, FC_FILE, 0,
             reinterpret_cast<FcChar8**>(const_cast<char**>(&c_filename)))) {

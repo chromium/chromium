@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/power_metrics/system_power_monitor.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -36,23 +32,23 @@ class FakeDelegate : public SystemPowerMonitorDelegate {
                          base::TimeTicks timestamp,
                          int64_t power) override {
     timestamp_ = timestamp;
-    if (strcmp(category, "Package Power (mW)") == 0) {
+    if (UNSAFE_TODO(strcmp(category, "Package Power (mW)")) == 0) {
       system_power_.package_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "CPU Power (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "CPU Power (mW)")) == 0) {
       system_power_.cpu_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "iGPU Power (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "iGPU Power (mW)")) == 0) {
       system_power_.gpu_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "DRAM Power (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "DRAM Power (mW)")) == 0) {
       system_power_.dram_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "Psys Power (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "Psys Power (mW)")) == 0) {
       system_power_.psys_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "VDDCR VDD (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "VDDCR VDD (mW)")) == 0) {
       system_power_.vdd_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "VDDCR SOC (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "VDDCR SOC (mW)")) == 0) {
       system_power_.soc_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "Current Socket (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "Current Socket (mW)")) == 0) {
       system_power_.socket_nanojoules = static_cast<uint64_t>(power);
-    } else if (strcmp(category, "APU Power (mW)") == 0) {
+    } else if (UNSAFE_TODO(strcmp(category, "APU Power (mW)")) == 0) {
       system_power_.apu_nanojoules = static_cast<uint64_t>(power);
     }
   }

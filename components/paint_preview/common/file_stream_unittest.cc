@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/paint_preview/common/file_stream.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,7 +120,7 @@ TEST(PaintPreviewFileStreamTest, TestSkip) {
   // Write half the data.
   EXPECT_TRUE(wstream.write(test_data.data(), 4));
   EXPECT_EQ(wstream.bytesWritten(), 4U);
-  EXPECT_TRUE(wstream.write(test_data.data() + 4, 4));
+  UNSAFE_TODO(EXPECT_TRUE(wstream.write(test_data.data() + 4, 4)));
   EXPECT_EQ(wstream.bytesWritten(), test_data.size());
   wstream.Close();
   base::File read_file(file_path, base::File::FLAG_OPEN |

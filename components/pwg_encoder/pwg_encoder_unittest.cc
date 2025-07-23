@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/pwg_encoder/pwg_encoder.h"
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/pwg_encoder/bitmap_image.h"
@@ -32,13 +28,13 @@ std::unique_ptr<BitmapImage> MakeSampleBitmap() {
   uint32_t* bitmap_data =
       reinterpret_cast<uint32_t*>(bitmap_image->pixel_data());
   for (int i = 0; i < kRasterWidth * kRasterHeight; i++)
-    bitmap_data[i] = 0xFFFFFF;
+    UNSAFE_TODO(bitmap_data[i]) = 0xFFFFFF;
 
   for (int i = 0; i < kRasterWidth; i++) {
     for (int j = 200; j < 300; j++) {
       int row_start = j * kRasterWidth;
       uint32_t red = (i * 255) / kRasterWidth;
-      bitmap_data[row_start + i] = red;
+      UNSAFE_TODO(bitmap_data[row_start + i]) = red;
     }
   }
 
@@ -47,9 +43,9 @@ std::unique_ptr<BitmapImage> MakeSampleBitmap() {
     for (int j = 400; j < 500; j++) {
       int row_start = j * kRasterWidth;
       if ((i / 40) % 2 == 0) {
-        bitmap_data[row_start + i] = 255 << 8;
+        UNSAFE_TODO(bitmap_data[row_start + i]) = 255 << 8;
       } else {
-        bitmap_data[row_start + i] = 255 << 16;
+        UNSAFE_TODO(bitmap_data[row_start + i]) = 255 << 16;
       }
     }
   }

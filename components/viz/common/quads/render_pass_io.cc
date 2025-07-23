@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/quads/render_pass_io.h"
 
 #include <optional>
@@ -17,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/bit_cast.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -249,7 +245,7 @@ bool FloatArrayFromList(const base::Value::List& list,
     double_data[ii] = list[ii].GetDouble();
   }
   for (size_t ii = 0; ii < count; ++ii)
-    data[ii] = static_cast<float>(double_data[ii]);
+    UNSAFE_TODO(data[ii]) = static_cast<float>(double_data[ii]);
   return true;
 }
 
@@ -464,7 +460,7 @@ bool TransformFromList(const base::Value::List& list,
   for (size_t ii = 0; ii < 16; ++ii) {
     if (!list[ii].is_double())
       return false;
-    data[ii] = list[ii].GetDouble();
+    UNSAFE_TODO(data[ii]) = list[ii].GetDouble();
   }
   *transform = gfx::Transform::ColMajorF(data);
   return true;
@@ -855,7 +851,7 @@ uint8_t StringToColorSpaceRangeId(const std::string& token) {
 
 base::Value::List Matrix3x3ToList(const skcms_Matrix3x3& mat) {
   float data[9];
-  memcpy(data, mat.vals, sizeof(mat));
+  UNSAFE_TODO(memcpy(data, mat.vals, sizeof(mat)));
   return FloatArrayToList(data);
 }
 

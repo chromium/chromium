@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -93,16 +89,20 @@ class MultilingualSpellCheckTest : public testing::Test {
       size_t misspelling_start = 0;
       size_t misspelling_length = 0;
       static_cast<blink::WebTextCheckClient*>(provider())
-          ->CheckSpelling(blink::WebString::FromUTF16(
-                              base::WideToUTF16(test_cases[i].input)),
+          ->CheckSpelling(blink::WebString::FromUTF16(base::WideToUTF16(
+                              UNSAFE_TODO(test_cases[i]).input)),
                           misspelling_start, misspelling_length, nullptr);
 
-      EXPECT_EQ(test_cases[i].expected_misspelling_start, misspelling_start)
+      UNSAFE_TODO(EXPECT_EQ(test_cases[i].expected_misspelling_start,
+                            misspelling_start))
           << "Improper misspelling location found with the languages "
-          << languages << " when checking \"" << test_cases[i].input << "\".";
-      EXPECT_EQ(test_cases[i].expected_misspelling_length, misspelling_length)
+          << languages << " when checking \""
+          << UNSAFE_TODO(test_cases[i]).input << "\".";
+      UNSAFE_TODO(EXPECT_EQ(test_cases[i].expected_misspelling_length,
+                            misspelling_length))
           << "Improper misspelling length found with the languages "
-          << languages << " when checking \"" << test_cases[i].input << "\".";
+          << languages << " when checking \""
+          << UNSAFE_TODO(test_cases[i]).input << "\".";
     }
   }
 

@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "components/sessions/core/session_command.h"
 
 #include <algorithm>
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/pickle.h"
-#include "components/sessions/core/session_command.h"
 
 namespace sessions {
 
@@ -26,7 +23,7 @@ SessionCommand::SessionCommand(id_type id, const base::Pickle& pickle)
     : id_(id),
       contents_(pickle.size(), 0) {
   DCHECK(pickle.size() < std::numeric_limits<size_type>::max());
-  memcpy(contents(), pickle.data(), pickle.size());
+  UNSAFE_TODO(memcpy(contents(), pickle.data(), pickle.size()));
 }
 
 SessionCommand::size_type SessionCommand::GetSerializedSize() const {
@@ -40,7 +37,7 @@ SessionCommand::size_type SessionCommand::GetSerializedSize() const {
 bool SessionCommand::GetPayload(void* dest, size_t count) const {
   if (size() != count)
     return false;
-  memcpy(dest, &(contents_[0]), count);
+  UNSAFE_TODO(memcpy(dest, &(contents_[0]), count));
   return true;
 }
 

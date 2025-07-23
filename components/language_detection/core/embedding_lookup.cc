@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/language_detection/core/embedding_lookup.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "components/language_detection/core/quantization_utils.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flexbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
@@ -90,8 +86,8 @@ TfLiteStatus Resize(TfLiteContext* context, TfLiteNode* node) {
   const TfLiteTensor* input_tensor =
       tflite::GetInput(context, node, kEmbeddingTable);
   TF_LITE_ENSURE(context, input_tensor != nullptr);
-  const int input_embedding_size = input_tensor->dims->data[1];
-  output_size->data[1] = GetOutputEmbeddingSize(
+  const int input_embedding_size = UNSAFE_TODO(input_tensor->dims->data[1]);
+  UNSAFE_TODO(output_size->data[1]) = GetOutputEmbeddingSize(
       input_embedding_size, params->IsQuantized(), params->GetNumBits());
   return context->ResizeTensor(context, output, output_size);
 }
@@ -118,14 +114,15 @@ void GetEmbedding(const TfLiteTensor* input,
                   const EmbeddingLookupOpParams* params) {
   const bool is_quantized = params->IsQuantized();
   const int num_precision_bits = params->GetNumBits();
-  const int input_embedding_size = embedding_table->dims->data[1];
-  const int num_tokens = input->dims->data[1];
+  const int input_embedding_size = UNSAFE_TODO(embedding_table->dims->data[1]);
+  const int num_tokens = UNSAFE_TODO(input->dims->data[1]);
   const int output_embedding_size = GetOutputEmbeddingSize(
       input_embedding_size, is_quantized, num_precision_bits);
   int num_embeddings = 0;
   std::vector<float> final_embedding(output_embedding_size, 0.0);
   for (int token_idx = 0; token_idx < num_tokens; token_idx++) {
-    const int32 token = tflite::GetTensorData<int32>(input)[token_idx];
+    const int32 token =
+        UNSAFE_TODO(tflite::GetTensorData<int32>(input)[token_idx]);
     if (token == 0) {
       break;
     }
@@ -138,8 +135,8 @@ void GetEmbedding(const TfLiteTensor* input,
           GetQuantizationParams(min_val, max_val, num_precision_bits);
       for (int embed_idx = 0; embed_idx < input_embedding_size; embed_idx++) {
         // Extract the packed embedding at the given index.
-        uint32 packed_embedding = tflite::GetTensorData<uint32>(
-            embedding_table)[token * input_embedding_size + embed_idx];
+        uint32 packed_embedding = UNSAFE_TODO(tflite::GetTensorData<uint32>(
+            embedding_table)[token * input_embedding_size + embed_idx]);
         for (int num_dims_extracted = 0;
              num_dims_extracted < compression_factor; num_dims_extracted++) {
           uint32 quantized_val = (packed_embedding & mask);
@@ -156,8 +153,8 @@ void GetEmbedding(const TfLiteTensor* input,
       // The embedding table is stored uncompressed.
       for (int embed_idx = 0; embed_idx < input_embedding_size; embed_idx++) {
         // Extract the raw value of the dimension in the embedding table.
-        const float raw_dim_value =
-            embedding_table->data.f[token * input_embedding_size + embed_idx];
+        const float raw_dim_value = UNSAFE_TODO(
+            embedding_table->data.f[token * input_embedding_size + embed_idx]);
         final_embedding[embed_idx] += raw_dim_value;
       }
     }
@@ -165,7 +162,7 @@ void GetEmbedding(const TfLiteTensor* input,
   }
   // Compute the mean of the embeddings.
   for (int embed_idx = 0; embed_idx < output_embedding_size; embed_idx++) {
-    data[embed_idx] =
+    UNSAFE_TODO(data[embed_idx]) =
         final_embedding[embed_idx] / (std::max(num_embeddings, 1));
   }
 }

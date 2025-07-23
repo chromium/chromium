@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webcrypto/fuzzer_support.h"
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_executor.h"
@@ -92,7 +88,7 @@ void ImportEcKeyFromDerFuzzData(const uint8_t* data,
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      format, base::span(data, size),
+      format, UNSAFE_TODO(base::span(data, size)),
       CreateEcImportAlgorithm(algorithm_id, curve), true, usages, &key);
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
@@ -111,7 +107,7 @@ void ImportEcKeyFromRawFuzzData(const uint8_t* data, size_t size) {
   uint8_t curve_index = 0;
   if (size > 0) {
     curve_index = data[0];
-    data++;
+    UNSAFE_TODO(data++);
     size--;
   }
 
@@ -137,7 +133,7 @@ void ImportEcKeyFromRawFuzzData(const uint8_t* data, size_t size) {
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      blink::kWebCryptoKeyFormatRaw, base::span(data, size),
+      blink::kWebCryptoKeyFormatRaw, UNSAFE_TODO(base::span(data, size)),
       CreateEcImportAlgorithm(algorithm_id, curve), true, usages, &key);
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
@@ -170,7 +166,7 @@ void ImportRsaKeyFromDerFuzzData(const uint8_t* data,
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      format, base::span(data, size),
+      format, UNSAFE_TODO(base::span(data, size)),
       CreateRsaHashedImportAlgorithm(algorithm_id, hash_id), true, usages,
       &key);
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
 // StorageMonitorLinux unit tests.
@@ -312,9 +307,12 @@ class StorageMonitorLinuxTest : public testing::Test {
     entry.mnt_freq = 0;
     entry.mnt_passno = 0;
     for (size_t i = 0; i < data_size; ++i) {
-      entry.mnt_fsname = const_cast<char*>(data[i].mount_device.c_str());
-      entry.mnt_dir = const_cast<char*>(data[i].mount_point.c_str());
-      entry.mnt_type = const_cast<char*>(data[i].mount_type.c_str());
+      entry.mnt_fsname =
+          const_cast<char*>(UNSAFE_TODO(data[i]).mount_device.c_str());
+      entry.mnt_dir =
+          const_cast<char*>(UNSAFE_TODO(data[i]).mount_point.c_str());
+      entry.mnt_type =
+          const_cast<char*>(UNSAFE_TODO(data[i]).mount_type.c_str());
       ASSERT_EQ(0, addmntent(file, &entry));
     }
     ASSERT_EQ(1, endmntent(file));

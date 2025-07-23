@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/dom_storage/dom_storage_database_leveldb.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -321,7 +317,8 @@ DbStatus DomStorageDatabaseLevelDB::CopyPrefixed(
         DCHECK_GE(key.size(), prefix.size());  // By definition.
         size_t suffix_length = key.size() - prefix.size();
         new_key.resize(new_prefix.size() + suffix_length);
-        std::copy(key.data() + prefix.size(), key.data() + key.size(),
+        std::copy(UNSAFE_TODO(key.data() + prefix.size()),
+                  UNSAFE_TODO(key.data() + key.size()),
                   new_key.begin() + new_prefix.size());
         batch->Put(MakeSlice(new_key), value);
       });

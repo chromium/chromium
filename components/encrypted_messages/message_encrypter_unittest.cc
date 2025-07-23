@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/encrypted_messages/message_encrypter.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -172,8 +168,8 @@ TEST(MessageEncrypterTest, EncryptedMessageCanBeDecrypted) {
   uint8_t server_private_key[32];
   uint8_t server_public_key[32];
   uint8_t client_private_key[32];
-  memset(server_private_key, 1, sizeof(server_private_key));
-  memset(client_private_key, 2, sizeof(client_private_key));
+  UNSAFE_TODO(memset(server_private_key, 1, sizeof(server_private_key)));
+  UNSAFE_TODO(memset(client_private_key, 2, sizeof(client_private_key)));
   X25519_public_from_private(server_public_key, server_private_key);
   encrypted_messages::EncryptedMessage message;
   std::string test_message = "test message";
@@ -191,7 +187,7 @@ TEST(MessageEncrypterTest, DecrypterWorksWithProperKey) {
   // server to no longer be able to decrypt reports that it receives from
   // Chrome.
   uint8_t server_private_key_[32];
-  memset(server_private_key_, 1, sizeof(server_private_key_));
+  UNSAFE_TODO(memset(server_private_key_, 1, sizeof(server_private_key_)));
   encrypted_messages::EncryptedMessage encrypted_message;
   std::string decrypted_serialized_report;
   ASSERT_TRUE(encrypted_message.ParseFromString(
@@ -208,7 +204,7 @@ TEST(MessageEncrypterTest, DecrypterWorksWithProperKey) {
 TEST(MessageEncrypterTest, DecrypterFailsWithWrongKey) {
   uint8_t server_private_key_[32];
   // Set the private key to an invalid one.
-  memset(server_private_key_, 0, sizeof(server_private_key_));
+  UNSAFE_TODO(memset(server_private_key_, 0, sizeof(server_private_key_)));
   encrypted_messages::EncryptedMessage encrypted_message;
   std::string decrypted_serialized_message;
   ASSERT_TRUE(encrypted_message.ParseFromString(

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/history/core/browser/url_utils.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 
@@ -42,8 +38,8 @@ bool CanonicalURLStringCompare(const std::string& s1, const std::string& s2) {
   const std::string::value_type* ch1 = s1.c_str();
   const std::string::value_type* ch2 = s2.c_str();
   while (*ch1 && *ch2 && *ch1 == *ch2) {
-    ++ch1;
-    ++ch2;
+    UNSAFE_TODO(++ch1);
+    UNSAFE_TODO(++ch2);
   }
   int pri_diff = GetURLCharPriority(*ch1) - GetURLCharPriority(*ch2);
   // We want false to be returned if `pri_diff` > 0.

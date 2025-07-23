@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/web_package/test_support/signed_web_bundles/ecdsa_p256_key_pair.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/sha2.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -101,7 +97,7 @@ std::vector<uint8_t> SignMessage(base::span<const uint8_t> message,
     bssl::UniquePtr<uint8_t> signature_bytes_deleter(signature_bytes);
 
     return std::vector<uint8_t>(signature_bytes,
-                                signature_bytes + signature_size);
+                                UNSAFE_TODO(signature_bytes + signature_size));
   }();
 
   if (key_pair.produce_invalid_signature) {

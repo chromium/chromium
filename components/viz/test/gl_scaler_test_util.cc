@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/test/gl_scaler_test_util.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -158,7 +154,7 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
         uint32_t* const pixels = result.getAddr32(0, y);
         const uint32_t stripe_rgba = cycle_as_rgba[y % cycle_as_rgba.size()];
         for (int x = 0; x < size.width(); ++x) {
-          pixels[x] = stripe_rgba;
+          UNSAFE_TODO(pixels[x]) = stripe_rgba;
         }
       }
       break;
@@ -167,7 +163,7 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
       for (int y = 0; y < size.height(); ++y) {
         uint32_t* const pixels = result.getAddr32(0, y);
         for (int x = 0; x < size.width(); ++x) {
-          pixels[x] = cycle_as_rgba[x % cycle_as_rgba.size()];
+          UNSAFE_TODO(pixels[x]) = cycle_as_rgba[x % cycle_as_rgba.size()];
         }
       }
       break;
@@ -176,7 +172,8 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
       for (int y = 0; y < size.height(); ++y) {
         uint32_t* const pixels = result.getAddr32(0, y);
         for (int x = 0; x < size.width(); ++x) {
-          pixels[x] = cycle_as_rgba[(x + y) % cycle_as_rgba.size()];
+          UNSAFE_TODO(pixels[x]) =
+              cycle_as_rgba[(x + y) % cycle_as_rgba.size()];
         }
       }
       break;
@@ -207,16 +204,17 @@ void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
   for (int y = 0; y < image->height(); ++y) {
     uint32_t* const pixels = image->getAddr32(0, y);
     for (int x = 0; x < image->width(); ++x) {
-      stims[x].set_x(((pixels[x] >> kRedShift) & 0xff) / 255.0f);
-      stims[x].set_y(((pixels[x] >> kGreenShift) & 0xff) / 255.0f);
-      stims[x].set_z(((pixels[x] >> kBlueShift) & 0xff) / 255.0f);
+      stims[x].set_x(((UNSAFE_TODO(pixels[x]) >> kRedShift) & 0xff) / 255.0f);
+      stims[x].set_y(((UNSAFE_TODO(pixels[x]) >> kGreenShift) & 0xff) / 255.0f);
+      stims[x].set_z(((UNSAFE_TODO(pixels[x]) >> kBlueShift) & 0xff) / 255.0f);
     }
     transform->Transform(stims.data(), stims.size());
     for (int x = 0; x < image->width(); ++x) {
-      pixels[x] = ((ToClamped255(stims[x].x()) << kRedShift) |
-                   (ToClamped255(stims[x].y()) << kGreenShift) |
-                   (ToClamped255(stims[x].z()) << kBlueShift) |
-                   (((pixels[x] >> kAlphaShift) & 0xff) << kAlphaShift));
+      UNSAFE_TODO(pixels[x]) =
+          ((ToClamped255(stims[x].x()) << kRedShift) |
+           (ToClamped255(stims[x].y()) << kGreenShift) |
+           (ToClamped255(stims[x].z()) << kBlueShift) |
+           (((UNSAFE_TODO(pixels[x]) >> kAlphaShift) & 0xff) << kAlphaShift));
     }
   }
 }
@@ -239,10 +237,11 @@ void GLScalerTestUtil::SwizzleBitmap(SkBitmap* image) {
   for (int y = 0; y < image->height(); ++y) {
     uint32_t* const pixels = image->getAddr32(0, y);
     for (int x = 0; x < image->width(); ++x) {
-      pixels[x] = ((((pixels[x] >> kBlueShift) & 0xff) << kRedShift) |
-                   (((pixels[x] >> kGreenShift) & 0xff) << kGreenShift) |
-                   (((pixels[x] >> kRedShift) & 0xff) << kBlueShift) |
-                   (((pixels[x] >> kAlphaShift) & 0xff) << kAlphaShift));
+      UNSAFE_TODO(pixels[x]) =
+          ((((UNSAFE_TODO(pixels[x]) >> kBlueShift) & 0xff) << kRedShift) |
+           (((UNSAFE_TODO(pixels[x]) >> kGreenShift) & 0xff) << kGreenShift) |
+           (((UNSAFE_TODO(pixels[x]) >> kRedShift) & 0xff) << kBlueShift) |
+           (((UNSAFE_TODO(pixels[x]) >> kAlphaShift) & 0xff) << kAlphaShift));
     }
   }
 }
@@ -267,10 +266,11 @@ SkBitmap GLScalerTestUtil::CreatePackedPlanarBitmap(const SkBitmap& source,
     for (int x = 0; x < result.width(); ++x) {
       //     (src[0..3])         (dst)
       // RGBA RGBA RGBA RGBA --> RRRR   (if channel is 0)
-      dst[x] = ((((src[x * 4 + 0] >> shift) & 0xff) << kRedShift) |
-                (((src[x * 4 + 1] >> shift) & 0xff) << kGreenShift) |
-                (((src[x * 4 + 2] >> shift) & 0xff) << kBlueShift) |
-                (((src[x * 4 + 3] >> shift) & 0xff) << kAlphaShift));
+      UNSAFE_TODO(dst[x]) =
+          ((((UNSAFE_TODO(src[x * 4 + 0]) >> shift) & 0xff) << kRedShift) |
+           (((UNSAFE_TODO(src[x * 4 + 1]) >> shift) & 0xff) << kGreenShift) |
+           (((UNSAFE_TODO(src[x * 4 + 2]) >> shift) & 0xff) << kBlueShift) |
+           (((UNSAFE_TODO(src[x * 4 + 3]) >> shift) & 0xff) << kAlphaShift));
     }
   }
   return result;
@@ -314,15 +314,16 @@ void GLScalerTestUtil::UnpackPlanarBitmap(const SkBitmap& plane,
     uint32_t* const dst = out->getAddr32(0, y);
     for (int x = 0; x < out->width(); ++x) {
       // Zero-out the existing byte (e.g., if channel==1, then "RGBA" → "R0BA").
-      dst[x] &= output_retain_mask;
+      UNSAFE_TODO(dst[x]) &= output_retain_mask;
 
       // From |src|, grab one of "XYZW". Then, copy it to the target byte in
       // |dst| (e.g., if x_src_ch=3, then grab "W" from |src|, and |dst| changes
       // from "R0BA" to "RWBA").
       const int x_src = x / col_sampling_ratio;
       const int x_src_ch = (x / ch_sampling_ratio) % 4;
-      dst[x] |= ((src[x_src] >> kShiftForChannel[x_src_ch]) & 0xff)
-                << output_shift;
+      UNSAFE_TODO(dst[x]) |=
+          ((UNSAFE_TODO(src[x_src]) >> kShiftForChannel[x_src_ch]) & 0xff)
+          << output_shift;
     }
   }
 }
@@ -374,7 +375,7 @@ void GLScalerTestUtil::UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out) {
     uint32_t* const dst = out->getAddr32(0, y);
     for (int x = 0; x < out->width(); ++x) {
       // Zero-out the existing byte (e.g., "RGBA" → "R00A").
-      dst[x] &= zero_green_blue_mask;
+      UNSAFE_TODO(dst[x]) &= zero_green_blue_mask;
 
       // Find which half-texel to look at:
       const int src_half_texel = x / col_sampling_ratio;
@@ -384,10 +385,14 @@ void GLScalerTestUtil::UnpackUVBitmap(const SkBitmap& plane, SkBitmap* out) {
       const int src_channel = 2 * (src_half_texel % 2);
 
       // Grab the 2 consecutive channels, starting at |src_channel|:
-      dst[x] |= ((src[src_texel] >> kShiftForChannel[src_channel]) & 0xff)
-                << kGreenShift;
-      dst[x] |= ((src[src_texel] >> kShiftForChannel[src_channel + 1]) & 0xff)
-                << kBlueShift;
+      UNSAFE_TODO(dst[x]) |=
+          ((UNSAFE_TODO(src[src_texel]) >> kShiftForChannel[src_channel]) &
+           0xff)
+          << kGreenShift;
+      UNSAFE_TODO(dst[x]) |=
+          ((UNSAFE_TODO(src[src_texel]) >> kShiftForChannel[src_channel + 1]) &
+           0xff)
+          << kBlueShift;
     }
   }
 }
@@ -400,8 +405,8 @@ SkBitmap GLScalerTestUtil::CreateVerticallyFlippedBitmap(
   CHECK_EQ(bitmap.rowBytes(), source.rowBytes());
   for (int y = 0; y < bitmap.height(); ++y) {
     const int src_y = bitmap.height() - y - 1;
-    memcpy(bitmap.getAddr32(0, y), source.getAddr32(0, src_y),
-           bitmap.rowBytes());
+    UNSAFE_TODO(memcpy(bitmap.getAddr32(0, y), source.getAddr32(0, src_y),
+                       bitmap.rowBytes()));
   }
   return bitmap;
 }

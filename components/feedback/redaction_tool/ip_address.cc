@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This is a copy of net/base/ip_address.cc circa 2023. It should be used only
 // by components/feedback/redaction_tool/. We need a copy because the
 // components/feedback/redaction_tool source code is shared into ChromeOS and
@@ -19,6 +14,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -46,7 +42,7 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   // Compare all the bytes that fall entirely within the prefix.
   size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
   for (size_t i = 0; i < num_entire_bytes_in_prefix; ++i) {
-    if (ip_address[i] != ip_prefix[i]) {
+    if (ip_address[i] != UNSAFE_TODO(ip_prefix[i])) {
       return false;
     }
   }
@@ -57,7 +53,7 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   if (remaining_bits != 0) {
     uint8_t mask = 0xFF << (8 - remaining_bits);
     size_t i = num_entire_bytes_in_prefix;
-    if ((ip_address[i] & mask) != (ip_prefix[i] & mask)) {
+    if ((ip_address[i] & mask) != (UNSAFE_TODO(ip_prefix[i]) & mask)) {
       return false;
     }
   }
@@ -251,9 +247,10 @@ IPAddress ConvertIPv4MappedIPv6ToIPv4(const IPAddress& address) {
   DCHECK(address.IsIPv4MappedIPv6());
 
   absl::InlinedVector<uint8_t, 16> bytes;
-  bytes.insert(bytes.end(),
-               address.bytes().begin() + std::size(kIPv4MappedPrefix),
-               address.bytes().end());
+  bytes.insert(
+      bytes.end(),
+      UNSAFE_TODO(address.bytes().begin() + std::size(kIPv4MappedPrefix)),
+      address.bytes().end());
   return IPAddress(bytes.data(), bytes.size());
 }
 

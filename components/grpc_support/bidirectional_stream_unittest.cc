@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <list>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -200,16 +196,16 @@ class TestBidirectionalStreamCallback {
     ASSERT_EQ(test->expected_negotiated_protocol,
               std::string(negotiated_protocol));
     for (size_t i = 0; i < headers->count; ++i) {
-      if (test->response_headers.find(headers->headers[i].key) ==
+      if (test->response_headers.find(UNSAFE_TODO(headers->headers[i]).key) ==
           test->response_headers.end()) {
-        test->response_headers[headers->headers[i].key] =
-            headers->headers[i].value;
+        test->response_headers[UNSAFE_TODO(headers->headers[i]).key] =
+            UNSAFE_TODO(headers->headers[i]).value;
       } else {
         // For testing purposes, headers with the same key are combined with
         // comma.
-        test->response_headers[headers->headers[i].key] =
-            test->response_headers[headers->headers[i].key] + ", " +
-            headers->headers[i].value;
+        test->response_headers[UNSAFE_TODO(headers->headers[i]).key] =
+            test->response_headers[UNSAFE_TODO(headers->headers[i]).key] +
+            ", " + UNSAFE_TODO(headers->headers[i]).value;
       }
     }
     if (test->MaybeCancel(stream, ON_RESPONSE_STARTED))
@@ -249,8 +245,8 @@ class TestBidirectionalStreamCallback {
       const bidirectional_stream_header_array* trailers) {
     TestBidirectionalStreamCallback* test = FromStream(stream);
     for (size_t i = 0; i < trailers->count; ++i) {
-      test->response_trailers[trailers->headers[i].key] =
-          trailers->headers[i].value;
+      test->response_trailers[UNSAFE_TODO(trailers->headers[i]).key] =
+          UNSAFE_TODO(trailers->headers[i]).value;
     }
 
     if (test->MaybeCancel(stream, ON_TRAILERS))

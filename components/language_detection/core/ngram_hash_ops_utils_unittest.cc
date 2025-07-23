@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/language_detection/core/ngram_hash_ops_utils.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace language_detection {
@@ -21,8 +17,9 @@ std::string ReconstructStringFromTokens(TokenizedOutput output) {
   std::string reconstructed_str;
   for (size_t i = 0; i < output.tokens.size(); i++) {
     reconstructed_str.append(
-        output.str.c_str() + output.tokens[i].first,
-        output.str.c_str() + output.tokens[i].first + output.tokens[i].second);
+        UNSAFE_TODO(output.str.c_str() + output.tokens[i].first),
+        UNSAFE_TODO(output.str.c_str() + output.tokens[i].first +
+                    output.tokens[i].second));
   }
   return reconstructed_str;
 }

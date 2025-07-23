@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -85,7 +81,8 @@ Status AesCbcEncryptDecrypt(EncryptOrDecrypt cipher_operation,
     return Status::OperationError();
   }
   int final_output_chunk_len = 0;
-  if (!EVP_CipherFinal_ex(context.get(), buffer->data() + output_len,
+  if (!EVP_CipherFinal_ex(context.get(),
+                          UNSAFE_TODO(buffer->data() + output_len),
                           &final_output_chunk_len)) {
     return Status::OperationError();
   }

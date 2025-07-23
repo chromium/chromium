@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/domain_reliability/monitor.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -356,7 +352,7 @@ TEST_F(DomainReliabilityMonitorTest, BakedInAndGoogleConfigs) {
 
   // Count the number of baked-in configs.
   size_t num_baked_in_configs = 0u;
-  for (const char* const* p = kBakedInJsonConfigs; *p; ++p) {
+  for (const char* const* p = kBakedInJsonConfigs; *p; UNSAFE_TODO(++p)) {
     ++num_baked_in_configs;
   }
   EXPECT_GT(num_baked_in_configs, 0u);

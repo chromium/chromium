@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/builtin_provider.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -115,17 +111,19 @@ class BuiltinProviderTest : public testing::Test {
   void RunTest(const TestData cases[], size_t num_cases) {
     ACMatches matches;
     for (size_t i = 0; i < num_cases; ++i) {
-      SCOPED_TRACE(base::StringPrintf(
-          "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));
-      AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,
+      UNSAFE_TODO(SCOPED_TRACE(
+          base::StringPrintf("case %" PRIuS ": %s", i,
+                             base::UTF16ToUTF8(cases[i].input).c_str())));
+      AutocompleteInput input(UNSAFE_TODO(cases[i]).input,
+                              metrics::OmniboxEventProto::OTHER,
                               TestSchemeClassifier());
       input.set_prevent_inline_autocomplete(true);
       provider_->Start(input, false);
       EXPECT_TRUE(provider_->done());
       matches = provider_->matches();
-      ASSERT_EQ(cases[i].output.size(), matches.size());
-      for (size_t j = 0; j < cases[i].output.size(); ++j) {
-        EXPECT_EQ(cases[i].output[j], matches[j].destination_url);
+      UNSAFE_TODO(ASSERT_EQ(cases[i].output.size(), matches.size()));
+      for (size_t j = 0; j < UNSAFE_TODO(cases[i]).output.size(); ++j) {
+        UNSAFE_TODO(EXPECT_EQ(cases[i].output[j], matches[j].destination_url));
       }
     }
   }

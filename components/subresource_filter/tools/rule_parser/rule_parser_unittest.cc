@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
 
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -103,7 +99,7 @@ TEST(RuleParserTest, ParseAllowlistUrlRule) {
   static const char* kLine = "@@?param=";
   UrlRule expected_rule;
   expected_rule.is_allowlist = true;
-  expected_rule.url_pattern = kLine + 2;
+  expected_rule.url_pattern = UNSAFE_TODO(kLine + 2);
   expected_rule.url_pattern_type =
       url_pattern_index::proto::URL_PATTERN_TYPE_SUBSTRING;
 
@@ -177,7 +173,7 @@ TEST(RuleParserTest, ParseContradictingTypeOptions) {
       expected_rule.type_mask |=
           type_mask_for(url_pattern_index::proto::ELEMENT_TYPE_POPUP);
     }
-    ParseAndExpectUrlRule(kLines[i], expected_rule);
+    ParseAndExpectUrlRule(UNSAFE_TODO(kLines[i]), expected_rule);
   }
 }
 

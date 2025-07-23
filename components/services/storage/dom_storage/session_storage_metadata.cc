@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -431,8 +427,9 @@ std::vector<uint8_t> SessionStorageMetadata::GetNamespacePrefix(
   std::vector<uint8_t> namespace_prefix(
       SessionStorageMetadata::kNamespacePrefixBytes,
       std::end(SessionStorageMetadata::kNamespacePrefixBytes));
-  namespace_prefix.insert(namespace_prefix.end(), namespace_id.data(),
-                          namespace_id.data() + namespace_id.size());
+  namespace_prefix.insert(
+      namespace_prefix.end(), namespace_id.data(),
+      UNSAFE_TODO(namespace_id.data() + namespace_id.size()));
   namespace_prefix.push_back(kNamespaceStorageKeySeperatorByte);
   return namespace_prefix;
 }
@@ -448,7 +445,7 @@ std::vector<uint8_t> SessionStorageMetadata::GetAreaKey(
   area_key.push_back(kNamespaceStorageKeySeperatorByte);
   std::string storage_key_str = storage_key.Serialize();
   area_key.insert(area_key.end(), storage_key_str.data(),
-                  storage_key_str.data() + storage_key_str.size());
+                  UNSAFE_TODO(storage_key_str.data() + storage_key_str.size()));
   return area_key;
 }
 

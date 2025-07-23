@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This binary takes a list of domain names in ASCII or unicode, passes them
 // through the IDN decoding algorithm and prints out the result. The list can be
 // passed as a text file or via stdin. In both cases, the output is printed as
@@ -20,6 +15,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -131,7 +127,7 @@ int main(int argc, char* argv[]) {
   }
 
   if (argc > 1) {
-    const std::string filename = argv[1];
+    const std::string filename = UNSAFE_TODO(argv[1]);
     std::ifstream input(filename);
     if (!input.good()) {
       LOG(ERROR) << "Could not open file " << filename;

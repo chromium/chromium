@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
@@ -57,23 +53,24 @@ TEST(MessagePayloadParserTest, ValidMessage) {
   const uint8_t* salt = kValidMessage;
 
   ASSERT_EQ(parser.salt().size(), kSaltSize);
-  EXPECT_EQ(parser.salt(), std::string(salt, salt + kSaltSize));
+  UNSAFE_TODO(EXPECT_EQ(parser.salt(), std::string(salt, salt + kSaltSize)));
 
   ASSERT_EQ(parser.record_size(), 18u);
 
-  const uint8_t* public_key =
-      kValidMessage + kSaltSize + sizeof(uint32_t) + sizeof(uint8_t);
+  const uint8_t* public_key = UNSAFE_TODO(kValidMessage + kSaltSize +
+                                          sizeof(uint32_t) + sizeof(uint8_t));
 
   ASSERT_EQ(parser.public_key().size(), kPublicKeySize);
-  EXPECT_EQ(parser.public_key(),
-            std::string(public_key, public_key + kPublicKeySize));
+  UNSAFE_TODO(EXPECT_EQ(parser.public_key(),
+                        std::string(public_key, public_key + kPublicKeySize)));
 
-  const uint8_t* ciphertext = kValidMessage + kSaltSize + sizeof(uint32_t) +
-                              sizeof(uint8_t) + kPublicKeySize;
+  const uint8_t* ciphertext =
+      UNSAFE_TODO(kValidMessage + kSaltSize + sizeof(uint32_t) +
+                  sizeof(uint8_t) + kPublicKeySize);
 
   ASSERT_EQ(parser.ciphertext().size(), kCiphertextSize);
-  EXPECT_EQ(parser.ciphertext(),
-            std::string(ciphertext, ciphertext + kCiphertextSize));
+  UNSAFE_TODO(EXPECT_EQ(parser.ciphertext(),
+                        std::string(ciphertext, ciphertext + kCiphertextSize)));
 }
 
 TEST(MessagePayloadParserTest, MinimumMessageSize) {

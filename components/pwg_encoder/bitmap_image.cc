@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/pwg_encoder/bitmap_image.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace pwg_encoder {
 
@@ -31,7 +27,8 @@ uint8_t BitmapImage::channels() const {
 const uint8_t* BitmapImage::GetPixel(const gfx::Point& point) const {
   DCHECK_LT(point.x(), size_.width());
   DCHECK_LT(point.y(), size_.height());
-  return data_.get() + (point.y() * size_.width() + point.x()) * channels();
+  return UNSAFE_TODO(data_.get() +
+                     (point.y() * size_.width() + point.x()) * channels());
 }
 
 }  // namespace pwg_encoder

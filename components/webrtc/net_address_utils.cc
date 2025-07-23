@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/webrtc/net_address_utils.h"
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -42,13 +38,13 @@ bool SocketAddressToIPEndPoint(const webrtc::SocketAddress& address,
 webrtc::IPAddress NetIPAddressToRtcIPAddress(const net::IPAddress& ip_address) {
   if (ip_address.IsIPv4()) {
     uint32_t address;
-    memcpy(&address, ip_address.bytes().data(), sizeof(uint32_t));
+    UNSAFE_TODO(memcpy(&address, ip_address.bytes().data(), sizeof(uint32_t)));
     address = webrtc::NetworkToHost32(address);
     return webrtc::IPAddress(address);
   }
   if (ip_address.IsIPv6()) {
     in6_addr address;
-    memcpy(&address, ip_address.bytes().data(), sizeof(in6_addr));
+    UNSAFE_TODO(memcpy(&address, ip_address.bytes().data(), sizeof(in6_addr)));
     return webrtc::IPAddress(address);
   }
   return webrtc::IPAddress();

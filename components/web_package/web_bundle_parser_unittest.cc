@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/web_package/web_bundle_parser.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <string_view>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -70,10 +66,10 @@ class TestDataSource : public mojom::BundleDataSource {
       return;
     }
     const uint8_t* start =
-        reinterpret_cast<const uint8_t*>(data_.data()) + offset;
+        UNSAFE_TODO(reinterpret_cast<const uint8_t*>(data_.data()) + offset);
     uint64_t available_length = std::min(length, data_.size() - offset);
     std::move(callback).Run(
-        std::vector<uint8_t>(start, start + available_length));
+        std::vector<uint8_t>(start, UNSAFE_TODO(start + available_length)));
   }
 
   void Length(LengthCallback callback) override {

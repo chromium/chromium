@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/test/test_raster_interface.h"
 
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -56,7 +52,7 @@ void TestRasterInterface::LoseContextCHROMIUM(GLenum current, GLenum other) {
 
 void TestRasterInterface::GenQueriesEXT(GLsizei n, GLuint* queries) {
   for (GLsizei i = 0; i < n; ++i) {
-    queries[i] = 1u;
+    UNSAFE_TODO(queries[i]) = 1u;
   }
 }
 
@@ -153,7 +149,7 @@ void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
                                  gpu::CommandBufferId(),
                                  next_insert_fence_sync_++);
   sync_token_data.SetVerifyFlush();
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
 }
 
 void TestRasterInterface::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
@@ -165,23 +161,25 @@ void TestRasterInterface::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
   gpu::SyncToken sync_token_data(gpu::CommandBufferNamespace::GPU_IO,
                                  gpu::CommandBufferId(),
                                  next_insert_fence_sync_++);
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
 }
 
 void TestRasterInterface::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                                    GLsizei count) {
   for (GLsizei i = 0; i < count; ++i) {
     gpu::SyncToken sync_token_data;
-    memcpy(sync_token_data.GetData(), sync_tokens[i], sizeof(sync_token_data));
+    UNSAFE_TODO(memcpy(sync_token_data.GetData(), sync_tokens[i],
+                       sizeof(sync_token_data)));
     sync_token_data.SetVerifyFlush();
-    memcpy(sync_tokens[i], &sync_token_data, sizeof(sync_token_data));
+    UNSAFE_TODO(
+        memcpy(sync_tokens[i], &sync_token_data, sizeof(sync_token_data)));
   }
 }
 
 void TestRasterInterface::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   gpu::SyncToken sync_token_data;
   if (sync_token)
-    memcpy(&sync_token_data, sync_token, sizeof(sync_token_data));
+    UNSAFE_TODO(memcpy(&sync_token_data, sync_token, sizeof(sync_token_data)));
 
   if (sync_token_data.release_count() >
       last_waited_sync_token_.release_count()) {
@@ -213,7 +211,7 @@ bool TestRasterInterface::ReadbackImagePixels(
     int plane_index,
     void* dst_pixels) {
   auto size = dst_info.computeByteSize(dst_row_bytes);
-  memset(dst_pixels, 0, size);
+  UNSAFE_TODO(memset(dst_pixels, 0, size));
   return true;
 }
 }  // namespace viz

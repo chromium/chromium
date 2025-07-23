@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -68,7 +64,8 @@ Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
     return Status::OperationError();
   }
   int final_output_chunk_len = 0;
-  if (!EVP_CipherFinal_ex(context.get(), output.data() + output_len,
+  if (!EVP_CipherFinal_ex(context.get(),
+                          UNSAFE_TODO(output.data() + output_len),
                           &final_output_chunk_len)) {
     return Status::OperationError();
   }
@@ -115,10 +112,12 @@ std::array<uint8_t, AES_BLOCK_SIZE> BlockWithZeroedCounter(
   unsigned int counter_length_bits_remainder = counter_length_bits % 8;
 
   std::array<uint8_t, AES_BLOCK_SIZE> new_counter_block;
-  memcpy(new_counter_block.data(), counter_block.data(), AES_BLOCK_SIZE);
+  UNSAFE_TODO(
+      memcpy(new_counter_block.data(), counter_block.data(), AES_BLOCK_SIZE));
 
   size_t index = new_counter_block.size() - counter_length_bytes;
-  memset(&new_counter_block.front() + index, 0, counter_length_bytes);
+  UNSAFE_TODO(
+      memset(&new_counter_block.front() + index, 0, counter_length_bytes));
 
   if (counter_length_bits_remainder) {
     new_counter_block[index - 1] &= 0xFF << counter_length_bits_remainder;

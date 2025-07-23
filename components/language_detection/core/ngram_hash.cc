@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/language_detection/core/ngram_hash.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "components/language_detection/core/ngram_hash_ops_utils.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flexbuffers.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/util.h"
@@ -157,11 +153,13 @@ void GetNGramHashIndices(NGramHashParams* params, int32_t* data) {
       // seamlessly. Anything over num_bytes = 7 can overflow on 32-bit. By
       // limiting to 7, this may truncate the last byte of the input and result
       // in a slightly different hash but impact should be minimal.
-      const auto str_hash = MurmurHash64A(
-          tokenized_output.str.c_str() + tokenized_output.tokens[start].first,
-          std::min(num_bytes, 7), seed);
+      const auto str_hash =
+          MurmurHash64A(UNSAFE_TODO(tokenized_output.str.c_str() +
+                                    tokenized_output.tokens[start].first),
+                        std::min(num_bytes, 7), seed);
       // Map the hash to an index in the vocab.
-      data[ngram * max_unicode_length + start] = (str_hash % vocab_size) + 1;
+      UNSAFE_TODO(data[ngram * max_unicode_length + start]) =
+          (str_hash % vocab_size) + 1;
     }
   }
 }
@@ -203,8 +201,8 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   if (tflite::IsDynamicTensor(output)) {
     TfLiteIntArray* output_size = TfLiteIntArrayCreate(3);
     output_size->data[0] = 1;
-    output_size->data[1] = params->GetNumNGrams();
-    output_size->data[2] = params->GetNumTokens();
+    UNSAFE_TODO(output_size->data[1]) = params->GetNumNGrams();
+    UNSAFE_TODO(output_size->data[2]) = params->GetNumTokens();
     TF_LITE_ENSURE_OK(context,
                       context->ResizeTensor(context, output, output_size));
   } else {

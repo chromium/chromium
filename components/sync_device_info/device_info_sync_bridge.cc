@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/sync_device_info/device_info_sync_bridge.h"
 
 #include <stdint.h>
@@ -18,6 +13,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -118,13 +114,14 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   if (from.secret().size() != to.secret.size()) {
     return std::nullopt;
   }
-  memcpy(to.secret.data(), from.secret().data(), to.secret.size());
+  UNSAFE_TODO(memcpy(to.secret.data(), from.secret().data(), to.secret.size()));
 
   if (from.peer_public_key_x962().size() != to.peer_public_key_x962.size()) {
     return std::nullopt;
   }
-  memcpy(to.peer_public_key_x962.data(), from.peer_public_key_x962().data(),
-         to.peer_public_key_x962.size());
+  UNSAFE_TODO(memcpy(to.peer_public_key_x962.data(),
+                     from.peer_public_key_x962().data(),
+                     to.peer_public_key_x962.size()));
 
   return to;
 }

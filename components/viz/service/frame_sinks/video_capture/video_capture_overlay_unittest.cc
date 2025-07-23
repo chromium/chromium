@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/frame_sinks/video_capture/video_capture_overlay.h"
 
 #include <array>
@@ -15,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -459,9 +455,11 @@ class VideoCaptureOverlayRenderTest
     if (is_argb_test()) {
       uint8_t* dst = frame->GetWritableVisibleData(VideoFrame::Plane::kARGB);
       const int stride = frame->stride(VideoFrame::Plane::kARGB);
-      for (int row = 0; row < size.height(); ++row, dst += stride) {
+      for (int row = 0; row < size.height();
+           ++row, UNSAFE_TODO(dst += stride)) {
         uint32_t* const begin = reinterpret_cast<uint32_t*>(dst);
-        std::fill(begin, begin + size.width(), UINT32_C(0xff000000));
+        std::fill(begin, UNSAFE_TODO(begin + size.width()),
+                  UINT32_C(0xff000000));
       }
     } else /* if (!is_argb_test()) */ {
       media::FillYUV(frame.get(), 0x00, 0x80, 0x80);
@@ -508,15 +506,19 @@ class VideoCaptureOverlayRenderTest
             new gfx::ColorTransform::TriStim[size.GetArea()]);
         int pos = 0;
         for (int row = 0; row < size.height(); ++row) {
-          const uint8_t* y = frame.visible_data(VideoFrame::Plane::kY) +
-                             (row * frame.stride(VideoFrame::Plane::kY));
-          const uint8_t* u = frame.visible_data(VideoFrame::Plane::kU) +
-                             ((row / 2) * frame.stride(VideoFrame::Plane::kU));
-          const uint8_t* v = frame.visible_data(VideoFrame::Plane::kV) +
-                             ((row / 2) * frame.stride(VideoFrame::Plane::kV));
+          const uint8_t* y =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kY) +
+                          (row * frame.stride(VideoFrame::Plane::kY)));
+          const uint8_t* u =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kU) +
+                          ((row / 2) * frame.stride(VideoFrame::Plane::kU)));
+          const uint8_t* v =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kV) +
+                          ((row / 2) * frame.stride(VideoFrame::Plane::kV)));
           for (int col = 0; col < size.width(); ++col) {
-            colors[pos].SetPoint(y[col] / 255.0f, u[col / 2] / 255.0f,
-                                 v[col / 2] / 255.0f);
+            colors[pos].SetPoint(UNSAFE_TODO(y[col]) / 255.0f,
+                                 UNSAFE_TODO(u[col / 2]) / 255.0f,
+                                 UNSAFE_TODO(v[col / 2]) / 255.0f);
             ++pos;
           }
         }
@@ -536,10 +538,11 @@ class VideoCaptureOverlayRenderTest
         for (int row = 0; row < size.height(); ++row) {
           uint32_t* out = canonical_bitmap.getAddr32(0, row);
           for (int col = 0; col < size.width(); ++col) {
-            out[col] = ((UINT32_C(255) << SK_A32_SHIFT) |
-                        (ToClamped255(colors[pos].x()) << SK_R32_SHIFT) |
-                        (ToClamped255(colors[pos].y()) << SK_G32_SHIFT) |
-                        (ToClamped255(colors[pos].z()) << SK_B32_SHIFT));
+            UNSAFE_TODO(out[col]) =
+                ((UINT32_C(255) << SK_A32_SHIFT) |
+                 (ToClamped255(colors[pos].x()) << SK_R32_SHIFT) |
+                 (ToClamped255(colors[pos].y()) << SK_G32_SHIFT) |
+                 (ToClamped255(colors[pos].z()) << SK_B32_SHIFT));
             ++pos;
           }
         }
@@ -602,7 +605,7 @@ class VideoCaptureOverlayRenderTest
       auto frame = CreateVideoFrame(video_frame_size);
       CHECK(renderers[i]);
       std::move(renderers[i]).Run(frame.get());
-      EXPECT_TRUE(FrameMatchesPNG(*frame, expected_files[i]));
+      UNSAFE_TODO(EXPECT_TRUE(FrameMatchesPNG(*frame, expected_files[i])));
     }
   }
 

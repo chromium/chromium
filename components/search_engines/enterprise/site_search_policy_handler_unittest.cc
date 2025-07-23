@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -589,7 +585,7 @@ TEST(SiteSearchPolicyHandlerTest, MissingRequiredField) {
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
   for (auto* it = std::begin(kMissingRequiredFieldsTestProviders);
-       it != std::end(kMissingRequiredFieldsTestProviders); ++it) {
+       it != std::end(kMissingRequiredFieldsTestProviders); UNSAFE_TODO(++it)) {
     policy::PolicyMap policies;
     PolicyErrorMap errors;
     PrefValueMap prefs;
@@ -616,7 +612,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kShortcutNotUniqueTestProviders);
-       it != std::end(kShortcutNotUniqueTestProviders); ++it) {
+       it != std::end(kShortcutNotUniqueTestProviders); UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -649,7 +645,7 @@ TEST(SiteSearchPolicyHandlerTest, NoUniqueShortcut) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kNoUniqueShortcutTestProviders);
-       it != std::end(kNoUniqueShortcutTestProviders); ++it) {
+       it != std::end(kNoUniqueShortcutTestProviders); UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -673,7 +669,7 @@ TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kEmptyFieldTestProviders);
-       it != std::end(kEmptyFieldTestProviders); ++it) {
+       it != std::end(kEmptyFieldTestProviders); UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -736,7 +732,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kShortcutWithSpacesTestProviders);
-       it != std::end(kShortcutWithSpacesTestProviders); ++it) {
+       it != std::end(kShortcutWithSpacesTestProviders); UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -746,7 +742,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
 
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   for (auto* it = std::begin(kShortcutWithSpacesTestProviders);
-       it != std::end(kShortcutWithSpacesTestProviders); ++it) {
+       it != std::end(kShortcutWithSpacesTestProviders); UNSAFE_TODO(++it)) {
     EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringFUTF16(
                              IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_CONTAINS_SPACE,
                              base::UTF8ToUTF16(it->shortcut.value()))));
@@ -763,7 +759,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kShortcutStartsWithAtTestProviders);
-       it != std::end(kShortcutStartsWithAtTestProviders); ++it) {
+       it != std::end(kShortcutStartsWithAtTestProviders); UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -800,7 +796,7 @@ TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kInvalidUrlTestProviders);
-       it != std::end(kInvalidUrlTestProviders); ++it) {
+       it != std::end(kInvalidUrlTestProviders); UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -810,7 +806,7 @@ TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
 
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   for (auto* it = std::begin(kInvalidUrlTestProviders);
-       it != std::end(kInvalidUrlTestProviders); ++it) {
+       it != std::end(kInvalidUrlTestProviders); UNSAFE_TODO(++it)) {
     EXPECT_THAT(&errors,
                 HasValidationError(l10n_util::GetStringFUTF16(
                     IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT,
@@ -828,7 +824,8 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kShortcutSameAsDSPKeywordTestProviders);
-       it != std::end(kShortcutSameAsDSPKeywordTestProviders); ++it) {
+       it != std::end(kShortcutSameAsDSPKeywordTestProviders);
+       UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -865,7 +862,8 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kShortcutSameAsDSPKeywordTestProviders);
-       it != std::end(kShortcutSameAsDSPKeywordTestProviders); ++it) {
+       it != std::end(kShortcutSameAsDSPKeywordTestProviders);
+       UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -905,7 +903,8 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kShortcutSameAsDSPKeywordTestProviders);
-       it != std::end(kShortcutSameAsDSPKeywordTestProviders); ++it) {
+       it != std::end(kShortcutSameAsDSPKeywordTestProviders);
+       UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 
@@ -999,7 +998,7 @@ TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
 
   base::Value::List policy_value;
   for (auto* it = std::begin(kTestProvidersWithFeaturedEntries);
-       it != std::end(kTestProvidersWithFeaturedEntries); ++it) {
+       it != std::end(kTestProvidersWithFeaturedEntries); UNSAFE_TODO(++it)) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
   }
 

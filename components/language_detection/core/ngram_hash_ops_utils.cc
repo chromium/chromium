@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/language_detection/core/ngram_hash_ops_utils.h"
 
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "third_party/utf/src/include/utf.h"
 
 namespace language_detection {
@@ -44,7 +40,8 @@ TokenizedOutput Tokenize(const char* input_str,
       break;
 
     // Use the standard UTF-8 library to find the next token.
-    size_t bytes_read = charntorune(&token, input_str + i, len - i);
+    size_t bytes_read =
+        charntorune(&token, UNSAFE_TODO(input_str + i), len - i);
     // Stop processing, if we can't read any more tokens, or we have reached
     // maximum allowed tokens, allocating one token for the suffix.
     if (bytes_read == 0) {
@@ -62,7 +59,7 @@ TokenizedOutput Tokenize(const char* input_str,
     }
     // Append the token in the output string, and note its position and the
     // number of bytes that token consumed.
-    output.str.append(input_str + i, bytes_read);
+    output.str.append(UNSAFE_TODO(input_str + i), bytes_read);
     output.tokens.emplace_back(std::make_pair(token_start, bytes_read));
     token_start += bytes_read;
     i += bytes_read;
@@ -79,7 +76,8 @@ void LowercaseUnicodeStr(const char* input_str,
   for (int i = 0; i < len;) {
     Rune token;
     // Tokenize the given string, and get the appropriate lowercase token.
-    size_t bytes_read = charntorune(&token, input_str + i, len - i);
+    size_t bytes_read =
+        charntorune(&token, UNSAFE_TODO(input_str + i), len - i);
     token = isalpharune(token) ? tolowerrune(token) : token;
     // Write back the token to the output string.
     char token_buf[UTFmax];

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/schema.h"
 
 #include <limits.h>
@@ -1495,7 +1490,7 @@ SchemaList Schema::GetPatternProperties(const std::string& key) const {
   const PropertyNode* begin = storage_->property(node->end);
   const PropertyNode* end = storage_->property(node->pattern_end);
   SchemaList matching_properties;
-  for (const PropertyNode* it = begin; it != end; ++it) {
+  for (const PropertyNode* it = begin; it != end; UNSAFE_TODO(++it)) {
     if (re2::RE2::PartialMatch(key, *storage_->CompileRegex(it->key))) {
       matching_properties.push_back(
           Schema(storage_, storage_->schema(it->schema)));
@@ -1574,8 +1569,9 @@ bool Schema::ValidateStringRestriction(int index, const char* str) const {
       rnode->enumeration_restriction.offset_end) {
     for (int i = rnode->enumeration_restriction.offset_begin;
          i < rnode->enumeration_restriction.offset_end; ++i) {
-      if (strcmp(*storage_->string_enums(i), str) == 0)
+      if (UNSAFE_TODO(strcmp(*storage_->string_enums(i), str)) == 0) {
         return true;
+      }
     }
     return false;
   } else {

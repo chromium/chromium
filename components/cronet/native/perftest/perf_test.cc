@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <string>
 
 #include "base/at_exit.h"
 #include "base/atomic_sequence_num.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -456,7 +452,8 @@ void PerfTest(const char* json_args) {
   std::string results_string;
   base::JSONWriter::Write(results, &results_string);
   FILE* results_file = fopen(GetConfigString("RESULTS_FILE").c_str(), "wb");
-  fwrite(results_string.c_str(), results_string.length(), 1, results_file);
+  UNSAFE_TODO(
+      fwrite(results_string.c_str(), results_string.length(), 1, results_file));
   fclose(results_file);
   fclose(fopen(GetConfigString("DONE_FILE").c_str(), "wb"));
 }
