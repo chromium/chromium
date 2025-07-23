@@ -647,6 +647,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const {
     return child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   }
+  const viz::LocalSurfaceId& target_local_surface_id() const {
+    return target_local_surface_id_;
+  }
 
   LayerTreeImpl* active_tree() { return active_tree_.get(); }
   const LayerTreeImpl* active_tree() const { return active_tree_.get(); }
