@@ -885,6 +885,18 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self updateLogoAndFakeboxDisplay];
 }
 
+- (void)updateLogoColor:(UIColor*)logoTintColor {
+  CHECK(_logoVendor);
+
+  if (logoTintColor) {
+    _logoVendor.usesMonochromeLogo = YES;
+    _logoVendor.view.tintColor = logoTintColor;
+  } else {
+    _logoVendor.usesMonochromeLogo = NO;
+    _logoVendor.view.tintColor = nil;
+  }
+}
+
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
   if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
     return;

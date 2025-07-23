@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_CONSUMER_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_CONSUMER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @protocol LogoVendor;
 @class NewTabPageColorPalette;
@@ -18,6 +18,10 @@
 
 // Exposes view and methods to drive the doodle.
 - (void)setLogoVendor:(id<LogoVendor>)logoVendor;
+
+// Sets the color for the monochrome logo. Pass `nil` to display the color
+// version.
+- (void)updateLogoColor:(UIColor*)logoTintColor;
 
 // Sets whether voice search is currently enabled.
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled;

@@ -394,13 +394,14 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   if (colorTheme && colorTheme->color()) {
     // Sets the New Tab Page trait to a color palette generated from the current
     // theme.
-    [self.consumer.traitOverrides
-        setObject:CreateColorPaletteFromSeedColor(
-                      skia::UIColorFromSkColor(colorTheme->color()),
-                      ProtoEnumToSchemeVariant(
-                          colorTheme->browser_color_variant()))
-         forTrait:NewTabPageTrait.class];
+    NewTabPageColorPalette* colorPalette = CreateColorPaletteFromSeedColor(
+        skia::UIColorFromSkColor(colorTheme->color()),
+        ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()));
+
+    [self.consumer.traitOverrides setObject:colorPalette
+                                   forTrait:NewTabPageTrait.class];
     [self.consumer setBackgroundImage:nil];
+    [self.headerConsumer updateLogoColor:colorPalette.tintColor];
     return;
   }
 
@@ -410,6 +411,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                                  forTrait:NewTabPageTrait.class];
   if (!background) {
     [self.consumer setBackgroundImage:nil];
+    [self.headerConsumer updateLogoColor:nil];
     return;
   }
 
@@ -605,6 +607,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 // image for the new tab page.
 - (void)handleBackgroundImageFetch:(const gfx::Image&)image {
   [self.consumer setBackgroundImage:image.ToUIImage()];
+  [self.headerConsumer updateLogoColor:UIColor.whiteColor];
 }
 
 @end
