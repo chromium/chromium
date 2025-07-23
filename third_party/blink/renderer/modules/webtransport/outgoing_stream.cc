@@ -55,9 +55,7 @@ class SendStreamAbortAlgorithm final : public AbortSignal::Algorithm {
 };
 
 struct CachedDataBufferDeleter {
-  void operator()(void* buffer) {
-    WTF::Partitions::BufferPartition()->Free(buffer);
-  }
+  void operator()(void* buffer) { Partitions::BufferPartition()->Free(buffer); }
 };
 
 }  // namespace
@@ -163,9 +161,9 @@ class OutgoingStream::CachedDataBuffer {
     // BufferPartition() will ever not be able to provide big enough
     // allocations, e.g. because bigger ArrayBuffers get supported, then we
     // have to switch to another allocator, e.g. the ArrayBuffer allocator.
-    void* memory_buffer = WTF::Partitions::BufferPartition()->Alloc(
-        data.size(), "OutgoingStream");
-    // SAFETY: WTF::Partitions::BufferPartition()->Alloc() returns a valid
+    void* memory_buffer =
+        Partitions::BufferPartition()->Alloc(data.size(), "OutgoingStream");
+    // SAFETY: Partitions::BufferPartition()->Alloc() returns a valid
     // pointer to at least data.size() bytes.
     buffer_ = UNSAFE_BUFFERS(HeapBuffer::FromOwningPointer(
         reinterpret_cast<uint8_t*>(memory_buffer), data.size()));

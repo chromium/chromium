@@ -352,7 +352,7 @@ class CORE_EXPORT SerializedScriptValue
   }
 
   struct BufferDeleter {
-    void operator()(uint8_t* buffer) { WTF::Partitions::BufferFree(buffer); }
+    void operator()(uint8_t* buffer) { Partitions::BufferFree(buffer); }
   };
   using DataBufferPtr = base::HeapArray<uint8_t, BufferDeleter>;
 

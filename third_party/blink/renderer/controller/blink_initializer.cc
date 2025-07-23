@@ -170,7 +170,7 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // The ArrayBuffer partition is placed inside V8's virtual memory cage if it
   // is enabled. For that reason, the partition can only be initialized after V8
   // has been initialized.
-  WTF::Partitions::InitializeArrayBufferPartition();
+  Partitions::InitializeArrayBufferPartition();
 }
 
 }  // namespace
@@ -352,12 +352,12 @@ void BlinkInitializer::OnClearWindowObjectInMainWorld(
 
 // Function defined in third_party/blink/public/web/blink.h.
 void OnProcessForegrounded() {
-  WTF::Partitions::AdjustPartitionsForForeground();
+  Partitions::AdjustPartitionsForForeground();
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
 void OnProcessBackgrounded() {
-  WTF::Partitions::AdjustPartitionsForBackground();
+  Partitions::AdjustPartitionsForBackground();
 }
 
 }  // namespace blink

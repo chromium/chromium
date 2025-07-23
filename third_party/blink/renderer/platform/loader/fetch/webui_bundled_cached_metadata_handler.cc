@@ -88,7 +88,7 @@ void WebUIBundledCachedMetadataHandler::OnMemoryDump(
   auto* dump = pmd->CreateMemoryAllocatorDump(dump_name);
   dump->AddScalar("size", "bytes", GetCodeCacheSize());
   pmd->AddSuballocation(dump->Guid(),
-                        String(WTF::Partitions::kAllocatedObjectPoolName));
+                        String(Partitions::kAllocatedObjectPoolName));
 }
 
 size_t WebUIBundledCachedMetadataHandler::GetCodeCacheSize() const {

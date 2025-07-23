@@ -48,7 +48,7 @@
 #include "partition_alloc/partition_root.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace WTF {
+namespace blink {
 
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
@@ -193,7 +193,7 @@ void Partitions::InitializeArrayBufferPartition() {
 // static
 void Partitions::StartMemoryReclaimer(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  CHECK(blink::IsMainThread());
+  CHECK(IsMainThread());
   DCHECK(initialized_);
 
   base::allocator::StartMemoryReclaimer(task_runner);
@@ -205,7 +205,7 @@ void Partitions::DumpMemoryStats(
     partition_alloc::PartitionStatsDumper* partition_stats_dumper) {
   // Object model and rendering partitions are not thread safe and can be
   // accessed only on the main thread.
-  DCHECK(blink::IsMainThread());
+  DCHECK(IsMainThread());
 
   if (auto* fast_malloc_partition = FastMallocPartition()) {
     fast_malloc_partition->DumpStats("fast_malloc", is_light_dump,
@@ -264,7 +264,7 @@ size_t Partitions::TotalSizeOfCommittedPages() {
 // static
 size_t Partitions::TotalActiveBytes() {
   LightPartitionStatsDumperImpl dumper;
-  WTF::Partitions::DumpMemoryStats(true, &dumper);
+  Partitions::DumpMemoryStats(true, &dumper);
   return dumper.TotalActiveBytes();
 }
 
@@ -462,4 +462,4 @@ void Partitions::AdjustPartitionsForBackground() {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

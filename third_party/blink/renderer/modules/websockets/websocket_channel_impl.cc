@@ -113,7 +113,7 @@ WebSocketChannelImpl::MessageDataDeleter::MessageDataDeleter(
 void WebSocketChannelImpl::MessageDataDeleter::operator()(char* p) const {
   DCHECK(isolate_) << "Cannot call deleter when default constructor was used";
   external_memory_accounter_.Decrease(isolate_.get(), size_);
-  WTF::Partitions::FastFree(p);
+  Partitions::FastFree(p);
 }
 
 // static
@@ -121,7 +121,7 @@ WebSocketChannelImpl::MessageData WebSocketChannelImpl::CreateMessageData(
     v8::Isolate* isolate,
     size_t message_size) {
   return MessageData(
-      static_cast<char*>(WTF::Partitions::FastMalloc(
+      static_cast<char*>(Partitions::FastMalloc(
           message_size, "blink::WebSockChannelImpl::MessageData")),
       MessageDataDeleter(isolate, message_size));
 }

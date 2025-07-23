@@ -21,7 +21,7 @@ struct Environment {
   Environment() {
     CHECK(base::i18n::InitializeICU());
     mojo::core::Init();
-    WTF::Partitions::Initialize();
+    blink::Partitions::Initialize();
     blink::InitializeWtf();
   }
   // used by ICU integration.

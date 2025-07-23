@@ -137,7 +137,7 @@ WebThemeEngine* Platform::ThemeEngine() {
 
 void Platform::InitializeBlink() {
   DCHECK(!did_initialize_blink_);
-  WTF::Partitions::Initialize();
+  Partitions::Initialize();
   InitializeWtf();
   Length::Initialize();
   ProcessHeap::Init();
@@ -209,7 +209,7 @@ void Platform::InitializeMainThreadCommon(
   // This relies on being called prior to
   // PartitionAllocSupport::ReconfigureAfterTaskRunnerInit, which would start
   // memory reclaimer with a regular task runner. The first one prevails.
-  WTF::Partitions::StartMemoryReclaimer(
+  Partitions::StartMemoryReclaimer(
       base::MakeRefCounted<IdleDelayedTaskHelper>());
 }
 

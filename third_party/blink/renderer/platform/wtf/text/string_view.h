@@ -61,7 +61,7 @@ class WTF_EXPORT StringView {
       size_t size = length * sizeof(CharT);
       if (size > sizeof(stackbuf16_)) [[unlikely]] {
         heapbuf_.reset(reinterpret_cast<char*>(
-            WTF::Partitions::BufferMalloc(size, "StackBackingStore")));
+            Partitions::BufferMalloc(size, "StackBackingStore")));
         // SAFETY: `heapbuf_` is the result of BufferMalloc() for `length`.
         return UNSAFE_BUFFERS(
             base::span(reinterpret_cast<CharT*>(heapbuf_.get()), length));
@@ -80,7 +80,7 @@ class WTF_EXPORT StringView {
 
    public:
     struct BufferDeleter {
-      void operator()(void* buffer) { WTF::Partitions::BufferFree(buffer); }
+      void operator()(void* buffer) { Partitions::BufferFree(buffer); }
     };
 
     static_assert(sizeof(UChar) != sizeof(char),

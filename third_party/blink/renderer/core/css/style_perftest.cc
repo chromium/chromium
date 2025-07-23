@@ -184,7 +184,7 @@ static StylePerfResult MeasureStyleForDumpedPage(
   size_t orig_gc_allocated_bytes =
       blink::ProcessHeap::TotalAllocatedObjectSize();
   size_t orig_partition_allocated_bytes =
-      WTF::Partitions::TotalSizeOfCommittedPages();
+      Partitions::TotalSizeOfCommittedPages();
 
   std::unique_ptr<DummyPageHolder> page;
 
@@ -238,8 +238,7 @@ static StylePerfResult MeasureStyleForDumpedPage(
   test::RunPendingTasks();
 
   size_t gc_allocated_bytes = blink::ProcessHeap::TotalAllocatedObjectSize();
-  size_t partition_allocated_bytes =
-      WTF::Partitions::TotalSizeOfCommittedPages();
+  size_t partition_allocated_bytes = Partitions::TotalSizeOfCommittedPages();
 
   result.gc_allocated_bytes = gc_allocated_bytes - orig_gc_allocated_bytes;
   result.partition_allocated_bytes =

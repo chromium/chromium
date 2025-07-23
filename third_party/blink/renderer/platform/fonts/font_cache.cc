@@ -348,7 +348,7 @@ void FontCache::DumpShapeResultCache(
   }
   dump->AddScalar("size", "bytes", shape_result_cache_size);
   memory_dump->AddSuballocation(dump->guid(),
-                                WTF::Partitions::kAllocatedObjectPoolName);
+                                Partitions::kAllocatedObjectPoolName);
 }
 
 sk_sp<SkTypeface> FontCache::CreateTypefaceFromUniqueName(

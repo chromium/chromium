@@ -308,8 +308,8 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   base::DiscardableMemoryAllocator::SetInstance(
       discardable_memory_allocator_.get());
 
-  // FeatureList must be initialized before WTF::Partitions::Initialize(),
-  // because WTF::Partitions::Initialize() uses base::FeatureList to obtain
+  // FeatureList must be initialized before Partitions::Initialize(),
+  // because Partitions::Initialize() uses base::FeatureList to obtain
   // PartitionOptions.
   // NOTE: InitScopedFeatureListForTesting() deliberately removes
   // `--enable-features` and `--disable-features` from the command line of the
@@ -332,7 +332,7 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   dummy_platform_ = std::make_unique<Platform>();
   Platform::SetCurrentPlatformForTesting(dummy_platform_.get());
 
-  WTF::Partitions::Initialize();
+  Partitions::Initialize();
   InitializeWtf();
   Length::Initialize();
 

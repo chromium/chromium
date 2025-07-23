@@ -10,11 +10,11 @@
 namespace blink {
 
 void* PartitionAllocator::AllocateBacking(size_t size, const char* type_name) {
-  return WTF::Partitions::BufferMalloc(size, type_name);
+  return Partitions::BufferMalloc(size, type_name);
 }
 
 void PartitionAllocator::FreeBacking(void* address) {
-  WTF::Partitions::BufferFree(address);
+  Partitions::BufferFree(address);
 }
 
 template <>

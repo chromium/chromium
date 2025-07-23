@@ -249,7 +249,7 @@ SerializedScriptValue::DataBufferPtr SerializedScriptValue::AllocateBuffer(
   // SAFETY: BufferMalloc() always returns a pointer to at least
   // `buffer_size` bytes.
   return UNSAFE_BUFFERS(DataBufferPtr::FromOwningPointer(
-      static_cast<uint8_t*>(WTF::Partitions::BufferMalloc(
+      static_cast<uint8_t*>(Partitions::BufferMalloc(
           buffer_size, "SerializedScriptValue buffer")),
       buffer_size));
 }

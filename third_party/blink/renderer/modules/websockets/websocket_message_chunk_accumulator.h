@@ -66,11 +66,11 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final
 
  private:
   struct SegmentDeleter {
-    void operator()(char* p) const { WTF::Partitions::FastFree(p); }
+    void operator()(char* p) const { Partitions::FastFree(p); }
   };
   using SegmentPtr = std::unique_ptr<char[], SegmentDeleter>;
   static SegmentPtr CreateSegment() {
-    return SegmentPtr(static_cast<char*>(WTF::Partitions::FastMalloc(
+    return SegmentPtr(static_cast<char*>(Partitions::FastMalloc(
         kSegmentSize, "blink::WebSocketMessageChunkAccumulator::Segment")));
   }
 

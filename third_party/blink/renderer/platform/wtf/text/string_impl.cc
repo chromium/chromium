@@ -54,8 +54,6 @@ using std::numeric_limits;
 
 namespace blink {
 
-using WTF::Partitions;
-
 namespace {
 
 struct SameSizeAsStringImpl {

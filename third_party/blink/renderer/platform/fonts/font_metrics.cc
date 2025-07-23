@@ -79,14 +79,14 @@ void FontMetrics::AscentDescentWithHacks(
        font.getHinting() == SkFontHinting::kNormal)) {
     size_t vdmx_size = face->getTableSize(kVdmxTag);
     if (vdmx_size && vdmx_size < kMaxVDMXTableSize) {
-      uint8_t* vdmx_table = (uint8_t*)WTF::Partitions::FastMalloc(
+      uint8_t* vdmx_table = (uint8_t*)Partitions::FastMalloc(
           vdmx_size, WTF_HEAP_PROFILER_TYPE_NAME(FontMetrics));
       if (vdmx_table &&
           face->getTableData(kVdmxTag, 0, vdmx_size, vdmx_table) == vdmx_size &&
           ParseVDMX(&vdmx_ascent, &vdmx_descent, vdmx_table, vdmx_size,
                     pixel_size))
         is_vdmx_valid = true;
-      WTF::Partitions::FastFree(vdmx_table);
+      Partitions::FastFree(vdmx_table);
     }
   }
 #endif

@@ -110,8 +110,8 @@ void CSSStyleSheetResource::OnMemoryDump(
   const String name = StrCat({GetMemoryDumpName(), "/style_sheets"});
   auto* dump = memory_dump->CreateMemoryAllocatorDump(name);
   dump->AddScalar("size", "bytes", decoded_sheet_text_.CharactersSizeInBytes());
-  memory_dump->AddSuballocation(
-      dump->Guid(), String(WTF::Partitions::kAllocatedObjectPoolName));
+  memory_dump->AddSuballocation(dump->Guid(),
+                                String(Partitions::kAllocatedObjectPoolName));
 }
 
 network::mojom::ReferrerPolicy CSSStyleSheetResource::GetReferrerPolicy()

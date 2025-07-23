@@ -44,7 +44,7 @@ class LiteralBufferBase {
 
   ~LiteralBufferBase() {
     if (!is_stored_inline())
-      WTF::Partitions::BufferFree(begin_);
+      blink::Partitions::BufferFree(begin_);
   }
 
   ALWAYS_INLINE const T* data() const { return begin_; }
@@ -100,8 +100,8 @@ class LiteralBufferBase {
     if (capacity() < other_size) {
       // Create large-enough heap-allocated storage.
       if (!is_stored_inline())
-        WTF::Partitions::BufferFree(begin_);
-      begin_ = static_cast<T*>(WTF::Partitions::BufferMalloc(
+        blink::Partitions::BufferFree(begin_);
+      begin_ = static_cast<T*>(blink::Partitions::BufferMalloc(
           AllocationSize(other_size), "LiteralBufferBase"));
       end_of_storage_ = UNSAFE_TODO(begin_ + other_size);
     }
@@ -113,7 +113,7 @@ class LiteralBufferBase {
     DCHECK_NE(this, &other);
     if (!other.is_stored_inline()) {
       if (!is_stored_inline())
-        WTF::Partitions::BufferFree(begin_);
+        blink::Partitions::BufferFree(begin_);
       begin_ = other.begin_;
       end_ = other.end_;
       end_of_storage_ = other.end_of_storage_;
@@ -160,11 +160,11 @@ class LiteralBufferBase {
     size_t in_use = end_ - begin_;
     size_t new_capacity =
         RoundUpToPowerOfTwo(std::max(min_capacity, 2 * capacity()));
-    T* new_storage = static_cast<T*>(WTF::Partitions::BufferMalloc(
+    T* new_storage = static_cast<T*>(blink::Partitions::BufferMalloc(
         AllocationSize(new_capacity), "LiteralBufferBase"));
     std::copy_n(begin_, in_use, new_storage);
     if (!is_stored_inline())
-      WTF::Partitions::BufferFree(begin_);
+      blink::Partitions::BufferFree(begin_);
     begin_ = new_storage;
     end_ = UNSAFE_TODO(new_storage + in_use);
     end_of_storage_ = UNSAFE_TODO(new_storage + new_capacity);

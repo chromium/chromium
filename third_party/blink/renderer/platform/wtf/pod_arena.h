@@ -72,10 +72,10 @@ class PodArena final : public RefCounted<PodArena> {
     }
 
     void* Allocate(size_t size) override {
-      return WTF::Partitions::FastMalloc(size,
-                                         WTF_HEAP_PROFILER_TYPE_NAME(PodArena));
+      return Partitions::FastMalloc(size,
+                                    WTF_HEAP_PROFILER_TYPE_NAME(PodArena));
     }
-    void Free(void* ptr) override { WTF::Partitions::FastFree(ptr); }
+    void Free(void* ptr) override { Partitions::FastFree(ptr); }
 
    protected:
     FastMallocAllocator() = default;

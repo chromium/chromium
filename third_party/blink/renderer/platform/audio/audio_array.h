@@ -55,7 +55,7 @@ class AudioArray final {
   AudioArray(const AudioArray&) = delete;
   AudioArray& operator=(const AudioArray&) = delete;
 
-  ~AudioArray() { WTF::Partitions::FastFree(allocation_); }
+  ~AudioArray() { Partitions::FastFree(allocation_); }
 
   // It's OK to call Allocate() multiple times, but data will *not* be copied
   // from an initial allocation if re-allocated. Allocations are
@@ -76,7 +76,7 @@ class AudioArray final {
 #endif
 
     if (allocation_) {
-      WTF::Partitions::FastFree(allocation_);
+      Partitions::FastFree(allocation_);
     }
 
     // Always allocate extra space so that we are guaranteed to get
@@ -84,7 +84,7 @@ class AudioArray final {
     // small since most arrays are probably at least 128 floats (or
     // doubles).
     unsigned total = base::CheckAdd(initial_size, kAlignment).ValueOrDie();
-    allocation_ = static_cast<T*>(WTF::Partitions::FastZeroedMalloc(
+    allocation_ = static_cast<T*>(Partitions::FastZeroedMalloc(
         total, WTF_HEAP_PROFILER_TYPE_NAME(AudioArray<T>)));
     CHECK(allocation_);
 

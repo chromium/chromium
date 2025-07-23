@@ -473,10 +473,9 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
   size_t size_bytes = 0;
   for (const auto& table : tables)
     size_bytes += table.size_bytes();
-  intptr_t* unified_table =
-      static_cast<intptr_t*>(::WTF::Partitions::FastMalloc(
-          size_bytes, "V8ContextSnapshotImpl::GetReferenceTable"));
-  // SAFETY: `::WTF::Partitions::FastMalloc` ensures `unified_table` points to
+  intptr_t* unified_table = static_cast<intptr_t*>(Partitions::FastMalloc(
+      size_bytes, "V8ContextSnapshotImpl::GetReferenceTable"));
+  // SAFETY: `Partitions::FastMalloc` ensures `unified_table` points to
   // `size_bytes` bytes.
   auto unified_table_span =
       UNSAFE_BUFFERS(base::span(unified_table, size_bytes));

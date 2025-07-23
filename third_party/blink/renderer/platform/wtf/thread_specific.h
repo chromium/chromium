@@ -94,7 +94,7 @@ inline void ThreadSpecific<T>::Destroy(void* ptr) {
   // and then free the memory manually.
   T* instance = static_cast<T*>(ptr);
   instance->~T();
-  WTF::Partitions::FastFree(ptr);
+  Partitions::FastFree(ptr);
 }
 
 template <typename T>
@@ -123,7 +123,7 @@ inline ThreadSpecific<T>::operator T*() {
   // in case any function it calls needs to access the value, to avoid
   // recursion.
   if (!*ptr) [[unlikely]] {
-    *ptr = static_cast<T*>(WTF::Partitions::FastZeroedMalloc(
+    *ptr = static_cast<T*>(Partitions::FastZeroedMalloc(
         sizeof(T), WTF_HEAP_PROFILER_TYPE_NAME(T)));
 
     // Even if we didn't realize we're on the main thread, we might still be.

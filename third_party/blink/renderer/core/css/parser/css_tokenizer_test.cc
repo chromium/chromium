@@ -131,10 +131,10 @@ static CSSParserToken Percentage(NumericValueType type, double value) {
 
 // We need to initialize PartitionAlloc before creating CSSParserTokens
 // because CSSParserToken depends on PartitionAlloc. It is safe to call
-// WTF::Partitions::initialize() multiple times.
+// Partitions::initialize() multiple times.
 #define DEFINE_TOKEN(name, argument)                       \
   static CSSParserToken& name() {                          \
-    WTF::Partitions::Initialize();                         \
+    Partitions::Initialize();                              \
     DEFINE_STATIC_LOCAL(CSSParserToken, name, (argument)); \
     return name;                                           \
   }

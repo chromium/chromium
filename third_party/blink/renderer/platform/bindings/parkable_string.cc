@@ -149,7 +149,7 @@ class NullableCharBuffer final {
 
   explicit NullableCharBuffer(size_t size) {
     data_ = reinterpret_cast<char*>(
-        WTF::Partitions::BufferPartition()
+        Partitions::BufferPartition()
             ->AllocInline<partition_alloc::AllocFlags::kReturnNull>(
                 size, "NullableCharBuffer"));
     size_ = size;
@@ -160,7 +160,7 @@ class NullableCharBuffer final {
 
   ~NullableCharBuffer() {
     if (data_)
-      WTF::Partitions::BufferPartition()->Free(data_);
+      Partitions::BufferPartition()->Free(data_);
   }
 
   // May return nullptr.
@@ -1080,7 +1080,7 @@ void ParkableString::OnMemoryDump(WebProcessMemoryDump* pmd,
 
   const char* parent_allocation =
       may_be_parked() ? ParkableStringManager::kAllocatorDumpName
-                      : WTF::Partitions::kAllocatedObjectPoolName;
+                      : Partitions::kAllocatedObjectPoolName;
   pmd->AddSuballocation(dump->Guid(), parent_allocation);
 }
 
