@@ -943,6 +943,7 @@ void GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
   // node to convert the input tensor to 1-D tensor.
   // TODO(crbug.com/430960849): Remove the workaround for elu's 1D input tensor
   // limitation when the ONNX issue is fixed.
+  // https://github.com/onnx/onnx/issues/7119
   bool need_reshape = input_descriptor.Rank() != 1;
   std::vector<uint32_t> input_shape = input_descriptor.shape();
   std::string elu_output = output;
@@ -1624,6 +1625,7 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   //
   // TODO(crbug.com/429272269): Remove the workaround for reduction operations
   // when ORT issue is fixed.
+  // https://github.com/onnx/onnx/issues/6103
   if (reduce.axes.empty()) {
     switch (reduce.kind) {
       case mojom::Reduce::Kind::kLogSum: {
@@ -1998,19 +2000,33 @@ void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
 }
 
 void GraphBuilderOrt::AddTileOperation(const mojom::Tile& tile) {
-  const std::string node_name = GenerateNodeName(tile.label);
   const std::string input = GetOperandNameById(tile.input_operand_id);
   const std::string output = GetOperandNameById(tile.output_operand_id);
 
+  const OperandDescriptor& input_descriptor =
+      GetOperand(tile.input_operand_id).descriptor;
   CHECK(context_properties_.data_type_limits.tile_input.Supports(
-      GetOperand(tile.input_operand_id).descriptor));
+      input_descriptor));
+
+  std::vector<const char*> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  // Emulate the tile operation with identity operation for unsupported scalar
+  // input.
+  // TODO(crbug.com/433414906): Remove the workaround for unsupported scalar
+  // input when the ORT tile operation issue is fixed.
+  // https://github.com/microsoft/onnxruntime/issues/11523
+  if (input_descriptor.Rank() == 0) {
+    const std::string node_name = GenerateNodeName(base::JoinString(
+        {kInserted, kOpTypeIdentity, kToEmulate, tile.label}, kUnderscore));
+    model_editor_.AddNode(kOpTypeIdentity, node_name, inputs, outputs);
+    return;
+  }
 
   const std::string repeats =
       CreateInt64InitializerForUint32Array(tile.repetitions);
-
-  std::array<const char*, 2> inputs = {input.data(), repeats.data()};
-  std::array<const char*, 1> outputs = {output.c_str()};
-
+  inputs.push_back(repeats.c_str());
+  const std::string node_name = GenerateNodeName(tile.label);
   model_editor_.AddNode(kOpTypeTile, node_name, inputs, outputs);
 }
 

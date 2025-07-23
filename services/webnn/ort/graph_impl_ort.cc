@@ -97,10 +97,11 @@ class GraphImplOrt::ComputeResources {
     }
 
     const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-    CHECK_STATUS(ort_api->Run(session_.get(), nullptr, input_names.data(),
-                              input_tensors.data(), input_names.size(),
-                              output_names.data(), output_names.size(),
-                              output_tensors.data()));
+    // TODO(crbug.com/433543131): Handle the inference error of MLGraph.
+    CALL_ORT_FUNC(ort_api->Run(session_.get(), nullptr, input_names.data(),
+                               input_tensors.data(), input_names.size(),
+                               output_names.data(), output_names.size(),
+                               output_tensors.data()));
   }
 
  private:
