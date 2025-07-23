@@ -755,7 +755,12 @@ void PrefetchService::PrefetchUrl(
 void PrefetchService::CheckEligibilityOfPrefetch(
     CheckEligibilityParams params) {
   const auto prefetch_container = params.prefetch_container;
-
+  if (!prefetch_container) {
+    // Test-only where the eligibility check is paused and resumed via
+    // `GetDelayEligibilityCheckForTesting()`.
+    std::move(params).Finish(PreloadingEligibility::kEligible);
+    return;
+  }
   CHECK(prefetch_container);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading",
                                     "PrefetchService::CheckEligibility", this);

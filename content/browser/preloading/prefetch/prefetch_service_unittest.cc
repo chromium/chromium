@@ -5833,6 +5833,11 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
                                                     expected_attempts);
   }
 
+  // Resume the elibility check (currently this is just to satisfy the preferred
+  // invariant that `PrefetchService::OnGotEligibility*()` is always called for
+  // each eligibility check.
+  eligibility_check_callback_future.Take().Run();
+
   prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
