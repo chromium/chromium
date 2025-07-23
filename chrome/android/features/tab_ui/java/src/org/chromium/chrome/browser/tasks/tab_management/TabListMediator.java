@@ -3157,7 +3157,8 @@ class TabListMediator implements TabListNotificationHandler {
         if (tabId != Tab.INVALID_TAB_ID) {
             TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
             Tab tab = filter.getTabModel().getTabById(tabId);
-            assumeNonNull(tab);
+            if (tab == null) return;
+
             boolean isInTabGroup = filter.tabGroupExists(tab.getTabGroupId());
             final @Nullable @TabGroupColorId Integer tabGroupColor =
                     isInTabGroup ? filter.getTabGroupColorWithFallback(tab.getTabGroupId()) : null;
