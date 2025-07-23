@@ -10,6 +10,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
@@ -55,9 +56,14 @@ class SiteIsolationPolicyBrowserTest : public PlatformBrowserTest {
     bool isolated;
   };
 
-  void CheckExpectations(Expectations* expectations, size_t count) {
+  void CheckExpectations(base::span<Expectations> expectations,
+                         size_t spanification_suspected_redundant_count) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(spanification_suspected_redundant_count == expectations.size(),
+          base::NotFatalUntil::M143);
     content::BrowserContext* context = chrome_test_utils::GetProfile(this);
-    for (size_t i = 0; i < count; ++i) {
+    for (size_t i = 0; i < spanification_suspected_redundant_count; ++i) {
       const GURL url(expectations[i].url);
       auto instance = content::SiteInstance::CreateForURL(context, url);
       EXPECT_EQ(expectations[i].isolated, instance->RequiresDedicatedProcess())
@@ -65,14 +71,19 @@ class SiteIsolationPolicyBrowserTest : public PlatformBrowserTest {
     }
   }
 
-  void CheckIsolatedOriginExpectations(Expectations* expectations,
-                                       size_t count) {
+  void CheckIsolatedOriginExpectations(
+      base::span<Expectations> expectations,
+      size_t spanification_suspected_redundant_count) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(spanification_suspected_redundant_count == expectations.size(),
+          base::NotFatalUntil::M143);
     if (!content::AreAllSitesIsolatedForTesting()) {
-      CheckExpectations(expectations, count);
+      CheckExpectations(expectations, spanification_suspected_redundant_count);
     }
 
     auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-    for (size_t i = 0; i < count; ++i) {
+    for (size_t i = 0; i < spanification_suspected_redundant_count; ++i) {
       const GURL url(expectations[i].url);
       const url::Origin origin = url::Origin::Create(url);
       EXPECT_EQ(expectations[i].isolated,

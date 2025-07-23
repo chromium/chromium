@@ -305,9 +305,13 @@ const StringToIntTable kDisplayProperties[] = {
 const size_t kDisplayPropertiesSize = std::size(kDisplayProperties);
 
 int GetIntForString(const std::string& key,
-                    const StringToIntTable* table,
-                    size_t table_length) {
-  for (size_t i = 0; i < table_length; ++i) {
+                    base::span<const StringToIntTable> table,
+                    size_t spanification_suspected_redundant_table_length) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_table_length == table.size(),
+        base::NotFatalUntil::M143);
+  for (size_t i = 0; i < spanification_suspected_redundant_table_length; ++i) {
     if (base::EqualsCaseInsensitiveASCII(key, table[i].key)) {
       return table[i].id;
     }

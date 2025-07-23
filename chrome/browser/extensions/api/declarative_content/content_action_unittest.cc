@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 #include "base/base64.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -312,7 +314,7 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   SkBitmap bitmap;
   EXPECT_TRUE(bitmap.tryAllocN32Pixels(19, 19));
   bitmap.eraseARGB(0, 0, 0, 0);
-  uint32_t* pixels = bitmap.getAddr32(0, 0);
+  base::span<uint32_t> pixels = UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, 0);
   // Set a single pixel, which isn't enough to consider the icon visible.
   pixels[0] = SkColorSetARGB(255, 255, 0, 0);
   std::string data64 =

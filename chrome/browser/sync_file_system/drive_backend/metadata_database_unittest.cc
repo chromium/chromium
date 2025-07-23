@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -241,12 +242,17 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetUpDatabaseByTrackedFiles(const TrackedFile** tracked_files,
-                                   int size) {
+  void SetUpDatabaseByTrackedFiles(base::span<const TrackedFile*> tracked_files,
+                                   int spanification_suspected_redundant_size) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(base::checked_cast<size_t>(spanification_suspected_redundant_size) ==
+              tracked_files.size(),
+          base::NotFatalUntil::M143);
     std::unique_ptr<LevelDBWrapper> db = InitializeLevelDB();
     ASSERT_TRUE(db);
 
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < spanification_suspected_redundant_size; ++i) {
       const TrackedFile* file = tracked_files[i];
       if (file->should_be_absent)
         continue;
@@ -274,9 +280,16 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
         file.tracker.tracker_id(), nullptr));
   }
 
-  void VerifyTrackedFiles(const TrackedFile** tracked_files, int size) {
-    for (int i = 0; i < size; ++i)
+  void VerifyTrackedFiles(base::span<const TrackedFile*> tracked_files,
+                          int spanification_suspected_redundant_size) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(base::checked_cast<size_t>(spanification_suspected_redundant_size) ==
+              tracked_files.size(),
+          base::NotFatalUntil::M143);
+    for (int i = 0; i < spanification_suspected_redundant_size; ++i) {
       VerifyTrackedFile(*tracked_files[i]);
+    }
   }
 
   MetadataDatabase* metadata_database() { return metadata_database_.get(); }

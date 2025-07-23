@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -365,8 +366,9 @@ class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
   // Run through |test_case_count| tests in |test_cases|. A new MockDownloadItem
   // will be created for each test case and destroyed when the test case is
   // complete.
-  void RunTestCasesWithActiveItem(const DownloadTestCase test_cases[],
-                                  size_t test_case_count);
+  void RunTestCasesWithActiveItem(
+      base::span<const DownloadTestCase> test_cases,
+      size_t spanification_suspected_redundant_test_case_count);
 
   // Verifies that |target_path|, |disposition|, |expected_danger_type| and
   // |intermediate_path| matches the expectations of |test_case|. Posts
@@ -551,9 +553,14 @@ DownloadTargetDeterminerTest::RunDownloadTargetDeterminer(
 }
 
 void DownloadTargetDeterminerTest::RunTestCasesWithActiveItem(
-    const DownloadTestCase test_cases[],
-    size_t test_case_count) {
-  for (size_t i = 0; i < test_case_count; ++i) {
+    base::span<const DownloadTestCase> test_cases,
+    size_t spanification_suspected_redundant_test_case_count) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_test_case_count == test_cases.size(),
+        base::NotFatalUntil::M143);
+  for (size_t i = 0; i < spanification_suspected_redundant_test_case_count;
+       ++i) {
     std::unique_ptr<download::MockDownloadItem> item =
         CreateActiveDownloadItem(i, test_cases[i]);
     SCOPED_TRACE(testing::Message() << "Running test case " << i);
@@ -1048,7 +1055,8 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
         .WillOnce(WithArg<2>(ScheduleCallback2(
             GetPathInDownloadDir(FILE_PATH_LITERAL("foo-local.txt")),
             base::FilePath())));
-    RunTestCasesWithActiveItem(&kAutomaticDownloadToVirtualDir, 1);
+    RunTestCasesWithActiveItem(
+        base::span_from_ref(kAutomaticDownloadToVirtualDir), 1);
   }
 
   {
@@ -1076,7 +1084,7 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
             DownloadConfirmationResult::CONFIRMED,
             ui::SelectedFileInfo(
                 test_virtual_dir().AppendASCII("prompted.txt")))));
-    RunTestCasesWithActiveItem(&kSaveAsToVirtualDir, 1);
+    RunTestCasesWithActiveItem(base::span_from_ref(kSaveAsToVirtualDir), 1);
   }
 
   // "Save as" is not supported on Android.
@@ -1101,7 +1109,7 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
             DownloadConfirmationResult::CONFIRMED,
             ui::SelectedFileInfo(
                 GetPathInDownloadDir(FILE_PATH_LITERAL("foo-x.txt"))))));
-    RunTestCasesWithActiveItem(&kSaveAsToLocalDir, 1);
+    RunTestCasesWithActiveItem(base::span_from_ref(kSaveAsToLocalDir), 1);
   }
 
   {
@@ -1118,7 +1126,7 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
         DownloadItem::TARGET_DISPOSITION_OVERWRITE,
 
         EXPECT_LOCAL_PATH};
-    RunTestCasesWithActiveItem(&kForcedSafe, 1);
+    RunTestCasesWithActiveItem(base::span_from_ref(kForcedSafe), 1);
   }
 }
 
@@ -1499,7 +1507,7 @@ TEST_F(DownloadTargetDeterminerTest, PromptAlways_SafeAutomatic) {
               RequestConfirmation_(
                   _, GetPathInDownloadDir(FILE_PATH_LITERAL("automatic.txt")),
                   DownloadConfirmationReason::PREFERENCE, _));
-  RunTestCasesWithActiveItem(&kSafeAutomatic, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kSafeAutomatic), 1);
 }
 
 TEST_F(DownloadTargetDeterminerTest, PromptAlways_SafeSaveAs) {
@@ -1522,7 +1530,7 @@ TEST_F(DownloadTargetDeterminerTest, PromptAlways_SafeSaveAs) {
               RequestConfirmation_(
                   _, GetPathInDownloadDir(FILE_PATH_LITERAL("save-as.txt")),
                   DownloadConfirmationReason::SAVE_AS, _));
-  RunTestCasesWithActiveItem(&kSafeSaveAs, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kSafeSaveAs), 1);
 }
 
 TEST_F(DownloadTargetDeterminerTest, PromptAlways_SafeForced) {
@@ -1541,7 +1549,7 @@ TEST_F(DownloadTargetDeterminerTest, PromptAlways_SafeForced) {
       EXPECT_LOCAL_PATH};
 
   SetPromptForDownload(true);
-  RunTestCasesWithActiveItem(&kSafeForced, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kSafeForced), 1);
 }
 
 TEST_F(DownloadTargetDeterminerTest, PromptAlways_AutoOpen) {
@@ -1562,7 +1570,7 @@ TEST_F(DownloadTargetDeterminerTest, PromptAlways_AutoOpen) {
   SetPromptForDownload(true);
   EnableAutoOpenByUserBasedOnExtension(
       base::FilePath(FILE_PATH_LITERAL("dummy.dummy")));
-  RunTestCasesWithActiveItem(&kAutoOpen, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kAutoOpen), 1);
 }
 
 // If an embedder responds to a RequestConfirmation with a new path and a
@@ -1588,7 +1596,7 @@ TEST_F(DownloadTargetDeterminerTest, ContinueWithoutConfirmation_SaveAs) {
           DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
           ui::SelectedFileInfo(
               GetPathInDownloadDir(FILE_PATH_LITERAL("foo.kindabad"))))));
-  RunTestCasesWithActiveItem(&kTestCase, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kTestCase), 1);
 }
 
 // Same as ContinueWithoutConfirmation_SaveAs, but the embedder response
@@ -1615,7 +1623,7 @@ TEST_F(DownloadTargetDeterminerTest, ContinueWithConfirmation_SaveAs) {
           DownloadConfirmationResult::CONFIRMED,
           ui::SelectedFileInfo(
               GetPathInDownloadDir(FILE_PATH_LITERAL("foo.kindabad"))))));
-  RunTestCasesWithActiveItem(&kTestCase, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kTestCase), 1);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1863,12 +1871,12 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsUnsafe) {
 
   ON_CALL(*delegate(), NotifyExtensions_(_, _, _))
       .WillByDefault(Invoke(&NotifyExtensionsOverridePath));
-  RunTestCasesWithActiveItem(&kNotHandledBySafeBrowsing, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kNotHandledBySafeBrowsing), 1);
 
   ON_CALL(*delegate(), CheckDownloadUrl_(_, _, _))
       .WillByDefault(WithArg<2>(ScheduleCallback(
           download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT)));
-  RunTestCasesWithActiveItem(&kHandledBySafeBrowsing, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kHandledBySafeBrowsing), 1);
 }
 
 // Test that conflict actions set by extensions are passed correctly into
@@ -3070,7 +3078,7 @@ TEST_F(DownloadTargetDeterminerDlpTest, InvalidUrl) {
                   _, GetPathInDownloadDir(FILE_PATH_LITERAL("download.txt")),
                   DownloadConfirmationReason::DLP_BLOCKED, _));
   EXPECT_CALL(*mock_files_controller_, ShouldPromptBeforeDownload).Times(0);
-  RunTestCasesWithActiveItem(&kManagedPathTestCase, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kManagedPathTestCase), 1);
 }
 
 // Even if the download path is managed, we should prompt if the download path
@@ -3099,7 +3107,7 @@ TEST_F(DownloadTargetDeterminerDlpTest, ManagedPath_ShouldPrompt) {
                   DownloadConfirmationReason::DLP_BLOCKED, _));
   EXPECT_CALL(*mock_files_controller_, ShouldPromptBeforeDownload)
       .WillOnce(testing::Return(true));
-  RunTestCasesWithActiveItem(&kManagedPathTestCase, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kManagedPathTestCase), 1);
 }
 
 // Even if "Prompt for download" user preference is set to false, we should
@@ -3127,7 +3135,7 @@ TEST_F(DownloadTargetDeterminerDlpTest, PromptAlways_SafeAutomatic) {
               RequestConfirmation_(
                   _, GetPathInDownloadDir(FILE_PATH_LITERAL("automatic.txt")),
                   DownloadConfirmationReason::DLP_BLOCKED, _));
-  RunTestCasesWithActiveItem(&kSafeAutomatic, 1);
+  RunTestCasesWithActiveItem(base::span_from_ref(kSafeAutomatic), 1);
 }
 #endif
 

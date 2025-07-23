@@ -15,7 +15,9 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
@@ -64,9 +66,12 @@ SkBitmap MakeTestSkBitmap(int w, int h) {
   SkBitmap bmp;
   bmp.allocN32Pixels(w, h);
 
-  uint32_t* src_data = bmp.getAddr32(0, 0);
-  for (int i = 0; i < w * h; i++) {
-    src_data[i] = SkPreMultiplyARGB(i % 255, i % 250, i % 245, i % 240);
+  for (int y = 0; y < h; y++) {
+    base::span<uint32_t> src_data = UNSAFE_SKBITMAP_GETADDR32(bmp, 0, y);
+    for (int x = 0; x < w; x++) {
+      int i = y * w + x;
+      src_data[x] = SkPreMultiplyARGB(i % 255, i % 250, i % 245, i % 240);
+    }
   }
   return bmp;
 }

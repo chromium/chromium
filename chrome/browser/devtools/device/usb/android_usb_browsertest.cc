@@ -368,8 +368,8 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
     append(static_cast<uint32_t>(body.size() + (add_zero ? 1 : 0)));
     append(Checksum(body));
     append(command ^ 0xffffffff);
-    const auto* body_head = reinterpret_cast<const uint8_t*>(body.data());
-    std::copy(body_head, body_head + body.size(),
+    base::span<const uint8_t> body_head = base::as_byte_span(body);
+    std::copy(body_head.data(), body_head.subspan(body.size()).data(),
               std::back_inserter(output_buffer_));
     if (add_zero) {
       output_buffer_.push_back(0);

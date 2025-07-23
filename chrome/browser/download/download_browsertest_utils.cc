@@ -11,6 +11,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -619,11 +620,16 @@ void DownloadTestBase::DownloadFilesCheckErrorsLoopBody(
   }
 }
 
-void DownloadTestBase::DownloadFilesCheckErrors(size_t count,
-                                                DownloadInfo* download_info) {
+void DownloadTestBase::DownloadFilesCheckErrors(
+    size_t spanification_suspected_redundant_count,
+    base::span<DownloadInfo> download_info) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_count == download_info.size(),
+        base::NotFatalUntil::M143);
   DownloadFilesCheckErrorsSetup();
 
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_count; ++i) {
     DownloadFilesCheckErrorsLoopBody(download_info[i], i);
   }
 }
@@ -650,8 +656,12 @@ void DownloadTestBase::DownloadInsertFilesErrorCheckErrorsLoopBody(
 }
 
 void DownloadTestBase::DownloadInsertFilesErrorCheckErrors(
-    size_t count,
-    FileErrorInjectInfo* info) {
+    size_t spanification_suspected_redundant_count,
+    base::span<FileErrorInjectInfo> info) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_count == info.size(),
+        base::NotFatalUntil::M143);
   DownloadFilesCheckErrorsSetup();
 
   // Set up file failures.
@@ -659,7 +669,7 @@ void DownloadTestBase::DownloadInsertFilesErrorCheckErrors(
       content::TestFileErrorInjector::Create(
           DownloadManagerForBrowser(browser())));
 
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_count; ++i) {
     DownloadInsertFilesErrorCheckErrorsLoopBody(injector, info[i], i);
   }
 }
@@ -667,8 +677,12 @@ void DownloadTestBase::DownloadInsertFilesErrorCheckErrors(
 // Attempts to download a file to a read-only folder, based on information
 // in |download_info|.
 void DownloadTestBase::DownloadFilesToReadonlyFolder(
-    size_t count,
-    DownloadInfo* download_info) {
+    size_t spanification_suspected_redundant_count,
+    base::span<DownloadInfo> download_info) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_count == download_info.size(),
+        base::NotFatalUntil::M143);
   DownloadFilesCheckErrorsSetup();
 
   // Make the test folder unwritable.
@@ -679,7 +693,7 @@ void DownloadTestBase::DownloadFilesToReadonlyFolder(
   base::FilePermissionRestorer permission_restorer(destination_folder);
   EXPECT_TRUE(base::MakeFileUnwritable(destination_folder));
 
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_count; ++i) {
     DownloadFilesCheckErrorsLoopBody(download_info[i], i);
   }
 }

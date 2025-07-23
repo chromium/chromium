@@ -9,6 +9,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
 
+#include <array>
+
 #include "base/barrier_closure.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -307,12 +309,15 @@ TEST_F(LocalBinaryUploadServiceTest, PendingRequestsGetProcessed) {
   fake_sdk_manager_.SetClientSendResponse(response);
 
   constexpr size_t kCount = LocalBinaryUploadService::kMaxActiveCount + 1;
-  BinaryUploadService::Result results[kCount];
-  ContentAnalysisResponse responses[kCount];
+  std::array<BinaryUploadService::Result, kCount> results;
+  std::array<ContentAnalysisResponse, kCount> responses;
   auto barrier_closure = CreateQuitBarrier(kCount);
   for (size_t i = 0; i < kCount; ++i) {
-    lbus.MaybeUploadForDeepScanning(
-        MakeRequest(config, results + i, responses + i, barrier_closure));
+    lbus.MaybeUploadForDeepScanning(MakeRequest(
+        config,
+        base::span<BinaryUploadService::Result>(results).subspan(i).data(),
+        base::span<ContentAnalysisResponse>(responses).subspan(i).data(),
+        barrier_closure));
   }
 
   task_environment_.RunUntilQuit();
@@ -352,12 +357,14 @@ TEST_F(LocalBinaryUploadServiceTest, AgentErrorMakesManyRequestsPending) {
 
   constexpr size_t kCount = LocalBinaryUploadService::kMaxActiveCount + 1;
 
-  BinaryUploadService::Result results[kCount];
-  ContentAnalysisResponse responses[kCount];
+  std::array<BinaryUploadService::Result, kCount> results;
+  std::array<ContentAnalysisResponse, kCount> responses;
 
   for (size_t i = 0; i < kCount; ++i) {
-    lbus.MaybeUploadForDeepScanning(
-        MakeRequest(config, results + i, responses + i));
+    lbus.MaybeUploadForDeepScanning(MakeRequest(
+        config,
+        base::span<BinaryUploadService::Result>(results).subspan(i).data(),
+        base::span<ContentAnalysisResponse>(responses).subspan(i).data()));
   }
 
   task_environment_.RunUntilIdle();
@@ -453,11 +460,13 @@ TEST_F(LocalBinaryUploadServiceTest, OnConnectionRetryCompletesManyPending) {
   fake_sdk_manager_.SetClientSendStatus(-1);
 
   constexpr size_t kCount = LocalBinaryUploadService::kMaxActiveCount + 1;
-  BinaryUploadService::Result results[kCount];
-  ContentAnalysisResponse responses[kCount];
+  std::array<BinaryUploadService::Result, kCount> results;
+  std::array<ContentAnalysisResponse, kCount> responses;
   for (size_t i = 0; i < kCount; ++i) {
-    lbus.MaybeUploadForDeepScanning(
-        MakeRequest(config, results + i, responses + i));
+    lbus.MaybeUploadForDeepScanning(MakeRequest(
+        config,
+        base::span<BinaryUploadService::Result>(results).subspan(i).data(),
+        base::span<ContentAnalysisResponse>(responses).subspan(i).data()));
   }
 
   task_environment_.RunUntilIdle();
@@ -520,8 +529,8 @@ TEST_F(LocalBinaryUploadServiceTest, CancelRequests) {
   FakeLocalBinaryUploadService lbus(&profile_);
 
   constexpr size_t kCount = LocalBinaryUploadService::kMaxActiveCount + 1;
-  BinaryUploadService::Result results[kCount];
-  ContentAnalysisResponse responses[kCount];
+  std::array<BinaryUploadService::Result, kCount> results;
+  std::array<ContentAnalysisResponse, kCount> responses;
 
   // Create a barrier closure whose count include one for each analysis request
   // plus one for the cancel request.
@@ -529,8 +538,11 @@ TEST_F(LocalBinaryUploadServiceTest, CancelRequests) {
   lbus.set_cancel_quit_closure(barrier_closure);
 
   for (size_t i = 0; i < kCount; ++i) {
-    auto request =
-        MakeRequest(config, results + i, responses + i, barrier_closure);
+    auto request = MakeRequest(
+        config,
+        base::span<BinaryUploadService::Result>(results).subspan(i).data(),
+        base::span<ContentAnalysisResponse>(responses).subspan(i).data(),
+        barrier_closure);
     request->set_user_action_id(kFakeUserActionId);
     lbus.MaybeUploadForDeepScanning(std::move(request));
   }
@@ -574,19 +586,24 @@ TEST_F(LocalBinaryUploadServiceTest, CancelRequests_MultipleUserActions) {
   CloudOrLocalAnalysisSettings cloud_or_local(local);
   FakeLocalBinaryUploadService lbus(&profile_);
 
-  BinaryUploadService::Result results[2];
-  ContentAnalysisResponse responses[2];
+  std::array<BinaryUploadService::Result, 2> results;
+  std::array<ContentAnalysisResponse, 2> responses;
 
   // Create a barrier closure whose count include one for each analysis request
   // plus one for the cancel request.
   auto barrier_closure = CreateQuitBarrier(3);
   lbus.set_cancel_quit_closure(barrier_closure);
 
-  auto request = MakeRequest(config, results, responses, barrier_closure);
+  auto request =
+      MakeRequest(config, results.data(), responses.data(), barrier_closure);
   request->set_user_action_id(kFakeUserActionId);
   lbus.MaybeUploadForDeepScanning(std::move(request));
 
-  request = MakeRequest(config, results + 1, responses + 1, barrier_closure);
+  request = MakeRequest(
+      config,
+      base::span<BinaryUploadService::Result>(results).subspan(1u).data(),
+      base::span<ContentAnalysisResponse>(responses).subspan(1u).data(),
+      barrier_closure);
   request->set_user_action_id(kFakeUserActionId2);
   lbus.MaybeUploadForDeepScanning(std::move(request));
 

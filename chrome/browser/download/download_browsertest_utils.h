@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
@@ -241,12 +242,14 @@ class DownloadTestBase : public InProcessBrowserTest {
   // |download_info| array.  |count| is the number of files.
   // If a Select File dialog appears, it will choose the default and return
   // immediately.
-  void DownloadFilesCheckErrors(size_t count, DownloadInfo* download_info);
+  void DownloadFilesCheckErrors(size_t spanification_suspected_redundant_count,
+                                base::span<DownloadInfo> download_info);
   void DownloadFilesCheckErrorsLoopBody(const DownloadInfo& download_info,
                                         size_t i);
 
-  void DownloadInsertFilesErrorCheckErrors(size_t count,
-                                           FileErrorInjectInfo* info);
+  void DownloadInsertFilesErrorCheckErrors(
+      size_t spanification_suspected_redundant_count,
+      base::span<FileErrorInjectInfo> info);
   void DownloadInsertFilesErrorCheckErrorsLoopBody(
       scoped_refptr<content::TestFileErrorInjector> injector,
       const FileErrorInjectInfo& info,
@@ -254,7 +257,9 @@ class DownloadTestBase : public InProcessBrowserTest {
 
   // Attempts to download a file to a read-only folder, based on information
   // in |download_info|.
-  void DownloadFilesToReadonlyFolder(size_t count, DownloadInfo* download_info);
+  void DownloadFilesToReadonlyFolder(
+      size_t spanification_suspected_redundant_count,
+      base::span<DownloadInfo> download_info);
 
   // This method:
   // * Starts a mock download by navigating to embedded test server URL.
