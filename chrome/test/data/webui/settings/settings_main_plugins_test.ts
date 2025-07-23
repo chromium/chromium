@@ -53,24 +53,10 @@ suite('SettingsMain', function() {
           `.active[slot=view] > :not(${pluginTag}, dom-if)`));
     }
 
-    // Check routes that are still residing within the old settings-basic-page
-    // "plugin".
-    const nonMigratedRoutes = [
-      routes.PRIVACY,
-    ];
-
-    for (const route of nonMigratedRoutes) {
-      Router.getInstance().navigateTo(route);
-      assertActive('settings-basic-page', route.path);
-    }
-
-    // Check routes that have been promoted to individual "plugins".
-    const migratedRoutes: Array<{route: Route, pluginTag: string}> = [
-      // TODO(crbug.com/424223101): Update this list as more routes are
-      // migrated.
-
+    const routesToVisit: Array<{route: Route, pluginTag: string}> = [
       {route: routes.PEOPLE, pluginTag: 'settings-people-page-index'},
       {route: routes.BASIC, pluginTag: 'settings-people-page-index'},
+      {route: routes.PRIVACY, pluginTag: 'settings-basic-page'},
       {route: routes.AUTOFILL, pluginTag: 'settings-autofill-page-index'},
       {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
@@ -92,7 +78,7 @@ suite('SettingsMain', function() {
       {route: routes.ABOUT, pluginTag: 'settings-about-page'},
     ];
 
-    for (const {route, pluginTag} of migratedRoutes) {
+    for (const {route, pluginTag} of routesToVisit) {
       Router.getInstance().navigateTo(route);
       await flushTasks();
       assertActive(pluginTag, route.path);

@@ -68,7 +68,8 @@
   </template>
 
   <div slot="view" id="old">
-    <template is="dom-if" if="[[renderBasicPage_(lastRoute_)]]">
+    <template is="dom-if" if="[[renderPlugin_(
+        routes_.PRIVACY, lastRoute_, inSearchMode_)]]">
       <settings-basic-page class="cr-centered-card-container"
           prefs="{{prefs}}" in-search-mode="[[inSearchMode_]]">
       </settings-basic-page>

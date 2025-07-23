@@ -153,6 +153,8 @@ export class SettingsMainElement extends SettingsMainElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.setAttribute('role', 'main');
+
     // Request loading of the lazy loaded module within an idle callback.
     requestIdleCallback(() => ensureLazyLoaded());
   }
@@ -195,6 +197,12 @@ export class SettingsMainElement extends SettingsMainElementBase {
     if (!sectionElement) {
       // Wait for any pageVisibility <dom-if>s to render and try again.
       await this.beforeNextRenderPromise_();
+
+      if (this.lastRoute_ !== effectiveRoute || !this.isConnected) {
+        // A newer currentRouteChanged call happened while awaiting or no longer
+        // connected (both can happen in tests). Do nothing.
+        return;
+      }
       sectionElement = this.$.switcher.querySelector(`#${newSection}`);
     }
 
@@ -259,12 +267,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
     });
   }
 
-  private renderBasicPage_(): boolean {
-    return this.lastRoute_ !== routes.ABOUT;
-  }
-
   private renderPlugin_(route: Route): boolean {
-    assert(route.hasMigratedToPlugin);
     return this.inSearchMode_ ||
         (!!this.lastRoute_ && route.contains(this.lastRoute_));
   }

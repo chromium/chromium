@@ -21,14 +21,8 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format off
-// <if expr="is_chromeos">
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-// </if>
-// clang-format on
 
 
-import {loadTimeData} from '../i18n_setup.js';
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
 import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide/privacy_guide_availability_mixin.js';
@@ -89,15 +83,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
       },
 
       currentRoute_: Object,
-
-      /**
-       * Used to avoid handling a new toggle while currently toggling.
-       */
-      advancedTogglingInProgress_: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -111,18 +96,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
   declare inSearchMode: boolean;
 
   declare private currentRoute_: Route;
-  declare private advancedTogglingInProgress_: boolean;
   declare private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
-
-  override ready() {
-    super.ready();
-
-    this.setAttribute('role', 'main');
-  }
-
 
   override connectedCallback() {
     super.connectedCallback();
@@ -141,8 +118,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
 
   /** Overrides MainPageMixin method. */
   override containsRoute(route: Route|null): boolean {
-    return !route || routes.BASIC.contains(route) ||
-        (routes.ADVANCED && routes.ADVANCED.contains(route));
+    return !route || routes.PRIVACY.contains(route);
   }
 
   private showPage_(visibility?: boolean): boolean {
@@ -166,45 +142,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
     }
   }
 
-  /**
-   * SettingsPlugin implementation
-   * Queues a task to search the basic sections, then another for the advanced
-   * sections.
-   * @param query The text to search for.
-   * @return A signal indicating that searching finished.
-   */
+  // SettingsPlugin implementation.
   async searchContents(query: string) {
     const basicPage = this.shadowRoot!.querySelector<HTMLElement>('#basicPage');
     assert(basicPage);
     const request = await getSearchManager().search(query, basicPage);
     return request.getSearchResult();
-  }
-
-  // <if expr="is_chromeos">
-  private onOpenChromeOsLanguagesSettingsClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('osSettingsLanguagesPageUrl'));
-  }
-  // </if>
-
-  private fire_(eventName: string, detail: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
-
-  /**
-   * @return Whether to show #basicPage. This is an optimization to lazy render
-   *     #basicPage only when a section/subpage within it is being shown, or
-   *     when in search mode.
-   * TODO(crbug.com/424223101): Make <settings-basic-page> as a whole lazy
-   * rendered and remove showBasicPage_()
-   */
-  private showBasicPage_(): boolean {
-    if (this.currentRoute_ === undefined) {
-      return false;
-    }
-
-    return this.inSearchMode || routes.BASIC.contains(this.currentRoute_);
   }
 }
 
