@@ -22,6 +22,7 @@ class AutocompleteController;
                         (AutocompleteController*)autocompleteController
              omniboxAutocompleteController:
                  (OmniboxAutocompleteController*)omniboxAutocompleteController
+                             isLensOverlay:(BOOL)isLensOverlay
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

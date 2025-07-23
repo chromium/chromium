@@ -57,6 +57,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   /// animation of focusing/defocusing the omnibox changes depending on this
   /// position.
   ToolbarType _unfocusedOmniboxToolbarType;
+  // Whether it's the lens overlay managing this popup.
+  BOOL _isLensOverlay;
 }
 
 - (instancetype)
@@ -64,12 +66,14 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
                popupViewController:
                    (UIViewController<ContentProviding>*)viewController
                  layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
-                         incognito:(BOOL)incognito {
+                         incognito:(BOOL)incognito
+                     isLensOverlay:(BOOL)isLensOverlay {
   self = [super init];
   if (self) {
     _delegate = delegate;
     _viewController = viewController;
     _layoutGuideCenter = layoutGuideCenter;
+    _isLensOverlay = isLensOverlay;
 
     UIView* containerView = [[UIView alloc] init];
     [containerView addSubview:viewController.view];
@@ -214,12 +218,16 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   // Creates the constraints if the view is newly added to the view hierarchy.
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    self.bottomConstraintPhone = [popup.superview.safeAreaLayoutGuide
-                                      .bottomAnchor
-        constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
-                                    constant:
-                                        kPopupBottomPaddingTablet +
-                                        kSecondaryToolbarWithoutOmniboxHeight];
+    BOOL paddingAmmount =
+        _isLensOverlay
+            ? 0
+            : kPopupBottomPaddingTablet + kSecondaryToolbarWithoutOmniboxHeight;
+    NSLayoutAnchor* superviewAnchor =
+        _isLensOverlay ? popup.superview.bottomAnchor
+                       : popup.superview.safeAreaLayoutGuide.bottomAnchor;
+    self.bottomConstraintPhone =
+        [superviewAnchor constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
+                                                     constant:paddingAmmount];
   } else {
     self.bottomConstraintPhone = [popup.bottomAnchor
         constraintEqualToAnchor:popup.superview.bottomAnchor];
