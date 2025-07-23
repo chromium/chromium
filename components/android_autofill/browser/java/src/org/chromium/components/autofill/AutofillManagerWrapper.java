@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.DoNotStripLogs;
@@ -108,6 +109,9 @@ public class AutofillManagerWrapper {
     public AutofillManagerWrapper(Context context) {
         updateLogStat();
         if (isLoggable()) log("constructor");
+        if (isLoggable() && context == ContextUtils.getApplicationContext()) {
+            log("Created with application context.");
+        }
         AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
         if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
                         .isEnabled()
