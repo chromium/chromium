@@ -5486,7 +5486,6 @@
     },
     {
       name: "WebFontResizeLCP",
-      status: "experimental",
     },
     {
       name: "WebGLDeveloperExtensions",
