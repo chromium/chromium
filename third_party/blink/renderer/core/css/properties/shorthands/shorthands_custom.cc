@@ -4283,6 +4283,141 @@ const CSSValue* WebkitColumnBreakInside::CSSValueFromComputedStyleInternal(
       style.BreakInside());
 }
 
+bool LineClamp::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const CSSValue* max_lines = nullptr;
+  const CSSValue* continue_value = nullptr;
+
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    max_lines = css_parsing_utils::ConsumeIdent(stream);
+    continue_value = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  } else {
+    // We must support the `auto` keyword for the `block-ellipsis` longhand,
+    // although we don't yet support that longhand.
+    bool parsed_auto = false;
+
+    do {
+      if (stream.Peek().Id() == CSSValueID::kWebkitLegacy) {
+        continue_value = css_parsing_utils::ConsumeIdent(stream);
+        break;
+      }
+
+      if (!parsed_auto && stream.Peek().Id() == CSSValueID::kAuto) {
+        css_parsing_utils::ConsumeIdent(stream);
+        parsed_auto = true;
+        continue;
+      }
+
+      if (!max_lines) {
+        max_lines = css_parsing_utils::ConsumePositiveInteger(stream, context);
+        if (max_lines) {
+          continue;
+        }
+      }
+
+      return false;
+    } while (!stream.AtEnd());
+
+    if (!max_lines && !parsed_auto) {
+      return false;
+    }
+
+    if (!max_lines) {
+      max_lines = CSSIdentifierValue::Create(CSSValueID::kNone);
+    }
+    if (!continue_value) {
+      continue_value = CSSIdentifierValue::Create(CSSValueID::kCollapse);
+    }
+  }
+
+  AddProperty(CSSPropertyID::kMaxLines, CSSPropertyID::kLineClamp, *max_lines,
+              important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+              properties);
+  AddProperty(CSSPropertyID::kContinue, CSSPropertyID::kLineClamp,
+              *continue_value, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return true;
+}
+
+const CSSValue* LineClamp::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (style.Continue() == EContinue::kAuto) {
+    if (style.MaxLines() == 0) {
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    }
+    return nullptr;
+  }
+
+  if (style.MaxLines() != 0) {
+    list->Append(*GetCSSPropertyMaxLines().CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase));
+  } else {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  }
+
+  if (style.Continue() == EContinue::kWebkitLegacy) {
+    list->Append(*GetCSSPropertyContinue().CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase));
+  }
+
+  return list;
+}
+
+bool AlternativeWebkitLineClamp::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const CSSValue* max_lines = nullptr;
+  const CSSValue* continue_value = nullptr;
+
+  // `none` is a keyword with a custom mapping, but it's also a valid value of
+  // the `block-ellipsis` longhand.
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    max_lines = css_parsing_utils::ConsumeIdent(stream);
+    continue_value = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  } else {
+    max_lines = css_parsing_utils::ConsumePositiveInteger(stream, context);
+    if (!max_lines) {
+      return false;
+    }
+    continue_value = CSSIdentifierValue::Create(CSSValueID::kWebkitLegacy);
+  }
+
+  AddProperty(CSSPropertyID::kMaxLines,
+              CSSPropertyID::kAlternativeWebkitLineClamp, *max_lines, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(CSSPropertyID::kContinue,
+              CSSPropertyID::kAlternativeWebkitLineClamp, *continue_value,
+              important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+              properties);
+  return true;
+}
+
+const CSSValue* AlternativeWebkitLineClamp::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (style.Continue() == EContinue::kAuto && style.MaxLines() == 0) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  if (style.Continue() == EContinue::kWebkitLegacy && style.MaxLines() != 0) {
+    return GetCSSPropertyMaxLines().CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase);
+  }
+  return nullptr;
+}
+
 bool WebkitMaskBoxImage::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,

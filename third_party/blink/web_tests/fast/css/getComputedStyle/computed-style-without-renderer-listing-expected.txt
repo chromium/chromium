@@ -15,7 +15,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-box-reflect: none
 -webkit-font-smoothing: auto
 -webkit-line-break: auto
--webkit-line-clamp: none
 -webkit-locale: auto
 -webkit-mask-box-image: none
 -webkit-mask-box-image-outset: 0
@@ -153,6 +152,7 @@ contain-intrinsic-width: none
 container-name: none
 container-type: normal
 content: normal
+continue: auto
 corner-bottom-left-shape: round
 corner-bottom-right-shape: round
 corner-end-end-shape: round
@@ -238,7 +238,6 @@ left: auto
 letter-spacing: normal
 lighting-color: rgb(255, 255, 255)
 line-break: auto
-line-clamp: none
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -271,6 +270,7 @@ math-style: normal
 max-block-size: none
 max-height: none
 max-inline-size: none
+max-lines: none
 max-width: none
 min-block-size: 0px
 min-height: 0px

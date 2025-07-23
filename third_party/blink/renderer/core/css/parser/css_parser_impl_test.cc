@@ -1264,7 +1264,7 @@ TEST(CSSParserImplTest, AllPropertiesCanParseImportant) {
   }
 
   // So that we don't introduce more, or break the entire test inadvertently.
-  EXPECT_EQ(broken_properties, 15);
+  EXPECT_EQ(broken_properties, 16);
 }
 
 TEST(CSSParserImplTest, ParseSupportsBlinkFeature) {

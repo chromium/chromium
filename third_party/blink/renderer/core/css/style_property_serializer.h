@@ -99,6 +99,7 @@ class CORE_EXPORT StylePropertySerializer {
   String ContainIntrinsicSizeValue() const;
   String WhiteSpaceValue() const;
   String ScrollStartValue() const;
+  String LineClampValue(bool is_webkit_line_clamp) const;
   String PositionTryValue(const StylePropertyShorthand&) const;
   String GetPropertyText(const CSSPropertyName&,
                          const String& value,

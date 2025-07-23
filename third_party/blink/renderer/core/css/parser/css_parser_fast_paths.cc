@@ -1708,6 +1708,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kInteractivity:
       DCHECK(RuntimeEnabledFeatures::CSSInertEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kInert;
+    case CSSPropertyID::kContinue:
+      return value_id == CSSValueID::kAuto ||
+             value_id == CSSValueID::kCollapse ||
+             value_id == CSSValueID::kWebkitLegacy;
     default:
       NOTREACHED();
   }
@@ -1739,6 +1743,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kColorInterpolationFilters,
     CSSPropertyID::kColorRendering,
     CSSPropertyID::kColumnRuleBreak,
+    CSSPropertyID::kContinue,
     CSSPropertyID::kDirection,
     CSSPropertyID::kDominantBaseline,
     CSSPropertyID::kEmptyCells,

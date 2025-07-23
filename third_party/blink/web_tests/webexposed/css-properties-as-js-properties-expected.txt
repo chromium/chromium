@@ -155,6 +155,7 @@ containerName
 containerType
 content
 contentVisibility
+continue
 cornerBlockEndShape
 cornerBlockStartShape
 cornerBottomLeftShape
@@ -327,6 +328,7 @@ mathStyle
 maxBlockSize
 maxHeight
 maxInlineSize
+maxLines
 maxWidth
 minBlockSize
 minHeight

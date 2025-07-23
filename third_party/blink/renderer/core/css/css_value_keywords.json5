@@ -2030,5 +2030,8 @@
     // block is elsewhere
     "bar",
     "underscore",
+
+    // continue
+    "-webkit-legacy",
   ],
 }
