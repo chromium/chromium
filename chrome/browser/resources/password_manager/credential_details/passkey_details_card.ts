@@ -14,6 +14,7 @@ import '../dialogs/delete_passkey_dialog.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
@@ -108,21 +109,25 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   private getAriaLabelForPasswordCard_(): string {
     return !this.passkey.username ?
         this.i18n('passkeyDetailsCardNoUsernameAriaLabel') :
-        this.i18n('passkeyDetailsCardAriaLabel', this.passkey.username);
+        this.i18n(
+            'passkeyDetailsCardAriaLabel',
+            htmlEscape(this.passkey.username));
   }
 
   private getAriaLabelForEditButton_(): string {
     return !this.passkey.username ?
         this.i18n('passkeyDetailsCardEditButtonNoUsernameAriaLabel') :
         this.i18n(
-            'passkeyDetailsCardEditButtonAriaLabel', this.passkey.username);
+            'passkeyDetailsCardEditButtonAriaLabel',
+            htmlEscape(this.passkey.username));
   }
 
   private getAriaLabelForDeleteButton_(): string {
     return !this.passkey.username ?
         this.i18n('passkeyDetailsCardDeleteButtonNoUsernameAriaLabel') :
         this.i18n(
-            'passkeyDetailsCardDeleteButtonAriaLabel', this.passkey.username);
+            'passkeyDetailsCardDeleteButtonAriaLabel',
+            htmlEscape(this.passkey.username));
   }
 
   private updatePasskeyManagementInfoLabel_() {

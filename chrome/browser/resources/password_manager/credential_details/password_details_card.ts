@@ -24,6 +24,7 @@ import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_b
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {PasswordsMovedEvent, ValueCopiedEvent} from '../password_manager_app.js';
@@ -295,7 +296,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return this.password.username ?
         this.i18n(
             'passwordDetailsCardAriaLabel', this.getCredentialTypeString_(),
-            this.password.username) :
+            htmlEscape(this.password.username)) :
         this.getCredentialTypeString_();
   }
 
@@ -303,7 +304,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return this.password.username ?
         this.i18n(
             'passwordDetailsCardEditButtonAriaLabel',
-            this.getCredentialTypeString_(), this.password.username) :
+            this.getCredentialTypeString_(),
+            htmlEscape(this.password.username)) :
         this.i18n(
             'passwordDetailsCardEditButtonNoUsernameAriaLabel',
             this.getCredentialTypeString_());
@@ -313,7 +315,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return this.password.username ?
         this.i18n(
             'passwordDetailsCardDeleteButtonAriaLabel',
-            this.getCredentialTypeString_(), this.password.username) :
+            this.getCredentialTypeString_(),
+            htmlEscape(this.password.username)) :
         this.i18n(
             'passwordDetailsCardDeleteButtonNoUsernameAriaLabel',
             this.getCredentialTypeString_());
