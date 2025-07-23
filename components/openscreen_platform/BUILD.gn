@@ -52,7 +52,18 @@ source_set("openscreen_platform_using_net_sockets") {
   ]
   if (is_android || is_ios) {
     # Allow broader visibility for platforms with unique generated targets.
-    visibility += [ "//components/cast_streaming/browser:*" ]
+    visibility += [
+      "//components/cast_streaming/browser:*",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__apk__compile_java",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__apk__compile_resources",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__apk__create",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__apk__java",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__apk__java__dex",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__apk__java__header",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__apk__java__validate",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__library",
+      "//media/cast:media_vpx_quantizer_parser_fuzzer__library__jni_registration__native_sources",
+    ]
   }
 
   assert_no_deps = [ "//services/network:network_service" ]
