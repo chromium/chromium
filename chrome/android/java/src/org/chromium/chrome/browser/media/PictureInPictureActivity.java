@@ -26,8 +26,6 @@ import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -39,6 +37,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,9 +58,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * A picture in picture activity which get created when requesting
- * PiP from web API. The activity will connect to web API through
- * OverlayWindowAndroid.
+ * A picture in picture activity which get created when requesting PiP from web API. The activity
+ * will connect to web API through OverlayWindowAndroid.
  */
 public class PictureInPictureActivity extends AsyncInitializationActivity {
     // Used to filter media buttons' remote action intents.
@@ -93,21 +91,21 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
 
     // The token and corresponding raw pointer to the native side.
-    private UnguessableToken mNativeToken;
+    private @Nullable UnguessableToken mNativeToken;
     private long mNativeOverlayWindowAndroid;
 
     private Tab mInitiatorTab;
-    private InitiatorTabObserver mTabObserver;
+    private @Nullable InitiatorTabObserver mTabObserver;
 
-    private CompositorView mCompositorView;
+    private @Nullable CompositorView mCompositorView;
 
     // If present, this is the video's aspect ratio.
-    private Rational mAspectRatio;
+    private @Nullable Rational mAspectRatio;
 
     // Maximum pip width, in pixels, to prevent resizes that are too big.
     private int mMaxWidth;
 
-    private MediaSessionBroadcastReceiver mMediaSessionReceiver;
+    private @Nullable MediaSessionBroadcastReceiver mMediaSessionReceiver;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     MediaActionButtonsManager mMediaActionsButtonsManager;
@@ -379,7 +377,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
          * @param iconResourceId used for getting icon associated with the id.
          * @param titleResourceId used for getting accessibility title associated with the id.
          * @param controlState indicate the action's state. (e.g. microphone on/off) Null if not
-         * applicable
+         *     applicable
          */
         @SuppressLint("NewApi")
         private RemoteAction createRemoteAction(
@@ -387,7 +385,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 int action,
                 int iconResourceId,
                 int titleResourceId,
-                Boolean controlState) {
+                @Nullable Boolean controlState) {
             Intent intent = new Intent(MEDIA_ACTION);
             intent.setPackage(getApplicationContext().getPackageName());
             IntentUtils.addTrustedIntentExtras(intent);
@@ -499,7 +497,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     interface LaunchIntoPipHelper {
         // Return a bundle to launch Picture in picture with `bounds` as the source rectangle.
         // May return null if the bundle could not be constructed.
-        Bundle build(Context activityContext, Rect bounds);
+        @Nullable Bundle build(Context activityContext, Rect bounds);
     }
 
     // Default implementation that tries to `makeLaunchIntoPiP` via reflection.  Does nothing,
@@ -507,7 +505,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     static LaunchIntoPipHelper sLaunchIntoPipHelper =
             new LaunchIntoPipHelper() {
                 @Override
-                public Bundle build(final Context activityContext, final Rect bounds) {
+                public @Nullable Bundle build(final Context activityContext, final Rect bounds) {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return null;
 
                     final Rational aspectRatio = new Rational(bounds.width(), bounds.height());
@@ -530,15 +528,14 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         ProfileProvider profileProvider =
                 new ProfileProvider() {
-                    @NonNull
+
                     @Override
                     public Profile getOriginalProfile() {
                         return mInitiatorTab.getProfile().getOriginalProfile();
                     }
 
-                    @Nullable
                     @Override
-                    public Profile getOffTheRecordProfile(boolean createIfNeeded) {
+                    public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
                         if (!mInitiatorTab.getProfile().isOffTheRecord()) {
                             throw new IllegalStateException(
                                     "Attempting to access invalid incognito profile from PiP");
@@ -796,7 +793,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @VisibleForTesting
-    /* package */ Rational getAspectRatio() {
+    /* package */ @Nullable Rational getAspectRatio() {
         return mAspectRatio;
     }
 
@@ -876,7 +873,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     @NativeMethods
     public interface Natives {
         long onActivityStart(
-                UnguessableToken token, PictureInPictureActivity self, WindowAndroid window);
+                UnguessableToken token,
+                PictureInPictureActivity self,
+                @Nullable WindowAndroid window);
 
         void destroyStartedByJava(long nativeOverlayWindowAndroid);
 

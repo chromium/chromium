@@ -28,6 +28,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -47,18 +48,19 @@ public class MediaViewerUtils {
 
     /**
      * Creates an Intent that allows viewing the given file in an internal media viewer.
-     * @param displayUri               URI to display to the user, ideally in file:// form.
-     * @param contentUri               content:// URI pointing at the file.
-     * @param mimeType                 MIME type of the file.
+     *
+     * @param displayUri URI to display to the user, ideally in file:// form.
+     * @param contentUri content:// URI pointing at the file.
+     * @param mimeType MIME type of the file.
      * @param allowExternalAppHandlers Whether the viewer should allow the user to open with another
-     *                                 app.
-     * @param allowShareAction         Whether the view should allow the share action.
+     *     app.
+     * @param allowShareAction Whether the view should allow the share action.
      * @return Intent that can be fired to open the file.
      */
     public static Intent getMediaViewerIntent(
-            Uri displayUri,
-            Uri contentUri,
-            String mimeType,
+            @Nullable Uri displayUri,
+            @Nullable Uri contentUri,
+            @Nullable String mimeType,
             boolean allowExternalAppHandlers,
             boolean allowShareAction,
             Context context) {
@@ -152,14 +154,18 @@ public class MediaViewerUtils {
 
     /**
      * Creates an Intent to open the file in another app by firing an Intent to Android.
-     * @param fileUri  Uri pointing to the file.
+     *
+     * @param fileUri Uri pointing to the file.
      * @param mimeType MIME type for the file.
      * @param originalUrl The original url of the downloaded file.
      * @param referrer Referrer of the downloaded file.
      * @return Intent that can be used to start an Activity for the file.
      */
     public static Intent createViewIntentForUri(
-            Uri fileUri, String mimeType, String originalUrl, String referrer) {
+            @Nullable Uri fileUri,
+            @Nullable String mimeType,
+            @Nullable String originalUrl,
+            @Nullable String referrer) {
         Intent fileIntent = new Intent(Intent.ACTION_VIEW);
         String normalizedMimeType = Intent.normalizeMimeType(mimeType);
         if (TextUtils.isEmpty(normalizedMimeType)) {
@@ -176,12 +182,13 @@ public class MediaViewerUtils {
 
     /**
      * Adds the originating Uri and referrer extras to an intent if they are not null.
-     * @param intent      Intent for adding extras.
+     *
+     * @param intent Intent for adding extras.
      * @param originalUrl The original url of the downloaded file.
-     * @param referrer    Referrer of the downloaded file.
+     * @param referrer Referrer of the downloaded file.
      */
     public static void setOriginalUrlAndReferralExtraToIntent(
-            Intent intent, String originalUrl, String referrer) {
+            Intent intent, @Nullable String originalUrl, @Nullable String referrer) {
         if (originalUrl != null) {
             intent.putExtra(Intent.EXTRA_ORIGINATING_URI, Uri.parse(originalUrl));
         }
@@ -194,7 +201,7 @@ public class MediaViewerUtils {
      * @param mimeType The MIME type to check.
      * @return MediaLauncherActivity.MediaType enum value for determined media type.
      */
-    static boolean isMediaMIMEType(String mimeType) {
+    static boolean isMediaMIMEType(@Nullable String mimeType) {
         if (TextUtils.isEmpty(mimeType)) return false;
 
         String[] pieces = mimeType.toLowerCase(Locale.getDefault()).split("/");
@@ -279,7 +286,7 @@ public class MediaViewerUtils {
                 || !restrictionsManager.getApplicationRestrictions().isEmpty();
     }
 
-    private static Intent createShareIntent(Uri fileUri, String mimeType) {
+    private static Intent createShareIntent(@Nullable Uri fileUri, @Nullable String mimeType) {
         if (TextUtils.isEmpty(mimeType)) mimeType = DEFAULT_MIME_TYPE;
 
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -290,7 +297,7 @@ public class MediaViewerUtils {
         return intent;
     }
 
-    private static boolean isImageType(String mimeType) {
+    private static boolean isImageType(@Nullable String mimeType) {
         if (TextUtils.isEmpty(mimeType)) return false;
 
         String[] pieces = mimeType.toLowerCase(Locale.getDefault()).split("/");
@@ -299,7 +306,7 @@ public class MediaViewerUtils {
         return MIMETYPE_IMAGE.equals(pieces[0]);
     }
 
-    private static boolean willExposeFileUri(Uri uri) {
+    private static boolean willExposeFileUri(@Nullable Uri uri) {
         assert uri != null && !uri.equals(Uri.EMPTY) : "URI is not successfully generated.";
         return uri.getScheme().equals(ContentResolver.SCHEME_FILE);
     }

@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -18,31 +19,26 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class MediaCaptureDevicesDispatcherAndroid {
     public static boolean isCapturingAudio(WebContents webContents) {
-        if (webContents == null) return false;
         return MediaCaptureDevicesDispatcherAndroidJni.get().isCapturingAudio(webContents);
     }
 
     public static boolean isCapturingVideo(WebContents webContents) {
-        if (webContents == null) return false;
         return MediaCaptureDevicesDispatcherAndroidJni.get().isCapturingVideo(webContents);
     }
 
     public static boolean isCapturingTab(WebContents webContents) {
-        if (webContents == null) return false;
         return MediaCaptureDevicesDispatcherAndroidJni.get().isCapturingTab(webContents);
     }
 
     public static boolean isCapturingWindow(WebContents webContents) {
-        if (webContents == null) return false;
         return MediaCaptureDevicesDispatcherAndroidJni.get().isCapturingWindow(webContents);
     }
 
     public static boolean isCapturingScreen(WebContents webContents) {
-        if (webContents == null) return false;
         return MediaCaptureDevicesDispatcherAndroidJni.get().isCapturingScreen(webContents);
     }
 
-    public static void notifyStopped(WebContents webContents) {
+    public static void notifyStopped(@Nullable WebContents webContents) {
         if (webContents == null) return;
         MediaCaptureDevicesDispatcherAndroidJni.get().notifyStopped(webContents);
     }

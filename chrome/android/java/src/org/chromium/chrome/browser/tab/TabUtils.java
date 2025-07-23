@@ -118,7 +118,7 @@ public class TabUtils {
         return screenBounds;
     }
 
-    public static Tab fromWebContents(WebContents webContents) {
+    public static Tab fromWebContents(@Nullable WebContents webContents) {
         return TabImplJni.get().fromWebContents(webContents);
     }
 

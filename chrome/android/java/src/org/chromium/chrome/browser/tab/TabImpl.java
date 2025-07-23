@@ -2733,7 +2733,7 @@ class TabImpl implements Tab {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        TabImpl fromWebContents(WebContents webContents);
+        TabImpl fromWebContents(@Nullable WebContents webContents);
 
         void init(TabImpl caller, @JniType("Profile*") Profile profile, int id);
 

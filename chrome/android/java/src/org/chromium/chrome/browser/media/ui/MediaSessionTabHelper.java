@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.media.ui;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -40,7 +40,8 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
                 }
 
                 @Override
-                public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
+                public void onFaviconUpdated(
+                        Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
                     assert tab == mTab;
 
                     if (mMediaSessionHelper == null) return;
@@ -87,7 +88,7 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     }
 
     @Override
-    public Intent createBringTabToFrontIntent() {
+    public @Nullable Intent createBringTabToFrontIntent() {
         return IntentHandler.createTrustedBringTabToFrontIntent(
                 mTab.getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
     }

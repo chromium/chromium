@@ -14,7 +14,6 @@ import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.util.SparseIntArray;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import org.chromium.base.ContextUtils;
@@ -22,6 +21,8 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -76,6 +77,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
 
     private boolean mStartedForegroundService;
 
+    @Initializer
     @Override
     public void onCreate() {
         mNotificationManager = BaseNotificationManagerProxyFactory.create();
@@ -102,7 +104,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         if (intent == null || intent.getExtras() == null) {
             cancelPreviousWebRtcNotifications();
             getService().stopSelf();
@@ -147,6 +149,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     /**
      * Updates the extisting notification or creates one if none exist for the provided
      * notificationId and mediaType.
+     *
      * @param notificationId Unique id of the notification.
      * @param mediaType Media type of the notification.
      * @param url Url of the current webrtc call.
@@ -155,7 +158,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     private void updateNotification(
             int notificationId,
             @MediaType int mediaType,
-            String url,
+            @Nullable String url,
             boolean isIncognito,
             int startId) {
         if (doesNotificationExist(notificationId)
@@ -211,7 +214,10 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     }
 
     private void createNotification(
-            int notificationId, @MediaType int mediaType, String url, boolean isIncognito) {
+            int notificationId,
+            @MediaType int mediaType,
+            @Nullable String url,
+            boolean isIncognito) {
         final String channelId =
                 MediaCaptureNotificationUtil.isCapture(mediaType)
                         ? ChromeChannelDefinitions.ChannelId.SCREEN_CAPTURE
@@ -349,7 +355,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public @Nullable IBinder onBind(Intent intent) {
         return null;
     }
 

@@ -66,7 +66,7 @@ public class MediaLauncherActivity extends Activity {
         finish();
     }
 
-    private String getMIMEType(Uri uri) {
+    private @Nullable String getMIMEType(@Nullable Uri uri) {
         if (uri == null) {
             return "";
         }

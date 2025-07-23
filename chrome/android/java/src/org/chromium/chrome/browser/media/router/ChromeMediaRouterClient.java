@@ -15,6 +15,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
@@ -42,7 +43,7 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
     }
 
     @Override
-    public Intent createBringTabToFrontIntent(int tabId) {
+    public @Nullable Intent createBringTabToFrontIntent(int tabId) {
         return IntentHandler.createTrustedBringTabToFrontIntent(
                 tabId, IntentHandler.BringToFrontSource.NOTIFICATION);
     }
@@ -63,7 +64,7 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
     }
 
     @Override
-    public FragmentManager getSupportFragmentManager(WebContents initiator) {
+    public @Nullable FragmentManager getSupportFragmentManager(WebContents initiator) {
         FragmentActivity currentActivity =
                 (FragmentActivity) ApplicationStatus.getLastTrackedFocusedActivity();
         return currentActivity == null ? null : currentActivity.getSupportFragmentManager();
