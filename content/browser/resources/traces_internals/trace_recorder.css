@@ -7,8 +7,9 @@
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=./config_toggle.css.js
+ * #import=//resources/cr_elements/md_select_lit.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit config-toggle
+ * #include=cr-shared-style-lit md-select-lit config-toggle
  * #css_wrapper_metadata_end */
 
 :host {
@@ -59,6 +60,21 @@
   text-overflow: ellipsis;
   overflow: hidden;
   min-height: 1.25em;
+}
+
+.buffer-config-container {
+  display: flex;
+  flex-direction: row;
+  margin: 8px 12px;
+}
+
+.buffer-row-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.growing-row {
+  flex-grow: 1;
 }
 
 .status-circle {
