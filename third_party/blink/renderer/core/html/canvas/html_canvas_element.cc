@@ -998,7 +998,8 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
 
   // If the size of an existing buffer matches, we can reuse that buffer.
   // This optimization is only done for 2D canvases for now.
-  if (IsRenderingContext2D() && GetResourceProviderForCanvas2D() != nullptr &&
+  if (IsRenderingContext2D() &&
+      RenderingContext()->GetResourceProviderForCanvas2D() != nullptr &&
       old_size == new_size) {
     return;
   }

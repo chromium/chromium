@@ -288,6 +288,9 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void DropAndRecreateExistingCanvas2DResourceProvider() {
     NOTREACHED();
   }
+  virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
+    NOTREACHED();
+  }
   virtual const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() {
     return empty_recording_;
   }
