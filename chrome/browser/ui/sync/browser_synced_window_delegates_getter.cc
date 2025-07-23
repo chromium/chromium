@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ui/sync/browser_synced_window_delegates_getter.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 
@@ -23,8 +21,8 @@ BrowserSyncedWindowDelegatesGetter::SyncedWindowDelegateMap
 BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
   // Add all the browser windows.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_) {
+  for (auto* browser : GetBrowserWindowInterfacesOrderedByActivation()) {
+    if (browser->GetProfile() != profile_) {
       continue;
     }
     auto* const delegate = browser->GetFeatures().synced_window_delegate();
@@ -35,7 +33,7 @@ BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
 
 const sync_sessions::SyncedWindowDelegate*
 BrowserSyncedWindowDelegatesGetter::FindById(SessionID id) {
-  Browser* browser = chrome::FindBrowserWithID(id);
+  auto* browser = BrowserWindowInterface::FromSessionID(id);
   return browser ? browser->GetFeatures().synced_window_delegate() : nullptr;
 }
 
