@@ -1088,6 +1088,8 @@ ci.builder(
 ci.builder(
     name = "android-15-x64-fyi-rel",
     description_html = "Run chromium tests on Android 15 emulators.",
+    # Set to trigger manually as there is no experiment at the moment.
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
