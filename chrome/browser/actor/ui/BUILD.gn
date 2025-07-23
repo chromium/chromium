@@ -98,6 +98,8 @@ source_set("test_support") {
     "mock_actor_ui_tab_controller.h",
     "mock_event_dispatcher.cc",
     "mock_event_dispatcher.h",
+    "mock_handoff_button_controller.cc",
+    "mock_handoff_button_controller.h",
   ]
   testonly = true
   public_deps = [

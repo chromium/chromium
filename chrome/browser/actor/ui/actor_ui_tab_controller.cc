@@ -6,6 +6,8 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor::ui {
@@ -77,6 +79,13 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
       FROM_HERE, base::BindOnce(std::move(callback), true));
 
   // TODO(crbug.com/428216197): Only notify relevant UI components on change.
+  if (GetHandoffButtonController()) {
+    // TODO(crbug.com/433568221): Update the visibility logic when ActorOverlay
+    // is integrated into the Tab Controller (For now it's set to true when the
+    // tab is active).
+    GetHandoffButtonController()->UpdateState(
+        current_ui_tab_state_.handoff_button, current_tab_active_status_);
+  }
 }
 
 void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
@@ -107,7 +116,19 @@ void ActorUiTabController::BindActorOverlay(
 }
 
 void ActorUiTabController::SetHandoffButtonVisibility(bool is_visible) {
-  // TODO(crbug.com/425952887): Implement this function.
+  bool should_be_visible = is_visible && current_tab_active_status_;
+  GetHandoffButtonController()->UpdateState(
+      current_ui_tab_state_.handoff_button, should_be_visible);
+  VLOG(4) << "Handoff button turned " << (should_be_visible ? "ON" : "OFF");
+}
+
+HandoffButtonController* ActorUiTabController::GetHandoffButtonController() {
+  if (!handoff_button_controller_) {
+    handoff_button_controller_ =
+        std::make_unique<HandoffButtonController>(*tab_);
+  }
+
+  return handoff_button_controller_.get();
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>

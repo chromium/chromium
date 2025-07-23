@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
 #include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -35,16 +36,22 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
   void SetActorTaskPaused() override;
   void SetActorTaskResume() override;
+  void SetHandoffButtonVisibility(bool is_visible) override;
 
   void BindActorOverlay(
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
-  void SetHandoffButtonVisibility(bool is_visible) override;
+
+ protected:
+  // The Handoff Button controller for this tab.
+  std::unique_ptr<HandoffButtonController> handoff_button_controller_;
 
  private:
   // Called to propagate a UiTabState and tab status change to UI controllers.
   void UpdateState(const UiTabState& ui_tab_state,
                    bool tab_active_status,
                    UiResultCallback callback);
+  // Gets a new or existing handoff button controller for this tab.
+  HandoffButtonController* GetHandoffButtonController();
   // Tab subscriptions:
   // Called when the tab is detached.
   void OnTabWillDetach(tabs::TabInterface* tab,
@@ -70,6 +77,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
   std::unique_ptr<ActorOverlayViewController> actor_overlay_view_controller_;
+
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };
 

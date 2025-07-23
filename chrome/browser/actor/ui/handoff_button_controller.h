@@ -35,7 +35,7 @@ class HandoffButtonController {
   HandoffButtonController(const HandoffButtonController&) = delete;
   HandoffButtonController& operator=(const HandoffButtonController&) = delete;
 
-  void UpdateState(const HandoffButtonState& state, bool is_visible);
+  virtual void UpdateState(const HandoffButtonState& state, bool is_visible);
 
  protected:
   void OnButtonPressed();
