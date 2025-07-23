@@ -29,7 +29,8 @@ HashSet<uint32_t> ExclusiveFeatures() {
 }
 
 bool IsExclusiveFeature(uint32_t tag) {
-  DEFINE_STATIC_LOCAL(HashSet<uint32_t>, tags, (ExclusiveFeatures()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<uint32_t>, tags,
+                                  (ExclusiveFeatures()));
   return tags.Contains(tag);
 }
 
