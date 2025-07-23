@@ -163,11 +163,11 @@ TEST_F(WebStateTest, Snapshot) {
         int white_pixel_x = (snapshot.size.width / 2) + 10;
         // Test a pixel on the left (red) side.
         gfx::test::CheckColors(
-            gfx::test::GetPlatformImageColor(snapshot, red_pixel_x, 50),
+            gfx::test::GetPlatformImageColor(snapshot, red_pixel_x, 60),
             SK_ColorRED);
         // Test a pixel on the right (white) side.
         gfx::test::CheckColors(
-            gfx::test::GetPlatformImageColor(snapshot, white_pixel_x, 50),
+            gfx::test::GetPlatformImageColor(snapshot, white_pixel_x, 60),
             SK_ColorWHITE);
         snapshot_complete = true;
       }));
