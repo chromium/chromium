@@ -103,8 +103,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_browser_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/chromeos/app_mode/web_kiosk_browser_controller_base.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
@@ -138,7 +138,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 
   ReparentWebContentsIntoBrowserImpl(
       source_browser, contents, target_browser,
-      /*insert_as_pinned_first_tab=*/insert_as_pinned_home_tab);
+      /*insert_as_pinned_home_tab=*/insert_as_pinned_home_tab);
   return target_browser;
 }
 
@@ -161,8 +161,8 @@ std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
     Browser* browser,
     WebAppProvider* provider,
     const webapps::AppId& app_id) {
-  return std::make_unique<ash::WebKioskBrowserControllerAsh>(*provider, browser,
-                                                             app_id);
+  return std::make_unique<chromeos::WebKioskBrowserControllerBase>(
+      *provider, browser, app_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
