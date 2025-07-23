@@ -73,7 +73,7 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
   const mojom::ErrorPtr& create_context_error = result->get_error();
   EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
   EXPECT_EQ(create_context_error->message,
-            "WebNN Service is not supported on this platform.");
+            "WebNN is not supported on this platform.");
 }
 
 #endif

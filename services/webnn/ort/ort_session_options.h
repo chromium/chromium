@@ -6,7 +6,6 @@
 #define SERVICES_WEBNN_ORT_ORT_SESSION_OPTIONS_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/mojom/webnn_device.mojom.h"
@@ -19,11 +18,8 @@ namespace webnn::ort {
 // sessions on background threads.
 class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
  public:
-  // The `device_type` would be used to configure ONNX Runtime EP. Currently,
-  // only CPU is supported by the default CPU EP.
-  // It may fail when appending a particular EP to the session options.
-  static base::expected<scoped_refptr<SessionOptions>, mojom::ErrorPtr> Create(
-      mojom::Device device_type);
+  // The `device_type` would be used to configure ONNX Runtime EP.
+  static scoped_refptr<SessionOptions> Create(mojom::Device device_type);
 
   SessionOptions(base::PassKey<SessionOptions>,
                  ScopedOrtSessionOptions session_options);

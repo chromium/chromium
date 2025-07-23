@@ -26,8 +26,7 @@ class ContextImplOrt final : public WebNNContextImpl {
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
-                 scoped_refptr<Environment> env,
-                 scoped_refptr<SessionOptions> session_options);
+                 scoped_refptr<Environment> env);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;

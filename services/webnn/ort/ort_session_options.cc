@@ -17,8 +17,8 @@
 namespace webnn::ort {
 
 // static
-base::expected<scoped_refptr<SessionOptions>, mojom::ErrorPtr>
-SessionOptions::Create(mojom::Device device_type) {
+scoped_refptr<SessionOptions> SessionOptions::Create(
+    mojom::Device device_type) {
   ScopedTrace scoped_trace("SessionOptions::Create");
 
   scoped_trace.AddStep("Create session options");

@@ -19,9 +19,13 @@
 #include "services/webnn/webnn_context_impl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <string>
+
 #include "base/types/expected_macros.h"
 #include "services/webnn/dml/context_provider_dml.h"
+#include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/context_provider_ort.h"
+#include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_session_options.h"
 #endif
 
@@ -208,24 +212,22 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   RecordDeviceType(options->device);
 
 #if BUILDFLAG(IS_WIN)
-  base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
-      context_creation_results;
-
   if (ort::ShouldCreateOrtContext(*options)) {
-    context_creation_results = ort::CreateContextFromOptions(
-        std::move(options), gpu_info_, std::move(receiver), this);
-    if (!context_creation_results.has_value()) {
-      std::move(callback).Run(mojom::CreateContextResult::NewError(
-          std::move(context_creation_results.error())));
-      return;
+    base::expected<scoped_refptr<ort::Environment>, std::string>
+        env_creation_results = ort::Environment::Create(gpu_info_);
+    if (!env_creation_results.has_value()) {
+      LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime context: "
+                 << env_creation_results.error();
+    } else {
+      context_impl = std::make_unique<ort::ContextImplOrt>(
+          std::move(receiver), this, std::move(options),
+          std::move(env_creation_results.value()));
     }
-    context_impl = std::move(context_creation_results.value());
-  }
-
-  if (!context_impl && dml::ShouldCreateDmlContext(*options)) {
-    context_creation_results = dml::CreateContextFromOptions(
-        std::move(options), gpu_feature_info_, gpu_info_,
-        shared_context_state_.get(), std::move(receiver), this);
+  } else if (dml::ShouldCreateDmlContext(*options)) {
+    base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
+        context_creation_results = dml::CreateContextFromOptions(
+            std::move(options), gpu_feature_info_, gpu_info_,
+            shared_context_state_.get(), std::move(receiver), this);
     if (!context_creation_results.has_value()) {
       std::move(callback).Run(mojom::CreateContextResult::NewError(
           std::move(context_creation_results.error())));
@@ -256,11 +258,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
   if (!context_impl) {
-    // TODO(crbug.com/40206287): Supporting WebNN Service on the platform.
+    // TODO(crbug.com/40206287): Supporting WebNN on the platform.
     std::move(callback).Run(ToError<mojom::CreateContextResult>(
         mojom::Error::Code::kNotSupportedError,
-        "WebNN Service is not supported on this platform."));
-    LOG(ERROR) << "[WebNN] Service is not supported on this platform.";
+        "WebNN is not supported on this platform."));
+    LOG(ERROR) << "WebNN is not supported on this platform.";
     return;
   }
 

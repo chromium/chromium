@@ -165,13 +165,11 @@ void ORT_API_CALL OrtCustomLoggingFunction(void* /*param*/,
 }  // namespace
 
 // static
-base::expected<scoped_refptr<Environment>, mojom::ErrorPtr> Environment::Create(
+base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     const gpu::GPUInfo& gpu_info) {
   auto* platform_functions = PlatformFunctions::GetInstance();
   if (!platform_functions) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError,
-        "WebNN is not supported in this ONNX Runtime version."));
+    return base::unexpected("Failed to get ONNX Runtime platform functions.");
   }
 
   OrtLoggingLevel ort_logging_level = ORT_LOGGING_LEVEL_ERROR;
@@ -188,9 +186,7 @@ base::expected<scoped_refptr<Environment>, mojom::ErrorPtr> Environment::Create(
   if (ORT_CALL_FAILED(ort_api->CreateEnvWithCustomLogger(
           OrtCustomLoggingFunction, /*logger_param=*/nullptr, ort_logging_level,
           /*logid=*/"WebNN", ScopedOrtEnv::Receiver(env).get()))) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                          "Failed to create the ONNX Runtime environment."));
+    return base::unexpected("Failed to create the ONNX Runtime environment.");
   }
 
   // Get the ORT EP library path specified by `kWebNNOrtEpLibraryPathForTesting`
@@ -202,9 +198,8 @@ base::expected<scoped_refptr<Environment>, mojom::ErrorPtr> Environment::Create(
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kWebNNOrtEpLibraryPathForTesting);
     if (base_path.empty()) {
-      return base::unexpected(mojom::Error::New(
-          mojom::Error::Code::kNotSupportedError,
-          "The specified ONNX Runtime EP library path is empty."));
+      return base::unexpected(
+          "The specified ONNX Runtime EP library path is empty.");
     }
     specified_ep_path = base_path;
   }

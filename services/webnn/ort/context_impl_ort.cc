@@ -22,14 +22,13 @@ ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
-    scoped_refptr<Environment> env,
-    scoped_refptr<SessionOptions> session_options)
+    scoped_refptr<Environment> env)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),
                        std::move(options)),
       env_(std::move(env)),
-      session_options_(std::move(session_options)),
+      session_options_(SessionOptions::Create(this->options().device)),
       is_external_data_supported_(
           env_->IsExternalDataSupported(this->options().device)) {}
 
