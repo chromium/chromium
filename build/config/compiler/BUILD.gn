@@ -222,12 +222,32 @@ if (is_android) {
 
     # The orderfile is trained on PGO builds (for arm64) and AFDO builds (for
     # arm32), so apply them only in these cases.
-    if (defined(default_chrome_orderfile)) {
-      if (((current_cpu == "arm64" || current_cpu == "x64") &&
-           chrome_pgo_phase == 2) ||
-          ((current_cpu == "arm" || current_cpu == "x86") &&
-           clang_use_default_sample_profile)) {
+    if (((current_cpu == "arm64" || current_cpu == "x64") &&
+         chrome_pgo_phase == 2) ||
+        ((current_cpu == "arm" || current_cpu == "x86") &&
+         clang_use_default_sample_profile)) {
+      if (defined(default_chrome_orderfile)) {
         chrome_orderfile_path = default_chrome_orderfile
+      } else if (enable_chrome_android_internal) {
+        # We generate separate orderfiles for 32-bit and 64-bit architectures
+        # to improve performance and reduce memory usage.
+        # - WebView and Chrome ARM64, see https://crbug.com/41490637.
+        # - WebView and Chrome x86, see https://crbug.com/967343.
+        # *IMPORTANT*: The x86 and x64 architectures are used to test orderfile
+        # logic more easily on an emulator, so the decision to use the arm64
+        # orderfile for x64 (instead of arm32) is somewhat arbitrary. We just
+        # needed to use some real orderfile.
+        if (is_desktop_android && current_cpu == "x64") {
+          # For Android Desktop x64, orderfile is disabled, see
+          # https://crbug.com/422005929.
+          chrome_orderfile_path = ""
+        } else if (current_cpu == "arm64" || current_cpu == "x64") {
+          chrome_orderfile_path =
+              "//chrome/android/orderfiles/arm64/orderfile.arm64.out"
+        } else if (current_cpu == "arm" || current_cpu == "x86") {
+          chrome_orderfile_path =
+              "//chrome/android/orderfiles/arm/orderfile.arm.out"
+        }
       }
     }
   }
