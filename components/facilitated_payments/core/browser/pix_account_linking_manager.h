@@ -42,6 +42,10 @@ class PixAccountLinkingManager {
   // showing the Pix account linking prompt if the user is eligible.
   void ShowPixAccountLinkingPromptIfEligible();
 
+  // Shows the Pix account linking prompt to user after the predefined wait
+  // time.
+  void ShowPixAccountLinkingPromptAfterDelay();
+
   // Sets the internal UI state and triggers dismissal.
   void DismissPrompt();
 

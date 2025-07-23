@@ -8,6 +8,8 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
@@ -15,6 +17,9 @@
 #include "url/origin.h"
 
 namespace payments::facilitated {
+
+// Delay before showing the account linking prompt.
+constexpr base::TimeDelta kShowPromptDelay = base::Seconds(3);
 
 PixAccountLinkingManager::PixAccountLinkingManager(
     FacilitatedPaymentsClient* client)
@@ -114,6 +119,15 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
     return;
   }
 
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay,
+          weak_ptr_factory_.GetWeakPtr()),
+      kShowPromptDelay);
+}
+
+void PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay() {
   client_->SetUiEventListener(
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));
