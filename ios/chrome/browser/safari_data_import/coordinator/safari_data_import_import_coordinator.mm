@@ -6,8 +6,9 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#import "base/check.h"
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator_transitioning_delegate.h"
+#import "base/check_op.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_mediator.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
@@ -62,7 +63,7 @@
 }
 
 - (void)stop {
-  self.transitioningDelegate = nil;
+  self.delegate = nil;
   _containerViewController = nil;
 }
 
@@ -94,8 +95,7 @@
 }
 
 - (void)didTapDismissButton {
-  [self.transitioningDelegate
-      safariDataImportCoordinatorWillDismissWorkflow:self];
+  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
 }
 
 #pragma mark - Private

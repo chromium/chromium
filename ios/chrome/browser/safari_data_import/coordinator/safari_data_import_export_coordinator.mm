@@ -31,7 +31,7 @@
 }
 
 - (void)stop {
-  self.transitioningDelegate = nil;
+  self.delegate = nil;
   _navigationController.delegate = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
@@ -84,7 +84,7 @@
   _importCoordinator = [[SafariDataImportImportCoordinator alloc]
       initWithBaseNavigationController:_navigationController
                                browser:self.browser];
-  _importCoordinator.transitioningDelegate = self.transitioningDelegate;
+  _importCoordinator.delegate = self.delegate;
   [_importCoordinator start];
 }
 

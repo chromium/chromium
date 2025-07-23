@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator_transitioning_delegate.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_entry_point_mediator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_ui_handler.h"
@@ -22,7 +22,7 @@
 
 @interface SafariDataImportMainCoordinator () <
     ConfirmationAlertActionHandler,
-    SafariDataImportCoordinatorTransitioningDelegate>
+    SafariDataImportChildCoordinatorDelegate>
 
 @end
 
@@ -73,7 +73,7 @@
   _exportCoordinator = [[SafariDataImportExportCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];
-  _exportCoordinator.transitioningDelegate = self;
+  _exportCoordinator.delegate = self;
   [_exportCoordinator start];
 }
 
@@ -86,7 +86,7 @@
   [self.delegate safariImportWorkflowDidEndForCoordinator:self];
 }
 
-#pragma mark - SafariDataImportCoordinatorTransitioningDelegate
+#pragma mark - SafariDataImportChildCoordinatorDelegate
 
 - (void)safariDataImportCoordinatorWillDismissWorkflow:
     (ChromeCoordinator*)coordinator {

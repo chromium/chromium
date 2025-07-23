@@ -62,7 +62,7 @@ source_set("import_coordinator") {
 }
 
 source_set("coordinator_delegate") {
-  sources = [ "safari_data_import_coordinator_transitioning_delegate.h" ]
+  sources = [ "safari_data_import_child_coordinator_delegate.h" ]
 }
 
 source_set("promo") {

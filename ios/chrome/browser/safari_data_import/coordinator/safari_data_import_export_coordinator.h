@@ -7,14 +7,14 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol SafariDataImportCoordinatorTransitioningDelegate;
+@protocol SafariDataImportChildCoordinatorDelegate;
 
 /// Coordinator for the safari data export screen.
 @interface SafariDataImportExportCoordinator : ChromeCoordinator
 
 /// Delegate object that handles Safari import events.
-@property(nonatomic, weak) id<SafariDataImportCoordinatorTransitioningDelegate>
-    transitioningDelegate;
+@property(nonatomic, weak) id<SafariDataImportChildCoordinatorDelegate>
+    delegate;
 
 @end
 
