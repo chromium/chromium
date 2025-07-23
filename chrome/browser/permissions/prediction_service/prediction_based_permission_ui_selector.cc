@@ -106,30 +106,6 @@ bool ShouldPredictionTriggerQuietUi(
     permissions::PermissionUiSelector::PredictionGrantLikelihood likelihood) {
   return likelihood == VeryUnlikely;
 }
-
-void LogSnapshotTakenSuccessfullyForAiv3(
-    bool success,
-    base::TimeTicks snapshot_inquire_start_time) {
-  base::UmaHistogramBoolean("Permissions.AIv3.SnapshotTaken", success);
-  base::UmaHistogramMediumTimes(
-      "Permissions.AIv3.SnapshotTakenDuration",
-      base::TimeTicks::Now() - snapshot_inquire_start_time);
-}
-
-void LogPredictionModelHandlerProviderForAiv3(bool exists) {
-  base::UmaHistogramBoolean("Permissions.AIv3.ModelHandlerProviderExists",
-                            exists);
-}
-
-void LogPermissionsAiv3HandlerForAiv3(bool exists) {
-  base::UmaHistogramBoolean("Permissions.AIv3.PermissionsAiv3HandlerExists",
-                            exists);
-}
-
-void LogAiv3RelevanceHasValue(bool has_value) {
-  base::UmaHistogramBoolean("Permissions.AIv3.RelevanceHasValue", has_value);
-}
-
 }  // namespace
 
 PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
@@ -252,21 +228,19 @@ void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
     PredictionRequestMetadata request_metadata,
     const SkBitmap& snapshot) {
   VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
-  LogSnapshotTakenSuccessfullyForAiv3(/*success=*/!snapshot.drawsNothing(),
-                                      snapshot_inquire_start_time);
+  PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
+      /*success=*/!snapshot.drawsNothing(), snapshot_inquire_start_time,
+      PredictionModelType::kOnDeviceAiV3Model);
   if (snapshot.drawsNothing()) {
     VLOG(1) << "[PermissionsAIv3] The page's snapshot is empty";
   } else {
     PredictionModelHandlerProvider* prediction_model_handler_provider =
         PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_);
-    LogPredictionModelHandlerProviderForAiv3(
-        prediction_model_handler_provider != nullptr);
     if (prediction_model_handler_provider) {
       PermissionsAiv3Handler* aiv3_handler =
           prediction_model_handler_provider->GetPermissionsAiv3Handler(
               request_metadata.request_type);
 
-      LogPermissionsAiv3HandlerForAiv3(aiv3_handler != nullptr);
       if (aiv3_handler) {
         VLOG(1) << "[PermissionsAIv3] Inquire model";
 
@@ -295,7 +269,6 @@ void PredictionBasedPermissionUiSelector::OnDeviceAiv3ModelExecutionCallback(
       model_inquire_start_time, PredictionModelType::kOnDeviceAiV3Model);
   VLOG(1) << "[PermissionsAIv3]: AI model execution callback called "
           << (relevance.has_value() ? "with value" : "without value");
-  LogAiv3RelevanceHasValue(relevance.has_value());
   if (relevance.has_value()) {
     VLOG(1) << "[PermissionsAIv3]: PermissionRequest has a relevance of "
             << static_cast<int>(relevance.value());

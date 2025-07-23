@@ -55,6 +55,7 @@ enum class PredictionModelType {
   kServerSideCpssV3Model = 1,
   kOnDeviceCpssV1Model = 2,
   kOnDeviceAiV3Model = 3,
+  kOnDeviceAiV4Model = 4,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PredictionModels)
 
@@ -867,7 +868,7 @@ class PermissionUmaUtil {
       base::TimeDelta time_delta);
 
   static void RecordPermissionRequestRelevance(
-    permissions::RequestType permission_request_type,
+      permissions::RequestType permission_request_type,
       PermissionRequestRelevance permission_request_relevance,
       std::string model_version);
 
@@ -886,6 +887,12 @@ class PermissionUmaUtil {
   // Records the execution time of prediction model inquiries.
   static void RecordPredictionModelInquireTime(
       base::TimeTicks model_inquire_start_time,
+      PredictionModelType model_type);
+
+  // Records the success and duration of taking a screenshot for AIvX models.
+  static void RecordSnapshotTakenTimeAndSuccessForAivX(
+      bool success,
+      base::TimeTicks snapshot_inquire_start_time,
       PredictionModelType model_type);
 
   // Records if the browser was active at the time the prompt started displaying

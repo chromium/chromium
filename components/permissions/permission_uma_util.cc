@@ -1496,6 +1496,8 @@ std::string PermissionUmaUtil::GetPredictionModelString(
       return "OnDevicePredictionService";
     case PredictionModelType::kOnDeviceAiV3Model:
       return "AIv3";
+    case PredictionModelType::kOnDeviceAiV4Model:
+      return "AIv4";
     default:
       NOTREACHED();
   }
@@ -2066,6 +2068,26 @@ void PermissionUmaUtil::RecordPredictionModelInquireTime(
                     ".InquiryDuration"});
   base::UmaHistogramMediumTimes(
       histogram_name, base::TimeTicks::Now() - model_inquire_start_time);
+}
+
+// static
+void PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
+    bool success,
+    base::TimeTicks snapshot_inquire_start_time,
+    PredictionModelType model_type) {
+  // Only AIv3 and AIV4 use snapshots as input.
+  DCHECK(model_type == PredictionModelType::kOnDeviceAiV3Model ||
+         model_type == PredictionModelType::kOnDeviceAiV4Model);
+
+  std::string success_histogram_name = base::StrCat(
+      {"Permissions.", GetPredictionModelString(model_type), ".SnapshotTaken"});
+  base::UmaHistogramBoolean(success_histogram_name, success);
+
+  std::string duration_histogram_name =
+      base::StrCat({success_histogram_name, "Duration"});
+  base::UmaHistogramMediumTimes(
+      duration_histogram_name,
+      base::TimeTicks::Now() - snapshot_inquire_start_time);
 }
 
 }  // namespace permissions

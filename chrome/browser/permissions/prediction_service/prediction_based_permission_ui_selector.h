@@ -141,9 +141,9 @@ class PredictionBasedPermissionUiSelector
       PredictionRequestMetadata request_metadata,
       bool record_source);
 
-  // As the first part of the AIv3 model execution chain, this function triggers
-  // AIv3 input collection and model execution, with its output being input of
-  // the follow-up CPSSv3 server side model execution. If the AIv3 model is not
+  // As the first part of the AIv1 model execution chain, this function triggers
+  // AIv1 input collection and model execution, with its output being input of
+  // the follow-up CPSSv3 server side model execution. If the AIv1 model is not
   // available or is executed with an error, only the server side model will get
   // called.
   void InquireOnDeviceAiv1AndServerModelIfAvailable(

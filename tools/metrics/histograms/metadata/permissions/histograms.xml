@@ -196,8 +196,14 @@ chromium-metrics-reviews@google.com.
 
 <variants name="PredictionModels">
   <variant name="AIv3"/>
+  <variant name="AIv4"/>
   <variant name="OnDevicePredictionService"/>
   <variant name="PredictionService"/>
+</variants>
+
+<variants name="SnapshotBasedPredictionModels">
+  <variant name="AIv3"/>
+  <variant name="AIv4"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PredictionModelType) -->
@@ -498,29 +504,6 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records whether the AIv3 model execution callback has a relevance value.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.AIv3.SnapshotTaken" enum="BooleanSuccess"
-    expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>hempjudith@google.com</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the snapshot needed as input for the AIv3 model was taken
-    successfully. This could go wrong if the current render view was occluded
-    (in the background) during the snapshot was taken.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.AIv3.SnapshotTakenDuration" units="ms"
-    expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>hempjudith@google.com</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the time it took for the permissions prediction service to fetch the
-    snapshot needed as the input for the AIv3 model.
   </summary>
 </histogram>
 
@@ -1848,6 +1831,31 @@ chromium-metrics-reviews@google.com.
     the {PredictionModel} and await its response for a permission request.
   </summary>
   <token key="PredictionModel" variants="PredictionModels"/>
+</histogram>
+
+<histogram name="Permissions.{PredictionModel}.SnapshotTaken"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the snapshot needed as input for the {PredictionModel} model
+    was taken successfully. This could go wrong if the current render view was
+    occluded (in the background) during the snapshot was taken.
+  </summary>
+  <token key="PredictionModel" variants="SnapshotBasedPredictionModels"/>
+</histogram>
+
+<histogram name="Permissions.{PredictionModel}.SnapshotTakenDuration"
+    units="ms" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time it took for the permissions prediction service to fetch the
+    snapshot needed as the input for the {PredictionModel} model.
+  </summary>
+  <token key="PredictionModel" variants="SnapshotBasedPredictionModels"/>
 </histogram>
 
 <histogram name="Permissions.{Version}.PermissionRequestRelevance"
