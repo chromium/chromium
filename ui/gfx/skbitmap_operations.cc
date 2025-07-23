@@ -16,6 +16,8 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "skia/ext/pmcolor_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -42,8 +44,8 @@ SkBitmap SkBitmapOperations::CreateInvertedBitmap(const SkBitmap& image) {
   inverted.allocN32Pixels(image.width(), image.height());
 
   for (int y = 0; y < image.height(); ++y) {
-    uint32_t* image_row = image.getAddr32(0, y);
-    uint32_t* dst_row = inverted.getAddr32(0, y);
+    base::span<uint32_t> image_row = UNSAFE_SKBITMAP_GETADDR32(image, 0, y);
+    base::span<uint32_t> dst_row = UNSAFE_SKBITMAP_GETADDR32(inverted, 0, y);
 
     for (int x = 0; x < image.width(); ++x) {
       uint32_t image_pixel = image_row[x];
@@ -79,9 +81,9 @@ SkBitmap SkBitmapOperations::CreateBlendedBitmap(const SkBitmap& first,
   double first_alpha = 1 - alpha;
 
   for (int y = 0; y < first.height(); ++y) {
-    uint32_t* first_row = first.getAddr32(0, y);
-    uint32_t* second_row = second.getAddr32(0, y);
-    uint32_t* dst_row = blended.getAddr32(0, y);
+    base::span<uint32_t> first_row = UNSAFE_SKBITMAP_GETADDR32(first, 0, y);
+    base::span<uint32_t> second_row = UNSAFE_SKBITMAP_GETADDR32(second, 0, y);
+    base::span<uint32_t> dst_row = UNSAFE_SKBITMAP_GETADDR32(blended, 0, y);
 
     for (int x = 0; x < first.width(); ++x) {
       uint32_t first_pixel = first_row[x];
@@ -115,9 +117,9 @@ SkBitmap SkBitmapOperations::CreateMaskedBitmap(const SkBitmap& rgb,
   masked.allocN32Pixels(rgb.width(), rgb.height());
 
   for (int y = 0; y < masked.height(); ++y) {
-    uint32_t* rgb_row = rgb.getAddr32(0, y);
-    uint32_t* alpha_row = alpha.getAddr32(0, y);
-    uint32_t* dst_row = masked.getAddr32(0, y);
+    base::span<uint32_t> rgb_row = UNSAFE_SKBITMAP_GETADDR32(rgb, 0, y);
+    base::span<uint32_t> alpha_row = UNSAFE_SKBITMAP_GETADDR32(alpha, 0, y);
+    base::span<uint32_t> dst_row = UNSAFE_SKBITMAP_GETADDR32(masked, 0, y);
 
     for (int x = 0; x < masked.width(); ++x) {
       unsigned alpha32 = SkPMColorGetA(alpha_row[x]);
@@ -144,9 +146,10 @@ SkBitmap SkBitmapOperations::CreateButtonBackground(SkColor color,
   double bg_b = SkColorGetB(color) * (bg_a / 255.0);
 
   for (int y = 0; y < mask.height(); ++y) {
-    uint32_t* dst_row = background.getAddr32(0, y);
-    uint32_t* image_row = image.getAddr32(0, y % image.height());
-    uint32_t* mask_row = mask.getAddr32(0, y);
+    base::span<uint32_t> dst_row = UNSAFE_SKBITMAP_GETADDR32(background, 0, y);
+    base::span<uint32_t> image_row =
+        UNSAFE_SKBITMAP_GETADDR32(image, 0, y % image.height());
+    base::span<uint32_t> mask_row = UNSAFE_SKBITMAP_GETADDR32(mask, 0, y);
 
     for (int x = 0; x < mask.width(); ++x) {
       uint32_t image_pixel = image_row[x % image.width()];
@@ -544,8 +547,9 @@ SkBitmap SkBitmapOperations::CreateTiledBitmap(const SkBitmap& source,
     while (y_pix < 0)
       y_pix += source.height();
 
-    uint32_t* source_row = source.getAddr32(0, y_pix);
-    uint32_t* dst_row = cropped.getAddr32(0, y);
+    base::span<uint32_t> source_row =
+        UNSAFE_SKBITMAP_GETADDR32(source, 0, y_pix);
+    base::span<uint32_t> dst_row = UNSAFE_SKBITMAP_GETADDR32(cropped, 0, y);
 
     for (int x = 0; x < dst_w; ++x) {
       int x_pix = (src_x + x) % source.width();
@@ -592,12 +596,14 @@ SkBitmap SkBitmapOperations::DownsampleByTwo(const SkBitmap& bitmap) {
 
   for (int dest_y = 0; dest_y < result.height(); ++dest_y) {
     const int src_y = dest_y << 1;
-    const SkPMColor* SK_RESTRICT cur_src0 = bitmap.getAddr32(0, src_y);
-    const SkPMColor* SK_RESTRICT cur_src1 = cur_src0;
+    base::span<const SkPMColor> cur_src0 =
+        UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, src_y);
+    base::span<const SkPMColor> cur_src1 = cur_src0;
     if (src_y + 1 < bitmap.height())
-      cur_src1 = bitmap.getAddr32(0, src_y + 1);
+      cur_src1 = UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, src_y + 1);
 
-    SkPMColor* SK_RESTRICT cur_dst = result.getAddr32(0, dest_y);
+    base::span<SkPMColor> cur_dst =
+        UNSAFE_SKBITMAP_GETADDR32(result, 0, dest_y);
 
     for (int dest_x = 0; dest_x <= resultLastX; ++dest_x) {
       // This code is based on downsampleby2_proc32 in SkBitmap.cpp. It is very
@@ -631,10 +637,17 @@ SkBitmap SkBitmapOperations::DownsampleByTwo(const SkBitmap& bitmap) {
       // |ag| has the alpha and green channels shifted right by 8 bits from
       // there they should end up, so shifting left by 6 gives them in the
       // correct position divided by 4.
-      *cur_dst++ = ((rb >> 2) & 0xFF00FF) | ((ag << 6) & 0xFF00FF00);
+      (base::PostIncrementSpan(cur_dst))[0] =
+          ((rb >> 2) & 0xFF00FF) | ((ag << 6) & 0xFF00FF00);
 
-      cur_src0 += 2;
-      cur_src1 += 2;
+      // Avoid incrementing past the end of the bitmap.
+      if (cur_src0.size() >= 2u) {
+        cur_src0 = cur_src0.subspan(2u);
+        cur_src1 = cur_src1.subspan(2u);
+      } else {
+        cur_src0 = {};
+        cur_src1 = {};
+      }
     }
   }
 
@@ -677,7 +690,7 @@ SkBitmap SkBitmapOperations::CreateTransposedBitmap(const SkBitmap& image) {
   transposed.allocN32Pixels(image.height(), image.width());
 
   for (int y = 0; y < image.height(); ++y) {
-    uint32_t* image_row = image.getAddr32(0, y);
+    base::span<uint32_t> image_row = UNSAFE_SKBITMAP_GETADDR32(image, 0, y);
     for (int x = 0; x < image.width(); ++x) {
       uint32_t* dst = transposed.getAddr32(y, x);
       *dst = image_row[x];

@@ -8,6 +8,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {
@@ -59,7 +60,7 @@ class HalfFloatTest : public testing::Test {
 
   HalfFloat Convert(float f) {
     HalfFloat ret;
-    FloatToHalfFloat(&f, &ret, 1);
+    FloatToHalfFloat(base::span_from_ref(f), base::span_from_ref(ret), 1);
     return ret;
   }
 };

@@ -51,7 +51,7 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
   }
 
   HomogeneousCoordinate result(p.x(), p.y(), z, 1.0);
-  transform.TransformVector4(result.vec.data());
+  transform.TransformVector4(result.vec);
   return result;
 }
 
@@ -68,7 +68,7 @@ static HomogeneousCoordinate MapHomogeneousPoint(
     const gfx::Transform& transform,
     const gfx::PointF& p) {
   HomogeneousCoordinate result(p.x(), p.y(), 0.0, 1.0);
-  transform.TransformVector4(result.vec.data());
+  transform.TransformVector4(result.vec);
   return result;
 }
 

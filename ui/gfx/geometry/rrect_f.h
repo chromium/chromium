@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -178,7 +179,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) RRectF {
                                                float error = 0.001f);
 
  private:
-  void GetAllRadii(SkVector radii[4]) const;
+  void GetAllRadii(base::span<SkVector, 4> radii) const;
 
   gfx::RoundedCornersF GetRoundedCorners() const;
 

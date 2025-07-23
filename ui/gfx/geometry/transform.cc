@@ -13,6 +13,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -106,7 +107,7 @@ Matrix44& Transform::EnsureFullMatrix() {
 }
 
 // static
-Transform Transform::ColMajor(const double a[16]) {
+Transform Transform::ColMajor(base::span<const double, 16> a) {
   return Transform(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9],
                    a[10], a[11], a[12], a[13], a[14], a[15]);
 }
@@ -724,8 +725,8 @@ Vector3dF Transform::MapVector(const Vector3dF& vector) const {
                    ClampFloatGeometry(p[2]));
 }
 
-void Transform::TransformVector4(float vector[4]) const {
-  DCHECK(vector);
+void Transform::TransformVector4(base::span<float, 4> vector) const {
+  DCHECK(!vector.empty());
   if (!full_matrix_) [[likely]] {
     vector[0] = vector[0] * axis_2d_.scale().x() +
                 vector[3] * axis_2d_.translation().x();

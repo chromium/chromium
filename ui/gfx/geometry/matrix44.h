@@ -187,7 +187,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Matrix44 {
 
   // Same as above, but assumes the vec[2] is 0 and vec[3] is 1, discards
   // vec[2], and returns vec[3].
-  double MapVector2(double vec[2]) const;
+  double MapVector2(base::span<double, 2> vec) const;
 
   void Flatten();
 

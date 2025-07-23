@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 
 namespace gfx {
 
@@ -16,7 +17,9 @@ typedef uint16_t HalfFloat;
 
 // Floats are expected to be within +/- 65535.0;
 COMPONENT_EXPORT(GFX)
-void FloatToHalfFloat(const float* input, HalfFloat* output, size_t num);
+void FloatToHalfFloat(base::span<const float> input,
+                      base::span<HalfFloat> output,
+                      size_t spanification_suspected_redundant_num);
 }  // namespace gfx
 
 #endif  // UI_GFX_HALF_FLOAT_H_

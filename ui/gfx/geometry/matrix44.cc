@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 
 namespace gfx {
@@ -412,7 +413,7 @@ void Matrix44::Zoom(double zoom_factor) {
   matrix_[3][2] *= zoom_factor;
 }
 
-double Matrix44::MapVector2(double vec[2]) const {
+double Matrix44::MapVector2(base::span<double, 2> vec) const {
   double v0 = vec[0];
   double v1 = vec[1];
   double x = v0 * matrix_[0][0] + v1 * matrix_[1][0] + matrix_[3][0];

@@ -16,6 +16,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/matrix44.h"
 
@@ -163,7 +164,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
 
   // Constructs Transform from a double col-major array.
   // Always creates a double precision 4x4 matrix.
-  static Transform ColMajor(const double a[16]);
+  static Transform ColMajor(base::span<const double, 16> a);
 
   // Constructs Transform from a float col-major array. Creates an
   // AxisTransform2d or a Matrix44 depending on the values. GetColMajorF() and
@@ -432,7 +433,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
 
   // Applies the transformation to the vector. The results are clamped with
   // ClampFloatGeometry().
-  void TransformVector4(float vector[4]) const;
+  void TransformVector4(base::span<float, 4> vector) const;
 
   // Returns the point with reverse transformation applied to `point`, clamped
   // with ClampFloatGeometry(), or `std::nullopt` if the transformation cannot

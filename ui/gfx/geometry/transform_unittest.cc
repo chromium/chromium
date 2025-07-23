@@ -18,6 +18,7 @@
 #include <optional>
 #include <ostream>
 
+#include "base/containers/span.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -1977,7 +1978,7 @@ TEST(XFormTest, GetColMajor) {
     EXPECT_EQ(i + 10.0, data[i]);
     EXPECT_EQ(data[i], transform.ColMajorData(i));
   }
-  EXPECT_EQ(transform, Transform::ColMajor(data.data()));
+  EXPECT_EQ(transform, Transform::ColMajor(data));
 }
 
 TEST(XFormTest, Affine) {
@@ -3681,7 +3682,7 @@ TEST(XFormTest, TransformVector4) {
   std::array<float, 4> input = {11.5f, 22.5f, 33.5f, 44.5f};
   auto vector = input;
   std::array<float, 4> expected = {28.75f, 78.75f, 150.75f, 244.75f};
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 
   // With translations and perspectives.
@@ -3693,7 +3694,7 @@ TEST(XFormTest, TransformVector4) {
   transform.set_rc(3, 2, 60);
   vector = input;
   expected = {473.75f, 968.75f, 1485.75f, 3839.75f};
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 
   // TransformVector4 with simple 2d transform.
@@ -3701,12 +3702,12 @@ TEST(XFormTest, TransformVector4) {
       Transform::MakeTranslation(10, 20) * Transform::MakeScale(2.5f, 3.5f);
   vector = input;
   expected = {473.75f, 968.75f, 33.5f, 44.5f};
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 
   vector = input;
   transform.EnsureFullMatrixForTesting();
-  transform.TransformVector4(vector.data());
+  transform.TransformVector4(vector);
   EXPECT_EQ(expected, vector);
 }
 
@@ -3945,8 +3946,14 @@ TEST(XFormTest, ClampOutput) {
       return is_valid_point(r.origin()) && std::isfinite(r.width()) &&
              std::isfinite(r.height());
     };
-    auto is_valid_array = [&](const float* a, size_t size) -> bool {
-      for (size_t i = 0; i < size; i++) {
+    auto is_valid_array =
+        [&](base::span<const float> a,
+            size_t spanification_suspected_redundant_size) -> bool {
+      // TODO(crbug.com/431824301): Remove unneeded parameter once validated to
+      // be redundant in M143.
+      CHECK(spanification_suspected_redundant_size == a.size(),
+            base::NotFatalUntil::M143);
+      for (size_t i = 0; i < spanification_suspected_redundant_size; i++) {
         if (!std::isfinite(a[i]))
           return false;
       }
