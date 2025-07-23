@@ -449,8 +449,7 @@ chromium-metrics-reviews@google.com.
   <owner>clank-performance-team@google.com</owner>
   <summary>
     Count the simultaneous New Tab Page. This is recorded when a new tab page is
-    created. The count contains the created page. This is supported on Android
-    only.
+    created. The count contains the created page.
   </summary>
 </histogram>
 

@@ -299,6 +299,9 @@ class NewTabPageUI
   // Called when the NTP (re)loads. Sets mutable load time data.
   void OnLoad();
 
+  // The counter for NewTabPage.Count UMA metrics.
+  static int instance_count_;
+
   std::unique_ptr<NewTabPageHandler> page_handler_;
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;
