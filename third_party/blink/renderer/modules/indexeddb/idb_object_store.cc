@@ -31,6 +31,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -385,6 +386,13 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
       break;
   }
   IDBRequest::AsyncTraceState metrics(tracing_type);
+
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/425145252) and these are disabled here.
+  // TODO(https://crbug.com/433423496): Optimize to remove this annotation.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
+
   if (IsDeleted()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -575,6 +583,13 @@ IDBRequest* IDBObjectStore::Delete(ScriptState* script_state,
                metadata_->name.Utf8());
   IDBRequest::AsyncTraceState metrics(
       IDBRequest::TypeForMetrics::kObjectStoreDelete);
+
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/425145252) and these are disabled here.
+  // TODO(https://crbug.com/433423496): Optimize to remove this annotation.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
+
   if (IsDeleted()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,

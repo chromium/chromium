@@ -216,6 +216,9 @@ _CONFIG = [
             # //base/memory/ptr_util.h.
             'base::WrapUnique',
 
+            # //base/memory/safety_checks.h
+            'base::ScopedSafetyChecksExclusion',
+
             # //base/containers/adapters.h
             'base::Reversed',
 

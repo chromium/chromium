@@ -10,6 +10,7 @@ include_rules = [
     "+base/memory/raw_ref.h",
     "+base/memory/raw_span.h",
     "+base/memory/raw_ptr_exclusion.h",
+    "+base/memory/safety_checks.h",
     "+base/memory/stack_allocated.h",
     "+base/notimplemented.h",
     "+base/notreached.h",
