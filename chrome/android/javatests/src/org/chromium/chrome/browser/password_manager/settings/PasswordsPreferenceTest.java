@@ -23,9 +23,7 @@ import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridgeJni;
@@ -47,17 +45,13 @@ import org.chromium.ui.test.util.RenderTestRule.Component;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Public Transit tests for the passwords preference item. Tests checking the subtitle for the
- * access loss warning can be found in {@link PasswordsPreferenceAccessLossTest}.
- */
+/** Public Transit tests for the passwords preference item. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(
         reason =
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
-@EnableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class PasswordsPreferenceTest {
     @ClassRule
     public static SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =

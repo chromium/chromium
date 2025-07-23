@@ -39,18 +39,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
-import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -74,11 +68,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
-import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -190,28 +180,6 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338976917
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
-    @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
-    public void testManagePasswordsNoUpmFlow() throws InterruptedException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PrefService prefService = UserPrefs.get(mActivityTestRule.getProfile(false));
-                    prefService.setInteger(
-                            "passwords_use_upm_local_and_separate_stores",
-                            /*UseUpmLocalAndSeparateStoresState = Off*/ 0);
-                });
-
-        setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_PASSWORDS));
-        clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), PasswordSettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_PASSWORDS, /* position= */ 0, /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
-    }
-
-    @Test
-    @MediumTest
     public void testManagePaymentMethods() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.UPDATE_CREDIT_CARD));
         clickOnPedalToSettings(
@@ -238,28 +206,6 @@ public class OmniboxPedalsTest {
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
                         OmniboxPedalId.LAUNCH_INCOGNITO, /* position= */ 0, /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.SAFETY_HUB, ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID})
-    public void testRunChromeSafetyCheck() throws InterruptedException {
-        setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
-
-        HistogramWatcher safetyCheckHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord("Settings.SafetyCheck.UpdatesResult")
-                        .build();
-        clickOnPedalToSettings(
-                () -> mOmniboxUtils.clickOnAction(0, 0), SafetyCheckSettingsFragment.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        // Make sure the safety check was ran.
-        safetyCheckHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
