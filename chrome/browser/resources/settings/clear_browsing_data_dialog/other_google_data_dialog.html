@@ -82,11 +82,19 @@
         <div slot="label" class="label">$i18n{searchHistory}</div>
       </cr-link-row>
       <cr-link-row id="myActivityLink" external using-slotted-label
-          class$="[[getMyActivityLinkCssClass_(isGoogleDse_)]]"
+          class$="[[getMyActivityLinkCssClass_(isGoogleDse_, syncStatus_)]]"
           hidden="[[!shouldShowMyActivityLink_(syncStatus_)]]"
           sub-label="$i18n{manageInYourGoogleAccount}"
           on-click="onMyActivityLinkClick_">
         <div slot="label" class="label">$i18n{myActivity}</div>
+      </cr-link-row>
+      <!-- TODO(rbug.com/432207975): Translate geminiAppsActivity strings. -->
+      <cr-link-row id="geminiAppsActivityLink" external using-slotted-label
+          class$="[[getGeminiAppsActivityLinkCssClass_(isGoogleDse_)]]"
+          hidden="[[!shouldShowGeminiAppsActivityLink_(syncStatus_)]]"
+          sub-label="$i18n{manageInYourGeminiAppsActivity}"
+          on-click="onGeminiAppsActivityClick_">
+        <div slot="label" class="label">$i18n{geminiAppsActivity}</div>
       </cr-link-row>
       <div id="nonGoogleSearchHistoryLink" class="cr-row first last-link-row"
           hidden="[[isGoogleDse_]]">

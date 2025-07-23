@@ -625,6 +625,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableDeleteBrowsingDataRevamp",
       base::FeatureList::IsEnabled(browsing_data::features::kDbdRevampDesktop));
+  html_source->AddBoolean(
+      "enableBrowsingHistoryActorIntegrationM1",
+      base::FeatureList::IsEnabled(
+          browsing_data::features::kBrowsingHistoryActorIntegrationM1));
 
   html_source->AddBoolean(
       "enableSupportForHomeAndWork",

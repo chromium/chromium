@@ -40,6 +40,7 @@ export interface SettingsOtherGoogleDataDialogElement {
     passwordManagerLink: CrLinkRowElement,
     myActivityLink: CrLinkRowElement,
     nonGoogleSearchHistoryLink: HTMLElement,
+    geminiAppsActivityLink: CrLinkRowElement,
   };
 }
 
@@ -142,6 +143,11 @@ export class SettingsOtherGoogleDataDialogElement extends
         'Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick');
   }
 
+  private onGeminiAppsActivityClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('myActivityGeminiAppsUrl'));
+  }
+
   private shouldShowMyActivityLink_() {
     return isSignedIn(this.syncStatus_);
   }
@@ -150,11 +156,22 @@ export class SettingsOtherGoogleDataDialogElement extends
     return isSignedIn(this.syncStatus_) && this.isGoogleDse_;
   }
 
+  private shouldShowGeminiAppsActivityLink_() {
+    return isSignedIn(this.syncStatus_) &&
+        loadTimeData.getBoolean('showGlicSettings') &&
+        loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1');
+  }
+
   private getMyActivityLinkCssClass_() {
-    if (!this.isGoogleDse_) {
+    // TODO (crbug.com/432676120) Make CSS class assignment more robust.
+    if (!this.isGoogleDse_ || this.shouldShowGeminiAppsActivityLink_()) {
       return 'middle-link-row';
     }
     return 'last-link-row';
+  }
+
+  private getGeminiAppsActivityLinkCssClass_() {
+    return this.isGoogleDse_ ? 'last-link-row' : 'middle-link-row';
   }
 
   private getPasswordsLinkCssClass_() {

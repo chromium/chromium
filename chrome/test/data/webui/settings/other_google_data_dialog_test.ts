@@ -34,10 +34,17 @@ suite('OtherGoogleDataDialog', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      showGlicSettings: true,
+    });
+    return createDialog();
+  });
+
+  function createDialog() {
     dialog = document.createElement('settings-other-google-data-dialog');
     document.body.appendChild(dialog);
     return flushTasks();
-  });
+  }
 
   function setSignedInAndDseState(
       signedInState: SignedInState, isGoogleDse: boolean,
@@ -205,24 +212,29 @@ suite('OtherGoogleDataDialog', function() {
 
   test('LinkRowsCssClass', async function() {
     // Case 1: User is signed in and Google is DSE, passwords > Google search
-    // history > my activity rows should be shown in this order.
+    // history > my activity > Gemini Apps rows should be shown in this order.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
     await flushTasks();
     assertTrue(
         dialog.$.passwordManagerLink.classList.contains('first-link-row'));
     assertTrue(
         dialog.$.googleSearchHistoryLink.classList.contains('middle-link-row'));
-    assertTrue(dialog.$.myActivityLink.classList.contains('last-link-row'));
+    assertTrue(dialog.$.myActivityLink.classList.contains('middle-link-row'));
+    assertTrue(
+        dialog.$.geminiAppsActivityLink.classList.contains('last-link-row'));
     assertFalse(isVisible(dialog.$.nonGoogleSearchHistoryLink));
 
     // Case 2: User is signed in and Google is not the DSE, passwords  > my
-    // activity > non Google search history rows should be shown in this order.
+    // activity > Gemini Apps>non Google search history rows should be shown in
+    // this order.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ false);
     await flushTasks();
     assertTrue(
         dialog.$.passwordManagerLink.classList.contains('first-link-row'));
     assertFalse(isVisible(dialog.$.googleSearchHistoryLink));
     assertTrue(dialog.$.myActivityLink.classList.contains('middle-link-row'));
+    assertTrue(
+        dialog.$.geminiAppsActivityLink.classList.contains('middle-link-row'));
     assertTrue(dialog.$.nonGoogleSearchHistoryLink.classList.contains(
         'last-link-row'));
 
@@ -234,6 +246,7 @@ suite('OtherGoogleDataDialog', function() {
         dialog.$.passwordManagerLink.classList.contains('first-link-row'));
     assertFalse(isVisible(dialog.$.googleSearchHistoryLink));
     assertFalse(isVisible(dialog.$.myActivityLink));
+    assertFalse(isVisible(dialog.$.geminiAppsActivityLink));
     assertTrue(dialog.$.nonGoogleSearchHistoryLink.classList.contains(
         'last-link-row'));
 
@@ -245,6 +258,52 @@ suite('OtherGoogleDataDialog', function() {
         dialog.$.passwordManagerLink.classList.contains('only-link-row'));
     assertFalse(isVisible(dialog.$.googleSearchHistoryLink));
     assertFalse(isVisible(dialog.$.myActivityLink));
+    assertFalse(isVisible(dialog.$.geminiAppsActivityLink));
     assertFalse(isVisible(dialog.$.nonGoogleSearchHistoryLink));
+
+    // Case 5: Gemini Activity row is not shown. Google is not DSE.
+    loadTimeData.overrideValues({
+      showGlicSettings: false,
+    });
+    await createDialog();
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+
+    assertTrue(
+        dialog.$.passwordManagerLink.classList.contains('first-link-row'));
+    assertTrue(
+        dialog.$.googleSearchHistoryLink.classList.contains('middle-link-row'));
+    assertTrue(dialog.$.myActivityLink.classList.contains('last-link-row'));
+    assertFalse(isVisible(dialog.$.geminiAppsActivityLink));
+    assertFalse(isVisible(dialog.$.nonGoogleSearchHistoryLink));
+  });
+
+  test('GeminiAppsActivityLinkClick', async function() {
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+
+    assertTrue(isVisible(dialog.$.geminiAppsActivityLink));
+    dialog.$.geminiAppsActivityLink.click();
+
+    const url = await testOpenWindowProxy.whenCalled('openUrl');
+    assertEquals(loadTimeData.getString('myActivityGeminiAppsUrl'), url);
+  });
+
+  test('GeminiAppsActivityVisibility', async function() {
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertTrue(isVisible(dialog.$.geminiAppsActivityLink));
+
+    setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertFalse(isVisible(dialog.$.geminiAppsActivityLink));
+
+    loadTimeData.overrideValues({
+      showGlicSettings: false,
+    });
+    await createDialog();
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertFalse(isVisible(dialog.$.geminiAppsActivityLink));
   });
 });

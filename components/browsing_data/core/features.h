@@ -14,11 +14,16 @@ namespace browsing_data::features {
 BASE_DECLARE_FEATURE(kBrowsingDataModel);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Enables a revamped Delete Browsing Data dialog. This includes UI changes,
 // updates to history counter logic and removal of the bulk password deletion
 // option from the dialog.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kDbdRevampDesktop);
+
+// Enables the Browsing History Actor Integration M1 feature. This feature
+// introduces new ui and functionality related to the history integration in
+// Chrome.
+BASE_DECLARE_FEATURE(kBrowsingHistoryActorIntegrationM1);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }  // namespace browsing_data::features
 

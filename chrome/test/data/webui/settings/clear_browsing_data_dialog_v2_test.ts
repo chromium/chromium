@@ -43,6 +43,7 @@ suite('DeleteBrowsingDataDialog', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     setClearBrowsingDataPrefs(false);
+    loadTimeData.overrideValues({showGlicSettings: true});
     return createDialog();
   });
 

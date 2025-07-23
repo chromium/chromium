@@ -862,9 +862,16 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
 }
 
 class SettingsClearBrowsingDataV2Test : public SettingsBrowserTest {
+ protected:
+  SettingsClearBrowsingDataV2Test() {
+    scoped_feature_list_.InitWithFeatures(
+        {browsing_data::features::kDbdRevampDesktop,
+         browsing_data::features::kBrowsingHistoryActorIntegrationM1},
+        /*disabled_features=*/{});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      browsing_data::features::kDbdRevampDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
