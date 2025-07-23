@@ -33,12 +33,14 @@ class PasswordChangeHats : public password_manager::PasswordStoreConsumer {
 
   // Tries to launch a password change survey in `web_contents`. `trigger`
   // specifies which scenario occurred (e.g. error or successful password
-  // change). `password_change_duration` specifies the feature runtime until
-  // reaching the trigger condition. The survey might not launch based on the
-  // global rate limiting logic handled by the `hats_service_`.
-  void MaybeLaunchSurvey(const std::string& trigger,
-                         base::TimeDelta password_change_duration,
-                         content::WebContents* web_contents);
+  // change). If not std::nullopt, `password_change_duration` specifies the
+  // feature runtime until reaching the trigger condition. The survey might not
+  // launch based on the global rate limiting logic handled by the
+  // `hats_service_`.
+  void MaybeLaunchSurvey(
+      const std::string& trigger,
+      std::optional<base::TimeDelta> password_change_duration,
+      content::WebContents* web_contents);
 
  private:
   // PasswordStoreConsumer:

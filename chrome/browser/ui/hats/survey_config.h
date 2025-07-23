@@ -46,6 +46,7 @@ extern const char kHatsSurveyTriggerLensOverlayResults[];
 extern const char kHatsSurveyTriggerNtpModules[];
 extern const char kHatsSurveyTriggerNtpPhotosModuleOptOut[];
 extern const char kHatsSurveyTriggerPasswordChangeCanceled[];
+extern const char kHatsSurveyTriggerPasswordChangeDelayed[];
 extern const char kHatsSurveyTriggerPasswordChangeError[];
 extern const char kHatsSurveyTriggerPasswordChangeSuccess[];
 extern const char kHatsSurveyTriggerPerformanceControlsPPM[];

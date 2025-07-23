@@ -27,6 +27,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_change/password_change_hats.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/promos/promos_types.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -178,6 +180,48 @@ GetSaveProgressLogger(password_manager::PasswordManagerClient* client) {
 
   return std::make_optional<
       password_manager::BrowserSavePasswordProgressLogger>(log_manager);
+}
+
+// Maybe triggers a hats survey that measures the user's perception of
+// password change recovery flow.
+void MaybeTriggerPasswordChangeDelayedSurvey(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get());
+
+  // PasswordChangeHats fetches password store data on construction. Add a small
+  // delay so that data is available in most cases on survey launch.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<PasswordChangeHats> password_change_hats,
+             base::WeakPtr<content::WebContents> web_contents) {
+            if (!web_contents) {
+              return;
+            }
+            password_change_hats->MaybeLaunchSurvey(
+                kHatsSurveyTriggerPasswordChangeDelayed,
+                /*password_change_duration=*/std::nullopt, web_contents.get());
+          },
+          std::move(password_change_hats), web_contents),
+      base::Seconds(1));
 }
 
 }  // namespace
@@ -909,7 +953,7 @@ void ManagePasswordsUIController::OnPasswordsRevealed() {
   passwords_data_.form_manager()->OnPasswordsRevealed();
 }
 
-void ManagePasswordsUIController::MaybeRecordPasswordRecoveryFinished(
+void ManagePasswordsUIController::MaybeHandlePasswordRecoveryFinished(
     const std::u16string& username,
     const std::u16string& password) const {
   auto pending_credentials = GetPendingPassword();
@@ -927,12 +971,13 @@ void ManagePasswordsUIController::MaybeRecordPasswordRecoveryFinished(
         "PasswordManager.PasswordChangeRecoveryFlow",
         password_manager::PasswordChangeRecoveryFlowState::
             kPrimaryPasswordUpdated);
+    MaybeTriggerPasswordChangeDelayedSurvey(web_contents()->GetWeakPtr());
   }
 }
 
 void ManagePasswordsUIController::SavePassword(const std::u16string& username,
                                                const std::u16string& password) {
-  MaybeRecordPasswordRecoveryFinished(username, password);
+  MaybeHandlePasswordRecoveryFinished(username, password);
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
 

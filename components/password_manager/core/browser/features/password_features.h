@@ -208,6 +208,10 @@ inline constexpr base::FeatureParam<std::string>
         &kImprovedPasswordChangeService,
         "PasswordChangeCanceledSurveyTriggerId",
         /*default_value=*/""};
+inline constexpr base::FeatureParam<std::string>
+    kPasswordChangeDelayedSurveyTriggerId{
+        &kImprovedPasswordChangeService, "PasswordChangeDelayedSurveyTriggerId",
+        /*default_value=*/""};
 
 // All features parameters in alphabetical order.
 
