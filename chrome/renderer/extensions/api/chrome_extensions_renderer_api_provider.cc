@@ -114,110 +114,94 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 
 void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
     ResourceBundleSourceMap* source_map) const {
-  // Custom bindings.
-  source_map->RegisterSource("action", IDR_ACTION_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("browserAction",
-                             IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("declarativeContent",
-                             IDR_DECLARATIVE_CONTENT_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("desktopCapture",
-                             IDR_DESKTOP_CAPTURE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("developerPrivate",
-                             IDR_DEVELOPER_PRIVATE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("downloads", IDR_DOWNLOADS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("gcm", IDR_GCM_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("identity", IDR_IDENTITY_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("imageWriterPrivate",
-                             IDR_IMAGE_WRITER_PRIVATE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("input.ime", IDR_INPUT_IME_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("mediaGalleries",
-                             IDR_MEDIA_GALLERIES_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("notifications",
-                             IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("omnibox", IDR_OMNIBOX_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("pageAction", IDR_PAGE_ACTION_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("pageCapture",
-                             IDR_PAGE_CAPTURE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("syncFileSystem",
-                             IDR_SYNC_FILE_SYSTEM_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("tabCapture", IDR_TAB_CAPTURE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("tts", IDR_TTS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("ttsEngine", IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS);
+  struct RegisterSourceData {
+    const char* name;
+    int resource_id;
+  };
+
+  static constexpr RegisterSourceData kSources[] = {
+      // Custom bindings.
+      {"action", IDR_ACTION_CUSTOM_BINDINGS_JS},
+      {"browserAction", IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS},
+      {"declarativeContent", IDR_DECLARATIVE_CONTENT_CUSTOM_BINDINGS_JS},
+      {"desktopCapture", IDR_DESKTOP_CAPTURE_CUSTOM_BINDINGS_JS},
+      {"developerPrivate", IDR_DEVELOPER_PRIVATE_CUSTOM_BINDINGS_JS},
+      {"downloads", IDR_DOWNLOADS_CUSTOM_BINDINGS_JS},
+      {"gcm", IDR_GCM_CUSTOM_BINDINGS_JS},
+      {"identity", IDR_IDENTITY_CUSTOM_BINDINGS_JS},
+      {"imageWriterPrivate", IDR_IMAGE_WRITER_PRIVATE_CUSTOM_BINDINGS_JS},
+      {"input.ime", IDR_INPUT_IME_CUSTOM_BINDINGS_JS},
+      {"mediaGalleries", IDR_MEDIA_GALLERIES_CUSTOM_BINDINGS_JS},
+      {"notifications", IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS},
+      {"omnibox", IDR_OMNIBOX_CUSTOM_BINDINGS_JS},
+      {"pageAction", IDR_PAGE_ACTION_CUSTOM_BINDINGS_JS},
+      {"pageCapture", IDR_PAGE_CAPTURE_CUSTOM_BINDINGS_JS},
+      {"syncFileSystem", IDR_SYNC_FILE_SYSTEM_CUSTOM_BINDINGS_JS},
+      {"tabCapture", IDR_TAB_CAPTURE_CUSTOM_BINDINGS_JS},
+      {"tts", IDR_TTS_CUSTOM_BINDINGS_JS},
+      {"ttsEngine", IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS},
 
 #if BUILDFLAG(IS_CHROMEOS)
-  source_map->RegisterSource("certificateProvider",
-                             IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("enterprise.platformKeys",
-                             IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("enterprise.platformKeys.CryptoKey",
-                             IDR_ENTERPRISE_PLATFORM_KEYS_CRYPTO_KEY_JS);
-  source_map->RegisterSource("enterprise.platformKeys.SubtleCrypto",
-                             IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);
-  source_map->RegisterSource("enterprise.platformKeys.Token",
-                             IDR_ENTERPRISE_PLATFORM_KEYS_TOKEN_JS);
-  source_map->RegisterSource("fileBrowserHandler",
-                             IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("fileSystemProvider",
-                             IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("platformKeys",
-                             IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("platformKeys.getCryptoKeyUtil",
-                             IDR_PLATFORM_KEYS_GET_CRYPTO_KEY_UTIL_JS);
-  source_map->RegisterSource("platformKeys.Key", IDR_PLATFORM_KEYS_KEY_JS);
-  source_map->RegisterSource("platformKeys.SubtleCrypto",
-                             IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);
-  source_map->RegisterSource("platformKeys.utils", IDR_PLATFORM_KEYS_UTILS_JS);
+      {"certificateProvider", IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS},
+      {"enterprise.platformKeys",
+       IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS},
+      {"enterprise.platformKeys.CryptoKey",
+       IDR_ENTERPRISE_PLATFORM_KEYS_CRYPTO_KEY_JS},
+      {"enterprise.platformKeys.SubtleCrypto",
+       IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS},
+      {"enterprise.platformKeys.Token", IDR_ENTERPRISE_PLATFORM_KEYS_TOKEN_JS},
+      {"fileBrowserHandler", IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS},
+      {"fileSystemProvider", IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS},
+      {"platformKeys", IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS},
+      {"platformKeys.getCryptoKeyUtil",
+       IDR_PLATFORM_KEYS_GET_CRYPTO_KEY_UTIL_JS},
+      {"platformKeys.Key", IDR_PLATFORM_KEYS_KEY_JS},
+      {"platformKeys.SubtleCrypto", IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS},
+      {"platformKeys.utils", IDR_PLATFORM_KEYS_UTILS_JS},
 
-  // Remote Apps.
-  source_map->RegisterSource("chromeos.remote_apps.mojom-lite",
-                             IDR_REMOTE_APPS_MOJOM_LITE_JS);
-  source_map->RegisterSource("chromeos.remote_apps",
-                             IDR_REMOTE_APPS_BINDINGS_JS);
-  source_map->RegisterSource("url/mojom/url.mojom-lite",
-                             IDR_MOJO_URL_MOJOM_LITE_JS);
+      // Remote Apps.
+      {"chromeos.remote_apps.mojom-lite", IDR_REMOTE_APPS_MOJOM_LITE_JS},
+      {"chromeos.remote_apps", IDR_REMOTE_APPS_BINDINGS_JS},
+      {"url/mojom/url.mojom-lite", IDR_MOJO_URL_MOJOM_LITE_JS},
 
-  source_map->RegisterSource("fileManagerPrivate",
-                             IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("terminalPrivate",
-                             IDR_TERMINAL_PRIVATE_CUSTOM_BINDINGS_JS);
+      {"fileManagerPrivate", IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS},
+      {"terminalPrivate", IDR_TERMINAL_PRIVATE_CUSTOM_BINDINGS_JS},
 
-  // IME service on Chrome OS.
-  source_map->RegisterSource("ash.ime.mojom.ime_service.mojom",
-                             IDR_IME_SERVICE_MOJOM_JS);
-  source_map->RegisterSource("ash.ime.mojom.input_engine.mojom",
-                             IDR_IME_SERVICE_INPUT_ENGINE_MOJOM_JS);
-  source_map->RegisterSource("ash.ime.mojom.input_method.mojom",
-                             IDR_IME_SERVICE_INPUT_METHOD_MOJOM_JS);
-  source_map->RegisterSource("ash.ime.mojom.input_method_host.mojom",
-                             IDR_IME_SERVICE_INPUT_METHOD_HOST_MOJOM_JS);
-  source_map->RegisterSource("chromeos.ime.service",
-                             IDR_IME_SERVICE_BINDINGS_JS);
+      // IME service on Chrome OS.
+      {"ash.ime.mojom.ime_service.mojom", IDR_IME_SERVICE_MOJOM_JS},
+      {"ash.ime.mojom.input_engine.mojom",
+       IDR_IME_SERVICE_INPUT_ENGINE_MOJOM_JS},
+      {"ash.ime.mojom.input_method.mojom",
+       IDR_IME_SERVICE_INPUT_METHOD_MOJOM_JS},
+      {"ash.ime.mojom.input_method_host.mojom",
+       IDR_IME_SERVICE_INPUT_METHOD_HOST_MOJOM_JS},
+      {"chromeos.ime.service", IDR_IME_SERVICE_BINDINGS_JS},
 
-  source_map->RegisterSource("chromeos.tts.mojom.google_tts_stream.mojom",
-                             IDR_GOOGLE_TTS_STREAM_MOJOM_JS);
-  source_map->RegisterSource("chromeos.tts.google_stream",
-                             IDR_GOOGLE_TTS_STREAM_BINDINGS_JS);
+      {"chromeos.tts.mojom.google_tts_stream.mojom",
+       IDR_GOOGLE_TTS_STREAM_MOJOM_JS},
+      {"chromeos.tts.google_stream", IDR_GOOGLE_TTS_STREAM_BINDINGS_JS},
 
-  source_map->RegisterSource("ash.enhanced_network_tts.mojom-lite",
-                             IDR_ENHANCED_NETWORK_TTS_MOJOM_LITE_JS);
-  source_map->RegisterSource("ash.enhanced_network_tts",
-                             IDR_ENHANCED_NETWORK_TTS_BINDINGS_JS);
+      {"ash.enhanced_network_tts.mojom-lite",
+       IDR_ENHANCED_NETWORK_TTS_MOJOM_LITE_JS},
+      {"ash.enhanced_network_tts", IDR_ENHANCED_NETWORK_TTS_BINDINGS_JS},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  source_map->RegisterSource(
-      "webrtcDesktopCapturePrivate",
-      IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("webrtcLoggingPrivate",
-                             IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS);
+      {"webrtcDesktopCapturePrivate",
+       IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS},
+      {"webrtcLoggingPrivate", IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS},
 
-  // Platform app sources that are not API-specific..
-  source_map->RegisterSource("chromeWebViewContextMenusApiMethods",
-                             IDR_CHROME_WEB_VIEW_CONTEXT_MENUS_API_METHODS_JS);
-  source_map->RegisterSource("chromeWebViewElement",
-                             IDR_CHROME_WEB_VIEW_ELEMENT_JS);
-  source_map->RegisterSource("chromeWebViewInternal",
-                             IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("chromeWebView", IDR_CHROME_WEB_VIEW_JS);
+      // Platform app sources that are not API-specific..
+      {"chromeWebViewContextMenusApiMethods",
+       IDR_CHROME_WEB_VIEW_CONTEXT_MENUS_API_METHODS_JS},
+      {"chromeWebViewElement", IDR_CHROME_WEB_VIEW_ELEMENT_JS},
+      {"chromeWebViewInternal",
+       IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS},
+      {"chromeWebView", IDR_CHROME_WEB_VIEW_JS},
+  };
+
+  for (const auto& source : kSources) {
+    source_map->RegisterSource(source.name, source.resource_id);
+  }
 }
 
 void ChromeExtensionsRendererAPIProvider::EnableCustomElementAllowlist() const {
