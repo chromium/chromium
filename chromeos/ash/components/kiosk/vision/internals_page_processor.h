@@ -10,8 +10,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
-#include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom-forward.h"
-#include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 
 namespace ash::kiosk_vision {
@@ -30,10 +28,7 @@ class COMPONENT_EXPORT(KIOSK_VISION) InternalsPageProcessor
 
   // Observer for `State` updates. Intended to be implemented under the
   // `UIController` for chrome://kiosk-vision-internals.
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnStateChange(const mojom::State& new_state) = 0;
-  };
+  class Observer : public base::CheckedObserver {};
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -46,10 +41,7 @@ class COMPONENT_EXPORT(KIOSK_VISION) InternalsPageProcessor
   void OnError(cros::mojom::KioskVisionError error) override;
 
   // Calls `Observer::OnStateChange` with `new_state` on all `observers_`.
-  void NotifyStateChange(mojom::StatePtr new_state);
-
-  // The last state emitted to `Observer::OnStateChange`.
-  mojom::StatePtr last_state_;
+  void NotifyStateChange();
 
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observers_;

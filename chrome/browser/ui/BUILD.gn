@@ -2442,8 +2442,6 @@ static_library("ui") {
       "//chromeos/ash/components/human_presence",
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/kcer",
-      "//chromeos/ash/components/kiosk/vision",
-      "//chromeos/ash/components/kiosk/vision/webui",
       "//chromeos/ash/components/language_packs",
       "//chromeos/ash/components/launcher_search",
       "//chromeos/ash/components/local_search_service/public/cpp",

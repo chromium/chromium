@@ -22,7 +22,6 @@ component("vision") {
     "//base",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
-    "//chromeos/ash/components/kiosk/vision/webui:mojo_bindings",
     "//components/capture_mode",
     "//components/prefs",
     "//components/reporting/proto:metric_data_proto",

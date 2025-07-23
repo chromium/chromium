@@ -109,7 +109,6 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/sys_internals",
     "//chrome/browser/ui/webui/ash/vm",
     "//chrome/browser/ui/webui/nearby_share",
-    "//chromeos/ash/components/kiosk/vision/webui",
     "//components/cross_device/logging",
     "//ui/webui",
   ]

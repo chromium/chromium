@@ -309,10 +309,6 @@ group("dev_ui_resources") {
     "//content/browser/webrtc/resources",
   ]
 
-  if (is_chromeos) {
-    public_deps += [ "//chromeos/ash/components/kiosk/vision/webui:resources" ]
-  }
-
   if (enable_vr) {
     public_deps += [ "//content/browser/resources/webxr_internals:resources" ]
   }
