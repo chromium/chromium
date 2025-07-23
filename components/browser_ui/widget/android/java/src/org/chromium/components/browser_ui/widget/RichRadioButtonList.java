@@ -80,21 +80,28 @@ public class RichRadioButtonList extends FrameLayout {
         mCurrentLayoutMode = layoutMode;
 
         RecyclerView.LayoutManager layoutManager;
-        int spacingPx =
-                getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.rich_radio_button_list_spacing);
 
         if (layoutMode == LayoutMode.VERTICAL_SINGLE_COLUMN) {
+            int verticalSpacingPx =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.rich_radio_button_list_vertical_spacing);
             layoutManager =
                     new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
             clearItemDecorations();
-            mRecyclerView.addItemDecoration(new SimpleItemDecoration(spacingPx, 0));
+            mRecyclerView.addItemDecoration(new SimpleItemDecoration(verticalSpacingPx, 0));
             mRecyclerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
         } else {
+            int horizontalSpacingPx =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.rich_radio_button_list_horizontal_spacing);
+
             layoutManager = new GridLayoutManager(getContext(), /* spanCount= */ 2);
             clearItemDecorations();
-            mRecyclerView.addItemDecoration(new SimpleItemDecoration(spacingPx, spacingPx));
+            mRecyclerView.addItemDecoration(
+                    new SimpleItemDecoration(horizontalSpacingPx, horizontalSpacingPx));
             mRecyclerView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         mRecyclerView.setLayoutManager(layoutManager);
@@ -129,7 +136,10 @@ public class RichRadioButtonList extends FrameLayout {
         }
     }
 
-    /** ItemDecoration for spacing between items. */
+    /**
+     * ItemDecoration for spacing between items. GridLayouts have a built-in "space-between"
+     * spacing.
+     */
     private static class SimpleItemDecoration extends RecyclerView.ItemDecoration {
         private final int mVerticalSpaceHeightPx;
         private final int mHorizontalSpaceWidthPx;
@@ -154,6 +164,16 @@ public class RichRadioButtonList extends FrameLayout {
             int spanCount = 1;
             if (parent.getLayoutManager() instanceof GridLayoutManager) {
                 spanCount = ((GridLayoutManager) parent.getLayoutManager()).getSpanCount();
+                int column = position % spanCount;
+                outRect.left = column * mHorizontalSpaceWidthPx / spanCount;
+                outRect.right =
+                        mHorizontalSpaceWidthPx
+                                - (column + 1) * mHorizontalSpaceWidthPx / spanCount;
+
+                if (position < itemCount - spanCount) {
+                    outRect.bottom = mVerticalSpaceHeightPx;
+                }
+                return;
             }
 
             if (position < itemCount - spanCount) {

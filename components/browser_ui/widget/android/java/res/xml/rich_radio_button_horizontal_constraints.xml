@@ -10,8 +10,8 @@ found in the LICENSE file.
 
     <Constraint
         android:id="@+id/rich_radio_button_icon_container"
-        android:layout_width="@dimen/rich_radio_button_icon_container_size"
-        android:layout_height="@dimen/rich_radio_button_icon_container_size"
+        android:layout_width="@dimen/rich_radio_button_horizontal_icon_container_size"
+        android:layout_height="@dimen/rich_radio_button_horizontal_icon_container_size"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
