@@ -660,6 +660,20 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
   }
 
+  async testGetContextForActorFromFocusedTabWithoutPermission() {
+    await this.host.setTabContextPermissionState(true);
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    const focusedTab = await this.host.getFocusedTabStateV2().getCurrentValue();
+    assertTrue(!!focusedTab?.hasFocus?.tabData?.tabId);
+    await this.host.setTabContextPermissionState(false);
+    const result = await this.host.getContextForActorFromTab?.(
+        focusedTab.hasFocus.tabData.tabId, {});
+    assertTrue(!!result);
+  }
+
+  // TODO(crbug.com/422544382): add test for getContextForActorFromTab for the
+  // case where tab is in background.
+
   // TODO(harringtond): This is disabled because it hangs. Fix it.
   async testCaptureScreenshot() {
     assertTrue(!!this.host.captureScreenshot);

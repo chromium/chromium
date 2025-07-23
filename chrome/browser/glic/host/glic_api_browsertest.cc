@@ -1106,6 +1106,11 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testGetContextForActorFromFocusedTabWithoutPermission) {
+  ExecuteJsTest();
+}
+
 #if BUILDFLAG(ENABLE_PDF)
 #define MAYBE_testGetContextFromFocusedTabWithPdfFile \
   testGetContextFromFocusedTabWithPdfFile

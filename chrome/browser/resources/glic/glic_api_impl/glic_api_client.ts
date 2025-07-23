@@ -325,6 +325,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.unpinTabs = undefined;
       this.unpinAllTabs = undefined;
     }
+
+    if (!state.enableGetContextActor) {
+      this.getContextForActorFromTab = undefined;
+    }
   }
 
   webClientInitialized(
@@ -417,6 +421,13 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       (tabId: string, options: TabContextOptions): Promise<TabContextResult> {
     const result = await this.sender.requestWithResponse(
         'glicBrowserGetContextFromTab', {tabId, options});
+    return convertTabContextResultFromPrivate(result.tabContextResult);
+  }
+
+  async getContextForActorFromTab?
+      (tabId: string, options: TabContextOptions): Promise<TabContextResult> {
+    const result = await this.sender.requestWithResponse(
+        'glicBrowserGetContextForActorFromTab', {tabId, options});
     return convertTabContextResultFromPrivate(result.tabContextResult);
   }
 

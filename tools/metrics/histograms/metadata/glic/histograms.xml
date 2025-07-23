@@ -74,6 +74,7 @@ chromium-metrics-reviews@google.com.
     <variant name="DetachPanel"/>
     <variant name="DropScrollToHighlight"/>
     <variant name="EnableDragResize"/>
+    <variant name="GetContextForActorFromTab"/>
     <variant name="GetContextFromFocusedTab"/>
     <variant name="GetContextFromTab"/>
     <variant name="GetModelQualityClientId"/>

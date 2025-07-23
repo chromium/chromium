@@ -138,6 +138,20 @@ void GlicSharingManagerImpl::GetContextFromTab(
   FetchPageContext(tab, options, std::move(callback));
 }
 
+void GlicSharingManagerImpl::GetContextForActorFromTab(
+    tabs::TabHandle tab_handle,
+    const mojom::GetTabContextOptions& options,
+    base::OnceCallback<void(mojom::GetContextResultPtr)> callback) {
+  auto* tab = tab_handle.Get();
+  if (!tab) {
+    std::move(callback).Run(
+        mojom::GetContextResult::NewErrorReason(std::string("tab not found")));
+    return;
+  }
+
+  FetchPageContext(tab, options, std::move(callback));
+}
+
 bool GlicSharingManagerImpl::IsBrowserValidForSharing(
     BrowserWindowInterface* browser_interface) {
   if (!browser_interface) {

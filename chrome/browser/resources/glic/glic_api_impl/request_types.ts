@@ -85,6 +85,15 @@ export declare interface HostRequestTypes {
       tabContextResult: TabContextResultPrivate,
     },
   };
+  glicBrowserGetContextForActorFromTab: {
+    request: {
+      tabId: string,
+      options: TabContextOptions,
+    },
+    response: {
+      tabContextResult: TabContextResultPrivate,
+    },
+  };
   glicBrowserSetMaximumNumberOfPinnedTabs: {
     request: {
       requestedMax: number,
@@ -445,6 +454,7 @@ type HostRequestEnumNamesType = {
     GetModelQualityClientId: 0,
     GetContextFromFocusedTab: 0,
     GetContextFromTab: 0,
+    GetContextForActorFromTab: 0,
     SetMaximumNumberOfPinnedTabs: 0,
     ActInFocusedTab: 0,
     StopActorTask: 0,

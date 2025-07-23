@@ -10,6 +10,12 @@ feature kGlicMultiTab {
   const bool default_state = false;
 };
 
+// Allows actor code to get tab context.
+feature kGlicActorTabContext {
+  const string name = "GlicActorTabContext";
+  const bool default_state = true;
+};
+
 feature kZeroStateSuggestionsV2 {
   const string name = "ZeroStateSuggestionsV2";
   const bool default_state = false;

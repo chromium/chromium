@@ -410,6 +410,24 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
+  async glicBrowserGetContextForActorFromTab(
+      request: {tabId: string, options: TabContextOptions},
+      extras: ResponseExtras):
+      Promise<{tabContextResult: TabContextResultPrivate}> {
+    const {result: {errorReason, tabContext}} =
+        await this.handler.getContextForActorFromTab(
+            tabIdFromClient(request.tabId),
+            tabContextOptionsFromClient(request.options));
+    if (!tabContext) {
+      throw new Error(`tabContext failed: ${errorReason}`);
+    }
+    const tabContextResult = tabContextToClient(tabContext, extras);
+
+    return {
+      tabContextResult: tabContextResult,
+    };
+  }
+
   async glicBrowserSetMaximumNumberOfPinnedTabs(request: {
     requestedMax: number,
   }): Promise<{effectiveMax: number}> {

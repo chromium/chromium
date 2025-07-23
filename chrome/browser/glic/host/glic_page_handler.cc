@@ -587,6 +587,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         features::kGlicUserStatusRefreshApi.Get();
     state->enable_multi_tab =
         base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab);
+    state->enable_get_context_actor = base::FeatureList::IsEnabled(
+        glic::mojom::features::kGlicActorTabContext);
 #if BUILDFLAG(ENABLE_PDF)
     if (features::kGlicScrollToPDF.Get()) {
       state->host_capabilities.push_back(mojom::HostCapability::kScrollToPdf);
@@ -722,6 +724,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     // Activation gating is handled in this function.
     glic_sharing_manager_->GetContextFromTab(tabs::TabHandle(tab_id), *options,
                                              std::move(callback));
+  }
+
+  void GetContextForActorFromTab(
+      int32_t tab_id,
+      glic::mojom::GetTabContextOptionsPtr options,
+      GetContextForActorFromTabCallback callback) override {
+    glic_sharing_manager_->GetContextForActorFromTab(
+        tabs::TabHandle(tab_id), *options, std::move(callback));
   }
 
   void SetMaximumNumberOfPinnedTabs(

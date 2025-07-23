@@ -90,6 +90,11 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       const mojom::GetTabContextOptions& options,
       base::OnceCallback<void(mojom::GetContextResultPtr)> callback);
 
+  void GetContextForActorFromTab(
+      tabs::TabHandle tab_handle,
+      const mojom::GetTabContextOptions& options,
+      base::OnceCallback<void(mojom::GetContextResultPtr)> callback);
+
   // True if the immutable attributes of `browser` are valid for Glic focus.
   // or pinning. Invalid browsers are never observed.
   bool IsBrowserValidForSharing(

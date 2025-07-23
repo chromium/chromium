@@ -252,6 +252,8 @@ struct WebClientInitialState {
   bool enable_maybe_refresh_user_status;
   // Whether multi tab is enabled.
   bool enable_multi_tab;
+  // Whether get context for actor from tab is enabled.
+  bool enable_get_context_actor;
   // The list of capabilities of the host.
   array<HostCapability> host_capabilities;
 };
@@ -495,6 +497,12 @@ interface WebClientHandler {
   // before data is collected.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   GetContextFromTab(int32 tab_id, GetTabContextOptions options)
+      => (GetContextResult result);
+
+  // Returns the context from the tab associated with `tab_id` for an actor.
+  // This skips the focus check.
+  [RuntimeFeature=glic.mojom.features.kGlicActorTabContext]
+  GetContextForActorFromTab(int32 tab_id, GetTabContextOptions options)
       => (GetContextResult result);
 
   // Sets the maximum number of supported pinned tabs. Negative means that the

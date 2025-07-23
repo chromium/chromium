@@ -181,6 +181,12 @@ export declare interface GlicBrowserHost {
       (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
 
   /**
+   * Similar to `getContextFromTab`, but for actors. Skips the focus check.
+   */
+  getContextForActorFromTab?
+      (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
+
+  /**
    * Sets the maximum number of supported pinned tabs. Should not be called
    * more than once. Chrome may not be able to support the given number, so
    * the applied limit is returned.
