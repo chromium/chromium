@@ -7,13 +7,15 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "ui/events/android/motion_event_android_source.h"
+#include "ui/events/events_export.h"
 
 namespace ui {
 
 // MotionEventAndroidSource implementation for Java-backed MotionEvents.
-class MotionEventAndroidSourceJava : public MotionEventAndroidSource {
+class EVENTS_EXPORT MotionEventAndroidSourceJava
+    : public MotionEventAndroidSource {
  public:
-  explicit MotionEventAndroidSourceJava(
+  static std::unique_ptr<MotionEventAndroidSource> Create(
       const base::android::JavaRef<jobject>& event,
       bool is_latest_event_time_resampled);
 
@@ -48,6 +50,10 @@ class MotionEventAndroidSourceJava : public MotionEventAndroidSource {
   std::unique_ptr<MotionEventAndroidSource> Clone() const override;
 
  private:
+  explicit MotionEventAndroidSourceJava(
+      const base::android::JavaRef<jobject>& event,
+      bool is_latest_event_time_resampled);
+
   base::android::ScopedJavaGlobalRef<jobject> event_;
   const bool is_latest_event_time_resampled_;
 };

@@ -5,6 +5,7 @@
 #include "ui/events/android/motion_event_android_source_java.h"
 
 #include "base/android/jni_android.h"
+#include "base/memory/ptr_util.h"
 #include "ui/events/android/events_android_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -14,6 +15,14 @@ using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 
 namespace ui {
+
+// static
+std::unique_ptr<MotionEventAndroidSource> MotionEventAndroidSourceJava::Create(
+    const base::android::JavaRef<jobject>& event,
+    bool is_latest_event_time_resampled) {
+  return base::WrapUnique(
+      new MotionEventAndroidSourceJava(event, is_latest_event_time_resampled));
+}
 
 MotionEventAndroidSourceJava::MotionEventAndroidSourceJava(
     const base::android::JavaRef<jobject>& event,
@@ -123,8 +132,7 @@ int MotionEventAndroidSourceJava::GetMetaState() const {
 
 std::unique_ptr<MotionEventAndroidSource> MotionEventAndroidSourceJava::Clone()
     const {
-  return std::make_unique<MotionEventAndroidSourceJava>(
-      event_, is_latest_event_time_resampled_);
+  return Create(event_, is_latest_event_time_resampled_);
 }
 
 }  // namespace ui

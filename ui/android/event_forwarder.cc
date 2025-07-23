@@ -17,6 +17,7 @@
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/android/motion_event_android_source_java.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/EventForwarder_jni.h"
@@ -64,6 +65,9 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       jint android_gesture_classification,
                                       jboolean for_touch_handle,
                                       jboolean is_latest_event_resampled) {
+  std::unique_ptr<MotionEventAndroidSource> source =
+      MotionEventAndroidSourceJava::Create(motion_event,
+                                           is_latest_event_resampled);
   jint pointer_count =
       JNI_MotionEvent::Java_MotionEvent_getPointerCount(env, motion_event);
   jint history_size =
@@ -80,10 +84,8 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
         if (oldest_event_time_ns != latest_event_time_ns) {
           forwarder->set_oldest_time_ns(oldest_event_time_ns);
         }
-        jfloat pos_x_0 =
-            JNI_MotionEvent::Java_MotionEvent_getX(env, motion_event);
-        jfloat pos_y_0 =
-            JNI_MotionEvent::Java_MotionEvent_getY(env, motion_event);
+        jfloat pos_x_0 = source->GetXPix(0);
+        jfloat pos_y_0 = source->GetYPix(0);
         forwarder->set_x_pixel(pos_x_0);
         forwarder->set_y_pixel(pos_y_0);
         // Only record if there was movement for Action::Move (we'll update the
@@ -104,47 +106,29 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                 perfetto::protos::pbzero::EventForwarder::AMotionEventAction>(
                 android_action));
       });
-  jfloat pos_x_0 = JNI_MotionEvent::Java_MotionEvent_getX(env, motion_event);
-  jfloat pos_y_0 = JNI_MotionEvent::Java_MotionEvent_getY(env, motion_event);
+  jfloat pos_x_0 = source->GetXPix(0);
+  jfloat pos_y_0 = source->GetYPix(0);
   last_x_pos_ = pos_x_0;
   last_y_pos_ = pos_y_0;
 
   MotionEventAndroid::Pointer pointer0(
-      /*id=*/JNI_MotionEvent::Java_MotionEvent_getPointerId(env, motion_event,
-                                                            0),
+      source->GetPointerId(0),
       /*pos_x_pixels=*/pos_x_0,
       /*pos_y_pixels=*/pos_y_0,
       /*touch_major_pixels=*/touch_major_0,
-      /*touch_minor_pixels=*/touch_minor_0,
-      /*pressure=*/
-      JNI_MotionEvent::Java_MotionEvent_getPressure(env, motion_event, 0),
-      /*orientation_rad=*/
-      JNI_MotionEvent::Java_MotionEvent_getOrientation(env, motion_event, 0),
-      /*tilt_rad=*/
-      JNI_MotionEvent::Java_MotionEvent_getAxisValue(
-          env, motion_event, JNI_MotionEvent::AXIS_TILT, 0),
-      /*tool_type=*/
-      JNI_MotionEvent::Java_MotionEvent_getToolType(env, motion_event, 0));
+      /*touch_minor_pixels=*/touch_minor_0, source->GetPressure(0),
+      source->GetRawOrientation(0), source->GetRawTilt(0),
+      MotionEventAndroid::GetAndroidToolType(source->GetToolType(0)));
   std::unique_ptr<MotionEventAndroid::Pointer> pointer1;
   if (pointer_count > 1) {
     pointer1 = std::make_unique<MotionEventAndroid::Pointer>(
-        /*id=*/JNI_MotionEvent::Java_MotionEvent_getPointerId(env, motion_event,
-                                                              1),
-        /*pos_x_pixels=*/
-        JNI_MotionEvent::Java_MotionEvent_getX(env, motion_event, 1),
-        /*pos_y_pixels=*/
-        JNI_MotionEvent::Java_MotionEvent_getY(env, motion_event, 1),
+        source->GetPointerId(1),
+        /*pos_x_pixels=*/source->GetXPix(1),
+        /*pos_y_pixels=*/source->GetYPix(1),
         /*touch_major_pixels=*/touch_major_1,
-        /*touch_minor_pixels=*/touch_minor_1,
-        /*pressure=*/
-        JNI_MotionEvent::Java_MotionEvent_getPressure(env, motion_event, 1),
-        /*orientation_rad=*/
-        JNI_MotionEvent::Java_MotionEvent_getOrientation(env, motion_event, 1),
-        /*tilt_rad=*/
-        JNI_MotionEvent::Java_MotionEvent_getAxisValue(
-            env, motion_event, JNI_MotionEvent::AXIS_TILT, 1),
-        /*tool_type=*/
-        JNI_MotionEvent::Java_MotionEvent_getToolType(env, motion_event, 1));
+        /*touch_minor_pixels=*/touch_minor_1, source->GetPressure(1),
+        source->GetRawOrientation(1), source->GetRawTilt(1),
+        MotionEventAndroid::GetAndroidToolType(source->GetToolType(1)));
   }
   // Java |MotionEvent.getDownTime| returns the value in milliseconds, use
   // base::TimeTicks::FromUptimeMillis to get base::TimeTicks for this
@@ -191,24 +175,19 @@ void EventForwarder::OnMouseEvent(
     jint android_action,
     jint android_action_button,
     jint android_tool_type) {
+  std::unique_ptr<MotionEventAndroidSource> source =
+      MotionEventAndroidSourceJava::Create(
+          motion_event, /*is_latest_event_time_resampled=*/false);
   // Construct a motion_event object minimally, only to convert the raw
   // parameters to ui::MotionEvent values. Since we used only the cached values
   // at index=0, it is okay to even pass a null event to the constructor.
   ui::MotionEventAndroid::Pointer pointer(
-      /*id=*/JNI_MotionEvent::Java_MotionEvent_getPointerId(env, motion_event,
-                                                            0),
-      /*pos_x_pixels=*/
-      JNI_MotionEvent::Java_MotionEvent_getX(env, motion_event),
-      /*pos_y_pixels=*/
-      JNI_MotionEvent::Java_MotionEvent_getY(env, motion_event),
+      source->GetPointerId(0),
+      /*pos_x_pixels=*/source->GetXPix(0),
+      /*pos_y_pixels=*/source->GetYPix(0),
       /*touch_major_pixels=*/0.0f, /*touch_minor_pixels=*/0.0f,
-      /*pressure=*/
-      JNI_MotionEvent::Java_MotionEvent_getPressure(env, motion_event, 0),
-      /*orientation_rad=*/
-      JNI_MotionEvent::Java_MotionEvent_getOrientation(env, motion_event, 0),
-      /*tilt_rad=*/
-      JNI_MotionEvent::Java_MotionEvent_getAxisValue(
-          env, motion_event, JNI_MotionEvent::AXIS_TILT, 0),
+      source->GetPressure(0), source->GetRawOrientation(0),
+      source->GetRawTilt(0),
       /*tool_type=*/android_tool_type);
   auto event = ui::MotionEventAndroidFactory::CreateFromJava(
       env, /*event=*/motion_event,

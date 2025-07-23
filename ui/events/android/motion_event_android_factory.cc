@@ -69,7 +69,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromJava(
     const MotionEventAndroid::Pointer* const pointer0,
     const MotionEventAndroid::Pointer* const pointer1,
     bool is_latest_event_time_resampled) {
-  auto source = std::make_unique<MotionEventAndroidSourceJava>(
+  auto source = MotionEventAndroidSourceJava::Create(
       event, is_latest_event_time_resampled);
   int meta_state = source->GetMetaState();
   return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroidJava(
