@@ -70,7 +70,6 @@ const CGFloat kSeparatorHeight = 0.5;
 @implementation MagicStackModuleContainer {
   UILabel* _title;
   UILabel* _subtitle;
-  BOOL _isPlaceholder;
   UIButton* _seeMoreButton;
   UIButton* _notificationsOptInButton;
   UIView* _contentView;
@@ -275,7 +274,6 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (void)configureWithConfig:(MagicStackModule*)config {
-  [self resetView];
   // Ensures that the modules conforms to the dynamic MS height. For
   // the MVT when it lives outside of the Magic Stack to stay as close to its
   // intrinsic size as possible, the constraint is configured to be less than
@@ -291,7 +289,6 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 
   if (config.type == ContentSuggestionsModuleType::kPlaceholder) {
-    _isPlaceholder = YES;
     _placeholderImage = [[UIImageView alloc]
         initWithImage:[UIImage imageNamed:@"magic_stack_placeholder_module"]];
     _placeholderImage.translatesAutoresizingMaskIntoConstraints = NO;
@@ -301,6 +298,7 @@ const CGFloat kSeparatorHeight = 0.5;
     _separator.hidden = YES;
     return;
   }
+
   _type = config.type;
   [[self contextMenuInteractionHandler] configureWithType:_type config:config];
 
@@ -329,11 +327,11 @@ const CGFloat kSeparatorHeight = 0.5;
     _subtitle.text = subtitle;
     _subtitle.accessibilityIdentifier = subtitle;
     _subtitle.hidden = NO;
+  } else {
+    _subtitle.text = nil;
   }
 
-  if ([_title.text length] == 0) {
-    _titleStackView.hidden = YES;
-  }
+  _titleStackView.hidden = [_title.text length] == 0;
 
   _separator.hidden = ![self shouldShowSeparator];
 
@@ -365,18 +363,11 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (void)resetView {
-  _title.text = nil;
-  _titleStackView.hidden = NO;
-  _subtitle.text = nil;
-  _isPlaceholder = NO;
-  if (_placeholderImage) {
     [_placeholderImage removeFromSuperview];
     _placeholderImage = nil;
-  }
-  if (_contentView) {
     [_contentView removeFromSuperview];
     _contentView = nil;
-  }
+    _contextMenuInteractionHandler = nil;
 }
 
 - (MagicStackContextMenuInteractionHandler*)contextMenuInteractionHandler {

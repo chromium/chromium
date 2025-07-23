@@ -49,6 +49,9 @@ const float kCornerRadius = 24;
 }
 
 - (void)configureWithConfig:(MagicStackModule*)config {
+  if (_type == config.type) {
+    return;
+  }
   _type = config.type;
   [_moduleContainer configureWithConfig:config];
   if (!_contextMenuInteraction) {
@@ -69,7 +72,9 @@ const float kCornerRadius = 24;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
+  _type = ContentSuggestionsModuleType::kInvalid;
   if (_contextMenuInteraction) {
+    [_contextMenuInteraction dismissMenu];
     [self removeInteraction:_contextMenuInteraction];
     _contextMenuInteraction = nil;
   }
