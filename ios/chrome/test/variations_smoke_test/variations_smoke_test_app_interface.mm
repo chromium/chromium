@@ -4,9 +4,12 @@
 
 #import "ios/chrome/test/variations_smoke_test/variations_smoke_test_app_interface.h"
 
+#import <string>
 #import <sys/sysctl.h>
 
+#import "base/base64.h"
 #import "base/process/process.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
@@ -55,6 +58,22 @@ base::Time GetProcessStartTime() {
 
 + (void)localStatePrefsCommitPendingWrite {
   GetApplicationContext()->GetLocalState()->CommitPendingWrite();
+}
+
++ (void)storeSeed:(NSString*)seed_data andSignature:(NSString*)signature {
+  std::string string_seed = base::SysNSStringToUTF8(seed_data);
+  std::string string_signature = base::SysNSStringToUTF8(signature);
+  std::string decoded_seed;
+  base::Base64Decode(string_seed, &decoded_seed);
+  GetApplicationContext()
+      ->GetVariationsService()
+      ->GetSeedStoreForTesting()
+      ->GetSeedReaderWriterForTesting()
+      ->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
+          .compressed_seed_data = decoded_seed,
+          .base64_seed_data = string_seed,
+          .signature = string_signature,
+      });
 }
 
 @end

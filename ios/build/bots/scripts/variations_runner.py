@@ -30,6 +30,23 @@ _LOCAL_STATE_VARIATIONS_LAST_FETCH_TIME_KEY = 'variations_last_fetch_time'
 # Test argument to make EG2 test verify the fetch happens in current app launch.
 _VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG = '--verify-fetched-in-current-launch'
 LOGGER = logging.getLogger(__name__)
+# Test arguments to make EG2 test load the seed instead of fetching a new one.
+_SEED_ARG = '--seed={}'
+_SIGNATURE_ARG = '--signature={}'
+
+
+class SeedData:
+  """Class to store the Seed Data for the tests."""
+
+  def __init__(self, seed, signature):
+    self.seed = seed
+    self.signature = signature
+
+  def as_test_arguments(self):
+    return [
+      _SEED_ARG.format(self.seed),
+      _SIGNATURE_ARG.format(self.signature),
+    ]
 
 
 class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
@@ -77,21 +94,33 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     LOGGER.info('Reset last fetch time to %s in Local State.' %
                 win_one_day_before_microseconds)
 
-  def _launch_app_once(self, out_sub_dir, verify_fetched_within_launch=False):
+  def _launch_app_once(self,
+                       out_sub_dir,
+                       verify_fetched_within_launch=False,
+                       seed_data=None):
     """Launches app once.
 
     Args:
       out_sub_dir: (str) Sub dir under |self.out_dir| for this attempt output.
       verify_fetched_within_launch: (bool) Whether to verify that the fetch
         would happens in current launch.
+      seed_data: None or SeedData instance to pass as args to the test.
 
     Returns:
       (test_result_util.ResultCollection): Raw EG test result of the launch.
     """
     launch_out_dir = os.path.join(self.out_dir, out_sub_dir)
 
+    # Args that will be passed to the test and cleared after its execution.
+    current_launch_args = []
+
     if verify_fetched_within_launch:
-      self.test_app.test_args.append(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)
+      current_launch_args.append(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)
+
+    if seed_data:
+      current_launch_args.extend(seed_data.as_test_arguments())
+
+    self.test_app.test_args.extend(current_launch_args)
 
     cmd = self.test_app.command(launch_out_dir, 'id=%s' % self.udid, 1)
     proc = subprocess.Popen(
@@ -102,8 +131,11 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     )
     output = test_runner.print_process_output(proc, self.readline_timeout)
 
-    if _VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG in self.test_app.test_args:
-      self.test_app.test_args.remove(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)
+    # Clear the current launch args for future launches
+    for arg in current_launch_args:
+      if arg in self.test_app.test_args:
+        self.test_app.test_args.remove(arg)
+
     return XcodeLogParser.collect_test_results(launch_out_dir, output)
 
   def _launch_variations_smoke_test(self):
@@ -128,23 +160,21 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
       LOGGER.error(log)
       return False, log
 
-    # Inject the test seed.
-    # |seed_helper.load_test_seed_from_file()| tries to find a seed file under
-    # src root first. If it doesn't exist, it will fallback to the one in
-    # |self.variations_seed_path|.
     seed, signature = seed_helper.load_test_seed_from_file(
         self.variations_seed_path)
-    if not seed or not signature:
-      return False, seed_helper.ILL_FORMED_TEST_SEED_ERROR_MESSAGE
-    if not seed_helper.inject_test_seed(seed, signature, self._user_data_dir()):
-      log = 'Failed to inject test seed.'
+
+    # Launch app with seed path.
+    injected_launch_result = self._launch_app_once(
+        'injected_launch', seed_data=SeedData(seed, signature))
+    if not injected_launch_result.passed_tests():
+      log = 'Test failure at app launch after the seed is injected.'
       LOGGER.error(log)
       return False, log
 
-    # Launch app with injected seed.
-    injected_launch_result = self._launch_app_once('injected_launch')
-    if not injected_launch_result.passed_tests():
-      log = 'Test failure at app launch after the seed is injected.'
+    current_seed, current_signature = seed_helper.get_current_seed(
+        self._user_data_dir())
+    if current_seed != seed or current_signature != signature:
+      log = 'Failed to update seed with seed from file.'
       LOGGER.error(log)
       return False, log
 
@@ -169,7 +199,7 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     current_seed, current_signature = seed_helper.get_current_seed(
         self._user_data_dir())
     if current_seed == seed or current_signature == signature:
-      log = 'Failed to update seed with a delta'
+      log = 'Failed to update seed with a delta.'
       LOGGER.error(log)
       return False, log
 
@@ -180,7 +210,8 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     success, log = self._launch_variations_smoke_test()
 
     test_status = TestStatus.PASS if success else TestStatus.FAIL
-    # Report a single test named |Variations.SmokeTest| as part of runner output.
+    # Report a single test named |Variations.SmokeTest| as part of runner
+    # output.
     overall_result = ResultCollection(test_results=[
         TestResult('Variations.SmokeTest', test_status, test_log=log)
     ])

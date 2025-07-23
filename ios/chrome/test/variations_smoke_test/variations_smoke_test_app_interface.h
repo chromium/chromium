@@ -20,6 +20,10 @@
 // Lands pending writes of Local State Prefs to disk.
 + (void)localStatePrefsCommitPendingWrite;
 
+// Stores the seed and signature using the SeedReaderWriter.
++ (void)storeSeed:(NSString*)seed_data
+     andSignature:(NSString*)signature;
+
 @end
 
 #endif  // IOS_CHROME_TEST_VARIATIONS_SMOKE_TEST_VARIATIONS_SMOKE_TEST_APP_INTERFACE_H_
