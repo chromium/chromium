@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/extensions/api/chrome_extensions_renderer_api_provider.h"
 
+#include <string_view>
+
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/notifications_native_handler.h"
@@ -115,7 +117,7 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
     ResourceBundleSourceMap* source_map) const {
   struct RegisterSourceData {
-    const char* name;
+    std::string_view name;
     int resource_id;
   };
 

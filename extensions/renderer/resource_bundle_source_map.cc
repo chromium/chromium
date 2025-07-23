@@ -47,7 +47,7 @@ ResourceBundleSourceMap::ResourceBundleSourceMap(
 ResourceBundleSourceMap::~ResourceBundleSourceMap() {
 }
 
-void ResourceBundleSourceMap::RegisterSource(const char* const name,
+void ResourceBundleSourceMap::RegisterSource(std::string_view name,
                                              int resource_id) {
   base::AutoLock lock(lock_);
   resource_map_.emplace(name, resource_id);
