@@ -4583,10 +4583,10 @@ const FeatureEntry::FeatureVariation
         {"(retroactive)", kInvalidateChoiceOnRestoreIsRetroactiveOption,
          std::size(kInvalidateChoiceOnRestoreIsRetroactiveOption), nullptr}};
 
-const FeatureEntry::FeatureVariation
-    kAISummarizationAPIWithAdaptationVaration[] = {
-        {"With Adaptation", nullptr, 0, "3389300"},
-        {"With EE Adaptation", nullptr, 0, "3389532"},
+const FeatureEntry::FeatureParam kAILangsParam[] = {{"langs", "*"}};
+
+const FeatureEntry::FeatureVariation kAILangsVariation[] = {
+    {"Multilingual", kAILangsParam, std::size(kAILangsParam), nullptr},
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -11156,7 +11156,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPromptAPIForGeminiNanoName,
      flag_descriptions::kPromptAPIForGeminiNanoDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(blink::features::kAIPromptAPI),
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAIPromptAPI,
+                                    kAILangsVariation,
+                                    "kAIPromptAPI"),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"prompt-api-for-gemini-nano-multimodal-input",
@@ -11171,8 +11173,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSummarizationAPIForGeminiNanoDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAISummarizationAPI,
-                                    kAISummarizationAPIWithAdaptationVaration,
-                                    "AISummarizationAPIWithAdaptation"),
+                                    kAILangsVariation,
+                                    "kAISummarizationAPI"),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"writer-api-for-gemini-nano",
