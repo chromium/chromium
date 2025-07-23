@@ -69,6 +69,7 @@ export interface PageElementTypes {
   createTabInBackground: HTMLInputElement;
   canAttachCheckbox: HTMLInputElement;
   scrollToDocumentId: HTMLSpanElement;
+  scrollToURL: HTMLSpanElement;
   scrollToExactText: HTMLInputElement;
   scrollToExactTextSearchStart: HTMLSelectElement;
   scrollToFetchAPCBn: HTMLButtonElement;

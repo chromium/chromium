@@ -612,8 +612,10 @@ BASE_FEATURE(kGlicDebugWebview,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
-// Controls whether we enforce that documentId (a currently optional parameter)
-// is set (and fail the request if it's not).
+
+// Controls whether we enforce that documentId (an optional parameter) is set
+// when trying to scroll all documents except PDFs (and fail the request if
+// it's not set).
 const base::FeatureParam<bool> kGlicScrollToEnforceDocumentId{
     &kGlicScrollTo, "glic-scroll-to-enforce-document-id", false};
 // Expand the scrollTo capability to PDF documents.
