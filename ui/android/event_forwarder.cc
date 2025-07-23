@@ -56,35 +56,18 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       const JavaParamRef<jobject>& motion_event,
                                       jlong oldest_event_time_ns,
                                       jlong latest_event_time_ns,
-                                      jlong down_time_ms,
                                       jint android_action,
-                                      jint pointer_count,
-                                      jint history_size,
-                                      jint action_index,
-                                      jfloat pos_x_0,
-                                      jfloat pos_y_0,
-                                      jfloat pos_x_1,
-                                      jfloat pos_y_1,
-                                      jint pointer_id_0,
-                                      jint pointer_id_1,
                                       jfloat touch_major_0,
                                       jfloat touch_major_1,
                                       jfloat touch_minor_0,
                                       jfloat touch_minor_1,
-                                      jfloat pressure_0,
-                                      jfloat pressure_1,
-                                      jfloat orientation_0,
-                                      jfloat orientation_1,
-                                      jfloat tilt_0,
-                                      jfloat tilt_1,
-                                      jfloat raw_pos_x,
-                                      jfloat raw_pos_y,
-                                      jint android_tool_type_0,
-                                      jint android_tool_type_1,
                                       jint android_gesture_classification,
-                                      jint android_button_state,
                                       jboolean for_touch_handle,
                                       jboolean is_latest_event_resampled) {
+  jint pointer_count =
+      JNI_MotionEvent::Java_MotionEvent_getPointerCount(env, motion_event);
+  jint history_size =
+      JNI_MotionEvent::Java_MotionEvent_getHistorySize(env, motion_event);
   TRACE_EVENT(
       "input", "EventForwarder::OnTouchEvent", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -97,6 +80,10 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
         if (oldest_event_time_ns != latest_event_time_ns) {
           forwarder->set_oldest_time_ns(oldest_event_time_ns);
         }
+        jfloat pos_x_0 =
+            JNI_MotionEvent::Java_MotionEvent_getX(env, motion_event);
+        jfloat pos_y_0 =
+            JNI_MotionEvent::Java_MotionEvent_getY(env, motion_event);
         forwarder->set_x_pixel(pos_x_0);
         forwarder->set_y_pixel(pos_y_0);
         // Only record if there was movement for Action::Move (we'll update the
@@ -108,6 +95,8 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
           forwarder->set_has_y_movement(
               !base::IsApproximatelyEqual(pos_y_0, last_y_pos_, kEpsilon));
         }
+        jlong down_time_ms =
+            JNI_MotionEvent::Java_MotionEvent_getDownTime(env, motion_event);
         forwarder->set_down_time_ns(down_time_ms *
                                     base::Time::kNanosecondsPerMillisecond);
         forwarder->set_action(
@@ -115,28 +104,53 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                 perfetto::protos::pbzero::EventForwarder::AMotionEventAction>(
                 android_action));
       });
+  jfloat pos_x_0 = JNI_MotionEvent::Java_MotionEvent_getX(env, motion_event);
+  jfloat pos_y_0 = JNI_MotionEvent::Java_MotionEvent_getY(env, motion_event);
   last_x_pos_ = pos_x_0;
   last_y_pos_ = pos_y_0;
 
   MotionEventAndroid::Pointer pointer0(
-      /*id=*/pointer_id_0, /*pos_x_pixels=*/pos_x_0, /*pos_y_pixels=*/pos_y_0,
+      /*id=*/JNI_MotionEvent::Java_MotionEvent_getPointerId(env, motion_event,
+                                                            0),
+      /*pos_x_pixels=*/pos_x_0,
+      /*pos_y_pixels=*/pos_y_0,
       /*touch_major_pixels=*/touch_major_0,
-      /*touch_minor_pixels=*/touch_minor_0, /*pressure=*/pressure_0,
-      /*orientation_rad=*/orientation_0, /*tilt_rad=*/tilt_0,
-      /*tool_type=*/android_tool_type_0);
+      /*touch_minor_pixels=*/touch_minor_0,
+      /*pressure=*/
+      JNI_MotionEvent::Java_MotionEvent_getPressure(env, motion_event, 0),
+      /*orientation_rad=*/
+      JNI_MotionEvent::Java_MotionEvent_getOrientation(env, motion_event, 0),
+      /*tilt_rad=*/
+      JNI_MotionEvent::Java_MotionEvent_getAxisValue(
+          env, motion_event, JNI_MotionEvent::AXIS_TILT, 0),
+      /*tool_type=*/
+      JNI_MotionEvent::Java_MotionEvent_getToolType(env, motion_event, 0));
   std::unique_ptr<MotionEventAndroid::Pointer> pointer1;
   if (pointer_count > 1) {
     pointer1 = std::make_unique<MotionEventAndroid::Pointer>(
-        /*id=*/pointer_id_1, /*pos_x_pixels=*/pos_x_1, /*pos_y_pixels=*/pos_y_1,
+        /*id=*/JNI_MotionEvent::Java_MotionEvent_getPointerId(env, motion_event,
+                                                              1),
+        /*pos_x_pixels=*/
+        JNI_MotionEvent::Java_MotionEvent_getX(env, motion_event, 1),
+        /*pos_y_pixels=*/
+        JNI_MotionEvent::Java_MotionEvent_getY(env, motion_event, 1),
         /*touch_major_pixels=*/touch_major_1,
         /*touch_minor_pixels=*/touch_minor_1,
-        /*pressure=*/pressure_1, /*orientation_rad=*/orientation_1,
-        /*tilt_rad=*/tilt_1, /*tool_type=*/android_tool_type_1);
+        /*pressure=*/
+        JNI_MotionEvent::Java_MotionEvent_getPressure(env, motion_event, 1),
+        /*orientation_rad=*/
+        JNI_MotionEvent::Java_MotionEvent_getOrientation(env, motion_event, 1),
+        /*tilt_rad=*/
+        JNI_MotionEvent::Java_MotionEvent_getAxisValue(
+            env, motion_event, JNI_MotionEvent::AXIS_TILT, 1),
+        /*tool_type=*/
+        JNI_MotionEvent::Java_MotionEvent_getToolType(env, motion_event, 1));
   }
   // Java |MotionEvent.getDownTime| returns the value in milliseconds, use
   // base::TimeTicks::FromUptimeMillis to get base::TimeTicks for this
   // milliseconds timestamp.
-  base::TimeTicks down_time = base::TimeTicks::FromUptimeMillis(down_time_ms);
+  base::TimeTicks down_time = base::TimeTicks::FromUptimeMillis(
+      JNI_MotionEvent::Java_MotionEvent_getDownTime(env, motion_event));
   auto event = ui::MotionEventAndroidFactory::CreateFromJava(
       env, /*event=*/motion_event,
       /*pix_to_dip=*/1.f / view_->GetDipScale(),
@@ -145,12 +159,15 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
       /*tick_multiplier=*/0.f,
       base::TimeTicks::FromJavaNanoTime(oldest_event_time_ns),
       base::TimeTicks::FromJavaNanoTime(latest_event_time_ns), down_time,
-      android_action, pointer_count, history_size, action_index,
+      android_action, pointer_count, history_size,
+      JNI_MotionEvent::Java_MotionEvent_getActionIndex(env, motion_event),
       /*android_action_button=*/0, android_gesture_classification,
-      android_button_state,
-      /*raw_offset_x_pixels=*/raw_pos_x - pos_x_0,
-      /*raw_offset_y_pixels=*/raw_pos_y - pos_y_0, for_touch_handle, &pointer0,
-      pointer1.get(), is_latest_event_resampled);
+      JNI_MotionEvent::Java_MotionEvent_getButtonState(env, motion_event),
+      /*raw_offset_x_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawX(env, motion_event) - pos_x_0,
+      /*raw_offset_y_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawY(env, motion_event) - pos_y_0,
+      for_touch_handle, &pointer0, pointer1.get(), is_latest_event_resampled);
 
   if (send_touch_moves_to_observers ||
       android_action !=

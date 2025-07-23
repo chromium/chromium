@@ -289,9 +289,6 @@ public class EventForwarder {
                 }
             }
 
-            float secondPointerX = pointerCount > 1 ? event.getX(1) : 0;
-            float secondPointerY = pointerCount > 1 ? event.getY(1) : 0;
-
             int gestureClassification = 0;
             if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                 gestureClassification = event.getClassification();
@@ -304,37 +301,12 @@ public class EventForwarder {
                                     event,
                                     oldestEventTime,
                                     latestEventTime,
-                                    event.getDownTime(),
                                     eventAction,
-                                    pointerCount,
-                                    historySize,
-                                    event.getActionIndex(),
-                                    event.getX(),
-                                    event.getY(),
-                                    secondPointerX,
-                                    secondPointerY,
-                                    event.getPointerId(0),
-                                    pointerCount > 1 ? event.getPointerId(1) : -1,
                                     touchMajor[0],
                                     touchMajor[1],
                                     touchMinor[0],
                                     touchMinor[1],
-                                    event.getPressure(0),
-                                    pointerCount > 1 ? event.getPressure(1) : 0,
-                                    event.getOrientation(),
-                                    pointerCount > 1 ? event.getOrientation(1) : 0,
-                                    event.getAxisValue(MotionEvent.AXIS_TILT),
-                                    pointerCount > 1
-                                            ? event.getAxisValue(MotionEvent.AXIS_TILT, 1)
-                                            : 0,
-                                    event.getRawX(),
-                                    event.getRawY(),
-                                    event.getToolType(0),
-                                    pointerCount > 1
-                                            ? event.getToolType(1)
-                                            : MotionEvent.TOOL_TYPE_UNKNOWN,
                                     gestureClassification,
-                                    event.getButtonState(),
                                     isTouchHandleEvent,
                                     isLatestEventTimeResampled);
 
@@ -837,33 +809,12 @@ public class EventForwarder {
                 MotionEvent event,
                 long oldestEventTimeNs,
                 long latestEventTimeNs,
-                long downTimeMs,
                 int action,
-                int pointerCount,
-                int historySize,
-                int actionIndex,
-                float x0,
-                float y0,
-                float x1,
-                float y1,
-                int pointerId0,
-                int pointerId1,
                 float touchMajor0,
                 float touchMajor1,
                 float touchMinor0,
                 float touchMinor1,
-                float pressure0,
-                float pressure1,
-                float orientation0,
-                float orientation1,
-                float tilt0,
-                float tilt1,
-                float rawX,
-                float rawY,
-                int androidToolType0,
-                int androidToolType1,
                 int gestureClassification,
-                int androidButtonState,
                 boolean isTouchHandleEvent,
                 boolean isLatestEventTimeResampled);
 
