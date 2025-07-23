@@ -219,7 +219,6 @@ const CGFloat kResizeFactor = 4;
   [card setHidden:NO];
 
   web::WebState* webState = _webStateList->GetWebStateAt(index);
-  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   PrefService* prefs =
       ProfileIOS::FromBrowserState(webState->GetBrowserState())->GetPrefs();
   // Lens overlay displays content fullscreen and hides the vertical toolbars.
@@ -242,7 +241,7 @@ const CGFloat kResizeFactor = 4;
         [self enableFullscreenCard:card];
         [self colorSnapshotRetrieved:lensOverlaySnapshot
                                 card:card
-                        weakWebState:weakWebState];
+                            webState:webState];
         return;
       }
     }
@@ -258,10 +257,13 @@ const CGFloat kResizeFactor = 4;
   [card setBottomToolbarImage:bottomToolbarSnapshot];
 
   __weak CardSideSwipeView* weakSelf = self;
-  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(^(
-      UIImage* image) {
-    [weakSelf colorSnapshotRetrieved:image card:card weakWebState:weakWebState];
-  });
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+      ^(UIImage* image) {
+        [weakSelf colorSnapshotRetrieved:image
+                                    card:card
+                                webState:weakWebState.get()];
+      });
 }
 
 // Helper method that turns a card fullscreen by removing the vertical margins
@@ -278,10 +280,9 @@ const CGFloat kResizeFactor = 4;
 // and thus for `webStateGetter` to return nullptr.
 - (void)colorSnapshotRetrieved:(UIImage*)image
                           card:(SwipeView*)card
-                  weakWebState:(base::WeakPtr<web::WebState>)weakWebState {
-  // If the WebState has been destroyed, the card will be dropped, so
-  // the image can be dropped.
-  web::WebState* webState = weakWebState.get();
+                      webState:(web::WebState*)webState {
+  // This method may be called with a null WebState (as it is called
+  // asynchronously). Return immediately if this is the case.
   if (!webState) {
     return;
   }
