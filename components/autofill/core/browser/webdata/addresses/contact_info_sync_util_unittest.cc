@@ -77,8 +77,12 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"California",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043-4567",
                                            VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_PREFIX, u"94043",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_SUFFIX, u"4567",
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
       u"123 Fake St. Premise Marcos y Oliva\n"
@@ -379,8 +383,12 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_state(), "California",
            ContactInfoSpecifics::OBSERVED);
-  SetToken(specifics.mutable_address_zip(), "94043",
+  SetToken(specifics.mutable_address_zip(), "94043-4567",
            ContactInfoSpecifics::OBSERVED);
+  SetToken(specifics.mutable_address_zip_prefix(), "94043",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_address_zip_suffix(), "4567",
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_country(), "ES",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_street_address(),
@@ -699,7 +707,8 @@ class ContactInfoSyncUtilTest
   ContactInfoSyncUtilTest() {
     features_.InitWithFeatures({features::kAutofillUseINAddressModel,
                                 features::kAutofillSupportPhoneticNameForJP,
-                                features::kAutofillSupportLastNamePrefix},
+                                features::kAutofillSupportLastNamePrefix,
+                                features::kAutofillSupportSplitZipCode},
                                {});
   }
 

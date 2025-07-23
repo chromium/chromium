@@ -235,6 +235,11 @@ message ContactInfoSpecifics {
   // some address forms require the combination of both in a single field as
   // opposed to each one separately.
   optional StringToken address_thoroughfare_number_and_apt = 53;
+  // Prefix of the zip code, e.g., "12345" in "12345-6789".
+  optional StringToken address_zip_prefix = 63;
+  // Part of the zip code, excluding prefix and separator.
+  // For example, "6789" in "12345-6789".
+  optional StringToken address_zip_suffix = 64;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;

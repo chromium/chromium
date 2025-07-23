@@ -93,8 +93,14 @@ AutofillProfile ConstructBaseProfile(
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"California",
                                            VerificationStatus::kObserved);
 
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043-4567",
                                            VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_PREFIX, u"94043",
+                                           VerificationStatus::kParsed);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_SUFFIX, u"4567",
+                                           VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
@@ -447,9 +453,17 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
   specifics.set_address_home_state_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_zip("94043");
+  specifics.set_address_home_zip("94043-4567");
   specifics.set_address_home_zip_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_zip_prefix("94043");
+  specifics.set_address_home_zip_prefix_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_zip_suffix("4567");
+  specifics.set_address_home_zip_suffix_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.set_address_home_country("ES");
   specifics.set_address_home_country_status(
@@ -956,6 +970,7 @@ class AutofillProfileSyncUtilTest
             features::kAutofillUseINAddressModel,
             features::kAutofillSupportPhoneticNameForJP,
             features::kAutofillSupportLastNamePrefix,
+            features::kAutofillSupportSplitZipCode,
         },
         {});
     task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
