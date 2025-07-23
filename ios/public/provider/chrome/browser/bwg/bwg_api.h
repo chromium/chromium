@@ -19,8 +19,26 @@ using BWGEligibilityCallback = void (^)(BOOL eligible);
 
 namespace ios::provider {
 
-// Enum representing the PageContext state of the BWG experience. This needs to
-// stay in sync with GCRGeminiPageState.
+// Enum representing the location permission state of the BWG experience. A full
+// permission grant is gated by first the OS level (for Chrome) location
+// permission and then the user level BWG-specific location permission.
+// This needs to stay in sync with GCRGeminiLocationPermissionState (and its SDK
+// counterpart).
+enum class BWGLocationPermissionState {
+  // Default state.
+  kUnknown,
+  // The location permission is fully granted.
+  kFullyGranted,
+  // The location permission is granted only at the OS level.
+  kBWGDisabled,
+  // The location permission is disabled at both the OS level and BWG level.
+  kBWGAndOSDisabled,
+  // The location permission is disable by an Enterprise policy.
+  kEnterpriseDisabled,
+};
+
+// Enum representing the PageContext state of the BWG experience.
+// This needs to stay in sync with GCRGeminiPageState (and its SDK counterpart).
 enum class BWGPageContextState {
   // Default state.
   kUnknown,
@@ -34,6 +52,10 @@ enum class BWGPageContextState {
   kBlocked,
   // There was an error extracting the PageContext.
   kError,
+  // PageContext should be detached due to an enterprise policy.
+  kEnterpriseDisabled,
+  // PageContext should be detached due to the user disabling it.
+  kUserDisabled,
 };
 
 // Creates request body data using a prompt and page context.
