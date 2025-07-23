@@ -11,11 +11,13 @@
 #import "base/ios/block_types.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/data_type.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 class Browser;
+enum class ChangeProfileReason;
 class ChromeAccountManagerService;
 @class MDCSnackbarMessage;
 class ProfileIOS;
@@ -154,6 +156,12 @@ void LogFullscreenSigninPromoManagerMigrationDone();
 void FetchUnsyncedDataForSignOutOrProfileSwitching(
     syncer::SyncService* sync_service,
     UnsyncedDataForSignoutOrProfileSwitchingCallback callback);
+
+// Post an asynchronous request to switch from a managed profile to the
+// personal profile, running `continuation` when the change completes.
+void SwitchToPersonalProfile(SceneState* scene_state,
+                             ChangeProfileReason reason,
+                             ChangeProfileContinuation continuation);
 
 }  // namespace signin
 

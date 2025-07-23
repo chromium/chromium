@@ -155,21 +155,6 @@ void SwitchToProfile(SceneState* scene_state,
                      weak_scene_state, reason, std::move(continuation)));
 }
 
-// Post an asynchronous request to switch from a managed profile to the
-// personal profile, running `continuation` when the change completes.
-void SwitchToPersonalProfile(SceneState* scene_state,
-                             ChangeProfileReason reason,
-                             ChangeProfileContinuation continuation) {
-  ProfileManagerIOS* profile_manager =
-      GetApplicationContext()->GetProfileManager();
-  std::string personal_profile_name =
-      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
-  CHECK(profile_manager->HasProfileWithName(personal_profile_name));
-
-  SwitchToProfile(scene_state, personal_profile_name, reason,
-                  std::move(continuation));
-}
-
 syncer::DataTypeSet DataCountsMapToDataTypeSet(
     absl::flat_hash_map<syncer::DataType, size_t> type_counts) {
   syncer::DataTypeSet types;
@@ -568,6 +553,21 @@ void FetchUnsyncedDataForSignOutOrProfileSwitching(
   sync_service->GetTypesWithUnsyncedData(
       kDataTypesToQuery,
       base::BindOnce(&DataCountsMapToDataTypeSet).Then(std::move(callback)));
+}
+
+// Post an asynchronous request to switch from a managed profile to the
+// personal profile, running `continuation` when the change completes.
+void SwitchToPersonalProfile(SceneState* scene_state,
+                             ChangeProfileReason reason,
+                             ChangeProfileContinuation continuation) {
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+  std::string personal_profile_name =
+      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+  CHECK(profile_manager->HasProfileWithName(personal_profile_name));
+
+  SwitchToProfile(scene_state, personal_profile_name, reason,
+                  std::move(continuation));
 }
 
 }  // namespace signin

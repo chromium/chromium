@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
@@ -179,6 +180,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -398,6 +400,7 @@ void OnListFamilyMembersResponse(
 // TODO(crbug.com/429354805): Add method comments(!)
 
 @interface SceneController () <AccountMenuCoordinatorDelegate,
+                               AuthenticationServiceObserving,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
@@ -446,6 +449,9 @@ void OnListFamilyMembersResponse(
   // This is used to ensure that the image search is only triggered when the BVC
   // is active.
   NSData* _imageSearchData;
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 // Navigation View controller for the settings.
@@ -873,6 +879,39 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - private
 
+// If sign-in is disabled, switch to the personal profile and sign-out.
+- (void)signoutIfNeeded {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  if (authenticationService->SigninEnabled()) {
+    return;
+  }
+  // If sign-in is disabled, switch to personal profile and sign-out.
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  const std::string& profileName = profile->GetProfileName();
+  BOOL isPersonalProfile = GetApplicationContext()
+                               ->GetProfileManager()
+                               ->GetProfileAttributesStorage()
+                               ->GetPersonalProfileName() == profileName;
+  if (!isPersonalProfile) {
+    auto signoutSource = signin_metrics::ProfileSignout::kPrefChanged;
+    ChangeProfileContinuation continuation =
+        CreateChangeProfileSignoutContinuation(
+            signoutSource, /*force_snackbar_over_toolbar=*/false,
+            /*should_record_metrics=*/false, /*snackbar_message =*/nil,
+            base::DoNothing());
+    signin::SwitchToPersonalProfile(self.sceneState,
+                                    ChangeProfileReason::kManagedAccountSignOut,
+                                    std::move(continuation));
+    return;
+  }
+  if (![self isSignedIn]) {
+    authenticationService->SignOut(signin_metrics::ProfileSignout::kPrefChanged,
+                                   nil);
+  }
+}
+
 - (void)stopAccountMenu {
   [_accountMenuCoordinator stop];
   _accountMenuCoordinator.delegate = nil;
@@ -1177,6 +1216,16 @@ void OnListFamilyMembersResponse(
       [applicationHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher];
     }
+
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(
+            self.sceneState.profileState.profile);
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
+    // The user may be signed-in while sign-in is disabled. In which case,
+    // we must sign the user out, potentially switching profile.
+    [self signoutIfNeeded];
   }
   if (level == SceneActivationLevelBackground) {
     [self recordWindowCreationForSceneState:self.sceneState];
@@ -1492,6 +1541,7 @@ void OnListFamilyMembersResponse(
 
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
+  _authServiceObserverBridge.reset();
   _policyWatcherObserver.reset();
 
   // TODO(crbug.com/40778288): Consider moving this at the beginning of
@@ -4510,6 +4560,12 @@ using UserFeedbackDataCallback =
   CHECK_EQ(coordinator, _safariImportCoordinator);
   [_safariImportCoordinator stop];
   _safariImportCoordinator = nil;
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self signoutIfNeeded];
 }
 
 @end

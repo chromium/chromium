@@ -22,6 +22,7 @@ source_set("signin_headers") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
+    "//ios/chrome/app:change_profile_continuation",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
