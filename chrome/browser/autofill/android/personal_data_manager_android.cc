@@ -840,4 +840,14 @@ static jlong JNI_PersonalDataManager_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(personal_data_manager_android);
 }
 
+jboolean PersonalDataManagerAndroid::IsCardEligibleForBenefits(
+    JNIEnv* env,
+    const std::string& guid) {
+  if (const CreditCard* card =
+          payments_data_manager().GetCreditCardByGUID(guid)) {
+    return payments_data_manager().IsCardEligibleForBenefits(*card);
+  }
+  return false;
+}
+
 }  // namespace autofill

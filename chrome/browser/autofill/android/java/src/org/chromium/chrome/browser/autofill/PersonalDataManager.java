@@ -1065,6 +1065,16 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
+     * @param guid The GUID of the credit card.
+     * @return Whether the card is eligible for benefits, based on its `guid`.
+     */
+    public boolean isCardEligibleForBenefits(String guid) {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get()
+                .isCardEligibleForBenefits(mPersonalDataManagerAndroid, guid);
+    }
+
+    /**
      * Enables or disables the card benefit showing feature.
      *
      * @param enable True to enable showing card benefits, false otherwise.
@@ -1217,5 +1227,8 @@ public class PersonalDataManager implements Destroyable {
         BankAccount[] getMaskedBankAccounts(long nativePersonalDataManagerAndroid);
 
         Ewallet[] getEwallets(long nativePersonalDataManagerAndroid);
+
+        boolean isCardEligibleForBenefits(
+                long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
     }
 }

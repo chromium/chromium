@@ -159,13 +159,15 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         HashSet<Pair<String, String>> issuersAndProductDescriptions = new HashSet<>();
 
         // List the card for product terms redirect if:
-        // 1. The card has a valid product term url.
-        // 2. Same issuer and card product combination is not listed before.
+        // 1. The card is eligible for benefits.
+        // 2. The card has a valid product term url.
+        // 3. Same issuer and card product combination is not listed before.
         for (CreditCard card : mPersonalDataManager.getCreditCardsForSettings()) {
             Pair<String, String> issuerAndProductDescriptionPair =
                     Pair.create(card.getIssuerId(), card.getProductDescription());
 
-            if (issuersAndProductDescriptions.contains(issuerAndProductDescriptionPair)
+            if (!mPersonalDataManager.isCardEligibleForBenefits(card.getGUID())
+                    || issuersAndProductDescriptions.contains(issuerAndProductDescriptionPair)
                     || GURL.isEmptyOrInvalid(card.getProductTermsUrl())) {
                 continue;
             }

@@ -252,6 +252,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jewallet);
 
+  // Returns whether a card with the specified `guid` is eligible for card
+  // benefits.
+  jboolean IsCardEligibleForBenefits(JNIEnv* env, const std::string& guid);
+
  private:
   ~PersonalDataManagerAndroid() override;
 
