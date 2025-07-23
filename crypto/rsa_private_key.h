@@ -21,8 +21,8 @@
 
 namespace crypto {
 
-// Encapsulates an RSA private key. Can be used to generate new keys, export
-// keys to other formats, or to extract a public key.
+// Encapsulates an RSA private key. Can be used to export keys to other formats
+// or to extract a public key.
 // TODO(https://crbug.com/425863216): Delete this.
 class CRYPTO_EXPORT RSAPrivateKey {
  public:
@@ -30,9 +30,6 @@ class CRYPTO_EXPORT RSAPrivateKey {
   RSAPrivateKey& operator=(const RSAPrivateKey&) = delete;
 
   ~RSAPrivateKey();
-
-  // Create a new random instance. Can return NULL if initialization fails.
-  static std::unique_ptr<RSAPrivateKey> Create(uint16_t num_bits);
 
   // Create a new instance by importing an existing private key. The format is
   // an ASN.1-encoded PrivateKeyInfo block from PKCS #8. This can return NULL if

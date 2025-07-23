@@ -26,26 +26,6 @@
 namespace crypto {
 
 // static
-std::unique_ptr<RSAPrivateKey> RSAPrivateKey::Create(uint16_t num_bits) {
-  OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
-  bssl::UniquePtr<RSA> rsa_key(RSA_new());
-  bssl::UniquePtr<BIGNUM> bn(BN_new());
-  if (!rsa_key.get() || !bn.get() || !BN_set_word(bn.get(), 65537L))
-    return nullptr;
-
-  if (!RSA_generate_key_ex(rsa_key.get(), num_bits, bn.get(), nullptr))
-    return nullptr;
-
-  std::unique_ptr<RSAPrivateKey> result(new RSAPrivateKey);
-  result->key_.reset(EVP_PKEY_new());
-  if (!result->key_ || !EVP_PKEY_set1_RSA(result->key_.get(), rsa_key.get()))
-    return nullptr;
-
-  return result;
-}
-
-// static
 std::unique_ptr<RSAPrivateKey> RSAPrivateKey::CreateFromPrivateKeyInfo(
     base::span<const uint8_t> input) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
