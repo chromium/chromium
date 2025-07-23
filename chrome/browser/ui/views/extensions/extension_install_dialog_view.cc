@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_input_protector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -58,6 +59,8 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -465,6 +468,18 @@ void ExtensionInstallDialogView::SetJustificationTextForTesting(
   justification_view_->SetJustificationTextForTesting(new_text);  // IN-TEST
 }
 
+bool ExtensionInstallDialogView::
+    ShouldIgnoreButtonPressedEventHandlingForTesting(
+        View* button,
+        const ui::Event& event) const {
+  return ShouldIgnoreButtonPressedEventHandling(button, event);
+}
+
+bool ExtensionInstallDialogView::
+    ShouldAllowKeyEventsDuringInputProtectionForTesting() const {
+  return ShouldAllowKeyEventsDuringInputProtection();
+}
+
 void ExtensionInstallDialogView::ResizeWidget() {
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
 }
@@ -561,6 +576,10 @@ void ExtensionInstallDialogView::AddedToWidget() {
   }
 
   GetBubbleFrameView()->SetTitleView(std::move(title_container));
+
+  picture_in_picture_input_protector_ =
+      std::make_unique<PictureInPictureInputProtector>(
+          GetWidget()->widget_delegate()->AsDialogDelegate());
 }
 
 void ExtensionInstallDialogView::OnDialogCanceled() {
@@ -619,6 +638,20 @@ bool ExtensionInstallDialogView::IsDialogButtonEnabled(
 
 std::u16string ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
   return title_;
+}
+
+bool ExtensionInstallDialogView::ShouldIgnoreButtonPressedEventHandling(
+    View* button,
+    const ui::Event& event) const {
+  // Ignore button pressed events whenever we are occluded by a
+  // Picture-in-Picture window.
+  return picture_in_picture_input_protector_ &&
+         picture_in_picture_input_protector_->OccludedByPictureInPicture();
+}
+
+bool ExtensionInstallDialogView::ShouldAllowKeyEventsDuringInputProtection()
+    const {
+  return false;
 }
 
 void ExtensionInstallDialogView::CloseDialog() {
