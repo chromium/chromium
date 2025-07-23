@@ -22989,6 +22989,32 @@
             ]
         }
     ],
+    "SideBySideDogfood": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "SideBySide_Dogfood",
+                    "params": {
+                        "drop_target_max_width": "360",
+                        "drop_target_min_width": "88",
+                        "drop_target_show_delay": "700ms",
+                        "drop_target_width_percentage": "20",
+                        "mini_toolbar_active_config": "hide"
+                    },
+                    "enable_features": [
+                        "SideBySide",
+                        "SideBySideLinkMenuNewBadge",
+                        "SideBySideSessionRestore"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelCompanionDesktopM116Plus": [
         {
             "platforms": [

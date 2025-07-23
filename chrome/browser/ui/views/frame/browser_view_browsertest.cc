@@ -86,7 +86,11 @@
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
-  BrowserViewTest() : devtools_(nullptr) {}
+  BrowserViewTest() : devtools_(nullptr) {
+    // TODO(crbug.com/415071842): Re-enable once DevTools is migrated to
+    // ContentsWebView.
+    scoped_feature_list_.InitWithFeatures({}, {features::kSideBySide});
+  }
 
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
@@ -129,6 +133,8 @@ class BrowserViewTest : public InProcessBrowserTest {
   }
 
   raw_ptr<DevToolsWindow> devtools_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 namespace {
