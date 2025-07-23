@@ -16,6 +16,10 @@ BASE_FEATURE(kCredentialProviderPerformanceImprovements,
              "CredentialProviderPerformanceImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCredentialProviderSignalAPI,
+             "CredentialProviderSignalAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsCPEPerformanceImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
       kCredentialProviderPerformanceImprovements);

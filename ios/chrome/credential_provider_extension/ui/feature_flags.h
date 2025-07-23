@@ -15,6 +15,9 @@ BOOL IsAutomaticPasskeyUpgradeEnabled();
 // Whether passkey PRF support is enabled.
 BOOL IsPasskeyPRFEnabled();
 
+// Whether signal API is enabled.
+BOOL IsSignalAPIEnabled();
+
 // Whether password creation is enabled for this user by preference.
 BOOL IsPasswordCreationUserEnabled();
 

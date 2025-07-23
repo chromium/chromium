@@ -147,6 +147,9 @@ class CredentialProviderService
   // Syncs whether or not PRF is enabled.
   void UpdatePasskeyPRFSetting();
 
+  // Syncs whether or not signal API is enabled.
+  void UpdateSignalAPISetting();
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,

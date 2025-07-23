@@ -335,6 +335,11 @@ const char kCredentialProviderPerformanceImprovementsDescription[] =
     "Enables a series of performance improvements for the Credential Provider "
     "Extension.";
 
+const char kCredentialProviderSignalAPIName[] =
+    "Credential Provider Signal API";
+const char kCredentialProviderSignalAPIDescription[] =
+    "Enables signal API for Passkeys in the Credential Provider Extension.";
+
 const char kMigrateIOSKeychainAccessibilityName[] =
     "Migrate iOS Keychain Accessibility";
 const char kMigrateIOSKeychainAccessibilityDescription[] =

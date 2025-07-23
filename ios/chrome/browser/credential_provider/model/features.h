@@ -18,6 +18,9 @@ BASE_DECLARE_FEATURE(kCredentialProviderPasskeyPRF);
 // provider.
 BASE_DECLARE_FEATURE(kCredentialProviderPerformanceImprovements);
 
+// Feature flag to enable signal API in the credential provider.
+BASE_DECLARE_FEATURE(kCredentialProviderSignalAPI);
+
 // Returns whether the CPE Performance Improvement Feature is enabled.
 bool IsCPEPerformanceImprovementsEnabled();
 

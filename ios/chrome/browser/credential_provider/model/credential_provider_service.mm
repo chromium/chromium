@@ -234,6 +234,7 @@ CredentialProviderService::CredentialProviderService(
   UpdatePasswordSyncSetting();
   UpdateAutomaticPasskeyUpgradeSetting();
   UpdatePasskeyPRFSetting();
+  UpdateSignalAPISetting();
 }
 
 CredentialProviderService::~CredentialProviderService() {}
@@ -609,6 +610,17 @@ void CredentialProviderService::UpdatePasskeyPRFSetting() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_enabled]
          forKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()];
+}
+
+void CredentialProviderService::UpdateSignalAPISetting() {
+  if (!IsLastUsedProfile()) {
+    return;
+  }
+
+  BOOL is_enabled = base::FeatureList::IsEnabled(kCredentialProviderSignalAPI);
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:is_enabled]
+         forKey:AppGroupUserDefaulsCredentialProviderSignalAPIEnabled()];
 }
 
 void CredentialProviderService::OnGetPasswordStoreResultsOrErrorFrom(

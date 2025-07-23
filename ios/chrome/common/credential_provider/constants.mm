@@ -76,6 +76,11 @@ NSString* const kUserDefaultsCredentialProviderAutomaticPasskeyUpgradeSetting =
 NSString* const kUserDefaultsCredentialProviderPasskeyPRFSetting =
     @"kUserDefaultsCredentialProviderPasskeyPRFSetting";
 
+// Used to generate the key for the app group user defaults containing whether
+// signal API is currently enabled.
+NSString* const kUserDefaultsCredentialProviderSignalAPISetting =
+    @"kUserDefaultsCredentialProviderSignalAPISetting";
+
 // Used to generate a unique AppGroupPrefix to differentiate between different
 // versions of Chrome running in the same device.
 NSString* AppGroupPrefix() {
@@ -175,4 +180,9 @@ AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled() {
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:kUserDefaultsCredentialProviderPasskeyPRFSetting];
+}
+
+NSString* AppGroupUserDefaulsCredentialProviderSignalAPIEnabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:kUserDefaultsCredentialProviderSignalAPISetting];
 }

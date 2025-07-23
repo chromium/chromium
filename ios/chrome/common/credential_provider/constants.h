@@ -56,6 +56,10 @@ NSString* AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled();
 // currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled();
 
+// Key for the app group user defaults containing whether signal API is
+// currently enabled.
+NSString* AppGroupUserDefaulsCredentialProviderSignalAPIEnabled();
+
 // Key for the app group user defaults indicating if the credentials have been
 // synced with iOS via AuthenticationServices.
 extern NSString* const

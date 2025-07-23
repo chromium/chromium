@@ -2804,6 +2804,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRcapsDynamicProfileCountryName,
      flag_descriptions::kRcapsDynamicProfileCountryDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(switches::kDynamicProfileCountry)},
+    {"cpe-signal-api", flag_descriptions::kCredentialProviderSignalAPIName,
+     flag_descriptions::kCredentialProviderSignalAPIDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderSignalAPI)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
