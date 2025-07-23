@@ -1513,6 +1513,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testShouldShowNewMenu_isTabletSizedScreen_returnsTrue() {
         assertTrue(
                 doTestShouldShowNewMenu(
@@ -1525,6 +1526,25 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* isInMultiWindowMode= */ false,
                         /* isInMultiDisplayMode= */ false,
                         /* isMultiInstanceRunning= */ false));
+        assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowNewIncognitoWindow());
+        verify(mTabbedAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testShouldShowNewMenu_isTabletSizedScreen_returnsTrue_withNewIncognitoWindow() {
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isInstanceSwitcherEnabled= */ true,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
+        assertTrue(mTabbedAppMenuPropertiesDelegate.shouldShowNewIncognitoWindow());
         verify(mTabbedAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
     }
 

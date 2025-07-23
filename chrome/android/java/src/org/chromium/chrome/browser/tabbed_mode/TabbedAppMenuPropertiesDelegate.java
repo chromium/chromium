@@ -234,6 +234,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // New Window
         if (shouldShowNewWindow()) modelList.add(buildNewWindowItem());
 
+        // New Incognito Window
+        if (shouldShowNewIncognitoWindow()) modelList.add(buildNewIncognitoWindowItem());
+
         // Move to other window
         if (shouldShowMoveToOtherWindow()) modelList.add(buildMoveToOtherWindowItem());
 
@@ -535,6 +538,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.new_window_menu_id,
                         R.string.menu_new_window,
                         shouldShowIconBeforeItem() ? R.drawable.ic_new_window : 0));
+    }
+
+    private MVCListAdapter.ListItem buildNewIncognitoWindowItem() {
+        assert shouldShowNewIncognitoWindow();
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.new_incognito_window_menu_id,
+                        R.string.menu_new_incognito_window,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_incognito : 0));
     }
 
     private MVCListAdapter.ListItem buildMoveToOtherWindowItem() {
@@ -918,6 +931,20 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                     || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
         }
+    }
+
+    /**
+     * @return Whether the "New incognito window" menu item should be displayed.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public boolean shouldShowNewIncognitoWindow() {
+        // TODO(crbug.com/433789957): A new helper function should be created to consolidate this,
+        // with form factors being checked.
+        if (!ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+            return false;
+        }
+
+        return shouldShowNewWindow();
     }
 
     /**

@@ -4359,6 +4359,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NEW_WINDOW" desc="Menu item for opening a new window. [CHAR_LIMIT=27]">
         New window
       </message>
+      <message name="IDS_MENU_NEW_INCOGNITO_WINDOW" desc="Menu item for opening a new incognito window. [CHAR_LIMIT=27]">
+        New incognito window
+      </message>
       <message name="IDS_MENU_MOVE_TO_OTHER_WINDOW" desc="Menu item for moving the current tab into the other window. [CHAR_LIMIT=27]">
         Move to other window
       </message>

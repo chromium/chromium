@@ -341,6 +341,10 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
             openNewWindow("MobileMenuNewWindow");
             return true;
+        } else if (id == org.chromium.chrome.R.id.new_incognito_window_menu_id) {
+            // TODO(crbug.com/429518328): Hook up with incognito window.
+            openNewWindow("MobileMenuNewIncognitoWindow");
+            return true;
         }
 
         return false;
