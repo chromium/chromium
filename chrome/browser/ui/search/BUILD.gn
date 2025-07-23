@@ -178,7 +178,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//ipc",
     "//ipc:message_support",
-    "//ipc:test_sink",
     "//ui/base:types",
     "//url",
   ]

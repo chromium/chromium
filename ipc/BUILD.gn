@@ -226,20 +226,6 @@ source_set("protobuf_support") {
   ]
 }
 
-static_library("test_sink") {
-  testonly = true
-  sources = [
-    "ipc_security_test_util.cc",
-    "ipc_security_test_util.h",
-  ]
-  public_deps = [ ":ipc" ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//mojo/core/test:test_support",
-  ]
-}
-
 if (use_blink) {
   source_set("run_all_unittests") {
     testonly = true
@@ -343,10 +329,7 @@ if (use_blink) {
       "ipc_test_channel_listener.cc",
       "ipc_test_channel_listener.h",
     ]
-    public_deps = [
-      ":ipc",
-      ":test_sink",
-    ]
+    public_deps = [ ":ipc" ]
     deps = [
       "//base",
       "//base/test:test_support",

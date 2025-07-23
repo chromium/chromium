@@ -308,7 +308,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
 
    private:
     friend class ChannelProxy;
-    friend class IpcSecurityTestUtil;
 
     // Create the Channel
     void CreateChannel(std::unique_ptr<ChannelFactory> factory);
@@ -399,8 +398,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   void SendInternal(Message* message);
 
  private:
-  friend class IpcSecurityTestUtil;
-
   template <typename Interface>
   static void BindPendingAssociatedReceiver(
       const AssociatedInterfaceFactory<Interface>& factory,
