@@ -15,11 +15,25 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Implements {@link ChromeAndroidTask}. */
 @NullMarked
 final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
+
+    /** States of this {@link ChromeAndroidTask}. */
+    private enum State {
+        /* The Task is alive. */
+        ALIVE,
+
+        /** The Task is being destroyed, but the destruction hasn't been completed. */
+        DESTROYING,
+
+        /** The Task has been destroyed. */
+        DESTROYED,
+    }
+
+    private final AtomicReference<State> mState = new AtomicReference<>(State.ALIVE);
 
     private final int mId;
 
@@ -30,13 +44,11 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
      * Contains all {@link ChromeAndroidTaskFeature}s associated with this {@link
      * ChromeAndroidTask}.
      */
-    @SuppressWarnings("UnusedVariable")
+    @GuardedBy("mFeaturesLock")
     private final List<ChromeAndroidTaskFeature> mFeatures = new ArrayList<>();
 
     private final Object mActivityWindowAndroidLock = new Object();
-
-    /** Whether {@link #destroy()} has been called. */
-    private final AtomicBoolean mDestroyed = new AtomicBoolean(false);
+    private final Object mFeaturesLock = new Object();
 
     /**
      * The {@link ActivityWindowAndroid} in this Task.
@@ -78,7 +90,7 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
 
     @Override
     public @Nullable ActivityWindowAndroid getActivityWindowAndroid() {
-        return getActivityWindowAndroidInternal(/* assertNotDestroyed= */ true);
+        return getActivityWindowAndroidInternal(/* assertAlive= */ true);
     }
 
     @Override
@@ -87,32 +99,63 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
     }
 
     @Override
+    public void addFeature(ChromeAndroidTaskFeature feature) {
+        synchronized (mFeaturesLock) {
+            assertAlive();
+            mFeatures.add(feature);
+            feature.onAddedToTask();
+        }
+    }
+
+    @Override
     public void destroy() {
+        // Immediately change the state to "DESTROYING" to block access to public methods that
+        // should only be called when the state is "ALIVE".
+        //
+        // One case where the "DESTROYING" state is crucial:
+        //
+        // If a ChromeAndroidTaskFeature ("Feature") holds a ChromeAndroidTask ("Task") reference,
+        // the Feature could call the Task's APIs during Feature#onTaskRemoved(). Since mState won't
+        // become "DESTROYED" until after Feature#onTaskRemoved(), we need the "DESTROYING" state to
+        // prevent the Feature from accessing the Task's APIs that should only be called when mState
+        // is "ALIVE".
+        if (!mState.compareAndSet(State.ALIVE, State.DESTROYING)) {
+            return;
+        }
+
         clearActivityWindowAndroidInternal();
+        destroyFeatures();
 
         // TODO(crbug.com/427214087): Destroy mAndroidBrowserWindow.
 
-        mDestroyed.set(true);
+        mState.set(State.DESTROYED);
     }
 
     @Override
     public boolean isDestroyed() {
-        return mDestroyed.get();
+        return mState.get() == State.DESTROYED;
     }
 
     /**
      * Same as {@link #getActivityWindowAndroid()}, but skips asserting that the {@link
-     * ChromeAndroidTask} isn't destroyed.
+     * ChromeAndroidTask} is alive.
      *
      * <p>This method should only be used in tests.
      */
     @Nullable ActivityWindowAndroid getActivityWindowAndroidForTesting() {
-        return getActivityWindowAndroidInternal(/* assertNotDestroyed= */ false);
+        return getActivityWindowAndroidInternal(/* assertAlive= */ false);
+    }
+
+    /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
+    List<ChromeAndroidTaskFeature> getAllFeaturesForTesting() {
+        synchronized (mFeaturesLock) {
+            return mFeatures;
+        }
     }
 
     private void setActivityWindowAndroidInternal(ActivityWindowAndroid activityWindowAndroid) {
         synchronized (mActivityWindowAndroidLock) {
-            assertNotDestroyed();
+            assertAlive();
             assert mActivityWindowAndroid.get() == null
                     : "This Task already has an ActivityWindowAndroid.";
             assert mId == getTaskId(activityWindowAndroid)
@@ -122,11 +165,10 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
         }
     }
 
-    private @Nullable ActivityWindowAndroid getActivityWindowAndroidInternal(
-            boolean assertNotDestroyed) {
+    private @Nullable ActivityWindowAndroid getActivityWindowAndroidInternal(boolean assertAlive) {
         synchronized (mActivityWindowAndroidLock) {
-            if (assertNotDestroyed) {
-                assertNotDestroyed();
+            if (assertAlive) {
+                assertAlive();
             }
 
             return mActivityWindowAndroid.get();
@@ -139,7 +181,16 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
         }
     }
 
-    private void assertNotDestroyed() {
-        assert !mDestroyed.get(): "This Task is already destroyed.";
+    private void destroyFeatures() {
+        synchronized (mFeaturesLock) {
+            for (var feature : mFeatures) {
+                feature.onTaskRemoved();
+            }
+            mFeatures.clear();
+        }
+    }
+
+    private void assertAlive() {
+        assert mState.get() == State.ALIVE : "This Task is not alive.";
     }
 }

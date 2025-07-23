@@ -9,6 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,6 +21,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.Arrays;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeAndroidTaskImplUnitTest {
@@ -131,6 +137,47 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void addFeature_addsFeatureToInternalFeatureList() {
+        // Arrange.
+        var chromeAndroidTask = createChromeAndroidTask();
+        var mockFeature1 = mock(ChromeAndroidTaskFeature.class);
+        var mockFeature2 = mock(ChromeAndroidTaskFeature.class);
+
+        // Act.
+        chromeAndroidTask.addFeature(mockFeature1);
+        chromeAndroidTask.addFeature(mockFeature2);
+
+        // Assert.
+        assertEquals(
+                chromeAndroidTask.getAllFeaturesForTesting(),
+                Arrays.asList(mockFeature1, mockFeature2));
+    }
+
+    @Test
+    public void addFeature_invokesOnAddedToTaskForFeature() {
+        // Arrange.
+        var chromeAndroidTask = createChromeAndroidTask();
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+
+        // Act.
+        chromeAndroidTask.addFeature(mockFeature);
+
+        // Assert.
+        verify(mockFeature, times(1)).onAddedToTask();
+    }
+
+    @Test
+    public void addFeature_calledAfterTaskDestroyed_throwsException() {
+        // Arrange.
+        var chromeAndroidTask = createChromeAndroidTask();
+        chromeAndroidTask.destroy();
+
+        // Act & Assert.
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+        assertThrows(AssertionError.class, () -> chromeAndroidTask.addFeature(mockFeature));
+    }
+
+    @Test
     public void destroy_clearsActivityWindowAndroid() {
         // Arrange.
         var chromeAndroidTask = createChromeAndroidTask();
@@ -143,7 +190,25 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void destroy_setsDestroyedToTrue() {
+    public void destroy_destroysAllFeatures() {
+        // Arrange.
+        var chromeAndroidTask = createChromeAndroidTask();
+        var mockFeature1 = mock(ChromeAndroidTaskFeature.class);
+        var mockFeature2 = mock(ChromeAndroidTaskFeature.class);
+        chromeAndroidTask.addFeature(mockFeature1);
+        chromeAndroidTask.addFeature(mockFeature2);
+
+        // Act.
+        chromeAndroidTask.destroy();
+
+        // Assert.
+        assertTrue(chromeAndroidTask.getAllFeaturesForTesting().isEmpty());
+        verify(mockFeature1, times(1)).onTaskRemoved();
+        verify(mockFeature2, times(1)).onTaskRemoved();
+    }
+
+    @Test
+    public void destroy_setsStateToDestroyed() {
         // Arrange.
         var chromeAndroidTask = createChromeAndroidTask();
         assertFalse(chromeAndroidTask.isDestroyed());
@@ -153,5 +218,32 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertTrue(chromeAndroidTask.isDestroyed());
+    }
+
+    /**
+     * Verifies that {@link ChromeAndroidTask#destroy} uses the {@code DESTROYING} state to block
+     * access to APIs that should only be called when the Task is alive.
+     */
+    @Test
+    public void destroy_blocksAccessToApisThatShouldOnlyBeCalledWhenAlive() {
+        // Arrange:
+        //
+        // Set up a mock ChromeAndroidTaskFeature that calls ChromeAndroidTask#addFeature() in
+        // its onTaskRemoved() method. No feature should do this in production, but there is nothing
+        // preventing this at compile time. Besides ChromeAndroidTask#addFeature(), the feature
+        // could also call other ChromeAndroidTask APIs that require the Task state to be "ALIVE".
+        var chromeAndroidTask = createChromeAndroidTask();
+        var mockFeature = mock(ChromeAndroidTaskFeature.class);
+        doAnswer(
+                        invocation -> {
+                            chromeAndroidTask.addFeature(mockFeature);
+                            return null;
+                        })
+                .when(mockFeature)
+                .onTaskRemoved();
+        chromeAndroidTask.addFeature(mockFeature);
+
+        // Act & Assert.
+        assertThrows(AssertionError.class, () -> chromeAndroidTask.destroy());
     }
 }

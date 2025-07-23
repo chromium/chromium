@@ -79,7 +79,20 @@ public interface ChromeAndroidTask {
      */
     void clearActivityWindowAndroid();
 
-    /** Destroys all objects owned by this {@link ChromeAndroidTask}. */
+    /**
+     * Adds a {@link ChromeAndroidTaskFeature} to this {@link ChromeAndroidTask}.
+     *
+     * <p>This method is the start of the {@link ChromeAndroidTaskFeature}'s lifecycle, and {@link
+     * ChromeAndroidTaskFeature#onAddedToTask} will be invoked.
+     */
+    void addFeature(ChromeAndroidTaskFeature feature);
+
+    /**
+     * Destroys all objects owned by this {@link ChromeAndroidTask}, including all {@link
+     * ChromeAndroidTaskFeature}s.
+     *
+     * @see #addFeature(ChromeAndroidTaskFeature)
+     */
     void destroy();
 
     /** Returns whether this {@link ChromeAndroidTask} has been destroyed. */
