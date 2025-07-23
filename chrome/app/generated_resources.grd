@@ -8511,8 +8511,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the image upload button on the compose box.">
         Upload an image
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the file upload button on the compose box.">
-        Upload a file
+      <message name="IDS_NTP_COMPOSE_PDF_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the file upload button on the compose box." translateable="false">
+        Upload a PDF
       </message>
       <message name="IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL" desc="The accessibility label for the submit button on the compose box.">
         Send

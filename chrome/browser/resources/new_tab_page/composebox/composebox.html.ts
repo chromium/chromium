@@ -47,7 +47,7 @@ export function getHtml(this: ComposeboxElement) {
             class="upload-icon no-overlap"
             id="fileUploadButton"
             iron-icon="composebox:fileUpload"
-            title="$i18n{composeboxFileUploadButtonTitle}"
+            title="$i18n{composeboxPdfUploadButtonTitle}"
             .disabled="${this.inputsDisabled_}"
             @click="${this.openFileUpload_}">
         </cr-icon-button>
