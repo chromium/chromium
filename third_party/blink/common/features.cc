@@ -2146,42 +2146,6 @@ BASE_FEATURE(kPrerender2EarlyDocumentLifecycleUpdate,
              "Prerender2EarlyDocumentLifecycleUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kPrewarmDefaultFontFamilies,
-             "PrewarmDefaultFontFamilies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kPrewarmStandard,
-                   &kPrewarmDefaultFontFamilies,
-                   "prewarm_standard",
-                   false);
-BASE_FEATURE_PARAM(bool,
-                   kPrewarmFixed,
-                   &kPrewarmDefaultFontFamilies,
-                   "prewarm_fixed",
-                   false);
-BASE_FEATURE_PARAM(bool,
-                   kPrewarmSerif,
-                   &kPrewarmDefaultFontFamilies,
-                   "prewarm_serif",
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kPrewarmSansSerif,
-                   &kPrewarmDefaultFontFamilies,
-                   "prewarm_sans_serif",
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kPrewarmCursive,
-                   &kPrewarmDefaultFontFamilies,
-                   "prewarm_cursive",
-                   false);
-BASE_FEATURE_PARAM(bool,
-                   kPrewarmFantasy,
-                   &kPrewarmDefaultFontFamilies,
-                   "prewarm_fantasy",
-                   false);
-#endif
-
 // Enables the Private Aggregation API.
 BASE_FEATURE(kPrivateAggregationApi,
              "PrivateAggregationApi",

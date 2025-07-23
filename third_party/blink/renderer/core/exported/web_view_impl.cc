@@ -1894,25 +1894,14 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.translate_service_available);
 
 #if BUILDFLAG(IS_WIN)
-  if (web_view_impl->GetPage() &&
-      base::FeatureList::IsEnabled(features::kPrewarmDefaultFontFamilies)) {
+  if (web_view_impl->GetPage()) {
     if (auto* prewarmer = WebFontRendering::GetFontPrewarmer()) {
       GenericFontFamilySettings& font_settings =
           web_view_impl->GetPage()
               ->GetSettings()
               .GetGenericFontFamilySettings();
-      if (features::kPrewarmStandard.Get())
-        prewarmer->PrewarmFamily(font_settings.Standard());
-      if (features::kPrewarmFixed.Get())
-        prewarmer->PrewarmFamily(font_settings.Fixed());
-      if (features::kPrewarmSerif.Get())
-        prewarmer->PrewarmFamily(font_settings.Serif());
-      if (features::kPrewarmSansSerif.Get())
-        prewarmer->PrewarmFamily(font_settings.SansSerif());
-      if (features::kPrewarmCursive.Get())
-        prewarmer->PrewarmFamily(font_settings.Cursive());
-      if (features::kPrewarmFantasy.Get())
-        prewarmer->PrewarmFamily(font_settings.Fantasy());
+      prewarmer->PrewarmFamily(font_settings.Serif());
+      prewarmer->PrewarmFamily(font_settings.SansSerif());
     }
   }
 #endif
