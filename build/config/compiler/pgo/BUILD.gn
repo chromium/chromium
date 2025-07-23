@@ -100,15 +100,7 @@ config("pgo_optimization_flags") {
     } else if (_pgo_target == "android-arm32") {
       inputs = [ "//chrome/build/android-arm32.pgo.txt" ]
     } else if (_pgo_target == "android-arm64") {
-      # By default on android for arm64 we use the PGO profile that is
-      # generated at the same commit as the orderfile.
-      if (pgo_data_path == "") {
-        pgo_data_path =
-            "//chrome/android/orderfiles/arm64/pgo_profile.arm64.profdata"
-        inputs = [ pgo_data_path ]
-      } else {
-        inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
-      }
+      inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
     } else if (_pgo_target == "android-desktop-x64") {
       inputs = [ "//chrome/build/android-desktop-x64.pgo.txt" ]
     }
@@ -138,6 +130,13 @@ config("pgo_optimization_flags") {
     }
     assert(pgo_data_path != "",
            "Please set pgo_data_path to point at the profile data")
+
+    # Ensure that the actual PGO profile that is used in the build is also
+    # listed in inputs in addition to any sha1 .txt files. This way the object
+    # files are rebuilt whenever the .txt files change or whenever the actual
+    # profile changes.
+    inputs += [ pgo_data_path ]
+
     cflags = [
       "-fprofile-use=" + rebase_path(pgo_data_path, root_build_dir),
 
