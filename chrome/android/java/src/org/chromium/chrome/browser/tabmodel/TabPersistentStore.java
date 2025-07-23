@@ -36,6 +36,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -835,8 +836,13 @@ public class TabPersistentStore {
             } else if (isIncognito) {
                 boolean isNtp = UrlUtilities.isNtpUrl(tabToRestore.url);
                 boolean isNtpFromMerge = isNtp && tabToRestore.fromMerge;
+                boolean isFromReparenting =
+                        AsyncTabParamsManagerSingleton.getInstance()
+                                .hasParamsForTabId(tabToRestore.id);
 
-                if (!isNtpFromMerge && (!isNtp || !setAsActive || mCancelIncognitoTabLoads)) {
+                if (!isNtpFromMerge
+                        && !isFromReparenting
+                        && (!isNtp || !setAsActive || mCancelIncognitoTabLoads)) {
                     Log.i(
                             TAG,
                             "Failed to restore Incognito tab: its TabState could not be restored.");

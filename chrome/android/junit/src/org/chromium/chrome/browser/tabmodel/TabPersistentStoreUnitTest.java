@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -321,6 +322,35 @@ public class TabPersistentStoreUnitTest {
                         eq(TabLaunchType.FROM_RESTORE),
                         isNull(),
                         eq(0));
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    public void testReparentedTabNotIgnoredDuringRestore() {
+        String url = "https://test.com";
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(1, new AsyncTabCreationParams(new LoadUrlParams(url)));
+        mPersistentStore =
+                new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory);
+        mPersistentStore.initializeRestoreVars(false);
+
+        TabRestoreDetails emptyNtpDetails = new TabRestoreDetails(1, 0, false, url, false);
+        mPersistentStore.restoreTab(emptyNtpDetails, null, false);
+
+        verify(mNormalTabCreator)
+                .createNewTab(
+                        argThat(new LoadUrlParamsUrlMatcher(url)),
+                        eq(TabLaunchType.FROM_RESTORE),
+                        isNull(),
+                        eq(0));
+        AsyncTabParamsManagerSingleton.getInstance().remove(1);
     }
 
     @Test
