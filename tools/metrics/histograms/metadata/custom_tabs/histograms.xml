@@ -705,17 +705,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.PostMessage.OnMessage" enum="Boolean"
-    expires_after="2025-07-06">
-  <owner>sinansahin@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Android only. Recorded when the tab controlled by the CustomTabsSession
-    sends a postMessage. Always emits true.
-  </summary>
-</histogram>
-
 <histogram
     name="CustomTabs.PostMessage.RequestPostMessageChannelWithTargetOrigin"
     enum="Boolean" expires_after="2026-01-11">

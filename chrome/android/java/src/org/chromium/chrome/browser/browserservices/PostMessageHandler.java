@@ -16,7 +16,6 @@ import androidx.browser.customtabs.PostMessageBackend;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TerminationStatus;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -88,8 +87,6 @@ public class PostMessageHandler implements OriginVerificationListener {
                     }
                     assumeNonNull(messagePayload.getAsString());
                     mPostMessageBackend.onPostMessage(messagePayload.getAsString(), bundle);
-                    RecordHistogram.recordBooleanHistogram(
-                            "CustomTabs.PostMessage.OnMessage", true);
                 };
     }
 
