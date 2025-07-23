@@ -144,11 +144,11 @@ bool ShouldSwitchProfileAtSignout(AuthenticationService* authentication_service,
 
 // Post an asynchronous request to switch to `profile`, running `continuation`
 // when the change completes.
-void SwitchToProfile(Browser* browser,
+void SwitchToProfile(SceneState* scene_state,
                      const std::string& profile_name,
                      ChangeProfileReason reason,
                      ChangeProfileContinuation continuation) {
-  __weak SceneState* weak_scene_state = browser->GetSceneState();
+  __weak SceneState* weak_scene_state = scene_state;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SwitchToProfileSynchronously, profile_name,
@@ -157,7 +157,7 @@ void SwitchToProfile(Browser* browser,
 
 // Post an asynchronous request to switch from a managed profile to the
 // personal profile, running `continuation` when the change completes.
-void SwitchToPersonalProfile(Browser* browser,
+void SwitchToPersonalProfile(SceneState* scene_state,
                              ChangeProfileReason reason,
                              ChangeProfileContinuation continuation) {
   ProfileManagerIOS* profile_manager =
@@ -166,7 +166,7 @@ void SwitchToPersonalProfile(Browser* browser,
       profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
   CHECK(profile_manager->HasProfileWithName(personal_profile_name));
 
-  SwitchToProfile(browser, personal_profile_name, reason,
+  SwitchToProfile(scene_state, personal_profile_name, reason,
                   std::move(continuation));
 }
 
@@ -504,7 +504,8 @@ void ProfileSignoutRequest::Run(Browser* browser) && {
   }
 
   std::move(prepare_callback_).Run(/*will_change_profile=*/true);
-  SwitchToPersonalProfile(browser, ChangeProfileReason::kManagedAccountSignOut,
+  SwitchToPersonalProfile(scene_state,
+                          ChangeProfileReason::kManagedAccountSignOut,
                           std::move(continuation));
 }
 
@@ -543,7 +544,7 @@ void MultiProfileSignOutForProfile(
             signout_source, /*force_snackbar_over_toolbar=*/false,
             /*should_record_metrics=*/false, /*snackbar_message =*/nil,
             base::IgnoreArgs<SceneState*>(barrier));
-    SwitchToPersonalProfile(browser,
+    SwitchToPersonalProfile(browser->GetSceneState(),
                             ChangeProfileReason::kManagedAccountSignOut,
                             std::move(continuation));
   }
