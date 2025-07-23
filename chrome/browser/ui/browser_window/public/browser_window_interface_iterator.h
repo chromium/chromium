@@ -20,4 +20,8 @@ std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces();
 std::vector<BrowserWindowInterface*>
 GetBrowserWindowInterfacesOrderedByActivation();
 
+// Returns the last active browser window interface. This can be nullptr if
+// there are no browser windows.
+BrowserWindowInterface* GetLastActiveBrowserWindowInterface();
+
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_ITERATOR_H_

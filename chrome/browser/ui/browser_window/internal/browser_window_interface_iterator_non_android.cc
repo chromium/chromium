@@ -20,3 +20,10 @@ GetBrowserWindowInterfacesOrderedByActivation() {
       BrowserList::GetInstance()->begin_browsers_ordered_by_activation(),
       BrowserList::GetInstance()->end_browsers_ordered_by_activation());
 }
+
+BrowserWindowInterface* GetLastActiveBrowserWindowInterface() {
+  // TODO(crbug.com/431671448): This is implemented in terms of BrowserList to
+  // ensure it stays in sync with other BrowserList APIs during migration. It
+  // can be implemented directly once clients are migrated off of BrowserList.
+  return BrowserList::GetInstance()->GetLastActive();
+}

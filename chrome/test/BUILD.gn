@@ -2410,6 +2410,7 @@ if (!is_android) {
       "//chrome/browser/ui/bluetooth",
       "//chrome/browser/ui/bookmarks:browser_tests",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:browser_tests",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:browser_tests",
