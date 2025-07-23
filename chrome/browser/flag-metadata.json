@@ -6611,8 +6611,12 @@
     "owners": ["tbarzic@chromium.org", "rtinkoff@google.com", "amehfooz@chromium.org"],
     "expiry_milestone": 94
   },
-
-    {
+  {
+    "name": "migrate-ios-keychain-accessibility",
+    "owners": [ "marq@chromium.org", "fedegermi@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "mini-origin-bar",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 147

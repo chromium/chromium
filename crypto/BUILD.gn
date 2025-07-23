@@ -201,6 +201,10 @@ test("crypto_unittests") {
     sources += [ "mock_apple_keychain_unittest.cc" ]
   }
 
+  if (is_ios) {
+    sources += [ "apple_keychain_secitem_ios_unittest.mm" ]
+  }
+
   if (is_mac) {
     sources += [
       "apple_keychain_util_unittest.mm",

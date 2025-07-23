@@ -18,6 +18,10 @@ CRYPTO_EXPORT BASE_DECLARE_FEATURE(kProcessBoundStringEncryption);
 // Enabled by default on M139. Remove in or after M142.
 CRYPTO_EXPORT BASE_DECLARE_FEATURE(kIsHardwareBackedFixEnabled);
 
+// Migrate the accessibility attribute in the iOS keychain to "after first
+// unlock".
+CRYPTO_EXPORT BASE_DECLARE_FEATURE(kMigrateIOSKeychainAccessibility);
+
 }  // namespace crypto::features
 
 #endif  // CRYPTO_FEATURES_H_

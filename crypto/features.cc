@@ -16,4 +16,8 @@ BASE_FEATURE(kIsHardwareBackedFixEnabled,
              "IsHardwareBackedFixEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMigrateIOSKeychainAccessibility,
+             "MigrateIOSKeychainAccessibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace crypto::features

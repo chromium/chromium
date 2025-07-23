@@ -335,6 +335,12 @@ const char kCredentialProviderPerformanceImprovementsDescription[] =
     "Enables a series of performance improvements for the Credential Provider "
     "Extension.";
 
+const char kMigrateIOSKeychainAccessibilityName[] =
+    "Migrate iOS Keychain Accessibility";
+const char kMigrateIOSKeychainAccessibilityDescription[] =
+    "Migrate the accessibility attribute in the iOS keychain to 'after first "
+    "unlock'.";
+
 const char kChromeStartupParametersAsyncName[] =
     "Enable the async chrome startup";
 const char kChromeStartupParametersAsyncDescription[] =

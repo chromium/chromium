@@ -11,6 +11,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/sys_string_conversions.h"
+#include "crypto/features.h"
 
 using base::apple::CFToNSPtrCast;
 using base::apple::NSToCFOwnershipCast;
@@ -36,6 +37,7 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeGenericPasswordQuery(
     // Use the proper search constants, return only the data of the first match.
     CFToNSPtrCast(kSecMatchLimit) : CFToNSPtrCast(kSecMatchLimitOne),
     CFToNSPtrCast(kSecReturnData) : @YES,
+    CFToNSPtrCast(kSecReturnAttributes) : @YES,
   };
   return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
       NSToCFOwnershipCast(query));
@@ -60,6 +62,19 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeKeychainData(
       CFToNSPtrCast(kSecValueData) : password,
     };
   } else {
+    NSString* attr_accessible;
+#if BUILDFLAG(IS_IOS)
+    if (base::FeatureList::IsEnabled(
+            crypto::features::kMigrateIOSKeychainAccessibility)) {
+      // Only allow access after the device has been unlocked once.
+      attr_accessible = CFToNSPtrCast(kSecAttrAccessibleAfterFirstUnlock);
+    } else {
+      // Only allow access while the device is unlocked.
+      attr_accessible = CFToNSPtrCast(kSecAttrAccessibleWhenUnlocked);
+    }
+#else
+    attr_accessible = CFToNSPtrCast(kSecAttrAccessibleWhenUnlocked);
+#endif  // BUILDFLAG(IS_IOS)
     keychain_data = @{
       // Set the password.
       CFToNSPtrCast(kSecValueData) : password,
@@ -67,9 +82,8 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeKeychainData(
       // Set the type of the data.
       CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
 
-      // Only allow access when the device has been unlocked.
-      CFToNSPtrCast(kSecAttrAccessible) :
-          CFToNSPtrCast(kSecAttrAccessibleWhenUnlocked),
+      // Set the accessibility attribute as determined above.
+      CFToNSPtrCast(kSecAttrAccessible) : attr_accessible,
 
       // Set the service name.
       CFToNSPtrCast(kSecAttrService) : base::SysUTF8ToNSString(serviceName),
@@ -82,6 +96,35 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeKeychainData(
   return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
       NSToCFOwnershipCast(keychain_data));
 }
+
+// Creates a dictionary containing the attributes for an accessibility
+// migration. Only used on iOS.
+#if BUILDFLAG(IS_IOS)
+base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeAttributeMigrationQuery() {
+  NSDictionary* query = @{
+    CFToNSPtrCast(kSecAttrAccessible) :
+        CFToNSPtrCast(kSecAttrAccessibleAfterFirstUnlock),
+  };
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
+      NSToCFOwnershipCast(query));
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+// Creates a dictionary that can be used to update a generic password. Only used
+// on iOS.
+#if BUILDFLAG(IS_IOS)
+base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeGenericPasswordUpdateQuery(
+    std::string_view service_name,
+    std::string_view account_name) {
+  NSDictionary* query = @{
+    CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
+    CFToNSPtrCast(kSecAttrService) : base::SysUTF8ToNSString(service_name),
+    CFToNSPtrCast(kSecAttrAccount) : base::SysUTF8ToNSString(account_name),
+  };
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
+      NSToCFOwnershipCast(query));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -122,15 +165,42 @@ AppleKeychainSecItem::FindGenericPassword(std::string_view service_name,
   base::apple::ScopedCFTypeRef<CFDictionaryRef> query =
       MakeGenericPasswordQuery(service_name, account_name);
 
-  // Get the keychain item containing the password.
+  // Get the keychain item containing the password and attributes.
+  // When kSecReturnData and kSecReturnAttributes are both true, the result is
+  // a CFDictionaryRef, but the API returns it as a CFTypeRef.
   base::apple::ScopedCFTypeRef<CFTypeRef> result;
   OSStatus status = SecItemCopyMatching(query.get(), result.InitializeInto());
   if (status != noErr) {
     return base::unexpected(status);
   }
 
-  CFDataRef data = base::apple::CFCast<CFDataRef>(result.get());
-  return base::ToVector(base::apple::CFDataToSpan(data));
+  CFDictionaryRef result_dict =
+      base::apple::CFCast<CFDictionaryRef>(result.get());
+  CFDataRef password_data = base::apple::GetValueFromDictionary<CFDataRef>(
+      result_dict, kSecValueData);
+
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          crypto::features::kMigrateIOSKeychainAccessibility)) {
+    CFStringRef accessibility =
+        base::apple::GetValueFromDictionary<CFStringRef>(result_dict,
+                                                         kSecAttrAccessible);
+    if (CFStringCompare(accessibility, kSecAttrAccessibleWhenUnlocked, 0) ==
+        kCFCompareEqualTo) {
+      // The item has the old accessibility attribute, so update it.
+      base::apple::ScopedCFTypeRef<CFDictionaryRef> update_query =
+          MakeGenericPasswordUpdateQuery(service_name, account_name);
+      base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes_to_update =
+          MakeAttributeMigrationQuery();
+      status = SecItemUpdate(update_query.get(), attributes_to_update.get());
+      // The status of the update is intentionally ignored. The goal is to
+      // migrate the item on a best-effort basis. If it fails, the item will
+      // just keep its legacy accessibility attribute.
+    }
+  }
+#endif  // BUILDFLAG(IS_IOS)
+
+  return base::ToVector(base::apple::CFDataToSpan(password_data));
 }
 
 }  // namespace crypto

@@ -87,6 +87,7 @@
 #import "components/webui/flags/feature_entry_macros.h"
 #import "components/webui/flags/flags_storage.h"
 #import "components/webui/flags/flags_ui_switches.h"
+#import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
@@ -1997,6 +1998,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCredentialProviderPerformanceImprovementsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCredentialProviderPerformanceImprovements)},
+    {"migrate-ios-keychain-accessibility",
+     flag_descriptions::kMigrateIOSKeychainAccessibilityName,
+     flag_descriptions::kMigrateIOSKeychainAccessibilityDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(crypto::features::kMigrateIOSKeychainAccessibility)},
     {"password-form-clientside-classifier",
      flag_descriptions::kPasswordFormClientsideClassifierName,
      flag_descriptions::kPasswordFormClientsideClassifierDescription,

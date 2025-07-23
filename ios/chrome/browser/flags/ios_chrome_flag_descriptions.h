@@ -191,6 +191,9 @@ extern const char kCredentialProviderPasskeyPRFDescription[];
 extern const char kCredentialProviderPerformanceImprovementsName[];
 extern const char kCredentialProviderPerformanceImprovementsDescription[];
 
+extern const char kMigrateIOSKeychainAccessibilityName[];
+extern const char kMigrateIOSKeychainAccessibilityDescription[];
+
 extern const char kChromeStartupParametersAsyncName[];
 extern const char kChromeStartupParametersAsyncDescription[];
 
