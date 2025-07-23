@@ -4142,7 +4142,7 @@ void InspectorCSSAgent::DidMutateStyleSheet(CSSStyleSheet* css_style_sheet) {
 void InspectorCSSAgent::GetTextPosition(wtf_size_t offset,
                                         const String* text,
                                         TextPosition* result) {
-  std::unique_ptr<Vector<wtf_size_t>> line_endings = WTF::GetLineEndings(*text);
+  std::unique_ptr<Vector<wtf_size_t>> line_endings = GetLineEndings(*text);
   *result = TextPosition::FromOffsetAndLineEndings(offset, *line_endings);
 }
 

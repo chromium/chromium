@@ -158,7 +158,7 @@ void ReportViolationWithLocation(
     const String& console_message,
     const KURL& blocked_url,
     const String& context_url,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     Element* element,
     const String& source) {
   String message = CSPDirectiveListIsReportOnly(csp)
@@ -445,7 +445,7 @@ bool CheckInlineAndReportViolation(
     Element* element,
     const String& source,
     const String& context_url,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     ContentSecurityPolicy::InlineType inline_type,
     const String& hash_value,
     CSPDirectiveName effective_type) {
@@ -698,7 +698,7 @@ bool CSPDirectiveListAllowInline(
     const String& content,
     const String& nonce,
     const String& context_url,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     ReportingDisposition reporting_disposition) {
   CSPDirectiveName type = EffectiveDirectiveForInlineCheck(inline_type);
 

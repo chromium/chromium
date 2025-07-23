@@ -29,7 +29,7 @@
 #include <memory>
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
-namespace WTF {
+namespace blink {
 
 std::unique_ptr<Vector<wtf_size_t>> GetLineEndings(const String& text) {
   std::unique_ptr<Vector<wtf_size_t>> result(
@@ -71,4 +71,4 @@ TextPosition TextPosition::FromOffsetAndLineEndings(
                       OrdinalNumber::FromZeroBasedInt(column));
 }
 
-}  // namespace WTF
+}  // namespace blink

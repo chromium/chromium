@@ -587,7 +587,7 @@ bool ContentSecurityPolicy::AllowInline(
     const String& content,
     const String& nonce,
     const String& context_url,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     ReportingDisposition reporting_disposition) {
   DCHECK(element || inline_type == InlineType::kScriptAttribute ||
          inline_type == InlineType::kNavigation);

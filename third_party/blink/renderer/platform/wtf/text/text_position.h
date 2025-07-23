@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 // An abstract number of element in a sequence. The sequence has a first
 // element.  This type should be used instead of integer because 2
@@ -114,12 +114,6 @@ class TextPosition final {
 
 WTF_EXPORT std::unique_ptr<Vector<wtf_size_t>> GetLineEndings(const String&);
 
-}  // namespace WTF
-
-using WTF::OrdinalNumber;
-
-using WTF::TextPosition;
-
-using WTF::GetLineEndings;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_POSITION_H_

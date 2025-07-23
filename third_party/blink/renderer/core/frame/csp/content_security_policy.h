@@ -285,7 +285,7 @@ class CORE_EXPORT ContentSecurityPolicy final
                    const String& content,
                    const String& nonce,
                    const String& context_url,
-                   const WTF::OrdinalNumber& context_line,
+                   const OrdinalNumber& context_line,
                    ReportingDisposition = ReportingDisposition::kReport);
 
   static bool IsScriptInlineType(InlineType);

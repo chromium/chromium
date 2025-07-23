@@ -343,7 +343,7 @@ const AtomicString& HTMLScriptElement::GetNonceForElement() const {
 
 bool HTMLScriptElement::AllowInlineScriptForCSP(
     const AtomicString& nonce,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     const String& script_content) {
   // Support 'inline-speculation-rules' source.
   // https://wicg.github.io/nav-speculation/speculation-rules.html#content-security-policy

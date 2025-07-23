@@ -489,7 +489,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   CSSStyleSheet* CreateSheet(Element&,
                              const String& text,
-                             WTF::TextPosition start_position,
+                             TextPosition start_position,
                              PendingSheetType type,
                              RenderBlockingBehavior render_blocking_behavior);
 
@@ -836,7 +836,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   CSSStyleSheet* ParseSheet(Element&,
                             const String& text,
-                            WTF::TextPosition start_position,
+                            TextPosition start_position,
                             RenderBlockingBehavior render_blocking_behavior);
 
   const DocumentStyleSheetCollection& GetDocumentStyleSheetCollection() const {

@@ -180,7 +180,7 @@ const AtomicString& SVGScriptElement::GetNonceForElement() const {
 
 bool SVGScriptElement::AllowInlineScriptForCSP(
     const AtomicString& nonce,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     const String& script_content) {
   return GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()

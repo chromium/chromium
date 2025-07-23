@@ -980,7 +980,7 @@ const LineEndings* InspectorStyleSheetBase::GetLineEndings() {
     return line_endings_.get();
   String text;
   if (GetText(&text))
-    line_endings_ = WTF::GetLineEndings(text);
+    line_endings_ = blink::GetLineEndings(text);
   return line_endings_.get();
 }
 

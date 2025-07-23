@@ -499,7 +499,7 @@ const LineEndings* InspectorCSSParserObserver::GetLineEndings() {
   if (line_endings_->size() > 0) {
     return line_endings_.get();
   }
-  line_endings_ = WTF::GetLineEndings(parsed_text_);
+  line_endings_ = blink::GetLineEndings(parsed_text_);
   return line_endings_.get();
 }
 

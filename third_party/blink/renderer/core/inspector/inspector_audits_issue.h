@@ -177,14 +177,14 @@ class CORE_EXPORT AuditsIssue {
       mojom::blink::PartitioningBlobURLInfo info);
   static void ReportStylesheetLoadingLateImportIssue(Document* document,
                                                      const KURL& url,
-                                                     WTF::OrdinalNumber line,
-                                                     WTF::OrdinalNumber column);
+                                                     OrdinalNumber line,
+                                                     OrdinalNumber column);
 
   static void ReportPropertyRuleIssue(
       Document* document,
       const KURL& url,
-      WTF::OrdinalNumber line,
-      WTF::OrdinalNumber column,
+      OrdinalNumber line,
+      OrdinalNumber column,
       protocol::Audits::PropertyRuleIssueReason reason,
       const String& propertyValue);
 
@@ -193,8 +193,8 @@ class CORE_EXPORT AuditsIssue {
       const KURL& url,
       const String& request_id,
       const KURL& initiator_url,
-      WTF::OrdinalNumber initiator_line,
-      WTF::OrdinalNumber initiator_column,
+      OrdinalNumber initiator_line,
+      OrdinalNumber initiator_column,
       const String& failureMessage);
 
   static void ReportElementAccessibilityIssue(

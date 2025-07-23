@@ -8241,7 +8241,7 @@ void Document::MaybeRecordSvgImageProcessingTime(
 bool Document::AllowInlineEventHandler(Node* node,
                                        EventListener* listener,
                                        const String& context_url,
-                                       const WTF::OrdinalNumber& context_line) {
+                                       const OrdinalNumber& context_line) {
   auto* element = DynamicTo<Element>(node);
   // HTML says that inline script needs browsing context to create its execution
   // environment.

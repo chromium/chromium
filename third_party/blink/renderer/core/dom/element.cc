@@ -10639,7 +10639,7 @@ bool Element::IsStyleAttributeChangeAllowed(const AtomicString& style_string) {
 
   if (auto* context = GetExecutionContext()) {
     if (auto* policy = context->GetContentSecurityPolicyForCurrentWorld()) {
-      WTF::OrdinalNumber start_line_number = WTF::OrdinalNumber::BeforeFirst();
+      OrdinalNumber start_line_number = OrdinalNumber::BeforeFirst();
       auto& document = GetDocument();
       if (document.GetScriptableDocumentParser() &&
           !document.IsInDocumentWrite()) {

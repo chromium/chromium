@@ -1510,7 +1510,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool AllowInlineEventHandler(Node*,
                                EventListener*,
                                const String& context_url,
-                               const WTF::OrdinalNumber& context_line);
+                               const OrdinalNumber& context_line);
 
   void StatePopped(scoped_refptr<SerializedScriptValue>);
 

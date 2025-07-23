@@ -124,7 +124,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
     return HasDuplicateAttribute();
   }
   bool AllowInlineScriptForCSP(const AtomicString& nonce,
-                               const WTF::OrdinalNumber&,
+                               const OrdinalNumber&,
                                const String& script_content) override;
   void DispatchLoadEvent() override;
   void DispatchErrorEvent() override;

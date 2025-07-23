@@ -719,8 +719,8 @@ void AuditsIssue::ReportPartitioningBlobURLIssue(
 void AuditsIssue::ReportPropertyRuleIssue(
     Document* document,
     const KURL& url,
-    WTF::OrdinalNumber line,
-    WTF::OrdinalNumber column,
+    OrdinalNumber line,
+    OrdinalNumber column,
     protocol::Audits::PropertyRuleIssueReason reason,
     const String& propertyValue) {
   if (!document || !document->GetExecutionContext()) {
@@ -753,11 +753,10 @@ void AuditsIssue::ReportPropertyRuleIssue(
       AuditsIssue(std::move(issue)));
 }
 
-void AuditsIssue::ReportStylesheetLoadingLateImportIssue(
-    Document* document,
-    const KURL& url,
-    WTF::OrdinalNumber line,
-    WTF::OrdinalNumber column) {
+void AuditsIssue::ReportStylesheetLoadingLateImportIssue(Document* document,
+                                                         const KURL& url,
+                                                         OrdinalNumber line,
+                                                         OrdinalNumber column) {
   if (!document || !document->GetExecutionContext()) {
     return;
   }
@@ -791,8 +790,8 @@ void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
     const KURL& url,
     const String& request_id,
     const KURL& initiator_url,
-    WTF::OrdinalNumber initiator_line,
-    WTF::OrdinalNumber initiator_column,
+    OrdinalNumber initiator_line,
+    OrdinalNumber initiator_column,
     const String& failureMessage) {
   if (!document || !document->GetExecutionContext()) {
     return;

@@ -32,6 +32,7 @@ class scoped_refptr;
 namespace blink {
 
 class AtomicString;
+class OrdinalNumber;
 class PartitionAllocator;
 class SegmentedBuffer;
 class SharedBuffer;
@@ -39,6 +40,7 @@ class String;
 class StringBuilder;
 class StringImpl;
 class StringView;
+class TextPosition;
 
 template <typename T,
           wtf_size_t inlineBuffer = 0,
@@ -54,9 +56,6 @@ class Vector;
 }  // namespace blink
 
 namespace WTF {
-
-class OrdinalNumber;
-class TextPosition;
 
 // TODO(crbug.com/422768753): Remove these `using` directives.
 using blink::String;
