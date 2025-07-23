@@ -16,6 +16,27 @@ key_rotation_data {
   }
 }
 
+special_app_permissions_data {
+  # Test entry: provides notification override for a test app.
+  special_app_permissions {
+    key: "2ehqwjhen5u2cwyyymd3viv67gx2hsf7gwqusdltdprjuh3nppuaaaic",
+    value: {
+      multi_screen_capture: {
+        skip_capture_started_notification: true
+      }
+    }
+  }
+  # Test entry: provides notification override for a test app.
+  special_app_permissions {
+    key: "hbsokgnyjp3cuyuhikquupayzrvbu72ymm7k7lobxq7f5pwbkvwqaaic",
+    value: {
+      multi_screen_capture: {
+        skip_capture_started_notification: true
+      }
+    }
+  }
+}
+
 iwa_access_control: {
   managed_allowlist: {
     key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai"
