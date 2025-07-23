@@ -12928,23 +12928,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableReaderMode",
+                        "EnableReaderModeDefaultBrowserPromo",
                         "EnableReaderModePageEligibilityForToolsMenu"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSReaderModeMetrics": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableReaderModeDistiller",
-                        "EnableReaderModeDistillerHeuristic"
                     ]
                 }
             ]
