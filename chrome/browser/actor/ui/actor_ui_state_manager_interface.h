@@ -52,11 +52,9 @@ class ActorUiStateManagerInterface {
       tabs::TabInterface* tab) = 0;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  // Called on glic window (floaty) state change. Receives new state and the
-  // last active window before the floaty became active.
+  // Called on glic window (floaty) state change.
   virtual void OnGlicUpdateFloatyState(
-      glic::GlicWindowController::State floaty_state,
-      BrowserWindowInterface* bwi) = 0;
+      glic::GlicWindowController::State floaty_state) = 0;
 
   // Register for this callback to detect changes to the glic floaty status and
   // UiState.
