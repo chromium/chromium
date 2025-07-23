@@ -7800,6 +7800,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowNewTabAnimationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShowNewTabAnimations)},
 
+    {"global-cache-list-for-gating-notification-protections",
+     flag_descriptions::kGlobalCacheListForGatingNotificationProtectionsName,
+     flag_descriptions::
+         kGlobalCacheListForGatingNotificationProtectionsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kGlobalCacheListForGatingNotificationProtections)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"report-notification-content-detection-data",

@@ -1883,6 +1883,11 @@ extern const char kShowRelatedWebsiteSetsPermissionGrantsDescription[];
 extern const char kShowWarningsForSuspiciousNotificationsName[];
 extern const char kShowWarningsForSuspiciousNotificationsDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kGlobalCacheListForGatingNotificationProtectionsName[];
+extern const char kGlobalCacheListForGatingNotificationProtectionsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kPowerBookmarkBackendName[];
 extern const char kPowerBookmarkBackendDescription[];
 

@@ -3291,6 +3291,15 @@ const char kShowWarningsForSuspiciousNotificationsDescription[] =
     "Enables replacing notification contents with a warning when the on-device "
     "notification content detection model returns a suspicious verdict.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kGlobalCacheListForGatingNotificationProtectionsName[] =
+    "Global cache list for gating notification protections";
+const char kGlobalCacheListForGatingNotificationProtectionsDescription[] =
+    "Enables using the global cache list, rather than using the Safe Browsing "
+    "allowlist, to gate notification content warnings and behavior-based "
+    "telemetry.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";

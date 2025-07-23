@@ -9364,6 +9364,8 @@ from previous Chrome versions.
       label="CCTOpenInBrowserButtonIfEnabledByEmbedder:enabled"/>
   <int value="-1732940196" label="MultiCalendarSupport:disabled"/>
   <int value="-1732888954" label="UseButtonTranslateBubbleUI:enabled"/>
+  <int value="-1732881759"
+      label="GlobalCacheListForGatingNotificationProtections:disabled"/>
   <int value="-1732777136" label="SignInProfileCreationFlow:disabled"/>
   <int value="-1732696544" label="TabGroupParityBottomSheetAndroid:enabled"/>
   <int value="-1732561795" label="ConsistentOmniboxGeolocation:enabled"/>
@@ -18063,6 +18065,8 @@ from previous Chrome versions.
   <int value="1460028797"
       label="EnableExtensionsExplicitBrowserSignin:disabled"/>
   <int value="1460266536" label="PulseaudioLoopbackForScreenShare:disabled"/>
+  <int value="1460521025"
+      label="GlobalCacheListForGatingNotificationProtections:enabled"/>
   <int value="1460747747" label="GdiTextPrinting:enabled"/>
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>
