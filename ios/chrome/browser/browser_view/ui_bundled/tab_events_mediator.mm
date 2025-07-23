@@ -329,12 +329,8 @@
 }
 - (void)willSwitchToTabWithURL:(const GURL&)URL
               newWebStateIndex:(NSInteger)newWebStateIndex {
-  base::WeakPtr<web::WebState> weakWebStateBeingActivated =
-      _webStateList->GetWebStateAt(newWebStateIndex)->GetWeakPtr();
-  web::WebState* webStateBeingActivated = weakWebStateBeingActivated.get();
-  if (!webStateBeingActivated) {
-    return;
-  }
+  web::WebState* webStateBeingActivated =
+      _webStateList->GetWebStateAt(newWebStateIndex);
   SnapshotTabHelper* snapshotTabHelper =
       SnapshotTabHelper::FromWebState(webStateBeingActivated);
   BOOL willAddPlaceholder =
