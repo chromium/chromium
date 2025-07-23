@@ -82,14 +82,7 @@ class UI_ANDROID_EXPORT EventForwarder {
                     const base::android::JavaParamRef<jobject>& motion_event,
                     jlong time_ns,
                     jint android_action,
-                    jfloat x,
-                    jfloat y,
-                    jint pointer_id,
-                    jfloat pressure,
-                    jfloat orientation,
-                    jfloat tilt,
                     jint android_changed_button,
-                    jint android_button_state,
                     jint tool_type);
 
   void OnDragEvent(JNIEnv* env,

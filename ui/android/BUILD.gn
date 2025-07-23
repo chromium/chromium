@@ -105,6 +105,7 @@ component("android") {
     "//ui/display",
     "//ui/display/util:util",
     "//ui/events",
+    "//ui/events:motionevent_jni_headers",
     "//ui/events/blink:blink",
     "//ui/events/devices",
     "//ui/gfx",

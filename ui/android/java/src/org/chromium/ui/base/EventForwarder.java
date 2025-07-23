@@ -424,14 +424,7 @@ public class EventForwarder {
                                     event,
                                     MotionEventUtils.getEventTimeNanos(event),
                                     MotionEvent.ACTION_BUTTON_RELEASE,
-                                    event.getX(),
-                                    event.getY(),
-                                    event.getPointerId(0),
-                                    event.getPressure(0),
-                                    event.getOrientation(0),
-                                    event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                                     MotionEvent.BUTTON_PRIMARY,
-                                    event.getButtonState(),
                                     event.getToolType(0));
                 }
                 mLastMouseButtonState = 0;
@@ -500,14 +493,7 @@ public class EventForwarder {
                         event,
                         MotionEventUtils.getEventTimeNanos(event),
                         eventAction,
-                        event.getX(),
-                        event.getY(),
-                        event.getPointerId(0),
-                        event.getPressure(0),
-                        event.getOrientation(0),
-                        event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                         getMouseEventActionButton(event),
-                        event.getButtonState(),
                         shouldConvertToMouseEvent
                                 ? MotionEvent.TOOL_TYPE_MOUSE
                                 : event.getToolType(0));
@@ -757,14 +743,7 @@ public class EventForwarder {
                             event,
                             MotionEventUtils.getEventTimeNanos(event),
                             event.getActionMasked(),
-                            event.getX(),
-                            event.getY(),
-                            event.getPointerId(0),
-                            event.getPressure(0),
-                            event.getOrientation(0),
-                            event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                             getMouseEventActionButton(event),
-                            event.getButtonState(),
                             shouldConvertToMouseEvent
                                     ? MotionEvent.TOOL_TYPE_MOUSE
                                     : event.getToolType(0));
@@ -893,14 +872,7 @@ public class EventForwarder {
                 MotionEvent event,
                 long timeNs,
                 int action,
-                float x,
-                float y,
-                int pointerId,
-                float pressure,
-                float orientation,
-                float tilt,
                 int changedButton,
-                int buttonState,
                 int toolType);
 
         void onDragEvent(
