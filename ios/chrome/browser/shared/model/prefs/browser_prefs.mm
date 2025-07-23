@@ -888,6 +888,16 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to download restrictions enterprise policy.
   registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);
 
+  // Preferences related to enterprise cloud profile reporting.
+  registry->RegisterBooleanPref(
+      enterprise_reporting::kCloudProfileReportingEnabled, false);
+  registry->RegisterTimePref(enterprise_reporting::kLastUploadTimestamp,
+                             base::Time());
+  registry->RegisterTimePref(
+      enterprise_reporting::kLastUploadSucceededTimestamp, base::Time());
+  registry->RegisterTimeDeltaPref(
+      enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
+
   // Preferences related to parcel tracking.
   // Deprecated 03/2025.
   registry->RegisterBooleanPref(kIosParcelTrackingOptInPromptDisplayLimitMet,

@@ -14,6 +14,7 @@
 //ios/chrome/test/data/policy/pref_mapping/ChromeVariations.json
 //ios/chrome/test/data/policy/pref_mapping/CloudManagementEnrollmentToken.json
 //ios/chrome/test/data/policy/pref_mapping/CloudPolicyOverridesPlatformPolicy.json
+//ios/chrome/test/data/policy/pref_mapping/CloudProfileReportingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/CloudReportingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/CloudReportingUploadFrequency.json
 //ios/chrome/test/data/policy/pref_mapping/CloudUserPolicyMerge.json

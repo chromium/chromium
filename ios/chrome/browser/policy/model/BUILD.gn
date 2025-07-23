@@ -46,6 +46,8 @@ source_set("model") {
     "profile_policy_connector_factory.mm",
     "reporting/browser_report_generator_ios.h",
     "reporting/browser_report_generator_ios.mm",
+    "reporting/features.h",
+    "reporting/features.mm",
     "reporting/profile_report_generator_ios.h",
     "reporting/profile_report_generator_ios.mm",
     "reporting/report_scheduler_ios.h",

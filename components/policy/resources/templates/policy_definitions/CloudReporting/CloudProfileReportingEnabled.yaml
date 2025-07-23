@@ -21,6 +21,7 @@ supported_on:
 future_on:
 - chrome_os
 - fuchsia
+- ios
 items:
 - caption: Enable managed profile cloud reporting
   value: true
