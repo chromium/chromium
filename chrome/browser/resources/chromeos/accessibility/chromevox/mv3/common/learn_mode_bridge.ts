@@ -20,40 +20,87 @@ const LearnModeTestTarget = BridgeConstants.LearnModeTest.TARGET;
 const LearnModeTestAction = BridgeConstants.LearnModeTest.Action;
 
 export class LearnModeBridge {
-  static onKeyDown(internalEvent: InternalKeyEvent): Promise<boolean> {
+  // We need to call this method before sending a message to the learn mode
+  // page, otherwise, we will encounter errors like "Unchecked
+  // runtime.lastError: The message port closed before a response was received".
+  private static async isLearnModeReady_(): Promise<boolean> {
+    if (chrome.runtime && chrome.runtime.getContexts) {
+      // If the calling context has access to the necessary API, then use it
+      // directly.
+      const learnModeUrl =
+          chrome.runtime.getURL('chromevox/mv3/learn_mode/learn_mode.html');
+      const existingContexts = await chrome.runtime.getContexts({
+        documentUrls: [learnModeUrl],
+      });
+
+      return existingContexts.length > 0;
+    }
+
+    // Otherwise, ask the service worker if learn mode is ready.
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ChromeVoxState.TARGET,
+        BridgeConstants.ChromeVoxState.Action.IS_LEARN_MODE_READY);
+  }
+
+  static async onKeyDown(internalEvent: InternalKeyEvent): Promise<boolean> {
+    const ready = await LearnModeBridge.isLearnModeReady_();
+    if (!ready) {
+      return false;
+    }
+
     return BridgeHelper.sendMessage(
         LearnModeTarget, LearnModeAction.ON_KEY_DOWN, internalEvent);
   }
 
-  static onKeyUp(): Promise<void> {
+  static async onKeyUp(): Promise<void> {
+    const ready = await LearnModeBridge.isLearnModeReady_();
+    if (!ready) {
+      return;
+    }
+
     return BridgeHelper.sendMessage(LearnModeTarget, LearnModeAction.ON_KEY_UP);
   }
 
-  static onKeyPress(): Promise<void> {
+  static async onKeyPress(): Promise<void> {
+    const ready = await LearnModeBridge.isLearnModeReady_();
+    if (!ready) {
+      return;
+    }
+
     return BridgeHelper.sendMessage(
         LearnModeTarget, LearnModeAction.ON_KEY_PRESS);
   }
 
-  static clearTouchExploreOutputTimeForTest(): Promise<void> {
+  static async clearTouchExploreOutputTimeForTest(): Promise<void> {
+    const ready = await LearnModeBridge.isLearnModeReady_();
+    if (!ready) {
+      return;
+    }
+
     return BridgeHelper.sendMessage(
         LearnModeTestTarget,
         LearnModeTestAction.CLEAR_TOUCH_EXPLORE_OUTPUT_TIME);
   }
 
-  static onAccessibilityGestureForTest(gesture: string): Promise<void> {
+  static async onAccessibilityGestureForTest(gesture: string): Promise<void> {
+    const ready = await LearnModeBridge.isLearnModeReady_();
+    if (!ready) {
+      return;
+    }
+
     return BridgeHelper.sendMessage(
         LearnModeTestTarget, LearnModeTestAction.ON_ACCESSIBILITY_GESTURE,
         gesture);
   }
 
-  static onBrailleKeyEventForTest(event: BrailleKeyEvent): Promise<void> {
+  static async onBrailleKeyEventForTest(event: BrailleKeyEvent): Promise<void> {
+    const ready = await LearnModeBridge.isLearnModeReady_();
+    if (!ready) {
+      return;
+    }
+
     return BridgeHelper.sendMessage(
         LearnModeTestTarget, LearnModeTestAction.ON_BRAILLE_KEY_EVENT, event);
-  }
-
-  static readyForTest(): Promise<void> {
-    return BridgeHelper.sendMessage(
-        LearnModeTestTarget, LearnModeTestAction.READY);
   }
 }
 

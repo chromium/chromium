@@ -87,10 +87,6 @@ export class LearnMode {
         TestTARGET, TestAction.ON_BRAILLE_KEY_EVENT,
         (event: chrome.brailleDisplayPrivate.KeyEvent) =>
             LearnMode.onBrailleKeyEvent(event));
-    BridgeHelper.registerHandler(
-        TestTARGET, TestAction.READY, () => readyPromise);
-
-    readyCallback();
   }
 
   /**
@@ -368,8 +364,3 @@ function $(id: string): HTMLElement | null {
  * The minimum time to wait before describing another touch explore gesture.
  */
 let MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS = 1000;
-
-
-let readyCallback: VoidFunction;
-const readyPromise =
-    new Promise(resolve => readyCallback = resolve as VoidFunction);

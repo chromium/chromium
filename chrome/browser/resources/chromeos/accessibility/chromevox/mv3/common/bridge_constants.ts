@@ -65,6 +65,13 @@ export const BridgeConstants = {
     },
   },
 
+  ChromeVoxState: {
+    TARGET: 'ChromeVoxState',
+    Action: {
+      IS_LEARN_MODE_READY: 'isLearnModeReady',
+    },
+  },
+
   CommandHandler: {
     TARGET: 'CommandHandler',
     Action: {
@@ -125,7 +132,6 @@ export const BridgeConstants = {
       CLEAR_TOUCH_EXPLORE_OUTPUT_TIME: 'clearTouchExploreOutputTime',
       ON_ACCESSIBILITY_GESTURE: 'onAccessibilityGesture',
       ON_BRAILLE_KEY_EVENT: 'onBrailleKeyEvent',
-      READY: 'ready',
     },
   },
 

@@ -22,6 +22,13 @@ ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
     globalThis.doBrailleKeyEvent = this.doBrailleKeyEvent.bind(this);
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    const imports = TestImportManager.getImports();
+    globalThis.LearnModeBridge = imports.LearnModeBridge;
+  }
+
   async runOnLearnModePage() {
     return new Promise(async resolve => {
       const mockFeedback = this.createMockFeedback();
@@ -187,7 +194,6 @@ AX_TEST_F('ChromeVoxLearnModeTest', 'HardwareFunctionKeys', async function() {
 AX_TEST_F(
     'ChromeVoxLearnModeTest', 'CommandHandlersDisabled', async function() {
       const [mockFeedback, evt] = await this.runOnLearnModePage();
-      await LearnModeBridge.readyForTest();
       assertTrue(BrailleCommandHandler.instance.bypassed_);
       assertTrue(GestureCommandHandler.instance.bypassed_);
       await mockFeedback.replay();
