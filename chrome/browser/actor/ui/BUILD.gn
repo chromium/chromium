@@ -32,6 +32,8 @@ source_set("ui") {
     "actor_ui_tab_controller.cc",
     "actor_ui_tab_controller.h",
     "actor_ui_tab_controller_interface.h",
+    "handoff_button_controller.cc",
+    "handoff_button_controller.h",
   ]
   deps = [
     ":ui_event_types",
@@ -151,6 +153,7 @@ source_set("unit_tests") {
     "actor_ui_state_manager_unittest.cc",
     "actor_ui_tab_controller_unittest.cc",
     "event_dispatcher_unittest.cc",
+    "handoff_button_controller_unittest.cc",
     "ui_event_debugstring_unittest.cc",
   ]
   deps = [
