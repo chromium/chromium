@@ -253,6 +253,11 @@ public final class ChildProcessLauncherHelperImpl {
                         ChildProcessConnectionMetrics.getInstance().removeConnection(connection);
                     }
                 }
+
+                @Override
+                public int getLibraryProcessType() {
+                    return ChildProcessCreationParamsImpl.getLibraryProcessType();
+                }
             };
 
     /**

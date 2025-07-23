@@ -66,6 +66,10 @@ BASE_EXPORT void LibraryLoaderExitHook();
 // shared library.
 void InitAtExitManager();
 
+// First symbol called after library is done loading, and our OnLoad has
+// finished. Sets and calls global initializer delegates.
+BASE_EXPORT bool LibraryLoaded(LibraryProcessType library_process_type);
+
 }  // namespace android
 }  // namespace base
 

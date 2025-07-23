@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cpu-features.h>
-
 #include "base/android/jni_array.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/android/memory_pressure_listener_android.h"
@@ -13,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "components/input/android/input_token_forwarder.h"
+#include "content/app/android/content_main_android.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/surface_wrapper.h"
 #include "content/common/shared_file_util.h"
@@ -111,8 +110,7 @@ void JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
     const JavaParamRef<jobject>& service_impl,
     jint cpu_count,
     jlong cpu_features) {
-  // Set the CPU properties.
-  android_setCpu(cpu_count, cpu_features);
+  InitChildProcessCommon(cpu_count, cpu_features);
 
   GetChildProcessSurfaceManager()->SetServiceImpl(service_impl);
 

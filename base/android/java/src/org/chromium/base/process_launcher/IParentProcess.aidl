@@ -15,7 +15,7 @@ interface IParentProcess {
     // or its app zygote did not produce a usable shared region containing
     // linker relocations (RELRO FD).
     oneway void finishSetupConnection(int pid, int zygotePid,
-        long zygoteStartupTimeMillis, in IRelroLibInfo relroInfo);
+        long zygoteStartupTimeMillis, in @nullable IRelroLibInfo relroInfo);
 
     // Reports exception before calling into native main method. This is before
     // crash reporting is initialized, which means this exception would

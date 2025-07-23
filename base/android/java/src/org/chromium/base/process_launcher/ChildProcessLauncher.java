@@ -94,6 +94,12 @@ public class ChildProcessLauncher {
          * @param connection the connection that got disconnected.
          */
         public void onConnectionLost(ChildProcessConnection connection) {}
+
+        /**
+         * Gives us which process type we have, so we know which delegate to use when initializing
+         * the child process.
+         */
+        public abstract int getLibraryProcessType();
     }
 
     // Represents an invalid process handle; same as base/process/process.h kNullProcessHandle.
@@ -310,6 +316,7 @@ public class ChildProcessLauncher {
         args.androidInfo = AndroidInfo.getAidlInfo();
         args.deviceInfo = DeviceInfo.getAidlInfo();
         args.channel = VersionConstants.CHANNEL;
+        args.libraryProcessType = mDelegate.getLibraryProcessType();
         return args;
     }
 

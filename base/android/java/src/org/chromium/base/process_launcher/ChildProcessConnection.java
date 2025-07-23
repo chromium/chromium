@@ -920,7 +920,7 @@ public class ChildProcessConnection {
                                 int pid,
                                 int zygotePid,
                                 long zygoteStartupTimeMillis,
-                                IRelroLibInfo relroInfo) {
+                                @Nullable IRelroLibInfo relroInfo) {
                             mLauncherHandler.post(
                                     () -> {
                                         onSetupConnectionResultOnLauncherThread(

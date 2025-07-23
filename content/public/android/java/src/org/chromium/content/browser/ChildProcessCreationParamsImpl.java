@@ -4,10 +4,12 @@
 
 package org.chromium.content.browser;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -20,6 +22,8 @@ public class ChildProcessCreationParamsImpl {
             "org.chromium.content.app.PrivilegedProcessService";
     private static final String SANDBOXED_SERVICES_NAME =
             "org.chromium.content.app.SandboxedProcessService";
+    private static final String NATIVE_SANDBOXED_SERVICES_NAME =
+            "org.chromium.content.app.NativeServiceSandboxedProcessService";
 
     // Members should all be immutable to avoid worrying about thread safety.
     private static @Nullable String sPackageNameForPrivilegedService;
@@ -57,6 +61,10 @@ public class ChildProcessCreationParamsImpl {
         if (sInitialized) extras.putInt(EXTRA_LIBRARY_PROCESS_TYPE, sLibraryProcessType);
     }
 
+    public static int getLibraryProcessType() {
+        return sInitialized ? sLibraryProcessType : LibraryProcessType.PROCESS_CHILD;
+    }
+
     public static String getPackageNameForPrivilegedService() {
         return sPackageNameForPrivilegedService != null
                 ? sPackageNameForPrivilegedService
@@ -90,6 +98,9 @@ public class ChildProcessCreationParamsImpl {
     }
 
     public static String getSandboxedServicesName() {
+        if (BuildConfig.JAVALESS_RENDERERS_AVAILABLE && Build.VERSION.SDK_INT >= 35) {
+            return NATIVE_SANDBOXED_SERVICES_NAME;
+        }
         return SANDBOXED_SERVICES_NAME;
     }
 }

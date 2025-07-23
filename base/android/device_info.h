@@ -7,10 +7,23 @@
 
 #include <string>
 
+#include "base/base_export.h"
+
+#if __ANDROID_API__ >= 29
+namespace aidl::org::chromium::base {
+class IDeviceInfo;
+}  // namespace aidl::org::chromium::base
+using ::aidl::org::chromium::base::IDeviceInfo;
+#else
+struct IDeviceInfo;
+#endif
+
 namespace base::android::device_info {
 const std::string& gms_version_code();
 
 void set_gms_version_code_for_test(const std::string& gms_version_code);
+
+BASE_EXPORT void Set(const IDeviceInfo& info);
 
 bool is_tv();
 bool is_automotive();

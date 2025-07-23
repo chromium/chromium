@@ -5,6 +5,8 @@
 #ifndef CONTENT_APP_ANDROID_CONTENT_MAIN_ANDROID_H_
 #define CONTENT_APP_ANDROID_CONTENT_MAIN_ANDROID_H_
 
+#include <cstdint>
+
 #include "content/common/content_export.h"
 
 namespace content {
@@ -15,6 +17,10 @@ class ContentMainDelegate;
 // SetContentMainDelegate().
 CONTENT_EXPORT ContentMainDelegate* GetContentMainDelegateForTesting();
 
+CONTENT_EXPORT int StartContentMain(bool start_minimal_browser);
+
+CONTENT_EXPORT void InitChildProcessCommon(int32_t cpu_count,
+                                           int64_t cpu_features);
 }  // namespace content
 
 #endif  // CONTENT_APP_ANDROID_CONTENT_MAIN_ANDROID_H_

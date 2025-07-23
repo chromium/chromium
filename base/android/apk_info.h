@@ -7,6 +7,17 @@
 
 #include <string>
 
+#include "base/base_export.h"
+
+#if __ANDROID_API__ >= 29
+namespace aidl::org::chromium::base {
+class IApkInfo;
+}  // namespace aidl::org::chromium::base
+using ::aidl::org::chromium::base::IApkInfo;
+#else
+struct IApkInfo;
+#endif
+
 namespace base::android::apk_info {
 // The package name of the host app which has loaded WebView, retrieved from
 // the application context. In the context of the SDK Runtime, the package
@@ -39,7 +50,6 @@ bool is_debug_app();
 
 int target_sdk_version();
 
-bool targets_at_least_u();
-
+BASE_EXPORT void Set(const IApkInfo& info);
 }  // namespace base::android::apk_info
 #endif  // BASE_ANDROID_APK_INFO_H_

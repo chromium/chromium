@@ -52,6 +52,8 @@ _IGNORE_WARNINGS = (
         r'EditorDialogToolbar',
         # https://crbug.com/1441226
         r'PaymentRequest[BH]',
+        # This service is defined in Native not Java.
+        r'NativeServiceSandboxedProcessService',
     ]) + ')',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',

@@ -2007,6 +2007,10 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_IS_DESKTOP_ANDROID" ]
       }
 
+      if (enable_javaless_renderers) {
+        defines += [ "_JAVALESS_RENDERERS_AVAILABLE" ]
+      }
+
       if (defined(invoker.write_clang_profiling_data) &&
           invoker.write_clang_profiling_data) {
         defines += [ "_WRITE_CLANG_PROFILING_DATA" ]
@@ -3976,6 +3980,7 @@ if (!is_robolectric && enable_java_templates) {
                  [
                    "cpp_root_names",
                    "cpp_package_name",
+                   "deps",
                  ])
     }
     action_with_pydeps(_aidl_target) {
@@ -4037,13 +4042,18 @@ if (!is_robolectric && enable_java_templates) {
       args += rebase_path(sources, root_build_dir)
     }
     if (_do_cpp_gen) {
-      _aidl_config = "${_aidl_target}_include_config"
+      _aidl_config = "${_aidl_target}__config"
       config(_aidl_config) {
         include_dirs = [ "$target_gen_dir" ]
       }
       source_set("${_aidl_target}_native") {
         sources = _cpp_outputs + _header_outputs
         deps = [ ":$_aidl_target" ]
+        if (defined(invoker.deps)) {
+          foreach(_dep, invoker.deps) {
+            deps += [ "${_dep}_native" ]
+          }
+        }
         libs = [ "binder_ndk" ]
         public_configs = [
           "//third_party/android_sdk:libbinder_include",

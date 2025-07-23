@@ -58,6 +58,12 @@ const IApkInfo& get_apk_info() {
 
 }  // namespace
 
+void Set(const IApkInfo& info) {
+  std::optional<IApkInfo>& holder = get_holder();
+  DCHECK(!holder.has_value());
+  holder.emplace(info);
+}
+
 static void JNI_ApkInfo_FillFields(JNIEnv* env,
                                    std::string& hostPackageName,
                                    std::string& hostVersionCode,
@@ -69,18 +75,16 @@ static void JNI_ApkInfo_FillFields(JNIEnv* env,
                                    std::string& installerPackageName,
                                    jboolean isDebugApp,
                                    jint targetSdkVersion) {
-  std::optional<IApkInfo>& holder = get_holder();
-  DCHECK(!holder.has_value());
-  holder.emplace(IApkInfo{.hostPackageLabel = hostPackageLabel,
-                          .hostPackageName = hostPackageName,
-                          .hostVersionCode = hostVersionCode,
-                          .installerPackageName = installerPackageName,
-                          .isDebugApp = static_cast<bool>(isDebugApp),
-                          .packageName = packageName,
-                          .packageVersionCode = packageVersionCode,
-                          .packageVersionName = packageVersionName,
-                          .resourcesVersion = resourcesVersion,
-                          .targetSdkVersion = targetSdkVersion});
+  Set(IApkInfo{.hostPackageLabel = hostPackageLabel,
+               .hostPackageName = hostPackageName,
+               .hostVersionCode = hostVersionCode,
+               .installerPackageName = installerPackageName,
+               .isDebugApp = static_cast<bool>(isDebugApp),
+               .packageName = packageName,
+               .packageVersionCode = packageVersionCode,
+               .packageVersionName = packageVersionName,
+               .resourcesVersion = resourcesVersion,
+               .targetSdkVersion = targetSdkVersion});
 }
 
 const std::string& host_package_name() {

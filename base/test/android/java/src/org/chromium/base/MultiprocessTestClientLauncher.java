@@ -109,6 +109,11 @@ public final class MultiprocessTestClientLauncher {
                     sPidToCleanExit.put(connection.getPid(), connection.hasCleanExit());
                     sPidToLauncher.remove(connection.getPid());
                 }
+
+                @Override
+                public int getLibraryProcessType() {
+                    return 0;
+                }
             };
 
     private final CountDownLatch mPidReceived = new CountDownLatch(1);

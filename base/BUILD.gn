@@ -1162,6 +1162,7 @@ component("base") {
       "android/bundle_utils.h",
       "android/child_process_binding_types.h",
       "android/child_process_service.cc",
+      "android/child_process_service.h",
       "android/content_uri_utils.cc",
       "android/content_uri_utils.h",
       "android/cpu_features.cc",
@@ -1341,6 +1342,7 @@ component("base") {
       "android/callback_android.cc",
       "android/callback_android.h",
       "android/command_line_android.cc",
+      "android/command_line_android.h",
       "android/int_string_callback.cc",
       "android/int_string_callback.h",
       "android/java_exception_reporter.cc",
@@ -4550,6 +4552,7 @@ if (is_android) {
       ":process_launcher_jni",
     ]
     deps = [
+      ":android_info_java",
       ":base_java",
       "//base/version_info/android:version_constants_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -5248,6 +5251,8 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/library_loader/IRelroLibInfo.aidl",
     ]
+    cpp_root_names = [ "RelroLibInfo" ]
+    cpp_package_name = "org/chromium/base/library_loader"
   }
 
   android_library("library_loader_java") {
@@ -5364,6 +5369,18 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/IChildProcessService.aidl",
       "android/java/src/org/chromium/base/process_launcher/IFileDescriptorInfo.aidl",
       "android/java/src/org/chromium/base/process_launcher/IParentProcess.aidl",
+    ]
+    cpp_root_names = [
+      "ChildProcessArgs",
+      "ChildProcessService",
+      "FileDescriptorInfo",
+      "ParentProcess",
+    ]
+    cpp_package_name = "org/chromium/base/process_launcher"
+    deps = [
+      ":android_info_aidl",
+      ":build_info_aidl",
+      ":relro_aidl",
     ]
   }
 

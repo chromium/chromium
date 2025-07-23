@@ -1,10 +1,10 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "base/command_line.h"
+#include "base/android/command_line_android.h"
 
 #include "base/android/jni_string.h"
+#include "base/command_line.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/command_line_jni/CommandLine_jni.h"
@@ -60,8 +60,14 @@ static void JNI_CommandLine_RemoveSwitch(JNIEnv* env,
 
 static void JNI_CommandLine_Init(JNIEnv* env,
                                  std::vector<std::string>& init_command_line) {
+  base::android::CommandLineInit(init_command_line);
+}
+
+namespace base::android {
+void CommandLineInit(std::vector<std::string>& command_line) {
   // TODO(port): Make an overload of Init() that takes StringVector rather than
   // have to round-trip via AppendArguments.
   CommandLine::Init(0, nullptr);
-  AppendToCommandLine(init_command_line, true);
+  AppendToCommandLine(command_line, true);
 }
+}  // namespace base::android

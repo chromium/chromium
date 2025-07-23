@@ -114,6 +114,15 @@ public class BuildConfig {
     public static boolean IS_DESKTOP_ANDROID;
 #endif
 
+    // Controls whether or not native-only renderers are available. Note that this check isn't
+    // sufficient to determine whether they are enabled, but just whether they have been included
+    // in the build.
+#if defined(_JAVALESS_RENDERERS_AVAILABLE)
+    public static boolean JAVALESS_RENDERERS_AVAILABLE = true;
+#else
+    public static boolean JAVALESS_RENDERERS_AVAILABLE;
+#endif
+
     // Controls whether or not StrictModeContext is a no-op.
 #if defined(_DISABLE_STRICT_MODE_CONTEXT)
     public static boolean DISABLE_STRICT_MODE_CONTEXT = true;

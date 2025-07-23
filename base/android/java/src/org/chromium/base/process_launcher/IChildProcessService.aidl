@@ -41,5 +41,5 @@ interface IChildProcessService {
   // uses it to replace the memory behind read only relocations in the child
   // process. On error the bundle is silently ignored, disabling the memory
   // optimization.
-  oneway void consumeRelroLibInfo(in IRelroLibInfo libInfo);
+  oneway void consumeRelroLibInfo(in @nullable IRelroLibInfo libInfo);
 }

@@ -83,6 +83,10 @@ template("chrome_common_shared_library") {
       deps += [ "//chrome:chrome_android_core" ]
     }
 
+    if (enable_javaless_renderers) {
+      deps += [ "//content/app:javaless_renderer" ]
+    }
+
     if (!(defined(testonly) && testonly)) {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]

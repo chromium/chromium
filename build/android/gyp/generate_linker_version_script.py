@@ -55,7 +55,11 @@ def main():
   # JNI_OnLoad is always exported.
   # CrashpadHandlerMain() is the entry point to the Crashpad handler, required
   # for libcrashpad_handler_trampoline.so.
-  symbol_list = ['CrashpadHandlerMain', 'JNI_OnLoad']
+  # NativeChildProcessService_onCreate export is for native-only services,
+  # which have a symbol exposed in our AndroidManifest which Android calls.
+  symbol_list = [
+      'CrashpadHandlerMain', 'JNI_OnLoad', 'NativeChildProcessService_onCreate'
+  ]
 
   if options.export_fortesting_java_symbols or options.jni_multiplexing:
     symbol_list.append('Java_*')

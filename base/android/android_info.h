@@ -8,6 +8,14 @@
 #include <string>
 
 #include "base/base_export.h"
+#if __ANDROID_API__ >= 29
+namespace aidl::org::chromium::base {
+class IAndroidInfo;
+}  // namespace aidl::org::chromium::base
+using ::aidl::org::chromium::base::IAndroidInfo;
+#else
+struct IAndroidInfo;
+#endif
 
 namespace base::android::android_info {
 
@@ -70,6 +78,7 @@ const std::string& abi_name();
 
 BASE_EXPORT const std::string& security_patch();
 
+BASE_EXPORT void Set(const IAndroidInfo& info);
 }  // namespace base::android::android_info
 
 #endif  // BASE_ANDROID_ANDROID_INFO_H_

@@ -68,5 +68,8 @@ source_set("webview_entry_point") {
     "//base",
     "//base:jni_onload",
   ]
+  if (enable_javaless_renderers) {
+    deps += [ "//content/app:javaless_renderer" ]
+  }
   sources = [ "webview_entry_point.cc" ]
 }

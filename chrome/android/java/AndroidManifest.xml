@@ -1267,6 +1267,27 @@ by a child template that "extends" this file.
           android:visibleToInstantApps="true"
           {% endif %} />
       {% endfor %}
+      {% if javaless_renderers is defined %}
+      <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
+      {% for i in range(2) %}
+      <!-- For now, the name of a native-only service must be prefixed with "NativeService". This is
+           only for the prototype, and once it actually lands in the Android tree, there will be a
+           better mechanism than this. -->
+      <service android:name="org.chromium.content.app.NativeServiceSandboxedProcessService{{ i }}"
+          android:process=":sandboxed_process{{ i }}"
+          android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
+          android:isolatedProcess="true"
+          android:exported="{{sandboxed_service_exported|default(false)}}"
+          {% if (sandboxed_service_exported|default(false)) == 'true' %}
+          android:externalService="true"
+          tools:ignore="ExportedService"
+          android:visibleToInstantApps="true"
+          {% endif %} >
+          <meta-data android:name="android.app.lib_name" android:value="{{ library_name }}"/>
+          <meta-data android:name="android.app.func_name" android:value="NativeChildProcessService_onCreate"/>
+      </service>
+      {% endfor %}
+      {% endif %}
 
       {% set num_privileged_services = 10 %}
       <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"

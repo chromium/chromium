@@ -772,6 +772,8 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'.*fuchsia.*test\.(cc|h)',
             # Clang plugins have different build config.
             '^tools/clang/plugins/',
+            # Needed for interop with Android native-only services.
+            r'^content/app/android/javaless_child_process_service\.cc',
             _THIRD_PARTY_EXCEPT_BLINK
         ],  # Not an error in third_party folders.
     ),

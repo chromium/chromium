@@ -53,6 +53,12 @@ IDeviceInfo& get_device_info() {
 
 }  // namespace
 
+void Set(const IDeviceInfo& info) {
+  std::optional<IDeviceInfo>& holder = get_holder();
+  DCHECK(!holder.has_value());
+  holder.emplace(info);
+}
+
 static void JNI_DeviceInfo_FillFields(JNIEnv* env,
                                       std::string& gmsVersionCode,
                                       jboolean isTV,
@@ -60,14 +66,12 @@ static void JNI_DeviceInfo_FillFields(JNIEnv* env,
                                       jboolean isFoldable,
                                       jboolean isDesktop,
                                       jint vulkanDeqpLevel) {
-  std::optional<IDeviceInfo>& holder = get_holder();
-  DCHECK(!holder.has_value());
-  holder.emplace(IDeviceInfo{.gmsVersionCode = gmsVersionCode,
-                             .isAutomotive = static_cast<bool>(isAutomotive),
-                             .isDesktop = static_cast<bool>(isDesktop),
-                             .isFoldable = static_cast<bool>(isFoldable),
-                             .isTv = static_cast<bool>(isTV),
-                             .vulkanDeqpLevel = vulkanDeqpLevel});
+  Set(IDeviceInfo{.gmsVersionCode = gmsVersionCode,
+                  .isAutomotive = static_cast<bool>(isAutomotive),
+                  .isDesktop = static_cast<bool>(isDesktop),
+                  .isFoldable = static_cast<bool>(isFoldable),
+                  .isTv = static_cast<bool>(isTV),
+                  .vulkanDeqpLevel = vulkanDeqpLevel});
 }
 
 const std::string& gms_version_code() {
