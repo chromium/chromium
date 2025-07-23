@@ -1486,11 +1486,6 @@ extern const char kLinkedServicesSettingDescription[];
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kLoginDbDeprecationAndroidName[];
-extern const char kLoginDbDeprecationAndroidDescription[];
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kMantisFeatureKeyName[];
 extern const char kMantisFeatureKeyDescription[];

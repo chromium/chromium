@@ -11763,14 +11763,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateLanguages)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"login-db-deprecation-android",
-     flag_descriptions::kLoginDbDeprecationAndroidName,
-     flag_descriptions::kLoginDbDeprecationAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kLoginDbDeprecationAndroid)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_GLIC)
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},

@@ -445,7 +445,9 @@ public abstract class ChromeFeatureList {
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOCAL_NETWORK_ACCESS = "LocalNetworkAccessChecks";
     public static final String LOCK_BACK_PRESS_HANDLER_AT_START = "LockBackPressHandlerAtStart";
-    public static final String LOGIN_DB_DEPRECATION_ANDROID = "LoginDbDeprecationAndroid";
+    // Note: Flag renamed to allow gradual clean up without causing issues for canary channel users
+    // with outdated finch seeds.
+    public static final String LOGIN_DB_DEPRECATION_ANDROID = "LoginDbDeprecationAndroidCleanedUp";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";

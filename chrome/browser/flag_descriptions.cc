@@ -2566,16 +2566,6 @@ const char kLogJsConsoleMessagesDescription[] =
     "Enable logging JS console messages in system logs, please note that they "
     "may contain PII.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kLoginDbDeprecationAndroidName[] =
-    "Deprecate the LoginDB on Android";
-const char kLoginDbDeprecationAndroidDescription[] =
-    "When enabled, Chrome on Android stops using the LoginDB. This applies "
-    "only to users who haven't been migrated to the new Android backend."
-    "Existing passwords in the LoginDB can be accessed in an exported CSV when "
-    "the user chooses to do so.";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
 const char kMantisFeatureKeyName[] = "Secret key for Mantis feature.";
 const char kMantisFeatureKeyDescription[] =
