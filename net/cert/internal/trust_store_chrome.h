@@ -83,10 +83,6 @@ class NET_EXPORT ChromeRootStoreData {
            std::vector<ChromeRootCertConstraints> constraints);
     Anchor(std::shared_ptr<const bssl::ParsedCertificate> certificate,
            std::vector<ChromeRootCertConstraints> constraints,
-           bool eutl);
-    Anchor(std::shared_ptr<const bssl::ParsedCertificate> certificate,
-           std::vector<ChromeRootCertConstraints> constraints,
-           bool eutl,
            bool enforce_anchor_expiry,
            bool enforce_anchor_constraints);
     ~Anchor();
@@ -98,7 +94,6 @@ class NET_EXPORT ChromeRootStoreData {
 
     std::shared_ptr<const bssl::ParsedCertificate> certificate;
     std::vector<ChromeRootCertConstraints> constraints;
-    bool eutl;
     bool enforce_anchor_expiry;
     // True if the certificate verifier should enforce X.509 constraints encoded
     // in the certificate.
@@ -129,9 +124,7 @@ class NET_EXPORT ChromeRootStoreData {
   ChromeRootStoreData& operator=(ChromeRootStoreData&& other);
 
   const std::vector<Anchor>& trust_anchors() const { return trust_anchors_; }
-  const std::vector<Anchor>& additional_certs() const {
-    return additional_certs_;
-  }
+  const std::vector<Anchor>& eutl_certs() const { return eutl_certs_; }
   int64_t version() const { return version_; }
 
  private:
@@ -142,7 +135,7 @@ class NET_EXPORT ChromeRootStoreData {
                       int64_t version);
 
   std::vector<Anchor> trust_anchors_;
-  std::vector<Anchor> additional_certs_;
+  std::vector<Anchor> eutl_certs_;
   int64_t version_;
 };
 
