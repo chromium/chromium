@@ -190,8 +190,6 @@ class ContentPasswordManagerDriver final
                              int32_t result) override;
 
  private:
-  void LogFilledFieldType();
-
   const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
   GetAutofillAgent();
 

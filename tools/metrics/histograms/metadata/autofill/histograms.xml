@@ -3249,16 +3249,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.FilledFieldType.Password"
-    enum="BooleanFieldClassificationType" expires_after="2026-01-18">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records for each field filled with passwords data, whether it is classified
-    as target filling password or not. Emitted at the time of the filling.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Filling.DidAlternativeNameFieldRequireConversion"
     enum="BooleanYesNo" expires_after="2025-12-17">
   <owner>aayazhan@google.com</owner>

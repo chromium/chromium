@@ -242,7 +242,6 @@ void ContentPasswordManagerDriver::FillField(
     const std::u16string& value,
     autofill::AutofillSuggestionTriggerSource suggestion_source) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    LogFilledFieldType();
     agent->FillField(last_triggering_field_id_, value, suggestion_source);
   }
 }
@@ -270,7 +269,6 @@ void ContentPasswordManagerDriver::FillChangePasswordForm(
     base::OnceCallback<void(const std::optional<autofill::FormData>&)>
         form_data_callback) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    LogFilledFieldType();
     agent->FillChangePasswordForm(
         password_element_id, new_password_element_id,
         confirm_password_element_id, old_password, new_password,
@@ -292,7 +290,6 @@ void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password,
     base::OnceCallback<void(bool)> success_callback) {
-  LogFilledFieldType();
   GetPasswordAutofillAgent()->FillPasswordSuggestion(
       username, password, std::move(success_callback));
 }
@@ -303,7 +300,6 @@ void ContentPasswordManagerDriver::FillSuggestionById(
     const std::u16string& username,
     const std::u16string& password,
     autofill::AutofillSuggestionTriggerSource suggestion_source) {
-  LogFilledFieldType();
   GetPasswordAutofillAgent()->FillPasswordSuggestionById(
       username_element_id, password_element_id, username, password,
       suggestion_source);
@@ -313,7 +309,6 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
     bool is_password,
     const std::u16string& credential) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    LogFilledFieldType();
     agent->FillIntoFocusedField(is_password, credential);
   }
 }
@@ -643,14 +638,6 @@ void ContentPasswordManagerDriver::LogFirstFillingResult(
           render_frame_host_))
     return;
   GetPasswordManager()->LogFirstFillingResult(this, form_renderer_id, result);
-}
-
-void ContentPasswordManagerDriver::LogFilledFieldType() {
-  bool field_classified_as_target_filling_password =
-      GetPasswordManager()->GetPasswordFormCache()->GetPasswordForm(
-          this, last_triggering_field_id_);
-  base::UmaHistogramBoolean("Autofill.FilledFieldType.Password",
-                            field_classified_as_target_filling_password);
 }
 
 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&

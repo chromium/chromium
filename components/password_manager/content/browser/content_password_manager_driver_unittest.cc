@@ -352,45 +352,6 @@ TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
 }
 
-TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
-  base::HistogramTester histogram_tester;
-  MockPasswordManager password_manager_{&password_manager_client_};
-  MockPasswordFormCache password_form_cache_;
-  PasswordForm form;
-  bool field_part_of_password_form = GetParam();
-
-  ON_CALL(password_manager_client_, GetPasswordManager())
-      .WillByDefault(Return(&password_manager_));
-  ON_CALL(password_manager_, GetPasswordFormCache())
-      .WillByDefault(Return(&password_form_cache_));
-  ON_CALL(password_form_cache_, GetPasswordForm(_, autofill::FieldRendererId()))
-      .WillByDefault(Return(field_part_of_password_form ? &form : nullptr));
-
-  std::unique_ptr<ContentPasswordManagerDriver> driver(
-      new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_));
-
-  driver->FillField(
-      u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
-  histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
-                                      field_part_of_password_form, 1);
-
-  driver->FillSuggestion(u"username", u"password", base::NullCallback());
-  histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
-                                      field_part_of_password_form, 2);
-
-  driver->FillSuggestionById(
-      autofill::FieldRendererId(), autofill::FieldRendererId(), u"username",
-      u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
-  histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
-                                      field_part_of_password_form, 3);
-
-  driver->FillIntoFocusedField(true, u"password");
-  histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
-                                      field_part_of_password_form, 4);
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          ContentPasswordManagerDriverTest,
                          testing::Bool());
