@@ -165,7 +165,7 @@ bool IsValidFieldTypeAndValue(
   // Allow the import for duplicate phone number component fields because a form
   // might request several phone numbers.
   // TODO(crbug.com/40735892) Remove feature check when launched.
-  if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone ||
+  if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
     return true;
