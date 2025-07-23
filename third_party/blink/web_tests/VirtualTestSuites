@@ -647,8 +647,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions",
-      "--disable-features=DeviceBoundSessionsRefreshQuota"
+      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions,DeviceBoundSessionsOriginTrialFeedback",
+      "--disable-features=DeviceBoundSessionsRefreshQuota,TrackingProtection3pcd"
     ],
     "expires": "never"
   },
