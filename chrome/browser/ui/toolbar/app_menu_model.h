@@ -22,7 +22,6 @@
 class AppMenuIconController;
 class BookmarkSubMenuModel;
 class Browser;
-class ChromeLabsModel;
 
 // Values should correspond to 'WrenchMenuAction' enum in enums.xml.
 //
@@ -145,8 +144,6 @@ class ToolsMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser);
-
-  std::unique_ptr<ChromeLabsModel> chrome_labs_model_;
 };
 
 class ExtensionsMenuModel : public ui::SimpleMenuModel {

@@ -73,7 +73,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
-#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -963,9 +962,8 @@ void ToolsMenuModel::Build(Browser* browser) {
   }
   if (IsChromeLabsEnabled()) {
     auto* profile = browser->profile();
-    chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
-    UpdateChromeLabsNewBadgePrefs(profile, chrome_labs_model_.get());
-    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), profile)) {
+    UpdateChromeLabsNewBadgePrefs(profile);
+    if (ShouldShowChromeLabsUI(profile)) {
       BooleanPrefMember show_chrome_labs_item;
       show_chrome_labs_item.Init(
           chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy,

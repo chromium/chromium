@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
-#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
@@ -410,12 +409,10 @@ void ToolbarView::Init() {
   }
 
   if (IsChromeLabsEnabled()) {
-    chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
-    UpdateChromeLabsNewBadgePrefs(browser_->profile(),
-                                  chrome_labs_model_.get());
+    UpdateChromeLabsNewBadgePrefs(browser_->profile());
 
     const bool should_show_chrome_labs_ui =
-        ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile());
+        ShouldShowChromeLabsUI(browser_->profile());
     if (should_show_chrome_labs_ui) {
       show_chrome_labs_button_.Init(
           chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, prefs,
@@ -1216,9 +1213,8 @@ void ToolbarView::OnChromeLabsPrefChanged() {
   actions::ActionItem* chrome_labs_action =
       pinned_toolbar_actions_container_->GetActionItemFor(
           kActionShowChromeLabs);
-  chrome_labs_action->SetVisible(
-      show_chrome_labs_button_.GetValue() &&
-      ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile()));
+  chrome_labs_action->SetVisible(show_chrome_labs_button_.GetValue() &&
+                                 ShouldShowChromeLabsUI(browser_->profile()));
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       chrome_labs_action->GetVisible()
           ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY

@@ -10,7 +10,6 @@
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 
 class Browser;
-class ChromeLabsModel;
 class ChromeLabsBubbleView;
 struct LabInfo;
 class Profile;
@@ -23,8 +22,7 @@ struct FeatureEntry;
 
 class ChromeLabsViewController {
  public:
-  ChromeLabsViewController(const ChromeLabsModel* model,
-                           ChromeLabsBubbleView* chrome_labs_bubble_view,
+  ChromeLabsViewController(ChromeLabsBubbleView* chrome_labs_bubble_view,
                            Browser* browser,
                            flags_ui::FlagsState* flags_state,
                            flags_ui::FlagsStorage* flags_storage);
@@ -45,8 +43,6 @@ class ChromeLabsViewController {
 
   user_education::DisplayNewBadge ShouldLabShowNewBadge(Profile* profile,
                                                         const LabInfo& lab);
-
-  raw_ptr<const ChromeLabsModel, DanglingUntriaged> model_;
   raw_ptr<ChromeLabsBubbleView, AcrossTasksDanglingUntriaged>
       chrome_labs_bubble_view_;
   base::CallbackListSubscription restart_callback_;

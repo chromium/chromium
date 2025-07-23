@@ -28,16 +28,7 @@
 #endif
 
 ChromeLabsCoordinator::ChromeLabsCoordinator(Browser* browser)
-    : ChromeLabsCoordinator(browser, nullptr) {}
-
-ChromeLabsCoordinator::ChromeLabsCoordinator(
-    Browser* browser,
-    std::unique_ptr<ChromeLabsModel> model)
-    : browser_(browser), model_(std::move(model)) {
-  if (!model) {
-    model_ = std::make_unique<ChromeLabsModel>();
-  }
-
+    : browser_(browser) {
   pinned_actions_observation_.Observe(
       PinnedToolbarActionsModel::Get(browser->profile()));
 
@@ -92,7 +83,7 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
   chrome_labs_bubble_view_tracker_.SetView(chrome_labs_bubble_view.get());
 
   controller_ = std::make_unique<ChromeLabsViewController>(
-      model_.get(), chrome_labs_bubble_view.get(), browser_, flags_state_,
+      chrome_labs_bubble_view.get(), browser_, flags_state_,
       flags_storage_.get());
 
   // ChromeLabsButton should not appear in the toolbar if there are no
@@ -195,7 +186,7 @@ void ChromeLabsCoordinator::MaybeInstallDotIndicator() {
   }
   views::DotIndicator* dot_indicator = views::DotIndicator::Install(anchor);
   dot_indicator->SetVisible(
-      AreNewChromeLabsExperimentsAvailable(model_.get(), browser_->profile()));
+      AreNewChromeLabsExperimentsAvailable(browser_->profile()));
 
   gfx::Rect dot_rect(8, 8);
   dot_rect.set_origin(gfx::Point(anchor->GetPreferredSize().width(),

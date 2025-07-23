@@ -67,6 +67,12 @@ ChromeLabsModel::ChromeLabsModel() : lab_info_(GetData()) {}
 
 ChromeLabsModel::~ChromeLabsModel() = default;
 
+// static
+ChromeLabsModel* ChromeLabsModel::GetInstance() {
+  static base::NoDestructor<ChromeLabsModel> instance;
+  return instance.get();
+}
+
 const std::vector<LabInfo>& ChromeLabsModel::GetLabInfo() const {
   return *lab_info_;
 }

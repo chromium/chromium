@@ -620,8 +620,6 @@ void BrowserActions::InitializeBrowserActions() {
 
   if (IsChromeLabsEnabled() &&
       !web_app::AppBrowserController::IsWebApp(browser)) {
-    // TODO(354758327): Update `ShouldShowChromeLabsUI()` to not require
-    // `model` as a parameter, then use to set visibility of action item.
     root_action_item_->AddChild(
         ChromeMenuAction(base::BindRepeating(
                              [](Browser* browser, actions::ActionItem* item,
@@ -631,7 +629,7 @@ void BrowserActions::InitializeBrowserActions() {
                              base::Unretained(browser)),
                          kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
                          kScienceIcon)
-            .SetVisible(false)
+            .SetVisible(ShouldShowChromeLabsUI(browser->profile()))
             .Build());
   }
 

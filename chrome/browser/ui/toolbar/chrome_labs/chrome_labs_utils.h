@@ -14,17 +14,15 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile);
 
 // Adds new experiments to PrefService and cleans up preferences for
 // experiments that are no longer featured.
-void UpdateChromeLabsNewBadgePrefs(Profile* profile,
-                                   const ChromeLabsModel* model);
+void UpdateChromeLabsNewBadgePrefs(Profile* profile);
 
 // This will indicate whether any Chrome Labs UI element (toolbar button,
 // menu item, etc..) be shown.
-bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile);
+bool ShouldShowChromeLabsUI(Profile* profile);
 
 // This will return true if there are new experiments and they haven't yet been
 // seen.
-bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
-                                          Profile* profile);
+bool AreNewChromeLabsExperimentsAvailable(Profile* profile);
 
 // This returns true if Chrome Labs is enabled. 99% of clients on
 // pre-stable channels will have Chrome Labs enabled by default.
