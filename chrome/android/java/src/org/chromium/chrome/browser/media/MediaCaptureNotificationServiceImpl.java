@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -22,6 +24,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -55,6 +58,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /** Service that creates/destroys the WebRTC notification when media capture starts/stops. */
+@NullMarked
 public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificationService.Impl {
     private static final String TAG = "MediaCapture";
     private static final String ACTION_MEDIA_CAPTURE_UPDATE =
@@ -183,7 +187,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                 final int tabId = getTabIdFromNotificationId(notificationId);
                 final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
                 if (tab != null) {
-                    WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
+                    WindowAndroid window =
+                            assumeNonNull(tab.getWebContents()).getTopLevelNativeWindow();
                     MediaCaptureOverlayController overlayController =
                             MediaCaptureOverlayController.from(window);
                     if (overlayController != null) {
@@ -275,7 +280,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
             final int tabId = getTabIdFromNotificationId(notificationId);
             final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
             if (tab != null) {
-                WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
+                WindowAndroid window =
+                        assumeNonNull(tab.getWebContents()).getTopLevelNativeWindow();
                 MediaCaptureOverlayController overlayController =
                         MediaCaptureOverlayController.from(window);
                 if (overlayController != null) {
@@ -425,10 +431,9 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         intent.putExtra(NOTIFICATION_ID_EXTRA, nofticationId);
         intent.putExtra(NOTIFICATION_MEDIA_URL_EXTRA, url.getSpec());
         intent.putExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, mediaType);
-        if (TabWindowManagerSingleton.getInstance().getTabById(tabId) != null) {
-            intent.putExtra(
-                    NOTIFICATION_MEDIA_IS_INCOGNITO,
-                    TabWindowManagerSingleton.getInstance().getTabById(tabId).isIncognito());
+        Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
+        if (tab != null) {
+            intent.putExtra(NOTIFICATION_MEDIA_IS_INCOGNITO, tab.isIncognito());
         }
         try {
             context.startService(intent);

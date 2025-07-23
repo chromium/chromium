@@ -515,7 +515,7 @@ public class MediaSessionHelper implements MediaImageCallback {
      * Updates the best favicon if the given icon is better and the favicon is shown in
      * notification.
      */
-    public void updateFavicon(Bitmap icon) {
+    public void updateFavicon(@Nullable Bitmap icon) {
         if (icon == null) return;
 
         mMaybeHasFavicon = true;

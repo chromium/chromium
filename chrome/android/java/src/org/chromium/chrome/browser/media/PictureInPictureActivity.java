@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -37,6 +39,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -61,6 +65,7 @@ import java.util.HashSet;
  * A picture in picture activity which get created when requesting PiP from web API. The activity
  * will connect to web API through OverlayWindowAndroid.
  */
+@NullMarked
 public class PictureInPictureActivity extends AsyncInitializationActivity {
     // Used to filter media buttons' remote action intents.
     private static final String MEDIA_ACTION =
@@ -452,12 +457,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     PictureInPictureActivityJni.get().nextSlide(mNativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.TOGGLE_MICROPHONE:
+                    // controlState should be non-null if MediaSessionAction toggles control state
                     PictureInPictureActivityJni.get()
-                            .toggleMicrophone(mNativeOverlayWindowAndroid, !controlState);
+                            .toggleMicrophone(
+                                    mNativeOverlayWindowAndroid, !assumeNonNull(controlState));
                     return;
                 case MediaSessionAction.TOGGLE_CAMERA:
+                    // controlState should be non-null if MediaSessionAction toggles control state
                     PictureInPictureActivityJni.get()
-                            .toggleCamera(mNativeOverlayWindowAndroid, !controlState);
+                            .toggleCamera(
+                                    mNativeOverlayWindowAndroid, !assumeNonNull(controlState));
                     return;
                 case MediaSessionAction.HANG_UP:
                     PictureInPictureActivityJni.get().hangUp(mNativeOverlayWindowAndroid);
@@ -559,7 +568,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // Compute a somewhat arbitrary cut-off of 90% of the window's display width. The PiP
         // window can't be anywhere near this big, so the exact value doesn't matter. We'll ignore
         // resizes messages that are above it, since they're spurious.
-        mMaxWidth = (int) (getWindowAndroid().getDisplay().getDisplayWidth() * 0.95);
+        mMaxWidth = (int) (assumeNonNull(getWindowAndroid()).getDisplay().getDisplayWidth() * 0.95);
 
         mCompositorView =
                 CompositorViewFactory.create(
@@ -612,6 +621,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @Override
     @SuppressLint("NewAPI") // Picture-in-Picture API will not be enabled for oldver versions.
+    @Initializer
     public void onStart() {
         super.onStart();
 
@@ -624,7 +634,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             this.finish();
             return;
         }
+        continueInitializationWithNativeToken(intent, mNativeToken);
+    }
 
+    @Initializer
+    private void continueInitializationWithNativeToken(
+            Intent intent, UnguessableToken nativeToken) {
         // Finish the activity if OverlayWindowAndroid has already been destroyed
         // or InitiatorTab has been destroyed by user or crashed.
         mInitiatorTab = TabUtils.fromWebContents(intent.getParcelableExtra(WEB_CONTENTS_KEY));
@@ -632,9 +647,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             onExitPictureInPicture(/* closeByNative= */ false);
             return;
         }
+        finishInitialize(intent, nativeToken, mInitiatorTab);
+    }
 
+    @Initializer
+    private void finishInitialize(Intent intent, UnguessableToken nativeToken, Tab initiatorTab) {
         mTabObserver = new InitiatorTabObserver();
-        mInitiatorTab.addObserver(mTabObserver);
+        initiatorTab.addObserver(mTabObserver);
 
         mMediaSessionReceiver = new MediaSessionBroadcastReceiver();
         ContextUtils.registerNonExportedBroadcastReceiver(
@@ -644,7 +663,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         mNativeOverlayWindowAndroid =
                 PictureInPictureActivityJni.get()
-                        .onActivityStart(mNativeToken, this, getWindowAndroid());
+                        .onActivityStart(nativeToken, this, getWindowAndroid());
         if (mNativeOverlayWindowAndroid == 0) {
             onExitPictureInPicture(/* closeByNative= */ true);
             return;
@@ -690,6 +709,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         onExitPictureInPicture(/* closeByNative= */ true);
     }
 
+    @SuppressWarnings("NullAway")
     private void onExitPictureInPicture(boolean closeByNative) {
         if (!closeByNative && mNativeOverlayWindowAndroid != 0) {
             PictureInPictureActivityJni.get().destroyStartedByJava(mNativeOverlayWindowAndroid);
@@ -866,8 +886,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         return original;
     }
 
-    /* package */ View getViewForTesting() {
-        return mCompositorView.getView();
+    /* package */ @Nullable View getViewForTesting() {
+        return mCompositorView == null ? null : mCompositorView.getView();
     }
 
     @NativeMethods

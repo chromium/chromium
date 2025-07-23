@@ -15,6 +15,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -27,6 +28,7 @@ import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.content_public.browser.WebContents;
 
 /** Provides Chrome-specific behavior for Media Router. */
+@NullMarked
 @JNINamespace("media_router")
 public class ChromeMediaRouterClient extends MediaRouterClient {
     private ChromeMediaRouterClient() {}
@@ -43,7 +45,7 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
     }
 
     @Override
-    public @Nullable Intent createBringTabToFrontIntent(int tabId) {
+    public Intent createBringTabToFrontIntent(int tabId) {
         return IntentHandler.createTrustedBringTabToFrontIntent(
                 tabId, IntentHandler.BringToFrontSource.NOTIFICATION);
     }

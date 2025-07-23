@@ -28,6 +28,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -38,6 +39,7 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.Locale;
 
 /** A class containing some utility static methods. */
+@NullMarked
 public class MediaViewerUtils {
     private static final String DEFAULT_MIME_TYPE = "*/*";
     private static final String MIMETYPE_AUDIO = "audio";
@@ -140,7 +142,8 @@ public class MediaViewerUtils {
         intent.setPackage(context.getPackageName());
         intent.setData(contentUri);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.MEDIA_VIEWER);
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_MEDIA_VIEWER_URL, displayUri.toString());
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_MEDIA_VIEWER_URL, String.valueOf(displayUri));
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_ENABLE_EMBEDDED_MEDIA_EXPERIENCE, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_BACKGROUND_COLOR, mediaColor);
         intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_COLOR, mediaColor);
@@ -308,7 +311,7 @@ public class MediaViewerUtils {
 
     private static boolean willExposeFileUri(@Nullable Uri uri) {
         assert uri != null && !uri.equals(Uri.EMPTY) : "URI is not successfully generated.";
-        return uri.getScheme().equals(ContentResolver.SCHEME_FILE);
+        return ContentResolver.SCHEME_FILE.equals(uri.getScheme());
     }
 
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
