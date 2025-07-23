@@ -645,8 +645,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether the image embedding model version is matched or not so that the
-    correctly paired trigger and image embedidng model are sent together to the
-    renderer process
+    correctly paired trigger and image embedding model are sent together to the
+    renderer process.
   </summary>
 </histogram>
 
