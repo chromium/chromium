@@ -572,7 +572,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   const auto& autofill_client =
       *autofill::ContentAutofillClient::FromWebContents(
           web_ui->GetWebContents());
-
+  html_source->AddBoolean(
+      "showAutofillAiControl",
+      autofill::MayPerformAutofillAiAction(
+          autofill_client,
+          autofill::AutofillAiAction::kListEntityInstancesInSettings));
   std::pair<const std::string_view, bool> optimization_guide_features[] = {
       {"showTabOrganizationControl",
        use_is_setting_visible
@@ -593,15 +597,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
        PasswordChangeServiceFactory::GetForProfile(profile) &&
            PasswordChangeServiceFactory::GetForProfile(profile)
                ->IsPasswordChangeAvailable()},
-      // The code checks only once, when setting is loaded, whether the
-      // Autofill Ai section should be shown.
-      // The code cannot dynamically check whether the Autofill Ai section
-      // should be shown, because otherwise the user could reach weird states,
-      // such as navigating to the Ai Page when the Ai Page has 0 entries.
-      {"showAutofillAiControl",
-       autofill::MayPerformAutofillAiAction(
-           autofill_client,
-           autofill::AutofillAiAction::kListEntityInstancesInSettings)},
   };
 
   const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(
