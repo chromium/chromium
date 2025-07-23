@@ -882,9 +882,6 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
 
 TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   EnableEnhancedFieldsForSecOps();
-  if (use_proto_format()) {
-    return;
-  }
 
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -894,6 +891,7 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
   ContentAnalysisResponse response;
   response.set_request_token("123");
@@ -901,26 +899,54 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   result->set_status(ContentAnalysisResponse::Result::SUCCESS);
   result->set_tag("dlp");
 
-  validator.ExpectSensitiveDataEvent(
-      /*url*/ "about:blank",
-      /*tab_url*/ "about:blank",
-      /*source*/ "exampleSource",
-      /*destination*/ "exampleDestination",
-      /*filename*/ "encrypted.zip",
-      /*sha256*/ "sha256_of_data",
-      /*trigger*/ "FILE_UPLOAD",
-      /*dlp_verdict*/ *result,
-      /*mimetype*/ ZipMimeType(),
-      /*size*/ 200,
-      /*result*/
-      EventResultToString(EventResult::ALLOWED),
-      /*username*/ profile_->GetProfileUserName(),
-      /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ "123",
-      /*content_transfer_method*/ "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
-      /*user_justification*/ std::nullopt);
-  validator.ExpectActiveUser("gaia@gmail.com");
-  validator.ExpectSourceActiveUser("test@gmail.com");
+  if (use_proto_format()) {
+    expected_event.set_url("about:blank");
+    expected_event.set_tab_url("about:blank");
+    expected_event.set_source("exampleSource");
+    expected_event.set_destination("exampleDestination");
+    expected_event.set_download_digest_sha_256("sha256_of_data");
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(200);
+    expected_event.set_scan_id("123");
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+    expected_event.set_clicked_through(false);
+    expected_event.set_content_transfer_method(
+        chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_DRAG_AND_DROP);
+    expected_event.set_web_app_signed_in_account("gaia@gmail.com");
+    expected_event.set_source_web_app_signed_in_account("test@gmail.com");
+
+    *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectSensitiveDataEvent(
+        /*url*/ "about:blank",
+        /*tab_url*/ "about:blank",
+        /*source*/ "exampleSource",
+        /*destination*/ "exampleDestination",
+        /*filename*/ "encrypted.zip",
+        /*sha256*/ "sha256_of_data",
+        /*trigger*/ "FILE_UPLOAD",
+        /*dlp_verdict*/ *result,
+        /*mimetype*/ ZipMimeType(),
+        /*size*/ 200,
+        /*result*/
+        EventResultToString(EventResult::ALLOWED),
+        /*username*/ profile_->GetProfileUserName(),
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ "123",
+        /*content_transfer_method*/ "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
+        /*user_justification*/ std::nullopt);
+    validator.ExpectActiveUser("gaia@gmail.com");
+    validator.ExpectSourceActiveUser("test@gmail.com");
+  }
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
@@ -935,9 +961,6 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
 
 TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   EnableEnhancedFieldsForSecOps();
-  if (use_proto_format()) {
-    return;
-  }
 
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -947,33 +970,72 @@ TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
   ContentAnalysisResponse response;
   response.set_request_token("123");
   auto* result = response.add_results();
-  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
   result->set_tag("dlp");
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* rule = result->add_triggered_rules();
+  rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  rule->set_rule_name("fake rule");
+  rule->set_rule_id("12345");
+  rule->set_url_category("test rule category");
 
-  validator.ExpectSensitiveDataEvent(
-      /*url*/ "about:blank",
-      /*tab_url*/ "about:blank",
-      /*source*/ "exampleSource",
-      /*destination*/ "exampleDestination",
-      /*filename*/ "encrypted.zip",
-      /*sha256*/ "sha256_of_data",
-      /*trigger*/ "FILE_DOWNLOAD",
-      /*dlp_verdict*/ *result,
-      /*mimetype*/ ZipMimeType(),
-      /*size*/ 200,
-      /*result*/
-      EventResultToString(EventResult::BLOCKED),
-      /*username*/ profile_->GetProfileUserName(),
-      /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ "123",
-      /*content_transfer_method*/ std::nullopt,
-      /*user_justification*/ std::nullopt);
-  validator.ExpectActiveUser("gaia@gmail.com");
-  validator.ExpectSourceActiveUser("test@gmail.com");
+  if (use_proto_format()) {
+    expected_event.set_url("about:blank");
+    expected_event.set_tab_url("about:blank");
+    expected_event.set_source("exampleSource");
+    expected_event.set_destination("exampleDestination");
+    expected_event.set_download_digest_sha_256("sha256_of_data");
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(200);
+    expected_event.set_scan_id("123");
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_DOWNLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+    expected_event.set_clicked_through(false);
+    expected_event.set_web_app_signed_in_account("gaia@gmail.com");
+    expected_event.set_source_web_app_signed_in_account("test@gmail.com");
+
+    TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(12345);
+    triggered_rule.set_rule_name("fake rule");
+    triggered_rule.set_url_category("test rule category");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectSensitiveDataEvent(
+        /*url*/ "about:blank",
+        /*tab_url*/ "about:blank",
+        /*source*/ "exampleSource",
+        /*destination*/ "exampleDestination",
+        /*filename*/ "encrypted.zip",
+        /*sha256*/ "sha256_of_data",
+        /*trigger*/ "FILE_DOWNLOAD",
+        /*dlp_verdict*/ *result,
+        /*mimetype*/ ZipMimeType(),
+        /*size*/ 200,
+        /*result*/
+        EventResultToString(EventResult::BLOCKED),
+        /*username*/ profile_->GetProfileUserName(),
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ "123",
+        /*content_transfer_method*/ std::nullopt,
+        /*user_justification*/ std::nullopt);
+    validator.ExpectActiveUser("gaia@gmail.com");
+    validator.ExpectSourceActiveUser("test@gmail.com");
+  }
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());

@@ -39,11 +39,10 @@ bool IsEventInReportingSettings(const std::string& event,
 }
 
 void AddAnalysisConnectorVerdictToEvent(
-    const enterprise_connectors::ContentAnalysisResponse::Result& result,
+    const ContentAnalysisResponse::Result& result,
     base::Value::Dict& event) {
   base::Value::List triggered_rule_info;
-  for (const enterprise_connectors::TriggeredRule& trigger :
-       result.triggered_rules()) {
+  for (const TriggeredRule& trigger : result.triggered_rules()) {
     base::Value::Dict triggered_rule;
     triggered_rule.Set(kKeyTriggeredRuleName, trigger.rule_name());
     int rule_id_int = 0;
@@ -485,49 +484,68 @@ void ReportingEventRouter::OnSensitiveDataEvent(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyTabUrl, tab_url.spec());
-  event.Set(kKeySource, source);
-  event.Set(kKeyDestination, destination);
-  event.Set(kKeyFileName,
-            GetFileName(file_name, reporting_client_->ShouldIncludeDeviceInfo(
-                                       settings->per_profile)));
-  event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
-  event.Set(kKeyContentType, mime_type);
-  // |content_size| can be set to -1 to indicate an unknown size, in
-  // which case the field is not set.
-  if (content_size >= 0) {
-    event.Set(kKeyContentSize, base::Int64ToValue(content_size));
-  }
-  event.Set(kKeyTrigger, trigger);
+  std::string final_file_name = GetFileName(
+      file_name,
+      reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
-  }
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_sensitive_data_event() = GetDlpSensitiveDataEvent(
+        url, tab_url, source, destination, final_file_name,
+        download_digest_sha256, mime_type, trigger, scan_id,
+        content_transfer_method, source_email, content_area_account_email,
+        reporting_client_->GetProfileIdentifier(),
+        reporting_client_->GetProfileUserName(), content_size, result,
+        referrer_chain, event_result);
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
-  event.Set(kKeyClickedThrough,
-            event_result == enterprise_connectors::EventResult::BYPASSED);
-  event.Set(kKeyScanId, scan_id);
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    event.Set(kKeyTabUrl, tab_url.spec());
+    event.Set(kKeySource, source);
+    event.Set(kKeyDestination, destination);
+    event.Set(kKeyFileName,
+              GetFileName(file_name, reporting_client_->ShouldIncludeDeviceInfo(
+                                         settings->per_profile)));
+    event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
+    event.Set(kKeyContentType, mime_type);
+    // |content_size| can be set to -1 to indicate an unknown size, in
+    // which case the field is not set.
+    if (content_size >= 0) {
+      event.Set(kKeyContentSize, base::Int64ToValue(content_size));
+    }
+    event.Set(kKeyTrigger, trigger);
 
-  if (!content_transfer_method.empty()) {
-    event.Set(kKeyContentTransferMethod, content_transfer_method);
-  }
-  if (!content_area_account_email.empty()) {
-    event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
-  }
-  if (!source_email.empty()) {
-    event.Set(kKeySourceWebAppSignedInAccount, source_email);
-  }
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
+    }
 
-  AddAnalysisConnectorVerdictToEvent(result, event);
+    event.Set(kKeyEventResult,
+              enterprise_connectors::EventResultToString(event_result));
+    event.Set(kKeyClickedThrough,
+              event_result == enterprise_connectors::EventResult::BYPASSED);
+    event.Set(kKeyScanId, scan_id);
 
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      enterprise_connectors::kKeySensitiveDataEvent,
-      std::move(settings.value()), std::move(event), base::Time::Now(),
-      /*include_profile_user_name=*/true);
+    if (!content_transfer_method.empty()) {
+      event.Set(kKeyContentTransferMethod, content_transfer_method);
+    }
+    if (!content_area_account_email.empty()) {
+      event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
+    }
+    if (!source_email.empty()) {
+      event.Set(kKeySourceWebAppSignedInAccount, source_email);
+    }
+
+    AddAnalysisConnectorVerdictToEvent(result, event);
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        enterprise_connectors::kKeySensitiveDataEvent,
+        std::move(settings.value()), std::move(event), base::Time::Now(),
+        /*include_profile_user_name=*/true);
+  }
 }
 
 void ReportingEventRouter::OnDangerousDeepScanningResult(

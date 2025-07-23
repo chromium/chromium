@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -98,6 +99,10 @@ class EventReportValidator : public EventReportValidatorBase {
       extensions::api::enterprise_reporting_private::DataMaskingEvent
           expected_event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  void ExpectSensitiveDataEvent(
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent
+          expected_sensitive_data_event);
 
   void ExpectSensitiveDataEvents(
       const std::string& expected_url,

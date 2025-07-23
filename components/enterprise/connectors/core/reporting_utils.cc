@@ -212,6 +212,25 @@ proto::ContentTransferMethod ToProtoContentTransferMethod(
   NOTREACHED();
 }
 
+google::protobuf::RepeatedPtrField<proto::TriggeredRuleInfo>
+GetTriggerRulesFromContentAnalysisResult(
+    const ContentAnalysisResponse::Result& result) {
+  google::protobuf::RepeatedPtrField<proto::TriggeredRuleInfo> triggered_rules;
+  for (const TriggeredRule& trigger : result.triggered_rules()) {
+    proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_name(trigger.rule_name());
+    triggered_rule.set_url_category(trigger.url_category());
+
+    int rule_id_int = 0;
+    if (base::StringToInt(trigger.rule_id(), &rule_id_int)) {
+      triggered_rule.set_rule_id(rule_id_int);
+    }
+    *triggered_rules.Add() = triggered_rule;
+  }
+
+  return triggered_rules;
+}
+
 }  // namespace
 
 std::string MaskUsername(const std::u16string& username) {
@@ -519,17 +538,9 @@ proto::UnscannedFileEvent GetUnscannedFileEvent(
   event.set_file_name(file_name);
   event.set_download_digest_sha_256(download_digest_sha256);
   event.set_content_type(mime_type);
-
-  // |content_size| can be set to -1 to indicate an unknown size, in
-  // which case the field is not set.
-  if (content_size >= 0) {
-    event.set_content_size(content_size);
-  }
-  event.set_unscanned_reason(ToProtoUnscannedReason(reason));
   event.set_trigger(ToProtoDataTransferEventTrigger(trigger));
-  event.set_event_result(GetEventResult(event_result));
-  event.set_clicked_through(event_result ==
-                            enterprise_connectors::EventResult::BYPASSED);
+  event.set_unscanned_reason(ToProtoUnscannedReason(reason));
+
   if (!content_transfer_method.empty()) {
     event.set_content_transfer_method(
         ToProtoContentTransferMethod(content_transfer_method));
@@ -537,6 +548,90 @@ proto::UnscannedFileEvent GetUnscannedFileEvent(
 
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(profile_username);
+
+  // |content_size| can be set to -1 to indicate an unknown size, in
+  // which case the field is not set.
+  if (content_size >= 0) {
+    event.set_content_size(content_size);
+  }
+
+  event.set_event_result(GetEventResult(event_result));
+  event.set_clicked_through(event_result ==
+                            enterprise_connectors::EventResult::BYPASSED);
+
+  return event;
+}
+
+proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
+    const GURL& url,
+    const GURL& tab_url,
+    const std::string& source,
+    const std::string& destination,
+    const std::string& file_name,
+    const std::string& download_digest_sha256,
+    const std::string& mime_type,
+    const std::string& trigger,
+    const std::string& scan_id,
+    const std::string& content_transfer_method,
+    const std::string& source_email,
+    const std::string& content_area_account_email,
+    const std::string& profile_identifier,
+    const std::string& profile_username,
+    const int64_t content_size,
+    const ContentAnalysisResponse::Result& result,
+    const ReferrerChain& referrer_chain,
+    EventResult event_result) {
+  proto::DlpSensitiveDataEvent event;
+  event.set_url(url.spec());
+  event.set_tab_url(tab_url.spec());
+  event.set_source(source);
+  event.set_destination(destination);
+  event.set_file_name(file_name);
+  event.set_download_digest_sha_256(download_digest_sha256);
+  event.set_content_type(mime_type);
+  event.set_trigger(ToProtoDataTransferEventTrigger(trigger));
+  event.set_scan_id(scan_id);
+
+  if (!content_transfer_method.empty()) {
+    event.set_content_transfer_method(
+        ToProtoContentTransferMethod(content_transfer_method));
+  }
+
+  if (!content_area_account_email.empty()) {
+    event.set_web_app_signed_in_account(content_area_account_email);
+  }
+
+  if (!source_email.empty()) {
+    event.set_source_web_app_signed_in_account(source_email);
+  }
+
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
+
+  // |content_size| can be set to -1 to indicate an unknown size, in
+  // which case the field is not set.
+  if (content_size >= 0) {
+    event.set_content_size(content_size);
+  }
+
+  *event.mutable_triggered_rule_info() =
+      GetTriggerRulesFromContentAnalysisResult(result);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    for (const auto& referrer : referrer_chain) {
+      proto::UrlInfo url_info;
+      if (referrer.ip_addresses().size() > 0) {
+        url_info.set_ip(referrer.ip_addresses()[0]);
+      }
+      url_info.set_url(referrer.url());
+      *event.add_referrers() = url_info;
+    }
+  }
+
+  event.set_event_result(GetEventResult(event_result));
+  event.set_clicked_through(event_result ==
+                            enterprise_connectors::EventResult::BYPASSED);
+
   return event;
 }
 
