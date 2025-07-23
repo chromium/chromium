@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
   auto* tab_strip_region_view = browser_view()->tab_strip_region_view();
 
-  if (features::IsTabSearchMoving()) {
+  if (features::HasTabSearchToolbarButton()) {
     TabStripActionContainer* action_container =
         browser_view()->tab_strip_region_view()->GetTabStripActionContainer();
     ASSERT_TRUE(action_container->GetIndexOf(product_specifications_button())

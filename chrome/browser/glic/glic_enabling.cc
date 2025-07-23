@@ -107,7 +107,7 @@ bool GlicEnabling::IsInRolloutLocation() {
 bool GlicEnabling::IsEnabledByFlags() {
   // Check that the feature flags are enabled.
   return base::FeatureList::IsEnabled(features::kGlic) &&
-         features::IsTabSearchMoving();
+         features::HasTabSearchToolbarButton();
 }
 
 bool GlicEnabling::IsProfileEligible(const Profile* profile) {

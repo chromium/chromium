@@ -56,7 +56,7 @@ BASE_FEATURE(kVerticalTabs, "VerticalTabs", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CanShowTabSearchPositionSetting() {
   // Alternate tab search locations cannot be repositioned.
-  if (features::IsTabSearchMoving()) {
+  if (features::HasTabSearchToolbarButton()) {
     return false;
   }
 // Mac and other platforms will always have the tab search position in the

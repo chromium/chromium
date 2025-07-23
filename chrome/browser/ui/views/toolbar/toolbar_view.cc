@@ -1268,7 +1268,7 @@ void ToolbarView::UpdateRecedingCornerRadius() {
        base::i18n::IsRTL());
   bool tab_strip_has_leading_action_buttons =
       (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
-       !features::IsTabSearchMoving());
+       !features::HasTabSearchToolbarButton());
   bool first_tab_selected = browser_->tab_strip_model()->active_index() == 0;
 
   int new_corner_radius;

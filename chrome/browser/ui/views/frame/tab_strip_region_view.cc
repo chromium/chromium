@@ -95,7 +95,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
                    : nullptr),
       render_tab_search_before_tab_strip_(
           !tabs::GetTabSearchTrailingTabstrip(profile_) &&
-          !features::IsTabSearchMoving()),
+          !features::HasTabSearchToolbarButton()),
       tab_search_position_metrics_logger_(
           std::make_unique<TabSearchPositionMetricsLogger>(profile_)) {
   views::SetCascadingColorProviderColor(
@@ -118,7 +118,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
   if (browser &&
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
-    if (features::IsTabSearchMoving()) {
+    if (features::HasTabSearchToolbarButton()) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
           tab_strip_->controller(),
           browser->GetFeatures().tab_declutter_controller(),
@@ -592,12 +592,6 @@ void TabStripRegionView::UpdateTabStripMargin() {
                             GetLayoutConstant(TAB_STRIP_PADDING) +
                             GetLayoutConstant(TAB_STRIP_PADDING) -
                             TabStyle::Get()->GetBottomCornerRadius();
-  } else if (features::IsTabSearchMoving() &&
-             !features::HasTabSearchToolbarButton() &&
-             !tabs::GetDefaultTabSearchRightAligned()) {
-    // With the combobutton, this case has no caption buttons on the left side.
-    // Leave a padding so the tabstrip is after the corner radius.
-    tab_strip_left_margin = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
   }
 
   UpdateButtonBorders();

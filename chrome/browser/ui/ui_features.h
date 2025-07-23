@@ -358,7 +358,6 @@ BASE_DECLARE_FEATURE(kLaunchedTabSearchToolbarButton);
 
 BASE_DECLARE_FEATURE_PARAM(bool, kTabSearchToolbarButton);
 
-bool IsTabSearchMoving();
 bool HasTabSearchToolbarButton();
 
 }  // namespace features

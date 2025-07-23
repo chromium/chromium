@@ -1884,7 +1884,7 @@ bool TabStrip::IsFocusInTabs() const {
 }
 
 bool TabStrip::ShouldCompactLeadingEdge() const {
-  return !features::IsTabSearchMoving() &&
+  return !features::HasTabSearchToolbarButton() &&
          controller_->IsFrameButtonsRightAligned() &&
          tabs::GetTabSearchTrailingTabstrip(controller_->GetProfile());
 }

@@ -124,12 +124,6 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
             webui_bubble_manager_->bubble_using_cached_web_contents(),
             webui_bubble_manager_->contents_warmup_level()));
 
-    // Pause tab closing mode observation.
-    if (features::IsTabSearchMoving() &&
-        !features::HasTabSearchToolbarButton()) {
-      tab_strip_->NotifyTabstripBubbleOpened();
-    }
-
     const PrefService* prefs = profile_->GetPrefs();
     const auto section = tab_search_prefs::GetTabSearchSectionFromInt(
         prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
@@ -153,12 +147,6 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
           tab_search::mojom::DeclutterCTREvent::kDeclutterShown);
     }
   } else if (!visible && bubble_created_time_.has_value()) {
-    // Re-enable tab closing mode observation.
-    if (features::IsTabSearchMoving() &&
-        !features::HasTabSearchToolbarButton()) {
-      tab_strip_->NotifyTabstripBubbleClosed();
-    }
-
     const base::TimeDelta time_to_close =
         base::TimeTicks::Now() - bubble_created_time_.value();
     base::UmaHistogramMediumTimes("Tabs.TabSearch.TimeToClose", time_to_close);

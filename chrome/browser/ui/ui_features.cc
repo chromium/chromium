@@ -575,7 +575,7 @@ static std::string GetCountryCode() {
   return country_code;
 }
 
-bool IsTabSearchMoving() {
+bool HasTabSearchToolbarButton() {
   static const bool is_tab_search_moving = [] {
     if (GetCountryCode() == "us" &&
         base::FeatureList::IsEnabled(
@@ -587,11 +587,6 @@ bool IsTabSearchMoving() {
   }();
 
   return is_tab_search_moving;
-}
-
-// TODO(crbug.com/432765417): Delete redundant function.
-bool HasTabSearchToolbarButton() {
-  return IsTabSearchMoving();
 }
 
 }  // namespace features

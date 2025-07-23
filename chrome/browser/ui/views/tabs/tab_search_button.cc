@@ -45,7 +45,7 @@ TabSearchButton::TabSearchButton(
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
 
-  CHECK(!features::IsTabSearchMoving());
+  CHECK(!features::HasTabSearchToolbarButton());
   SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
@@ -71,8 +71,8 @@ int TabSearchButton::GetCornerRadius() const {
 }
 
 int TabSearchButton::GetFlatCornerRadius() const {
-  return features::IsTabSearchMoving() ? kComboButtonFlatCornerRadius
-                                       : kCRTabSearchFlatCornerRadius;
+  return features::HasTabSearchToolbarButton() ? kComboButtonFlatCornerRadius
+                                               : kCRTabSearchFlatCornerRadius;
 }
 
 BEGIN_METADATA(TabSearchButton)

@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
 
   if (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
-      !features::IsTabSearchMoving()) {
+      !features::HasTabSearchToolbarButton()) {
     EXPECT_TRUE(tab_0->HasFocus());
 
 #if !BUILDFLAG(IS_WIN)
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
                        DefaultTestSearchContainerIsEndAligned) {
-  if (!features::IsTabSearchMoving() &&
+  if (!features::HasTabSearchToolbarButton() &&
       !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
 
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
-  } else if (!features::IsTabSearchMoving()) {
+  } else if (!features::HasTabSearchToolbarButton()) {
     const int tab_search_container_expected_end =
         tab_strip_region_view()->GetLocalBounds().right() -
         GetLayoutConstant(TAB_STRIP_PADDING);
@@ -273,7 +273,7 @@ class TabSearchForcedPositionTest : public TabStripRegionViewBrowserBaseTest,
 
 IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
                        DefaultTestSearchContainerIsEndAligned) {
-  if (!features::IsTabSearchMoving() &&
+  if (!features::HasTabSearchToolbarButton() &&
       !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
 
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
-  } else if (!features::IsTabSearchMoving()) {
+  } else if (!features::HasTabSearchToolbarButton()) {
     const int tab_search_container_expected_end =
         tab_strip_region_view()->GetLocalBounds().right() -
         GetLayoutConstant(TAB_STRIP_PADDING);
