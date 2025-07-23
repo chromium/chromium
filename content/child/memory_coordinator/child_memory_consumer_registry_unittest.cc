@@ -29,6 +29,10 @@ using ConsumerInfo = ChildMemoryConsumerRegistry::ConsumerInfo;
 class DummyBrowserMemoryConsumerRegistry
     : public mojom::BrowserMemoryConsumerRegistry {
  public:
+  explicit DummyBrowserMemoryConsumerRegistry(
+      mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
   // mojom::BrowserMemoryConsumerRegistry:
   void RegisterChildMemoryConsumer(
       const std::string& consumer_id,
@@ -44,7 +48,7 @@ class DummyBrowserMemoryConsumerRegistry
   }
 
  private:
-  mojo::Receiver<mojom::BrowserMemoryConsumerRegistry> receiver_{this};
+  mojo::Receiver<mojom::BrowserMemoryConsumerRegistry> receiver_;
 
   mojo::RemoteSet<mojom::ChildMemoryConsumer> remote_set_;
 };
@@ -56,16 +60,16 @@ const base::MemoryConsumerTraits kTestTraits1{};
 class ChildMemoryConsumerRegistryTest : public testing::Test {
  protected:
   ChildMemoryConsumerRegistryTest()
-      : registry_(browser_registry_.BindNewPipeAndPassRemote()) {}
+      : browser_registry_(registry_.BindAndPassReceiverForTesting()) {}
 
   ChildMemoryConsumerRegistry* registry() { return &registry_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  DummyBrowserMemoryConsumerRegistry browser_registry_;
-
   ChildMemoryConsumerRegistry registry_;
+
+  DummyBrowserMemoryConsumerRegistry browser_registry_;
 };
 
 TEST_F(ChildMemoryConsumerRegistryTest, LocalConsumer) {
