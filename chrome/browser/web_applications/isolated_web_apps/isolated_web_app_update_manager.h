@@ -47,7 +47,6 @@ class SignedWebBundleId;
 namespace web_app {
 
 class IsolatedWebAppUrlInfo;
-class IsolatedWebAppURLLoaderFactory;
 class WebAppProvider;
 
 namespace {
@@ -139,12 +138,7 @@ class IsolatedWebAppUpdateManager
 
   // Returns `true` if an update for the provided `app_id` is currently being
   // applied or scheduled to be applied soon.
-  //
-  // Use of this method should be limited to the
-  // `IsolatedWebAppURLLoaderFactory`. If you have a different use case, please
-  // talk to iwa-dev@chromium.org first.
-  bool IsUpdateBeingApplied(base::PassKey<IsolatedWebAppURLLoaderFactory>,
-                            const webapps::AppId app_id) const;
+  bool IsUpdateBeingApplied(const webapps::AppId app_id) const;
 
   // Starts an already scheduled update apply task for the provided `app_id`, if
   // it is queued but not already running. This happens regardless of whether
@@ -153,12 +147,7 @@ class IsolatedWebAppUpdateManager
   //
   // `callback` will be run once the update apply task for the provided `app_id`
   // finishes.
-  //
-  // Use of this method should be limited to the
-  // `IsolatedWebAppURLLoaderFactory`. If you have a different use case, please
-  // talk to iwa-dev@chromium.org first.
   void PrioritizeUpdateAndWait(
-      base::PassKey<IsolatedWebAppURLLoaderFactory>,
       const webapps::AppId& app_id,
       base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
           callback);

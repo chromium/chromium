@@ -398,13 +398,11 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
 }
 
 bool IsolatedWebAppUpdateManager::IsUpdateBeingApplied(
-    base::PassKey<IsolatedWebAppURLLoaderFactory>,
     const webapps::AppId app_id) const {
   return task_queue_.IsUpdateApplyTaskQueued(app_id);
 }
 
 void IsolatedWebAppUpdateManager::PrioritizeUpdateAndWait(
-    base::PassKey<IsolatedWebAppURLLoaderFactory>,
     const webapps::AppId& app_id,
     base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
         callback) {
