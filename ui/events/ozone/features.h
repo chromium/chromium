@@ -30,8 +30,6 @@ BASE_DECLARE_FEATURE(kEnableNeuralPalmDetectionFilter);
 
 COMPONENT_EXPORT(EVENTS_OZONE) BASE_DECLARE_FEATURE(kEnableOrdinalMotion);
 
-COMPONENT_EXPORT(EVENTS_OZONE) BASE_DECLARE_FEATURE(kEnablePalmOnToolTypePalm);
-
 COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::FeatureParam<std::string> kNeuralPalmModelVersion;
 

@@ -214,8 +214,7 @@ TouchEventConverterEvdev::TouchEventConverterEvdev(
       heatmap_palm_detection_filter_(
           CreateHeatmapPalmDetectionFilter(devinfo, shared_palm_state)),
       palm_on_touch_major_max_(true),
-      palm_on_tool_type_palm_(
-          base::FeatureList::IsEnabled(kEnablePalmOnToolTypePalm)),
+      palm_on_tool_type_palm_(true),
       shared_palm_state_(shared_palm_state) {
   if (base::FeatureList::IsEnabled(kEnableNeuralPalmDetectionFilter) &&
       NeuralStylusPalmDetectionFilter::

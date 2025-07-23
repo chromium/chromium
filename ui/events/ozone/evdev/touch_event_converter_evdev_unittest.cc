@@ -400,8 +400,7 @@ class TouchEventConverterEvdevTest : public testing::Test {
     // By default, tests disable single-cancel and enable palm on touch_major ==
     // major_max.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({kEnablePalmOnToolTypePalm},
-                                           {kEnableSingleCancelTouch});
+    scoped_feature_list_->InitWithFeatures({}, {kEnableSingleCancelTouch});
     SetUpDevice();
   }
 
@@ -2701,29 +2700,6 @@ TEST_F(TouchEventConverterEvdevTest, TouchPoints) {
 
   std::stringstream output;
   dev->DescribeForLog(output);
-
-  EXPECT_EQ(output.str(), log);
-}
-
-TEST_F(TouchEventConverterEvdevTest, ChangePalmOnTool) {
-  TearDownDevice();
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {}, {kEnableSingleCancelTouch, kEnablePalmOnToolTypePalm});
-  SetUpDevice();
-
-  ui::MockTouchEventConverterEvdev* dev = device();
-
-  EventDeviceInfo devinfo;
-  CapabilitiesToDeviceInfo(kEveTouchScreen, &devinfo);
-  dev->Initialize(devinfo);
-
-  std::stringstream output;
-  dev->DescribeForLog(output);
-
-  std::string log = kEveTouchScreenLogDescription;
-
-  log = LogSubst(log, "palm_on_tool_type_palm", "0");
 
   EXPECT_EQ(output.str(), log);
 }
