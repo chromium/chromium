@@ -66,6 +66,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -1577,9 +1578,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             optionalButton,
                             /* userEducationHelper= */ () -> {
                                 return new UserEducationHelper(
-                                        mActivity,
-                                        () -> getCurrentTab().getProfile(),
-                                        new Handler());
+                                        mActivity, getProfileSupplier(), new Handler());
                             },
                             /* transitionRoot= */ CustomTabToolbar.this,
                             /* isAnimationAllowedPredicate= */ () -> true,
@@ -1624,6 +1623,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mButtonVisibilityRule.setHidingOptionalButton();
             }
             return true;
+        }
+
+        private Supplier getProfileSupplier() {
+            Tab tab = getCurrentTab();
+            if (tab != null) return () -> tab.getProfile();
+
+            // Passing OneshotSupplier effectively delays UserEducationHelper#requestShowIph()
+            // till Profile becomes reachable via the current Tab.
+            var profileSupplier = new OneshotSupplierImpl<Profile>();
+            mLocationBarModel.addObserver(
+                    new LocationBarDataProvider.Observer() {
+                        @Override
+                        public void onUrlChanged() {
+                            Tab tab = getCurrentTab();
+                            if (tab != null) {
+                                profileSupplier.set(tab.getProfile());
+                                mLocationBarModel.removeObserver(this);
+                            }
+                        }
+                    });
+            return profileSupplier;
         }
 
         private @Px int getDimensionPx(@DimenRes int resId) {
