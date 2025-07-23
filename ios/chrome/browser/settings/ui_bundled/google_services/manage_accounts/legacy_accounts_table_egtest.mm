@@ -487,6 +487,11 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests to sign out with a managed account.
 - (void)testSignOutWithManagedAccount {
+  // TODO(crbug.com/433726717): Test disabled on iPhones.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhones.");
+  }
+
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey signinWithFakeManagedIdentityInPersonalProfile:fakeIdentity];
