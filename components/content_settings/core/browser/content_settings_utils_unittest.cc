@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -140,6 +141,7 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST(ContentSettingsUtilsTest, CanBeAutoRevoked) {
+  ContentSettingsRegistry::GetInstance();
   EXPECT_TRUE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
                                ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 

@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -186,17 +187,7 @@ bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
 }
 
 bool CanTrackLastVisit(ContentSettingsType type) {
-  // Last visit is not tracked for notification permission as it shouldn't be
-  // auto-revoked.
-  if (type == ContentSettingsType::NOTIFICATIONS) {
-    return false;
-  }
-
-  // Protocol handler don't actually use their content setting and don't have
-  // a valid "initial default" value.
-  if (type == ContentSettingsType::PROTOCOL_HANDLERS) {
-    return false;
-  }
+  DCHECK(WebsiteSettingsRegistry::GetInstance()->Get(type)) << type;
 
   // Chooser based content settings will not be tracked by default.
   // Only allowlisted ones should be tracked.
@@ -204,9 +195,8 @@ bool CanTrackLastVisit(ContentSettingsType type) {
     return true;
   }
 
-  auto* info =
-      content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
-  return info && info->GetInitialDefaultSetting() == CONTENT_SETTING_ASK;
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(type);
+  return info && info->delegate().CanTrackLastVisit();
 }
 
 base::Time GetCoarseVisitedTime(base::Time time) {
@@ -226,6 +216,8 @@ base::TimeDelta GetCoarseVisitedTimePrecision() {
 bool CanBeAutoRevoked(ContentSettingsType type,
                       const base::Value& value,
                       bool is_one_time) {
+  DCHECK(WebsiteSettingsRegistry::GetInstance()->Get(type)) << type;
+
   // The Permissions module in Safety check will revoke permissions after
   // a finite amount of time.
   // We're only interested in expiring permissions that are either
@@ -238,33 +230,27 @@ bool CanBeAutoRevoked(ContentSettingsType type,
   // C. chooser permissions (= WebsiteSettingsRegistry-based), which
   //    1. Are allowlisted.
   //    2. Have a non-empty value.
+  if (is_one_time) {
+    return false;
+  }
+
   auto* permission_settings_info =
-      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+      PermissionSettingsRegistry::GetInstance()->Get(type);
   if (permission_settings_info) {
     auto setting = permission_settings_info->delegate().FromValue(value);
-    DCHECK(setting);
+    DCHECK(setting) << value.DebugString();
     if (!setting.has_value()) {
       return false;
     }
     return permission_settings_info->delegate().CanBeAutoRevoked(
-        setting.value(), is_one_time);
+               setting.value()) &&
+           CanTrackLastVisit(type);
   } else {
-    // TODO(crbug.com/425642101): Migrate to using the
-    // |PermissionSettingsInfo::Delegate| once content settings are migrated to
-    // the PermissionSettingsRegistry.
-    auto* info =
-        content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
-    if (info) {
-      return !is_one_time &&
-             ValueToContentSetting(value) == CONTENT_SETTING_ALLOW &&
-             CanTrackLastVisit(type);
-    } else {
       // If the value is already empty, no need to revoke the permission.
       return IsChooserPermissionEligibleForAutoRevocation(type) &&
              !value.is_none();
     }
   }
-}
 
 bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type) {
   // Currently, only File System Access is allowlisted for auto-revoking unused
@@ -308,8 +294,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
 }
 
 bool ShouldTypeExpireActively(ContentSettingsType type) {
-  return base::FeatureList::IsEnabled(
-             content_settings::features::kActiveContentSettingExpiry) &&
+  return base::FeatureList::IsEnabled(features::kActiveContentSettingExpiry) &&
          base::Contains(GetTypesWithTemporaryGrantsInHcsm(), type);
 }
 

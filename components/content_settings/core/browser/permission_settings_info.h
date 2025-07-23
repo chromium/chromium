@@ -38,8 +38,9 @@ class PermissionSettingsInfo {
         const PermissionSetting& setting) const = 0;
 
     // Returns whether the permission setting can be auto-revoked by SafetyHub.
-    virtual bool CanBeAutoRevoked(PermissionSetting setting,
-                                  bool is_one_time) const = 0;
+    virtual bool CanBeAutoRevoked(PermissionSetting setting) const = 0;
+    // Returns whether the permission setting supports expiration tracking.
+    virtual bool CanTrackLastVisit() const = 0;
 
     // Returns true if any existing persistent state should be coalesced with
     // ephemeral state from the OneTimePermissionProvider.

@@ -85,11 +85,14 @@ std::optional<PermissionSetting> GeolocationSettingDelegate::FromValue(
   return setting;
 }
 
-bool GeolocationSettingDelegate::CanBeAutoRevoked(PermissionSetting setting,
-                                                  bool is_one_time) const {
-  auto* geolocation_setting = std::get_if<GeolocationSetting>(&setting);
-  return !is_one_time && geolocation_setting &&
-         (*geolocation_setting).approximate == PermissionOption::kAllowed;
+bool GeolocationSettingDelegate::CanBeAutoRevoked(
+    PermissionSetting setting) const {
+  return std::get<GeolocationSetting>(setting).approximate ==
+         PermissionOption::kAllowed;
+}
+
+bool GeolocationSettingDelegate::CanTrackLastVisit() const {
+  return true;
 }
 
 bool GeolocationSettingDelegate::ShouldCoalesceEphemeralState() const {

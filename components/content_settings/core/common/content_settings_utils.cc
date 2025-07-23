@@ -19,8 +19,6 @@
 
 namespace content_settings {
 
-namespace {
-
 // Converts a |Value| to a |ContentSetting|. Returns a result if |value| encodes
 // a valid content setting, nullopt otherwise. Note that
 // |CONTENT_SETTING_DEFAULT| is encoded as a NULL value, so it is not allowed as
@@ -37,8 +35,6 @@ std::optional<ContentSetting> ParseContentSettingValue(
   return setting == CONTENT_SETTING_DEFAULT ? std::nullopt
                                             : std::make_optional(setting);
 }
-
-}  // namespace
 
 ContentSetting ValueToContentSetting(const base::Value& value) {
   auto setting = ParseContentSettingValue(value);

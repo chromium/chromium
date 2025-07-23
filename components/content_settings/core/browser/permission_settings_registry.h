@@ -16,6 +16,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {
@@ -47,6 +48,19 @@ class PermissionSettingsRegistry {
   const_iterator begin() const;
   const_iterator end() const;
 
+  // Register a new content setting. This maps an origin to an ALLOW/ASK/BLOCK
+  // value (see the ContentSetting enum).
+  const PermissionSettingsInfo* Register(
+      ContentSettingsType type,
+      const std::string& name,
+      PermissionSetting initial_default_value,
+      WebsiteSettingsInfo::SyncStatus sync_status,
+      const std::vector<std::string>& allowlisted_primary_schemes,
+      WebsiteSettingsInfo::ScopingType scoping_type,
+      WebsiteSettingsRegistry::Platforms platforms,
+      PermissionSettingsInfo::OriginRestriction origin_restriction,
+      std::unique_ptr<PermissionSettingsInfo::Delegate> delegate);
+
  private:
   friend class ContentSettingsRegistryTest;
   friend struct base::LazyInstanceTraitsBase<PermissionSettingsRegistry>;
@@ -57,20 +71,6 @@ class PermissionSettingsRegistry {
   ~PermissionSettingsRegistry();
 
   void Init();
-
-  typedef uint32_t Platforms;
-
-  // Register a new content setting. This maps an origin to an ALLOW/ASK/BLOCK
-  // value (see the ContentSetting enum).
-  void Register(ContentSettingsType type,
-                const std::string& name,
-                PermissionSetting initial_default_value,
-                WebsiteSettingsInfo::SyncStatus sync_status,
-                const std::vector<std::string>& allowlisted_primary_schemes,
-                WebsiteSettingsInfo::ScopingType scoping_type,
-                Platforms platforms,
-                PermissionSettingsInfo::OriginRestriction origin_restriction,
-                std::unique_ptr<PermissionSettingsInfo::Delegate> delegate);
 
   Map permission_settings_info_;
   raw_ptr<WebsiteSettingsRegistry> website_settings_registry_;

@@ -257,9 +257,6 @@ class HostContentSettingsMap : public content_settings::Observer,
       std::optional<PermissionSetting> setting,
       const content_settings::ContentSettingConstraints& constraints = {});
 
-  // TODO(crbug.com/425642101): Add functions to set and reset
-  // PermissionSettings.
-
   // Sets the |value| for the default scope of the url that is appropriate for
   // the given |content_type| applying any provided |constraints|. Setting the
   // value to NONE (base::Value()) removes the default pattern pair for this

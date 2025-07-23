@@ -53,24 +53,17 @@ const char kDecidedByRelatedWebsiteSets[] = "decided_by_related_website_sets";
 const base::TimeDelta kLastUsedPermissionExpiration = base::Hours(24);
 
 bool IsValueAllowedForType(const base::Value& value, ContentSettingsType type) {
-  auto* info =
-      content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
-  if (info) {
-    if (!value.is_int())
-      return false;
-    if (value.GetInt() == CONTENT_SETTING_DEFAULT)
-      return false;
-    return info->IsSettingValid(IntToContentSetting(value.GetInt()));
-  }
-
   auto* permission_info =
       content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+
   if (permission_info) {
-    return permission_info->delegate().FromValue(value).has_value();
+    auto setting = permission_info->delegate().FromValue(value);
+    if (setting) {
+      return permission_info->delegate().IsValid(setting.value());
+    }
+    return false;
   }
 
-  // TODO(raymes): We should permit different types of base::Value for
-  // website settings.
   return value.is_dict();
 }
 
@@ -164,6 +157,7 @@ ContentSettingsPref::ContentSettingsPref(
       notify_callback_(notify_callback),
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(prefs_);
+  content_settings::ContentSettingsRegistry::GetInstance();
   ReadContentSettingsFromPref();
 
   for (const auto& path : {pref_name_, partitioned_pref_name_}) {
@@ -206,7 +200,7 @@ void ContentSettingsPref::SetWebsiteSetting(
     RuleMetaData metadata,
     const PartitionKey& partition_key) {
   DCHECK(value.is_none() || IsValueAllowedForType(value, content_type_))
-      << value << " " << content_type_;
+      << value.DebugString() << " " << content_type_;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
   DCHECK(primary_pattern != ContentSettingsPattern::Wildcard() ||
@@ -449,7 +443,8 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
         }
         last_visited = GetLastVisit(settings_dictionary);
       }
-      DCHECK(IsValueAllowedForType(*value, content_type_));
+      DCHECK(IsValueAllowedForType(*value, content_type_))
+          << value->DebugString() << " " << content_type_;
       RuleMetaData metadata;
       metadata.set_last_modified(last_modified);
       metadata.set_last_used(last_used);

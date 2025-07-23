@@ -31,7 +31,8 @@ using ::testing::ElementsAre;
 class ContentSettingsRegistryTest : public testing::Test {
  protected:
   ContentSettingsRegistryTest()
-      : registry_(&permission_settings_registry_, &website_settings_registry_) {
+      : permission_settings_registry_(&website_settings_registry_),
+        registry_(&permission_settings_registry_, &website_settings_registry_) {
   }
 
   ContentSettingsRegistry* registry() { return &registry_; }
@@ -74,7 +75,7 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
       registry()->Get(ContentSettingsType::COOKIES);
   ASSERT_TRUE(info);
 
-  EXPECT_THAT(info->allowlisted_primary_schemes(),
+  EXPECT_THAT(info->permission_settings_info()->allowlisted_primary_schemes(),
               ElementsAre("chrome", "devtools"));
   EXPECT_THAT(info->third_party_cookie_allowed_secondary_schemes(),
               ElementsAre("devtools", "chrome-extension"));

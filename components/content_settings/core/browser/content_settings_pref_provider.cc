@@ -222,7 +222,8 @@ bool PrefProvider::SetWebsiteSetting(
       store_last_modified_ ? clock_->Now() : base::Time();
 
   DCHECK(!constraints.track_last_visit_for_autoexpiration() ||
-         content_settings::CanTrackLastVisit(content_type));
+         content_settings::CanTrackLastVisit(content_type))
+      << content_type;
   // Last visit timestamps can only be tracked for host-specific pattern.
   DCHECK(!constraints.track_last_visit_for_autoexpiration() ||
          !primary_pattern.GetHost().empty());

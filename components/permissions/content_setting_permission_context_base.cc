@@ -49,9 +49,6 @@ void ContentSettingPermissionContextBase::UpdateContentSetting(
 
   // The Permissions module in Safety check will revoke permissions after
   // a finite amount of time if the permission can be revoked.
-  // TODO(crbug.com/425642101): Migrate to using the
-  // PermissionSettingsInfo::Delegate once content settings are migrated to the
-  // PermissionSettingsRegistry.
   if (content_settings::CanBeAutoRevoked(
           content_settings_type(),
           content_settings::ContentSettingToValue(content_setting),

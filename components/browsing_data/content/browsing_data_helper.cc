@@ -147,16 +147,6 @@ void RemoveEmbedderCookieData(
 void RemoveSiteSettingsData(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             HostContentSettingsMap* host_content_settings_map) {
-  // TODO(crbug.com/425642101): Remove this when content settings are registered
-  // as permission settings.
-  const auto* registry =
-      content_settings::ContentSettingsRegistry::GetInstance();
-  for (const content_settings::ContentSettingsInfo* info : *registry) {
-    host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-        info->website_settings_info()->type(), delete_begin, delete_end,
-        HostContentSettingsMap::PatternSourcePredicate());
-  }
-
   const auto* permission_settings_registry =
       content_settings::PermissionSettingsRegistry::GetInstance();
   for (const content_settings::PermissionSettingsInfo* info :
