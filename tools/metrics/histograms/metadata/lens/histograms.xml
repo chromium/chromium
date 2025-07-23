@@ -172,6 +172,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SelectionState.CloseButtonEvent"
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-01-21">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome-eng@google.com</owner>
+  <summary>
+    Records an event for the close button on the selection overlay. Recorded
+    every time the button is shown to the user, and once if it is used in the
+    session. This allows for measuring click-through rate.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SessionDuration"
     units="ms" expires_after="2025-11-09">
   <owner>jdonnelly@chromium.org</owner>
@@ -678,6 +691,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded each time the user interacts with the Lens Permission Bubble,
     enumerated by those actions.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.SelectionState.CloseButtonEvent"
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-01-21">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome-eng@google.com</owner>
+  <summary>
+    Records an event for the close button on the selection overlay. Recorded
+    every time the button is shown to the user, and once if it is used in the
+    session. This allows for measuring click-through rate.
   </summary>
 </histogram>
 

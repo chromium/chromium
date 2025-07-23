@@ -128,6 +128,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_new_tab_source.h:LensOverlayNewTabSource) -->
 
+<!-- LINT.IfChange(LensOverlaySelectionCloseButtonEvent) -->
+
+<enum name="LensOverlaySelectionCloseButtonEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Used"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/lens/overlay/metrics_utils.ts:LensOverlaySelectionCloseButtonEvent) -->
+
 <!-- LINT.IfChange(LensOverlaySidePanelMenuOption) -->
 
 <enum name="LensOverlaySidePanelMenuOption">
