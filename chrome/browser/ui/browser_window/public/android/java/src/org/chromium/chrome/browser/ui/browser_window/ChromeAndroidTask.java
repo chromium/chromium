@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
  * Represents an Android window containing Chrome.
@@ -38,4 +40,48 @@ import org.chromium.build.annotations.NullMarked;
  * </ul>
  */
 @NullMarked
-public interface ChromeAndroidTask {}
+public interface ChromeAndroidTask {
+
+    /**
+     * Returns the ID of this {@link ChromeAndroidTask}, which is the same as defined by {@link
+     * android.app.TaskInfo#taskId}.
+     */
+    int getId();
+
+    /**
+     * Sets the current {@link ActivityWindowAndroid} in this Task.
+     *
+     * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but an {@link
+     * ActivityWindowAndroid} is associated with a {@code ChromeActivity}, this method is needed to
+     * support the difference in their lifecycles.
+     *
+     * <p>We assume there is at most one {@link ActivityWindowAndroid} associated with a {@link
+     * ChromeAndroidTask} at any time. If this method is called when this {@link ChromeAndroidTask}
+     * already has an {@link ActivityWindowAndroid}, an {@link AssertionError} will occur.
+     *
+     * @see #clearActivityWindowAndroid()
+     */
+    void setActivityWindowAndroid(ActivityWindowAndroid activityWindowAndroid);
+
+    /**
+     * Returns the current {@link ActivityWindowAndroid} in this Task, or {@code null} if there is
+     * none.
+     */
+    @Nullable ActivityWindowAndroid getActivityWindowAndroid();
+
+    /**
+     * Clears the current {@link ActivityWindowAndroid} in this Task.
+     *
+     * <p>This method should be called when the current {@link ActivityWindowAndroid} is about to be
+     * destroyed.
+     *
+     * @see #setActivityWindowAndroid(ActivityWindowAndroid)
+     */
+    void clearActivityWindowAndroid();
+
+    /** Destroys all objects owned by this {@link ChromeAndroidTask}. */
+    void destroy();
+
+    /** Returns whether this {@link ChromeAndroidTask} has been destroyed. */
+    boolean isDestroyed();
+}

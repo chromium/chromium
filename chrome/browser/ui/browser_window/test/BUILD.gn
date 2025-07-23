@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Android targets need to be guarded by is_android because:
+# (1) Android GNI files may assert is_android, and
+# (2) The rest of this file can be included in non-Android builds.
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("junit_test_support") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskUnitTestSupport.java" ]
+    deps = [
+      "//build/android:build_java",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
+}

@@ -102,6 +102,26 @@ if (is_android) {
     deps = [
       "//build/android:build_java",
       "//chrome/browser/ui/browser_window:java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    testonly = true
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImplUnitTest.java",
+    ]
+    deps = [
+      ":java",
+      "//base:base_junit_test_support",
+      "//build/android:build_java",
+      "//chrome/browser/ui/browser_window:java",
+      "//chrome/browser/ui/browser_window/test:junit_test_support",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
     ]
   }
 }

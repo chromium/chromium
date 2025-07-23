@@ -46,7 +46,10 @@ if (is_android) {
       "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
       "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
     ]
-    deps = [ "//build/android:build_java" ]
+    deps = [
+      "//build/android:build_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
   }
 
   # Public Java factory
