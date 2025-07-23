@@ -27,6 +27,7 @@ source_set("eg2_tests") {
   sources = [ "post_restore_default_browser_egtest.mm" ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/time/time.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -43,6 +44,13 @@ id<GREYMatcher> SecondaryActionMatcher() {
 
 @implementation PostRestoreDefaultBrowserPromoTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kEnableReaderMode);
+  config.features_disabled.push_back(kEnableReaderModeDefaultBrowserPromo);
+  return config;
+}
+
 #pragma mark - Helpers
 
 - (void)checkThatCommonElementsAreVisible {
@@ -64,7 +72,7 @@ id<GREYMatcher> SecondaryActionMatcher() {
 }
 
 - (void)simulateRestore {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSimulatePostDeviceRestore);
