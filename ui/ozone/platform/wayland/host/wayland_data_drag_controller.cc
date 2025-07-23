@@ -130,6 +130,7 @@ WaylandDataDragController::WaylandDataDragController(
 
 WaylandDataDragController::~WaylandDataDragController() {
   window_manager_->RemoveObserver(this);
+  data_device_manager_->GetDevice()->ResetDragDelegate();
 }
 
 bool WaylandDataDragController::StartSession(const OSExchangeData& data,

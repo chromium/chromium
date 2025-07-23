@@ -157,7 +157,9 @@ WaylandWindowDragController::WaylandWindowDragController(
   DCHECK(keyboard_delegate_);
 }
 
-WaylandWindowDragController::~WaylandWindowDragController() = default;
+WaylandWindowDragController::~WaylandWindowDragController() {
+  data_device_manager_->GetDevice()->ResetDragDelegate();
+}
 
 bool WaylandWindowDragController::StartDragSession(
     WaylandToplevelWindow* origin,
