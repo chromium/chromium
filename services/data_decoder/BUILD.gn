@@ -148,6 +148,15 @@ source_set("xml_parser_fuzzer_deps") {
   visibility = [
     ":run_xml_parser_fuzzer",
     ":xml_parser_fuzzer",
+    ":xml_parser_fuzzer__apk__compile_java",
+    ":xml_parser_fuzzer__apk__compile_resources",
+    ":xml_parser_fuzzer__apk__create",
+    ":xml_parser_fuzzer__apk__java",
+    ":xml_parser_fuzzer__apk__java__dex",
+    ":xml_parser_fuzzer__apk__java__header",
+    ":xml_parser_fuzzer__apk__java__validate",
+    ":xml_parser_fuzzer__library",
+    ":xml_parser_fuzzer__library__jni_registration__native_sources",
     ":xml_parser_fuzzer_executable",
   ]
   public_deps = [
