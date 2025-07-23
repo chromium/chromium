@@ -2029,19 +2029,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </token>
 </histogram>
 
-<histogram name="Extensions.ExtensionsWithPageActions" units="units"
-    expires_after="2025-07-07">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of Extensions that have Page Actions. Measured once per profile
-    open for &quot;user profile&quot; (profiles where people can install
-    extensions, specifically profiles that can have non-component extensions
-    installed). Replaced previous version
-    (PageActionController.ExtensionsWithPageActions).
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
     expires_after="2023-07-07">
   <owner>anunoy@chromium.org</owner>
@@ -3802,17 +3789,6 @@ This is emitted for two scenarios when a worker may be unregistered:
     people can install extensions, specifically profiles that can have
     non-component extensions installed) open grouped by
     Extension::HistogramType.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.LoadUserScript2" units="units"
-    expires_after="2025-04-20">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of converted user scripts loaded at &quot;user profile&quot;
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed) open.
   </summary>
 </histogram>
 

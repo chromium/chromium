@@ -492,11 +492,9 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   int hosted_app_count = 0;
   int legacy_packaged_app_count = 0;
   int platform_app_count = 0;
-  int user_script_count = 0;
   int extension_user_count = 0;
   int extension_external_count = 0;
   int theme_count = 0;
-  int page_action_count = 0;
   int browser_action_count = 0;
   int no_action_count = 0;
   int disabled_for_permissions_count = 0;
@@ -771,7 +769,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
         ++theme_count;
         break;
       case Manifest::TYPE_USER_SCRIPT:
-        ++user_script_count;
+        // No histogram.
         break;
       case Manifest::TYPE_HOSTED_APP:
         ++hosted_app_count;
@@ -811,8 +809,10 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     // we want to know how many extensions have a given type of action as part
     // of their code, rather than as part of the extension action redesign
     // (which gives each extension an action).
+    // TODO(devlin): This is wrong -- it's not counting manifest_keys::kAction,
+    // which is the most popular (and only allowed option in MV3+).
     if (extension->manifest()->FindKey(manifest_keys::kPageAction)) {
-      ++page_action_count;
+      // No histogram.
     } else if (extension->manifest()->FindKey(manifest_keys::kBrowserAction)) {
       ++browser_action_count;
     } else {
@@ -1041,9 +1041,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   base::UmaHistogramCounts100("Extensions.LoadExtensionExternal",
                               extension_external_count);
   base::UmaHistogramCounts100("Extensions.LoadTheme", theme_count);
-  // Histogram name different for legacy reasons.
-  base::UmaHistogramCounts100("PageActionController.ExtensionsWithPageActions",
-                              page_action_count);
   base::UmaHistogramCounts100("Extensions.LoadBrowserAction",
                               browser_action_count);
   base::UmaHistogramCounts100("Extensions.LoadNoExtensionAction",
@@ -1078,11 +1075,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
                                 extension_user_count);
     base::UmaHistogramCounts100("Extensions.LoadExtensionExternal2",
                                 extension_external_count);
-    base::UmaHistogramCounts100("Extensions.LoadUserScript2",
-                                user_script_count);
     base::UmaHistogramCounts100("Extensions.LoadTheme2", theme_count);
-    base::UmaHistogramCounts100("Extensions.ExtensionsWithPageActions",
-                                page_action_count);
     base::UmaHistogramCounts100("Extensions.LoadBrowserAction2",
                                 browser_action_count);
     base::UmaHistogramCounts100("Extensions.LoadNoExtensionAction2",
