@@ -104,7 +104,7 @@ class DeviceLocalAccountPolicyStoreTest : public testing::Test {
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
     owner_key_util_->ImportPrivateKeyAndSetPublicKey(
-        device_policy_.GetSigningKey());
+        *device_policy_.GetSigningKey());
     ash::OwnerSettingsServiceAshFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util_);
     ash::DeviceSettingsService::Get()->StartProcessing(

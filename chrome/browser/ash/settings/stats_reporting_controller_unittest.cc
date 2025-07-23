@@ -56,7 +56,7 @@ class StatsReportingControllerTest : public testing::Test {
     device_policy_.Build();
     fake_session_manager_client_.set_device_policy(device_policy_.GetBlob());
 
-    both_keys->ImportPrivateKeyAndSetPublicKey(device_policy_.GetSigningKey());
+    both_keys->ImportPrivateKeyAndSetPublicKey(*device_policy_.GetSigningKey());
     public_key_only->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
     // Prevent new keys from being generated.

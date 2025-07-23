@@ -179,7 +179,8 @@ class MetricsConsentHandlerTest : public testing::Test {
 
     // Keys to be used for testing.
     non_owner_keys->SetPublicKeyFromPrivateKey(*device_policy_.GetSigningKey());
-    owner_keys->ImportPrivateKeyAndSetPublicKey(device_policy_.GetSigningKey());
+    owner_keys->ImportPrivateKeyAndSetPublicKey(
+        *device_policy_.GetSigningKey());
 
     content::RunAllTasksUntilIdle();
 

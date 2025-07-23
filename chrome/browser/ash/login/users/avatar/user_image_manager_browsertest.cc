@@ -591,8 +591,8 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
         UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id_);
     const base::FilePath user_key_file =
         user_keys_dir.AppendASCII(sanitized_username).AppendASCII("policy.pub");
-    std::vector<uint8_t> user_key_bits;
-    ASSERT_TRUE(user_policy_.GetSigningKey()->ExportPublicKey(&user_key_bits));
+    std::vector<uint8_t> user_key_bits =
+        user_policy_.GetSigningKey()->ToSubjectPublicKeyInfo();
     ASSERT_TRUE(base::CreateDirectory(user_key_file.DirName()));
     ASSERT_TRUE(base::WriteFile(user_key_file, user_key_bits));
     user_policy_.policy_data().set_username(

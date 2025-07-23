@@ -11,10 +11,7 @@
 #include <vector>
 
 #include "components/policy/proto/device_management_backend.pb.h"
-
-namespace crypto {
-class RSAPrivateKey;
-}  // namespace crypto
+#include "crypto/keypair.h"
 
 namespace em = enterprise_management;
 
@@ -27,7 +24,7 @@ class SignatureProvider {
   // Provides access to a predefined test signing key.
   class SigningKey {
    public:
-    SigningKey(std::unique_ptr<crypto::RSAPrivateKey> private_key,
+    SigningKey(crypto::keypair::PrivateKey private_key,
                const std::map<std::string, std::string>& signatures);
     SigningKey(SigningKey&& signing_key);
     SigningKey& operator=(SigningKey&& signing_key);
@@ -47,9 +44,10 @@ class SignatureProvider {
 
    private:
     // The key used for signing.
-    std::unique_ptr<crypto::RSAPrivateKey> private_key_;
+    crypto::keypair::PrivateKey private_key_;
 
-    // The public key corresponding to |private_key_|.
+    // The public key corresponding to |private_key_|, encoded as a
+    // SubjectPublicKeyInfo.
     std::string public_key_;
 
     // Maps domains to the corresponding signatures.
@@ -101,7 +99,7 @@ class SignatureProvider {
 
  private:
   std::vector<SigningKey> signing_keys_;
-  std::unique_ptr<crypto::RSAPrivateKey> verification_key_;
+  crypto::keypair::PrivateKey verification_key_;
 
   // The key version to be used if no key version is defined by the client.
   int current_key_version_ = 1;

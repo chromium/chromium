@@ -129,7 +129,7 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
     owner_key_util_->ImportPrivateKeyAndSetPublicKey(
-        device_policy_->GetSigningKey());
+        *device_policy_->GetSigningKey());
     InitOwner(
         AccountId::FromUserEmail(device_policy_->policy_data().username()),
         true);
@@ -616,7 +616,7 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, TakeOwnershipForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
   owner_key_util_->ImportPrivateKeyAndSetPublicKey(
-      device_policy_->GetSigningKey());
+      *device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
             true);
   ReloadDeviceSettings();
@@ -663,7 +663,7 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysPublicKeyOnly) {
 // return correct results.
 TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysBothKeys) {
   owner_key_util_->ImportPrivateKeyAndSetPublicKey(
-      device_policy_->GetSigningKey());
+      *device_policy_->GetSigningKey());
 
   EXPECT_FALSE(service_->IsReady());
   service_->OnTPMTokenReady();  // Trigger key load.
@@ -689,7 +689,7 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, CleanUpOldOwnerKey) {
   FakeNssService* nss_service = FakeNssService::InitializeForBrowserContext(
       profile_.get(), /*enable_system_slot=*/false);
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      device_policy_->GetSigningKey(), nss_service->GetPublicSlot());
+      *device_policy_->GetSigningKey(), nss_service->GetPublicSlot());
 
   EXPECT_FALSE(service_->IsReady());
   service_->OnTPMTokenReady();  // Trigger key load.

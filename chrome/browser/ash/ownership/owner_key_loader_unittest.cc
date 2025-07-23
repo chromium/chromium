@@ -30,7 +30,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using PublicKeyRefPtr = scoped_refptr<ownership::PublicKey>;
@@ -41,11 +41,8 @@ namespace ash {
 
 constexpr char kUserEmail[] = "user@example.com";
 
-std::vector<uint8_t> ExtractSpkiDer(
-    const std::unique_ptr<crypto::RSAPrivateKey>& key) {
-  std::vector<uint8_t> bytes;
-  key->ExportPublicKey(&bytes);
-  return bytes;
+std::vector<uint8_t> ExtractSpkiDer(crypto::keypair::PrivateKey key) {
+  return key.ToSubjectPublicKeyInfo();
 }
 
 std::vector<uint8_t> ExtractSpkiDer(const crypto::ScopedSECKEYPrivateKey& key) {
@@ -94,7 +91,7 @@ class OwnerKeyLoaderTestBase : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<crypto::RSAPrivateKey> ConfigureExistingPolicies(
+  crypto::keypair::PrivateKey ConfigureExistingPolicies(
       const std::string& owner_username) {
     // The actual content of the policies doesn't matter, OwnerKeyLoader only
     // looks at the username that created them (i.e. at the user that was
@@ -103,7 +100,7 @@ class OwnerKeyLoaderTestBase : public testing::Test {
     policy_builder.policy_data().set_username(owner_username);
     policy_builder.Build();
     session_manager_client_.set_device_policy(policy_builder.GetBlob());
-    return policy_builder.GetSigningKey();
+    return *policy_builder.GetSigningKey();
   }
 
   // Checks whether the private key for `public_key_spki` is in the `slot`.
@@ -229,7 +226,7 @@ TEST_F(RegularOwnerKeyLoaderTest, SecondUserDoesNotTakeOwnership) {
   // In real code the first user would have created some device policies and
   // saved the public owner key on disk. Emulate that.
   auto signing_key = ConfigureExistingPolicies("owner@example.com");
-  owner_key_util_->SetPublicKeyFromPrivateKey(*signing_key);
+  owner_key_util_->SetPublicKeyFromPrivateKey(signing_key);
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -256,7 +253,7 @@ TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyFromPublicSlot) {
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPublicSlot());
+      signing_key, nss_service_->GetPublicSlot());
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -285,7 +282,7 @@ TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyFromPrivateSlot) {
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPrivateSlot());
+      signing_key, nss_service_->GetPrivateSlot());
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -314,10 +311,10 @@ TEST_F(RegularOwnerKeyLoaderTest,
       /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   policy::DevicePolicyBuilder policy_builder;
-  auto signing_key = policy_builder.GetSigningKey();
+  auto signing_key = *policy_builder.GetSigningKey();
 
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPublicSlot());
+      signing_key, nss_service_->GetPublicSlot());
 
   key_loader_->Run();
 
@@ -344,10 +341,10 @@ TEST_F(RegularOwnerKeyLoaderTest,
       /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   policy::DevicePolicyBuilder policy_builder;
-  auto signing_key = policy_builder.GetSigningKey();
+  auto signing_key = *policy_builder.GetSigningKey();
 
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPrivateSlot());
+      signing_key, nss_service_->GetPrivateSlot());
 
   key_loader_->Run();
 
@@ -367,9 +364,9 @@ TEST_F(RegularOwnerKeyLoaderTest,
 // policies fail to load and does not have the owner key.
 TEST_F(RegularOwnerKeyLoaderTest, SecondaryUserWithoutPolicies) {
   policy::DevicePolicyBuilder policy_builder;
-  auto signing_key = policy_builder.GetSigningKey();
+  auto signing_key = *policy_builder.GetSigningKey();
 
-  owner_key_util_->SetPublicKeyFromPrivateKey(*signing_key);
+  owner_key_util_->SetPublicKeyFromPrivateKey(signing_key);
 
   key_loader_->Run();
 
@@ -392,7 +389,7 @@ TEST_F(RegularOwnerKeyLoaderTest,
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   // Configure that the public key is on disk, but the private key doesn't
   // exist.
-  owner_key_util_->SetPublicKeyFromPrivateKey(*signing_key);
+  owner_key_util_->SetPublicKeyFromPrivateKey(signing_key);
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -422,9 +419,9 @@ TEST_F(RegularOwnerKeyLoaderTest,
       AccountId::FromUserEmail(profile_->GetProfileUserName()));
 
   policy::DevicePolicyBuilder policy_builder;
-  auto signing_key = policy_builder.GetSigningKey();
+  auto signing_key = *policy_builder.GetSigningKey();
 
-  owner_key_util_->SetPublicKeyFromPrivateKey(*signing_key);
+  owner_key_util_->SetPublicKeyFromPrivateKey(signing_key);
 
   key_loader_->Run();
 
@@ -493,7 +490,7 @@ TEST_F(RegularOwnerKeyLoaderTest, EnterpriseDevicesDontNeedPrivateKey) {
   // device policies that the user is the owner (shouldn't happen on a real
   // device) and prepare a private key in case OwnerKeyLoader tries to load it.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
-  owner_key_util_->ImportPrivateKeyAndSetPublicKey(signing_key->Copy());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(signing_key);
 
   // Re-create the loader with is_enterprise_enrolled=true.
   key_loader_ = std::make_unique<OwnerKeyLoader>(
@@ -524,7 +521,7 @@ TEST_F(RegularOwnerKeyLoaderTest, MigrateFromPublicToPrivateSlot) {
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPublicSlot());
+      signing_key, nss_service_->GetPublicSlot());
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -562,7 +559,7 @@ TEST_F(RegularOwnerKeyLoaderTest, NotMigratedFromPublicToPrivateSlot) {
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPublicSlot());
+      signing_key, nss_service_->GetPublicSlot());
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -598,7 +595,7 @@ TEST_F(RegularOwnerKeyLoaderTest, NotMigratedFromPrivateToPublicSlot) {
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPrivateSlot());
+      signing_key, nss_service_->GetPrivateSlot());
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
@@ -634,7 +631,7 @@ TEST_F(RegularOwnerKeyLoaderTest, MigrateFromPrivateToPublicSlot) {
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      signing_key->Copy(), nss_service_->GetPrivateSlot());
+      signing_key, nss_service_->GetPrivateSlot());
   device_settings_service_.LoadImmediately();  // Reload policies.
 
   key_loader_->Run();
