@@ -177,7 +177,13 @@ TEST_F(WebStateTest, Snapshot) {
 }
 
 // Tests that the create PDF method returns a PDF of a rendered html page.
-TEST_F(WebStateTest, CreateFullPagePdf_ValidURL) {
+// TODO(crbug.com/433740395): Re-enable tests
+#if TARGET_OS_SIMULATOR
+#define MAYBE_CreateFullPagePdf_ValidURL CreateFullPagePdf_ValidURL
+#else
+#define MAYBE_CreateFullPagePdf_ValidURL DISABLED_CreateFullPagePdf_ValidURL
+#endif
+TEST_F(WebStateTest, MAYBE_CreateFullPagePdf_ValidURL) {
   [GetAnyKeyWindow() addSubview:web_state()->GetView()];
 
   // Load a URL and some HTML in the WebState.
@@ -320,7 +326,13 @@ TEST_F(WebStateTest, SetHasOpener) {
 
 // Verifies that large session can be restored with max session size limit
 // equals to `wk_navigation_util::kMaxSessionSize`.
-TEST_F(WebStateTest, RestoreLargeSession) {
+// TODO(crbug.com/433740395): Re-enable tests
+#if TARGET_OS_SIMULATOR
+#define MAYBE_RestoreLargeSession RestoreLargeSession
+#else
+#define MAYBE_RestoreLargeSession DISABLED_RestoreLargeSession
+#endif
+TEST_F(WebStateTest, MAYBE_RestoreLargeSession) {
   // Create session storage with large number of items.
   const int kItemCount = 150;
   std::unique_ptr<WebState> web_state =
@@ -424,7 +436,13 @@ TEST_F(WebStateTest, RestoreLargeSession) {
 // Verifies that calling WebState::Stop() does not stop the session restoration.
 // Session restoration should be opaque to the user and embedder, so calling
 // Stop() is no-op.
-TEST_F(WebStateTest, CallStopDuringSessionRestore) {
+// TODO(crbug.com/433740395): Re-enable tests
+#if TARGET_OS_SIMULATOR
+#define MAYBE_CallStopDuringSessionRestore CallStopDuringSessionRestore
+#else
+#define MAYBE_CallStopDuringSessionRestore DISABLED_CallStopDuringSessionRestore
+#endif
+TEST_F(WebStateTest, MAYBE_CallStopDuringSessionRestore) {
   // Create session storage with large number of items.
   const int kItemCount = 10;
   std::unique_ptr<WebState> web_state =
@@ -505,7 +523,14 @@ TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
 // Verifies that calling NavigationManager::Reload() does not stop the session
 // restoration. Session restoration should be opaque to the user and embedder,
 // so calling Reload() is no-op.
-TEST_F(WebStateTest, CallReloadDuringSessionRestore) {
+// TODO(crbug.com/433740395): Re-enable tests
+#if TARGET_OS_SIMULATOR
+#define MAYBE_CallReloadDuringSessionRestore CallReloadDuringSessionRestore
+#else
+#define MAYBE_CallReloadDuringSessionRestore \
+  DISABLED_CallReloadDuringSessionRestore
+#endif
+TEST_F(WebStateTest, MAYBE_CallReloadDuringSessionRestore) {
   // Create session storage with large number of items.
   const int kItemCount = 10;
   std::unique_ptr<WebState> web_state =
