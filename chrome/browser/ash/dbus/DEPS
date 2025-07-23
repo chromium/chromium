@@ -21,6 +21,7 @@ include_rules = [
   "+chrome/browser/ash/arc/tracing",
   "+chromeos/ash/experiences/arc/video",
   "+chrome/browser/ash/borealis",
+  "+chrome/browser/ash/bruschetta",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/exo",
   "+chrome/browser/ash/fusebox",

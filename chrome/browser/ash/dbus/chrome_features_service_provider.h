@@ -76,6 +76,9 @@ class ChromeFeaturesServiceProvider
   // this dbus method.
   void GetFeatureParams(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender response_sender);
+  void IsBruschettaEnabled(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
   void IsCrostiniEnabled(dbus::MethodCall* method_call,
                          dbus::ExportedObject::ResponseSender response_sender);
   void IsCryptohomeDistributedModelEnabled(
