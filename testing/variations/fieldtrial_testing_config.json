@@ -9602,6 +9602,24 @@
             ]
         }
     ],
+    "EnterpriseIframeDlpRulesSupport": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseIframeDlpRulesSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "EsbAsASyncedSetting": [
         {
             "platforms": [
