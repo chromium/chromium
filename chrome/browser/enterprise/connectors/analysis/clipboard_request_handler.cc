@@ -172,7 +172,7 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       kWebContentUploadDataTransferEventTrigger, content_transfer_method_,
-      content_analysis_info_->GetContentAreaAccountEmail(), content_size_,
+      source_content_area_email_, content_size_,
       content_analysis_info_->referrer_chain(), result, response_,
       CalculateEventResult(content_analysis_info_->settings(),
                            request_handler_result.complies, should_warn));

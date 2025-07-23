@@ -173,6 +173,7 @@ TEST_F(ClipboardRequestHandlerTest, Text) {
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();
   validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectSourceActiveUser(kSourceEmail);
   validator.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,
@@ -249,6 +250,7 @@ TEST_F(ClipboardRequestHandlerTest, Image) {
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();
   validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectSourceActiveUser(kSourceEmail);
   validator.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,
