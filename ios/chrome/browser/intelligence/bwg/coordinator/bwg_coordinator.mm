@@ -135,7 +135,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
   BOOL shouldAnimatePresentation =
-      BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : YES;
+      BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : NO;
 
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_FREWrapperViewController

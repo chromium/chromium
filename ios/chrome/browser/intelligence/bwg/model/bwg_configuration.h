@@ -14,7 +14,6 @@ class AuthenticationService;
 @protocol SingleSignOnService;
 
 namespace ios::provider {
-enum class BWGLocationPermissionState;
 enum class BWGPageContextState;
 }  // namespace ios::provider
 
@@ -36,10 +35,6 @@ class PageContext;
 @property(nonatomic, assign)
     std::unique_ptr<optimization_guide::proto::PageContext>
         uniquePageContext;
-
-// The state of the BWG location permission.
-@property(nonatomic, assign)
-    ios::provider::BWGLocationPermissionState BWGLocationPermissionState;
 
 // The state of the BWG PageContext.
 @property(nonatomic, assign)
