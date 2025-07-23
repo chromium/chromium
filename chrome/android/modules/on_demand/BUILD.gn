@@ -46,6 +46,8 @@ android_library("data_importer_service_impl_java") {
     ":os_migration_target_service_grpc_java",
     ":os_migration_target_service_proto_java",
     "//base:log_java",
+    "//base:tasks_java",
+    "//base/version_info/android:version_constants_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/flags:java",
     "//components/cached_flags:java",

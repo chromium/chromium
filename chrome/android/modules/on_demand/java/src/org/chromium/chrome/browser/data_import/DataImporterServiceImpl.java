@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.data_import;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.IBinder;
+import android.util.Base64;
 
 import io.grpc.Server;
 import io.grpc.Status;
@@ -14,11 +16,14 @@ import io.grpc.binder.AndroidComponentAddress;
 import io.grpc.binder.BinderServerBuilder;
 import io.grpc.binder.IBinderReceiver;
 import io.grpc.binder.InboundParcelablePolicy;
+import io.grpc.binder.SecurityPolicies;
+import io.grpc.binder.SecurityPolicy;
 import io.grpc.binder.ServerSecurityPolicy;
-import io.grpc.binder.UntrustedSecurityPolicies;
 import io.grpc.stub.StreamObserver;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -75,12 +80,47 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
         return mBinderReceiver.get();
     }
 
+    private static final String RESTORE_PACKAGE_NAME = "com.google.android.apps.restore";
+    private static final String RESTORE_SHA_HASH_PROD =
+            "Vr4TK3gGVv4kRM00Mm6116rJHSCWq/D+ZzqZJwYi7Ic=";
+    private static final String RESTORE_SHA_HASH_DEV =
+            "znRkbMxkfBZAxFcQI+HPcbkOTR0HFnwYS+KRNkSeTH8=";
+
+    private static final String DEV_APP_PACKAGE_NAME =
+            "com.google.android.apps.restore.experimental.osmigration.devapp";
+    private static final String DEV_APP_SHA_HASH = "EDk47kU35Z6O55L2VFBPuDRvxrNG0LvEQV/DOfz8jsE=";
+
     private ServerSecurityPolicy getServerSecurityPolicy() {
-        // TODO(crbug.com/431218724): Define a proper security policy.
         return ServerSecurityPolicy.newBuilder()
-                .servicePolicy(
-                        TargetServiceGrpc.SERVICE_NAME, UntrustedSecurityPolicies.untrustedPublic())
+                .servicePolicy(TargetServiceGrpc.SERVICE_NAME, getSecurityPolicy())
                 .build();
+    }
+
+    private SecurityPolicy getSecurityPolicy() {
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        if (VersionInfo.isLocalBuild() || VersionInfo.isCanaryBuild() || VersionInfo.isDevBuild()) {
+            // In local (aka developer) builds, as well as in Canary and Dev channel, allow
+            // development apps to call the API.
+            return SecurityPolicies.anyOf(isRestoreAppProd(pm), isRestoreAppDev(pm), isDevApp(pm));
+        } else {
+            // In Stable and Beta channel, only allow the production Restore app.
+            return isRestoreAppProd(pm);
+        }
+    }
+
+    private static SecurityPolicy isRestoreAppProd(PackageManager pm) {
+        return SecurityPolicies.hasSignatureSha256Hash(
+                pm, RESTORE_PACKAGE_NAME, Base64.decode(RESTORE_SHA_HASH_PROD, Base64.DEFAULT));
+    }
+
+    private static SecurityPolicy isRestoreAppDev(PackageManager pm) {
+        return SecurityPolicies.hasSignatureSha256Hash(
+                pm, RESTORE_PACKAGE_NAME, Base64.decode(RESTORE_SHA_HASH_DEV, Base64.DEFAULT));
+    }
+
+    private static SecurityPolicy isDevApp(PackageManager pm) {
+        return SecurityPolicies.hasSignatureSha256Hash(
+                pm, DEV_APP_PACKAGE_NAME, Base64.decode(DEV_APP_SHA_HASH, Base64.DEFAULT));
     }
 
     private InboundParcelablePolicy getInboundParcelablePolicy() {
