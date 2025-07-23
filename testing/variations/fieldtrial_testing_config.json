@@ -180,21 +180,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3AccessibilityCommon": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3AccessibilityCommon"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityManifestV3BrailleIme": [
         {
             "platforms": [
