@@ -56,9 +56,13 @@ class SuggestionGenerator {
   // top-level documentation of `SuggestionGenerator` for more details).
   // Once the data is obtained, `callback` is called with the `FillingProduct`
   // of which the data is for and the corresponding `SuggestionData`.
+  // `form` and `field` may be null if the `form_data` or `field_data` wasn't
+  // yet parsed.
   virtual void FetchSuggestionData(
-      const FormStructure& form,
-      const AutofillField& field,
+      const FormData& form_data,
+      const FormFieldData& field_data,
+      const FormStructure* form,
+      const AutofillField* field,
       const AutofillClient& client,
       base::OnceCallback<
           void(std::pair<FillingProduct,
@@ -71,9 +75,13 @@ class SuggestionGenerator {
   // Suggestions were triggered on `field` which belongs to `form`. `callback`
   // is called when generation is complete and a list of `Suggestion`
   // objects is passed along with the corresponding `FillingProduct`.
+  // `form` and `field` may be null if the `form_data` or `field_data` wasn't
+  // yet parsed.
   virtual void GenerateSuggestions(
-      const FormStructure& form,
-      const AutofillField& field,
+      const FormData& form_data,
+      const FormFieldData& field_data,
+      const FormStructure* form,
+      const AutofillField* field,
       const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) = 0;

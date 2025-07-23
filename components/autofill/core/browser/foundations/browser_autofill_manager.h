@@ -484,12 +484,13 @@ class BrowserAutofillManager : public AutofillManager {
       SuggestionsContext& context,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
-  // Called when all suggestion generators have finished fetching their data.
-  // It schedules the generation of the individual suggestions for each
-  // `FillingProduct` and calls `OnIndividualSuggestionsGenerated` when done.
+  // Called when all suggestion generators have finished fetching their data for
+  // the given `field` in `form`. It schedules the generation of the individual
+  // suggestions for each `FillingProduct` and calls
+  // `OnIndividualSuggestionsGenerated` when done.
   void OnSuggestionDataFetched(
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
+      const FormData& form,
+      const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       std::vector<std::pair<FillingProduct,

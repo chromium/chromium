@@ -100,8 +100,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
               Run(testing::Pair(FillingProduct::kMerchantPromoCode,
                                 testing::ElementsAre(testPromoCodeOfferData))))
       .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
-  generator.FetchSuggestionData(form(), field(), client(),
-                                suggestion_data_callback.Get());
+  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
+                                client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(
       suggestions_generated_callback,
@@ -111,7 +111,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
               Field(&Suggestion::main_text, promo_code_suggestion.main_text),
               Field(&Suggestion::type, SuggestionType::kSeparator),
               Field(&Suggestion::main_text, footer_suggestion.main_text)))));
-  generator.GenerateSuggestions(form(), field(), {savedCallbackArgument},
+  generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
+                                {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
 }
 

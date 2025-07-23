@@ -1176,18 +1176,19 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>>(
       suggestion_generators_.size(),
       base::BindOnce(&BrowserAutofillManager::OnSuggestionDataFetched,
-                     weak_ptr_factory_.GetWeakPtr(), form.global_id(), field_id,
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
                      trigger_source, context));
 
   for (const auto& suggestion_generator : suggestion_generators_) {
-    suggestion_generator->FetchSuggestionData(*form_structure, *autofill_field,
-                                              client(), barrier_callback);
+    suggestion_generator->FetchSuggestionData(form, field, form_structure,
+                                              autofill_field, client(),
+                                              barrier_callback);
   }
 }
 
 void BrowserAutofillManager::OnSuggestionDataFetched(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
+    const FormData& form,
+    const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     std::vector<std::pair<FillingProduct,
@@ -1198,21 +1199,21 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
           suggestion_generators_.size(),
           base::BindOnce(
               &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
-              weak_ptr_factory_.GetWeakPtr(), form_id, field_id, trigger_source,
-              context));
+              weak_ptr_factory_.GetWeakPtr(), form.global_id(),
+              field.global_id(), trigger_source, context));
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
-                             &autofill_field)) {
-    // Form is not autofillable, or either the form or the field cannot be
-    // found.
-    return;
-  }
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
+  std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field);
 
   for (const auto& suggestion_generator : suggestion_generators_) {
-    suggestion_generator->GenerateSuggestions(
-        *form_structure, *autofill_field, suggestion_data, barrier_callback);
+    suggestion_generator->GenerateSuggestions(form, field,
+        form_structure, autofill_field, suggestion_data, barrier_callback);
   }
 }
 

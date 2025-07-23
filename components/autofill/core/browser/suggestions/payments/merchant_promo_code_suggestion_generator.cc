@@ -18,15 +18,18 @@ MerchantPromoCodeSuggestionGenerator::~MerchantPromoCodeSuggestionGenerator() =
     default;
 
 void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
-    const FormStructure& form,
-    const AutofillField& field,
+    const FormData& form_data,
+    const FormFieldData& field_data,
+    const FormStructure* form,
+    const AutofillField* field,
     const AutofillClient& client,
     base::OnceCallback<
         void(std::pair<FillingProduct,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   // The field is eligible only if it's focused on a merchant promo code.
-  if (field.Type().GetStorableType() != MERCHANT_PROMO_CODE) {
+  if (!form || !field ||
+      field->Type().GetStorableType() != MERCHANT_PROMO_CODE) {
     std::move(callback).Run({FillingProduct::kMerchantPromoCode, {}});
     return;
   }
@@ -41,12 +44,12 @@ void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
       client.GetPaymentsAutofillClient()
           ->GetPaymentsDataManager()
           .GetActiveAutofillPromoCodeOffersForOrigin(
-              form.main_frame_origin().GetURL());
+              form->main_frame_origin().GetURL());
 
   // If the input box content equals any of the available promo codes, then
   // assume the promo code has been filled, and don't show any suggestions.
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
-    if (field.value() == base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
+    if (field->value() == base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
       std::move(callback).Run({FillingProduct::kMerchantPromoCode, {}});
       return;
     }
@@ -60,8 +63,10 @@ void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
 }
 
 void MerchantPromoCodeSuggestionGenerator::GenerateSuggestions(
-    const FormStructure& form,
-    const AutofillField& field,
+    const FormData& form_data,
+    const FormFieldData& field_data,
+    const FormStructure* form,
+    const AutofillField* field,
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {

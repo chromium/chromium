@@ -49,7 +49,8 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   auto on_suggestion_data_returned = base::BindOnce(
       [](base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>
              callback,
-         const FormStructure& form, const AutofillField& autofill_field,
+         const FormFieldData& field, const FormStructure* form,
+         const AutofillField* autofill_field,
          base::WeakPtr<MerchantPromoCodeSuggestionGenerator>
              merchant_promo_code_suggestion_generator,
          std::pair<FillingProduct,
@@ -57,18 +58,18 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
              suggestion_data) {
         if (merchant_promo_code_suggestion_generator) {
           merchant_promo_code_suggestion_generator->GenerateSuggestions(
-              form, autofill_field, {suggestion_data}, std::move(callback));
+              form->ToFormData(), field, form, autofill_field,
+              {suggestion_data}, std::move(callback));
         }
       },
-      std::move(on_suggestions_generated), std::cref(form_structure),
-      std::cref(autofill_field),
-      merchant_promo_code_suggestion_generator.GetWeakPtr());
+      std::move(on_suggestions_generated), std::cref(field), &form_structure,
+      &autofill_field, merchant_promo_code_suggestion_generator.GetWeakPtr());
 
   // Since the `on_suggestion_data_returned` callback is called synchronously,
   // we can assume that `suggestions_generated` will hold correct value.
   merchant_promo_code_suggestion_generator.FetchSuggestionData(
-      form_structure, autofill_field, client,
-      std::move(on_suggestion_data_returned));
+      form_structure.ToFormData(), field, &form_structure, &autofill_field,
+      client, std::move(on_suggestion_data_returned));
   return suggestions_generated;
 }
 

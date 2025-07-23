@@ -15,8 +15,10 @@ class MerchantPromoCodeSuggestionGenerator : public SuggestionGenerator {
   ~MerchantPromoCodeSuggestionGenerator() override;
 
   void FetchSuggestionData(
-      const FormStructure& form,
-      const AutofillField& field,
+      const FormData& form_data,
+      const FormFieldData& field_data,
+      const FormStructure* form,
+      const AutofillField* field,
       const AutofillClient& client,
       base::OnceCallback<
           void(std::pair<FillingProduct,
@@ -24,8 +26,10 @@ class MerchantPromoCodeSuggestionGenerator : public SuggestionGenerator {
           callback) override;
 
   void GenerateSuggestions(
-      const FormStructure& form,
-      const AutofillField& field,
+      const FormData& form_data,
+      const FormFieldData& field_data,
+      const FormStructure* form,
+      const AutofillField* field,
       const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;

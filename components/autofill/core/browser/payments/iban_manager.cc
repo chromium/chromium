@@ -54,23 +54,26 @@ bool IbanManager::OnGetSingleFieldSuggestions(
   auto on_suggestion_data_returned = base::BindOnce(
       [](base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>
              callback,
-         const FormStructure& form, const AutofillField& autofill_field,
+         const FormFieldData& field, const FormStructure* form,
+         const AutofillField* autofill_field,
          base::WeakPtr<IbanSuggestionGenerator> iban_suggestion_generator,
          std::pair<FillingProduct,
                    std::vector<SuggestionGenerator::SuggestionData>>
              suggestion_data) {
         if (iban_suggestion_generator) {
           iban_suggestion_generator->GenerateSuggestions(
-              form, autofill_field, {suggestion_data}, std::move(callback));
+              form->ToFormData(), field, form, autofill_field,
+              {suggestion_data}, std::move(callback));
         }
       },
-      std::move(on_suggestions_generated), std::cref(form),
-      std::cref(autofill_field), iban_suggestion_generator.GetWeakPtr());
+      std::move(on_suggestions_generated), std::cref(field), &form,
+      &autofill_field, iban_suggestion_generator.GetWeakPtr());
 
   // Since the `on_suggestion_data_returned` callback is called synchronously,
   // we can assume that `suggestions_generated` will hold correct value.
   iban_suggestion_generator.FetchSuggestionData(
-      form, autofill_field, client, std::move(on_suggestion_data_returned));
+      form.ToFormData(), field, &form, &autofill_field, client,
+      std::move(on_suggestion_data_returned));
   return suggestions_generated;
 }
 

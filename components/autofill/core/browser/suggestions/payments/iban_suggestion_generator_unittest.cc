@@ -183,20 +183,20 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
   EXPECT_CALL(suggestion_data_callback,
               Run(testing::Pair(FillingProduct::kIban, testing::SizeIs(4))))
       .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
-  generator.FetchSuggestionData(form(), field(), client(),
-                                suggestion_data_callback.Get());
+  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
+                                client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(
                   FillingProduct::kIban,
                   testing::UnorderedElementsAre(
-                    MatchesTextAndSuggestionType(local_iban_suggestion_0),
-                    MatchesTextAndSuggestionType(local_iban_suggestion_1),
-                    MatchesTextAndSuggestionType(server_iban_suggestion_0),
-                    MatchesTextAndSuggestionType(server_iban_suggestion_1),
-                    MatchesTextAndSuggestionType(separator_suggestion),
-                    MatchesTextAndSuggestionType(footer_suggestion)))));
-  generator.GenerateSuggestions(form(), field(),
+                      MatchesTextAndSuggestionType(local_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(local_iban_suggestion_1),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_1),
+                      MatchesTextAndSuggestionType(separator_suggestion),
+                      MatchesTextAndSuggestionType(footer_suggestion)))));
+  generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
                                 {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
   task_environment().RunUntilIdle();
