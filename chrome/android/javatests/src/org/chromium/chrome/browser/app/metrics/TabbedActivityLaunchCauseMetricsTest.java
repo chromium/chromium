@@ -59,7 +59,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -99,7 +99,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         // If this is the first test in the batch, opens an NTP. Otherwise, opens a blank page.
         mActivityTestRule
                 .startFromLauncherTo()
-                .arriveAt(PageStation.newGenericBuilder().withEntryPoint().build());
+                .arriveAt(CtaPageStation.newGenericBuilder().withEntryPoint().build());
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(
@@ -150,7 +150,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         // If this is the first test in the batch, opens an NTP. Otherwise, opens a blank page.
         mActivityTestRule
                 .startWithIntentPlusUrlTo(intent, /* url= */ null)
-                .arriveAt(PageStation.newGenericBuilder().withEntryPoint().build());
+                .arriveAt(CtaPageStation.newGenericBuilder().withEntryPoint().build());
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(
@@ -179,7 +179,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         mActivityTestRule
                 .startWithIntentPlusUrlTo(intent, /* url= */ null)
                 .arriveAt(
-                        PageStation.newGenericBuilder()
+                        CtaPageStation.newGenericBuilder()
                                 .withIncognito(true)
                                 .withEntryPoint()
                                 .build());

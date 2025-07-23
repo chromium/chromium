@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
-import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ import java.util.Set;
  * The New Tab Page screen, with an omnibox, most visited tiles, and the Feed instead of the
  * WebContents.
  */
-public class RegularNewTabPageStation extends PageStation {
+public class RegularNewTabPageStation extends CtaPageStation {
     public ViewElement<View> searchBoxElement;
     public ViewElement<UrlBar> urlBarElement;
     public ViewElement<View> logoElement;

@@ -85,7 +85,7 @@ import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.SwipingToTabFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
@@ -160,7 +160,7 @@ public class SensitiveContentTest {
     public void testTabHasSensitiveContentWhileSensitiveFieldsArePresent() {
         assertNotSensitive(mPage);
 
-        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         assertSensitive(page);
 
         page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
@@ -182,7 +182,7 @@ public class SensitiveContentTest {
         ThreadUtils.runOnUiThreadBlocking(() -> client.addObserver(observer));
 
         assertFalse(observer.getContentSensitivity());
-        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         assertSensitive(page);
         assertTrue(observer.getContentSensitivity());
 
@@ -234,7 +234,7 @@ public class SensitiveContentTest {
         final Tab tab = mCtaTestRule.getActivity().getActivityTab();
         assertFalse(tab.getTabHasSensitiveContent());
 
-        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         assertSensitive(page);
         assertTrue(tab.getTabHasSensitiveContent());
 
@@ -252,7 +252,7 @@ public class SensitiveContentTest {
         HistogramWatcher histogramWatcherForTrueBucket =
                 HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Open a second tab.
-        PageStation page = mPage.openNewTabFast();
+        CtaPageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.loadedTabElement.get();
         // Load sensitive content only into the second tab.
         page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
@@ -292,7 +292,7 @@ public class SensitiveContentTest {
         HistogramWatcher histogramWatcherForTrueBucket =
                 HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Open the first incognito tab.
-        PageStation page = mPage.openNewIncognitoTabFast();
+        CtaPageStation page = mPage.openNewIncognitoTabFast();
         // Open the second incognito tab.
         page = page.openNewIncognitoTabFast();
         final Tab secondIncognitoTab = page.loadedTabElement.get();
@@ -330,7 +330,7 @@ public class SensitiveContentTest {
     public void testRegularTabSwitcherBecomesSensitiveWithTabGroups() {
         final Tab firstTab = mPage.loadedTabElement.get();
         // Open a second tab.
-        PageStation page = mPage.openNewTabFast();
+        CtaPageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.loadedTabElement.get();
         // Load sensitive content only into the second tab.
         page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
@@ -354,7 +354,7 @@ public class SensitiveContentTest {
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testIncognitoTabSwitcherBecomesSensitiveWithTabGroups() {
         // Open the first incognito tab.
-        PageStation page = mPage.openNewIncognitoTabFast();
+        CtaPageStation page = mPage.openNewIncognitoTabFast();
         final Tab firstIncognitoTab = page.loadedTabElement.get();
         // Open the second incognito tab.
         page = page.openNewIncognitoTabFast();
@@ -387,7 +387,7 @@ public class SensitiveContentTest {
                 HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Load sensitive content only into the first tab.
         final Tab firstTab = mPage.loadedTabElement.get();
-        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> firstTab.getTabHasSensitiveContent());
         // Open a second tab.
         page = page.openNewTabFast();
@@ -414,7 +414,7 @@ public class SensitiveContentTest {
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSwipingBetweenTabsIsSensitive() {
-        PageStation page = mPage;
+        CtaPageStation page = mPage;
         // Set up.
         // Open a second tab.
         page = page.openNewTabFast();
@@ -480,15 +480,15 @@ public class SensitiveContentTest {
         return activity.findViewById(android.R.id.content).getContentSensitivity();
     }
 
-    private void assertNotSensitive(PageStation page) {
+    private void assertNotSensitive(CtaPageStation page) {
         assertNotEquals(View.CONTENT_SENSITIVITY_SENSITIVE, getPageContentSensitivity(page));
     }
 
-    private void assertSensitive(PageStation page) {
+    private void assertSensitive(CtaPageStation page) {
         assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, getPageContentSensitivity(page));
     }
 
-    private int getPageContentSensitivity(PageStation page) {
+    private int getPageContentSensitivity(CtaPageStation page) {
         return page.loadedTabElement.get().getContentView().getContentSensitivity();
     }
 
@@ -593,7 +593,7 @@ public class SensitiveContentTest {
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSensitiveContentIsRestoredFromTabState() {
         // Create a new tab.
-        PageStation page = mPage.openNewTabFast();
+        CtaPageStation page = mPage.openNewTabFast();
         final Tab secondTabBeforeFreeze = page.loadedTabElement.get();
         page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTabBeforeFreeze.getTabHasSensitiveContent());

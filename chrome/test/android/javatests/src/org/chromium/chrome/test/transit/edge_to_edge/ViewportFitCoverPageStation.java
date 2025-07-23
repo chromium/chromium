@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.edge_to_edge.EdgeToEdgeConditions.BottomControlsStackerCondition;
 import org.chromium.chrome.test.transit.edge_to_edge.EdgeToEdgeConditions.EdgeToEdgeControllerCondition;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.transit.HtmlElement;
 import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
@@ -63,7 +63,7 @@ public class ViewportFitCoverPageStation extends WebPageStation {
 
     /** Load the test page viewport-fit-cover-sub-frames-main.html. */
     public static ViewportFitCoverPageStation loadViewportFitCoverPage(
-            ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
+            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
         String url = activityTestRule.getTestServer().getURL(PATH_VIEWPORT_FIT_COVER_SUB_FRAMES);
         return currentPageStation.loadPageProgrammatically(
                 url, new Builder<>(ViewportFitCoverPageStation::new));

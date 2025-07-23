@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
-public class WebPageStation extends PageStation {
+public class WebPageStation extends CtaPageStation {
     public Element<WebContents> webContentsElement;
     public ViewElement<UrlBar> urlBarElement;
 

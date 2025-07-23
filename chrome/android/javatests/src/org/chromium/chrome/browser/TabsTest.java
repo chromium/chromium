@@ -71,7 +71,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
@@ -954,7 +954,7 @@ public class TabsTest {
     @Test
     @MediumTest
     public void testTabIsActivated() {
-        PageStation page0 = mActivityTestRule.startOnBlankPage();
+        CtaPageStation page0 = mActivityTestRule.startOnBlankPage();
 
         TabModel regularModel =
                 mActivityTestRule.getActivity().getTabModelSelector().getModel(false);

@@ -11,16 +11,18 @@ import android.view.View;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 
 import java.util.List;
 
 /**
  * Represents the bottom tab strip UI. As TabStrip UI can show on both NTP and web pages.
  *
- * @param <HostStationT> Page that can be a simple {@link PageStation}, or a {@link WebPageStation}.
+ * @param <HostStationT> Page that can be a simple {@link CtaPageStation}, or a {@link
+ *     WebPageStation}.
  */
-public class TabGroupUiFacility<HostStationT extends PageStation> extends Facility<HostStationT> {
+public class TabGroupUiFacility<HostStationT extends CtaPageStation>
+        extends Facility<HostStationT> {
     private final List<Integer> mTabIds;
     public ViewElement<View> viewElement;
 

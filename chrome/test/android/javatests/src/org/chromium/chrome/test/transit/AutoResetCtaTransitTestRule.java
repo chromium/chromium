@@ -17,7 +17,7 @@ import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -31,14 +31,15 @@ import java.util.List;
 @NullMarked
 public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implements TestRule {
     private final BlankCTATabInitialStateRule mInitialStateRule;
-    private final BatchedPublicTransitRule<PageStation> mBatchedRule;
+    private final BatchedPublicTransitRule<CtaPageStation> mBatchedRule;
     private final RuleChain mChain;
 
     /** Create with {@link ChromeTransitTestRules#autoResetCtaActivityRule()}. */
     AutoResetCtaTransitTestRule(boolean clearAllTabState) {
         super();
         mBatchedRule =
-                new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ false);
+                new BatchedPublicTransitRule<>(
+                        CtaPageStation.class, /* expectResetByTest= */ false);
         mInitialStateRule = new BlankCTATabInitialStateRule(mActivityTestRule, clearAllTabState);
         mChain =
                 RuleChain.outerRule(mActivityTestRule)

@@ -30,8 +30,9 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Base class for the screen that shows a web or native page in ChromeActivity. {@link PageStation}
- * subclasses this for ChromeTabbedActivity and {@link CctPageStation} for CustomTabActivity.
+ * Base class for the screen that shows a web or native page in ChromeActivity. {@link
+ * CtaPageStation} subclasses this for ChromeTabbedActivity and {@link CctPageStation} for
+ * CustomTabActivity.
  *
  * <p>Contains extra configurable Conditions such as waiting for a tab to be created, selected, have
  * the expected title, etc.

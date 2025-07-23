@@ -7,7 +7,7 @@ package org.chromium.chrome.test.transit.testhtmls;
 import android.util.Pair;
 
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.PopupBlockedMessageFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -29,7 +29,8 @@ public class PopupOnLoadPageStation extends WebPageStation {
      */
     public static Pair<PopupOnLoadPageStation, PopupBlockedMessageFacility>
             loadInCurrentTabExpectBlocked(
-                    ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
+                    ChromeTabbedActivityTestRule activityTestRule,
+                    CtaPageStation currentPageStation) {
         // TODO(crbug.com/329307093): Add condition that no new tabs were opened.
         String url = activityTestRule.getTestServer().getURL(PATH);
         PopupOnLoadPageStation newPage =
@@ -49,7 +50,7 @@ public class PopupOnLoadPageStation extends WebPageStation {
      * @return the now active PageStation two.html
      */
     public static WebPageStation loadInCurrentTabExpectPopups(
-            ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
+            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
         // TODO(crbug.com/329307093): Add condition that two new tabs were opened.
         String url = activityTestRule.getTestServer().getURL(PATH);
         return currentPageStation.loadPageProgrammatically(

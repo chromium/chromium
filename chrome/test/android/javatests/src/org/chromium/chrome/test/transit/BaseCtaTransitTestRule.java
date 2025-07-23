@@ -78,45 +78,45 @@ public class BaseCtaTransitTestRule {
         mActivityTestRule.assertWaitForPageScaleFactorMatch(expectedScale);
     }
 
-    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // TODO(crbug.com/406324209): Use CtaPageStation#loadWebPageProgrammatically() or
     // #loadPageProgrammatically to replace these calls.
     public Tab.LoadUrlResult loadUrl(GURL url) {
         return mActivityTestRule.loadUrl(url);
     }
 
-    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // TODO(crbug.com/406324209): Use CtaPageStation#loadWebPageProgrammatically() or
     // #loadPageProgrammatically to replace these calls.
     public Tab.LoadUrlResult loadUrl(String url) {
         return mActivityTestRule.loadUrl(url);
     }
 
-    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // TODO(crbug.com/406324209): Use CtaPageStation#loadWebPageProgrammatically() or
     // #loadPageProgrammatically to replace these calls.
     public Tab.LoadUrlResult loadUrl(String url, long secondsToWait) {
         return mActivityTestRule.loadUrl(url, secondsToWait);
     }
 
-    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // TODO(crbug.com/406324209): Use CtaPageStation#loadWebPageProgrammatically() or
     // #loadPageProgrammatically to replace these calls.
     public Tab.LoadUrlResult loadUrlInTab(
             String url, int pageTransition, Tab tab, long secondsToWait) {
         return mActivityTestRule.loadUrlInTab(url, pageTransition, tab, secondsToWait);
     }
 
-    // TODO(crbug.com/406324209): Use PageStation#loadWebPageProgrammatically() or
+    // TODO(crbug.com/406324209): Use CtaPageStation#loadWebPageProgrammatically() or
     // #loadPageProgrammatically to replace these calls.
     public Tab.LoadUrlResult loadUrlInTab(String url, int pageTransition, Tab tab) {
         return mActivityTestRule.loadUrlInTab(url, pageTransition, tab);
     }
 
-    // TODO(crbug.com/406324209): Use PageStation#openFakeLinkToWebPage() or #openFakeLink to
+    // TODO(crbug.com/406324209): Use CtaPageStation#openFakeLinkToWebPage() or #openFakeLink to
     // replace these calls.
     public Tab loadUrlInNewTab(String url) {
         return mActivityTestRule.loadUrlInNewTab(url);
     }
 
     // TODO(crbug.com/406324209): Use Public Transit in a case-by-case basis to replace these calls,
-    // often with PageStation#openFakeLinkToWebPage().
+    // often with CtaPageStation#openFakeLinkToWebPage().
     public Tab loadUrlInNewTab(final String url, final boolean incognito) {
         return mActivityTestRule.loadUrlInNewTab(url, incognito);
     }
@@ -126,7 +126,8 @@ public class BaseCtaTransitTestRule {
         return mActivityTestRule.loadUrlInNewTab(url, incognito, launchType);
     }
 
-    // TODO(crbug.com/406324209): Use PageStation#openNewIncognitoTabFast() to replace these calls.
+    // TODO(crbug.com/406324209): Use CtaPageStation#openNewIncognitoTabFast() to replace these
+    // calls.
     public Tab newIncognitoTabFromMenu() {
         return mActivityTestRule.newIncognitoTabFromMenu();
     }

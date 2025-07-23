@@ -17,13 +17,14 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 /**
  * The color picker palette that is opened from the {@link TabGroupDialogFacility}.
  *
- * @param <HostStationT> the station where the Tab Group Dialog is opened from. Should be
- *     TabSwitcherStation or PageStation.
+ * @param <HostStationT> the station where the Tab Group Dialog is opened from. Should be {@link
+ *     TabSwitcherStation} or {@link CtaPageStation}.
  */
 public class TabGroupColorPickerFacility<
                 HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>

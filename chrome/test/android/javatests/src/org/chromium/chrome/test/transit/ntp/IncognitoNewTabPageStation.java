@@ -21,12 +21,12 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
-import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
-public class IncognitoNewTabPageStation extends PageStation {
+public class IncognitoNewTabPageStation extends CtaPageStation {
     public ViewElement<UrlBar> urlBarElement;
     public ViewElement<View> iconElement;
     public ViewElement<View> goneIncognitoTextElement;

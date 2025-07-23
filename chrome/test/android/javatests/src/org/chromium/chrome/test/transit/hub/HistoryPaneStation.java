@@ -19,7 +19,7 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.history.HistoryItemView;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** The History pane station. */
@@ -99,7 +99,7 @@ public class HistoryPaneStation extends HubBaseStation {
         }
 
         /** Select the entry to open. */
-        public WebPageStation selectToOpenWebPage(PageStation previousPage, String url) {
+        public WebPageStation selectToOpenWebPage(CtaPageStation previousPage, String url) {
             return itemElement
                     .clickTo()
                     .arriveAt(

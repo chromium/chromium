@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.test.R;
 
 /** The screen that shows a native PDF page within a tabbed activity. */
-public class PdfCtaPageStation extends PageStation {
+public class PdfCtaPageStation extends CtaPageStation {
 
     public final Element<PdfPage> pdfNativePageElement;
 

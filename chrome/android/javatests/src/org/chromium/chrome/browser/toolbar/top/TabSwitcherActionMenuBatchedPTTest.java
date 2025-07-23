@@ -31,7 +31,7 @@ import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -143,7 +143,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
     public void testSwitchIntoAndOutOfIncognito() {
         // Open 1 regular and 1 incognito tab.
         WebPageStation blankPage = mCtaTestRule.start();
-        PageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
+        CtaPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
 
         // Open action menu and switch out of incognito.
         TabSwitcherActionMenuFacility actionMenu = incognitoNtp.openTabSwitcherActionMenu();

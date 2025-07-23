@@ -18,7 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /**
@@ -45,7 +45,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     /**
      * Start the test in a blank page.
      *
-     * @return the active entry {@link PageStation}
+     * @return the active entry {@link CtaPageStation}
      */
     public WebPageStation startOnBlankPage() {
         return ChromeTabbedActivityEntryPoints.startOnBlankPage(mActivityTestRule);
@@ -55,7 +55,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
      * Start the test with a url that leads to a web page.
      *
      * @param url the URL of the page to load
-     * @return the active entry {@link PageStation}
+     * @return the active entry {@link CtaPageStation}
      */
     public WebPageStation startOnUrl(String url) {
         return ChromeTabbedActivityEntryPoints.startOnUrl(mActivityTestRule, url);
@@ -76,7 +76,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
      * Start the test in a web page served by the test server.
      *
      * @param relativeUrl the relative URL of the page to serve and load
-     * @return the active entry {@link PageStation}
+     * @return the active entry {@link CtaPageStation}
      */
     public WebPageStation startOnTestServerUrl(String relativeUrl) {
         assert relativeUrl.startsWith("/") : "|relativeUrl| must be relative";

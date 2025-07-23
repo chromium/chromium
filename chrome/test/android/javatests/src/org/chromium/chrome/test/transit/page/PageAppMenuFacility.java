@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * The app menu shown when pressing ("...") in a Tab.
  *
- * <p>Use subclasses to access menu items not shared between all PageStation types:
+ * <p>Use subclasses to access menu items not shared between all {@link CtaPageStation} types:
  *
  * <ul>
  *   <li>{@link RegularNewTabPageAppMenuFacility}
@@ -35,9 +35,9 @@ import java.util.Set;
  *   <li>{@link IncognitoWebPageAppMenuFacility}
  * </ul>
  *
- * @param <HostPageStationT> the type of host {@link PageStation} where this app menu is opened.
+ * @param <HostPageStationT> the type of host {@link CtaPageStation} where this app menu is opened.
  */
-public class PageAppMenuFacility<HostPageStationT extends PageStation>
+public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         extends CtaAppMenuFacility<HostPageStationT> {
 
     protected Item mNewTab;

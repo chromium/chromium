@@ -26,8 +26,10 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabModelChangedCondition;
 
-/** The action menu opened when long pressing the tab switcher button in a {@link PageStation}. */
-public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
+/**
+ * The action menu opened when long pressing the tab switcher button in a {@link CtaPageStation}.
+ */
+public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
     public ViewElement<View> appMenuListElement;
     public ViewElement<View> closeTabMenuItemElement;
     public ViewElement<View> newTabMenuItemElement;
@@ -99,8 +101,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
      *
      * <p>This happens when there are other tabs in the same TabModel.
      */
-    public <T extends PageStation> T selectCloseTabAndDisplayAnotherTab(
-            PageStation.Builder<T> pageStationBuilder) {
+    public <T extends CtaPageStation> T selectCloseTabAndDisplayAnotherTab(
+            CtaPageStation.Builder<T> pageStationBuilder) {
         return selectCloseTabTo()
                 .arriveAt(pageStationBuilder.initFrom(mHostStation).withIsSelectingTabs(1).build());
     }
@@ -111,8 +113,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
      *
      * <p>This happens when the last incognito tab is closed but there are other regular tabs.
      */
-    public <T extends PageStation> T selectCloseTabAndDisplayRegularTab(
-            PageStation.Builder<T> pageStationBuilder) {
+    public <T extends CtaPageStation> T selectCloseTabAndDisplayRegularTab(
+            CtaPageStation.Builder<T> pageStationBuilder) {
         return selectCloseTabTo()
                 .arriveAt(
                         pageStationBuilder.withIncognito(false).initSelectingExistingTab().build());
@@ -143,8 +145,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     }
 
     /** Switches out of incognito tab model to regular tab model */
-    public <T extends PageStation> T selectSwitchOutOfIncognito(
-            PageStation.Builder<T> destinationBuilder) {
+    public <T extends CtaPageStation> T selectSwitchOutOfIncognito(
+            CtaPageStation.Builder<T> destinationBuilder) {
         assertTrue(mHostStation.isIncognito());
         return switchOutOfIncognitoMenuItemElement
                 .clickTo()
@@ -153,8 +155,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     }
 
     /** Switches to incognito tab model from regular tab model */
-    public <T extends PageStation> T selectSwitchToIncognito(
-            PageStation.Builder<T> destinationBuilder) {
+    public <T extends CtaPageStation> T selectSwitchToIncognito(
+            CtaPageStation.Builder<T> destinationBuilder) {
         assertFalse(mHostStation.isIncognito());
         return switchToIncognitoMenuItemElement
                 .clickTo()

@@ -41,23 +41,20 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
  *
  * <p>Contains extra configurable Conditions such as waiting for a tab to be created, selected, have
  * the expected title, etc.
- *
- * <p>TODO(crbug.com/420471518): Rename this to CtaPageStation to match {@link CctPageStation}.
- * Then, rename {@link BasePageStation} to {@link PageStation}.
  */
-public class PageStation extends BasePageStation<ChromeTabbedActivity> {
+public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     public static final ViewSpec<UrlBar> URL_BAR = viewSpec(UrlBar.class, withId(R.id.url_bar));
     public ViewElement<ToolbarControlContainer> toolbarElement;
     public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
     public ViewElement<ImageButton> menuButtonElement;
 
-    /** Prefer the PageStation's subclass |newBuilder()|. */
-    public static Builder<PageStation> newGenericBuilder() {
-        return new Builder<>(PageStation::new);
+    /** Prefer the CtaPageStation's subclass |newBuilder()|. */
+    public static Builder<CtaPageStation> newGenericBuilder() {
+        return new Builder<>(CtaPageStation::new);
     }
 
-    /** Use the PageStation's subclass |newBuilder()|. */
-    protected PageStation(Config config) {
+    /** Use the CtaPageStation's subclass |newBuilder()|. */
+    protected CtaPageStation(Config config) {
         super(ChromeTabbedActivity.class, config);
 
         declareEnterCondition(
@@ -92,7 +89,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
-    public PageAppMenuFacility<PageStation> openGenericAppMenu() {
+    public PageAppMenuFacility<CtaPageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
         return menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
@@ -114,7 +111,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /** Shortcut to select a different tab programmatically. */
-    public <T extends PageStation> T selectTabFast(
+    public <T extends CtaPageStation> T selectTabFast(
             Tab tabToSelect, Supplier<Builder<T>> pageStationFactory) {
         return runOnUiThreadTo(
                         () ->
@@ -168,7 +165,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /** Loads a |url| in another tab as if a link was clicked and waits to transition. */
-    public <T extends PageStation> T openFakeLink(String url, Builder<T> builder) {
+    public <T extends CtaPageStation> T openFakeLink(String url, Builder<T> builder) {
         return runOnUiThreadTo(
                         () ->
                                 getActivity()
@@ -190,19 +187,19 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /** Move to next tab by swiping the toolbar left. */
-    public <T extends PageStation> T swipeToolbarToNextTab(
-            PageStation.Builder<T> destinationBuilder) {
+    public <T extends CtaPageStation> T swipeToolbarToNextTab(
+            CtaPageStation.Builder<T> destinationBuilder) {
         return swipeToolbar(destinationBuilder, /* directionRight= */ false);
     }
 
     /** Move to previous tab by swiping the toolbar right. */
-    public <T extends PageStation> T swipeToolbarToPreviousTab(
-            PageStation.Builder<T> destinationBuilder) {
+    public <T extends CtaPageStation> T swipeToolbarToPreviousTab(
+            CtaPageStation.Builder<T> destinationBuilder) {
         return swipeToolbar(destinationBuilder, /* directionRight= */ true);
     }
 
-    public <T extends PageStation> T swipeToolbar(
-            PageStation.Builder<T> destinationBuilder, boolean directionRight) {
+    public <T extends CtaPageStation> T swipeToolbar(
+            CtaPageStation.Builder<T> destinationBuilder, boolean directionRight) {
         ToolbarSwipeCoordinates coords =
                 new ToolbarSwipeCoordinates(toolbarElement.get(), directionRight);
 
