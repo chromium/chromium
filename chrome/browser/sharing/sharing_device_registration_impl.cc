@@ -27,7 +27,6 @@
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
-#include "crypto/ec_private_key.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/SharingJNIBridge_jni.h"
