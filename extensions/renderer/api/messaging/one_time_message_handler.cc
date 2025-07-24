@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/supports_user_data.h"
@@ -172,7 +173,38 @@ bool CheckAndHandleAsyncListenerReply(
   return false;
 }
 
+base::debug::CrashKeyString* GetPromiseRejectFeatureEnabledCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_promise_reject_feature_enabled", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
 }  // namespace
+
+namespace debug {
+
+// Helper for adding a crash keys when we encounter unexpected state in promise
+// support for rejections.
+//
+// It is only created when the callback for a promise rejection is called to
+// process the rejection's reason/value.
+//
+// All keys are logged every time this class is instantiated.
+class ScopedPromiseRejectedResponseCrashKeys {
+ public:
+  explicit ScopedPromiseRejectedResponseCrashKeys(
+      bool promise_support_feature_enabled)
+      : promise_reject_feature_enabled_crash_key_(
+            GetPromiseRejectFeatureEnabledCrashKey(),
+            promise_support_feature_enabled ? "true" : "false") {}
+  ~ScopedPromiseRejectedResponseCrashKeys() = default;
+
+ private:
+  // Records if the promise support feature was enabled as "true" or "false".
+  base::debug::ScopedCrashKeyString promise_reject_feature_enabled_crash_key_;
+};
+
+}  // namespace debug
 
 OneTimeMessageHandler::OneTimeMessageHandler(
     NativeExtensionBindingsSystem* bindings_system)
@@ -733,6 +765,8 @@ void OneTimeMessageHandler::PromiseRejectedResponse(const PortId& port_id,
     return;
   }
 
+  debug::ScopedPromiseRejectedResponseCrashKeys(base::FeatureList::IsEnabled(
+      extensions_features::kRuntimeOnMessagePromiseReturnSupport));
   v8::Local<v8::Value> promise_reject_reason;
   // This is safe to CHECK() because when a promise rejects it always provides a
   // value. Even if `reject()` (with no argument) is called we see `undefined`
