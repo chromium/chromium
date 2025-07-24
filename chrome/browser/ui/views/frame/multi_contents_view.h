@@ -113,6 +113,10 @@ class MultiContentsView : public views::View,
     return initial_start_width_on_resize_.has_value();
   }
 
+  // Returns the minimum width for a single view within the `MultiContentsView`.
+  // Returns 0 if not in a split view.
+  int GetMinViewWidth() const;
+
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 

@@ -152,7 +152,8 @@ class BrowserViewLayout : public views::LayoutManager {
   // Layout the contents border, which indicates the tab is being captured.
   void LayoutContentBorder();
 
-  // Returns the minimum acceptable width for the browser web contents.
+  // Returns the minimum acceptable width for the browser web contents. If split
+  // view is active, this includes the full split view.
   int GetMinWebContentsWidth() const;
 
   void UpdateSplitViewInsets();

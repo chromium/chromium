@@ -922,6 +922,12 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
       kMainBrowserContentsMinimumWidth -
       unified_side_panel_->GetMinimumSize().width() -
       right_aligned_side_panel_separator_->GetPreferredSize().width();
+
+  // When in split view, the minimum width of the contents is higher.
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    min_width = std::max(
+        min_width, 2 * browser_view_->multi_contents_view()->GetMinViewWidth());
+  }
   DCHECK_GE(min_width, 0);
   return min_width;
 }

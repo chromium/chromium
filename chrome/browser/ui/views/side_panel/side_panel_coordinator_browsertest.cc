@@ -31,12 +31,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -279,6 +281,17 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
       contextual_registries_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class SidePanelCoordinatorWithSideBySideTest : public SidePanelCoordinatorTest {
+ public:
+  SidePanelCoordinatorWithSideBySideTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSidePanelResizing, features::kSideBySide}, {});
+  }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -561,6 +574,47 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
                (browser_width - two_thirds_browser_width - 1));
   EXPECT_EQ(browser()->GetBrowserView().contents_web_view()->width(),
             web_contents_width);
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorWithSideBySideTest,
+                       ChangeSidePanelWidthMaxMin) {
+  Init();
+
+  // Create split view.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Set side panel to left-aligned so positive resize increments mean an
+  // increase in side panel width.
+  browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, false);
+  coordinator()->DisableAnimationsForTesting();
+
+  coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
+                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  const int starting_width = 500;
+  browser()->GetBrowserView().unified_side_panel()->SetPanelWidth(
+      starting_width);
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
+            starting_width);
+
+  // Use an increment large enough to hit side panel and browser contents
+  // minimum width constraints.
+  const int large_increment = 1000000000;
+  browser()->GetBrowserView().unified_side_panel()->OnResize(large_increment,
+                                                             true);
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+
+  BrowserViewLayout* layout_manager = static_cast<BrowserViewLayout*>(
+      browser()->GetBrowserView().GetLayoutManager());
+  EXPECT_EQ(browser()->GetBrowserView().multi_contents_view()->width(),
+            layout_manager->GetMinWebContentsWidthForTesting());
+  EXPECT_EQ(
+      browser()->GetBrowserView().multi_contents_view()->width(),
+      browser()->GetBrowserView().multi_contents_view()->GetMinViewWidth() * 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {

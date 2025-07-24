@@ -213,6 +213,19 @@ void MultiContentsView::OnSwap() {
   delegate_->ReverseWebContents();
 }
 
+int MultiContentsView::GetMinViewWidth() const {
+  if (!IsInSplitView()) {
+    return 0;
+  }
+
+  const int min_percentage =
+      kMinWebContentsWidthPercentage * browser_view_->GetBounds().width();
+  const int min_fixed_value = min_contents_width_for_testing_.has_value()
+                                  ? min_contents_width_for_testing_.value()
+                                  : kMinWebContentsWidth;
+  return std::min(min_fixed_value, min_percentage);
+}
+
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   if (!initial_start_width_on_resize_.has_value()) {
     initial_start_width_on_resize_ =
@@ -369,12 +382,7 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     return widths;
   }
 
-  const int min_percentage =
-      kMinWebContentsWidthPercentage * browser_view_->GetBounds().width();
-  const int min_fixed_value = min_contents_width_for_testing_.has_value()
-                                  ? min_contents_width_for_testing_.value()
-                                  : kMinWebContentsWidth;
-  const int min_width = std::min(min_fixed_value, min_percentage);
+  const int min_width = GetMinViewWidth();
   if (widths.start_width < min_width) {
     const double diff = min_width - widths.start_width;
     widths.start_width += diff;
