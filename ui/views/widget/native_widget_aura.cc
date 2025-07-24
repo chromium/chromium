@@ -1555,6 +1555,17 @@ Widget::Widgets NativeWidgetPrivate::GetAllOwnedWidgets(
     owned.merge(GetAllOwnedWidgets(transient_child));
   }
 
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  // If the aura::Window is a desktop widget, fetch any additional widgets
+  // with an ownership relationship established at the platform-window level.
+  NativeWidgetPrivate* native_widget =
+      GetNativeWidgetForNativeView(native_view);
+  if (native_widget && native_widget->IsDesktopNativeWidget()) {
+    owned.merge(static_cast<DesktopNativeWidgetAura*>(native_widget)
+                    ->GetOwnedDesktopWidgets());
+  }
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
+
   // Add all child windows.
   for (aura::Window* child : native_view->children()) {
     owned.merge(GetAllChildWidgets(child));

@@ -288,6 +288,19 @@ aura::WindowTreeHost* DesktopWindowTreeHostWin::AsWindowTreeHost() {
   return this;
 }
 
+DesktopWindowTreeHost::WindowTreeHosts
+DesktopWindowTreeHostWin::GetOwnedWindowTreeHosts() {
+  WindowTreeHosts window_tree_hosts;
+  std::vector<HWND> owned_hwns = message_handler_->GetOwnedWindows();
+  for (HWND hwnd : owned_hwns) {
+    if (aura::WindowTreeHost* host =
+            aura::WindowTreeHost::GetForAcceleratedWidget(hwnd)) {
+      window_tree_hosts.insert(host);
+    }
+  }
+  return window_tree_hosts;
+}
+
 void DesktopWindowTreeHostWin::Show(ui::mojom::WindowShowState show_state,
                                     const gfx::Rect& restore_bounds) {
   OnAcceleratedWidgetMadeVisible(true);

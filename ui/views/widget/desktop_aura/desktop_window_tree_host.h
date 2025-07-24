@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "ui/aura/window_event_dispatcher.h"
@@ -48,6 +49,9 @@ class DesktopNativeWidgetAura;
 
 class VIEWS_EXPORT DesktopWindowTreeHost {
  public:
+  using WindowTreeHosts =
+      std::set<raw_ptr<aura::WindowTreeHost, SetExperimental>>;
+
   virtual ~DesktopWindowTreeHost() = default;
 
   static DesktopWindowTreeHost* Create(
@@ -93,6 +97,9 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void CloseNow() = 0;
 
   virtual aura::WindowTreeHost* AsWindowTreeHost() = 0;
+
+  // Gets all the owned WindowTreeHosts of this host.
+  virtual WindowTreeHosts GetOwnedWindowTreeHosts();
 
   // There are two distinct ways for DesktopWindowTreeHosts's to be shown:
   // 1. This function is called. As this function is specific to

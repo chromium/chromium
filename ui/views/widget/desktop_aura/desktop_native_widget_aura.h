@@ -117,6 +117,10 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // DesktopWindowTreeHost's transparency.
   void UpdateWindowTransparency();
 
+  // Gets child Widgets with an ownership relationship established at the
+  // platform window level. Does not include the views::Widget for this.
+  Widget::Widgets GetOwnedDesktopWidgets();
+
   base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 
  protected:

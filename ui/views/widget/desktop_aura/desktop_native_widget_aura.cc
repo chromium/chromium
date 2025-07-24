@@ -550,6 +550,18 @@ void DesktopNativeWidgetAura::UpdateWindowTransparency() {
   content_window_->SetFillsBoundsCompletely(true);
 }
 
+Widget::Widgets DesktopNativeWidgetAura::GetOwnedDesktopWidgets() {
+  Widget::Widgets widgets;
+  // Adds any Widgets owned by this NativeWidget's tree host.
+  DesktopWindowTreeHost::WindowTreeHosts owned_tree_hosts =
+      desktop_window_tree_host_->GetOwnedWindowTreeHosts();
+  for (aura::WindowTreeHost* owned_tree_host : owned_tree_hosts) {
+    widgets.merge(
+        NativeWidgetPrivate::GetAllOwnedWidgets(owned_tree_host->window()));
+  }
+  return widgets;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopNativeWidgetAura, internal::NativeWidgetPrivate implementation:
 void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
