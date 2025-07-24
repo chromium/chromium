@@ -76,6 +76,20 @@ class FormFiller {
 
   virtual ~FormFiller();
 
+  class RefillOptions {
+   public:
+    static RefillOptions NotRefill();
+    static RefillOptions Refill(DenseSet<FieldTypeGroup> originally_filled);
+
+    bool is_refill() const;
+    bool may_refill(FieldType field_type) const;
+
+   private:
+    RefillOptions();
+
+    std::optional<DenseSet<FieldTypeGroup>> originally_filled_;
+  };
+
   // Given `field`, the corresponding `autofill_field` to fill, and the
   // `trigger_field`, return the set of all reasons for that field to be skipped
   // for filling. If the field should not be skipped, an empty set is returned
@@ -93,11 +107,10 @@ class FormFiller {
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const AutofillField& trigger_field,
+      const RefillOptions& refill_options,
       base::flat_map<FieldType, size_t>& type_count,
-      std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
       const base::flat_set<FieldGlobalId>& blocked_fields,
-      FillingProduct filling_product,
-      bool is_refill = false);
+      FillingProduct filling_product);
 
   // Resets states that FormFiller holds and maintains.
   void Reset();
@@ -110,13 +123,11 @@ class FormFiller {
   // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
   // FieldTypeSet.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
-  GetFieldFillingSkipReasons(
-      base::span<const FormFieldData> fields,
-      const FormStructure& form_structure,
-      const AutofillField& trigger_field,
-      std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
-      FillingProduct filling_product,
-      bool is_refill) const;
+  GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
+                             const FormStructure& form_structure,
+                             const AutofillField& trigger_field,
+                             const RefillOptions& refill_options,
+                             FillingProduct filling_product) const;
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`. `renderer_action` denotes whether this is an actual

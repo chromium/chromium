@@ -2855,8 +2855,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     if (form.fields().size() == form_structure.field_count()) {
       skip_reasons = form_filler_->GetFieldFillingSkipReasons(
           form.fields(), form_structure, trigger_autofill_field,
-          /*type_groups_originally_filled=*/std::nullopt,
-          FillingProduct::kAddress, /*is_refill=*/false);
+          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress);
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure.field_count(); ++i) {

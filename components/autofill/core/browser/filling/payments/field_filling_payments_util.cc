@@ -540,8 +540,8 @@ bool WillFillCreditCardNumberOrCvc(
         // TODO(crbug.com/328478565): Cover cases where filling is skipped due
         // to the iframe security policy.
         return FormFiller::GetFillingSkipReasonsForField(
-                   *field, autofill_field, trigger_autofill_field, type_count,
-                   /*type_groups_originally_filled=*/std::nullopt,
+                   *field, autofill_field, trigger_autofill_field,
+                   FormFiller::RefillOptions::NotRefill(), type_count,
                    /*blocked_fields=*/{}, FillingProduct::kCreditCard)
             .empty();
       };
