@@ -1,4 +1,5 @@
 boliu@chromium.org
+smaier@chromium.org
 
 per-file *.aidl=set noparent
 per-file *.aidl=file://ipc/SECURITY_OWNERS
