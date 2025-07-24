@@ -34,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/embedder_support/switches.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
@@ -563,4 +564,7 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   actor::ActorNavigationThrottle::MaybeCreateAndAdd(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  dom_distiller::DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle(
+      registry);
 }
