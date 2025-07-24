@@ -313,12 +313,12 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
   // If `blink::features::kVisitedLinksOnErrorNavigation` is enabled, visits to
   // reachable URLs that result in a 404 response will be saved to history. We
-  // don't want to count error navigations as visits when calculating the Most
+  // don't want to count 404 navigations as visits when calculating the Most
   // Visited, so we filter them out here.
   const bool status_code_qualifies_for_ntp_most_visited =
       !(base::FeatureList::IsEnabled(
             blink::features::kVisitedLinksOnErrorNavigation) &&
-        status_code_is_error);
+        http_response_code == 404);
   const bool should_consider_for_ntp_most_visited =
       status_code_qualifies_for_ntp_most_visited &&
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle);

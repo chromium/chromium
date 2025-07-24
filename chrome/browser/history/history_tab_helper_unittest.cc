@@ -194,17 +194,35 @@ TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
   bool are_error_navigations_recorded_in_history = base::FeatureList::IsEnabled(
       blink::features::kVisitedLinksOnErrorNavigation);
   NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
-  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
-  std::string raw_response_headers = "HTTP/1.1 404 Not Found\r\n\r\n";
+  const GURL some_url = GURL("https://someurl.com");
+  navigation_handle.set_redirect_chain({some_url});
+
+  // Simulate a user navigating to a forbidden resource.
+  std::string raw_response_headers = "HTTP/1.1 403 Forbidden\r\n\r\n";
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       net::HttpResponseHeaders::TryToCreate(raw_response_headers);
   navigation_handle.set_response_headers(response_headers);
 
+  // Create HistoryAddPageArgs for the 403 navigation.
   history::HistoryAddPageArgs args =
-      history_tab_helper()->CreateHistoryAddPageArgs(
-          GURL("https://someurl.com"), base::Time(), 1, &navigation_handle);
+      history_tab_helper()->CreateHistoryAddPageArgs(some_url, base::Time(), 1,
+                                                     &navigation_handle);
 
-  // If error navigations are recorded in history, we should filter them out
+  // We should never be filtering out 403 navigations when determining NTP most
+  // visited. This is because all error navigations other than 404 are eligible.
+  EXPECT_EQ(args.consider_for_ntp_most_visited, true);
+
+  // Simulate a user navigating to a resource that is not found.
+  raw_response_headers = "HTTP/1.1 404 Not Found\r\n\r\n";
+  response_headers =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
+  navigation_handle.set_response_headers(response_headers);
+
+  // Create HistoryAddPageArgs for the 404 navigation.
+  args = history_tab_helper()->CreateHistoryAddPageArgs(
+      GURL("https://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  // If 404 error navigations are recorded in history, we should filter them out
   // when determining NTP most visited.
   EXPECT_EQ(args.consider_for_ntp_most_visited,
             !are_error_navigations_recorded_in_history);
