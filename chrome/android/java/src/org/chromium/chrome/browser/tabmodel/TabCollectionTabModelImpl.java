@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -364,9 +365,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (tab == null) return;
 
         int currentIndex = indexOf(tab);
-        if (currentIndex == TabList.INVALID_TAB_INDEX || currentIndex == newIndex) {
-            return;
-        }
+        if (currentIndex == TabList.INVALID_TAB_INDEX || currentIndex == newIndex) return;
 
         // Clamp negative values here to ensure the tab moves to index 0 if negative. The size_t
         // cast in C++ otherwise results in the tab going to the end of the list which is not
@@ -739,7 +738,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public int representativeIndexOf(@Nullable Tab tab) {
         // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
         if (tab == null) return TabList.INVALID_TAB_INDEX;
-        return getRepresentativeTabList().indexOf(tab);
+        Token tabGroupId = tab.getTabGroupId();
+        boolean isTabGroup = tabGroupId != null;
+
+        List<Tab> representativeTabList = getRepresentativeTabList();
+        for (int i = 0; i < representativeTabList.size(); i++) {
+            Tab representativeTab = representativeTabList.get(i);
+            if (representativeTab == tab
+                    || (isTabGroup
+                            && Objects.equals(tabGroupId, representativeTab.getTabGroupId()))) {
+                return i;
+            }
+        }
+        return TabList.INVALID_TAB_INDEX;
     }
 
     @Override
@@ -810,9 +821,28 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (tab == null) return;
 
         Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId == null) return;
+        if (tabGroupId != null) {
+            moveGroupToIndex(tabGroupId, newIndex);
+            return;
+        }
 
-        moveGroupToIndex(tabGroupId, newIndex);
+        // TODO(crbug.com/433947821): TabListMediator uses this API for individual tab reordering
+        // and expects to get a notification that a group has moved. However, this is not a group.
+        // We should consider refactoring TabListMediator to use a different API for individual tab
+        // reordering (or also listen to didMoveTab()).
+        int curIndex = indexOf(tab);
+        int finalIndex =
+                moveTabInternal(
+                        tab,
+                        curIndex,
+                        newIndex,
+                        /* newTabGroupId= */ null,
+                        /* isPinned= */ tab.getIsPinned());
+        if (finalIndex != curIndex) {
+            for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                observer.didMoveTabGroup(tab, finalIndex, curIndex);
+            }
+        }
     }
 
     @Override
@@ -1477,7 +1507,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      */
     private boolean wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(
             Tab tab, Token oldTabGroupId, int finalIndex) {
-        int prevFilterIndex = getFirstTabIndexInGroup(oldTabGroupId);
+        int prevFilterIndex = representativeIndexOf(getLastShownTabForGroup(oldTabGroupId));
         boolean isLastTabInGroup = prevFilterIndex == TabList.INVALID_TAB_INDEX;
         if (isLastTabInGroup) {
             prevFilterIndex = finalIndex;
@@ -1486,13 +1516,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             observer.didMoveTabOutOfGroup(tab, prevFilterIndex);
         }
         return isLastTabInGroup;
-    }
-
-    private int getFirstTabIndexInGroup(Token tabGroupId) {
-        // TODO(crbug.com/428692223): Optimize this by requesting it from the collection.
-        List<Tab> tabsInGroup = getTabsInGroup(tabGroupId);
-        if (tabsInGroup.isEmpty()) return TabList.INVALID_TAB_INDEX;
-        return indexOf(tabsInGroup.get(0));
     }
 
     private @Nullable Tab getLastShownTabForGroup(Token tabGroupId) {

@@ -677,12 +677,6 @@ public class TabCollectionTabModelImplTest {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
 
-        // TODO(crbug.com/429145597): Remove this once the implementation is further along.
-        // Create a tab that is not in a group to act as the current tab. This is required to
-        // prevent TabListMediator from being created and failing a bunch of lookups for
-        // representative tabs that are not yet implemented.
-        createTab();
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNotNull(tab0);
@@ -934,6 +928,59 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
+    @SmallTest
+    public void testMoveRelatedTabs_IndividualTab() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        CallbackHelper didMoveTabGroupHelper = new CallbackHelper();
+        CallbackHelper didMoveTabHelper = new CallbackHelper();
+
+        TabGroupModelFilterObserver groupObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
+                        fail("willMoveTabGroup should not be called for individual tab.");
+                    }
+
+                    @Override
+                    public void didMoveTabGroup(Tab movedTab, int newIndex, int oldIndex) {
+                        assertEquals(tab1, movedTab);
+                        assertEquals(2, newIndex);
+                        assertEquals(1, oldIndex);
+                        didMoveTabGroupHelper.notifyCalled();
+                    }
+                };
+        TabModelObserver modelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didMoveTab(Tab tab, int newIndex, int oldIndex) {
+                        assertEquals(tab1, tab);
+                        assertEquals(2, newIndex);
+                        assertEquals(1, oldIndex);
+                        didMoveTabHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(groupObserver);
+                    mCollectionModel.addObserver(modelObserver);
+                    // Move tab1 to the end.
+                    mCollectionModel.moveRelatedTabs(tab1.getId(), 3);
+                    mCollectionModel.removeTabGroupObserver(groupObserver);
+                    mCollectionModel.removeObserver(modelObserver);
+                });
+
+        didMoveTabGroupHelper.waitForOnly();
+        didMoveTabHelper.waitForOnly();
+
+        assertTabsInOrderAre(List.of(tab0, tab2, tab1));
+    }
+
+    @Test
     @MediumTest
     public void testMoveTab_InGroup() {
         Tab tab0 = getTabAt(0);
@@ -1048,16 +1095,10 @@ public class TabCollectionTabModelImplTest {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
 
-        // TODO(crbug.com/429145597): Remove this once the implementation is further along.
-        // Create a tab that is not in a group to act as the current tab. This is required to
-        // prevent TabListMediator from being created and failing a bunch of lookups for
-        // representative tabs that are not yet implemented.
-        Tab tab2 = createTab();
-
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.createSingleTabGroup(tab1));
         Token groupId = tab1.getTabGroupId();
         assertNotNull(groupId);
-        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+        assertTabsInOrderAre(List.of(tab0, tab1));
 
         CallbackHelper willMoveOutOfGroup = new CallbackHelper();
         CallbackHelper didMoveOutOfGroup = new CallbackHelper();
@@ -1100,7 +1141,7 @@ public class TabCollectionTabModelImplTest {
 
         assertTrue(tab1.getIsPinned());
         assertNull(tab1.getTabGroupId());
-        assertTabsInOrderAre(List.of(tab1, tab0, tab2));
+        assertTabsInOrderAre(List.of(tab1, tab0));
     }
 
     @Test
@@ -1342,12 +1383,18 @@ public class TabCollectionTabModelImplTest {
     @Test
     @SmallTest
     public void testRepresentativeTabLogic() {
-        // Setup: tab0, tab1 (in group), tab2
+        // Setup: tab0, {tab1, tab3} (in group), tab2
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
         Tab tab2 = createTab();
-        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.createSingleTabGroup(tab1));
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab1, tab3), tab1, /* notify= */ false);
+                });
+        assertTabsInOrderAre(List.of(tab0, tab1, tab3, tab2));
         Token tab1GroupId = tab1.getTabGroupId();
         assertNotNull(tab1GroupId);
 
@@ -1358,7 +1405,6 @@ public class TabCollectionTabModelImplTest {
         assertEquals(tab0, representativeTabs.get(0));
         assertEquals(tab1, representativeTabs.get(1));
         assertEquals(tab2, representativeTabs.get(2));
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(3, mCollectionModel.getIndividualTabAndGroupCount());
@@ -1368,23 +1414,25 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(tab2, mCollectionModel.getRepresentativeTabAt(2));
                     assertNull(mCollectionModel.getRepresentativeTabAt(3));
                     assertNull(mCollectionModel.getRepresentativeTabAt(-1));
-
                     assertEquals(0, mCollectionModel.representativeIndexOf(tab0));
                     assertEquals(1, mCollectionModel.representativeIndexOf(tab1));
+                    assertEquals(1, mCollectionModel.representativeIndexOf(tab3));
                     assertEquals(2, mCollectionModel.representativeIndexOf(tab2));
                     assertEquals(
                             TabList.INVALID_TAB_INDEX,
                             mCollectionModel.representativeIndexOf(null));
-
                     mCollectionModel.setIndex(0, TabSelectionType.FROM_USER); // Select tab0
                     assertEquals(tab0, mCollectionModel.getCurrentRepresentativeTab());
                     assertEquals(0, mCollectionModel.getCurrentRepresentativeTabIndex());
-
                     mCollectionModel.setIndex(1, TabSelectionType.FROM_USER); // Select tab1
                     assertEquals(tab1, mCollectionModel.getCurrentRepresentativeTab());
                     assertEquals(1, mCollectionModel.getCurrentRepresentativeTabIndex());
 
-                    mCollectionModel.setIndex(2, TabSelectionType.FROM_USER); // Select tab2
+                    mCollectionModel.setIndex(2, TabSelectionType.FROM_USER); // Select tab3
+                    assertEquals(tab3, mCollectionModel.getCurrentRepresentativeTab());
+                    assertEquals(1, mCollectionModel.getCurrentRepresentativeTabIndex());
+
+                    mCollectionModel.setIndex(3, TabSelectionType.FROM_USER); // Select tab2
                     assertEquals(tab2, mCollectionModel.getCurrentRepresentativeTab());
                     assertEquals(2, mCollectionModel.getCurrentRepresentativeTabIndex());
                 });
@@ -1526,6 +1574,7 @@ public class TabCollectionTabModelImplTest {
         // prevent TabListMediator from being created and failing a bunch of lookups for
         // representative tabs that are not yet implemented.
         Tab tab4 = createTab();
+
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4));
 
         CallbackHelper didRemoveTabGroupHelper = new CallbackHelper();

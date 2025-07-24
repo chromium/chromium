@@ -138,11 +138,7 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
             sortedTabs.add(tab);
         }
 
-        List<Tab> tabsToMerge = new ArrayList<>();
-        tabsToMerge.addAll(sortedTabs);
-        tabsToMerge.add(destinationTab);
-        boolean willMergingCreateNewGroup =
-                tabGroupModelFilter.willMergingCreateNewGroup(tabsToMerge);
+        boolean willMergingCreateNewGroup = tabGroupModelFilter.willMergingCreateNewGroup(tabs);
         tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, /* notify= */ true);
 
         if (willMergingCreateNewGroup) {

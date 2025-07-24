@@ -50,6 +50,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -722,8 +723,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         Tab hoveredCard = filter.getRepresentativeTabAt(hoveredCardIndex);
         if (selectedCard == null) return;
         if (hoveredCard == null) return;
-        boolean willMergingCreateNewGroup =
-                filter.willMergingCreateNewGroup(List.of(selectedCard, hoveredCard));
+        List<Tab> tabsToMerge = new ArrayList<>();
+        tabsToMerge.addAll(filter.getRelatedTabList(selectedCard.getId()));
+        tabsToMerge.addAll(filter.getRelatedTabList(hoveredCard.getId()));
+        boolean willMergingCreateNewGroup = filter.willMergingCreateNewGroup(tabsToMerge);
         filter.mergeTabsToGroup(selectedCard.getId(), hoveredCard.getId());
 
         if (willMergingCreateNewGroup) {
