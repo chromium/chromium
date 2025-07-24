@@ -18,14 +18,11 @@ class LoginDbDeprecationRunnerFactoryTest : public testing::Test {
   LoginDbDeprecationRunnerFactoryTest() = default;
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_env_;
   TestingProfile testing_profile_;
 };
 
 TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfMigrated) {
-  scoped_feature_list_.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
   PrefService* prefs = testing_profile_.GetPrefs();
   prefs->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -35,23 +32,7 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfMigrated) {
       LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
 }
 
-TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfFlagOff) {
-  scoped_feature_list_.InitAndDisableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  PrefService* prefs = testing_profile_.GetPrefs();
-  prefs->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
-                    true);
-  EXPECT_FALSE(
-      LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
-}
-
 TEST_F(LoginDbDeprecationRunnerFactoryTest, NullIfAlreadyExported) {
-  scoped_feature_list_.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
   PrefService* prefs = testing_profile_.GetPrefs();
   prefs->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -65,8 +46,6 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest, NullIfAlreadyExported) {
 
 TEST_F(LoginDbDeprecationRunnerFactoryTest,
        NonNullServiceIfNotEligibleForMigration) {
-  scoped_feature_list_.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
   PrefService* prefs = testing_profile_.GetPrefs();
   prefs->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -79,8 +58,6 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest,
 }
 
 TEST_F(LoginDbDeprecationRunnerFactoryTest, NonNullServiceIfMigrationPending) {
-  scoped_feature_list_.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
   PrefService* prefs = testing_profile_.GetPrefs();
   prefs->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,

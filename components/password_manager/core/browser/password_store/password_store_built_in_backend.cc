@@ -163,23 +163,8 @@ bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
   return is_database_initialized_successfully_;
 #else
   CHECK(pref_service_);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
-    // The login database is being deprecated on Android.
-    // The built-in backend should no longer allow saving passwords to it.
-    return false;
-  }
-  // Database was not initialized siccessfully, disable saving.
-  if (!is_database_initialized_successfully_) {
-    return false;
-  }
-
-  // Login database is not empty continue saving passwords.
-  if (!pref_service_->GetBoolean(prefs::kEmptyProfileStoreLoginDatabase)) {
-    return true;
-  }
-
-  // Login database is empty, disable saving.
+  // The login database is being deprecated on Android.
+  // The built-in backend should no longer allow saving passwords to it.
   return false;
 #endif
 }

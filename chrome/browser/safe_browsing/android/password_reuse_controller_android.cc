@@ -93,9 +93,7 @@ std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
   // entered a password on a phishing website in the exact time interval in
   // which Chrome was exporting passwods to an internally-stored CSV or
   // in-between export tries if the first attempt failed.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid) &&
-      !password_manager_android_util::LoginDbDeprecationReady(pref_service_)) {
+  if (!password_manager_android_util::LoginDbDeprecationReady(pref_service_)) {
     return l10n_util::GetStringUTF16(IDS_CLOSE);
   }
 
@@ -119,9 +117,7 @@ std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
     return std::u16string();
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid) &&
-      !password_manager_android_util::LoginDbDeprecationReady(pref_service_)) {
+  if (!password_manager_android_util::LoginDbDeprecationReady(pref_service_)) {
     return std::u16string();
   }
 

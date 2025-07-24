@@ -30,8 +30,7 @@ void LoginDbDeprecationRunner::StartExportWithDelay(
       FROM_HERE,
       base::BindOnce(&LoginDbDeprecationRunner::StartExport,
                      weak_ptr_factory_.GetWeakPtr(), password_store),
-      base::Seconds(
-          password_manager::features::kLoginDbDeprecationExportDelay.Get()));
+      kLoginDbDeprecationExportDelay);
 }
 
 void LoginDbDeprecationRunner::StartExport(

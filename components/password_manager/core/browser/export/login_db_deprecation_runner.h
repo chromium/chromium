@@ -5,12 +5,16 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_EXPORT_LOGIN_DB_DEPRECATION_RUNNER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_EXPORT_LOGIN_DB_DEPRECATION_RUNNER_H_
 
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace password_manager {
+
+inline constexpr base::TimeDelta kLoginDbDeprecationExportDelay =
+    base::Seconds(5);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

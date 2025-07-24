@@ -49,11 +49,6 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
-    return nullptr;
-  }
-
   if (prefs->GetBoolean(
           password_manager::prefs::kUpmUnmigratedPasswordsExported)) {
     // Since saving new passwords is disabled, one export is enough to guarantee

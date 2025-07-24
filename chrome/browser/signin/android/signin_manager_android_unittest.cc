@@ -204,30 +204,3 @@ TEST_F(SigninManagerAndroidTest, DoNotWipePasswordsIfLocalUpmOn) {
       account_password_store()->stored_passwords(),
       UnorderedElementsAre(Pair(account_store_form.signon_realm, SizeIs(1))));
 }
-
-class SigninManagerAndroidWithoutLocalUpmTest
-    : public SigninManagerAndroidTest {
- public:
-  SigninManagerAndroidWithoutLocalUpmTest() {
-    // Fake a user with outdated GmsCore.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
-  }
-};
-
-TEST_F(SigninManagerAndroidWithoutLocalUpmTest, WipePasswordsIfLocalUpmOff) {
-  // After login db deprecation, all users have split stores which either
-  // store credentials outside of the browser or cannot store credentials at
-  // all. In any case, wiping data doesn't apply to them.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  password_manager::PasswordForm form;
-  form.username_value = u"username";
-  form.password_value = u"password";
-  form.signon_realm = "https://g.com";
-  profile_password_store()->AddLogin(form);
-
-  WipeData(/*all_data=*/true);
-
-  EXPECT_THAT(profile_password_store()->stored_passwords(), IsEmpty());
-}

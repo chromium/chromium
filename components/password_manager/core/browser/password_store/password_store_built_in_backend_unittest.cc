@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -26,7 +25,6 @@
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -879,22 +877,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, NotAbleToSavePasswordsEmptyDB) {
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest,
-       IsAbleToSavePasswordsBeforeDeprecation) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  PasswordStoreBackend* backend = CreateBackend();
-  InitializeBackend(backend);
-  EXPECT_TRUE(backend->IsAbleToSavePasswords());
-}
-
-TEST_P(PasswordStoreBuiltInBackendTest,
-       NotAbleToSavePasswordsDuringDeprecation) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
+       NotAbleToSavePasswordsAfterDeprecation) {
   // Pretend the login DB is not empty, because saving passwords to an
   // empty login DB has already been disallowed before.
   pref_service()->SetBoolean(

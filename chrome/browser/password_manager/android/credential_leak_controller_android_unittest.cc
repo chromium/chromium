@@ -229,10 +229,6 @@ TEST_F(CredentialLeakControllerAndroidTest, NoDirectInteraction) {
 // The following tests are specific to the login DB deprecation.
 TEST_F(CredentialLeakControllerAndroidTest,
        LeakTypeResetToChangeIfLoginDbDeprecationNotReady) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-
   // The export state is only valid for users who are not enrolled in UPM.
   profile()->GetPrefs()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -270,9 +266,6 @@ TEST_F(CredentialLeakControllerAndroidTest,
     // "Check passwords" button.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
 
   // The export state is only valid for users who are not enrolled in UPM.
   profile()->GetPrefs()->SetInteger(
@@ -311,9 +304,6 @@ TEST_F(CredentialLeakControllerAndroidTest,
     // "Check passwords" button.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
 
   profile()->GetPrefs()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,

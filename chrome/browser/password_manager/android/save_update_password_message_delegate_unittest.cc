@@ -1239,10 +1239,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, RecordsPromptShownWhenEnqueuing) {
 // updated comes from the local storage, despite the user being signed in,
 // if the credential comes from the profile store.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       LocalCredentialNotUsingAccountStorage_DbDeprecationOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
+       LocalCredentialNotUsingAccountStorage) {
   profile()->GetPrefs()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
@@ -1262,11 +1259,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests `IsUsingAccountStorage` returns true if the crential comes from
 // the account store.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       CredentialUsingAccountStorage_DbDeprecationOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
+TEST_F(SaveUpdatePasswordMessageDelegateTest, CredentialUsingAccountStorage) {
   profile()->GetPrefs()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(

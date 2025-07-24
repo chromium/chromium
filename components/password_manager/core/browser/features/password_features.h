@@ -161,15 +161,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 // The feature flag for the Identity Check feature. The feature makes biometric
 // authentication mandatory before password filling in untrusted locations.
 BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
-
-// If enabled, the password store no longer uses the Login DB as a backend.
-// Instead, it either uses the Android-specific storage or an empty backend
-// if the client isn't eligible for the former.
-BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
-
-inline constexpr base::FeatureParam<int> kLoginDbDeprecationExportDelay = {
-    &kLoginDbDeprecationAndroid,
-    /*name=*/"login-db-deprecation-export-delay-seconds", /*default_value=*/5};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from

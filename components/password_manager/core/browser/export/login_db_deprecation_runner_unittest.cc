@@ -9,11 +9,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter_interface.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,7 +62,6 @@ class LoginDbDeprecationdRunnerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
@@ -76,30 +73,23 @@ class LoginDbDeprecationdRunnerTest : public testing::Test {
 };
 
 TEST_F(LoginDbDeprecationdRunnerTest, ExportScheduledNotStartingBeforeDelay) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      features::kLoginDbDeprecationAndroid,
-      {{features::kLoginDbDeprecationExportDelay.name, "5"}});
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_exporter(), Start).Times(0);
   db_export_runner()->StartExportWithDelay(mock_password_store());
 
   // Fast forward by a less time than the task delay.
-  task_env_.FastForwardBy(base::Seconds(3));
+  task_env_.FastForwardBy(kLoginDbDeprecationExportDelay / 2);
   histogram_tester.ExpectUniqueSample(
       kExportProgressHistogram, LoginDbDeprecationExportProgress::kScheduled,
       1);
 }
 
 TEST_F(LoginDbDeprecationdRunnerTest, ExportRunsAfterDelayButDoesntFinish) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      features::kLoginDbDeprecationAndroid,
-      {{features::kLoginDbDeprecationExportDelay.name, "5"}});
-
   base::HistogramTester histogram_tester;
 
   db_export_runner()->StartExportWithDelay(mock_password_store());
   EXPECT_CALL(*mock_exporter(), Start);
-  task_env_.FastForwardBy(base::Seconds(5));
+  task_env_.FastForwardBy(kLoginDbDeprecationExportDelay);
 
   histogram_tester.ExpectBucketCount(
       kExportProgressHistogram, LoginDbDeprecationExportProgress::kScheduled,
@@ -111,10 +101,6 @@ TEST_F(LoginDbDeprecationdRunnerTest, ExportRunsAfterDelayButDoesntFinish) {
 }
 
 TEST_F(LoginDbDeprecationdRunnerTest, ExportRunsAndFinishes) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      features::kLoginDbDeprecationAndroid,
-      {{features::kLoginDbDeprecationExportDelay.name, "5"}});
-
   base::HistogramTester histogram_tester;
 
   db_export_runner()->StartExportWithDelay(mock_password_store());
@@ -122,7 +108,7 @@ TEST_F(LoginDbDeprecationdRunnerTest, ExportRunsAndFinishes) {
       .WillOnce(WithArgs<1>([](base::OnceClosure completion_callback) {
         std::move(completion_callback).Run();
       }));
-  task_env_.FastForwardBy(base::Seconds(5));
+  task_env_.FastForwardBy(kLoginDbDeprecationExportDelay);
 
   histogram_tester.ExpectBucketCount(
       kExportProgressHistogram, LoginDbDeprecationExportProgress::kScheduled,

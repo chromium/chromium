@@ -177,12 +177,6 @@ BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
 BASE_FEATURE(kBiometricAuthIdentityCheck,
              "BiometricAuthIdentityCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLoginDbDeprecationAndroid,
-             // Note: Flag renamed to allow gradual clean up without causing
-             // issues for canary channel users with outdated finch seeds.
-             "LoginDbDeprecationAndroidCleanedUp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kUseNewEncryptionMethod,

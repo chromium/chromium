@@ -429,19 +429,6 @@ bool SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage(
     return false;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-
-  // Pre-UPM there was a single storage, which would either store account
-  // storage credentials (when sync was on for passwords) or local passwords.
-  // After login db deprecation, pre-UPM clients can no longer save passwords,
-  // so this code is only reached for clients that have access to split stores.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid) &&
-      !UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
-    return account_email_.has_value();
-  }
-
   // After UPM, an updated credential can be saved either to the local or
   // account storage, so the credential itself needs to be checked to determine
   // whether account storage messaging needs to be displayed.

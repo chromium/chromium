@@ -96,8 +96,6 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
     PrefService* prefs,
     const base::FilePath& login_db_directory,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kLoginDbDeprecationAndroid));
   if (!password_manager_android_util::LoginDbDeprecationReady(prefs)) {
     // There are still passwords that need exporting, so instantiate the
     // backend that connects to the login DB.
@@ -120,8 +118,6 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
 // login db deprecation.
 std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackendAndroid(
     PrefService* prefs) {
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kLoginDbDeprecationAndroid));
   // The account store shouldn't have an associated login DB with existing
   // passwords, so no pre-export step is required.
   if (password_manager_android_util::IsPasswordManagerAvailable(
@@ -169,30 +165,15 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
   password_manager::LoginDatabase* login_db_ptr = login_db.get();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  // Once the login DB is deprecated, there will be only 2 options for
+  // the backend: an empty one if the Android backend isn't supported,
+  // or the Android backend.
+  return CreateAccountPasswordStoreBackendAndroid(prefs);
+#else
   backend = std::make_unique<PasswordStoreBuiltInBackend>(
       std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
       prefs, os_crypt_async, std::move(unsynced_deletions_notifier));
-#else  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
-    // Once the login DB is deprecated, there will be only 2 options for
-    // the backend: an empty one if the Android backend isn't supported,
-    // or the Android backend.
-    return CreateAccountPasswordStoreBackendAndroid(prefs);
-  }
-
-  // On Android, if there is no internal backend, the account store isn't
-  // created, so this function isn't called.
-  // If the GMS Core version is not high enough for the account-only upm,
-  // it will not be high enough for split stores, so the account store
-  // won't be created in that case either.
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
-  backend =
-      std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, password_manager::kAccountStore);
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   auto is_account_db_empty_cb =
@@ -211,7 +192,8 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
   policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
   // If `user_data_dir` is empty it means that policy did not set it.
   login_db_ptr->SetIsUserDataDirPolicySet(!user_data_dir.empty());
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   return backend;
+#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }

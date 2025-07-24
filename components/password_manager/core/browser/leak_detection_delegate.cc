@@ -166,21 +166,12 @@ LeakedPasswordDetails LeakDetectionDelegate::PrepareLeakDetails(
     is_syncing = IsSyncing{true};
   } else {
     // Credential saved to the local-or-syncable store.
-#if BUILDFLAG(IS_ANDROID)
-    // After login db deprecation, all users have split stores on Android.
-    const bool uses_split_stores_for_sync_users =
-        base::FeatureList::IsEnabled(features::kLoginDbDeprecationAndroid) ||
-        UsesSplitStoresAndUPMForLocal(client_->GetPrefs());
-#else
-    const bool uses_split_stores_for_sync_users = false;
-#endif  // BUILDFLAG(IS_ANDROID)
-
-    if (!uses_split_stores_for_sync_users) {
-      // TODO(crbug.com/40066949): Remove this codepath once
-      // IsSyncFeatureEnabled() is fully deprecated.
-      is_syncing = IsSyncing(sync_util::IsSyncFeatureEnabledIncludingPasswords(
-          client_->GetSyncService()));
-    }
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/40066949): Remove this codepath once
+    // IsSyncFeatureEnabled() is fully deprecated.
+    is_syncing = IsSyncing(sync_util::IsSyncFeatureEnabledIncludingPasswords(
+        client_->GetSyncService()));
+#endif
   }
 
   CredentialLeakType leak_type =

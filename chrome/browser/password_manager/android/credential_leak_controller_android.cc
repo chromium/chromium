@@ -27,9 +27,7 @@ namespace {
 CredentialLeakType AdjustLeakTypeForLoginDbDeprecation(
     CredentialLeakType leak_type,
     Profile* profile) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid) &&
-      !password_manager_android_util::LoginDbDeprecationReady(
+  if (!password_manager_android_util::LoginDbDeprecationReady(
           profile->GetPrefs())) {
     // While the login DB deprecation is being prepared (passwords are
     // exported), saved passwords from the DB are still visible to the leak
