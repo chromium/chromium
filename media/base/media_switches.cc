@@ -588,13 +588,6 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
              "MemoryPressureBasedSourceBufferGC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Forces SuggestProviderState() to only suggest deferring when range requests
-// aren't supported and the underlying provider considers itself stale. The
-// stale state is set if the provider has been in a deferred state for > 1 sec.
-BASE_FEATURE(kMultiBufferNeverDefer,
-             "MultiBufferNeverDefer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,
