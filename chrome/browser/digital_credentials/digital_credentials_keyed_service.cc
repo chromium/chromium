@@ -79,4 +79,9 @@ DigitalCredentialsKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
       *optimization_guide_service);
 }
 
+bool DigitalCredentialsKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
+}
+
 }  // namespace digital_credentials
