@@ -9,6 +9,7 @@ import './pref_display.js';
 import './pref_page.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './privacy_sandbox_internals.mojom-webui.js';
+import './search_bar.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
@@ -73,13 +74,14 @@ export class InternalsPage extends CustomElement implements RouteObserver {
   private browserProxy_: PrivacySandboxInternalsBrowserProxy =
       PrivacySandboxInternalsBrowserProxy.getInstance();
   private tabBox_: HTMLElement|null = null;
-
+  private panels_: NodeListOf<HTMLElement>;
   static get is() {
     return 'internals-page';
   }
 
   constructor() {
     super();
+    this.panels_ = this.shadowRoot!.querySelectorAll('.panel');
     Router.getInstance().addObserver(this);
   }
 
@@ -116,13 +118,11 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     if (parentElement) {
       const filteredPrefs = prefs.filter(
           (pref) => prefixes.some((prefix) => pref.name.startsWith(prefix)));
-
       this.addPrefsToDom(parentElement, filteredPrefs);
     } else {
       console.error('Parent element not defined for prefixList:', prefixes);
     }
   }
-
   // Accepts a list prefs and displays them in the parent element
   addPrefsToDom(
       parentElement: HTMLElement, prefs: PrivacySandboxInternalsPref[]) {
@@ -132,7 +132,6 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       item.configure(name, value);
     });
   }
-
   // Called when the route changes, this method updates the selected tab in the
   // UI to match the current page in the URL.
   onRouteChanged(pageName: string): void {
@@ -141,24 +140,23 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     if (!frameList) {
       return;
     }
-
     const allTabsInDom =
         Array.from(frameList.querySelectorAll<HTMLElement>('[slot="tab"]'));
     let index = allTabsInDom.findIndex(
         (tab: HTMLElement) => tab.dataset['pageName'] === pageName);
-
     // If no direct match, fall back to the pre-selected tab.
     if (index === -1) {
       index = allTabsInDom.findIndex(
           (tab: HTMLElement) => tab.hasAttribute('selected'));
     }
-
     // If a match is found, update the UI. Otherwise, do nothing.
     if (index !== -1) {
       frameList.setAttribute('selected-index', index.toString());
     }
+    this.panels_.forEach(p => {
+      p.hidden = p.dataset['pageName'] !== pageName;
+    });
   }
-
   // Create the DOM elements needed for the pref pages
   createLayoutForPrefPages() {
     const headerTab = document.createElement('div');
@@ -167,21 +165,48 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     headerTab.setAttribute('role', 'heading');
     headerTab.setAttribute('slot', 'tab');
     this.tabBox.appendChild(headerTab);
-
     const headerPanel = document.createElement('div');
     headerPanel.setAttribute('slot', 'panel');
     this.tabBox.appendChild(headerPanel);
 
-    prefPagesToCreate.forEach((pageToCreate) => {
-      const prefPage = document.createElement('pref-page');
-      prefPage.pageConfig = pageToCreate;
-
-      // The specific pref-page instance to be the default.
-      if (pageToCreate.id === 'tracking-protection') {
-        prefPage.isDefault = true;
+    prefPagesToCreate.forEach((pageConfig) => {
+      // Create the tab for this preference page
+      const tab = document.createElement('div');
+      tab.setAttribute('slot', 'tab');
+      tab.textContent = pageConfig.title;
+      tab.dataset['pageName'] = pageConfig.id;
+      if (pageConfig.id === 'tracking-protection') {
+        tab.setAttribute('selected', '');
       }
-
-      this.tabBox.append(prefPage);
+      this.tabBox.appendChild(tab);
+      // Create the corresponding panel for the tab
+      const panel = document.createElement('div');
+      panel.setAttribute('slot', 'panel');
+      panel.classList.add('panel');
+      panel.dataset['pageName'] = pageConfig.id;
+      panel.hidden = pageConfig.id !== 'tracking-protection';
+      // Create the inner structure for this panel
+      const mainContentWrapper = document.createElement('div');
+      // Use a class for styling instead of a dynamic ID and inline styles
+      mainContentWrapper.className = 'main-content-wrapper';
+      const searchBar = document.createElement('search-bar');
+      mainContentWrapper.appendChild(searchBar);
+      const panelsContainer = document.createElement('div');
+      // Use a class here as well
+      panelsContainer.className = 'panels-container';
+      // Create the content (headings and divs) inside the container
+      pageConfig.prefGroups.forEach(group => {
+        const heading = document.createElement('h3');
+        heading.textContent = group.title;
+        panelsContainer.appendChild(heading);
+        const prefsPanelDiv = document.createElement('div');
+        // This ID is unique per group, so keeping it is fine
+        prefsPanelDiv.id = `${group.id}-prefs-panel`;
+        panelsContainer.appendChild(prefsPanelDiv);
+      });
+      mainContentWrapper.appendChild(panelsContainer);
+      panel.appendChild(mainContentWrapper);
+      this.tabBox.appendChild(panel);
     });
   }
 
@@ -250,8 +275,9 @@ export class InternalsPage extends CustomElement implements RouteObserver {
 
       const panel = document.createElement('div');
       panel.setAttribute('slot', 'panel');
-      panel.setAttribute('title', ContentSettingsType[setting]);
-
+      panel.classList.add('panel');
+      panel.dataset['pageName'] = ContentSettingsType[setting].toLowerCase();
+      panel.hidden = true;
       const panelTitle = document.createElement('h2');
       panelTitle.innerText = ContentSettingsType[setting];
       panel.appendChild(panelTitle);
@@ -286,6 +312,8 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       otherSettings.forEach(setting => addContentSetting(setting));
     }
 
+    // Re-query panels to include the dynamically created ones for routing.
+    this.panels_ = this.shadowRoot!.querySelectorAll('.panel');
     for (const [setting, panel] of csPanels.entries()) {
       let mojoResponse;
       if (setting === ContentSettingsType.TPCD_METADATA_GRANTS) {

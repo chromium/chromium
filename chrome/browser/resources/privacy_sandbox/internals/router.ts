@@ -42,11 +42,12 @@ export class Router {
 
   processInitialRoute(defaultPageFromDom: string) {
     const params = new URLSearchParams(window.location.search);
-    const pageName = params.get('page');
-    if (!pageName) {
+    const pageFromUrl = params.get('page');
+    const targetPage = pageFromUrl || defaultPageFromDom;
+    if (!pageFromUrl) {
       this.navigateTo(defaultPageFromDom);
     }
-    this.notifyObservers(pageName);
+    this.notifyObservers(targetPage);
   }
 
   private notifyObservers(pageName: string|null) {

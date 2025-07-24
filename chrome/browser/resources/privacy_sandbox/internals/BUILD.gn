@@ -19,6 +19,7 @@ build_webui("build") {
     "text_copy_button.ts",
     "value_display.ts",
     "internals_page.ts",
+    "search_bar.ts",
   ]
 
   ts_files = [

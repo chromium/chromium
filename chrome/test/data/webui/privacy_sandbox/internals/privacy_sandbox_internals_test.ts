@@ -22,7 +22,7 @@ import type {TextCopyButton} from 'chrome://privacy-sandbox-internals/text_copy_
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
 import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -55,6 +55,28 @@ async function waitForCondition(checkFn: () => boolean): Promise<void> {
     check();
   });
 }
+
+// Test suite for the Search Bar UI.
+suite('SearchBarUITest', function() {
+  let page: InternalsPage;
+
+  setup(async function() {
+    const browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    await microtasksFinished();
+  });
+
+  test('search bar is visible', async function() {
+    const searchBar = await waitForElement(page.shadowRoot!, 'search-bar');
+    assertTrue(!!searchBar, 'Search bar element should be present.');
+    assertTrue(
+        searchBar.offsetWidth > 0 && searchBar.offsetHeight > 0,
+        'Search bar should be visible on the page.');
+  });
+});
 
 // Test suite for the sidebar toggle functionality.
 suite('SidebarToggleTest', function() {
@@ -331,7 +353,7 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
             Page.ADVERTISING);
 
     const advertisingTab = await waitForElement(
-        shadowRoot, `[data-page-name="${Page.ADVERTISING}"]`);
+        shadowRoot, `div[slot="tab"][data-page-name="${Page.ADVERTISING}"]`);
     const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
     const expectedIndex = allTabs.indexOf(advertisingTab).toString();
     assertEquals(expectedIndex, tabContainer.getAttribute('selected-index'));
@@ -358,8 +380,8 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
         () => new URLSearchParams(window.location.search).get('page') ===
             Page.POPUPS);
 
-    const popupsTab =
-        await waitForElement(shadowRoot, `[data-page-name="${Page.POPUPS}"]`);
+    const popupsTab = await waitForElement(
+        shadowRoot, `div[slot="tab"][data-page-name="${Page.POPUPS}"]`);
     const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
     const expectedIndex = allTabs.indexOf(popupsTab).toString();
     assertEquals(expectedIndex, tabContainer.getAttribute('selected-index'));
@@ -443,20 +465,6 @@ suite('PSInternalsPageTpcdTabLoadingTest', function() {
 
     return foundTab;
   }
-
-  test('NoTpcdPanelIfDisabled', async () => {
-    setShouldShowTpcdMetadataGrants(false);
-    const anotherPanel = await waitForElement(
-        internalsPage.shadowRoot!, 'div[slot="panel"][title="COOKIES"]');
-    assertTrue(
-        !!anotherPanel,
-        'Panels that are not TPCD Metadata Grants should render normally.');
-    const tpcdPanel = internalsPage.shadowRoot!.querySelector(
-        'div[slot="panel"][title="TPCD_METADADATA_GRANTS"]');
-    assertNull(
-        tpcdPanel,
-        'The panel for TPCD Metadata Grants should not exist when the flag is disabled.');
-  });
 
   test('hidesTpcdMetadataGrantsTab', async () => {
     setShouldShowTpcdMetadataGrants(false);

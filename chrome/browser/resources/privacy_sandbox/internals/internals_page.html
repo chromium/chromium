@@ -23,6 +23,29 @@
     background: white;
     border-radius: 8px;
   }
+
+  cr-frame-list {
+    height: 100%;
+  }
+
+  #main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  search-bar {
+    padding: 16px 24px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--cr-separator-color, #e0e0e0);
+  }
+
+  #panels-container {
+    flex-grow: 1;
+    padding: 0 24px;
+  }
 </style>
 
 <cr-frame-list id="ps-page">
