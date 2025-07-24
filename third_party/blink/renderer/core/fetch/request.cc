@@ -656,6 +656,7 @@ Request* Request::CreateRequestWithRequestOrString(
     request->SetKeepalive(init->keepalive());
 
   if (init->hasRetryOptions()) {
+    UseCounter::Count(execution_context, WebFeature::kFetchRetry);
     network::FetchRetryOptions options;
     RetryOptions* retry_options = init->retryOptions();
     options.max_attempts = retry_options->maxAttempts();

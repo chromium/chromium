@@ -3222,7 +3222,8 @@ enum WebFeature {
   kV8URLPattern_Exec_Method = 3961,
   kSameSiteCookieInclusionChangedByCrossSiteRedirect = 3962,
   // The items above roughly this point are available in the M93 branch.
-  kOBSOLETE_BlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory = 3963,
+  kOBSOLETE_BlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory =
+      3963,
   kOBSOLETE_BlobStoreAccessAcrossAgentClustersInResolveForNavigation = 3964,
   kTapDelayEnabled = 3965,
   kV8URLPattern_CompareComponent_Method = 3966,
@@ -4919,6 +4920,7 @@ enum WebFeature {
   kCanvasFallbackElementContent = 5609,
   kAutofillMaybeSyntheticSelect = 5610,
   kAutofillSyntheticSelect = 5611,
+  kFetchRetry = 5612,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

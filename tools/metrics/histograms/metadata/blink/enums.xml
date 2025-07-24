@@ -6242,6 +6242,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5609" label="CanvasFallbackElementContent"/>
   <int value="5610" label="AutofillMaybeSyntheticSelect"/>
   <int value="5611" label="AutofillSyntheticSelect"/>
+  <int value="5612" label="FetchRetry"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
