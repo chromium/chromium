@@ -2297,16 +2297,20 @@ bool AXNode::IsLikelyARIAActiveDescendant() const {
   if (!ui::IsLikelyActiveDescendantRole(GetRole()))
     return false;
 
+  // False if no explicit ARIA role -- not a perfect rule, but a reasonable
+  // heuristic. Don't apply this rule for table cells or headers that get their
+  // role from their HTML semantics (e.g., <td>, <th>, etc.).
+  if (!HasStringAttribute(ax::mojom::StringAttribute::kRole) &&
+      !ui::IsCellOrTableHeader(GetRole())) {
+    return false;
+  }
+
   // False if invisible, ignored or disabled.
   if (IsInvisibleOrIgnored() ||
       GetIntAttribute(ax::mojom::IntAttribute::kRestriction) ==
           static_cast<int>(ax::mojom::Restriction::kDisabled)) {
     return false;
   }
-
-  // False if no ARIA role -- not a perfect rule, but a reasonable heuristic.
-  if (!HasStringAttribute(ax::mojom::StringAttribute::kRole))
-    return false;
 
   // False if no id attribute -- nothing to point to.
   // This requirement may need to be removed if ARIA element reflection is

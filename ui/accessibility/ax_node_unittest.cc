@@ -1031,6 +1031,39 @@ TEST(AXNodeTest, GroupAsTreeItemParentPosInSetSetSize) {
   EXPECT_EQ(tree.GetFromId(8)->GetSetSize(), 6);
 }
 
+TEST(AXNodeTest, GridCellsFocusableViaARIAActiveDescendant) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGrid stringAttribute=kHtmlTag,"table" intAttribute=kActivedescendantId,4
+    ++++++3 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++4 kColumnHeader stringAttribute=kHtmlId,"row1-cell1" stringAttribute=kHtmlTag,"th"
+    ++++++5 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++6 kGridCell stringAttribute=kHtmlId,"row2-cell1" stringAttribute=kHtmlTag,"td"
+    ++++7 kGrid stringAttribute=kHtmlTag,"table"
+    ++++++8 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++9 kColumnHeader stringAttribute=kHtmlId,"row1-cell1" stringAttribute=kHtmlTag,"th"
+    ++++++10 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++11 kGridCell stringAttribute=kHtmlId,"row2-cell1" stringAttribute=kHtmlTag,"td"
+  )HTML"));
+
+  AXTree tree(update);
+
+  // Grid with aria-activedescendant should have focusable cells because they
+  // have HTML ids. Rows shouldn't. None of the cells in the grid without
+  // aria-activedescendant should be focusable.
+  for (int id : {4, 6}) {
+    const AXNode* n = tree.GetFromId(id);
+    ASSERT_NE(n, nullptr) << "Node " << id << " missing";
+    EXPECT_TRUE(n->IsFocusable()) << "cell with " << id << " not focusable";
+  }
+
+  for (int id : {2, 3, 5, 7, 8, 9, 10, 11}) {
+    const AXNode* n = tree.GetFromId(id);
+    ASSERT_NE(n, nullptr) << "Node " << id << " missing";
+    EXPECT_FALSE(n->IsFocusable()) << "Node " << id << " is focusable";
+  }
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 TEST(AXNodeTest, ExtraAnnouncementNodesNotCreated) {
   AXNodeData root;

@@ -419,6 +419,7 @@ bool IsLikelyActiveDescendantRole(const ax::mojom::Role role) {
     case ax::mojom::Role::kButton:
     case ax::mojom::Role::kCell:
     case ax::mojom::Role::kCheckBox:
+    case ax::mojom::Role::kColumnHeader:
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kListBoxOption:
@@ -428,6 +429,7 @@ bool IsLikelyActiveDescendantRole(const ax::mojom::Role role) {
     case ax::mojom::Role::kMenuListOption:
     case ax::mojom::Role::kRadioButton:
     case ax::mojom::Role::kRow:
+    case ax::mojom::Role::kRowHeader:
     case ax::mojom::Role::kTab:
     case ax::mojom::Role::kToggleButton:
     case ax::mojom::Role::kTreeItem:
