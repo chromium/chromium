@@ -71,7 +71,7 @@ scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info_copy, GenVerifiedSyncToken(),
+      mailbox, si_info_copy, gpu::SyncToken(),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), buffer_usage),
       holder_);
 }
