@@ -22,6 +22,12 @@ public class HubAnimationConstants {
     /** Duration in milliseconds of fade animations for the Hub Layout. */
     public static final long HUB_LAYOUT_FADE_DURATION_MS = 325L;
 
+    /** Duration in milliseconds before the fade in animation for the Hub Layout on XR. */
+    public static final long HUB_LAYOUT_XR_FADE_IN_DELAY_MS = 250L;
+
+    /** Duration in milliseconds before the fade out animation for the Hub Layout on XR. */
+    public static final long HUB_LAYOUT_XR_FADE_OUT_DELAY_MS = 250L;
+
     /** Duration in milliseconds before a fallback animation will occur for the Hub Layout. */
     public static final long HUB_LAYOUT_TIMEOUT_MS = 300L;
 
