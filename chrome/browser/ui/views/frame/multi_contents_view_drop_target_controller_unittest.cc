@@ -8,9 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h"
@@ -23,11 +25,13 @@
 
 namespace {
 
-static constexpr gfx::Size kMultiContentsViewSize(500, 500);
+constexpr gfx::Size kMultiContentsViewSize(500, 500);
 
-static constexpr gfx::PointF kDragPointForStartDropTargetShow(1, 250);
-static constexpr gfx::PointF kDragPointForEndDropTargetShow(499, 250);
-static constexpr gfx::PointF kDragPointForHiddenTargets(250, 250);
+constexpr gfx::PointF kDragPointForStartDropTargetShow(1, 250);
+constexpr gfx::PointF kDragPointForEndDropTargetShow(499, 250);
+constexpr gfx::PointF kDragPointForHiddenTargets(250, 250);
+
+constexpr base::TimeDelta kShowTargetDelay = base::Milliseconds(1000);
 
 content::DropData ValidUrlDropData() {
   content::DropData valid_url_data;
@@ -76,6 +80,11 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
   ~MultiContentsViewDropTargetControllerTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSideBySide,
+          {{features::kSideBySideShowDropTargetDelay.name,
+            base::NumberToString(kShowTargetDelay.InMilliseconds()) + "ms"}}}},
+        {});
     SetRTL(false);
     multi_contents_view_ = std::make_unique<views::View>();
     drop_target_view_ = multi_contents_view_->AddChildView(
@@ -100,7 +109,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
 
   // Fast forwards by an arbitrary time to ensure timed events are executed.
   void FastForward(double progress = 1.0) {
-    task_environment_.FastForwardBy(base::Milliseconds(1000 * progress));
+    task_environment_.FastForwardBy(kShowTargetDelay * progress);
   }
 
   void DragURLTo(const gfx::PointF& point) {
@@ -110,6 +119,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
   MockDropDelegate& drop_delegate() { return drop_delegate_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   MockDropDelegate drop_delegate_;
   std::unique_ptr<MultiContentsViewDropTargetController> controller_;
   std::unique_ptr<views::View> multi_contents_view_;

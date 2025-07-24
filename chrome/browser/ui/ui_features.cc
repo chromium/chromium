@@ -128,12 +128,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideShowDropTargetDelay,
                    &kSideBySide,
                    "drop_target_show_delay",
-                   base::Milliseconds(700));
+                   base::Milliseconds(500));
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetMinWidth,
                    &kSideBySide,
                    "drop_target_min_width",
-                   88);
+                   120);
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetMaxWidth,
                    &kSideBySide,
@@ -143,7 +143,7 @@ BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetTargetWidthPercentage,
                    &kSideBySide,
                    "drop_target_width_percentage",
-                   20);
+                   30);
 
 constexpr base::FeatureParam<MiniToolbarActiveConfiguration>::Option
     kMiniToolbarActiveConfigurationOptions[] = {
