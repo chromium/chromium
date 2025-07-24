@@ -1163,16 +1163,16 @@
 
       <!-- ACT - Incognito Tracking Protections Incognito NTP -->
       <!-- TODO(crbug.com/408036586): Mark translateable after content is finalized -->
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="" formatter_data="android_java" translateable="false" >
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="This text is for the header of the emphasized section, “Tracking protections in Incognito.”" formatter_data="android_java" translateable="false" >
         Tracking protections in Incognito
       </message>
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false" >
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="This text is for the body of the “Tracking protections in Incognito” section. It specifies how third-party cookies are blocked in Incognito and informs the user of other protections available and a link to the page where they can manage their settings." formatter_data="android_java" translateable="false" >
         Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="This text is for the body of the “Tracking protections in Incognito” section. It specifies how third-party cookies are blocked in Incognito and informs the user of other protections available and a link to the page where they can manage their settings." translateable="false">
         Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="START_LINK">&lt;a href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
-      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL" desc="This text is read by screenreaders for the link to the Incognito tracking protections settings page." translateable="false">
         Settings for Incognito tracking protections
       </message>
     </messages>
