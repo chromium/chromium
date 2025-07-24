@@ -1156,8 +1156,8 @@ ShapeResult* HarfBuzzShaper::Shape(
     unsigned end,
     const Vector<RunSegmenter::RunSegmenterRange>& ranges,
     ShapeOptions options) const {
-  DCHECK_GE(end, start);
-  DCHECK_LE(end, text_.length());
+  CHECK_GE(end, start);
+  CHECK_LE(end, text_.length());
   DCHECK_GT(ranges.size(), 0u);
   DCHECK_EQ(start, ranges[0].start);
   DCHECK_EQ(end, ranges[ranges.size() - 1].end);
@@ -1186,8 +1186,8 @@ ShapeResult* HarfBuzzShaper::Shape(
     unsigned end,
     const RunSegmenter::RunSegmenterRange pre_segmented,
     ShapeOptions options) const {
-  DCHECK_GE(end, start);
-  DCHECK_LE(end, text_.length());
+  CHECK_GE(end, start);
+  CHECK_LE(end, text_.length());
   DCHECK_GE(start, pre_segmented.start);
   DCHECK_LE(end, pre_segmented.end);
 
