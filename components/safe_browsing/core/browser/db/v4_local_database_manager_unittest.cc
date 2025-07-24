@@ -1139,6 +1139,26 @@ TEST_F(V4LocalDatabaseManagerTest, CancelQueued) {
   EXPECT_TRUE(client2.on_check_browse_url_result_called());
 }
 
+TEST_F(V4LocalDatabaseManagerTest, ShutdownCancelsQueued) {
+  const GURL url("http://example.com/a/");
+  TestClient client1(SB_THREAT_TYPE_SAFE, url,
+                     v4_local_database_manager_.get());
+  TestClient client2(SB_THREAT_TYPE_SAFE, url);
+  EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
+      url, usual_threat_types_, &client1, CheckBrowseUrlType::kHashDatabase));
+  EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
+      url, usual_threat_types_, &client2, CheckBrowseUrlType::kHashDatabase));
+  EXPECT_EQ(2ul, GetQueuedChecks().size());
+  ShutdownLocalDatabaseManager();
+  EXPECT_TRUE(GetQueuedChecks().empty());
+  WaitForTasksOnTaskRunner();
+  EXPECT_FALSE(client1.on_check_browse_url_result_called());
+  EXPECT_FALSE(client2.on_check_browse_url_result_called());
+  // Client should still be able to cancel checks post-shutdown.
+  v4_local_database_manager_->CancelCheck(&client1);
+  v4_local_database_manager_->CancelCheck(&client2);
+}
+
 TEST_F(V4LocalDatabaseManagerTest, QueuedCheckWithFullHash) {
   std::string url_bad_no_scheme("example.com/bad/");
   const GURL url_bad("https://" + url_bad_no_scheme);
