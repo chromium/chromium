@@ -49,12 +49,6 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
   }
 }
 
-void SaveAndFillManagerImpl::OfferLocalSaveAndFill() {
-  payments_autofill_client()->ShowCreditCardLocalSaveAndFillDialog(
-      base::BindOnce(&SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
     CardSaveAndFillDialogUserDecision user_decision,
     const UserProvidedCardSaveAndFillDetails&
@@ -88,6 +82,17 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
   fill_card_callback_.Reset();
 }
 
+void SaveAndFillManagerImpl::SetCreditCardUploadEnabledOverrideForTesting(
+    bool credit_card_upload_enabled_override) {
+  credit_card_upload_enabled_override_ = credit_card_upload_enabled_override;
+}
+
+void SaveAndFillManagerImpl::OfferLocalSaveAndFill() {
+  payments_autofill_client()->ShowCreditCardLocalSaveAndFillDialog(
+      base::BindOnce(&SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void SaveAndFillManagerImpl::PopulateCreditCardInfo(
     CreditCard& card,
     const UserProvidedCardSaveAndFillDetails&
@@ -111,11 +116,6 @@ void SaveAndFillManagerImpl::PopulateCreditCardInfo(
   card.SetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR,
                user_provided_card_save_and_fill_details.expiration_date_year,
                app_locale);
-}
-
-void SaveAndFillManagerImpl::SetCreditCardUploadEnabledOverrideForTesting(
-    bool credit_card_upload_enabled_override) {
-  credit_card_upload_enabled_override_ = credit_card_upload_enabled_override;
 }
 
 bool SaveAndFillManagerImpl::IsCreditCardUploadEnabled() const {

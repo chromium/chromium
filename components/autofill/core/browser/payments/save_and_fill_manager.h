@@ -25,23 +25,6 @@ class SaveAndFillManager {
   // suggestion.
   virtual void OnDidAcceptCreditCardSaveAndFillSuggestion(
       FillCardCallback fill_card_callback) = 0;
-  // Begins the process to show the local Save and Fill dialog.
-  virtual void OfferLocalSaveAndFill() = 0;
-  // Called when the user makes a decision on the local Save and Fill dialog.
-  // The `user_provided_card_save_and_fill_details` holds the  data entered by
-  // the user in the Save and Fill dialog when the `user_decision` is
-  // `kAccepted`.
-  virtual void OnUserDidDecideOnLocalSave(
-      CardSaveAndFillDialogUserDecision user_decision,
-      const UserProvidedCardSaveAndFillDetails&
-          user_provided_card_save_and_fill_details) = 0;
-  // Populates a new credit card object with user provided card details from the
-  // Save and Fill dialog. This is called after the user provides credit card
-  // information and accepts the dialog.
-  virtual void PopulateCreditCardInfo(
-      CreditCard& card,
-      const UserProvidedCardSaveAndFillDetails&
-          user_provided_card_save_and_fill_details) = 0;
 };
 
 }  // namespace autofill::payments

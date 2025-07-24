@@ -26,24 +26,30 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   // SaveAndFillManager:
   void OnDidAcceptCreditCardSaveAndFillSuggestion(
       FillCardCallback fill_card_callback) override;
-  void OfferLocalSaveAndFill() override;
+
+  // Called when the user makes a decision on the local Save and Fill dialog.
+  // The `user_provided_card_save_and_fill_details` holds the  data entered by
+  // the user in the Save and Fill dialog when the `user_decision` is
+  // `kAccepted`.
   void OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision user_decision,
       const UserProvidedCardSaveAndFillDetails&
-          user_provided_card_save_and_fill_details) override;
-  void PopulateCreditCardInfo(
-      CreditCard& card,
-      const UserProvidedCardSaveAndFillDetails&
-          user_provided_card_save_and_fill_details) override;
-
-  PaymentsAutofillClient* payments_autofill_client() const {
-    return autofill_client_->GetPaymentsAutofillClient();
-  }
+          user_provided_card_save_and_fill_details);
 
   void SetCreditCardUploadEnabledOverrideForTesting(
       bool credit_card_upload_enabled_override);
 
  private:
+  // Begins the process to show the local Save and Fill dialog.
+  void OfferLocalSaveAndFill();
+
+  // Populates a new credit card object with user provided card details from the
+  // Save and Fill dialog. This is called after the user provides credit card
+  // information and accepts the dialog.
+  void PopulateCreditCardInfo(CreditCard& card,
+                              const UserProvidedCardSaveAndFillDetails&
+                                  user_provided_card_save_and_fill_details);
+
   // Whether all prerequisites for credit card uploading are met.
   bool IsCreditCardUploadEnabled() const;
 
@@ -68,6 +74,10 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       CardSaveAndFillDialogUserDecision user_decision,
       const UserProvidedCardSaveAndFillDetails&
           user_provided_card_save_and_fill_details);
+
+  PaymentsAutofillClient* payments_autofill_client() const {
+    return autofill_client_->GetPaymentsAutofillClient();
+  }
 
   // Reference to the AutofillClient. `autofill_client_` outlives `this`.
   const raw_ref<AutofillClient> autofill_client_;
