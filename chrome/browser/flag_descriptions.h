@@ -2191,6 +2191,11 @@ extern const char kStorageAccessApiFollowsSameOriginPolicyDescription[];
 extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kSubmenusTabContextMenuLffTabStripName[];
+extern const char kSubmenusTabContextMenuLffTabStripDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kSupportToolScreenshot[];
 extern const char kSupportToolScreenshotDescription[];
 

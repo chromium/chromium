@@ -9340,6 +9340,7 @@ from previous Chrome versions.
   <int value="-1745909884" label="LibAssistantV2:disabled"/>
   <int value="-1745844997" label="AvifGainmapHdrImages:enabled"/>
   <int value="-1744231895" label="CCTEphemeralMode:enabled"/>
+  <int value="-1743234830" label="SubmenusTabContextMenuLffTabStrip:disabled"/>
   <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
   <int value="-1743079191" label="SyncPseudoUSSPriorityPreferences:enabled"/>
   <int value="-1742376665" label="SyncPseudoUSSPasswords:disabled"/>
@@ -9751,6 +9752,7 @@ from previous Chrome versions.
   <int value="-1595021446"
       label="AdaptiveButtonInTopToolbarPageSummary:enabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
+  <int value="-1594078405" label="SubmenusTabContextMenuLffTabStrip:enabled"/>
   <int value="-1594067749" label="TabStripIncognitoMigration:disabled"/>
   <int value="-1593946814"
       label="AccountReauthenticationRecentTimeWindow:enabled"/>

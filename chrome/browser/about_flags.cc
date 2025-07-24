@@ -5480,6 +5480,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(dom_distiller::kReaderModeUseReadability,
                                     kReaderModeUseReadabilityChoices,
                                     "Reader Mode use readability")},
+    {"submenus-tab-context-menu-lff-tab-strip",
+     flag_descriptions::kSubmenusTabContextMenuLffTabStripName,
+     flag_descriptions::kSubmenusTabContextMenuLffTabStripDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSubmenusTabContextMenuLffTabStrip)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

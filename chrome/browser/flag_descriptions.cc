@@ -5248,6 +5248,14 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kSubmenusTabContextMenuLffTabStripName[] =
+    "Submenus in LFF Tab Context Menu on LFF Tab Strip";
+const char kSubmenusTabContextMenuLffTabStripDescription[] =
+    "Enables submenus (for moving tabs to groups or windows) in the tab "
+    "context menu on LFF tab strip";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kSupervisedUserInterstitialWithoutApprovalsName[] =
     "Supervisded user interstitial without approvals for content filters";
 const char kSupervisedUserInterstitialWithoutApprovalsDescription[] =

@@ -388,6 +388,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShareCustomActionsInCCT,
     &kShowCloseAllIncognitoTabsButton,
     &kSmallerTabStripTitleLimit,
+    &kSubmenusTabContextMenuLffTabStrip,
     &kSuppressToolbarCapturesAtGestureEnd,
     &kSwapNewTabAndNewTabInGroupAndroid,
     &kTabArchivalDragDropAndroid,
@@ -1266,6 +1267,10 @@ BASE_FEATURE(kShowCloseAllIncognitoTabsButton,
 BASE_FEATURE(kSmallerTabStripTitleLimit,
              "SmallerTabStripTitleLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSubmenusTabContextMenuLffTabStrip,
+             "SubmenusTabContextMenuLffTabStrip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,
              "SuppressToolbarCapturesAtGestureEnd",

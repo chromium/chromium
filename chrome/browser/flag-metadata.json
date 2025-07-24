@@ -9189,6 +9189,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "submenus-tab-context-menu-lff-tab-strip",
+    "owners": [ "clank-large-form-factors@google.com", "jhimawan@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
       "name": "suggest-strong-password-in-add-password",
       "owners": [ "prasanaa@google.com", "adamta@google.com" ],
       "expiry_milestone": 150
