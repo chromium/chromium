@@ -8,6 +8,7 @@ License: MIT
 License File: LICENSE
 Security Critical: no
 Shipped: yes
+CPEPrefix: cpe:/a:x.org:libx11
 
 Description:
 Core X11 protocol client library
