@@ -114,12 +114,6 @@ public class TabPersistentStore {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected static int sMaxMigrationsPerSave = 5;
 
-    private TabModelObserver mTabModelObserver;
-    private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
-
-    private int mDuplicateTabIdsSeen;
-    private boolean mSkipSaveTabList;
-
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActiveTabState {
@@ -165,92 +159,6 @@ public class TabPersistentStore {
         int SKIPPED_EMPTY_URL = 5;
 
         int NUM_ENTRIES = 6;
-    }
-
-    @Initializer
-    public void onNativeLibraryReady() {
-        TabStateAttributes.Observer attributesObserver =
-                new TabStateAttributes.Observer() {
-                    @Override
-                    public void onTabStateDirtinessChanged(
-                            Tab tab, @TabStateAttributes.DirtinessState int dirtiness) {
-                        if (dirtiness == TabStateAttributes.DirtinessState.DIRTY
-                                && !tab.isDestroyed()) {
-                            addTabToSaveQueue(tab);
-                        }
-                    }
-                };
-        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
-                new TabModelSelectorTabRegistrationObserver.Observer() {
-                    @Override
-                    public void onTabRegistered(Tab tab) {
-                        TabStateAttributes attributes = TabStateAttributes.from(tab);
-                        assumeNonNull(attributes);
-                        if (attributes.addObserver(attributesObserver)
-                                == TabStateAttributes.DirtinessState.DIRTY) {
-                            addTabToSaveQueue(tab);
-                        }
-                    }
-
-                    @Override
-                    public void onTabUnregistered(Tab tab) {
-                        if (!tab.isDestroyed()) {
-                            assumeNonNull(TabStateAttributes.from(tab))
-                                    .removeObserver(attributesObserver);
-                        }
-                        if (tab.isClosing()) {
-                            PersistedTabData.onTabClose(tab);
-                            removeTabFromQueues(tab);
-                        }
-                    }
-                });
-
-        mTabModelObserver =
-                new TabModelObserver() {
-                    @Override
-                    public void willCloseAllTabs(boolean incognito) {
-                        cancelLoadingTabs(incognito);
-                    }
-
-                    @Override
-                    public void tabClosureUndone(Tab tab) {
-                        saveTabListAsynchronously();
-                    }
-
-                    @Override
-                    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
-                        if (!mTabModelSelector.isIncognitoSelected()) {
-                            saveTabListAsynchronously();
-                        }
-                    }
-
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        saveTabListAsynchronously();
-                    }
-
-                    @Override
-                    public void didMoveTab(Tab tab, int newIndex, int curIndex) {
-                        saveTabListAsynchronously();
-                    }
-
-                    @Override
-                    public void didAddTab(
-                            Tab tab,
-                            @TabLaunchType int type,
-                            @TabCreationState int creationState,
-                            boolean markedForSelection) {
-                        saveTabListAsynchronously();
-                    }
-
-                    @Override
-                    public void tabRemoved(Tab tab) {
-                        saveTabListAsynchronously();
-                    }
-                };
-        mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
-        mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
     }
 
     /** Callback interface to use while reading the persisted TabModelSelector info from disk. */
@@ -337,6 +245,54 @@ public class TabPersistentStore {
         }
     }
 
+    /** Stores meta data about the TabModelSelector which can be serialized to disk. */
+    public static class TabModelSelectorMetadata {
+        public final TabModelMetadata normalModelMetadata;
+        public final TabModelMetadata incognitoModelMetadata;
+
+        public TabModelSelectorMetadata(
+                TabModelMetadata normalModelMetadata, TabModelMetadata incognitoModelMetadata) {
+            this.normalModelMetadata = normalModelMetadata;
+            this.incognitoModelMetadata = incognitoModelMetadata;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TabModelSelectorMetadata that)) return false;
+            return Objects.equals(normalModelMetadata, that.normalModelMetadata)
+                    && Objects.equals(incognitoModelMetadata, that.incognitoModelMetadata);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(normalModelMetadata, incognitoModelMetadata);
+        }
+    }
+
+    /** Provides additional meta data to restore an individual tab. */
+    @VisibleForTesting
+    protected static final class TabRestoreDetails {
+        public final int id;
+        public final int originalIndex;
+        public final String url;
+        public final @Nullable Boolean isIncognito;
+        public final Boolean fromMerge;
+
+        public TabRestoreDetails(
+                int id,
+                int originalIndex,
+                @Nullable Boolean isIncognito,
+                String url,
+                Boolean fromMerge) {
+            this.id = id;
+            this.originalIndex = originalIndex;
+            this.url = url;
+            this.isIncognito = isIncognito;
+            this.fromMerge = fromMerge;
+        }
+    }
+
     private final Set<Integer> mSeenTabIds = new HashSet<>();
     // Counts distinct URLs.
     private final Map<String, Integer> mSeenTabUrlMap = new HashMap<>();
@@ -347,40 +303,36 @@ public class TabPersistentStore {
     private final TabWindowManager mTabWindowManager;
     private final CipherFactory mCipherFactory;
     private final ObserverList<TabPersistentStoreObserver> mObservers;
-
     private final Deque<Tab> mTabsToSave;
     private final ArrayDeque<Tab> mTabsToMigrate;
     private final ArrayDeque<File> mLegacyTabStateFilesToDelete;
     private final Deque<TabRestoreDetails> mTabsToRestore;
     private final Set<Integer> mTabIdsToRestore;
-
-    private @Nullable TabBatchLoader mTabBatchLoader;
-    private @Nullable SaveTabTask mSaveTabTask;
-    private @Nullable MigrateTabTask mMigrateTabTask;
-
-    private @Nullable SaveListTask mSaveListTask;
-
-    private boolean mDestroyed;
-    private boolean mCancelNormalTabLoads;
-    private boolean mCancelIncognitoTabLoads;
-
-    // Keys are the original tab indexes, values are the tab ids.
-    private @Nullable SparseIntArray mNormalTabsRestored;
-    private @Nullable SparseIntArray mIncognitoTabsRestored;
-
     private final SequencedTaskRunner mSequencedTaskRunner;
-    private @Nullable AsyncTask<@Nullable DataInputStream> mPrefetchTabListTask;
     private final List<Pair<AsyncTask<@Nullable DataInputStream>, String>>
             mPrefetchTabListToMergeTasks;
     // A set of filenames which are tracked to merge.
     private final Set<String> mMergedFileNames;
-    private @Nullable TabModelSelectorMetadata mLastSavedMetadata;
 
+    private TabModelObserver mTabModelObserver;
+    private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
+    private int mDuplicateTabIdsSeen;
+    private boolean mSkipSaveTabList;
+    private @Nullable TabBatchLoader mTabBatchLoader;
+    private @Nullable SaveTabTask mSaveTabTask;
+    private @Nullable MigrateTabTask mMigrateTabTask;
+    private @Nullable SaveListTask mSaveListTask;
+    private boolean mDestroyed;
+    private boolean mCancelNormalTabLoads;
+    private boolean mCancelIncognitoTabLoads;
+    // Keys are the original tab indexes, values are the tab ids.
+    private @Nullable SparseIntArray mNormalTabsRestored;
+    private @Nullable SparseIntArray mIncognitoTabsRestored;
+    private @Nullable AsyncTask<@Nullable DataInputStream> mPrefetchTabListTask;
+    private @Nullable TabModelSelectorMetadata mLastSavedMetadata;
     // Tracks whether this TabPersistentStore's tabs are being loaded.
     private boolean mLoadInProgress;
-
     private long mTabRestoreStartTime = INVALID_TIME;
-
     @Nullable AsyncTask<@Nullable TabState> mPrefetchTabStateActiveTabTask;
 
     /**
@@ -440,6 +392,92 @@ public class TabPersistentStore {
                     startFetchTabListTask(taskRunner, mergedFileName);
             mPrefetchTabListToMergeTasks.add(Pair.create(task, mergedFileName));
         }
+    }
+
+    @Initializer
+    public void onNativeLibraryReady() {
+        TabStateAttributes.Observer attributesObserver =
+                new TabStateAttributes.Observer() {
+                    @Override
+                    public void onTabStateDirtinessChanged(
+                            Tab tab, @TabStateAttributes.DirtinessState int dirtiness) {
+                        if (dirtiness == TabStateAttributes.DirtinessState.DIRTY
+                                && !tab.isDestroyed()) {
+                            addTabToSaveQueue(tab);
+                        }
+                    }
+                };
+        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                new TabModelSelectorTabRegistrationObserver.Observer() {
+                    @Override
+                    public void onTabRegistered(Tab tab) {
+                        TabStateAttributes attributes = TabStateAttributes.from(tab);
+                        assumeNonNull(attributes);
+                        if (attributes.addObserver(attributesObserver)
+                                == TabStateAttributes.DirtinessState.DIRTY) {
+                            addTabToSaveQueue(tab);
+                        }
+                    }
+
+                    @Override
+                    public void onTabUnregistered(Tab tab) {
+                        if (!tab.isDestroyed()) {
+                            assumeNonNull(TabStateAttributes.from(tab))
+                                    .removeObserver(attributesObserver);
+                        }
+                        if (tab.isClosing()) {
+                            PersistedTabData.onTabClose(tab);
+                            removeTabFromQueues(tab);
+                        }
+                    }
+                });
+
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void willCloseAllTabs(boolean incognito) {
+                        cancelLoadingTabs(incognito);
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        saveTabListAsynchronously();
+                    }
+
+                    @Override
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
+                        if (!mTabModelSelector.isIncognitoSelected()) {
+                            saveTabListAsynchronously();
+                        }
+                    }
+
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        saveTabListAsynchronously();
+                    }
+
+                    @Override
+                    public void didMoveTab(Tab tab, int newIndex, int curIndex) {
+                        saveTabListAsynchronously();
+                    }
+
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        saveTabListAsynchronously();
+                    }
+
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        saveTabListAsynchronously();
+                    }
+                };
+        mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
+        mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
     }
 
     /** Waits for the task that migrates all state files to their new location to finish. */
@@ -1168,186 +1206,12 @@ public class TabPersistentStore {
         return saveTabModelSelectorMetadata(mTabModelSelector, tabsToRestore);
     }
 
-    /**
-     * Records state of {@code selector} into a separate DataStructure to be used for save/restore.
-     *
-     * @param selector The {@link TabModelSelector} to process.
-     * @param tabsBeingRestored Tabs that are in the process of being restored.
-     * @return {@link TabModelSelectorMetadata} containing the meta data of {@code selector}.
-     */
-    @VisibleForTesting
-    public static TabModelSelectorMetadata saveTabModelSelectorMetadata(
-            TabModelSelector selector, List<TabRestoreDetails> tabsBeingRestored)
-            throws IOException {
-        ThreadUtils.assertOnUiThread();
-
-        // TODO(crbug.com/40549331): Convert TabModelMetadata to use GURL.
-        TabModelMetadata incognitoInfo = metadataFromModel(selector, true);
-
-        TabModel normalModel = selector.getModel(false);
-        TabModelMetadata normalInfo = metadataFromModel(selector, false);
-
-        // Cache the active tab id to be pre-loaded next launch.
-        int activeTabId = Tab.INVALID_TAB_ID;
-        int activeIndex = normalModel.index();
-        @ActiveTabState int activeTabState = ActiveTabState.EMPTY;
-        if (activeIndex != TabList.INVALID_TAB_INDEX) {
-            Tab activeTab = normalModel.getTabAtChecked(activeIndex);
-            activeTabId = activeTab.getId();
-            activeTabState =
-                    UrlUtilities.isNtpUrl(activeTab.getUrl())
-                            ? ActiveTabState.NTP
-                            : ActiveTabState.OTHER;
-        }
-
-        // Add information about the tabs that haven't finished being loaded.
-        // We shouldn't have to worry about Tab duplication because the tab details are processed
-        // only on the UI Thread.
-        if (tabsBeingRestored != null) {
-            for (TabRestoreDetails details : tabsBeingRestored) {
-                // isIncognito was added in M61 (see https://crbug.com/485217), so it is extremely
-                // unlikely that isIncognito will be null. But if it is, assume that the tab is
-                // incognito so that #restoreTab() will require a tab state file on disk to
-                // restore. If a tab state file exists and the tab is not actually incognito, it
-                // will be restored in the normal tab model. If a tab state file does not exist,
-                // the tab will not be restored.
-                if (details.isIncognito == null || details.isIncognito) {
-                    incognitoInfo.ids.add(details.id);
-                    incognitoInfo.urls.add(details.url);
-                } else {
-                    normalInfo.ids.add(details.id);
-                    normalInfo.urls.add(details.url);
-                }
-            }
-        }
-
-        Log.d(
-                TAG,
-                "Recording tab lists; counts: "
-                        + normalInfo.ids.size()
-                        + ", "
-                        + incognitoInfo.ids.size());
-
-        saveTabModelPrefs(normalInfo, incognitoInfo, activeTabId, activeTabState);
-        return new TabModelSelectorMetadata(normalInfo, incognitoInfo);
-    }
-
-    @VisibleForTesting
-    public static void saveTabModelPrefs(
-            TabModelMetadata normalInfo,
-            TabModelMetadata incognitoInfo,
-            int activeTabId,
-            int activeTabState) {
-        // Always override the existing value in case there is no active tab.
-        SharedPreferences.Editor editor = ChromeSharedPreferences.getInstance().getEditor();
-        editor.putInt(ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, activeTabId);
-        editor.putInt(ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, activeTabState);
-        editor.apply();
-    }
-
-    /**
-     * Creates a TabModelMetadata for the given TabModel mode.
-     *
-     * @param selector The object of {@link TabModelSelector}
-     * @param isIncognito Whether the TabModel is incognito.
-     */
-    private static TabModelMetadata metadataFromModel(
-            TabModelSelector selector, boolean isIncognito) {
-        TabModel tabModel = selector.getModel(isIncognito);
-        TabModelMetadata modelInfo = new TabModelMetadata(tabModel.index());
-
-        int activeIndex = tabModel.index();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAtChecked(i);
-            // This tab has likely just been deleted, and it's possible we're being notified before
-            // hand because undo is not allowed. This shouldn't be persisted.
-            if (tab.isClosing()) {
-                // Select the previous tab if there is one. 0 should be fine even if there are no
-                // tabs left.
-                if (i == activeIndex) {
-                    modelInfo.index = Math.max(0, modelInfo.ids.size() - 1);
-                }
-                continue;
-            }
-
-            if (i == activeIndex) {
-                // If any non-active NTPs have been skipped, the serialized tab model index
-                // needs to be adjusted.
-                modelInfo.index = modelInfo.ids.size();
-            } else if (shouldSkipTab(tab)) {
-                continue;
-            }
-            modelInfo.ids.add(tab.getId());
-            modelInfo.urls.add(tab.getUrl().getSpec());
-        }
-        return modelInfo;
-    }
-
-    public static boolean shouldSkipTab(Tab tab) {
-        boolean isNtp = tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl());
-        if (!isNtp) return false;
-
-        // Only skip NTP tabs that are not in a tab group.
-        return tab.getTabGroupId() == null;
-    }
-
     private void saveListToFile(TabModelSelectorMetadata listData) {
         if (Objects.equals(mLastSavedMetadata, listData)) return;
         // Save the index file containing the list of tabs to restore.
         File metadataFile = new File(getStateDirectory(), mPersistencePolicy.getMetadataFileName());
         saveListToFile(metadataFile, listData);
         mLastSavedMetadata = listData;
-    }
-
-    /**
-     * Atomically writes the given tab model selector data to disk.
-     *
-     * @param metadataFile File to save TabModel data into.
-     * @param metadata TabModel data in copied types.
-     */
-    public static void saveListToFile(File metadataFile, TabModelSelectorMetadata metadata) {
-        synchronized (SAVE_LIST_LOCK) {
-            AtomicFile file = new AtomicFile(metadataFile);
-            FileOutputStream output = null;
-            try {
-                output = file.startWrite();
-
-                int standardCount = metadata.normalModelMetadata.ids.size();
-                int incognitoCount = metadata.incognitoModelMetadata.ids.size();
-
-                // Determine how many Tabs there are.
-                int numTabsTotal = incognitoCount + standardCount;
-                Log.d(TAG, "Persisting tab lists; " + standardCount + ", " + incognitoCount);
-
-                // Save the index file containing the list of tabs to restore. Wrap a
-                // BufferedOutputStream to batch/buffer actual writes. Most urls are far smaller
-                // than the 8K buffer.
-                DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(output));
-                stream.writeInt(SAVED_STATE_VERSION);
-                stream.writeInt(numTabsTotal);
-                stream.writeInt(incognitoCount);
-                stream.writeInt(metadata.incognitoModelMetadata.index);
-                stream.writeInt(metadata.normalModelMetadata.index + incognitoCount);
-
-                // Save incognito state first, so when we load, if the incognito files are
-                // unreadable
-                // we can fall back easily onto the standard selected tab.
-                for (int i = 0; i < incognitoCount; i++) {
-                    stream.writeInt(metadata.incognitoModelMetadata.ids.get(i));
-                    stream.writeUTF(metadata.incognitoModelMetadata.urls.get(i));
-                }
-                for (int i = 0; i < standardCount; i++) {
-                    stream.writeInt(metadata.normalModelMetadata.ids.get(i));
-                    stream.writeUTF(metadata.normalModelMetadata.urls.get(i));
-                }
-
-                stream.flush();
-                file.finishWrite(output);
-
-            } catch (IOException e) {
-                if (output != null) file.failWrite(output);
-            }
-        }
     }
 
     /**
@@ -1462,68 +1326,7 @@ public class TabPersistentStore {
     }
 
     /**
-     * Extracts the tab information from a given tab state metadata stream.
-     *
-     * @param stream The stream pointing to the tab state metadata file to be parsed.
-     * @param callback A callback to be streamed updates about the tab state information being read.
-     * @param tabIds A mapping of tab ID to whether the tab is an off the record tab.
-     * @return The next available tab ID based on the maximum ID referenced in this state file.
-     */
-    public static int readSavedMetadataFile(
-            DataInputStream stream,
-            @Nullable OnTabStateReadCallback callback,
-            @Nullable SparseBooleanArray tabIds)
-            throws IOException {
-        if (stream == null) return 0;
-        int nextId = 0;
-        boolean skipUrlRead = false;
-        boolean skipIncognitoCount = false;
-        final int version = stream.readInt();
-        if (version != SAVED_STATE_VERSION) {
-            // We don't support restoring Tab data from before M18.
-            if (version < 3) return 0;
-            // Older versions are missing newer data.
-            if (version < 5) skipIncognitoCount = true;
-            if (version < 4) skipUrlRead = true;
-        }
-
-        final int count = stream.readInt();
-        final int incognitoCount = skipIncognitoCount ? -1 : stream.readInt();
-        final int incognitoActiveIndex = stream.readInt();
-        int standardActiveIndex = stream.readInt();
-        if (standardActiveIndex < incognitoCount) {
-            // See https://crbug.com/354041918. This is equal to the original standard active index
-            // + incognitoCount. If there are not standard tabs, that would be -1 + incognitoCount,
-            // which unexpectedly maps to the last incognito tab. Adjust here.
-            standardActiveIndex = TabModel.INVALID_TAB_INDEX;
-        }
-        if (count < 0 || incognitoActiveIndex >= count || standardActiveIndex >= count) {
-            throw new IOException();
-        }
-
-        for (int i = 0; i < count; i++) {
-            int id = stream.readInt();
-            String tabUrl = skipUrlRead ? "" : stream.readUTF();
-            if (id >= nextId) nextId = id + 1;
-            if (tabIds != null) tabIds.append(id, true);
-
-            Boolean isIncognito = (incognitoCount < 0) ? null : i < incognitoCount;
-
-            if (callback != null) {
-                callback.onDetailsRead(
-                        i,
-                        id,
-                        tabUrl,
-                        isIncognito,
-                        i == standardActiveIndex,
-                        i == incognitoActiveIndex);
-            }
-        }
-        return nextId;
-    }
-
-    /**
-     * Triggers the next save tab task.  Clients do not need to call this as it will be triggered
+     * Triggers the next save tab task. Clients do not need to call this as it will be triggered
      * automatically by calling {@link #addTabToSaveQueue(Tab)}.
      */
     @VisibleForTesting
@@ -1719,31 +1522,6 @@ public class TabPersistentStore {
             if (mDestroyed || isCancelled()) return;
             mMigrateTabTask = null;
             migrateNextTabIfApplicable(mNumMigration + 1);
-        }
-    }
-
-    /** Stores meta data about the TabModelSelector which can be serialized to disk. */
-    public static class TabModelSelectorMetadata {
-        public final TabModelMetadata normalModelMetadata;
-        public final TabModelMetadata incognitoModelMetadata;
-
-        public TabModelSelectorMetadata(
-                TabModelMetadata normalModelMetadata, TabModelMetadata incognitoModelMetadata) {
-            this.normalModelMetadata = normalModelMetadata;
-            this.incognitoModelMetadata = incognitoModelMetadata;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof TabModelSelectorMetadata that)) return false;
-            return Objects.equals(normalModelMetadata, that.normalModelMetadata)
-                    && Objects.equals(incognitoModelMetadata, that.incognitoModelMetadata);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(normalModelMetadata, incognitoModelMetadata);
         }
     }
 
@@ -2206,29 +1984,6 @@ public class TabPersistentStore {
         loadNextTabs();
     }
 
-    /** Provides additional meta data to restore an individual tab. */
-    @VisibleForTesting
-    protected static final class TabRestoreDetails {
-        public final int id;
-        public final int originalIndex;
-        public final String url;
-        public final @Nullable Boolean isIncognito;
-        public final Boolean fromMerge;
-
-        public TabRestoreDetails(
-                int id,
-                int originalIndex,
-                @Nullable Boolean isIncognito,
-                String url,
-                Boolean fromMerge) {
-            this.id = id;
-            this.originalIndex = originalIndex;
-            this.url = url;
-            this.isIncognito = isIncognito;
-            this.fromMerge = fromMerge;
-        }
-    }
-
     /**
      * Determines if a Tab being restored is definitely an Incognito Tab.
      *
@@ -2313,6 +2068,243 @@ public class TabPersistentStore {
         mObservers.removeObserver(observer);
     }
 
+    // Static functions:
+
+    /**
+     * Records state of {@code selector} into a separate DataStructure to be used for save/restore.
+     *
+     * @param selector The {@link TabModelSelector} to process.
+     * @param tabsBeingRestored Tabs that are in the process of being restored.
+     * @return {@link TabModelSelectorMetadata} containing the meta data of {@code selector}.
+     */
+    @VisibleForTesting
+    public static TabModelSelectorMetadata saveTabModelSelectorMetadata(
+            TabModelSelector selector, List<TabRestoreDetails> tabsBeingRestored)
+            throws IOException {
+        ThreadUtils.assertOnUiThread();
+
+        // TODO(crbug.com/40549331): Convert TabModelMetadata to use GURL.
+        TabModelMetadata incognitoInfo = metadataFromModel(selector, true);
+
+        TabModel normalModel = selector.getModel(false);
+        TabModelMetadata normalInfo = metadataFromModel(selector, false);
+
+        // Cache the active tab id to be pre-loaded next launch.
+        int activeTabId = Tab.INVALID_TAB_ID;
+        int activeIndex = normalModel.index();
+        @ActiveTabState int activeTabState = ActiveTabState.EMPTY;
+        if (activeIndex != TabList.INVALID_TAB_INDEX) {
+            Tab activeTab = normalModel.getTabAtChecked(activeIndex);
+            activeTabId = activeTab.getId();
+            activeTabState =
+                    UrlUtilities.isNtpUrl(activeTab.getUrl())
+                            ? ActiveTabState.NTP
+                            : ActiveTabState.OTHER;
+        }
+
+        // Add information about the tabs that haven't finished being loaded.
+        // We shouldn't have to worry about Tab duplication because the tab details are processed
+        // only on the UI Thread.
+        if (tabsBeingRestored != null) {
+            for (TabRestoreDetails details : tabsBeingRestored) {
+                // isIncognito was added in M61 (see https://crbug.com/485217), so it is extremely
+                // unlikely that isIncognito will be null. But if it is, assume that the tab is
+                // incognito so that #restoreTab() will require a tab state file on disk to
+                // restore. If a tab state file exists and the tab is not actually incognito, it
+                // will be restored in the normal tab model. If a tab state file does not exist,
+                // the tab will not be restored.
+                if (details.isIncognito == null || details.isIncognito) {
+                    incognitoInfo.ids.add(details.id);
+                    incognitoInfo.urls.add(details.url);
+                } else {
+                    normalInfo.ids.add(details.id);
+                    normalInfo.urls.add(details.url);
+                }
+            }
+        }
+
+        Log.d(
+                TAG,
+                "Recording tab lists; counts: "
+                        + normalInfo.ids.size()
+                        + ", "
+                        + incognitoInfo.ids.size());
+
+        saveTabModelPrefs(normalInfo, incognitoInfo, activeTabId, activeTabState);
+        return new TabModelSelectorMetadata(normalInfo, incognitoInfo);
+    }
+
+    @VisibleForTesting
+    public static void saveTabModelPrefs(
+            TabModelMetadata normalInfo,
+            TabModelMetadata incognitoInfo,
+            int activeTabId,
+            int activeTabState) {
+        // Always override the existing value in case there is no active tab.
+        SharedPreferences.Editor editor = ChromeSharedPreferences.getInstance().getEditor();
+        editor.putInt(ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, activeTabId);
+        editor.putInt(ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, activeTabState);
+        editor.apply();
+    }
+
+    /**
+     * Creates a TabModelMetadata for the given TabModel mode.
+     *
+     * @param selector The object of {@link TabModelSelector}
+     * @param isIncognito Whether the TabModel is incognito.
+     */
+    private static TabModelMetadata metadataFromModel(
+            TabModelSelector selector, boolean isIncognito) {
+        TabModel tabModel = selector.getModel(isIncognito);
+        TabModelMetadata modelInfo = new TabModelMetadata(tabModel.index());
+
+        int activeIndex = tabModel.index();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab tab = tabModel.getTabAtChecked(i);
+            // This tab has likely just been deleted, and it's possible we're being notified before
+            // hand because undo is not allowed. This shouldn't be persisted.
+            if (tab.isClosing()) {
+                // Select the previous tab if there is one. 0 should be fine even if there are no
+                // tabs left.
+                if (i == activeIndex) {
+                    modelInfo.index = Math.max(0, modelInfo.ids.size() - 1);
+                }
+                continue;
+            }
+
+            if (i == activeIndex) {
+                // If any non-active NTPs have been skipped, the serialized tab model index
+                // needs to be adjusted.
+                modelInfo.index = modelInfo.ids.size();
+            } else if (shouldSkipTab(tab)) {
+                continue;
+            }
+            modelInfo.ids.add(tab.getId());
+            modelInfo.urls.add(tab.getUrl().getSpec());
+        }
+        return modelInfo;
+    }
+
+    public static boolean shouldSkipTab(Tab tab) {
+        boolean isNtp = tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl());
+        if (!isNtp) return false;
+
+        // Only skip NTP tabs that are not in a tab group.
+        return tab.getTabGroupId() == null;
+    }
+
+    /**
+     * Atomically writes the given tab model selector data to disk.
+     *
+     * @param metadataFile File to save TabModel data into.
+     * @param metadata TabModel data in copied types.
+     */
+    public static void saveListToFile(File metadataFile, TabModelSelectorMetadata metadata) {
+        synchronized (SAVE_LIST_LOCK) {
+            AtomicFile file = new AtomicFile(metadataFile);
+            FileOutputStream output = null;
+            try {
+                output = file.startWrite();
+
+                int standardCount = metadata.normalModelMetadata.ids.size();
+                int incognitoCount = metadata.incognitoModelMetadata.ids.size();
+
+                // Determine how many Tabs there are.
+                int numTabsTotal = incognitoCount + standardCount;
+                Log.d(TAG, "Persisting tab lists; " + standardCount + ", " + incognitoCount);
+
+                // Save the index file containing the list of tabs to restore. Wrap a
+                // BufferedOutputStream to batch/buffer actual writes. Most urls are far smaller
+                // than the 8K buffer.
+                DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(output));
+                stream.writeInt(SAVED_STATE_VERSION);
+                stream.writeInt(numTabsTotal);
+                stream.writeInt(incognitoCount);
+                stream.writeInt(metadata.incognitoModelMetadata.index);
+                stream.writeInt(metadata.normalModelMetadata.index + incognitoCount);
+
+                // Save incognito state first, so when we load, if the incognito files are
+                // unreadable
+                // we can fall back easily onto the standard selected tab.
+                for (int i = 0; i < incognitoCount; i++) {
+                    stream.writeInt(metadata.incognitoModelMetadata.ids.get(i));
+                    stream.writeUTF(metadata.incognitoModelMetadata.urls.get(i));
+                }
+                for (int i = 0; i < standardCount; i++) {
+                    stream.writeInt(metadata.normalModelMetadata.ids.get(i));
+                    stream.writeUTF(metadata.normalModelMetadata.urls.get(i));
+                }
+
+                stream.flush();
+                file.finishWrite(output);
+
+            } catch (IOException e) {
+                if (output != null) file.failWrite(output);
+            }
+        }
+    }
+
+    /**
+     * Extracts the tab information from a given tab state metadata stream.
+     *
+     * @param stream The stream pointing to the tab state metadata file to be parsed.
+     * @param callback A callback to be streamed updates about the tab state information being read.
+     * @param tabIds A mapping of tab ID to whether the tab is an off the record tab.
+     * @return The next available tab ID based on the maximum ID referenced in this state file.
+     */
+    public static int readSavedMetadataFile(
+            DataInputStream stream,
+            @Nullable OnTabStateReadCallback callback,
+            @Nullable SparseBooleanArray tabIds)
+            throws IOException {
+        if (stream == null) return 0;
+        int nextId = 0;
+        boolean skipUrlRead = false;
+        boolean skipIncognitoCount = false;
+        final int version = stream.readInt();
+        if (version != SAVED_STATE_VERSION) {
+            // We don't support restoring Tab data from before M18.
+            if (version < 3) return 0;
+            // Older versions are missing newer data.
+            if (version < 5) skipIncognitoCount = true;
+            if (version < 4) skipUrlRead = true;
+        }
+
+        final int count = stream.readInt();
+        final int incognitoCount = skipIncognitoCount ? -1 : stream.readInt();
+        final int incognitoActiveIndex = stream.readInt();
+        int standardActiveIndex = stream.readInt();
+        if (standardActiveIndex < incognitoCount) {
+            // See https://crbug.com/354041918. This is equal to the original standard active index
+            // + incognitoCount. If there are not standard tabs, that would be -1 + incognitoCount,
+            // which unexpectedly maps to the last incognito tab. Adjust here.
+            standardActiveIndex = TabModel.INVALID_TAB_INDEX;
+        }
+        if (count < 0 || incognitoActiveIndex >= count || standardActiveIndex >= count) {
+            throw new IOException();
+        }
+
+        for (int i = 0; i < count; i++) {
+            int id = stream.readInt();
+            String tabUrl = skipUrlRead ? "" : stream.readUTF();
+            if (id >= nextId) nextId = id + 1;
+            if (tabIds != null) tabIds.append(id, true);
+
+            Boolean isIncognito = (incognitoCount < 0) ? null : i < incognitoCount;
+
+            if (callback != null) {
+                callback.onDetailsRead(
+                        i,
+                        id,
+                        tabUrl,
+                        isIncognito,
+                        i == standardActiveIndex,
+                        i == incognitoActiveIndex);
+            }
+        }
+        return nextId;
+    }
+
     /**
      * @param uniqueTag The tag that uniquely identifies this state file. Typically this is an index
      *     or ID.
@@ -2360,6 +2352,12 @@ public class TabPersistentStore {
         sDeferredStartupComplete = true;
     }
 
+    private static boolean isFlatBufferSchemaEnabled() {
+        return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
+    }
+
+    // Static and instanced ForTest/Testing functions:
+
     public static void resetDeferredStartupCompleteForTesting() {
         sDeferredStartupComplete = false;
     }
@@ -2386,10 +2384,6 @@ public class TabPersistentStore {
 
     protected Deque<Tab> getTabsToMigrateForTesting() {
         return mTabsToMigrate;
-    }
-
-    private static boolean isFlatBufferSchemaEnabled() {
-        return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
     }
 
     SequencedTaskRunner getTaskRunnerForTests() {
