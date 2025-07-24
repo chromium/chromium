@@ -1170,6 +1170,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
 // on a history entry.
 - (void)testContextMenuOpenInIncognito {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+  }
+#endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1230,6 +1236,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the Share context menu action for a reading list entry.
 - (void)testContextMenuShare {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+  }
+#endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1240,6 +1252,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the Delete context menu action for a reading list entry.
 - (void)testContextMenuDelete {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+  }
+#endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
