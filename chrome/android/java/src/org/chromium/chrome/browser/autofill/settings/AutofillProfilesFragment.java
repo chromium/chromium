@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -225,14 +224,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             pref.setSummary(profile.getLabel());
             pref.setKey(String.valueOf(pref.getTitle())); // For testing.
 
-            // Conditionally show local profile icon for address profiles that are neither synced,
-            // nor saved in the account.
-            pref.setShouldShowLocalProfileIcon(shouldShowLocalProfileIcon(profile));
-            pref.setRecordType(profile.getRecordType());
-            pref.setWidgetLayoutResource(R.layout.autofill_settings_profile_icons);
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
-                pref.setIcon(getIconIdForProfile(profile));
+            // Set the widget to display an icon indicating the profile's type: local, home or work.
+            if (shouldShowLocalProfileIcon(profile)) {
+                pref.setWidgetLayoutResource(R.layout.autofill_settings_local_profile_icon);
+            } else if (profile.getRecordType() == RecordType.ACCOUNT_HOME) {
+                pref.setWidgetLayoutResource(R.layout.autofill_settings_home_profile_icon);
+            } else if (profile.getRecordType() == RecordType.ACCOUNT_WORK) {
+                pref.setWidgetLayoutResource(R.layout.autofill_settings_work_profile_icon);
             }
             Bundle args = pref.getExtras();
             args.putString(AutofillEditorBase.AUTOFILL_GUID, profile.getGUID());
@@ -304,18 +302,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         AutofillProfileEditorPreference editorPreference =
                 (AutofillProfileEditorPreference) preference;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)
-                && editorPreference.getRecordType().isPresent()) {
-            if (editorPreference.getRecordType().getAsInt() == RecordType.ACCOUNT_HOME) {
-                openHomeAndWorkLink(GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL);
-                return;
-            }
-            if (editorPreference.getRecordType().getAsInt() == RecordType.ACCOUNT_WORK) {
-                openHomeAndWorkLink(GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL);
-                return;
-            }
-        }
-
         if (editorPreference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
             AutofillFallbackSurfaceLauncher.openManagePlusAddresses(getActivity(), getProfile());
             PlusAddressesUserActions.MANAGE_OPTION_ON_SETTINGS_SELECTED.log();
@@ -366,7 +352,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return false;
         }
-        if (profile.getRecordType() == RecordType.ACCOUNT) {
+        if (profile.getRecordType() != RecordType.LOCAL_OR_SYNCABLE) {
             return false;
         }
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
@@ -380,21 +366,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     EditorDialogView getEditorDialogForTest() {
         return assumeNonNull(mAddressEditor).getEditorDialogForTesting();
-    }
-
-    private void openHomeAndWorkLink(String url) {
-        CustomTabActivity.showInfoPage(getActivity(), url);
-    }
-
-    private int getIconIdForProfile(AutofillProfile profile) {
-        switch (profile.getRecordType()) {
-            case RecordType.ACCOUNT_HOME:
-                return R.drawable.home_logo;
-            case RecordType.ACCOUNT_WORK:
-                return R.drawable.work_logo;
-            default:
-                return R.drawable.location_on_logo;
-        }
     }
 
     @Override

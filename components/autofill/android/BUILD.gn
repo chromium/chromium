@@ -175,7 +175,6 @@ android_resources("autofill_java_resources") {
 # WebView targets.
 android_resources("autofill_browser_resources") {
   sources = [
-    "browser/java/res/drawable/autofill_chevron_right.xml",
     "browser/java/res/drawable/autofill_external_link.xml",
     "browser/java/res/drawable/home_logo.xml",
     "browser/java/res/drawable/location_on_logo.xml",
@@ -338,7 +337,7 @@ robolectric_library("payments_autofill_junit_tests") {
     "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//url:url_java",
   ]
