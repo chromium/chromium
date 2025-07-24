@@ -261,7 +261,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
     [self registerForTraitChanges:traits
-                       withAction:@selector(updateConstraitsOnTraitChange)];
+                       withAction:@selector(updateConstraintsOnTraitChange)];
   }
 }
 
@@ -304,7 +304,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  [self updateConstraitsOnTraitChange];
+  [self updateConstraintsOnTraitChange];
 }
 #endif
 
@@ -1533,7 +1533,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.topToolbar.pageControl.userInteractionEnabled = NO;
 }
 
-- (void)updateConstraitsOnTraitChange {
+- (void)updateConstraintsOnTraitChange {
   if (IsPinnedTabsEnabled()) {
     [self updatePinnedTabsViewControllerConstraints];
   }
