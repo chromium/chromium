@@ -28,6 +28,9 @@ enum class PageOrientation : uint8_t {
   kLast = kClockwise270
 };
 
+// Whether the page orientation is `kClockwise90` or `kClockwise270`.
+bool IsTransposedPageOrientation(PageOrientation orientation);
+
 // Rotates a page orientation clockwise by one step (90 degrees).
 PageOrientation RotateClockwise(PageOrientation orientation);
 

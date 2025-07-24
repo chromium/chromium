@@ -1102,10 +1102,7 @@ PdfInkModule::GetTextSelectionHighlightStrokeData(
   // or y axis. Strokes will always be drawn along the largest dimension of the
   // rectangle.
   bool should_offset_y =
-      (is_vertical_stroke && (orientation == PageOrientation::kOriginal ||
-                              orientation == PageOrientation::kClockwise180)) ||
-      (!is_vertical_stroke && (orientation == PageOrientation::kClockwise90 ||
-                               orientation == PageOrientation::kClockwise270));
+      is_vertical_stroke != IsTransposedPageOrientation(orientation);
   float offset = brush_size / 2;
   start.Offset(should_offset_y ? 0 : offset, should_offset_y ? offset : 0);
   end.Offset(should_offset_y ? 0 : -offset, should_offset_y ? -offset : 0);

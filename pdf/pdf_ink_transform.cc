@@ -29,17 +29,13 @@ namespace {
 
 gfx::Size GetOriginalUnrotatedSize(PageOrientation orientation,
                                    const gfx::Size& size) {
-  switch (orientation) {
-    case PageOrientation::kOriginal:
-    case PageOrientation::kClockwise180:
-      return size;
-    case PageOrientation::kClockwise90:
-    case PageOrientation::kClockwise270:
-      gfx::Size transposed_size(size);
-      transposed_size.Transpose();
-      return transposed_size;
+  if (!IsTransposedPageOrientation(orientation)) {
+    return size;
   }
-  NOTREACHED();
+
+  gfx::Size transposed_size(size);
+  transposed_size.Transpose();
+  return transposed_size;
 }
 
 }  // namespace
