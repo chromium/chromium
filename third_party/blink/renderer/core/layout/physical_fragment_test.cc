@@ -117,12 +117,12 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
     Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x66 LayoutBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x50 LayoutBlockFlow BODY
         Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutBlockFlow (multicol) DIV id='multicol'
-          Box (column block-flow) offset:0,0 size:260.65625x50
-            Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
-          Box (column block-flow) offset:261.65625,0 size:260.65625x50
-*           Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
-          Box (column block-flow) offset:523.3125,0 size:260.65625x50
-            Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
+          Box (column block-flow) offset:0,0 size:260.65625x50 sequence:0 (seen all children) consumed:50px
+            Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child' sequence:0 (seen all children) consumed:50px
+          Box (column block-flow)(resumed) offset:261.65625,0 size:260.65625x50 sequence:1 (seen all children) consumed:100px
+*           Box (block-flow)(resumed) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child' sequence:1 (seen all children) consumed:100px
+          Box (column block-flow)(resumed) offset:523.3125,0 size:260.65625x50
+            Box (block-flow)(resumed) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

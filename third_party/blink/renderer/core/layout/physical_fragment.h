@@ -512,6 +512,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     DumpNodeName = 0x100,
     DumpItems = 0x200,
     DumpLegacyDescendants = 0x400,
+    DumpBreakInfo = 0x800,
     DumpAll = -1
   };
   typedef int DumpFlags;

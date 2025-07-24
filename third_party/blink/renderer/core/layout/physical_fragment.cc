@@ -136,6 +136,10 @@ class FragmentTreeDumper {
             box->HasSelfPaintingLayer()) {
           attributes.push_back("self paint");
         }
+        if (flags_ & PhysicalFragment::DumpBreakInfo &&
+            !box->IsFirstForNode()) {
+          attributes.push_back("resumed");
+        }
       }
       AppendAttributes(attributes);
       has_content = AppendOffsetAndSize(fragment, fragment_offset, has_content);
@@ -144,7 +148,16 @@ class FragmentTreeDumper {
         if (has_content)
           builder_->Append(" ");
         builder_->Append(layout_object->DebugName());
+        has_content = true;
       }
+
+      if (flags_ & PhysicalFragment::DumpBreakInfo) {
+        if (const BlockBreakToken* token = box->GetBreakToken()) {
+          builder_->Append(token->ToString(/*skip_node_info=*/true));
+          has_content = true;
+        }
+      }
+
       builder_->Append("\n");
 
       bool has_fragment_items = false;

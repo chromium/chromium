@@ -239,9 +239,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
     return MutableForOofFragmentation(*this);
   }
 
-#if DCHECK_IS_ON()
-  String ToString() const;
-#endif
+  String ToString(bool skip_node_info = false) const;
 
   using PassKey = base::PassKey<BlockBreakToken>;
 

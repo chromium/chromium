@@ -118,11 +118,11 @@ void BlockBreakToken::MutableForOofFragmentation::Merge(
   }
 }
 
-#if DCHECK_IS_ON()
-
-String BlockBreakToken::ToString() const {
+String BlockBreakToken::ToString(bool skip_node_info) const {
   StringBuilder string_builder;
-  string_builder.Append(InputNode().ToString());
+  if (!skip_node_info) {
+    string_builder.Append(InputNode().ToString());
+  }
   if (is_break_before_) {
     if (is_forced_break_) {
       string_builder.Append(" forced");
@@ -162,8 +162,6 @@ String BlockBreakToken::ToString() const {
 
   return string_builder.ToString();
 }
-
-#endif  // DCHECK_IS_ON()
 
 void BlockBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(data_);
