@@ -270,13 +270,6 @@ public class SafetyCheckMediatorTest {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
         when(mPasswordManagerUtilBridgeNativeMock.areMinUpmRequirementsMet()).thenReturn(true);
 
-        // Availability of the UPM backend will be checked by the SafetyCheckMediator using
-        // PasswordManagerHelper so the bridge method needs to be mocked.
-        // The parameter mUseGmsApi currently means that the mock SyncService will be configured to
-        // sync passwords, which so far is the only case in which the GMS APIs can be used.
-        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(mSyncService, mPrefService))
-                .thenReturn(mUseGmsApi);
-
         SafetyCheckBridgeJni.setInstanceForTesting(mSafetyCheckBridge);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);

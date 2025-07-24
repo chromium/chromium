@@ -135,9 +135,6 @@ class TouchToFillControllerAutofillTest
   TouchToFillControllerAutofillTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    password_manager_launcher::
-        OverrideManagePasswordWhenPasskeysPresentForTesting(false);
-
     // By default, disable biometric authentication.
     ON_CALL(client(), IsReauthBeforeFillingRequired)
         .WillByDefault(Return(false));

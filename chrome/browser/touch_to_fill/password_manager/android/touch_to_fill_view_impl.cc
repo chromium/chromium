@@ -151,7 +151,6 @@ bool TouchToFillViewImpl::Show(
       env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
       is_origin_secure.value(), passkey_array, credential_array,
       !!(flags & TouchToFillView::kTriggerSubmission),
-      !(flags & TouchToFillView::kCanManagePasswordsWhenPasskeysPresent),
       !!(flags & TouchToFillView::kShouldShowHybridOption),
       !!(flags & TouchToFillView::kShouldShowCredManEntry));
   return true;

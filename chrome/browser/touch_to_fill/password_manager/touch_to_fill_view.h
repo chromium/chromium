@@ -26,17 +26,13 @@ class TouchToFillView {
     // Indicates whether Touch To Fill will submit a form after filling.
     kTriggerSubmission = 1 << 0,
 
-    // Indicates whether selecting the 'manage' button with passkeys available
-    // will show a screen that also allows management of passwords.
-    kCanManagePasswordsWhenPasskeysPresent = 1 << 1,
-
     // Indicates whether the footer should contain a button that invokes hybrid
     // passkey sign-in.
-    kShouldShowHybridOption = 1 << 2,
+    kShouldShowHybridOption = 1 << 1,
 
     // Indicates if there should be a list item to open Android Credential
     // Manager UI.
-    kShouldShowCredManEntry = 1 << 3,
+    kShouldShowCredManEntry = 1 << 2,
   };
 
   TouchToFillView() = default;

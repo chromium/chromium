@@ -63,7 +63,6 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
             List<WebauthnCredential> webAuthnCredentials,
             List<Credential> credentials,
             boolean triggerSubmission,
-            boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry) {
         mMediator.showCredentials(
@@ -73,7 +72,6 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
                 credentials,
                 showCredManEntry,
                 triggerSubmission,
-                managePasskeysHidesPasswords,
                 showHybridPasskeyOption);
     }
 

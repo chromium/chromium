@@ -68,10 +68,4 @@ public class PasswordManagerLauncher {
                 () -> window.getModalDialogManager(),
                 managePasskeys);
     }
-
-    @CalledByNative
-    private static boolean canManagePasswordsWhenPasskeysPresent(Profile profile) {
-        return PasswordManagerHelper.getForProfile(profile).canUseUpm()
-                || !PasswordManagerHelper.canUseAccountSettings();
-    }
 }

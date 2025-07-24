@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
-#include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
@@ -133,10 +132,6 @@ bool TouchToFillController::Show(
 
       if (ttf_delegate_->ShouldTriggerSubmission()) {
         flags |= TouchToFillView::kTriggerSubmission;
-      }
-      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent(
-              profile_)) {
-        flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
       }
       if (ttf_delegate_->ShouldShowHybridOption()) {
         flags |= TouchToFillView::kShouldShowHybridOption;

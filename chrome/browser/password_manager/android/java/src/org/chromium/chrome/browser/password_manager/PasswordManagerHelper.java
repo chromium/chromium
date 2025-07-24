@@ -250,26 +250,6 @@ public class PasswordManagerHelper {
     }
 
     /**
-     * Checks the availability and status of the UPM feature. All clients should check this before
-     * trying to use UPM methods. Checks for the UPM to be anabled and downstream backend to be
-     * available.
-     *
-     * <p>TODO(crbug.com/40226137): Make sure we rely on the same util in all places that need to
-     * check whether UPM can be used (for password check as well as for all other cases that share
-     * the same preconditions, e.g. launching the credential manager).
-     *
-     * @return True if Unified Password Manager can be used, false otherwise.
-     */
-    public boolean canUseUpm() {
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        PrefService prefService = UserPrefs.get(mProfile);
-        // TODO(crbug.com/40226137): Move the backend presence checks in the util.
-        return syncService != null
-                && PasswordManagerUtilBridge.shouldUseUpmWiring(syncService, prefService)
-                && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
-    }
-
-    /**
      * Checks the ability to use an AccountSettings intent to launch the password manager. This
      * provides a fallback for users who attempt to manage passkeys when UPM is not available.
      * Passkeys cannot be managed from the Chrome password settings page.

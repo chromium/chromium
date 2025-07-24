@@ -15,10 +15,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace password_manager_android_util {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -78,16 +74,6 @@ GetSplitStoresAndLocalUpmPrefValue(PrefService* pref_service);
 // TODO(crbug.com/391829891): This becomes obsolete after login db migration,
 // when the only accepted UPM version is the one offering full support.
 bool AreMinUpmRequirementsMet();
-
-// Used to decide whether to show the UPM password settings and password check
-// UIs or the old pre-UPM UIs. There are 2 cases when this check returns true:
-//  - If the user is using UPM and everything works as expected.
-//  - If the user is eligible for using UPM, but the GMSCore version is too old
-//  and doesn't support UPM.
-// TODO(crbug.com/391829891): This should be removed after login db deprecation.
-// All the checks will be consolidated in a single util.
-bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
-                        const PrefService* pref_service);
 
 // Called on startup to update the value of UsesSplitStoresAndUPMForLocal(),
 // based on minimum GmsCore version and other criteria.

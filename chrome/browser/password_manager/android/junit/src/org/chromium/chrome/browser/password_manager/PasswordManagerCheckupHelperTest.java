@@ -273,9 +273,6 @@ public class PasswordManagerCheckupHelperTest {
 
     @Test
     public void testRetrievesIntentForLocalCheckup() {
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
-
         mPasswordManagerHelper.showPasswordCheckup(
                 ContextUtils.getApplicationContext(),
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -306,9 +303,6 @@ public class PasswordManagerCheckupHelperTest {
 
     @Test
     public void testPasswordCheckupIntentForLocalCalledIfSuccess() throws CanceledException {
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
-
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_NO_EMAIL_ADDRESS);
         mPasswordManagerHelper.showPasswordCheckup(
                 ContextUtils.getApplicationContext(),
@@ -355,8 +349,6 @@ public class PasswordManagerCheckupHelperTest {
                                         .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
                                 1)
                         .build();
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_NO_EMAIL_ADDRESS);
 
         mPasswordManagerHelper.showPasswordCheckup(
@@ -410,8 +402,6 @@ public class PasswordManagerCheckupHelperTest {
                                         .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
 
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
         returnErrorWhenFetchingIntentForPasswordCheckup(
                 new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED),
                 TEST_NO_EMAIL_ADDRESS);
@@ -466,8 +456,6 @@ public class PasswordManagerCheckupHelperTest {
                                 PasswordMetricsUtil
                                         .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
         returnErrorWhenFetchingIntentForPasswordCheckup(
                 new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)),
                 TEST_NO_EMAIL_ADDRESS);
@@ -1232,10 +1220,6 @@ public class PasswordManagerCheckupHelperTest {
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId(
                                 TEST_EMAIL_ADDRESS, new GaiaId("0")));
-        // Set the adequate PasswordManagerUtilBridge response for shouldUseUpmWiring for a syncing
-        // user.
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
     }
 
     private void setUpSuccessfulCheckupIntentFetching(PendingIntent intent, String accountEmail) {

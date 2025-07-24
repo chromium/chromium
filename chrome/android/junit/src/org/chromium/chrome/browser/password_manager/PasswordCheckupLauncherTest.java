@@ -187,8 +187,6 @@ public class PasswordCheckupLauncherTest {
     public void testLaunchSafetyCheckOpensSafetyCheckInChromeSettings()
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(mMockSyncService, mPrefService))
-                .thenReturn(true);
 
         PasswordCheckupLauncher.launchSafetyCheck(mMockWindowAndroid);
 
@@ -204,8 +202,6 @@ public class PasswordCheckupLauncherTest {
     public void testLaunchSafetyHupOpensSafetyHubInChromeSettings()
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(mMockSyncService, mPrefService))
-                .thenReturn(true);
 
         PasswordCheckupLauncher.launchSafetyHub(mMockWindowAndroid);
 

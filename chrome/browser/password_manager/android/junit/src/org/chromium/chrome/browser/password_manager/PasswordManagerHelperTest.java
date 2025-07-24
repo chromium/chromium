@@ -199,83 +199,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testCanUseUpmCheckup() {
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
-
-        assertTrue(mPasswordManagerHelper.canUseUpm());
-    }
-
-    @Test
-    public void testCanNotUseUpmCheckupWithoutPasswordType() {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-
-        assertFalse(mPasswordManagerHelper.canUseUpm());
-    }
-
-    @Test
-    public void testCanNotUseUpmCheckupWithoutSyncService() {
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-
-        assertFalse(mPasswordManagerHelper.canUseUpm());
-    }
-
-    @Test
-    public void testCanNotUseUpmCheckupWithoutSyncConsent() {
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
-
-        assertFalse(mPasswordManagerHelper.canUseUpm());
-    }
-
-    @Test
-    public void testCanNotUseUpmCheckupWithAuthError() {
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-        when(mSyncServiceMock.getAuthError())
-                .thenReturn(
-                        new GoogleServiceAuthError(
-                                GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
-
-        assertFalse(mPasswordManagerHelper.canUseUpm());
-    }
-
-    @Test
-    public void testCanNotUseUpmCheckupWithNoBackend() {
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(false);
-
-        assertFalse(mPasswordManagerHelper.canUseUpm());
-    }
-
-    @Test
-    public void testCanUseUpmCheckupWhenBackendUpdateNeeded() {
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
-
-        // TODO(crbug.com/40841269): Replace with fakes
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.areMinUpmRequirementsMet()).thenReturn(false);
-
-        assertTrue(mPasswordManagerHelper.canUseUpm());
-    }
-
-    @Test
     public void testResetsUnenrollment() {
         when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
@@ -806,8 +729,6 @@ public class PasswordManagerHelperTest {
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
 
         ApiException returnedException =
                 new ApiException(
@@ -1053,10 +974,6 @@ public class PasswordManagerHelperTest {
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId(
                                 TEST_EMAIL_ADDRESS, new GaiaId("0")));
-        // Set the adequate PasswordManagerUtilBridge response for shouldUseUpmWiring for a syncing
-        // user.
-        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
-                .thenReturn(true);
     }
 
     private void setUpSuccessfulIntentFetchingForAccount() {

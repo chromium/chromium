@@ -237,20 +237,6 @@ bool AreMinUpmRequirementsMet() {
   return gms_version >= password_manager::kAccountUpmMinGmsVersion;
 }
 
-bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
-                        const PrefService* pref_service) {
-  bool is_pwd_sync_enabled =
-      password_manager::sync_util::HasChosenToSyncPasswords(sync_service);
-  if (is_pwd_sync_enabled &&
-      password_manager_upm_eviction::IsCurrentUserEvicted(pref_service)) {
-    return false;
-  }
-  if (is_pwd_sync_enabled) {
-    return true;
-  }
-  return password_manager::UsesSplitStoresAndUPMForLocal(pref_service);
-}
-
 void SetUsesSplitStoresAndUPMForLocal(
     PrefService* pref_service,
     const base::FilePath& login_db_directory,

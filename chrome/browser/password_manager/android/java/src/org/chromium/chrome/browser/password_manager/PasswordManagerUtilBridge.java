@@ -33,20 +33,6 @@ public class PasswordManagerUtilBridge {
     }
 
     /**
-     * There are 2 cases when this check returns true: 1) if the user is using UPM and everything
-     * works as expected; 2) if the user is eligible for using UPM, but the GMSCore version is too
-     * old and doesn't support UPM.
-     *
-     * @param syncService The sync service.
-     * @param prefService The preference service (used to identify whether the preference for using
-     *     UPM for local passwords is set)
-     * @return Returns true if UPM wiring should be instantiated.
-     */
-    public static boolean shouldUseUpmWiring(SyncService syncService, PrefService prefService) {
-        return PasswordManagerUtilBridgeJni.get().shouldUseUpmWiring(syncService, prefService);
-    }
-
-    /**
      * Checks if the GMSCore update is required to use the Password Manager functionality.
      *
      * @param prefService Preference service for checking if the user is enrolled into UPM.
@@ -94,10 +80,6 @@ public class PasswordManagerUtilBridge {
     public interface Natives {
         boolean isPasswordManagerAvailable(
                 @JniType("PrefService*") PrefService prefService, boolean isInternalBackendPresent);
-
-        boolean shouldUseUpmWiring(
-                @JniType("syncer::SyncService*") SyncService syncService,
-                @JniType("PrefService*") PrefService prefService);
 
         boolean isGmsCoreUpdateRequired(
                 @JniType("PrefService*") PrefService prefService,

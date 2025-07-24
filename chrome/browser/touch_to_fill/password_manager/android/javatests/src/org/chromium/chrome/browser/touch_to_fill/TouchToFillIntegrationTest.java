@@ -148,7 +148,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
@@ -167,7 +166,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
@@ -191,7 +189,6 @@ public class TouchToFillIntegrationTest {
                             Collections.singletonList(sCam),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
@@ -215,7 +212,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
@@ -239,7 +235,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
@@ -262,7 +257,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
@@ -294,7 +288,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ true,
                             /* showCredManEntry= */ false);
                 });
@@ -404,7 +397,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
@@ -435,7 +427,6 @@ public class TouchToFillIntegrationTest {
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
-                            /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ true);
                 });

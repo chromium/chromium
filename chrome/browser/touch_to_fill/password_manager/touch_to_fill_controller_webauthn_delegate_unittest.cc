@@ -99,8 +99,6 @@ class TouchToFillControllerWebAuthnTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    password_manager_launcher::
-        OverrideManagePasswordWhenPasskeysPresentForTesting(false);
     webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
         webauthn::CredManSupport::DISABLED);
 

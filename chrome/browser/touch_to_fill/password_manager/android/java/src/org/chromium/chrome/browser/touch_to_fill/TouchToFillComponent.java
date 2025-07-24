@@ -87,8 +87,6 @@ public interface TouchToFillComponent {
      * @param credentials A list of {@link Credential}s that will be displayed.
      * @param triggerSubmission A {@link boolean} that indicates whether a form should be submitted
      *     after filling.
-     * @param managePasskeysHidesPasswords A {@link boolean} that indicates whether managing
-     *     passkeys will show a screen that does not provide password management.
      * @param showHybridPasskeyOption A {@link boolean} that indicates whether the footer should
      *     display an option to initiate hybrid sign-in.
      * @param showCredManEntry A {@link boolean} that indicates whether the list should have an item
@@ -100,7 +98,6 @@ public interface TouchToFillComponent {
             List<WebauthnCredential> webauthnCredentials,
             List<Credential> credentials,
             boolean triggerSubmission,
-            boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry);
 

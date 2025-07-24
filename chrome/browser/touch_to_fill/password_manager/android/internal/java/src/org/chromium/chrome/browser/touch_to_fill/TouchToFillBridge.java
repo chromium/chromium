@@ -119,7 +119,6 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             WebauthnCredential[] webAuthnCredentials,
             Credential[] credentials,
             boolean submitCredential,
-            boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry) {
         mTouchToFillComponent.showCredentials(
@@ -128,7 +127,6 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
                 Arrays.asList(webAuthnCredentials),
                 Arrays.asList(credentials),
                 submitCredential,
-                managePasskeysHidesPasswords,
                 showHybridPasskeyOption,
                 showCredManEntry);
     }
