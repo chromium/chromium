@@ -29,9 +29,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/extensions/api/experimental_actor.h"
+#include "chrome/common/extensions/api/tabs.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "extensions/common/features/feature_channel.h"
 
@@ -43,31 +45,17 @@ namespace {
 int32_t ConvertSessionTabIdToTabHandle(
     int32_t session_tab_id,
     content::BrowserContext* browser_context) {
-  content::WebContents* web_contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(session_tab_id, browser_context,
-                                    /*include_incognito=*/true,
-                                    &web_contents)) {
-    return tabs::TabHandle::Null().raw_value();
-  }
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  // Can be null for pre-render web-contents.
-  // TODO(crbug.com/369319589): Remove this logic.
-  if (!tab) {
-    return tabs::TabHandle::Null().raw_value();
-  }
-  return tab->GetHandle().raw_value();
+  return tabs::SessionMappedTabHandleFactory::GetInstance()
+      .GetHandleForSessionId(session_tab_id);
 }
 
 // Converts a tab handle to a session tab id.
 int32_t ConvertTabHandleToSessionTabId(
     int32_t tab_handle,
     content::BrowserContext* browser_context) {
-  tabs::TabInterface* tab = tabs::TabHandle(tab_handle).Get();
-  if (!tab) {
-    return api::tabs::TAB_ID_NONE;
-  }
-  return sessions::SessionTabHelper::IdForTab(tab->GetContents()).id();
+  return tabs::SessionMappedTabHandleFactory::GetInstance()
+      .GetSessionIdForHandle(tab_handle)
+      .value_or(api::tabs::TAB_ID_NONE);
 }
 
 // Helper function to convert the session tab id to a tab handle for any action
