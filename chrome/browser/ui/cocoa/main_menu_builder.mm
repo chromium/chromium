@@ -21,6 +21,18 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 
+@interface NSImage (SPI)
+
+// Creates a system symbol image from SF Symbols with the specified name and
+// value. Differs from +imageWithSystemSymbolName:accessibilityDescription: in
+// that it allows instantiation of private symbols, those intended for
+// Apple-only usage (see the SFSymbols.framework's bundles CoreGlyphs vs
+// CoreGlyphsPrivate).
++ (instancetype)imageWithPrivateSystemSymbolName:(NSString*)name
+                        accessibilityDescription:(NSString*)description;
+
+@end
+
 namespace chrome {
 namespace {
 
@@ -182,9 +194,11 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                   .action(@selector(paste:)),
               Item(IDS_PASTE_MATCH_STYLE_MAC)
                   .tag(IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE)
-                  .action(@selector(pasteAndMatchStyle:)),
+                  .action(@selector(pasteAndMatchStyle:))
+                  .sf_symbol(@"paintbrush.page.on.clipboard"),
               Item(IDS_PASTE_MATCH_STYLE_MAC)
                   .action(@selector(pasteAndMatchStyle:))
+                  .sf_symbol(@"paintbrush.page.on.clipboard")
                   .is_alternate()
                   .key_equivalent(@"V", NSEventModifierFlagCommand |
                                             NSEventModifierFlagOption),
@@ -666,6 +680,14 @@ NSMenuItem* MenuItemBuilder::Build() const {
   item.keyEquivalentModifierMask = key_equivalent_flags;
   item.alternate = is_alternate_;
   item.hidden = is_hidden_;
+  if (@available(macOS 26, *)) {
+    if (sf_symbol_name_) {
+      // Some action images that macOS uses by default are private and aren't
+      // accessible via normal lookup, so use SPI.
+      item.image = [NSImage imageWithPrivateSystemSymbolName:sf_symbol_name_
+                                    accessibilityDescription:nil];
+    }
+  }
 
   if (submenu_.has_value()) {
     NSMenu* menu = [[NSMenu alloc] initWithTitle:title];
