@@ -306,7 +306,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
   }
 
   memcpy(iq_matrix_buf.ScalingListDC16x16,
-         scaling_list.scaling_list_dc_coef_16x16,
+         scaling_list.scaling_list_dc_coef_16x16.data(),
          sizeof(iq_matrix_buf.ScalingListDC16x16));
   iq_matrix_buf.ScalingListDC32x32[0] =
       scaling_list.scaling_list_dc_coef_32x32[0];
