@@ -13,6 +13,8 @@
 #include <linux/videodev2.h>
 #include <sys/ioctl.h>
 
+#include <bitset>
+
 #include "base/bits.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
