@@ -2025,18 +2025,18 @@ TEST_F(MLGraphTest, MLQDQDetectionTest) {
                       V8MLOperandDataType::Enum::kInt8, exception_state);
 
     auto* input_scale =
-        BuildConstant(scope.GetScriptState(), builder, {},
+        BuildConstant(scope.GetScriptState(), builder, {1, 1, 1, 1},
                       V8MLOperandDataType::Enum::kFloat32, exception_state);
 
     auto* input_zero_point =
-        BuildConstant(scope.GetScriptState(), builder, {},
+        BuildConstant(scope.GetScriptState(), builder, {1, 1, 1, 1},
                       V8MLOperandDataType::Enum::kInt8, exception_state);
 
     auto* filter_scale =
-        BuildConstant(scope.GetScriptState(), builder, {},
+        BuildConstant(scope.GetScriptState(), builder, {1, 1, 1, 1},
                       V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* filter_zero_point =
-        BuildConstant(scope.GetScriptState(), builder, {},
+        BuildConstant(scope.GetScriptState(), builder, {1, 1, 1, 1},
                       V8MLOperandDataType::Enum::kInt8, exception_state);
 
     auto* dq0_output_operand =
@@ -2075,10 +2075,10 @@ TEST_F(MLGraphTest, MLQDQDetectionTest) {
         conv2d_output_operand, transpose_options2, exception_state);
     ASSERT_THAT(transpose2_output_operand, testing::NotNull());
     auto* output_scale =
-        BuildConstant(scope.GetScriptState(), builder, {},
+        BuildConstant(scope.GetScriptState(), builder, {1, 1, 1, 1},
                       V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* output_zero_point =
-        BuildConstant(scope.GetScriptState(), builder, {},
+        BuildConstant(scope.GetScriptState(), builder, {1, 1, 1, 1},
                       V8MLOperandDataType::Enum::kInt8, exception_state);
 
     auto* q_output_operand = builder->quantizeLinear(

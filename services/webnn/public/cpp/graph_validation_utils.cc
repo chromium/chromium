@@ -947,14 +947,14 @@ ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
     base::span<const uint32_t> zero_point_shape,
     std::string_view label) {
   // Check whether `scale_shape` is a subsample of `input_shape`.
-  if (scale_shape.size() > input_shape.size()) {
+  if (scale_shape.size() != input_shape.size()) {
     return base::unexpected(ErrorWithLabel(
-        label, "The rank of scale is larger than the rank of input."));
+        label, "The rank of scale is not equal to the rank of input."));
   }
 
   for (size_t i = 0; i < scale_shape.size(); ++i) {
-    auto scale_dim = scale_shape[scale_shape.size() - i - 1];
-    auto input_dim = input_shape[input_shape.size() - i - 1];
+    auto scale_dim = scale_shape[i];
+    auto input_dim = input_shape[i];
     // The block_size should be an integer where block_size = dim_input /
     // dim_scale along the axis.
     if (input_dim % scale_dim != 0) {

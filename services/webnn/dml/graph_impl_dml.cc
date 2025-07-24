@@ -2121,14 +2121,8 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
                 std::is_same_v<DML_OPERATOR_DESC,
                                DML_DEQUANTIZE_OPERATOR_DESC>) {
     const auto input_rank = input_tensor_desc.GetDimensions().size();
-    // DML_QUANTIZE_OPERATOR_DESC and DML_DEQUANTIZE_OPERATOR_DESC constraint
-    // scale and zeroPoint must have the same dimension rank with input.
-    if (scale_tensor_desc.GetDimensions().size() < input_rank) {
-      scale_tensor_desc.EnsureMinimumRank(input_rank,
-                                          TensorDesc::Alignment::kTrailing);
-      zero_point_tensor_desc.EnsureMinimumRank(
-          input_rank, TensorDesc::Alignment::kTrailing);
-    }
+    const auto scale_rank = scale_tensor_desc.GetDimensions().size();
+    CHECK_EQ(scale_rank, input_rank);
 
     // A invalid parameter error will be reported from DirectML when a
     // dequantize is followed by a matmul and the input rank of the dequantize
@@ -2148,20 +2142,17 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
   } else {
     const auto input_dimensions = input_tensor_desc.GetDimensions();
     auto scale_dimensions = scale_tensor_desc.GetDimensions();
+    CHECK_EQ(input_dimensions.size(), scale_dimensions.size());
     // When FL < 6.3, DML_ELEMENT_WISE_DEQUANTIZE_LINEAR and
     // DML_ELEMENT_WISE_QUANTIZE_LINEAR can't support block-wise.
     // For each dimension where we need to do expansion of block_size which is
     // calculated by input_dimensions[i] / scale_dimensions[i], we use reshape
     // and broadcast to emulate.
     for (size_t index = 0; index < scale_dimensions.size(); index++) {
-      if (input_dimensions[input_dimensions.size() - index - 1] !=
-              scale_dimensions[scale_dimensions.size() - index - 1] &&
-          input_dimensions[input_dimensions.size() - index - 1] != 1 &&
-          scale_dimensions[scale_dimensions.size() - index - 1] != 1) {
-        uint32_t block_size =
-            input_dimensions[input_dimensions.size() - index - 1] /
-            scale_dimensions[scale_dimensions.size() - index - 1];
-        uint32_t axis = scale_dimensions.size() - index - 1;
+      if (input_dimensions[index] != scale_dimensions[index] &&
+          input_dimensions[index] != 1 && scale_dimensions[index] != 1) {
+        uint32_t block_size = input_dimensions[index] / scale_dimensions[index];
+        uint32_t axis = index;
 
         ASSIGN_OR_RETURN(scale,
                          BlockwiseExpandAlongAxis(scale, graph_builder, axis,

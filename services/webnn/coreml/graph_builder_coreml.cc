@@ -1205,8 +1205,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/
        {kFloatsAndInt32, kMaxRank},
-       // TODO(crbug.com/396176047): Make scale and zero_point's rank match with
-       // input.
        // TODO(crbug.com/361603703): Support constant (u)int4 inputs via
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS18.compression.constexpr_blockwise_shift_scale
        /*dequantize_linear_input=*/{kInts8Ints32, kMaxRank},
@@ -2412,19 +2410,18 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
   // or vector scale whose size matches with one axis of input.
   base::span<const uint32_t> scale_dimensions = scale_operand_info.dimensions;
   base::span<const uint32_t> input_dimensions = input_operand_info.dimensions;
-  CHECK_LE(scale_dimensions.size(), input_dimensions.size());
+  CHECK_EQ(scale_dimensions.size(), input_dimensions.size());
   uint32_t scale_vector_size = 0;
   size_t axis = 0;
   bool has_matching_dimension = false;
   for (size_t i = 0; i < scale_dimensions.size(); ++i) {
-    size_t current_axis = input_dimensions.size() + i - scale_dimensions.size();
     if (scale_dimensions[i] != 1) {
       // Only allow at most one matching dimension, otherwise emulate.
-      if (scale_dimensions[i] != input_dimensions[current_axis] ||
+      if (scale_dimensions[i] != input_dimensions[i] ||
           has_matching_dimension) {
         return AddOperationForDequantizeLinearEmulate(operation, block);
       } else {
-        axis = current_axis;
+        axis = i;
         scale_vector_size = scale_dimensions[i];
         has_matching_dimension = true;
       }
@@ -2570,22 +2567,14 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearConstBlockwise(
   bool input_needs_reshape = input_operand_info.dimensions.empty();
   std::vector<uint32_t> input_shape = input_operand_info.dimensions;
   std::vector<uint32_t> scale_shape = scale_operand_info.dimensions;
-  CHECK_GE(input_shape.size(), scale_shape.size());
+  CHECK_EQ(input_shape.size(), scale_shape.size());
   CHECK(std::ranges::equal(scale_shape, zero_point_operand_info.dimensions));
 
   if (input_needs_reshape) {
     input_shape = {1};
+    scale_shape = {1};
   }
 
-  // TODO(crbug.com/396176047): Remove this logic after WebNN requires scale and
-  // zero_point's rank match with input.
-  if (scale_shape.size() < input_shape.size()) {
-    std::vector<uint32_t> scale_reshaped(
-        input_shape.size() - scale_shape.size(), 1);
-    scale_reshaped.insert(scale_reshaped.end(), scale_shape.begin(),
-                          scale_shape.end());
-    scale_shape = std::move(scale_reshaped);
-  }
   static constexpr char kParamOffset[] = "offset";
   RETURN_IF_ERROR(
       SetInputFromConstantOperand(*op->mutable_inputs(), kOpParamData,
@@ -2671,17 +2660,15 @@ GraphBuilderCoreml::ExpandForBlockwise(
       GetOperandInfo(input_operand_id).dimensions;
   base::span<const uint32_t> scale_dimensions =
       GetOperandInfo(scale_operand_id).dimensions;
-  CHECK_LE(scale_dimensions.size(), input_dimensions.size());
+  CHECK_EQ(scale_dimensions.size(), input_dimensions.size());
 
   // When zero_point and scale on a dimension is not
   // input_dimension or 1, this is a blockwise dequantization, the zero_point
   // and scale need to be expanded.
   for (size_t i = 0; i < scale_dimensions.size(); ++i) {
     uint32_t scale_vector_size = scale_dimensions[i];
-    size_t current_axis = input_dimensions.size() + i - scale_dimensions.size();
 
-    if (scale_vector_size != 1 &&
-        scale_vector_size != input_dimensions[current_axis]) {
+    if (scale_vector_size != 1 && scale_vector_size != input_dimensions[i]) {
       // For blockwise dequantization we need to expand the shape by 1 during
       // `ExpandDimForBlockwise`, so the original shape needs to be <=4.
       if (scale_dimensions.size() > 4) {
@@ -2689,9 +2676,8 @@ GraphBuilderCoreml::ExpandForBlockwise(
             "Unsupported rank for scale. It should "
             "be between 0 and 4 for blockwise (de)quantization.");
       }
-      CHECK_EQ(input_dimensions[current_axis] % scale_vector_size, 0u);
-      const int32_t repetitions =
-          input_dimensions[current_axis] / scale_vector_size;
+      CHECK_EQ(input_dimensions[i] % scale_vector_size, 0u);
+      const int32_t repetitions = input_dimensions[i] / scale_vector_size;
       OperandId prev_scale = scale_operand_id;
       ASSIGN_OR_RETURN(
           scale_operand_id,
@@ -4813,14 +4799,13 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
   size_t axis = 0;
   bool has_matching_dimension = false;
   for (size_t i = 0; i < scale_dimensions.size(); ++i) {
-    size_t current_axis = input_dimensions.size() + i - scale_dimensions.size();
     if (scale_dimensions[i] != 1) {
       // Only allow at most one matching dimension, otherwise emulate.
-      if (scale_dimensions[i] != input_dimensions[current_axis] ||
+      if (scale_dimensions[i] != input_dimensions[i] ||
           has_matching_dimension) {
         return AddOperationForQuantizeLinearEmulate(operation, block);
       } else {
-        axis = current_axis;
+        axis = i;
         scale_vector_size = scale_dimensions[i];
         has_matching_dimension = true;
       }
