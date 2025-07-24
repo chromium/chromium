@@ -29,6 +29,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 #import "ios/chrome/test/earl_grey/scoped_allow_crash_on_startup.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
@@ -291,6 +292,10 @@ void ResetAuthentication() {
 
   if ([[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation] !=
       _originalOrientation) {
+    // Synchronization off due to an infinite spinner if the keyboard is
+    // visible.
+    ScopedSynchronizationDisabler disabler;
+
     // Rotate the device back to the original orientation, since some tests
     // attempt to run in other orientations.
     [EarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
