@@ -120,6 +120,10 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using auction_worklet::TestDevToolsAgentClient;
 using testing::HasSubstr;
 
@@ -21914,6 +21918,14 @@ TEST_F(AuctionRunnerTest, JoinCountPassedToReportWin) {
 }
 
 TEST_F(AuctionRunnerTest, RecencyPassedReportWin) {
+// TODO(crbug.com/433968045): This test fails on macOS 26 due to
+// a test timeout. Re-enable once the timeout is fixed.
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   // Due to noising, recency is only correctly passed 99% of the time.
   //
   // Since the noising pseudorandom number generator is uniform, in 30 runs, the
