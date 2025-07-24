@@ -627,7 +627,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
             "TabStripTransitionInDesktopWindow";
     public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
-    public static final String TAB_SWITCHER_COLOR_BLEND_ANIMATE = "TabSwitcherColorBlendAnimate";
     public static final String TAB_SWITCHER_DRAG_DROP_ANDROID = "TabSwitcherDragDropAndroid";
     public static final String TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID =
             "TabSwitcherGroupSuggestionsAndroid";
