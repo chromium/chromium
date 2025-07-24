@@ -7,6 +7,7 @@ Version: 7.12.0
 License: UnRAR
 License File: src/license.txt
 License Android Compatible: No
+CPEPrefix: cpe:/a:rarlab:unrar
 Security Critical: yes
 Shipped: yes
 
