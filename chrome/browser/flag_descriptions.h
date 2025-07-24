@@ -2218,6 +2218,9 @@ extern const char kTabArchivalDragDropAndroidDescription[];
 extern const char kTabCollectionAndroidName[];
 extern const char kTabCollectionAndroidDescription[];
 
+extern const char kTabModelInitFixesName[];
+extern const char kTabModelInitFixesDescription[];
+
 extern const char kTabSwitcherDragDropName[];
 extern const char kTabSwitcherDragDropDescription[];
 

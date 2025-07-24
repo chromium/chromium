@@ -3930,6 +3930,13 @@ const char kTabCollectionAndroidDescription[] =
     "data loss, etc. Don't enable this flag unless you know what you are doing "
     "and are working on developing this feature.";
 
+const char kTabModelInitFixesName[] = "Tab Model Init Fixes";
+const char kTabModelInitFixesDescription[] =
+    "A grab bag of simple and miscellaneous improvements for tab model "
+    "initialization on Android. Should speed up initialization, as well as "
+    "have better handling for app menu tab model operations during "
+    "initialization.";
+
 const char kTabSwitcherDragDropName[] = "Tab Drag and Drop via Tab Switcher";
 const char kTabSwitcherDragDropDescription[] =
     "Enables long-pressing on tab switcher tab to start drag-and-drop. Users "

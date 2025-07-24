@@ -12950,6 +12950,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMigrateAccountPrefsOnMobileName,
      flag_descriptions::kMigrateAccountPrefsOnMobileDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(syncer::kMigrateAccountPrefs)},
+
+    {"tab-model-init-fixes", flag_descriptions::kTabModelInitFixesName,
+     flag_descriptions::kTabModelInitFixesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabModelInitFixes)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.

@@ -9400,6 +9400,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-model-init-fixes",
+    "owners": [ "skym@chromium.org", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-resumption",
     "owners": [ "olivierrobin@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 142

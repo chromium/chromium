@@ -15891,6 +15891,7 @@ from previous Chrome versions.
   <int value="666871156" label="KaleidoscopeModule:enabled"/>
   <int value="667262414" label="IOSPromoBookmarkBubble:disabled"/>
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
+  <int value="668342684" label="TabModelInitFixes:disabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
   <int value="670404276" label="ImeUsEnglishModelUpdate:disabled"/>
@@ -16214,6 +16215,7 @@ from previous Chrome versions.
   <int value="773952982" label="ReduceIPAddressChangeNotification:disabled"/>
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
+  <int value="775373286" label="TabModelInitFixes:enabled"/>
   <int value="777569794" label="FeedWebUi:enabled"/>
   <int value="777667507" label="DesktopPWAsLinkCapturing:enabled"/>
   <int value="778000757" label="EnableInputEventLogging:disabled"/>
