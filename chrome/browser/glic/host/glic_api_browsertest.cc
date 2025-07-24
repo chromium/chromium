@@ -304,7 +304,8 @@ class GlicApiTest : public NonInteractiveGlicTest {
   void ProcessTestResult(const ExecuteTestOptions& options,
                          const content::EvalJsResult& result) {
     if (options.expect_guest_frame_destroyed) {
-      ASSERT_THAT(result.error, testing::HasSubstr("RenderFrame deleted."));
+      ASSERT_THAT(result, content::EvalJsResult::ErrorIs(
+                              testing::HasSubstr("RenderFrame deleted.")));
       return;
     }
 

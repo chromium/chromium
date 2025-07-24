@@ -387,17 +387,17 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerIsolatedWebAppsTest,
     navigator.registerProtocolHandler("web+meow", "%s");
   )";
   ASSERT_THAT(EvalJs(web_contents, base::StringPrintf(kRegisterProtocolScript,
-                                                      protocol_url.spec()))
-                  .error,
-              testing::HasSubstr("Isolated Web Apps do not support "
-                                 "registering/unregistering protocol"));
+                                                      protocol_url.spec())),
+              content::EvalJsResult::ErrorIs(
+                  testing::HasSubstr("Isolated Web Apps do not support "
+                                     "registering/unregistering protocol")));
 
   static constexpr std::string_view kUnegisterProtocolScript = R"(
     navigator.unregisterProtocolHandler("web+meow", "%s");
   )";
   ASSERT_THAT(EvalJs(web_contents, base::StringPrintf(kUnegisterProtocolScript,
-                                                      protocol_url.spec()))
-                  .error,
-              testing::HasSubstr("Isolated Web Apps do not support "
-                                 "registering/unregistering protocol"));
+                                                      protocol_url.spec())),
+              content::EvalJsResult::ErrorIs(
+                  testing::HasSubstr("Isolated Web Apps do not support "
+                                     "registering/unregistering protocol")));
 }

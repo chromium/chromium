@@ -2310,13 +2310,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
   GURL script_url =
       https_server()->GetURL(kMainHost, "/shared_storage/erroneous_module.js");
-  content::EvalJsResult result = content::EvalJs(
-      GetActiveWebContents(),
-      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
-
   EXPECT_THAT(
-      result.error,
-      testing::HasSubstr("ReferenceError: undefinedVariable is not defined"));
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("sharedStorage.worklet.addModule($1)",
+                                         script_url)),
+      content::EvalJsResult::ErrorIs(testing::HasSubstr(
+          "ReferenceError: undefinedVariable is not defined")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -2340,13 +2339,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
-  content::EvalJsResult result = content::EvalJs(
-      GetActiveWebContents(),
-      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
-
   EXPECT_THAT(
-      result.error,
-      testing::HasSubstr("addModule() can only be invoked once per worklet"));
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("sharedStorage.worklet.addModule($1)",
+                                         script_url)),
+      content::EvalJsResult::ErrorIs(testing::HasSubstr(
+          "addModule() can only be invoked once per worklet")));
 
   WaitForHistogramsWithSampleCounts(
       {std::make_tuple(kTimingDocumentAddModuleHistogram, 1),
@@ -2367,15 +2365,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(), R"(
+  EXPECT_THAT(
+      content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.run(
           'test-operation', {data: {}});
-    )");
-
-  EXPECT_THAT(
-      result.error,
-      testing::HasSubstr(
-          "sharedStorage.worklet.addModule() has to be called before run()"));
+    )"),
+      content::EvalJsResult::ErrorIs(testing::HasSubstr(
+          "sharedStorage.worklet.addModule() has to be called before run()")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -2540,7 +2536,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_TRUE(ExecJs(GetActiveWebContents(),
                      content::JsReplace("window.resolveSelectURLToConfig = $1;",
                                         ResolveSelectURLToConfig())));
-  content::EvalJsResult result = EvalJs(GetActiveWebContents(), R"(
+  EXPECT_THAT(EvalJs(GetActiveWebContents(), R"(
         (async function() {
           window.select_url_result = await sharedStorage.selectURL(
             'test-url-selection-operation-1',
@@ -2560,11 +2556,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
           }
           return window.select_url_result;
         })()
-      )");
-
-  EXPECT_THAT(result.error,
-              testing::HasSubstr("sharedStorage.worklet.addModule() has to be "
-                                 "called before selectURL()"));
+      )"),
+              content::EvalJsResult::ErrorIs(testing::HasSubstr(
+                  "sharedStorage.worklet.addModule() has to be "
+                  "called before selectURL()")));
 
   WaitForHistograms({kErrorTypeHistogram});
 
@@ -3264,16 +3259,16 @@ IN_PROC_BROWSER_TEST_P(
           content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
               "", "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
-  content::EvalJsResult result =
+  EXPECT_THAT(
       content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
         (async function() {
           window.testWorklet = await sharedStorage.createWorklet($1,
             {dataOrigin: 'script-origin'});
         })()
       )",
-                                                                 script_url));
-
-  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
+                                                                 script_url)),
+      content::EvalJsResult::ErrorIs(
+          testing::HasSubstr("Error: Failed to load")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -3296,16 +3291,16 @@ IN_PROC_BROWSER_TEST_P(
           content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
               "Access-Control-Allow-Origin: *", "")));
 
-  content::EvalJsResult result =
+  EXPECT_THAT(
       content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
         (async function() {
           window.testWorklet = await sharedStorage.createWorklet($1,
             {dataOrigin: 'script-origin'});
         })()
       )",
-                                                                 script_url));
-
-  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
+                                                                 script_url)),
+      content::EvalJsResult::ErrorIs(
+          testing::HasSubstr("Error: Failed to load")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -3324,16 +3319,16 @@ IN_PROC_BROWSER_TEST_P(
   GURL script_url = https_server()->GetURL(
       kCrossOriginHost, "/shared_storage/nonexistent_module.js");
 
-  content::EvalJsResult result =
+  EXPECT_THAT(
       content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
         (async function() {
           window.testWorklet = await sharedStorage.createWorklet($1,
             {dataOrigin: 'script-origin'});
         })()
       )",
-                                                                 script_url));
-
-  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
+                                                                 script_url)),
+      content::EvalJsResult::ErrorIs(
+          testing::HasSubstr("Error: Failed to load")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -3472,15 +3467,15 @@ IN_PROC_BROWSER_TEST_P(
           content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
               "", "")));
 
-  content::EvalJsResult result =
+  EXPECT_THAT(
       content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
         (async function() {
           await sharedStorage.createWorklet($1);
         })()
       )",
-                                                                 script_url));
-
-  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
+                                                                 script_url)),
+      content::EvalJsResult::ErrorIs(
+          testing::HasSubstr("Error: Failed to load")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -3618,15 +3613,15 @@ IN_PROC_BROWSER_TEST_P(
           content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
               "", "")));
 
-  content::EvalJsResult result =
+  EXPECT_THAT(
       content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
         (async function() {
           await sharedStorage.createWorklet($1, {dataOrigin: 'context-origin'});
         })()
       )",
-                                                                 script_url));
-
-  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
+                                                                 script_url)),
+      content::EvalJsResult::ErrorIs(
+          testing::HasSubstr("Error: Failed to load")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -3799,11 +3794,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
           content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
               "", "")));
 
-  content::EvalJsResult result = content::EvalJs(
-      GetActiveWebContents(),
-      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
-
-  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
+  EXPECT_THAT(
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("sharedStorage.worklet.addModule($1)",
+                                         script_url)),
+      content::EvalJsResult::ErrorIs(
+          testing::HasSubstr("Error: Failed to load")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -3821,11 +3817,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   GURL script_url = https_server()->GetURL(
       kCrossOriginHost, "/shared_storage/nonexistent_module.js");
 
-  content::EvalJsResult result = content::EvalJs(
-      GetActiveWebContents(),
-      content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
-
-  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
+  EXPECT_THAT(
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("sharedStorage.worklet.addModule($1)",
+                                         script_url)),
+      content::EvalJsResult::ErrorIs(
+          testing::HasSubstr("Error: Failed to load")));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(

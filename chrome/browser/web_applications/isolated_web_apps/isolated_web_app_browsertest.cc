@@ -561,9 +561,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WebCannotLoadIwaResources) {
       return response.ok;
     })();
   )",
-                                              url_info.origin().Serialize()))
-          .error,
-      HasSubstr("Failed to fetch"));
+                                              url_info.origin().Serialize())),
+      content::EvalJsResult::ErrorIs(HasSubstr("Failed to fetch")));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
@@ -600,9 +599,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
       return response.ok;
     })();
   )",
-                                            url_info2.origin().Serialize()))
-          .error,
-      HasSubstr("Failed to fetch"));
+                                            url_info2.origin().Serialize())),
+      content::EvalJsResult::ErrorIs(HasSubstr("Failed to fetch")));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
@@ -679,8 +677,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
       await socket.opened;
     })();
   )";
-  EXPECT_THAT(EvalJs(app_frame, openSocketJs).error,
-              HasSubstr("Permissions-Policy: direct-sockets are disabled."));
+  EXPECT_THAT(EvalJs(app_frame, openSocketJs),
+              content::EvalJsResult::ErrorIs(HasSubstr(
+                  "Permissions-Policy: direct-sockets are disabled.")));
 }
 
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {

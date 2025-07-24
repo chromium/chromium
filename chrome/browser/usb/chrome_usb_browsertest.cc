@@ -116,9 +116,8 @@ constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
     }
   })();)";
 
-// Matches an EvalJs error message.
-MATCHER_P(FailedWithSubstr, substr, "") {
-  return arg.error.find(substr) != std::string::npos;
+auto FailedWithSubstr(std::string_view substr) {
+  return content::EvalJsResult::ErrorIs(testing::HasSubstr(substr));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)

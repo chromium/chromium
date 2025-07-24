@@ -864,6 +864,10 @@ class EvalJsResult {
     return testing::AllOf(IsOk(), testing::Field(&EvalJsResult::value_, m));
   }
   static auto IsError() { return testing::Not(IsOk()); }
+  template <typename M>
+  static auto ErrorIs(M m) {
+    return testing::AllOf(IsError(), testing::Field(&EvalJsResult::error, m));
+  }
 
   // Extract a result value of the requested type, or die trying.
   //

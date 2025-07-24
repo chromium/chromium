@@ -43,13 +43,14 @@ constexpr char kTestDomain[] = "a.test";
 
 constexpr char kJsErrorPrefix[] = "a JavaScript error: \"";
 
-MATCHER_P(IsJsError, name, "") {
-  return base::StartsWith(arg.error, base::StrCat({kJsErrorPrefix, name}));
+auto IsJsError(std::string_view name) {
+  return content::EvalJsResult::ErrorIs(
+      testing::StartsWith(base::StrCat({kJsErrorPrefix, name})));
 }
 
-MATCHER_P2(IsJsErrorWithMessage, name, message, "") {
-  return base::StrCat({kJsErrorPrefix, name, ": ", message, "\"\n"}) ==
-         arg.error;
+auto IsJsErrorWithMessage(std::string_view name, std::string_view message) {
+  return content::EvalJsResult::ErrorIs(
+      base::StrCat({kJsErrorPrefix, name, ": ", message, "\"\n"}));
 }
 
 class WebAuthenticationProxyApiTest : public ExtensionApiTest {

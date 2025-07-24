@@ -1144,9 +1144,9 @@ IN_PROC_BROWSER_TEST_F(
     )");
 
   EXPECT_THAT(
-      result.error,
-      testing::HasSubstr(
-          "The \"shared-storage\" Permissions Policy denied the method"));
+      result,
+      EvalJsResult::ErrorIs(testing::HasSubstr(
+          "The \"shared-storage\" Permissions Policy denied the method")));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
@@ -1194,10 +1194,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       );
     )");
 
-  EXPECT_THAT(result.error,
-              testing::HasSubstr(
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(testing::HasSubstr(
                   "selectURL() is called in a context with a fenced frame "
-                  "depth (2) exceeding the maximum allowed number (1)."));
+                  "depth (2) exceeding the maximum allowed number (1).")));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
@@ -1683,10 +1683,10 @@ IN_PROC_BROWSER_TEST_F(
     sharedStorage.get('test');
   )");
 
-  EXPECT_THAT(
-      get_result.error,
-      testing::HasSubstr("Cannot call get() in a fenced frame with feature "
-                         "FencedFramesLocalUnpartitionedDataAccess disabled."));
+  EXPECT_THAT(get_result,
+              EvalJsResult::ErrorIs(testing::HasSubstr(
+                  "Cannot call get() in a fenced frame with feature "
+                  "FencedFramesLocalUnpartitionedDataAccess disabled.")));
 
   // Check that a histogram was logged for the failed get() operation.
   content::FetchHistogramsFromChildProcesses();
@@ -1765,11 +1765,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameDocumentGetBrowserTest,
   )");
 
   EXPECT_THAT(
-      get_result.error,
-      testing::HasSubstr(
+      get_result,
+      EvalJsResult::ErrorIs(testing::HasSubstr(
           "sharedStorage.get() is not allowed in a fenced frame until network "
           "access for it and all descendent frames has been revoked with "
-          "window.fence.disableUntrustedNetwork()"));
+          "window.fence.disableUntrustedNetwork()")));
 
   // Check that a histogram was logged for the get() result.
   content::FetchHistogramsFromChildProcesses();
@@ -1824,9 +1824,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameDocumentGetBrowserTest,
     sharedStorage.get('test');
   )");
 
-  EXPECT_THAT(
-      get_result_main_frame.error,
-      testing::HasSubstr("Cannot call get() outside of a fenced frame."));
+  EXPECT_THAT(get_result_main_frame,
+              EvalJsResult::ErrorIs(testing::HasSubstr(
+                  "Cannot call get() outside of a fenced frame.")));
 
   // The "Blink.FencedFrame.SharedStorageGetInFencedFrameOutcome" histogram
   // should not log since get() was not called from within a fenced frame.
@@ -1851,9 +1851,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameDocumentGetBrowserTest,
     sharedStorage.get('test');
   )");
 
-  EXPECT_THAT(
-      get_result_iframe.error,
-      testing::HasSubstr("Cannot call get() outside of a fenced frame."));
+  EXPECT_THAT(get_result_iframe,
+              EvalJsResult::ErrorIs(testing::HasSubstr(
+                  "Cannot call get() outside of a fenced frame.")));
 
   // The "Blink.FencedFrame.SharedStorageGetInFencedFrameOutcome" histogram
   // should not log since get() was not called from within a fenced frame.
@@ -1909,8 +1909,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameDocumentGetBrowserTest,
       sharedStorage.get('test');
   )");
 
-  EXPECT_THAT(get_result.error,
-              testing::HasSubstr("is not allowed in an opaque origin context"));
+  EXPECT_THAT(get_result, EvalJsResult::ErrorIs(testing::HasSubstr(
+                              "is not allowed in an opaque origin context")));
 
   // The "Blink.FencedFrame.SharedStorageGetInFencedFrameOutcome" histogram
   // should not log since opaque origins are treated as being outside of a
@@ -1957,11 +1957,11 @@ IN_PROC_BROWSER_TEST_F(
   )");
 
   EXPECT_THAT(
-      get_result.error,
-      testing::HasSubstr(
+      get_result,
+      EvalJsResult::ErrorIs(testing::HasSubstr(
           "sharedStorage.get() is not allowed in a fenced frame until network "
           "access for it and all descendent frames has been revoked with "
-          "window.fence.disableUntrustedNetwork()"));
+          "window.fence.disableUntrustedNetwork()")));
 
   // Check that a histogram was logged for the get() result.
   content::FetchHistogramsFromChildProcesses();
@@ -2027,10 +2027,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
       );
     )");
 
-  EXPECT_THAT(result.error,
-              testing::HasSubstr(
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(testing::HasSubstr(
                   "selectURL() is called in a context with a fenced frame "
-                  "depth (1) exceeding the maximum allowed number (0)."));
+                  "depth (1) exceeding the maximum allowed number (0).")));
 }
 
 class SharedStorageReportEventBrowserTest

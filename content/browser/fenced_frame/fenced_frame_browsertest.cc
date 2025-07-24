@@ -4276,10 +4276,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
     const peerConnection = new RTCPeerConnection(configuration);
   )");
 
-  EXPECT_THAT(
-      result.error,
-      testing::HasSubstr("Failed to construct 'RTCPeerConnection': "
-                         "RTCPeerConnection is not allowed in fenced frames."));
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(testing::HasSubstr(
+                  "Failed to construct 'RTCPeerConnection': "
+                  "RTCPeerConnection is not allowed in fenced frames.")));
 }
 
 namespace {
@@ -6207,11 +6207,11 @@ IN_PROC_BROWSER_TEST_F(
         // Shared storage get is denied.
         EvalJsResult get_result = EvalJs(ff1, "sharedStorage.get('test');");
         EXPECT_THAT(
-            get_result.error,
-            testing::HasSubstr(
+            get_result,
+            EvalJsResult::ErrorIs(testing::HasSubstr(
                 "sharedStorage.get() is not allowed in a fenced frame until "
                 "network access for it and all descendent frames has been "
-                "revoked with window.fence.disableUntrustedNetwork()"));
+                "revoked with window.fence.disableUntrustedNetwork()")));
       }));
 
   // Embedder initiates nested fenced frame navigation.
@@ -7421,9 +7421,8 @@ class FencedFrameReportEventBrowserTest
           // When eventData exceeds the length limit, a security error is thrown
           // instead of a console error.
           EXPECT_FALSE(result.error.empty());
-          EXPECT_THAT(
-              result.error,
-              testing::HasSubstr(GetErrorPattern(step.report_event_result)));
+          EXPECT_THAT(result, EvalJsResult::ErrorIs(testing::HasSubstr(
+                                  GetErrorPattern(step.report_event_result))));
           continue;
         }
 

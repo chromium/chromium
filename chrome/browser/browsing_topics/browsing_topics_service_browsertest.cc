@@ -1500,9 +1500,9 @@ IN_PROC_BROWSER_TEST_P(
     content::EvalJsResult result = EvalJs(
         web_contents()->GetPrimaryMainFrame(),
         content::JsReplace("fetch($1, {browsingTopics: true})", resource_url));
-    EXPECT_THAT(result.error,
-                testing::HasSubstr("browsingTopics: Topics operations are only "
-                                   "available in secure contexts."));
+    EXPECT_THAT(result, content::EvalJsResult::ErrorIs(testing::HasSubstr(
+                            "browsingTopics: Topics operations are only "
+                            "available in secure contexts.")));
   } else {
     EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
   }

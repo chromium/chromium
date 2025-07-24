@@ -4523,8 +4523,9 @@ IN_PROC_BROWSER_TEST_P(
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(postSharedArrayBuffer.error,
-              HasSubstr("Failed to execute 'postMessage' on 'Window':"));
+  EXPECT_THAT(postSharedArrayBuffer,
+              EvalJsResult::ErrorIs(
+                  HasSubstr("Failed to execute 'postMessage' on 'Window':")));
 }
 
 // Transfer a SharedArrayBuffer in between two COOP+COEP document with a
@@ -4813,8 +4814,9 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(postSharedArrayBuffer.error,
-              HasSubstr("Failed to execute 'postMessage' on 'Window'"));
+  EXPECT_THAT(postSharedArrayBuffer,
+              EvalJsResult::ErrorIs(
+                  HasSubstr("Failed to execute 'postMessage' on 'Window'")));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

@@ -270,7 +270,7 @@ auto PrivateNetworkAccessBlocked() {
 }
 
 auto ErrorIs(const auto& matcher) {
-  return testing::Field(&content::EvalJsResult::error, matcher);
+  return content::EvalJsResult::ErrorIs(matcher);
 }
 
 auto IsOk() {

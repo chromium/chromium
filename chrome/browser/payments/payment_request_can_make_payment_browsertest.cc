@@ -159,27 +159,27 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest, InvalidSSL) {
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
   test_controller()->SetValidSsl(false);
 
-  content::EvalJsResult can_make_payment_result =
-      content::EvalJs(GetActiveWebContents(),
-                      content::JsReplace("checkCanMakePayment($1)", method));
   // canMakePayment() will either reject or resolve with "false", depending on
   // timing of when the browser completes the SSL check and when the website
   // calls canMakePayment().
   // TODO(crbug.com/40858197): More consistent canMakePayment() behavior.
-  EXPECT_TRUE("a JavaScript error: \"false\"\n" ==
-                  can_make_payment_result.error ||
-              false == can_make_payment_result.ExtractBool());
+  EXPECT_THAT(
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("checkCanMakePayment($1)", method)),
+      testing::AnyOf(
+          content::EvalJsResult::ErrorIs("a JavaScript error: \"false\"\n"),
+          content::EvalJsResult::IsOkAndHolds(false)));
 
-  content::EvalJsResult has_enrolled_instrument_result = content::EvalJs(
-      GetActiveWebContents(),
-      content::JsReplace("checkHasEnrolledInstrument($1)", method));
   // hasEnrolledInstrument() will either reject or resolve with "false",
   // depending on timing of when the browser completes the SSL check and when
   // the website calls hasEnrolledInstrument().
   // TODO(crbug.com/40858197): More consistent hasEnrolledInstrument() behavior.
-  EXPECT_TRUE("a JavaScript error: \"false\"\n" ==
-                  has_enrolled_instrument_result.error ||
-              false == has_enrolled_instrument_result.ExtractBool());
+  EXPECT_THAT(content::EvalJs(
+                  GetActiveWebContents(),
+                  content::JsReplace("checkHasEnrolledInstrument($1)", method)),
+              testing::AnyOf(content::EvalJsResult::ErrorIs(
+                                 "a JavaScript error: \"false\"\n"),
+                             content::EvalJsResult::IsOkAndHolds(false)));
 
   EXPECT_EQ("NotSupportedError: Invalid SSL certificate",
             content::EvalJs(GetActiveWebContents(),
