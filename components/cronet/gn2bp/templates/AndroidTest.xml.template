@@ -22,7 +22,7 @@
 
     <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
         <option name="push-file" key="net" value="/storage/emulated/0/chromium_tests_root/net" />
-        <option name="push-file" key="test_server" value="${TEST_SERVER_FOLDER}" />
+        <option name="push-file" key="test_server" value="/storage/emulated/0/chromium_tests_root/components/cronet/android/test/test_server" />
     </target_preparer>
     <!-- Tethering/Connectivity is a SDK 30+ module however Cronet is installed on 31+ due to b/270049141. -->
     <object type="module_controller"
