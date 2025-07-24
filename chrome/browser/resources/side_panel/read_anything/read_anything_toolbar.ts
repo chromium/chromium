@@ -34,7 +34,7 @@ import type {HighlightMenuElement} from './menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 import type {RateMenuElement} from './menus/rate_menu.js';
-import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
+import {ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom} from './read_anything_logger.js';
 import {getCss} from './read_anything_toolbar.css.js';
 import {getHtml} from './read_anything_toolbar.html.js';
@@ -362,13 +362,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   protected getHighlightButtonLabel_(): string {
-    if (chrome.readingMode.isPhraseHighlightingEnabled) {
       return loadTimeData.getString('voiceHighlightLabel');
-    } else {
-      return chrome.readingMode.isHighlightOn() ?
-          loadTimeData.getString('turnHighlightOff') :
-          loadTimeData.getString('turnHighlightOn');
-    }
   }
 
   // Loading the fonts stylesheet can take a while, especially with slow
@@ -445,12 +439,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     if (this.isReadAloudEnabled_) {
       this.speechRate_ = getCurrentSpeechRate();
-
-      if (!chrome.readingMode.isPhraseHighlightingEnabled) {
-        const highlightOn = chrome.readingMode.isHighlightOn();
-        this.setHighlightButtonTitle_(highlightOn);
-        this.setHighlightButtonIcon_(highlightOn);
-      }
     }
   }
 
@@ -547,29 +535,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected onHighlightClick_(event: MouseEvent) {
     // Click handler for the highlight button. Used both for the
     // highlight menu mode and the toggle button mode.
-    if (chrome.readingMode.isPhraseHighlightingEnabled) {
       this.$.highlightMenu.open(event.target as HTMLElement);
-    } else {
-      // Don't show the highlight menu if phrase highlighting is disabled.
-      this.onHighlightToggle_();
-    }
-  }
-
-  private onHighlightToggle_() {
-    assert(
-        !chrome.readingMode.isPhraseHighlightingEnabled,
-        'should not be called when highlighting menu is shown');
-    this.logger_.logSpeechSettingsChange(
-        ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
-    const isHighlightOn = chrome.readingMode.isHighlightOn();
-    const turnOn = !isHighlightOn;
-    this.logger_.logHighlightState(turnOn);
-    this.setHighlightButtonIcon_(turnOn);
-    this.setHighlightButtonTitle_(turnOn);
-    this.fire(ToolbarEvent.HIGHLIGHT_CHANGE, {
-      data: turnOn ? chrome.readingMode.autoHighlighting :
-                     chrome.readingMode.noHighlighting,
-    });
   }
 
   private setHighlightButtonIcon_(turnOn: boolean) {
@@ -584,20 +550,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     } else {
       button.setAttribute('iron-icon', 'read-anything:highlight-off');
     }
-  }
-
-  private setHighlightButtonTitle_(turnOn: boolean) {
-    // Sets the title of the highlight button. This is dynamically changed only
-    // when the highlight menu is disabled (i.e. the button acts as a toggle).
-    const button = this.$.toolbarContainer.querySelector('#highlight');
-    assert(button, 'no highlight button');
-    // The title is the opposite of the state, since it connotes the action that
-    // will be performed when the button is next clicked, and not the present
-    // state.
-    const title =
-        loadTimeData.getString(turnOn ? 'turnHighlightOff' : 'turnHighlightOn');
-    button.setAttribute('title', title);
-    button.setAttribute('aria-label', title);
   }
 
   protected onFontClick_(e: Event) {

@@ -269,11 +269,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordHighlighting) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightToggle) {
-  RunSidePanelTest("side_panel/read_anything/highlight_toggle_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Highlighter) {
   RunSidePanelTest("side_panel/read_anything/highlighter_test.js",
                    "mocha.run()");
@@ -304,6 +299,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ConnectedCallback) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightMenu) {
+  RunSidePanelTest("side_panel/read_anything/highlight_menu_test.js",
+                   "mocha.run()");
+}
+
 class ReadAnythingReadAloudPhraseHighlightingMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:
@@ -320,7 +320,7 @@ class ReadAnythingReadAloudPhraseHighlightingMochaTest
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
                        HighlightMenu) {
-  RunSidePanelTest("side_panel/read_anything/highlight_menu_test.js",
+  RunSidePanelTest("side_panel/read_anything/phrase_highlight_menu_test.js",
                    "mocha.run()");
 }
 

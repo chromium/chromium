@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -25,6 +25,7 @@ suite('HighlightMenuElement', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
+    chrome.readingMode.isPhraseHighlightingEnabled = true;
 
     app = await createApp();
 
@@ -72,8 +73,8 @@ suite('HighlightMenuElement', () => {
           menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
     });
 
-    test('has 4 items', () => {
-      assertEquals(options.length, 4);
+    test('has 5 items', () => {
+      assertEquals(options.length, 5);
     });
 
     test('selects highlight granularity', async () => {
@@ -81,17 +82,13 @@ suite('HighlightMenuElement', () => {
       for (const option of options) {
         option.click();
         await microtasksFinished();
-        // Skip phrase highlighting, since it's not shown in this menu.
-        if (index === chrome.readingMode.phraseHighlighting) {
-          index += 1;
-        }
         assertEquals(chrome.readingMode.highlightGranularity, index);
         index++;
       }
     });
 
     test('highlight off changes icon', async () => {
-      options[3]!.click();
+      options[4]!.click();
       await microtasksFinished();
       assertEquals('read-anything:highlight-off', highlightButton.ironIcon);
     });

@@ -23,7 +23,7 @@ build_webui_tests("build") {
     "font_menu_test.ts",
     "font_size_test.ts",
     "highlight_menu_test.ts",
-    "highlight_toggle_test.ts",
+    "phrase_highlight_menu_test.ts",
     "highlighter_test.ts",
     "image_test.ts",
     "images_toggle_button_test.ts",
