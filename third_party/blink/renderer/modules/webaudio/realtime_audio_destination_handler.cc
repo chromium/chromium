@@ -313,6 +313,8 @@ void RealtimeAudioDestinationHandler::SetDetectSilenceIfNecessary(
 
   // Post a cross-thread task only when the detecting condition has changed.
   if (is_detecting_silence_ != needs_silence_detection) {
+    TRACE_EVENT1("webaudio", __func__,
+                 "needs_silence_detection (changed)", needs_silence_detection);
     PostCrossThreadTask(
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(&RealtimeAudioDestinationHandler::SetDetectSilence,
