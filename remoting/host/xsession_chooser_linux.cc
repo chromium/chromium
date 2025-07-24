@@ -7,6 +7,9 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
+
 // This file implements a dialog allowing the user to pick between installed
 // X session types. It finds sessions by looking for .desktop files in
 // /etc/X11/sessions and in the xsessions folder (if any) in each XDG system
@@ -271,7 +274,8 @@ std::vector<XSession> CollectXSessions() {
   session_search_dirs.emplace_back("/etc/X11/sessions");
 
   // Returned list is owned by GLib and should not be modified or freed.
-  const gchar* const* system_data_dirs = g_get_system_data_dirs();
+  base::span<const gchar* const> system_data_dirs =
+      UNSAFE_G_GET_SYSTEM_DATA_DIRS();
   // List is null-terminated.
   for (std::size_t i = 0; system_data_dirs[i]; ++i) {
     session_search_dirs.push_back(

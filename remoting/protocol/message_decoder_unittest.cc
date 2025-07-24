@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/internal.pb.h"
@@ -51,7 +52,13 @@ static void PrepareData(uint8_t** buffer, int* size) {
   memcpy(*buffer, encoded_data.c_str(), *size);
 }
 
-void SimulateReadSequence(const int read_sequence[], int sequence_size) {
+void SimulateReadSequence(base::span<const int> read_sequence,
+                          int spanification_suspected_redundant_sequence_size) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(static_cast<size_t>(spanification_suspected_redundant_sequence_size) ==
+            read_sequence.size(),
+        base::NotFatalUntil::M143);
   // Prepare encoded data for testing.
   int size;
   uint8_t* test_data;
@@ -71,7 +78,9 @@ void SimulateReadSequence(const int read_sequence[], int sequence_size) {
     SCOPED_TRACE("Input position: " + base::NumberToString(pos));
 
     // First generate the amount to feed the decoder.
-    int read = std::min(size - pos, read_sequence[pos % sequence_size]);
+    int read = std::min(
+        size - pos,
+        read_sequence[pos % spanification_suspected_redundant_sequence_size]);
 
     // And then prepare an IOBuffer for feeding it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read);

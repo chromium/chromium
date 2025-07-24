@@ -11,6 +11,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -507,7 +508,7 @@ void VideoEncoderVpx::SetActiveMapFromRegion(
 
 void VideoEncoderVpx::UpdateRegionFromActiveMap(
     webrtc::DesktopRegion* updated_region) {
-  const uint8_t* map = active_map_.data();
+  base::span<const uint8_t> map = active_map_;
   for (int y = 0; y < active_map_size_.height(); ++y) {
     for (int x0 = 0; x0 < active_map_size_.width();) {
       int x1 = x0;

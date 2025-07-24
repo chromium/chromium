@@ -16,6 +16,7 @@
 #include <string>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "net/base/io_buffer.h"
@@ -93,7 +94,7 @@ class CompoundBufferTest : public testing::Test {
   // Iterate over chunks of data with sizes specified in |sizes| in the
   // interval [0..kDataSize]. |function| is called for each chunk.
   void IterateOverPieces(
-      const int sizes[],
+      base::span<const int> sizes,
       const base::RepeatingCallback<void(int, int)>& function) {
     DCHECK_GT(sizes[0], 0);
 
