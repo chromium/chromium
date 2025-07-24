@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
@@ -39,18 +39,19 @@ namespace {
 void ShowPrompt() {
   // Show the default browser request prompt in the most recently active,
   // visible, tabbed browser. Do not show the prompt if no such browser exists.
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+  for (BrowserWindowInterface* browser :
+       GetBrowserWindowInterfacesOrderedByActivation()) {
     // |browser| may be null in UI tests. Also, don't show the prompt in an app
     // window, which is not meant to be treated as a Chrome window. Only show in
     // a normal, tabbed browser.
-    if (browser && !browser->is_type_normal()) {
+    if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
       continue;
     }
 
     // In ChromeBot tests, there might be a race. This line appears to get
     // called during shutdown and the active web contents can be nullptr.
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     if (!web_contents ||
         web_contents->GetVisibility() != content::Visibility::VISIBLE) {
       continue;
@@ -58,7 +59,7 @@ void ShowPrompt() {
 
     DefaultBrowserInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
-        browser->profile(),
+        browser->GetProfile(),
         /*can_pin_to_taskbar=*/false);
     break;
   }
