@@ -115,11 +115,11 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
 
     int dimension_aligned = (dimension + 1) & ~1;
     y_data_ =
-        base::HeapArray<uint8_t>::Uninit(multiplier * dimension * dimension);
-    u_data_ = base::HeapArray<uint8_t>::Uninit(multiplier * dimension_aligned *
-                                               dimension_aligned / 4);
-    v_data_ = base::HeapArray<uint8_t>::Uninit(multiplier * dimension_aligned *
-                                               dimension_aligned / 4);
+        base::HeapArray<uint8_t>::WithSize(multiplier * dimension * dimension);
+    u_data_ = base::HeapArray<uint8_t>::WithSize(
+        multiplier * dimension_aligned * dimension_aligned / 4);
+    v_data_ = base::HeapArray<uint8_t>::WithSize(
+        multiplier * dimension_aligned * dimension_aligned / 4);
 
     // Initialize the last pixel of each plane
     int y_size = multiplier * dimension * dimension;
@@ -393,10 +393,6 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOne10BppHardwareFrameWithOddSize) {
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/366375486): Resolve data mismatch failure and re-enable.
-  GTEST_SKIP();
-#else
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(17, 10);
   scoped_refptr<VideoFrame> frame;
@@ -426,7 +422,6 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
-#endif
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, ReuseFirstResource) {
@@ -639,10 +634,6 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareP010FrameWithOddSize) {
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/366375486): Resolve data mismatch failure and re-enable.
-  GTEST_SKIP();
-#else
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(7, 10);
   scoped_refptr<VideoFrame> frame;
@@ -675,7 +666,6 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
-#endif
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
