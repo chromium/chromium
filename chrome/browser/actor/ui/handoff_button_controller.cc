@@ -6,6 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,9 +16,14 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace {
+
+// A fixed vertical offset from the top of the window, used when the tab
+// strip is not visible (e.g., in immersive fullscreen).
+constexpr int kHandoffButtonTopOffset = 8;
 
 std::unique_ptr<views::NonClientFrameView> CreateHandoffButtonFrameView(
     views::Widget* widget) {
@@ -83,10 +89,10 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
     button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
     UpdateBounds();
   }
+
   // TODO(crbug.com/422541242): Add Z-order logic.
 
-  // TODO(crbug.com/422541242): Update dialog visibility via the
-  // TabDialogManager.
+  UpdateVisibility();
 }
 
 void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
@@ -131,7 +137,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   tab_dialog_params->close_on_navigate = false;
   tab_dialog_params->close_on_detach = false;
   tab_dialog_params->disable_input = false;
-  tab_dialog_params->animated = true;
+  tab_dialog_params->animated = false;
   tab_dialog_params->should_show_callback = base::BindRepeating(
       &HandoffButtonController::ShouldShowButton, base::Unretained(this));
   tab_dialog_params->get_dialog_bounds =
@@ -151,10 +157,30 @@ void HandoffButtonController::ShouldShowButton(bool& show) {
 
 gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
     views::Widget* widget) {
-  // TODO(crbug.com/422541242): Add custom positioning logic for immersive
-  // fullscreen in a follow-up CL. For now, we return a rect with only the
-  // preferred size.
-  return gfx::Rect(widget->GetContentsView()->GetPreferredSize());
+  const gfx::Size preferred_size =
+      widget->GetContentsView()->GetPreferredSize();
+
+  auto* anchor_view = tab_interface_->GetBrowserWindowInterface()->GetWebView();
+  if (!anchor_view) {
+    return gfx::Rect(preferred_size);
+  }
+  const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
+
+  const int x =
+      anchor_bounds.x() + (anchor_bounds.width() - preferred_size.width()) / 2;
+
+  // Calculate the Y coordinate based on tab strip visibility.
+  const bool is_tab_strip_visible =
+      tab_interface_->GetBrowserWindowInterface()->IsTabStripVisible();
+
+  const int y =
+      is_tab_strip_visible
+          // Vertically center the button on the top edge of the anchor.
+          ? anchor_bounds.y() - preferred_size.height() / 2
+          // Position with a fixed offset from the top of the anchor.
+          : anchor_bounds.y() - kHandoffButtonTopOffset;
+
+  return gfx::Rect({x, y}, preferred_size);
 }
 
 void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
@@ -178,6 +204,10 @@ void HandoffButtonController::OnButtonPressed() {
 
 void HandoffButtonController::UpdateBounds() {
   GetTabDialogManager()->UpdateModalDialogBounds();
+}
+
+void HandoffButtonController::UpdateVisibility() {
+  GetTabDialogManager()->UpdateDialogVisibility();
 }
 
 tabs::TabDialogManager* HandoffButtonController::GetTabDialogManager() {

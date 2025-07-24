@@ -46,6 +46,11 @@ class TestHandoffButtonController : public HandoffButtonController {
   void UpdateBounds() override { update_bounds_call_count_++; }
   int update_bounds_call_count() const { return update_bounds_call_count_; }
 
+  void UpdateVisibility() override { update_visibility_call_count_++; }
+  int update_visibility_call_count() const {
+    return update_visibility_call_count_;
+  }
+
   MockActorUiTabController* GetTabController() override {
     return mock_tab_controller_.get();
   }
@@ -55,6 +60,7 @@ class TestHandoffButtonController : public HandoffButtonController {
  private:
   int close_button_call_count_ = 0;
   int update_bounds_call_count_ = 0;
+  int update_visibility_call_count_ = 0;
   std::unique_ptr<MockActorUiTabController> mock_tab_controller_;
 };
 
@@ -138,11 +144,13 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   controller_->UpdateState(state, /*is_visible=*/true);
   EXPECT_EQ(button_->GetText(), actor::ui::TAKE_OVER_TASK_TEXT);
   EXPECT_EQ(1, controller_->update_bounds_call_count());
+  EXPECT_EQ(1, controller_->update_visibility_call_count());
 
   state.controller = kClient;
   controller_->UpdateState(state, /*is_visible=*/true);
   EXPECT_EQ(button_->GetText(), actor::ui::GIVE_TASK_BACK_TEXT);
   EXPECT_EQ(2, controller_->update_bounds_call_count());
+  EXPECT_EQ(2, controller_->update_visibility_call_count());
 }
 
 TEST_F(HandoffButtonControllerTest,
