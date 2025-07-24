@@ -253,7 +253,7 @@ public class TabPersistentStore {
     }
 
     /** Callback interface to use while reading the persisted TabModelSelector info from disk. */
-    public static interface OnTabStateReadCallback {
+    public interface OnTabStateReadCallback {
         /**
          * To be called as the details about a persisted Tab are read from the TabModelSelector's
          * persisted data.

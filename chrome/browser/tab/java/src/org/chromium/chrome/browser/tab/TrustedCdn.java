@@ -28,10 +28,10 @@ public class TrustedCdn extends TabWebContentsUserData {
     private final long mNativeTrustedCdn;
 
     /**
-     * UnownedUserData shared across all tabs to get the publisher url visibility.
-     * This hangs off of an activity via WindowAndroid.
+     * UnownedUserData shared across all tabs to get the publisher url visibility. This hangs off of
+     * an activity via WindowAndroid.
      */
-    public static interface PublisherUrlVisibility extends UnownedUserData {
+    public interface PublisherUrlVisibility extends UnownedUserData {
         /** The key for accessing this object on an {@link UnownedUserDataHost}. */
         public static final UnownedUserDataKey<PublisherUrlVisibility> KEY =
                 new UnownedUserDataKey<>(PublisherUrlVisibility.class);

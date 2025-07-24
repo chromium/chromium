@@ -668,9 +668,10 @@ public class OfflinePageUtils {
      * top of WebContents' counterpart methods. This interface is designed to ensure these extra
      * steps have been taken into account.
      */
-    public static interface OfflinePageLoadUrlDelegate {
+    public interface OfflinePageLoadUrlDelegate {
         /**
          * Load the url of the given {@link LoadUrlParam} in WebContents.
+         *
          * @param params The LoadUrlParams that has specified which url to load.
          */
         /* package */ void loadUrl(LoadUrlParams params);

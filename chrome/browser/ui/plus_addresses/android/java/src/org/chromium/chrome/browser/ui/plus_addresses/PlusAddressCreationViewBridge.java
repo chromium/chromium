@@ -58,7 +58,7 @@ public class PlusAddressCreationViewBridge {
     }
 
     @VisibleForTesting
-    /*package*/ static interface CoordinatorFactory {
+    /*package*/ interface CoordinatorFactory {
         PlusAddressCreationCoordinator create(
                 Context context,
                 BottomSheetController bottomSheetController,

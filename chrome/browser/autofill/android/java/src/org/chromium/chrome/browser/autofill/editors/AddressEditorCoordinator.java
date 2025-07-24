@@ -33,7 +33,7 @@ public class AddressEditorCoordinator {
     private @Nullable PropertyModel mEditorModel;
 
     /** Delegate used to subscribe to AddressEditor user interactions. */
-    public static interface Delegate {
+    public interface Delegate {
         /**
          * The user has tapped "Done" button.
          *

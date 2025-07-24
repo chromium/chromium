@@ -26,7 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
     private final AlertDialogFactory mAlertDialogFactory;
 
     /** A interface for creating alert dialogs. */
-    /* package */ static interface AlertDialogFactory {
+    /* package */ interface AlertDialogFactory {
         /**
          * Returns a new dialog builder. Mocked in tests.
          *

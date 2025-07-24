@@ -44,7 +44,7 @@ public class BookmarkBarItemsProviderTest {
 
     /** A factory for creating {@link ScopedBookmarkModelObservation} instances. */
     @FunctionalInterface
-    private static interface ScopedBookmarkModelObservationFactory {
+    private interface ScopedBookmarkModelObservationFactory {
         /**
          * Invoked to create a scoped bookmark model observation.
          *

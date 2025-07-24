@@ -42,7 +42,7 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
      * An observer to which events are propagated if and only if they involve top-level bookmark bar
      * items from the supplied bookmark model.
      */
-    public static interface Observer extends ScopedBookmarkModelObservation.Observer {
+    public interface Observer extends ScopedBookmarkModelObservation.Observer {
         /**
          * Invoked when top-level bookmark bar items are added to the supplied bookmark model.
          *

@@ -26,7 +26,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
      * An observer to which events are propagated if and only if they involve the supplied bookmark
      * folder's direct descendants.
      */
-    public static interface Observer {
+    public interface Observer {
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is added.
          *

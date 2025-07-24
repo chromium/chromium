@@ -320,28 +320,23 @@ public class UiLocatorHelper {
 
     /**
      * Delegate to be used with getCustomElements.
+     *
      * @param <T> The type of the element.
      */
-    public static interface CustomElementMaker<T> {
+    public interface CustomElementMaker<T> {
         /**
          * Should construct an element given a node.
-         * @param root          The input node.
-         * @param isLastAttempt getCustomElements may call this delegate
-         *                      multiple times if errors are thrown from this
-         *                      method and timeout has not been reached.  If
-         *                      isLastAttempt is true, then it indicates that
-         *                      getCustomElements will not call this delegate
-         *                      again.  For example the delegate can return null
-         *                      on the lastAttempt if it still encounters errors
-         *                      which indicates that a properly formed element is
-         *                      not found on the page, this case could happen if
-         *                      an element gets cutoff at a scroll boundary.
-         * @return              The element if construction is successful, null
-         *                      otherwise.
-         * @throws UiLocationException Should throw a UiLocationException or
-         *                      UiStaleObjectException if getCustomElements
-         *                      should re-obtain a root using its provided
-         *                      locator.
+         *
+         * @param root The input node.
+         * @param isLastAttempt getCustomElements may call this delegate multiple times if errors
+         *     are thrown from this method and timeout has not been reached. If isLastAttempt is
+         *     true, then it indicates that getCustomElements will not call this delegate again. For
+         *     example the delegate can return null on the lastAttempt if it still encounters errors
+         *     which indicates that a properly formed element is not found on the page, this case
+         *     could happen if an element gets cutoff at a scroll boundary.
+         * @return The element if construction is successful, null otherwise.
+         * @throws UiLocationException Should throw a UiLocationException or UiStaleObjectException
+         *     if getCustomElements should re-obtain a root using its provided locator.
          */
         T makeElement(UiObject2 root, boolean isLastAttempt);
     }
@@ -394,9 +389,10 @@ public class UiLocatorHelper {
 
     /**
      * Define a conversion method creates an object from info in a UiObject2 node.
+     *
      * @param <T> Type of the object.
      */
-    private static interface ElementConverter<T> {
+    private interface ElementConverter<T> {
         T convert(UiObject2 object2);
     }
 

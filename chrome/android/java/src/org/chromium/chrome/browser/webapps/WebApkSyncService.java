@@ -30,7 +30,7 @@ public class WebApkSyncService {
     private static final long UNIX_OFFSET_MICROS = 11644473600000000L;
 
     /** Called with update result. */
-    public static interface PwaRestorableListCallback {
+    public interface PwaRestorableListCallback {
         @CalledByNative("PwaRestorableListCallback")
         public void onRestorableAppsAvailable(
                 boolean success,

@@ -29,7 +29,7 @@ import java.util.Map;
 @NullMarked
 public class ServiceWorkerPaymentAppBridge {
     /** The interface for checking whether there is an installed SW payment app. */
-    public static interface HasServiceWorkerPaymentAppsCallback {
+    public interface HasServiceWorkerPaymentAppsCallback {
         /**
          * Called to return checking result.
          *
@@ -39,7 +39,7 @@ public class ServiceWorkerPaymentAppBridge {
     }
 
     /** The interface for getting all installed SW payment apps' information. */
-    public static interface GetServiceWorkerPaymentAppsInfoCallback {
+    public interface GetServiceWorkerPaymentAppsInfoCallback {
         /**
          * Called to return installed SW payment apps' information.
          *

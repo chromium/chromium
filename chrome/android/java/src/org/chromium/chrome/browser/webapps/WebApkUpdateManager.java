@@ -122,7 +122,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private Handler mUpdateFailureHandler;
 
     /** Called with update result. */
-    public static interface WebApkUpdateCallback {
+    public interface WebApkUpdateCallback {
         @CalledByNative("WebApkUpdateCallback")
         public void onResultFromNative(@WebApkInstallResult int result, boolean relaxUpdates);
     }

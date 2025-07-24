@@ -28,7 +28,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class SafetyHubNotificationsPreference extends ChromeBasePreference
         implements ListMenu.Delegate {
-    static interface MenuClickListener {
+    interface MenuClickListener {
         void onAllowClicked(SafetyHubNotificationsPreference preference);
 
         void onResetClicked(SafetyHubNotificationsPreference preference);

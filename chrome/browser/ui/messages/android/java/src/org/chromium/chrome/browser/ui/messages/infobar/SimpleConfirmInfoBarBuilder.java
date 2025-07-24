@@ -24,7 +24,7 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class SimpleConfirmInfoBarBuilder {
     /** Listens for when users interact with an infobar. */
-    public static interface Listener {
+    public interface Listener {
         /** Called when the infobar was dismissed. */
         void onInfoBarDismissed();
 

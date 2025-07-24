@@ -34,7 +34,7 @@ public class LaunchHostBrowserSelector {
      * Called once {@link #selectHostBrowser()} has selected the host browser either via a shared
      * preferences/<meta-data> lookup or via the user selecting the host browser from a dialog.
      */
-    public static interface Callback {
+    public interface Callback {
         void onBrowserSelected(
                 @Nullable PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
                 boolean dialogShown);

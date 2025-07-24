@@ -27,9 +27,10 @@ public class ProfileManager {
     private static boolean sInitialized;
 
     /** Observer for Profile creation. */
-    public static interface Observer {
+    public interface Observer {
         /**
          * Called whenever a profile is created.
+         *
          * @param profile The profile that has just been created.
          */
         public void onProfileAdded(Profile profile);
