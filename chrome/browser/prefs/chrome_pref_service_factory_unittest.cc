@@ -32,8 +32,9 @@ class ChromePrefServiceFactoryTestBase : public testing::Test {
         data_dir_.GetPath(), /*validation_delegate=*/mojo::NullRemote(),
         /*policy_service=*/
         g_browser_process->browser_policy_connector()->GetPolicyService(),
-        /*supervised_user_settings=*/nullptr, /*extension_prefs=*/nullptr,
-        pref_registry_,
+        /*supervised_user_settings=*/nullptr,
+        /*content_filters_service=*/nullptr,
+        /*extension_prefs=*/nullptr, pref_registry_,
         /*connector=*/g_browser_process->browser_policy_connector(),
         /*async=*/true, task_environment_.GetMainThreadTaskRunner().get(),
         /*os_crypt_async=*/nullptr);

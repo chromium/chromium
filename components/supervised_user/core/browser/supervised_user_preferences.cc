@@ -208,29 +208,4 @@ void SetGoogleSafeSearch(PrefService& pref_service,
   pref_service.SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch,
                           static_cast<bool>(status));
 }
-
-namespace {
-void CheckEligibilityForContentFilters(PrefService& pref_service) {
-  CHECK(!IsSubjectToParentalControls(pref_service))
-      << "Users who are subject to Family Link parental controls cannot "
-         "change browser content filters";
-}
-}  // namespace
-
-void EnableSearchContentFilters(PrefService& pref_service) {
-  CheckEligibilityForContentFilters(pref_service);
-  pref_service.SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
-}
-void DisableSearchContentFilters(PrefService& pref_service) {
-  // Reset the setting to default.
-  pref_service.ClearPref(policy::policy_prefs::kForceGoogleSafeSearch);
-}
-void EnableIncognitoMode(PrefService& pref_service) {
-  pref_service.ClearPref(policy::policy_prefs::kIncognitoModeAvailability);
-}
-void DisableIncognitoMode(PrefService& pref_service) {
-  pref_service.SetInteger(
-      policy::policy_prefs::kIncognitoModeAvailability,
-      static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
-}
 }  // namespace supervised_user

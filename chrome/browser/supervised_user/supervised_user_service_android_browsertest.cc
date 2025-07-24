@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -70,7 +71,7 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
 
   // Called just before supervised user service is created. Much like
   // SetUpLocalStatePrefService, but called after prefs are registered.
-  virtual void SetUpPrefs(PrefService* local_state) = 0;
+  virtual void SetUpPrefs(PrefService* local_state) {}
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -120,7 +121,6 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
   std::unique_ptr<KeyedService> BuildSupervisedUserService(
       content::BrowserContext* browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
-
     SetUpPrefs(profile->GetPrefs());
 
     std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
@@ -136,6 +136,8 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
             ->GetURLLoaderFactoryForBrowserProcess(),
         *profile->GetPrefs(),
         *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+            profile->GetProfileKey()),
+        SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
             profile->GetProfileKey()),
         SyncServiceFactory::GetInstance()->GetForProfile(profile),
         std::make_unique<SupervisedUserURLFilter>(
@@ -155,10 +157,6 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
 
 struct BootstrapServiceTestCase {
   std::string test_name;
-  // If true, the browser will start with values of preferences set to values
-  // indicating the user turned off the browser when both device filters were
-  // on.
-  bool set_up_hot_local_state;
   // Determines the value of browser device filter on browser startup.
   bool initial_browser_content_filters_value;
   // Determines the value of search device filter on browser startup.
@@ -189,21 +187,6 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
     : public SupervisedUserServiceBootstrapAndroidBrowserTestBase,
       public ::testing::WithParamInterface<BootstrapServiceTestCase> {
  protected:
-  void SetUpPrefs(PrefService* local_state) override {
-    if (!GetParam().set_up_hot_local_state) {
-      return;
-    }
-
-    // Before re-creating the service, set all on device prefs to enabled, to
-    // see how the browser behaves after init even if some settings had values
-    // inconsistent with the current device filters state.
-    local_state->SetBoolean(prefs::kSupervisedUserSafeSites, true);
-    local_state->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                            static_cast<int>(FilteringBehavior::kAllow));
-    EnableSearchContentFilters(*local_state);
-    DisableIncognitoMode(*local_state);
-  }
-
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
@@ -215,7 +198,7 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
-                       IngognitoIsBlockedWhenAnyFilterIsEnabled) {
+                       IncognitoIsBlockedWhenAnyFilterIsEnabled) {
   policy::IncognitoModeAvailability expected_incognito_mode_availability =
       GetParam().ShouldBlockIncognito()
           ? policy::IncognitoModeAvailability::kDisabled
@@ -311,39 +294,18 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 }
 
 const BootstrapServiceTestCase kBootstrapServiceTestCases[] = {
-    {.test_name = "AllFiltersDisabledColdStart",
-     .set_up_hot_local_state = false,
+    {.test_name = "AllFiltersDisabled",
      .initial_browser_content_filters_value = false,
      .initial_search_content_filters_value = false},
-    {.test_name = "AllFiltersEnabledColdStart",
-     .set_up_hot_local_state = false,
+    {.test_name = "AllFiltersEnabled",
      .initial_browser_content_filters_value = true,
      .initial_search_content_filters_value = true},
-    {.test_name = "SearchFilterEnabledColdStart",
-     .set_up_hot_local_state = false,
+    {.test_name = "SearchFilterEnabled",
      .initial_browser_content_filters_value = false,
      .initial_search_content_filters_value = true},
-    {.test_name = "BrowserFilterEnabledColdStart",
-     .set_up_hot_local_state = false,
+    {.test_name = "BrowserFilterEnabled",
      .initial_browser_content_filters_value = true,
-     .initial_search_content_filters_value = false},
-    {.test_name = "AllFiltersDisabledHotStart",
-     .set_up_hot_local_state = true,
-     .initial_browser_content_filters_value = false,
-     .initial_search_content_filters_value = false},
-    {.test_name = "AllFiltersEnabledHotStart",
-     .set_up_hot_local_state = true,
-     .initial_browser_content_filters_value = true,
-     .initial_search_content_filters_value = true},
-    {.test_name = "SearchFilterEnabledHotStart",
-     .set_up_hot_local_state = true,
-     .initial_browser_content_filters_value = false,
-     .initial_search_content_filters_value = true},
-    {.test_name = "BrowserFilterEnabledHotStart",
-     .set_up_hot_local_state = true,
-     .initial_browser_content_filters_value = true,
-     .initial_search_content_filters_value = false},
-};
+     .initial_search_content_filters_value = false}};
 
 INSTANTIATE_TEST_SUITE_P(
     ,
@@ -358,10 +320,6 @@ INSTANTIATE_TEST_SUITE_P(
 class SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest
     : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
  protected:
-  void SetUpPrefs(PrefService* local_state) override {
-    EnableParentalControls(*local_state);
-  }
-
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
@@ -369,11 +327,15 @@ class SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest
     return std::make_unique<FakeContentFiltersObserverBridge>(
         setting_name, on_enabled, on_disabled, /*initial_value=*/false);
   }
+
+  void SetUpPrefs(PrefService* local_state) override {
+    EnableParentalControls(*local_state);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
-    IngognitoIsBlocked) {
+    IncognitoIsBlocked) {
   // TODO(http://crbug.com/433234589): this test could actually try to open
   // incognito (to no avail).
   EXPECT_EQ(static_cast<policy::IncognitoModeAvailability>(
@@ -414,8 +376,6 @@ IN_PROC_BROWSER_TEST_F(
 class SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest
     : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
  protected:
-  void SetUpPrefs(PrefService* local_state) override {}
-
   std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
       std::string_view setting_name,
       base::RepeatingClosure on_enabled,
@@ -427,7 +387,7 @@ class SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest
 
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest,
-    IngognitoIsBlocked) {
+    IncognitoIsNotBlocked) {
   // TODO(http://crbug.com/433234589): this test could actually try to open
   // incognito (to no avail).
   EXPECT_EQ(static_cast<policy::IncognitoModeAvailability>(

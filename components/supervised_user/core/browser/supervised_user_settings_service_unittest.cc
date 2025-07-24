@@ -441,7 +441,9 @@ TEST_F(SupervisedUserSettingsServiceTest,
   // Example pref store that consumes changes in the settings service. Has a
   // private destructor.
   scoped_refptr<SupervisedUserPrefStore> pref_store =
-      new SupervisedUserPrefStore(&settings_service_);
+      new SupervisedUserPrefStore(
+          &settings_service_,
+          /*supervised_user_content_filters_service=*/nullptr);
   StartSyncing(syncer::SyncDataList());
 
   // Implementation detail: SupervisedUserPrefStore presets value of

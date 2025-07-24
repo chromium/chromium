@@ -178,6 +178,11 @@ void SupervisedUserSettingsService::SetActive(bool active) {
   InformSubscribers();
 }
 
+void SupervisedUserSettingsService::SetSuspended(bool suspended) {
+  CHECK(!active_) << "Only inactive services can be suspended.";
+  suspended_ = suspended;
+}
+
 bool SupervisedUserSettingsService::IsReady() const {
   // Initialization cannot be complete but have failed at the same time.
   DCHECK(!(store_->IsInitializationComplete() && initialization_failed_));
@@ -556,7 +561,7 @@ base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault() {
 }
 
 void SupervisedUserSettingsService::InformSubscribers() {
-  if (!IsReady()) {
+  if (!IsReady() || suspended_) {
     return;
   }
 

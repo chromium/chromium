@@ -14,6 +14,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -35,7 +36,8 @@ SupervisedUserSettingsService* InitializeSettingsServiceForTesting(
 
 // Prepares a pref service component for use in test.
 scoped_refptr<TestingPrefStore> CreateTestingPrefStore(
-    SupervisedUserSettingsService* settings_service);
+    SupervisedUserSettingsService* settings_service,
+    SupervisedUserContentFiltersService* content_filters_service);
 
 // Pref service exposed by this environment has the supervised user pref store
 // configured.
@@ -50,18 +52,22 @@ class SupervisedUserPrefStoreTestEnvironment {
 
   PrefService* pref_service();
   SupervisedUserSettingsService* settings_service();
+  SupervisedUserContentFiltersService* content_filters_service();
 
   void Shutdown();
 
  private:
   SupervisedUserSettingsService settings_service_;
+  SupervisedUserContentFiltersService content_filters_service_;
+
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       syncable_pref_service_ =
           std::make_unique<sync_preferences::TestingPrefServiceSyncable>(
               /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
               /*supervised_user_prefs=*/
               CreateTestingPrefStore(
-                  InitializeSettingsServiceForTesting(&settings_service_)),
+                  InitializeSettingsServiceForTesting(&settings_service_),
+                  &content_filters_service_),
               /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
               /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
               /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
@@ -133,6 +139,7 @@ class TestSupervisedUserService : public SupervisedUserService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
       SupervisedUserSettingsService& settings_service,
+      SupervisedUserContentFiltersService* content_filters_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<SupervisedUserURLFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>

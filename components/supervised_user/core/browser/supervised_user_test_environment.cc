@@ -13,6 +13,7 @@
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -38,10 +39,12 @@ namespace {
 class SupervisedUserTestingPrefStore : public TestingPrefStore,
                                        public PrefStore::Observer {
  public:
-  explicit SupervisedUserTestingPrefStore(
-      supervised_user::SupervisedUserSettingsService* settings_service)
-      : pref_store_(
-            base::MakeRefCounted<SupervisedUserPrefStore>(settings_service)) {
+  SupervisedUserTestingPrefStore(
+      SupervisedUserSettingsService* settings_service,
+      SupervisedUserContentFiltersService* content_filters_service)
+      : pref_store_(base::MakeRefCounted<SupervisedUserPrefStore>(
+            settings_service,
+            content_filters_service)) {
     observation_.Observe(pref_store_.get());
   }
 
@@ -113,8 +116,10 @@ SupervisedUserSettingsService* InitializeSettingsServiceForTesting(
 }
 
 scoped_refptr<TestingPrefStore> CreateTestingPrefStore(
-    SupervisedUserSettingsService* settings_service) {
-  return base::MakeRefCounted<SupervisedUserTestingPrefStore>(settings_service);
+    SupervisedUserSettingsService* settings_service,
+    SupervisedUserContentFiltersService* content_filters_service) {
+  return base::MakeRefCounted<SupervisedUserTestingPrefStore>(
+      settings_service, content_filters_service);
 }
 
 bool SupervisedUserMetricsServiceExtensionDelegateFake::
@@ -155,6 +160,12 @@ SupervisedUserSettingsService*
 SupervisedUserPrefStoreTestEnvironment::settings_service() {
   return &settings_service_;
 }
+
+SupervisedUserContentFiltersService*
+SupervisedUserPrefStoreTestEnvironment::content_filters_service() {
+  return &content_filters_service_;
+}
+
 PrefService* SupervisedUserPrefStoreTestEnvironment::pref_service() {
   return syncable_pref_service_.get();
 }
@@ -174,7 +185,9 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       *pref_store_environment_.pref_service(),
-      *pref_store_environment_.settings_service(), &sync_service_,
+      *pref_store_environment_.settings_service(),
+      pref_store_environment_.content_filters_service(),
+      &sync_service_,
       std::make_unique<SupervisedUserURLFilter>(
           *pref_store_environment_.pref_service(),
           std::make_unique<FakeURLFilterDelegate>(), std::move(client)),
@@ -340,6 +353,7 @@ TestSupervisedUserService::TestSupervisedUserService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService& user_prefs,
     SupervisedUserSettingsService& settings_service,
+    SupervisedUserContentFiltersService* content_filters_service,
     syncer::SyncService* sync_service,
     std::unique_ptr<SupervisedUserURLFilter> url_filter,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate)
@@ -348,6 +362,7 @@ TestSupervisedUserService::TestSupervisedUserService(
           url_loader_factory,
           user_prefs,
           settings_service,
+          content_filters_service,
           sync_service,
           std::move(url_filter),
           std::move(platform_delegate)

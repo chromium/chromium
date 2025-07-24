@@ -49,14 +49,6 @@ bool IsSubjectToParentalControls(const PrefService& pref_service);
 bool IsGoogleSafeSearchEnforced(const PrefService& pref_service);
 void SetGoogleSafeSearch(PrefService& pref_service,
                          GoogleSafeSearchStateStatus status);
-
-// A set of modifiers of supervision state without associated account.
-// Changes are written to user prefs.
-void EnableSearchContentFilters(PrefService& pref_service);
-void DisableSearchContentFilters(PrefService& pref_service);
-void EnableIncognitoMode(PrefService& pref_service);
-void DisableIncognitoMode(PrefService& pref_service);
-
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_

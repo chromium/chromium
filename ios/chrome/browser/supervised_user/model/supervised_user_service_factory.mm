@@ -67,6 +67,7 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<supervised_user::SupervisedUserService>(
       identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(SupervisedUserSettingsServiceFactory::GetForProfile(profile)),
+      /*content_settings_service=*/nullptr,
       &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
       std::make_unique<supervised_user::SupervisedUserURLFilter>(
           CHECK_DEREF(profile->GetPrefs()),

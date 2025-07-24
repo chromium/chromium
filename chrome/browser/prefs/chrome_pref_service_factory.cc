@@ -61,6 +61,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -304,6 +305,8 @@ void PrepareFactory(
     const base::FilePath& pref_filename,
     policy::PolicyService* policy_service,
     supervised_user::SupervisedUserSettingsService* supervised_user_settings,
+    supervised_user::SupervisedUserContentFiltersService*
+        content_filters_service,
     scoped_refptr<PersistentPrefStore> user_pref_store,
     scoped_refptr<PrefStore> extension_prefs,
     bool async,
@@ -311,8 +314,11 @@ void PrepareFactory(
   factory->SetManagedPolicies(policy_service, policy_connector);
   factory->SetRecommendedPolicies(policy_service, policy_connector);
   if (supervised_user_settings) {
+    // supervised_user_prefs handles the case when content_filters_service is
+    // nullptr. It's simply not subscribing to empty service's notifications.
     scoped_refptr<PrefStore> supervised_user_prefs =
-        base::MakeRefCounted<SupervisedUserPrefStore>(supervised_user_settings);
+        base::MakeRefCounted<SupervisedUserPrefStore>(supervised_user_settings,
+                                                      content_filters_service);
     DCHECK(async || supervised_user_prefs->IsInitializationComplete());
     factory->set_supervised_user_prefs(supervised_user_prefs);
   }
@@ -366,9 +372,10 @@ std::unique_ptr<PrefService> CreateLocalState(
     policy::BrowserPolicyConnector* policy_connector) {
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, pref_filename, policy_service,
-                 nullptr,  // supervised_user_settings
+                 /*supervised_user_settings=*/nullptr,
+                 /*content_filters_service=*/nullptr,
                  pref_store,
-                 nullptr,  // extension_prefs
+                 /*extension_prefs=*/nullptr,
                  /*async=*/false, policy_connector);
 
   return factory.Create(std::move(pref_registry));
@@ -380,6 +387,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
         validation_delegate,
     policy::PolicyService* policy_service,
     supervised_user::SupervisedUserSettingsService* supervised_user_settings,
+    supervised_user::SupervisedUserContentFiltersService*
+        content_filters_service,
     scoped_refptr<PrefStore> extension_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     policy::BrowserPolicyConnector* connector,
@@ -408,8 +417,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
 #endif
 
   PrepareFactory(&factory, profile_path, policy_service,
-                 supervised_user_settings, user_pref_store,
-                 std::move(extension_prefs), async, connector);
+                 supervised_user_settings, content_filters_service,
+                 user_pref_store, std::move(extension_prefs), async, connector);
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   // Get raw pointers to the filters before moving user_pref_store.

@@ -105,6 +105,8 @@ static_library("browser") {
     "permission_request_creator_impl.h",
     "remote_web_approvals_manager.cc",
     "remote_web_approvals_manager.h",
+    "supervised_user_content_filters_service.cc",
+    "supervised_user_content_filters_service.h",
     "supervised_user_content_settings_provider.cc",
     "supervised_user_content_settings_provider.h",
     "supervised_user_error_page.cc",
