@@ -21,7 +21,6 @@
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 using ::testing::UnorderedElementsAreArray;
 
@@ -344,10 +343,10 @@ TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
 
     // Wipe out the first prefix. We should still see the second prefix.
     std::vector<DomStorageDatabase::KeyValuePair> entries;
-    leveldb::WriteBatch batch;
+    std::unique_ptr<DomStorageBatchOperation> batch = db.CreateBatchOperation();
     EXPECT_STATUS_OK(
-        db.DeletePrefixed(base::byte_span_from_cstring(kTestPrefix1), &batch));
-    EXPECT_STATUS_OK(db.Commit(&batch));
+        db.DeletePrefixed(base::byte_span_from_cstring(kTestPrefix1), *batch));
+    EXPECT_STATUS_OK(db.Commit(*batch));
     EXPECT_STATUS_OK(
         db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix1), &entries));
     EXPECT_TRUE(entries.empty());
@@ -359,10 +358,10 @@ TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
                      MakeKeyValuePair(kTestPrefix2Key2, kTestValue3)}));
 
     // Wipe out the second prefix.
-    batch.Clear();
+    batch = db.CreateBatchOperation();
     EXPECT_STATUS_OK(
-        db.DeletePrefixed(base::byte_span_from_cstring(kTestPrefix2), &batch));
-    EXPECT_STATUS_OK(db.Commit(&batch));
+        db.DeletePrefixed(base::byte_span_from_cstring(kTestPrefix2), *batch));
+    EXPECT_STATUS_OK(db.Commit(*batch));
     EXPECT_STATUS_OK(
         db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
 
@@ -406,11 +405,11 @@ TEST_F(StorageServiceDomStorageDatabaseTest, CopyPrefixed) {
 
     // Copy the prefixed entries to |kTestPrefix2| and verify that we have the
     // expected entries.
-    leveldb::WriteBatch batch;
+    std::unique_ptr<DomStorageBatchOperation> batch = db.CreateBatchOperation();
     EXPECT_STATUS_OK(db.CopyPrefixed(base::byte_span_from_cstring(kTestPrefix1),
                                      base::byte_span_from_cstring(kTestPrefix2),
-                                     &batch));
-    EXPECT_STATUS_OK(db.Commit(&batch));
+                                     *batch));
+    EXPECT_STATUS_OK(db.Commit(*batch));
 
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     EXPECT_STATUS_OK(

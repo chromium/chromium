@@ -46,8 +46,6 @@
 #include "storage/common/database/db_status.h"
 #include "storage/common/database/leveldb_status_helper.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 
@@ -176,15 +174,14 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
       base::BindOnce(
           [](std::vector<blink::StorageKey> storage_keys,
              const DomStorageDatabase& db) {
-            leveldb::WriteBatch batch;
+            std::unique_ptr<DomStorageBatchOperation> batch =
+                db.CreateBatchOperation();
             for (const auto& storage_key : storage_keys) {
-              db.DeletePrefixed(MakeStorageKeyPrefix(storage_key), &batch);
-              batch.Delete(
-                  leveldb_env::MakeSlice(CreateAccessMetaDataKey(storage_key)));
-              batch.Delete(
-                  leveldb_env::MakeSlice(CreateWriteMetaDataKey(storage_key)));
+              db.DeletePrefixed(MakeStorageKeyPrefix(storage_key), *batch);
+              batch->Delete(CreateAccessMetaDataKey(storage_key));
+              batch->Delete(CreateWriteMetaDataKey(storage_key));
             }
-            return db.Commit(&batch);
+            return db.Commit(*batch);
           },
           storage_keys),
       std::move(callback));
@@ -249,15 +246,15 @@ class LocalStorageImpl::StorageAreaHolder final
         base::BindOnce(
             [](const blink::StorageKey& storage_key,
                const DomStorageDatabase& db) {
-              leveldb::WriteBatch batch;
+              std::unique_ptr<DomStorageBatchOperation> batch =
+                  db.CreateBatchOperation();
               storage::LocalStorageAreaAccessMetaData data;
               data.set_last_accessed(base::Time::Now().ToInternalValue());
               const std::string serialized_data = data.SerializeAsString();
-              batch.Put(
-                  leveldb_env::MakeSlice(CreateAccessMetaDataKey(storage_key)),
-                  leveldb_env::MakeSlice(DomStorageDatabase::Value(
-                      serialized_data.begin(), serialized_data.end())));
-              return db.Commit(&batch);
+              batch->Put(CreateAccessMetaDataKey(storage_key),
+                         DomStorageDatabase::Value(serialized_data.begin(),
+                                                   serialized_data.end()));
+              return db.Commit(*batch);
             },
             storage_key_),
         base::BindOnce([](DbStatus status) {

@@ -34,7 +34,6 @@
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 
@@ -219,9 +218,10 @@ class StorageAreaImplTest : public testing::Test,
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
-          leveldb::WriteBatch batch;
-          ASSERT_TRUE(db.DeletePrefixed({}, &batch).ok());
-          ASSERT_TRUE(db.Commit(&batch).ok());
+          std::unique_ptr<DomStorageBatchOperation> batch =
+              db.CreateBatchOperation();
+          ASSERT_TRUE(db.DeletePrefixed({}, *batch).ok());
+          ASSERT_TRUE(db.Commit(*batch).ok());
           loop.Quit();
         }));
     loop.Run();

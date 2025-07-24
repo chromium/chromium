@@ -118,7 +118,27 @@ DbStatus ForEachWithPrefix(leveldb::DB* db,
   return FromLevelDBStatus(iter->status());
 }
 
+leveldb::WriteBatch* GetAsWriteBatch(DomStorageBatchOperation& batch) {
+  return static_cast<DomStorageBatchOperationLevelDB*>(&batch)->write_batch();
+}
+
 }  // namespace
+
+DomStorageBatchOperationLevelDB::DomStorageBatchOperationLevelDB() = default;
+
+DomStorageBatchOperationLevelDB::~DomStorageBatchOperationLevelDB() = default;
+
+void DomStorageBatchOperationLevelDB::Put(KeyView key, ValueView value) {
+  write_batch_.Put(MakeSlice(key), MakeSlice(value));
+}
+
+void DomStorageBatchOperationLevelDB::Delete(KeyView key) {
+  write_batch_.Delete(MakeSlice(key));
+}
+
+size_t DomStorageBatchOperationLevelDB::ApproximateSizeForMetrics() const {
+  return write_batch_.ApproximateSize();
+}
 
 DomStorageDatabaseLevelDB::DomStorageDatabaseLevelDB(
     PassKey,
@@ -289,7 +309,7 @@ DbStatus DomStorageDatabaseLevelDB::GetPrefixed(
 
 DbStatus DomStorageDatabaseLevelDB::DeletePrefixed(
     KeyView prefix,
-    leveldb::WriteBatch* batch) const {
+    DomStorageBatchOperation& batch) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     return DbStatus::IOError(kInvalidDatabaseMessage);
@@ -297,7 +317,8 @@ DbStatus DomStorageDatabaseLevelDB::DeletePrefixed(
   DbStatus status = ForEachWithPrefix(
       db_.get(), prefix,
       [&](const leveldb::Slice& key, const leveldb::Slice& value) {
-        batch->Delete(key);
+        leveldb::WriteBatch* write_batch = GetAsWriteBatch(batch);
+        write_batch->Delete(key);
       });
   return status;
 }
@@ -305,7 +326,7 @@ DbStatus DomStorageDatabaseLevelDB::DeletePrefixed(
 DbStatus DomStorageDatabaseLevelDB::CopyPrefixed(
     KeyView prefix,
     KeyView new_prefix,
-    leveldb::WriteBatch* batch) const {
+    DomStorageBatchOperation& batch) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     return DbStatus::IOError(kInvalidDatabaseMessage);
@@ -320,19 +341,22 @@ DbStatus DomStorageDatabaseLevelDB::CopyPrefixed(
         std::copy(UNSAFE_TODO(key.data() + prefix.size()),
                   UNSAFE_TODO(key.data() + key.size()),
                   new_key.begin() + new_prefix.size());
-        batch->Put(MakeSlice(new_key), value);
+        leveldb::WriteBatch* write_batch = GetAsWriteBatch(batch);
+        write_batch->Put(MakeSlice(new_key), value);
       });
   return status;
 }
 
-DbStatus DomStorageDatabaseLevelDB::Commit(leveldb::WriteBatch* batch) const {
+DbStatus DomStorageDatabaseLevelDB::Commit(
+    DomStorageBatchOperation& batch) const {
   if (!db_) {
     return DbStatus::IOError(kInvalidDatabaseMessage);
   }
   if (fail_commits_for_testing_) {
     return DbStatus::IOError("Simulated I/O Error");
   }
-  return FromLevelDBStatus(db_->Write(leveldb::WriteOptions(), batch));
+  return FromLevelDBStatus(
+      db_->Write(leveldb::WriteOptions(), GetAsWriteBatch(batch)));
 }
 
 DbStatus DomStorageDatabaseLevelDB::RewriteDB() {
@@ -344,6 +368,11 @@ DbStatus DomStorageDatabaseLevelDB::RewriteDB() {
     db_.reset();
   }
   return FromLevelDBStatus(status);
+}
+
+std::unique_ptr<DomStorageBatchOperation>
+DomStorageDatabaseLevelDB::CreateBatchOperation() const {
+  return std::make_unique<DomStorageBatchOperationLevelDB>();
 }
 
 void DomStorageDatabaseLevelDB::SetDestructionCallbackForTesting(

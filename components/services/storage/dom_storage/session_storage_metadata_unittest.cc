@@ -30,7 +30,6 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
-#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 namespace {
@@ -467,21 +466,30 @@ class SessionStorageMetadataMigrationTest : public testing::Test {
   std::vector<uint8_t> namespaces_prefix_key_;
 };
 
-struct BatchCollector : public leveldb::WriteBatch::Handler {
+class BatchCollector : public DomStorageBatchOperation {
  public:
   BatchCollector() = default;
-  ~BatchCollector() override = default;
 
-  void Put(const leveldb::Slice& key, const leveldb::Slice& value) override {
-    new_entries.emplace(key.ToString(), value.ToString());
+  void Put(KeyView key, ValueView value) override {
+    new_entries_.emplace(std::string(key.begin(), key.end()),
+                         std::string(value.begin(), value.end()));
   }
 
-  void Delete(const leveldb::Slice& key) override {
-    deleted_keys.push_back(key.ToString());
+  void Delete(KeyView key) override {
+    deleted_keys_.emplace_back(key.begin(), key.end());
   }
 
-  std::map<std::string, std::string> new_entries;
-  std::vector<std::string> deleted_keys;
+  std::vector<std::string> GetDeletedKeys() const { return deleted_keys_; }
+
+  std::map<std::string, std::string> GetNewEntries() const {
+    return new_entries_;
+  }
+
+ private:
+  size_t ApproximateSizeForMetrics() const override { return 0; }
+
+  std::map<std::string, std::string> new_entries_;
+  std::vector<std::string> deleted_keys_;
 };
 
 TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
@@ -539,26 +547,27 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
           base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
   loop.Run();
 
-  // Run the tasks on our local batch object.
-  leveldb::WriteBatch batch;
+  std::map<std::string, std::string> new_entries;
+  std::vector<std::string> deleted_keys;
   base::RunLoop loop2;
   database->RunDatabaseTask(
       base::OnceCallback<bool(const DomStorageDatabase&)>(
           base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+            auto collector = std::make_unique<BatchCollector>();
             for (auto& task : migration_tasks) {
-              std::move(task).Run(&batch, db);
+              std::move(task).Run(*collector, db);
             }
+
+            new_entries = collector->GetNewEntries();
+            deleted_keys = collector->GetDeletedKeys();
             return true;
           })),
       base::BindLambdaForTesting([&](bool) { loop2.Quit(); }));
   loop2.Run();
 
-  BatchCollector collector;
-  batch.Iterate(&collector);
-  EXPECT_EQ(1u, collector.new_entries.size());
-  EXPECT_EQ("1", collector.new_entries["version"]);
-  EXPECT_THAT(collector.deleted_keys,
-              testing::ElementsAre("namespace-", "map-0-"));
+  EXPECT_EQ(1u, new_entries.size());
+  EXPECT_EQ("1", new_entries["version"]);
+  EXPECT_THAT(deleted_keys, testing::ElementsAre("namespace-", "map-0-"));
 }
 
 }  // namespace

@@ -25,11 +25,9 @@ class MemoryAllocatorDumpGuid;
 }  // namespace trace_event
 }  // namespace base
 
-namespace leveldb {
-class WriteBatch;
-}  // namespace leveldb
-
 namespace storage {
+
+class DomStorageBatchOperation;
 
 // Abstract interface for DOM storage database implementations. Provides
 // key-value storage operations for DOMStorage StorageAreas.
@@ -77,23 +75,22 @@ class DomStorageDatabase {
   virtual DbStatus GetPrefixed(KeyView prefix,
                                std::vector<KeyValuePair>* entries) const = 0;
 
-  // TODO(crbug.com/377242771): Move away from using leveldb::WriteBatch in this
-  // interface.
-  //
+  // TODO(crbug.com/377242771): Instead of passing a DomStorageBatchOperation,
+  // consider moving these methods to the DomStorageBatchOperation.
   // Adds operations to |batch| which will delete all database entries whose key
   // starts with |prefix| when committed.
   virtual DbStatus DeletePrefixed(KeyView prefix,
-                                  leveldb::WriteBatch* batch) const = 0;
+                                  DomStorageBatchOperation& batch) const = 0;
 
   // Adds operations to |batch| which when committed will copy all database
   // entries whose key starts with |prefix| over to new entries with |prefix|
   // replaced by |new_prefix| in each new key.
   virtual DbStatus CopyPrefixed(KeyView prefix,
                                 KeyView new_prefix,
-                                leveldb::WriteBatch* batch) const = 0;
+                                DomStorageBatchOperation& batch) const = 0;
 
   // Commits operations in |batch| to the database.
-  virtual DbStatus Commit(leveldb::WriteBatch* batch) const = 0;
+  virtual DbStatus Commit(DomStorageBatchOperation& batch) const = 0;
 
   // Rewrites the database on disk to clean up traces of deleted entries.
   //
@@ -101,6 +98,12 @@ class DomStorageDatabase {
   // be usable; in such cases, all future operations will return an IOError
   // status.
   virtual DbStatus RewriteDB() = 0;
+
+  // Returns a database implementation appropriate batch operation for
+  // atomically applying multiple database updates. The returned object must not
+  // outlive the DomStorageDatabase instance it was created from.
+  virtual std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation()
+      const = 0;
 
   // Test only methods.
   virtual void MakeAllCommitsFailForTesting() = 0;
@@ -153,6 +156,30 @@ class DomStorageDatabaseFactory {
       const std::string& name,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       base::OnceCallback<void(DbStatus)> callback);
+};
+
+// Abstraction for batched operations on a DomStorageDatabase.
+// This class encapsulates a series of database operations that should be
+// performed atomically.
+class DomStorageBatchOperation {
+ public:
+  using Key = DomStorageDatabase::Key;
+  using KeyView = DomStorageDatabase::KeyView;
+  using Value = DomStorageDatabase::Value;
+  using ValueView = DomStorageDatabase::ValueView;
+
+  virtual ~DomStorageBatchOperation() = default;
+
+  // Store the mapping "key->value" in the database.
+  virtual void Put(KeyView key, ValueView value) = 0;
+
+  // Delete the entry for "key" if it exists.
+  virtual void Delete(KeyView key) = 0;
+
+  // The size of the database changes caused by this batch operation. This
+  // number is tied to implementation details and should only be used for
+  // metrics.
+  virtual size_t ApproximateSizeForMetrics() const = 0;
 };
 
 }  // namespace storage

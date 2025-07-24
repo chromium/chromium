@@ -35,7 +35,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 
@@ -976,9 +975,10 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   base::RunLoop loop;
   session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
       base::BindOnce([](const DomStorageDatabase& db) {
-        leveldb::WriteBatch batch;
-        db.DeletePrefixed(StringViewToUint8Vector("map"), &batch);
-        EXPECT_TRUE(db.Commit(&batch).ok());
+        std::unique_ptr<DomStorageBatchOperation> batch =
+            db.CreateBatchOperation();
+        db.DeletePrefixed(StringViewToUint8Vector("map"), *batch);
+        EXPECT_TRUE(db.Commit(*batch).ok());
         return 0;
       }),
       base::IgnoreArgs<int>(loop.QuitClosure()));

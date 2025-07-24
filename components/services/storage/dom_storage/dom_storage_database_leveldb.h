@@ -24,6 +24,7 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "storage/common/database/db_status.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace base {
 class FilePath;
@@ -32,10 +33,28 @@ class FilePath;
 namespace leveldb {
 class DB;
 class Env;
-class WriteBatch;
 }  // namespace leveldb
 
 namespace storage {
+
+// A DomStorageBatchOperation implementation that uses LevelDB's WriteBatch.
+class DomStorageBatchOperationLevelDB : public DomStorageBatchOperation {
+ public:
+  DomStorageBatchOperationLevelDB();
+  ~DomStorageBatchOperationLevelDB() override;
+
+  // DomStorageBatchOperation implementation.
+  void Put(KeyView key, ValueView value) override;
+  void Delete(KeyView key) override;
+  size_t ApproximateSizeForMetrics() const override;
+
+  // Access to the underlying LevelDB WriteBatch
+  leveldb::WriteBatch* write_batch() { return &write_batch_; }
+  const leveldb::WriteBatch* write_batch() const { return &write_batch_; }
+
+ private:
+  leveldb::WriteBatch write_batch_;
+};
 
 // A DomStorageDatabase implementation that uses LevelDB to store data. This
 // object is not thread-safe. Additionally, it must be instantiated on a
@@ -62,12 +81,14 @@ class DomStorageDatabaseLevelDB
   DbStatus GetPrefixed(KeyView prefix,
                        std::vector<KeyValuePair>* entries) const override;
   DbStatus DeletePrefixed(KeyView prefix,
-                          leveldb::WriteBatch* batch) const override;
+                          DomStorageBatchOperation& batch) const override;
   DbStatus CopyPrefixed(KeyView prefix,
                         KeyView new_prefix,
-                        leveldb::WriteBatch* batch) const override;
-  DbStatus Commit(leveldb::WriteBatch* batch) const override;
+                        DomStorageBatchOperation& batch) const override;
+  DbStatus Commit(DomStorageBatchOperation& batch) const override;
   DbStatus RewriteDB() override;
+  std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation()
+      const override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
   void MakeAllCommitsFailForTesting() override;
 

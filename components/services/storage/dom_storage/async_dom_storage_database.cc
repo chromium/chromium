@@ -11,7 +11,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 
@@ -72,21 +71,23 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                       [](RunBatchTasksContext context,
                          std::vector<BatchDatabaseTask> tasks,
                          const DomStorageDatabase& db) -> DbStatus {
-                        leveldb::WriteBatch batch;
+                        std::unique_ptr<DomStorageBatchOperation> batch =
+                            db.CreateBatchOperation();
                         // TODO(crbug.com/40245293): Remove this after debugging
                         // is complete.
                         base::debug::Alias(&context);
                         size_t batch_task_count = tasks.size();
                         size_t iteration_count = 0;
-                        size_t current_batch_size = batch.ApproximateSize();
+                        size_t current_batch_size =
+                            batch->ApproximateSizeForMetrics();
                         base::debug::Alias(&batch_task_count);
                         base::debug::Alias(&iteration_count);
                         base::debug::Alias(&current_batch_size);
                         for (auto& task : tasks) {
                           iteration_count++;
-                          std::move(task).Run(&batch, db);
-                          size_t growth =
-                              batch.ApproximateSize() - current_batch_size;
+                          std::move(task).Run(*batch, db);
+                          size_t growth = batch->ApproximateSizeForMetrics() -
+                                          current_batch_size;
                           base::UmaHistogramCustomCounts(
                               "Storage.DomStorage."
                               "BatchTaskGrowthSizeBytes2",
@@ -96,7 +97,8 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                             size_t target_batch_size =
                                 batch_size_mb * 1024 * 1024;
                             if (current_batch_size < target_batch_size &&
-                                batch.ApproximateSize() >= target_batch_size) {
+                                batch->ApproximateSizeForMetrics() >=
+                                    target_batch_size) {
                               base::UmaHistogramCounts10000(
                                   base::StringPrintf("Storage.DomStorage."
                                                      "IterationsToReach%zuMB2",
@@ -104,9 +106,10 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                                   iteration_count);
                             }
                           }
-                          current_batch_size = batch.ApproximateSize();
+                          current_batch_size =
+                              batch->ApproximateSizeForMetrics();
                         }
-                        return db.Commit(&batch);
+                        return db.Commit(*batch);
                       },
                       context, std::move(tasks)),
                   std::move(callback));
@@ -152,7 +155,8 @@ void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
   RunDatabaseTask(
       base::BindOnce(
           [](std::vector<Commit> commits, const DomStorageDatabase& db) {
-            leveldb::WriteBatch batch;
+            std::unique_ptr<DomStorageBatchOperation> batch =
+                db.CreateBatchOperation();
             for (const Commit& commit : commits) {
               const auto now = base::TimeTicks::Now();
               for (const base::TimeTicks& put_time : commit.timestamps) {
@@ -161,21 +165,20 @@ void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
               }
 
               if (commit.clear_all_first) {
-                db.DeletePrefixed(commit.prefix, &batch);
+                db.DeletePrefixed(commit.prefix, *batch);
               }
               for (const auto& entry : commit.entries_to_add) {
-                batch.Put(leveldb_env::MakeSlice(entry.key),
-                          leveldb_env::MakeSlice(entry.value));
+                batch->Put(entry.key, entry.value);
               }
               for (const auto& key : commit.keys_to_delete) {
-                batch.Delete(leveldb_env::MakeSlice(key));
+                batch->Delete(key);
               }
               if (commit.copy_to_prefix) {
                 db.CopyPrefixed(commit.prefix, commit.copy_to_prefix.value(),
-                                &batch);
+                                *batch);
               }
             }
-            return db.Commit(&batch);
+            return db.Commit(*batch);
           },
           std::move(commits)),
       std::move(run_all));
