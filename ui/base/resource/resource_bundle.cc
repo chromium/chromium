@@ -406,40 +406,41 @@ bool ResourceBundle::LocaleDataPakExists(std::string_view locale,
 #if BUILDFLAG(IS_WIN)
   // https://crbug.com/40688225: Chrome sometimes fails to find standard .pak
   // files. One theory is that this happens shortly after an update because
-  // scanners (e.g., A/V) are busy checking Chrome's files. If this is
-  // happening, then `base::PathExists` is reporting `false` for files that
-  // exist but can't be opened.
+  // scanners (e.g., A/V) are busy checking Chrome's files. Record the last
+  // found and the last not found pak file in crash keys to reveal what was
+  // searched for and/or found when there is a failure to load resources.
   DWORD attributes;
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     attributes = ::GetFileAttributes(path.value().c_str());
   }
-  if (attributes == FILE_ATTRIBUTE_DIRECTORY) {
-    return false;  // A directory is not a .pak file.
-  }
   if (attributes != INVALID_FILE_ATTRIBUTES) {
-    return true;  // Attributes were read; the file must exist.
+    static auto* const found_path_key = base::debug::AllocateCrashKeyString(
+        "LocaleDataPakExists-found_path", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(found_path_key, path.AsUTF8Unsafe());
+    static auto* const found_attrs_key = base::debug::AllocateCrashKeyString(
+        "LocaleDataPakExists-found_attrs", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(found_attrs_key,
+                                   base::NumberToString(attributes));
+    // Report that the file exists as long as it isn't a directory.
+    return (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
   }
+
+  // ERROR_FILE_NOT_FOUND means that path.BaseName() does not exist.
+  // PATH_NOT_FOUND means that path.DirName() does not exist.
+  // ERROR_ACCESS_DENIED could mean that the file has been marked for deletion.
+  // ERROR_FILE_CORRUPT has been known to happen, and is surely unrecoverable.
+  // Treat these and all other errors as if the file does not exist.
   const auto error = ::GetLastError();
-  if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND) {
-    return false;  // `path` does not exist.
-  }
-  // The attributes could not be read yet `path` exists. This is likely a case
-  // of the file being locked by other software. Either the file will be
-  // readable by the time it's needed, or the failure to open it will be handled
-  // at that time.
-
-  // Include the path and the error in subsequent crashes (e.g., in Chrome's
-  // InitResourceBundleAndDetermineLocale).
-  static auto* const busy_path_key = base::debug::AllocateCrashKeyString(
-      "LocaleDataPakExists-busy_path", base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(busy_path_key, path.AsUTF8Unsafe());
-  static auto* const busy_error_key = base::debug::AllocateCrashKeyString(
-      "LocaleDataPakExists-busy_error", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(busy_error_key, base::NumberToString(error));
-
-  return true;
+  static auto* const not_found_path_key = base::debug::AllocateCrashKeyString(
+      "LocaleDataPakExists-not_found_path", base::debug::CrashKeySize::Size256);
+  base::debug::SetCrashKeyString(not_found_path_key, path.AsUTF8Unsafe());
+  static auto* const not_found_error_key = base::debug::AllocateCrashKeyString(
+      "LocaleDataPakExists-not_found_error", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(not_found_error_key,
+                                 base::NumberToString(error));
+  return false;
 #else
   return base::PathExists(path);
 #endif
@@ -487,6 +488,7 @@ base::FilePath ResourceBundle::GetLocaleFilePath(std::string_view app_locale) {
     return base::FilePath();
 
   base::FilePath locale_file_path;
+
   if (base::PathService::Get(ui::DIR_LOCALES, &locale_file_path)) {
     locale_file_path = locale_file_path.AppendASCII(
         base::StrCat({app_locale, kPakFileExtension}));
