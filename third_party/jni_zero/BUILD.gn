@@ -60,6 +60,10 @@ component("jni_zero") {
   ]
   configs += [ ":jni_include_dir" ]
 
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   defines = []
   if (enable_jni_multiplexing) {
     defines += [ "JNI_ZERO_MULTIPLEXING_ENABLED" ]
