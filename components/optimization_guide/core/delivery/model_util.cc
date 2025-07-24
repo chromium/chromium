@@ -161,6 +161,8 @@ std::string GetStringNameForOptimizationTarget(
       return "PermissionsAiv4GeolocationDesktop";
     case proto::OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP:
       return "PermissionsAiv4NotificationsDesktop";
+    case proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY:
+      return "GeneralizedSafety";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

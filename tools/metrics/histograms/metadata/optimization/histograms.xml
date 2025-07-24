@@ -97,6 +97,8 @@ chromium-metrics-reviews@google.com.
   <variant name="EduClassifier" summary="Education classifier"/>
   <variant name="ExperimentalEmbedder"
       summary="Embedder for performance experiments"/>
+  <variant name="GeneralizedSafety"
+      summary="Safety classifier, to replace `TextSafety` target"/>
   <variant name="GeolocationPermissions"
       summary="Permissions: Use permissions historic data to decide on
                relevance for a Geolocation permission request"/>
