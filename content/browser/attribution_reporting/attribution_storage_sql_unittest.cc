@@ -1080,14 +1080,7 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
 TEST_F(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
   OpenDatabase();
 
-  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
-
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
-                  DefaultAggregatableTriggerBuilder().Build()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kSuccess),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+  AddEventAndAggregatableReportsToStorage();
 
   std::vector<AttributionReport> reports =
       storage()->GetAttributionReports(base::Time::Max());
@@ -1142,17 +1135,7 @@ TEST_F(AttributionStorageSqlTest,
        ExpiredSourceWithPendingAggregatableAttribution_NotDeleted) {
   OpenDatabase();
 
-  storage()->StoreSource(TestAggregatableSourceProvider()
-                             .GetBuilder()
-                             .SetExpiry(base::Milliseconds(3))
-                             .Build());
-
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
-                  DefaultAggregatableTriggerBuilder().Build()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kSuccess),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
+  AddEventAndAggregatableReportsToStorage();
 
   std::vector<AttributionReport> reports =
       storage()->GetAttributionReports(base::Time::Max());
