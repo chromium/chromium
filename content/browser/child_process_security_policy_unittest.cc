@@ -3359,6 +3359,55 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
   p->Remove(kRendererID);
 }
 
+// Test that
+// ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOrigin()
+// ignores opaque origins.
+TEST_P(ChildProcessSecurityPolicyTest,
+       AddV8OptimizationDisabledStateForOpaqueOrigin) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  BrowsingInstanceId browsing_instance_id =
+      SiteInstanceImpl::NextBrowsingInstanceId();
+  url::Origin opaque_origin;
+
+  p->AddV8OptimizationDisabledStateForOrigin(
+      browsing_instance_id, opaque_origin,
+      /*are_v8_optimizations_disabled=*/false);
+  std::optional<bool> are_v8_optimizations_disabled_result =
+      p->LookupAreV8OptimizationsDisabled(browsing_instance_id, opaque_origin);
+  EXPECT_FALSE(are_v8_optimizations_disabled_result.has_value());
+}
+
+// Test the behavior of
+// ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOrigin()
+// for non-opaque origins.
+TEST_P(ChildProcessSecurityPolicyTest,
+       AddV8OptimizationDisabledStateForNonOpaqueOrigin) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  BrowsingInstanceId browsing_instance_id =
+      BrowsingInstanceId::FromUnsafeValue(1);
+  url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
+
+  p->AddV8OptimizationDisabledStateForOrigin(
+      browsing_instance_id, origin, /*are_v8_optimizations_disabled=*/false);
+  EXPECT_EQ(std::optional<bool>(false),
+            p->LookupAreV8OptimizationsDisabled(browsing_instance_id, origin));
+
+  EXPECT_FALSE(
+      p->LookupAreV8OptimizationsDisabled(
+           browsing_instance_id, url::Origin::Create(GURL("https://bar.com")))
+          .has_value());
+  EXPECT_FALSE(p->LookupAreV8OptimizationsDisabled(
+                    browsing_instance_id,
+                    url::Origin::Create(GURL("https://subdomain.foo.com")))
+                   .has_value());
+
+  EXPECT_FALSE(p->LookupAreV8OptimizationsDisabled(
+                    BrowsingInstanceId::FromUnsafeValue(2), origin)
+                   .has_value());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChildProcessSecurityPolicyTest,

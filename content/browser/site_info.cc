@@ -132,6 +132,31 @@ bool IsOriginIsolatedSandboxedFrame(const UrlInfo& url_info) {
              blink::features::IsolateSandboxedIframesGrouping::kPerOrigin;
 }
 
+// Computes whether to disable v8-optimization for the
+// (browsing_instance_id, process_lock_origin) pair. Caches the result in
+// ChildProcessSecurityPolicyImpl.
+bool CheckAndCacheShouldDisableV8Optimization(
+    BrowserContext* browser_context,
+    const BrowsingInstanceId& browsing_instance_id,
+    const url::Origin& process_lock_origin) {
+  std::optional<bool> are_v8_optimizations_disabled_result =
+      ChildProcessSecurityPolicyImpl::GetInstance()
+          ->LookupAreV8OptimizationsDisabled(browsing_instance_id,
+                                             process_lock_origin);
+  if (are_v8_optimizations_disabled_result.has_value()) {
+    return are_v8_optimizations_disabled_result.value();
+  }
+
+  bool are_v8_optimizations_disabled =
+      GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
+          browser_context, process_lock_origin.GetURL());
+  ChildProcessSecurityPolicyImpl::GetInstance()
+      ->AddV8OptimizationDisabledStateForOrigin(browsing_instance_id,
+                                                process_lock_origin,
+                                                are_v8_optimizations_disabled);
+  return are_v8_optimizations_disabled;
+}
+
 }  // namespace
 
 // static
@@ -165,9 +190,8 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
       isolation_context.browser_or_resource_context().ToBrowserContext();
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
-  bool are_v8_optimizations_disabled =
-      GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
-          browser_context, GURL());
+  bool are_v8_optimizations_disabled = CheckAndCacheShouldDisableV8Optimization(
+      browser_context, isolation_context.browsing_instance_id(), url::Origin());
 
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
@@ -282,9 +306,9 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
     is_jitless =
         is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
                           browser_context, lock_url_or_default);
-    are_v8_optimizations_disabled =
-        GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
-            browser_context, lock_url_or_default);
+    are_v8_optimizations_disabled = CheckAndCacheShouldDisableV8Optimization(
+        browser_context, isolation_context.browsing_instance_id(),
+        url::Origin::Create(lock_url_or_default));
 
     if (!storage_partition_config.has_value()) {
       storage_partition_config =
