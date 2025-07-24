@@ -38,7 +38,7 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #endif
 
@@ -238,7 +238,9 @@ bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
 // client (which will be gfx::EmptyBuffer if the client did not supply a
 // GMB/GMBHandle). Conceptually:
 // * On Mac the native buffer target is required if either (1) the client
-//   gave a native buffer or (2) the usages require a native buffer.
+//   gave a native buffer or (2) the usages require a native buffer. And this
+//   matters only when running on ANGLE OpenGL/CGL - in all other cases we use
+//   GL_TEXTURE_2D including with Graphite and on iOS (EAGL instead of CGL).
 // * On Ozone the native buffer target is required iff external sampling is
 //   being used, which is dictated by the format of the SharedImage. Note
 //   * Fuchsia does not support import of external images to GL for usage with
@@ -253,21 +255,22 @@ uint32_t ComputeTextureTargetForSharedImage(
     gfx::GpuMemoryBufferType client_gmb_type,
     scoped_refptr<SharedImageInterface> sii) {
   CHECK(sii);
-
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
   return GL_TEXTURE_2D;
 #elif BUILDFLAG(IS_MAC)
-  // Check for IOSurfaces being used.
-  // NOTE: WebGPU usage on Mac results in SharedImages being backed by
-  // IOSurfaces.
-  gpu::SharedImageUsageSet usages_requiring_native_buffer =
+  // Check for IOSurfaces being used. We infer IOSurface based on scanout or
+  // WebGPU usage, but that's not strictly correct e.g. with Graphite, WebGL
+  // canvas back buffers will also use IOSurfaces always regardless of scanout.
+  // However, in those cases we would be using GL_TEXTURE_2D anyway due to ANGLE
+  // Metal (or Swiftshader for tests) being used.
+  // Note that iOS uses GL_TEXTURE_2D even though it uses IOSurfaces -
+  // GL_TEXTURE_RECTANGLE_ARB is in CGL which is Mac only.
+  constexpr gpu::SharedImageUsageSet kUsagesRequiringNativeBuffer =
       SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU_READ |
       SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-
-  bool uses_native_buffer =
+  const bool uses_native_buffer =
       GMBIsNative(client_gmb_type) ||
-      metadata.usage.HasAny(usages_requiring_native_buffer);
-
+      metadata.usage.HasAny(kUsagesRequiringNativeBuffer);
   return uses_native_buffer
              ? sii->GetCapabilities().texture_target_for_io_surfaces
              : GL_TEXTURE_2D;
@@ -276,11 +279,9 @@ uint32_t ComputeTextureTargetForSharedImage(
   if (!metadata.format.PrefersExternalSampler()) {
     return GL_TEXTURE_2D;
   }
-
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
   CHECK(GMBIsNative(client_gmb_type));
-
   // See the note at the top of this function wrt Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
   return 0;
@@ -307,7 +308,7 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
     case gfx::SHARED_MEMORY_BUFFER:
       return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
           std::move(handle), size, format, usage);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER: {
       bool is_read_only_cpu_usage =
           si_usage.Has(SHARED_IMAGE_USAGE_CPU_READ) &&
