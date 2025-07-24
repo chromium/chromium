@@ -198,6 +198,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
       return;
   }
 

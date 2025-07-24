@@ -41233,6 +41233,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromNtpFeaturePromo">
+  <owner>cjgrant@chromium.org</owner>
+  <description>
+    A sign-in flow is shown triggered by an NTP feature promo.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromNTPFeedBottomSigninPromo">
   <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>

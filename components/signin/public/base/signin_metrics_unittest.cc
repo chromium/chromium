@@ -249,6 +249,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "EnterpriseManagementDisclaimerAfterBrowserFocus";
       case AccessPoint::kEnterpriseManagementDisclaimerAfterSignin:
         return "EnterpriseManagementDisclaimerAfterSignin";
+      case AccessPoint::kNtpFeaturePromo:
+        return "NtpFeaturePromo";
     }
   }
 };

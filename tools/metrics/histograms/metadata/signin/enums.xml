@@ -854,6 +854,7 @@ chromium-metrics-reviews@google.com.
   <int value="86" label="Enterprise management disclaimer at startup"/>
   <int value="87" label="Enterprise management disclaimer after browser focus"/>
   <int value="88" label="Enterprise management disclaimer after signin"/>
+  <int value="89" label="New Tab Page sign-in feature promo"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

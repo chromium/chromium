@@ -164,6 +164,7 @@ NSString* GetPromoLabelString(
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

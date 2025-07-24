@@ -652,6 +652,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromEnterpriseManagementDisclaimerAfterSignin"));
       break;
+    case AccessPoint::kNtpFeaturePromo:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromNtpFeaturePromo"));
+      break;
   }
 }
 
@@ -835,6 +839,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kEnterpriseManagementDisclaimerAtStartup:
     case AccessPoint::kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case AccessPoint::kEnterpriseManagementDisclaimerAfterSignin:
+    case AccessPoint::kNtpFeaturePromo:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

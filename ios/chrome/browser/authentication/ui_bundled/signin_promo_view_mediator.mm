@@ -146,6 +146,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
       return false;
   }
 }
@@ -252,6 +253,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -359,6 +361,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -455,6 +458,7 @@ const char* DisplayedCountPreferenceKey(
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
       return nullptr;
   }
 }
@@ -550,6 +554,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
       return nullptr;
   }
 }
