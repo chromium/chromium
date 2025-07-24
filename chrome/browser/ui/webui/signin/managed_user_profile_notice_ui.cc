@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/browser/extension_registry.h"
@@ -277,9 +278,13 @@ void ManagedUserProfileNoticeUI::Initialize(
   }
 
   if (create_param->account_info.IsManaged() != signin::Tribool::kTrue) {
-    update_data.Set("valuePropSubtitle",
-                    l10n_util::GetStringUTF16(
-                        IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE));
+    update_data.Set(
+        "valuePropSubtitle",
+        l10n_util::GetStringUTF16(
+            base::FeatureList::IsEnabled(
+                syncer::kReplaceSyncPromosWithSignInPromos)
+                ? IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS
+                : IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE));
     update_data.Set(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(

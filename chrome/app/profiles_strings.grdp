@@ -703,6 +703,9 @@
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
       Sign in to get your passwords and more on all your devices
     </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+      Sign in to get your passwords, bookmarks, and more on all your devices
+    </message>
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SCHOOL_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for school.">
       Set up a school profile to save and use your passwords and more in your account
     </message>
