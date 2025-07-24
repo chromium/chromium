@@ -341,6 +341,8 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Create PasswordFormManager for |form|, adds the newly created one to
   // |form_managers_| and returns it.
+  // Returns nullptr if the manager should not be created for a form (e.g. when
+  // filling is disabled).
   PasswordFormManager* CreateFormManager(PasswordManagerDriver* driver,
                                          const autofill::FormData& form);
 

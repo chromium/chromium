@@ -634,8 +634,10 @@ void PasswordManager::OnGeneratedPasswordAccepted(
       GetMatchedManagerForForm(driver, form_data.renderer_id());
   if (!manager) {
     // Form manager might not be present at the time manual password generation
-    // is triggered.
+    // is triggered, but if password generation was possible, so should be the
+    // creation of a new form manager.
     manager = CreateFormManager(driver, form_data);
+    CHECK(manager);
   }
 
   manager->OnGeneratedPasswordAccepted(form_data, generation_element_id,
@@ -1056,10 +1058,6 @@ void PasswordManager::CreateFormManagers(
   // Find new forms.
   std::vector<const FormData*> new_forms_data;
   for (const FormData& form_data : forms_data) {
-    if (!client_->IsFillingEnabled(form_data.url())) {
-      continue;
-    }
-
     PasswordFormManager* manager =
         GetMatchedManagerForForm(driver, form_data.renderer_id());
     if (!manager) {
@@ -1085,6 +1083,11 @@ void PasswordManager::CreateFormManagers(
 PasswordFormManager* PasswordManager::CreateFormManager(
     PasswordManagerDriver* driver,
     const autofill::FormData& form) {
+  // Do not proceed if the form cannot not be filled.
+  if (!client_->IsFillingEnabled(form.url())) {
+    return nullptr;
+  }
+
   auto manager = std::make_unique<PasswordFormManager>(
       client_,
       driver ? driver->AsWeakPtr() : base::WeakPtr<PasswordManagerDriver>(),
@@ -1140,6 +1143,10 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
     RecordProvisionalSaveFailure(
         client_, PasswordManagerMetricsRecorder::NO_MATCHING_FORM);
     matched_manager = CreateFormManager(driver, submitted_form);
+    if (!matched_manager) {
+      // The form manager could not be created, saving can not proceed.
+      return nullptr;
+    }
   }
 
   if (is_manual_fallback && matched_manager->GetFormFetcher()->GetState() ==
@@ -1712,7 +1719,9 @@ void PasswordManager::ProcessAutofillPredictions(
     }
     // Otherwise, create it and use predictions (which may trigger filling).
     manager = CreateFormManager(driver, form);
-    manager->ProcessServerPredictions(server_predictions_);
+    if (manager) {
+      manager->ProcessServerPredictions(server_predictions_);
+    }
     return;
   }
 
@@ -1750,9 +1759,11 @@ void PasswordManager::ProcessClassificationModelPredictions(
   PasswordFormManager* manager =
       GetMatchedManagerForForm(driver, form.renderer_id());
   if (!manager) {
-    if (ModelPredictionsContainCredentialTypes(predictions_for_form)) {
-      manager = CreateFormManager(driver, form);
-    } else {
+    if (!ModelPredictionsContainCredentialTypes(predictions_for_form)) {
+      return;
+    }
+    manager = CreateFormManager(driver, form);
+    if (!manager) {
       return;
     }
   }
