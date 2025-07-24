@@ -462,6 +462,7 @@ message SafeBrowsingDangerousDownloadEvent {
     UNKNOWN = 5;
     DANGEROUS_FILE_TYPE = 6;
     DANGEROUS_URL = 7;
+    DANGEROUS_ACCOUNT_COMPROMISE = 8;
   }
 
   // Category of dangerous download.
