@@ -273,14 +273,14 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            size_t row_bytes,
                                            int x,
                                            int y) {
-  DCHECK(IsCanvas2DBufferValid());
+  if (!resource_provider_ || !IsCanvas2DResourceValid()) {
+    return false;
+  }
+
   CanvasRenderingContextHost* host = Host();
   CHECK(host);
 
-  CanvasResourceProvider* provider = GetOrCreateCanvas2DResourceProvider();
-  if (provider == nullptr) {
-    return false;
-  }
+  CanvasResourceProvider* provider = resource_provider_.get();
 
   if (x <= 0 && y <= 0 && x + orig_info.width() >= host->Size().width() &&
       y + orig_info.height() >= host->Size().height()) {
@@ -1130,13 +1130,6 @@ void CanvasRenderingContext2D::DisableAcceleration() {
 bool CanvasRenderingContext2D::ShouldDisableAccelerationBecauseOfReadback()
     const {
   return canvas()->ShouldDisableAccelerationBecauseOfReadback();
-}
-
-bool CanvasRenderingContext2D::IsCanvas2DBufferValid() {
-  if (IsPaintable()) {
-    return IsCanvas2DResourceValid();
-  }
-  return false;
 }
 
 void CanvasRenderingContext2D::ColorSchemeMayHaveChanged() {

@@ -353,7 +353,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void Stop() final;
 
   cc::Layer* CcLayer() const override;
-  bool IsCanvas2DBufferValid() override;
 
   void ColorSchemeMayHaveChanged() override;
 

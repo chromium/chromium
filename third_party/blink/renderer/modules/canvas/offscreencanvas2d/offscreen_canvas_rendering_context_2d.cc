@@ -453,7 +453,9 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     size_t row_bytes,
     int x,
     int y) {
-  DCHECK(IsCanvas2DBufferValid());
+  if (!resource_provider_ || !resource_provider_->IsValid()) {
+    return false;
+  }
 
   resource_provider_->FlushCanvas(FlushReason::kWritePixels);
 
@@ -489,12 +491,6 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
     GetState().SetFont(desc, host->GetFontSelector());
   }
   return true;
-}
-
-bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() {
-  if (IsPaintable())
-    return resource_provider_->IsValid();
-  return false;
 }
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(

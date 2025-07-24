@@ -669,9 +669,6 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
 void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
                                           const gfx::Rect& source_rect,
                                           const gfx::Vector2d& dest_offset) {
-  if (!IsCanvas2DBufferValid())
-    return;
-
   DCHECK(gfx::Rect(source.width(), source.height()).Contains(source_rect));
   int dest_x = dest_offset.x() + source_rect.x();
   DCHECK_GE(dest_x, 0);
