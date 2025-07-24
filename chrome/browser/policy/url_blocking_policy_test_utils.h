@@ -9,6 +9,8 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+
 class Browser;
 class GURL;
 
@@ -32,6 +34,12 @@ class UrlBlockingPolicyTest : public PolicyTest {
 
   // Verifies that access to |view-source:spec| is blocked.
   void CheckViewSourceURLIsBlocked(Browser* browser, const std::string& spec);
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 }  // namespace policy

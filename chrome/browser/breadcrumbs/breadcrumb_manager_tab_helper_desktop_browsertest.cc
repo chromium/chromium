@@ -5,6 +5,7 @@
 #include "base/containers/circular_deque.h"
 #include "build/build_config.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -36,6 +37,10 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   void WaitForDidChangeVisibleSecurityState() { run_loop_.Run(); }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::RunLoop run_loop_;
 };
 
@@ -66,6 +71,10 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   breadcrumbs::ScopedEnableBreadcrumbsForTesting enable_breadcrumbs_;
 };
 

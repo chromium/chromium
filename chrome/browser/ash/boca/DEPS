@@ -52,4 +52,10 @@ specific_include_rules = {
   "content_settings_handler_unittest.cc": [
       "+chrome/browser/content_settings/host_content_settings_map_factory.h",
   ],
+  "on_task_locked_session_navigation_throttle_interactive_ui_test.cc": [
+      "+chrome/browser/preloading/scoped_prewarm_feature_list.h",
+  ],
+  "on_task_session_manager_browsertest.cc": [
+      "+chrome/browser/preloading/scoped_prewarm_feature_list.h",
+  ]
 }

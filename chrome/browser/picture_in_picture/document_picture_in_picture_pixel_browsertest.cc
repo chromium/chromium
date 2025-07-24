@@ -5,6 +5,7 @@
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
@@ -152,6 +153,10 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
   }
 
  private:
+ // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   raw_ptr<content::DocumentPictureInPictureWindowController>
       pip_window_controller_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
