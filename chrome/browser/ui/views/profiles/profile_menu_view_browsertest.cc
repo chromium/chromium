@@ -1669,20 +1669,27 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class ProfileMenuHatsSurveyTest : public ProfileMenuViewTestBase,
                                   public InProcessBrowserTest {
+ public:
+  ProfileMenuHatsSurveyTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
+         switches::kChromeIdentitySurveyProfileMenuDismissed},
+        /*disabled_features=*/{});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kChromeIdentitySurveySwitchProfileFromProfileMenu};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // List of actionable items in the correct order as they appear in the menu. If
 // a new button is added to the menu, it should also be added to this list.
-// This list is not for setting up a click test, and rather for anchoring the
+// This list is NOT for setting up a click test, and rather for anchoring the
 // "Other Profile" item for selection.
 constexpr std::array kActionableItems_WithAnotherProfile = {
     ProfileMenuViewBase::ActionableItem::kSigninButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
@@ -1691,18 +1698,20 @@ constexpr std::array kActionableItems_WithAnotherProfile = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kSigninButton};
 
+// Tests that the HaTS service will attempt to launch a survey when users
+// switch profile from the profile menu.
 IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
                        SurveyLaunchedOnSwitchingProfile) {
   // Setup a new profile and its mock HatsService.
   Profile* other_profile = CreateAdditionalProfile();
-  MockHatsService* hats_service = static_cast<MockHatsService*>(
+  MockHatsService* other_profile_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           other_profile, base::BindRepeating(&BuildMockHatsService)));
   Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
 
   // The survey should be launched for the other profile after switching.
   EXPECT_CALL(
-      *hats_service,
+      *other_profile_hats_service,
       LaunchSurvey(kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu, _, _,
                    _, _, _, _));
 
@@ -1711,16 +1720,86 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   OpenProfileMenu();
   ASSERT_TRUE(profile_menu_view());
   for (const auto& item : kActionableItems_WithAnotherProfile) {
+    profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
     if (item == ProfileMenuViewBase::ActionableItem::kOtherProfileButton) {
       break;
     }
-    profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
   }
   views::View* focused_item =
       profile_menu_view()->GetFocusManager()->GetFocusedView();
   ASSERT_TRUE(focused_item);
   Click(focused_item);
   base::RunLoop().RunUntilIdle();
+}
+
+// Tests that the HaTS service will attempt to launch a survey when users
+// dismiss the profile menu without clicking any buttons.
+IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
+                       SurveyLaunchedOnProfileMenuDismissed) {
+  MockHatsService* hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          GetProfile(), base::BindRepeating(&BuildMockHatsService)));
+
+  EXPECT_CALL(*hats_service,
+              LaunchSurvey(kHatsSurveyTriggerIdentityProfileMenuDismissed, _, _,
+                           _, _, _, _));
+
+  // Open the profile menu.
+  SetTargetBrowser(browser());
+  OpenProfileMenu();
+  ASSERT_TRUE(profile_menu_view());
+
+  // Dismiss the profile menu.
+  profile_menu_view()->GetWidget()->Close();
+  base::RunLoop().RunUntilIdle();
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  EXPECT_FALSE(coordinator->IsShowing());
+}
+
+// Tests that the HaTS service will NOT attempt to launch a survey when a user
+// clicks an actionable item within the profile menu, causing it to close.
+IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
+                       SurveyNotLaunchedOnActionableItemClick) {
+  MockHatsService* hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          GetProfile(), base::BindRepeating(&BuildMockHatsService)));
+
+  // Set up another profile.
+  Profile* other_profile = CreateAdditionalProfile();
+  Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
+
+  // Attempt to select every actionable item in the menu.
+  for (const auto& selected_item : kActionableItems_WithAnotherProfile) {
+    EXPECT_CALL(*hats_service,
+                LaunchSurvey(kHatsSurveyTriggerIdentityProfileMenuDismissed, _,
+                             _, _, _, _, _))
+        .Times(0);
+
+    SetTargetBrowser(browser());
+
+    // Open the profile menu.
+    OpenProfileMenu();
+    ASSERT_TRUE(profile_menu_view());
+    profile_menu_view()->set_perform_menu_actions_for_testing(false);
+
+    // Click on the selected item.
+    for (const auto& item : kActionableItems_WithAnotherProfile) {
+      profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+      if (item == selected_item) {
+        break;
+      }
+    }
+    views::View* focused_item =
+        profile_menu_view()->GetFocusManager()->GetFocusedView();
+    ASSERT_TRUE(focused_item);
+    Click(focused_item);
+
+    // Make sure that the profile menu is closed.
+    profile_menu_view()->GetWidget()->Close();
+    base::RunLoop().RunUntilIdle();
+    auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+    EXPECT_FALSE(coordinator->IsShowing());
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -219,9 +220,26 @@ ProfileMenuView::ProfileMenuView(
       browser_(raw_ref<Browser>::from_ptr(browser)),
       explicit_signin_access_point_(explicit_signin_access_point) {
   set_close_on_deactivate(close_on_deactivate_for_testing_);
+
+  // Set the callback to launch a HaTS survey upon menu dismissal.
+  // We use `SetCloseCallback` instead of `SetCancelCallback` because the close
+  // callback is also executed when users dismiss the menu by clicking outside,
+  // unlike the cancel callback.
+  SetCloseCallback(
+      base::BindOnce(&ProfileMenuView::OnClose, base::Unretained(this)));
 }
 
 ProfileMenuView::~ProfileMenuView() = default;
+
+void ProfileMenuView::OnClose() {
+  if (!actionable_item_clicked()) {
+    // Launch a HaTS survey only if the user dismissed the profile menu by
+    // clicking outside or pressing the Escape key. Do not launch if a button
+    // within the menu was clicked.
+    profiles::LaunchSigninHatsSurveyForBrowser(
+        kHatsSurveyTriggerIdentityProfileMenuDismissed, &browser());
+  }
+}
 
 void ProfileMenuView::BuildMenu() {
   if (profile().IsGuestSession()) {
@@ -281,7 +299,7 @@ std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
 }
 
 void ProfileMenuView::OnProfileManagementButtonClicked() {
-  RecordClick(ActionableItem::kProfileManagementLabel);
+  OnActionableItemClicked(ActionableItem::kProfileManagementLabel);
   if (!perform_menu_actions()) {
     return;
   }
@@ -289,7 +307,7 @@ void ProfileMenuView::OnProfileManagementButtonClicked() {
 }
 
 void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
-  RecordClick(ActionableItem::kManageGoogleAccountButton);
+  OnActionableItemClicked(ActionableItem::kManageGoogleAccountButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -304,7 +322,7 @@ void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
 }
 
 void ProfileMenuView::OnGuestProfileButtonClicked() {
-  RecordClick(ActionableItem::kGuestProfileButton);
+  OnActionableItemClicked(ActionableItem::kGuestProfileButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -313,7 +331,7 @@ void ProfileMenuView::OnGuestProfileButtonClicked() {
 }
 
 void ProfileMenuView::OnExitProfileButtonClicked() {
-  RecordClick(ActionableItem::kExitProfileButton);
+  OnActionableItemClicked(ActionableItem::kExitProfileButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -321,7 +339,7 @@ void ProfileMenuView::OnExitProfileButtonClicked() {
 }
 
 void ProfileMenuView::OnSyncSettingsButtonClicked() {
-  RecordClick(ActionableItem::kSyncSettingsButton);
+  OnActionableItemClicked(ActionableItem::kSyncSettingsButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -329,7 +347,7 @@ void ProfileMenuView::OnSyncSettingsButtonClicked() {
 }
 
 void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
-  RecordClick(ActionableItem::kSyncErrorButton);
+  OnActionableItemClicked(ActionableItem::kSyncErrorButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -394,7 +412,7 @@ void ProfileMenuView::OnSigninButtonClicked(
     CoreAccountInfo account,
     ActionableItem button_type,
     signin_metrics::AccessPoint access_point) {
-  RecordClick(button_type);
+  OnActionableItemClicked(button_type);
 
   if (!perform_menu_actions()) {
     return;
@@ -423,7 +441,7 @@ void ProfileMenuView::OnSignoutButtonClicked() {
       << "Clear primary account is not allowed. Signout should not be offered "
          "in the UI.";
 
-  RecordClick(ActionableItem::kSignoutButton);
+  OnActionableItemClicked(ActionableItem::kSignoutButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -437,7 +455,7 @@ void ProfileMenuView::OnSignoutButtonClicked() {
 
 void ProfileMenuView::OnOtherProfileSelected(
     const base::FilePath& profile_path) {
-  RecordClick(ActionableItem::kOtherProfileButton);
+  OnActionableItemClicked(ActionableItem::kOtherProfileButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -482,7 +500,7 @@ void ProfileMenuView::OnOtherProfileSelected(
 }
 
 void ProfileMenuView::OnAddNewProfileButtonClicked() {
-  RecordClick(ActionableItem::kAddNewProfileButton);
+  OnActionableItemClicked(ActionableItem::kAddNewProfileButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -491,7 +509,7 @@ void ProfileMenuView::OnAddNewProfileButtonClicked() {
 }
 
 void ProfileMenuView::OnManageProfilesButtonClicked() {
-  RecordClick(ActionableItem::kManageProfilesButton);
+  OnActionableItemClicked(ActionableItem::kManageProfilesButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -500,7 +518,7 @@ void ProfileMenuView::OnManageProfilesButtonClicked() {
 }
 
 void ProfileMenuView::OnEditProfileButtonClicked() {
-  RecordClick(ActionableItem::kEditProfileButton);
+  OnActionableItemClicked(ActionableItem::kEditProfileButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -508,7 +526,7 @@ void ProfileMenuView::OnEditProfileButtonClicked() {
 }
 
 void ProfileMenuView::OnAutofillSettingsButtonClicked() {
-  RecordClick(ActionableItem::kAutofillSettingsButton);
+  OnActionableItemClicked(ActionableItem::kAutofillSettingsButton);
   if (!perform_menu_actions()) {
     return;
   }
@@ -516,7 +534,7 @@ void ProfileMenuView::OnAutofillSettingsButtonClicked() {
 }
 
 void ProfileMenuView::OnBuildBatchUploadButtonClicked() {
-  RecordClick(ActionableItem::kBatchUploadButton);
+  OnActionableItemClicked(ActionableItem::kBatchUploadButton);
   if (!perform_menu_actions()) {
     return;
   }

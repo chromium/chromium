@@ -79,6 +79,8 @@ constexpr char kHatsSurveyTriggerIdentityFirstRunSignin[] =
     "identity-first-run-signin";
 constexpr char kHatsSurveyTriggerIdentityPasswordBubbleSignin[] =
     "identity-password-bubble-signin";
+constexpr char kHatsSurveyTriggerIdentityProfileMenuDismissed[] =
+    "identity-profile-menu-dismissed";
 constexpr char kHatsSurveyTriggerIdentityProfileMenuSignin[] =
     "identity-profile-menu-signin";
 constexpr char kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[] =
@@ -507,6 +509,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyPasswordBubbleSignin,
       kHatsSurveyTriggerIdentityPasswordBubbleSignin);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveyProfileMenuDismissed,
+      kHatsSurveyTriggerIdentityProfileMenuDismissed);
   survey_configs.emplace_back(&switches::kChromeIdentitySurveyProfileMenuSignin,
                               kHatsSurveyTriggerIdentityProfileMenuSignin);
   survey_configs.emplace_back(

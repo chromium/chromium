@@ -36,6 +36,7 @@ extern const char kHatsSurveyTriggerIdentityDiceWebSigninAccepted[];
 extern const char kHatsSurveyTriggerIdentityDiceWebSigninDeclined[];
 extern const char kHatsSurveyTriggerIdentityFirstRunSignin[];
 extern const char kHatsSurveyTriggerIdentityPasswordBubbleSignin[];
+extern const char kHatsSurveyTriggerIdentityProfileMenuDismissed[];
 extern const char kHatsSurveyTriggerIdentityProfileMenuSignin[];
 extern const char kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[];
 extern const char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[];

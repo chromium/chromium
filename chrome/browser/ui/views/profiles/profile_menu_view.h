@@ -43,6 +43,9 @@ class Browser;
 // If `explicit_signin_access_point` is provided, it will be used as the access
 // point for the signin (or sync) flow. This is used to track the real source of
 // the signin (or sync), e.g. history sync opt-in identity pill promo.
+//
+// Dismissing the menu without clicking an actionable item will trigger a HaTS
+// survey.
 class ProfileMenuView : public ProfileMenuViewBase {
  public:
   // `browser` must not be nullptr.
@@ -69,6 +72,9 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
+
+  // Callback invoked whenever the view is being closed.
+  void OnClose();
 
   // Button/link actions.
   void OnProfileManagementButtonClicked();
