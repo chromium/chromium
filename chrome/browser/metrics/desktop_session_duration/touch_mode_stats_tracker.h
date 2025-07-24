@@ -30,9 +30,15 @@ class TouchModeStatsTracker
       ui::TouchUiController* touch_ui_controller);
 
   static const char kSessionTouchDurationHistogramName[];
+#if BUILDFLAG(IS_WIN)
+  static const char kSessionTabletDurationHistogramName[];
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   void TouchModeChanged();
+#if BUILDFLAG(IS_WIN)
+  void TabletModeChanged();
+#endif  // BUILDFLAG(IS_WIN)
 
   // metrics::DesktopSessionDurationTracker::Observer:
   void OnSessionStarted(base::TimeTicks session_start) override;
@@ -41,7 +47,10 @@ class TouchModeStatsTracker
 
   const raw_ptr<ui::TouchUiController> touch_ui_controller_;
 
-  base::CallbackListSubscription mode_change_subscription_;
+  base::CallbackListSubscription touch_mode_change_subscription_;
+#if BUILDFLAG(IS_WIN)
+  base::CallbackListSubscription tablet_mode_change_subscription_;
+#endif  // BUILDFLAG(IS_WIN)
 
   // The time passed by OnSessionStarted() if there is an ongoing
   // session, or 0 otherwise.
@@ -55,6 +64,17 @@ class TouchModeStatsTracker
   // and before the corresponding OnSessionEnded() call. This value is logged
   // and discarded upon OnSessionEnded().
   base::TimeDelta touch_mode_duration_in_session_;
+
+#if BUILDFLAG(IS_WIN)
+  // The time when the last posture mode change was detected.
+  // This is used to calculate the time spent in tablet mode.
+  base::TimeTicks last_tablet_mode_switch_in_session_;
+
+  // The total time spent in tablet mode since the last OnSessionStarted() call,
+  // and before the corresponding OnSessionEnded() call. This value is logged
+  // and discarded upon OnSessionEnded().
+  base::TimeDelta tablet_mode_duration_in_session_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 #endif  // CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_MODE_STATS_TRACKER_H_

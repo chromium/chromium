@@ -115,6 +115,9 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
   std::unique_ptr<Browser> browser_;
 };
 
+#if BUILDFLAG(IS_WIN)
+class DevicePostureModeStatsTrackerTest : public TouchModeStatsTrackerTest {};
+#endif  // BUILDFLAG(IS_WIN)
 // An entire session spent in touch mode should be logged accordingly.
 TEST_F(TouchModeStatsTrackerTest, TouchSession) {
   ui::TouchUiController::TouchUiScoperForTesting enable_touch_mode(true);
@@ -190,3 +193,103 @@ TEST_F(TouchModeStatsTrackerTest, TouchChangesDuringSession) {
         base::Seconds(30), 1);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+// An entire session spent in tablet mode should be logged accordingly.
+TEST_F(DevicePostureModeStatsTrackerTest, TabletSession) {
+  ui::TouchUiController::TouchUiScoperForTesting enable_tablet_mode(
+      true, /*tablet_mode_enabled*/ true);
+  base::HistogramTester histograms;
+
+  StartSession();
+  task_environment_.RunUntilIdle();
+  // Have to reset the tablet mode again since
+  // IsDeviceInTabletMode() is called again in StartSession()
+  // and might override the previous value.
+  enable_tablet_mode.UpdateTabletMode(true);
+  task_environment_.FastForwardBy(base::Minutes(1));
+  EndSession();
+
+  histograms.ExpectUniqueTimeSample(
+      TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+      base::Minutes(1), 1);
+}
+
+// The tablet duration logged should be 0 for a non-tablet session.
+TEST_F(DevicePostureModeStatsTrackerTest, NonTabletSession) {
+  ui::TouchUiController::TouchUiScoperForTesting disable_tablet_mode(
+      true, /*tablet_mode_enabled*/ false);
+  base::HistogramTester histograms;
+
+  StartSession();
+  task_environment_.RunUntilIdle();
+  // Have to reset the tablet mode again since
+  // IsDeviceInTabletMode() is called again in StartSession()
+  // and might override the previous value.
+  disable_tablet_mode.UpdateTabletMode(false);
+  task_environment_.FastForwardBy(base::Minutes(1));
+  EndSession();
+
+  histograms.ExpectUniqueTimeSample(
+      TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+      base::TimeDelta(), 1);
+}
+
+// If the tablet mode changes during a session, the logged duration
+// should comprise the session time spent in tablet mode.
+TEST_F(DevicePostureModeStatsTrackerTest, TabletModeChangesDuringSession) {
+  ui::TouchUiController::TouchUiScoperForTesting posture_mode_override(
+      true, /*tablet_mode_enabled*/ false);
+
+  // Check starting in tablet mode.
+  {
+    base::HistogramTester histograms;
+    StartSession();
+    task_environment_.RunUntilIdle();
+    // Have to reset the tablet mode again since
+    // IsDeviceInTabletMode() is called again in StartSession()
+    // and might override the previous value.
+    posture_mode_override.UpdateTabletMode(false);
+
+    task_environment_.FastForwardBy(base::Seconds(15));
+    posture_mode_override.UpdateTabletMode(true);  // Enter tablet mode
+    task_environment_.FastForwardBy(base::Seconds(15));
+    posture_mode_override.UpdateTabletMode(false);  // Exit tablet mode
+    task_environment_.FastForwardBy(base::Seconds(15));
+    posture_mode_override.UpdateTabletMode(true);  // Enter tablet mode again
+    task_environment_.FastForwardBy(base::Seconds(15));
+    posture_mode_override.UpdateTabletMode(false);  // Exit tablet mode
+    task_environment_.FastForwardBy(base::Seconds(15));
+
+    EndSession();
+    histograms.ExpectUniqueTimeSample(
+        TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+        base::Seconds(30), 1);
+  }
+
+  posture_mode_override.UpdateTabletMode(true);
+  task_environment_.FastForwardBy(base::Seconds(15));
+
+  // Check starting in non-tablet mode.
+  {
+    base::HistogramTester histograms;
+    StartSession();
+    task_environment_.RunUntilIdle();
+    // Have to reset the tablet mode again since
+    // IsDeviceInTabletMode() is called again in StartSession()
+    // and might override the previous value.
+    posture_mode_override.UpdateTabletMode(true);
+
+    task_environment_.FastForwardBy(base::Seconds(15));
+    posture_mode_override.UpdateTabletMode(true);  // Enter tablet mode
+    task_environment_.FastForwardBy(base::Seconds(15));
+    posture_mode_override.UpdateTabletMode(false);  // Exit tablet mode
+    task_environment_.FastForwardBy(base::Seconds(15));
+
+    EndSession();
+    histograms.ExpectUniqueTimeSample(
+        TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+        base::Seconds(30), 1);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)

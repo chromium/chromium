@@ -443,6 +443,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.TotalDuration.TimeInTabletMode" units="times"
+    expires_after="2026-07-08">
+  <owner>robliao@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>wangsongjin@microsoft.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Time spent in tablet mode in each session (as defined by
+    DesktopSessionDurationTracker). Samples correspond one-to-one with
+    Session.TotalDuration samples.
+
+    This histogram should be analyzed with Session.TotalDuration. For example,
+    the sum of this histogram divided by the sum of Session.TotalDuration is the
+    total proportion of active browsing time spent in tablet mode.
+  </summary>
+</histogram>
+
 <histogram name="Session.TotalDuration.TouchMode" units="times"
     expires_after="2024-01-14">
   <owner>collinbaker@chromium.org</owner>
