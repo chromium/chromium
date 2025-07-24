@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/session/logout_confirmation_controller.h"
@@ -1459,7 +1460,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,
-       CaptureFloatingWorkspaceTemplateOnLockScreen) {
+       CaptureFloatingWorkspaceTemplateWhenLockingTheScreen) {
   SessionControllerClientImpl client(
       CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   client.Init();
@@ -1491,6 +1492,53 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
             creation_time);
+}
+
+TEST_F(FloatingWorkspaceServiceV2Test, DontUploadEmptyDeskFromLockScreen) {
+  SkipOnFirstSyncCallback();
+  PopulateAppsCache();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  FloatingWorkspaceService* floating_workspace_service =
+      InitFloatingWorkspaceServiceAndStartSession();
+
+  // Create and capture a template
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
+  mock_desks_client()->SetCapturedDeskTemplate(
+      std::move(floating_workspace_template));
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
+  ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
+  EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
+                ->created_time(),
+            creation_time);
+
+  // Simulate screen lock and verify that the session state is reported as
+  // locked.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  GetSessionControllerClient()->FlushForTest();
+  ASSERT_EQ(session_manager::SessionState::LOCKED,
+            ash::Shell::Get()->session_controller()->GetSessionState());
+
+  // Wait for the next capture and verify that we didn't capture an empty desk.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+  const DeskTemplate* current_template =
+      floating_workspace_service->GetLatestFloatingWorkspaceTemplate();
+  const app_restore::RestoreData* restore_data =
+      current_template->desk_restore_data();
+  EXPECT_FALSE(restore_data->app_id_to_launch_list().empty());
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,

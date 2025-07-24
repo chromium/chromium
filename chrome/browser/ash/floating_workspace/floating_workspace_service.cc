@@ -717,6 +717,17 @@ void FloatingWorkspaceService::OnTemplateCaptured(
     LOG(WARNING) << "Desk capture failed. Nothing to upload.";
     return;
   }
+
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
+  if (restore_data && restore_data->app_id_to_launch_list().empty() &&
+      ash::Shell::Get()->session_controller()->GetSessionState() !=
+          session_manager::SessionState::ACTIVE) {
+    // A capture event can be triggered while the device is on the lock screen,
+    // but then it always captures an empty desk. Don't upload it in such case.
+    return;
+  }
+
   // Check if there's an associated floating workspace uuid from the desk
   // sync bridge. If there is, use that one. The
   // `floating_workspace_uuid_ is populated once during the first capture
