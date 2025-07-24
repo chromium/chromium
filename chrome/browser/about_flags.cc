@@ -12772,14 +12772,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableBuyNowPayLaterForKlarna)},
-
-    {"autofill-enable-buy-now-pay-later-syncing-for-klarna",
-     flag_descriptions::kAutofillEnableBuyNowPayLaterSyncingForKlarnaName,
-     flag_descriptions::
-         kAutofillEnableBuyNowPayLaterSyncingForKlarnaDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableBuyNowPayLaterSyncingForKlarna)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

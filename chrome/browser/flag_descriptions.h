@@ -435,9 +435,6 @@ extern const char kAutofillEnableBuyNowPayLaterForKlarnaDescription[];
 
 extern const char kAutofillEnableBuyNowPayLaterSyncingName[];
 extern const char kAutofillEnableBuyNowPayLaterSyncingDescription[];
-
-extern const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaName[];
-extern const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

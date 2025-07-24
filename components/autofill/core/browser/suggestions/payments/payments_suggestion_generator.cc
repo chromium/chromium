@@ -980,8 +980,6 @@ Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
 
   if (affirm_present && zip_present && klarna_present &&
       base::FeatureList::IsEnabled(
-          features::kAutofillEnableBuyNowPayLaterSyncingForKlarna) &&
-      base::FeatureList::IsEnabled(
           features::kAutofillEnableBuyNowPayLaterForKlarna)) {
     bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::

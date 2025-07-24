@@ -1829,8 +1829,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/
-      {features::kAutofillEnableBuyNowPayLaterForKlarna,
-       features::kAutofillEnableBuyNowPayLaterSyncingForKlarna});
+      {features::kAutofillEnableBuyNowPayLaterForKlarna});
 
   // Add a server card.
   payments_data().AddServerCreditCard(test::GetMaskedServerCardAmex());
@@ -1866,11 +1865,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
        MaybeUpdateSuggestionsWithBnpl_IphBubble_KlarnaEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForKlarna,
-                            features::
-                                kAutofillEnableBuyNowPayLaterSyncingForKlarna},
-      /*disabled_features=*/
-      {});
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForKlarna},
+      /*disabled_features=*/{});
 
   // Add a server card.
   payments_data().AddServerCreditCard(test::GetMaskedServerCardAmex());
@@ -1907,11 +1903,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
        MaybeUpdateSuggestionsWithBnpl_IphBubble_KlarnaEnabled_KlarnaMissing) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForKlarna,
-                            features::
-                                kAutofillEnableBuyNowPayLaterSyncingForKlarna},
-      /*disabled_features=*/
-      {});
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForKlarna},
+      /*disabled_features=*/{});
 
   // Add a server card.
   payments_data().AddServerCreditCard(test::GetMaskedServerCardAmex());

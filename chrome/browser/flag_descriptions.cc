@@ -673,12 +673,6 @@ const char kAutofillEnableBuyNowPayLaterSyncingName[] =
     "Enable syncing buy now pay later user data.";
 const char kAutofillEnableBuyNowPayLaterSyncingDescription[] =
     "When enabled, Chrome will sync user data related to buy now pay later.";
-
-const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaName[] =
-    "Enable syncing buy now pay later user data for Klarna";
-const char kAutofillEnableBuyNowPayLaterSyncingForKlarnaDescription[] =
-    "When enabled, Chrome will sync user data related to buy now pay later for "
-    "Klarna.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
