@@ -192,14 +192,14 @@ bool V8URLPatternToMatchPatterns(v8::Isolate* isolate,
   return true;
 }
 
-// This function sends back multiple match patterns to the js layer, even though
-// it gets only one URLPattern via args, because of the discrepancies between
-// how URLPatterns and Match Patterns work. See the stringifying function above
-// for details.
+// This function sends multiple match patterns back to the js layer, even though
+// it gets only one URLPattern object or string via args, because of
+// the discrepancies between how URLPatterns and Match Patterns work.
+// See the stringifying function above for details.
 void WebUrlPatternNatives::URLPatternToMatchPatterns(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(1, args.Length());
-  CHECK(args[0]->IsObject());
+  CHECK(args[0]->IsString() || args[0]->IsObject());
   v8::Isolate* isolate = args.GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Value> input = args[0];

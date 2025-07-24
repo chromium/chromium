@@ -4671,6 +4671,7 @@ if (!is_android) {
         "../browser/ui/views/user_education/recent_session_observer_impl_browsertest.cc",
         "../browser/user_bypass/user_bypass_web_contents_observer_browsertest.cc",
         "../browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
+        "../renderer/controlled_frame/web_url_pattern_natives_browsertest.cc",
       ]
 
       public_deps += [
@@ -4859,6 +4860,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/web_apps:browser_tests",
         "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
+        "//chrome/renderer/controlled_frame",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
         "//components/autofill/core/common:features",
         "//components/content_settings/core/test:test_support",
@@ -4879,6 +4881,7 @@ if (!is_android) {
         "//extensions/common:mojom",
         "//extensions/common/api",
         "//extensions/renderer",
+        "//extensions/renderer:unit_test_support",
         "//google_apis/common:test_support",
         "//google_apis/drive",
         "//ui/actions:actions_headers",

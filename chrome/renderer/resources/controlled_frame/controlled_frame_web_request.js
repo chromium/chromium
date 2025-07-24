@@ -12,13 +12,13 @@ const $Headers = require('safeMethods').SafeMethods.$Headers;
 
 let WebUrlPatternNatives = requireNative('WebUrlPatternNatives');
 
-function convertURLPatternsToExtension(urlPatternsStrs) {
+function convertURLPatternsToExtension(urlPatternsStrsOrObjs) {
   let matchPatterns = [];
-  for (const urlPatternStr of urlPatternsStrs) {
+  for (const urlPatternStrOrObj of urlPatternsStrsOrObjs) {
     matchPatterns = $Array.concat(
       matchPatterns,
       WebUrlPatternNatives.URLPatternToMatchPatterns(
-        new URLPattern(urlPatternStr))
+        new URLPattern(urlPatternStrOrObj))
     );
   };
   return matchPatterns;

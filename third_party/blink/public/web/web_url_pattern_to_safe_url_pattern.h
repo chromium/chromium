@@ -17,10 +17,10 @@ namespace blink {
 
 struct SafeUrlPattern;
 
-// This function turns the URLPattern coming from JS to a SafeUrlPattern.
-// It exists because the URLPattern isn't exposed outside of Blink, so a jump
-// here happens to have the URLPattern available and then we jump back with
-// the publicly available SafeUrlPattern.
+// This function turns the URLPattern object or string coming from JS
+// to a SafeUrlPattern. It exists because the URLPattern isn't exposed outside
+// of Blink, so a jump here happens to have the URLPattern available and then
+// we jump back with the publicly available SafeUrlPattern.
 BLINK_EXPORT std::optional<SafeUrlPattern> WebURLPatternToSafeUrlPattern(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value);
