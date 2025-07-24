@@ -88,6 +88,8 @@ constexpr base::TimeDelta kDefaultKeyAutoRepeatInterval =
 // Constants for notification.
 const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
 const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
+const char kPrivacyIndicatorsMultiCaptureNotifierId[] =
+    "ash.multi-capture-active-privacy-indicators";
 
 // The default delay between last key release and accepting a new key press.
 inline constexpr base::TimeDelta kDefaultAccessibilityBounceKeysDelay =

@@ -111,7 +111,8 @@ size_t GetNotificationCount() {
         // `PrivacyIndicatorsTrayItemView` or `CameraMicTrayItemView` to show
         // indicators on the systray.
         if (notifier == kPrivacyIndicatorsNotifierId ||
-            notifier == kVmCameraMicNotifierId) {
+            notifier == kVmCameraMicNotifierId ||
+            notifier == kPrivacyIndicatorsMultiCaptureNotifierId) {
           return false;
         }
 

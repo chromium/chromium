@@ -53,8 +53,10 @@ const char kPrivacyIndicatorsMultiCaptureLoginNotificationId[] =
     "multi-capture-login-privacy-indicators";
 const char kPrivacyIndicatorsMultiCaptureLoginNotifierId[] =
     "multi-capture-login-privacy-indicators";
-const char kPrivacyIndicatorsMultiCaptureActiveNotificationIdBase[] =
+const char kPrivacyIndicatorsMultiCaptureNotificationIdPrefix[] =
     "multi-capture-active-privacy-indicators-";
+
+constexpr auto kNotifierType = message_center::NotifierType::SYSTEM_COMPONENT;
 
 std::vector<std::string> GetAllCaptureWithNotificationApps(
     const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps) {
@@ -87,7 +89,7 @@ std::vector<std::string> GetAllCaptureWithoutNotificationApps(
 }
 
 std::string GenerateActiveNotifcationId(const webapps::AppId& app_id) {
-  return kPrivacyIndicatorsMultiCaptureActiveNotificationIdBase + app_id;
+  return kPrivacyIndicatorsMultiCaptureNotificationIdPrefix + app_id;
 }
 
 std::vector<std::string> GenerateAppNameList(
@@ -240,8 +242,7 @@ MultiCaptureUsageIndicatorService::CreateFutureCaptureNotification(
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
       message_center::NotifierId(
-          message_center::NotifierType::SYSTEM_COMPONENT,
-          kPrivacyIndicatorsMultiCaptureLoginNotifierId,
+          kNotifierType, kPrivacyIndicatorsMultiCaptureLoginNotifierId,
           ash::NotificationCatalogName::kPrivacyIndicators),
       optional_fields,
       /*delegate=*/
@@ -283,8 +284,7 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
     // Using this notifier ID will tie the notification to the privacy
     // indicators group and prevent a separate icon to show up in the system
     // tray.
-    // TODO(crbug.com/432201381): Create multi capture specific notifier id.
-    notifier_id = ash::kPrivacyIndicatorsNotifierId;
+    notifier_id = ash::kPrivacyIndicatorsMultiCaptureNotifierId;
   }
 
   if (notification_shown_for_app_id_.contains(app_id)) {
@@ -312,7 +312,7 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
       message_center::NotifierId(
-          message_center::NotifierType::SYSTEM_COMPONENT, notifier_id,
+          kNotifierType, notifier_id,
           ash::NotificationCatalogName::kPrivacyIndicators),
       optional_fields,
       // TODO(crbug.com/424104858): Make the notification do nothing on click.
@@ -458,7 +458,6 @@ void MultiCaptureUsageIndicatorService::ShowActiveMultiCaptureNotifications(
     // and only execute this if there is a change.
     notification_display_service_->Close(NotificationHandler::Type::TRANSIENT,
                                          GenerateActiveNotifcationId(app_id));
-
     notification_display_service_->Display(
         NotificationHandler::Type::TRANSIENT,
         CreateActiveCaptureNotification(app_id, app_name,

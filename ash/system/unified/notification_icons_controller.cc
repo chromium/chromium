@@ -70,7 +70,8 @@ bool ShouldShowNotification(message_center::Notification* notification) {
   if (notifier_id == kVmCameraMicNotifierId ||
       notifier_id == kBatteryNotificationNotifierId ||
       notifier_id == kUsbNotificationNotifierId ||
-      notifier_id == kPrivacyIndicatorsNotifierId) {
+      notifier_id == kPrivacyIndicatorsNotifierId ||
+      notifier_id == kPrivacyIndicatorsMultiCaptureNotifierId) {
     return false;
   }
 
