@@ -45,7 +45,7 @@ constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
 constexpr char kVisualInputTypeQueryParameterImageValue[] = "img";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
-constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
+constexpr char kClientUploadDurationQueryParameter[] = "cud";
 
 // Computes whether updates to the search engines database are needed.
 //
@@ -613,12 +613,15 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
   result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", "50");
   result_url =
       net::AppendOrReplaceQueryParameter(result_url, "aep", aim_entrypoint);
+  base::Time query_submission_time = base::Time::Now();
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kClientUploadDurationQueryParameter,
+      base::NumberToString(
+          (query_submission_time - query_start_time).InMilliseconds()));
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kQuerySubmissionTimeQueryParameter,
-      base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()));
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
-      base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
+      base::NumberToString(
+          query_submission_time.InMillisecondsSinceUnixEpoch()));
   return result_url;
 }
 

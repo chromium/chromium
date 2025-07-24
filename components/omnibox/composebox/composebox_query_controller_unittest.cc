@@ -46,7 +46,7 @@
 #endif  // !BUILDFLAG(IS_IOS)
 
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
-constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
+constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kVariationsHeaderKey[] = "X-Client-Data";
 constexpr char kTestUser[] = "test_user@gmail.com";
@@ -815,11 +815,9 @@ TEST_F(ComposeboxQueryControllerTest, AbandonSessionClearsFiles) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
-  std::string pqsubts_value;
+  std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
-      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
-      &pqsubts_value));
-  EXPECT_EQ(pqsubts_value, "1000");
+      aim_url, kClientUploadDurationQueryParameter, &cud_value));
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -898,11 +896,9 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
-  std::string pqsubts_value;
+  std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
-      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
-      &pqsubts_value));
-  EXPECT_EQ(pqsubts_value, "1000");
+      aim_url, kClientUploadDurationQueryParameter, &cud_value));
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
@@ -935,11 +931,9 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
-  std::string pqsubts_value;
+  std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
-      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
-      &pqsubts_value));
-  EXPECT_EQ(pqsubts_value, "1000");
+      aim_url, kClientUploadDurationQueryParameter, &cud_value));
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
@@ -987,11 +981,9 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
-  std::string pqsubts_value;
+  std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
-      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
-      &pqsubts_value));
-  EXPECT_EQ(pqsubts_value, "1000");
+      aim_url, kClientUploadDurationQueryParameter, &cud_value));
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -1046,11 +1038,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
-  std::string pqsubts_value;
+  std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
-      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
-      &pqsubts_value));
-  EXPECT_EQ(pqsubts_value, "1000");
+      aim_url, kClientUploadDurationQueryParameter,
+      &cud_value));
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

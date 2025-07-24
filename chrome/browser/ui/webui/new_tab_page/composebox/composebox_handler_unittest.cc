@@ -45,8 +45,8 @@ constexpr int kImageCompressionQuality = 30;
 constexpr int kImageMaxArea = 1000000;
 constexpr int kImageMaxHeight = 1000;
 constexpr int kImageMaxWidth = 1000;
+constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
-constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
 constexpr char kQueryText[] = "query";
 
 class MockPage : public composebox::mojom::Page {
@@ -218,15 +218,15 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_TRUE(net::GetValueForKeyInQuery(
         url, kQuerySubmissionTimeQueryParameter, &qsubts_param));
 
-    std::string pqsubts_param;
+    std::string cud_param;
     EXPECT_TRUE(net::GetValueForKeyInQuery(
-        url, kUserPerceivedQuerySubmissionTimeQueryParameter, &pqsubts_param));
+        url, kClientUploadDurationQueryParameter, &cud_param));
 
     GURL result_url = url;
     result_url = net::AppendOrReplaceQueryParameter(
         result_url, kQuerySubmissionTimeQueryParameter, std::nullopt);
     result_url = net::AppendOrReplaceQueryParameter(
-        result_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
+        result_url, kClientUploadDurationQueryParameter,
         std::nullopt);
     return result_url;
   }
