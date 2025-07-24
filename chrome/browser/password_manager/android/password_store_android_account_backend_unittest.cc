@@ -171,8 +171,6 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
-    prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
-                                          20.22);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
@@ -681,7 +679,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_NE(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
-  EXPECT_NE(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
 
   histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,
@@ -730,7 +727,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_NE(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
-  EXPECT_NE(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
 
   histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(
@@ -1110,7 +1106,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_NE(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
-  EXPECT_NE(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
   EXPECT_FALSE(backend().IsAbleToSavePasswords());
   histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,

@@ -563,17 +563,6 @@ enum PasswordChangeFlowStep {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowStep)
 
 #if BUILDFLAG(IS_ANDROID)
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with `
-// `LocalPwdMigrationProgressState` in the passwords' enums.xml.
-enum class LocalPwdMigrationProgressState {
-  kScheduled = 0,
-  kStarted = 1,
-  // Finished is recorded irrespective of success status.
-  kFinished = 2,
-  kMaxValue = kFinished,
-};
-
 // Enum specifying the outcome of an attempt to access credentials stored in a
 // SharedPref. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused. Keep in sync with
@@ -812,13 +801,6 @@ void LogUserInteractionsInSharedPasswordsNotificationBubble(
 // Log the result of processing an incoming password sharing invitation.
 void LogProcessIncomingPasswordSharingInvitationResult(
     ProcessIncomingPasswordSharingInvitationResult result);
-
-#if BUILDFLAG(IS_ANDROID)
-// Records the scheduling state of the local passwords migration to the
-// Android backend.
-void LogLocalPwdMigrationProgressState(
-    LocalPwdMigrationProgressState scheduling_state);
-#endif
 
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to

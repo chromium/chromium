@@ -492,12 +492,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User typed or autofilled values"/>
 </enum>
 
-<enum name="LocalPwdMigrationProgressState">
-  <int value="0" label="Scheduled"/>
-  <int value="1" label="Started"/>
-  <int value="2" label="Finished"/>
-</enum>
-
 <enum name="LoginDatabaseEncryptionStatus">
   <int value="0" label="No issues"/>
   <int value="1"

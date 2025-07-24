@@ -38,8 +38,6 @@ PasswordManagerEvictionUtilTest::PasswordManagerEvictionUtilTest() {
       0);
   test_pref_service_.registry()->RegisterIntegerPref(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
-  test_pref_service_.registry()->RegisterDoublePref(
-      password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
 }

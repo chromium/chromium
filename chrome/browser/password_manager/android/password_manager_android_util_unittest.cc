@@ -75,8 +75,6 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
              ".", syncer::DataTypeToStableLowerCaseString(syncer::PASSWORDS)}),
         false);
     pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kSettingsMigratedToUPMLocal, false);
-    pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kUpmAutoExportCsvNeedsDeletion, false);

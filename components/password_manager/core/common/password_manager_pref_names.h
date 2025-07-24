@@ -97,21 +97,10 @@ inline constexpr char kEmptyProfileStoreLoginDatabase[] =
 inline constexpr char kOfferToSavePasswordsEnabledGMS[] =
     "profile.save_passwords_enabed_gms";
 
-// Boolean value indicating whether the regular prefs that apply to the local
-// password store were migrated to UPM settings. It will be set to true
-// automatically if there is nothing to migrate.
-inline constexpr char kSettingsMigratedToUPMLocal[] =
-    "profile.settings_migrated_to_upm_local";
-
 // Integer value which indicates the version used to migrate passwords from
 // built in storage to Google Mobile Services.
 inline constexpr char kCurrentMigrationVersionToGoogleMobileServices[] =
     "current_migration_version_to_google_mobile_services";
-
-// Timestamps of when credentials from the GMS Core to the built in storage were
-// last time migrated, in milliseconds since UNIX epoch.
-inline constexpr char kTimeOfLastMigrationAttempt[] =
-    "time_of_last_migration_attempt";
 #endif
 
 // The total amount of passwords available in Password Manager account store.

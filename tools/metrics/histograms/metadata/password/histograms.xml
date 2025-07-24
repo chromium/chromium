@@ -35,13 +35,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithoutCustomPassphrase" summary="regularly encrypted"/>
 </variants>
 
-<variants name="MigrationOperation">
-  <variant name="AddLogin"/>
-  <variant name="GetAllLogins"/>
-  <variant name="RemoveLogin"/>
-  <variant name="UpdateLogin"/>
-</variants>
-
 <variants name="PasswordAccountStorageUsageLevel">
   <variant name=""/>
   <variant name=".NotUsingAccountStorage"
@@ -3211,36 +3204,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
-<histogram
-    name="PasswordManager.PasswordSettingsMigrationFailed.{Setting}.APIError2"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-09-08">
-  <owner>sygiet@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    The error codes returned by the GMS Core Password preferences 1P API while
-    attempting to do migration for {Setting}. This is only recorded on Android.
-    Replaces
-    &quot;PasswordManager.PasswordSettingsMigrationFailed.{Setting}.APIError&quot;
-    which was overly recorded in rare cases if fetching a password setting fails
-    after the migration was just marked as done.
-  </summary>
-  <token key="Setting" variants="PasswordManagerSetting"/>
-</histogram>
-
-<histogram name="PasswordManager.PasswordSettingsMigrationSucceeded2"
-    enum="BooleanYesNo" expires_after="2025-09-22">
-  <owner>sygiet@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The number of succesful password settings migration from Chrome to GMS.
-    Recorded for the local users on Android when migration finished because of a
-    success or failure along the way. Replaces
-    &quot;PasswordManager.PasswordSettingsMigrationSucceeded&quot; which was
-    overly recorded when the settings migration was being marked as done for
-    clients with default settings which weren't eligible for settings migration.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordsGrouping.Time" units="ms"
     expires_after="2025-12-28">
   <owner>vsemeniuk@google.com</owner>
@@ -3317,21 +3280,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     (potentially) requests all logins to notify consumers because data may have
     changed. Changes can occur within Chrome (e.g. after saving/updating a
     password) or externally.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated"
-    enum="Boolean" expires_after="2026-01-04">
-  <owner>kazinova@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Recorded on Android when the password store backend is created. This happens
-    on startup and once per profile. It logs whether the user is enrolled in
-    UPM. In this context, all profiles are enrolled unless they have encountered
-    an unrecoverable error upon querying GMS Core. Once that happens, a profile
-    pref is flipped and the client is considered unenrolled from that point on.
   </summary>
 </histogram>
 
@@ -3601,30 +3549,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     <variant name=".RemoveLoginAsync" summary="removing a login from"/>
     <variant name=".UpdateLoginAsync" summary="updating a login in"/>
   </token>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.PasswordRemovalStatus"
-    enum="BooleanSuccess" expires_after="2025-08-31">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Records whether a call to remove all passwords in BuiltInBackend succeeded.
-    Recorded when the removal operation is finished.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreProxyBackend.RemovedPasswordCount"
-    units="passwords" expires_after="2025-08-29">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Records the number of credentials removed by
-    PasswordStoreProxyBackend::MaybeClearBuiltInBackend() when the deletion
-    actually took place. Recorded only when RemoveLoginsCreatedBetweenAsync()
-    operation was successful.
-  </summary>
 </histogram>
 
 <histogram name="PasswordManager.PasswordStore{Backend}.{Function}"
@@ -4374,146 +4298,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     Note a client can have both sync off and be unenrolled, in which case it
     will still only appear in the sync off bucket, since this is considered the
     main reason why the client is inactive for UPM.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.AddLoginCount"
-    units="passwords" expires_after="2025-08-22">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the number of credentials successfully added to GMS Core during
-    MigrationForLocalUsers. Recorded when the migration is finished,
-    irrespective of the overall migration success.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.AndroidBackend.{MigrationOperation}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-11-09">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Records the API error received when performing {MigrationOperation} on the
-    AndroidBacked as part of MigrationForLocalUsers. Reported immediately after
-    the operation finishes, unless it's a Get operation. For GetAllLogins, the
-    result is only reported after the replies come back fom both backends. Note
-    that the BuiltInBackend doesn't return API Errors so no similar histogram is
-    recorded for it.
-  </summary>
-  <token key="MigrationOperation" variants="MigrationOperation"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.Latency"
-    units="ms" expires_after="2025-10-12">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Real-time duration of MigrationForLocalUsers. Recorded when all operations
-    are completed and migration is finished.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.MergeWhereAndroidHasMostRecent"
-    units="passwords" expires_after="2025-08-22">
-  <owner>atsvirchkova@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    The number of conflicts found while migrating local passwords where the
-    credential already stored in GMS Core is kept instead of the one in Chrome.
-    A conflict is defined as both Chrome and GMS Core having credentials with
-    the same primary key, but different passwords. In that case the credential
-    that was updated or used last is considered to be the correct one.
-
-    Recorded when the entire migration finished successfully in order to avoid
-    double-counting.
-
-    The counterpart of this histogram, recording counts of conflicts where
-    Chrome had the more recent credential. is
-    &quot;PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.UpdateLoginCount&quot;
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.MigratedLoginsTotalCount"
-    units="passwords" expires_after="2025-08-22">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the number of credential successfully migrated to GMS Core during
-    MigrationForLocalUsers. Recorded when the migration is finished. If the
-    migration fails in the middle after writting only part of credentials to GMS
-    core, the metric will report only those that were actually written before
-    the failure.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.ProgressState"
-    enum="LocalPwdMigrationProgressState" expires_after="2025-10-26">
-  <owner>atsvirchkova@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Recorded when the local passwords migration is scheduled, when it's started
-    and when it finishes, irrespective of success status.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.Success"
-    enum="BooleanSuccess" expires_after="2025-10-12">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Records success of MigrationForLocalUsers. Recorded when the migration is
-    finished.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.UpdateLoginCount"
-    units="passwords" expires_after="2025-08-22">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the number of credentials successfully updated in GMS Core during
-    MigrationForLocalUsers. Recorded when the migration is finished,
-    irrespective of the overall migration success.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.{BackendType}.{MigrationOperation}.Success"
-    enum="BooleanSuccess" expires_after="2025-12-28">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Records whether performing {MigrationOperation} on the {BackendType} as part
-    of MigrationForLocalUsers succeeded or not. Reported immediately after the
-    operation finishes, unless it's a Get operation. For GetAllLogins, the
-    result is only reported after the replies come back fom both backends.
-  </summary>
-  <token key="BackendType">
-    <variant name="AndroidBackend"/>
-    <variant name="BuiltInBackend"/>
-  </token>
-  <token key="MigrationOperation" variants="MigrationOperation"/>
-</histogram>
-
-<histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
-    enum="BooleanSuccess" expires_after="2025-10-26">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Records whether passwords were successfully migrated from built in backed to
-    android backed and the current migration version stored in pref is
-    greater/equal to the version from feature parameters. Recorded on start up.
   </summary>
 </histogram>
 

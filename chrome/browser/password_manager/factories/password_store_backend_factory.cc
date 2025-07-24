@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_empty_backend.h"
-#include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -30,8 +29,6 @@
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
-#include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
-#include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
@@ -136,57 +133,6 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackendAndroid(
   return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
 }
 
-// TODO(crbug.com/378653024): Remove this function after login db deprecation.
-std::unique_ptr<PasswordStoreBackend>
-CreateProfilePasswordStoreBackendForUpmAndroid(
-    PrefService* prefs,
-    const base::FilePath& login_db_directory,
-    os_crypt_async::OSCryptAsync* os_crypt_async) {
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
-      !prefs->GetBoolean(password_manager::prefs::
-                             kUnenrolledFromGoogleMobileServicesDueToErrors));
-  auto useSplitStores =
-      static_cast<UseUpmLocalAndSeparateStoresState>(prefs->GetInteger(
-          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores));
-  // Creates the password store backend for the profile store on Android
-  // platform when UPM is enabled. There are 3 cases:
-  switch (useSplitStores) {
-    // UPM M3: The password store migration decorator is created as backend. It
-    // is expected to migrate the passwords from the built in profile store to
-    // the GMS core local store.
-    case UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
-      return std::make_unique<
-          password_manager::PasswordStoreBackendMigrationDecorator>(
-          CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
-                                                   os_crypt_async),
-          std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-              prefs),
-          prefs);
-    // UPM M2: The password store proxy backend is created. No migrations are
-    // needed.
-    case UseUpmLocalAndSeparateStoresState::kOn:
-      return std::make_unique<
-          password_manager::PasswordStoreAndroidLocalBackend>(prefs);
-    // Old UPM: support for local passwords in GMSCore is unavailable for some
-    // reason.
-    case UseUpmLocalAndSeparateStoresState::kOff: {
-      // Even though this is a backend for a ProfilePasswordStore it has to
-      // talk to the account. Before the store split, the `ProfilePasswordStore`
-      // only supports talking to the account storage in GMS Core. All local
-      // storage requests go to the built-in backend instead.
-      auto android_account_backend = std::make_unique<
-          password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, password_manager::kProfileStore);
-      // Chrome stopped trying to migrate passwords to the account GMSCore
-      // storage. Only PasswordStoreProxyBackend is created.
-      return std::make_unique<password_manager::PasswordStoreProxyBackend>(
-          CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
-                                                   os_crypt_async),
-          std::move(android_account_backend), prefs);
-    }
-  }
-}
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }  // namespace
 
@@ -197,25 +143,16 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
-    // During the login DB deprecation, only the built-in backend should be
-    // instantiated. After the unmigrated passwords are exported, the login DB
-    // is considered deprecated. There will be only 2 options for
-    // the backend: an empty one if the Android backend isn't supported,
-    // or the Android backend.
-    return CreateProfilePasswordStoreBackendAndroid(prefs, login_db_directory,
-                                                    os_crypt_async);
-  }
-
-  // This are the absolute minimum requirements to have any version of UPM.
-  if (password_manager_android_util::AreMinUpmRequirementsMet()) {
-    return CreateProfilePasswordStoreBackendForUpmAndroid(
-        prefs, login_db_directory, os_crypt_async);
-  }
-#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  // Only the built-in backend should be instantiated. After the unmigrated
+  // passwords are exported, the login DB is considered deprecated. There will
+  // be only 2 options for the backend: an empty one if the Android backend
+  // isn't supported, or the Android backend.
+  return CreateProfilePasswordStoreBackendAndroid(prefs, login_db_directory,
+                                                  os_crypt_async);
+#else
   return CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
                                                   os_crypt_async);
+#endif
 }
 
 std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(

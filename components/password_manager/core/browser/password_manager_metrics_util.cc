@@ -517,14 +517,6 @@ void LogProcessIncomingPasswordSharingInvitationResult(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void LogLocalPwdMigrationProgressState(
-    LocalPwdMigrationProgressState scheduling_state) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
-      "ProgressState",
-      scheduling_state);
-}
-
 void LogSharedPrefCredentialsAccessOutcome(
     SharedPrefCredentialsAccessOutcome outcome) {
   base::UmaHistogramEnumeration(
