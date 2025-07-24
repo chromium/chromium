@@ -55,6 +55,8 @@ analysis.
     as `TRACE_EVENT0/1/2`, `TRACE_EVENT_ASYNC_BEGIN0/1/2` or any other macro
     that has 0/1/2 suffix.
     * These macros are deprecated and should not be used in new code.
+  * Do not emit synchronous events when a thread is idle. This yields misleading
+    process activity summary shown by perfetto UI.
 
 ### Static Strings
   * **Always Use Static Strings:** For event names, *always* use static strings.
