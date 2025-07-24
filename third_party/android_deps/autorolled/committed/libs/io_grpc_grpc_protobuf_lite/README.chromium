@@ -5,7 +5,7 @@ Version: 1.73.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
-CPEPrefix: unknown
+CPEPrefix: cpe:/a:grpc:grpc
 Security Critical: yes
 Shipped: yes
 
