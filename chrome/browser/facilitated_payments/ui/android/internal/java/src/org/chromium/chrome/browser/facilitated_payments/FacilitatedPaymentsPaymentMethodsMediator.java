@@ -42,6 +42,8 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
+import static org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS;
+import static org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
@@ -62,7 +64,9 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.payments.AccountType;
@@ -335,15 +339,16 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                 R.string.pix_payment_additional_info)
                         .with(
                                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () ->
-                                        this.onTurnOffPaymentPromptLinkClicked(
-                                                PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM))
+                                () -> {
+                                    startSettings(FINANCIAL_ACCOUNTS);
+                                    recordHistogramOnTurnOffPaymentPromptLinkClicked(
+                                            PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM);
+                                })
                         .build());
     }
 
     @VisibleForTesting
     ListItem buildEwalletAdditionalInfo(List<Ewallet> ewallets) {
-
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO,
                 new PropertyModel.Builder(AdditionalInfoProperties.ALL_KEYS)
@@ -352,10 +357,23 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                 R.string.ewallet_payment_additional_info)
                         .with(
                                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () ->
-                                        this.onTurnOffPaymentPromptLinkClicked(
-                                                getEwalletFopSelectorUserActionHistogram(ewallets)))
+                                () -> {
+                                    if (ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList
+                                                    .AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)) {
+                                        startSettings(NON_CARD_PAYMENT_METHODS);
+                                    } else {
+                                        startSettings(FINANCIAL_ACCOUNTS);
+                                    }
+                                    recordHistogramOnTurnOffPaymentPromptLinkClicked(
+                                            getEwalletFopSelectorUserActionHistogram(ewallets));
+                                })
                         .build());
+    }
+
+    private void startSettings(int settingsFragment) {
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(mContext, settingsFragment);
     }
 
     @VisibleForTesting
@@ -424,9 +442,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 FopSelectorAction.MAX_VALUE);
     }
 
-    private void onTurnOffPaymentPromptLinkClicked(String histogramName) {
-        mDelegate.showFinancialAccountsManagementSettings(mContext);
-
+    private void recordHistogramOnTurnOffPaymentPromptLinkClicked(String histogramName) {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,

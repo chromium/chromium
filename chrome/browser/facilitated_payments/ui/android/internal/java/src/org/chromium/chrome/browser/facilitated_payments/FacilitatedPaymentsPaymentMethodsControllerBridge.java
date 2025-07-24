@@ -65,16 +65,6 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     }
 
     @Override
-    public boolean showFinancialAccountsManagementSettings(Context context) {
-        if (context == null) {
-            return false;
-        }
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
-        return true;
-    }
-
-    @Override
     public boolean showManagePaymentMethodsSettings(Context context) {
         if (context == null) {
             return false;

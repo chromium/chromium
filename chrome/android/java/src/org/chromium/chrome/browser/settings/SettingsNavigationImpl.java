@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
+import org.chromium.chrome.browser.autofill.settings.NonCardPaymentMethodsManagementFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
@@ -57,6 +58,8 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             case SettingsFragment.PASSWORDS:
             case SettingsFragment.GOOGLE_SERVICES:
             case SettingsFragment.MANAGE_SYNC:
+            case SettingsFragment.FINANCIAL_ACCOUNTS:
+            case SettingsFragment.NON_CARD_PAYMENT_METHODS:
                 break;
         }
         startSettings(context, getFragmentClassFromEnum(settingsFragment), fragmentArgs);
@@ -124,6 +127,8 @@ public class SettingsNavigationImpl implements SettingsNavigation {
                 return ManageSyncSettings.class;
             case SettingsFragment.FINANCIAL_ACCOUNTS:
                 return FinancialAccountsManagementFragment.class;
+            case SettingsFragment.NON_CARD_PAYMENT_METHODS:
+                return NonCardPaymentMethodsManagementFragment.class;
         }
         assert false;
         return null;

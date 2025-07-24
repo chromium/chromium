@@ -40,9 +40,6 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
         /** Called whenever a bank account is selected. */
         void onEwalletSelected(long instrumentId);
 
-        /** Called whenever the payment settings text is clicked on the bottom sheet. */
-        boolean showFinancialAccountsManagementSettings(Context context);
-
         /** Called whenever the manage payment methods footer is tapped on the bottom sheet. */
         boolean showManagePaymentMethodsSettings(Context context);
 

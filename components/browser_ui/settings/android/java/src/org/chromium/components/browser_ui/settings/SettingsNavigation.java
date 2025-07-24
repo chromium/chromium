@@ -31,7 +31,8 @@ public interface SettingsNavigation {
         SettingsFragment.PASSWORDS,
         SettingsFragment.GOOGLE_SERVICES,
         SettingsFragment.MANAGE_SYNC,
-        SettingsFragment.FINANCIAL_ACCOUNTS
+        SettingsFragment.FINANCIAL_ACCOUNTS,
+        SettingsFragment.NON_CARD_PAYMENT_METHODS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SettingsFragment {
@@ -55,6 +56,8 @@ public interface SettingsNavigation {
         int MANAGE_SYNC = 8;
         /// Financial accounts.
         int FINANCIAL_ACCOUNTS = 9;
+        /// Non-card payment methods.
+        int NON_CARD_PAYMENT_METHODS = 10;
     }
 
     /**
