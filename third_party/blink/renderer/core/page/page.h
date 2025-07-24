@@ -426,6 +426,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     should_prepare_paint_tree_on_prerender_ =
         should_prepare_paint_tree_on_prerender;
   }
+  void SetShouldPauseJavaScriptExecutionOnPrerender(
+      bool should_pause_javascript_execution_on_prerender) {
+    should_pause_javascript_execution_on_prerender_ =
+        should_pause_javascript_execution_on_prerender;
+  }
   bool IsPrerendering() const { return is_prerendering_; }
   const String& PrerenderMetricSuffix() const {
     return prerender_metric_suffix_;
@@ -703,13 +708,16 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // this Page. Once initialized, it can only transition from true to false on
   // prerender activation; it does not go from false to true.
   bool is_prerendering_ = false;
-  String prerender_metric_suffix_;
 
+  // TODO(crbug.com/428500219): Do not flatten these params.
+  String prerender_metric_suffix_;
   // If true, warms up compositor on `WebLocalFrameImpl::DidCommitLoad` if the
   // page is under prerendering.
   bool should_warm_up_compositor_on_prerender_ = false;
   // If true, prepares the paint tree if the page is under prerendering.
   bool should_prepare_paint_tree_on_prerender_ = false;
+  // If true, pauses JavaScript execution until the page is activated.
+  bool should_pause_javascript_execution_on_prerender_ = false;
 
   // Whether the the Page's main document is a Fenced Frame document. This is
   // only set for the MPArch implementation and is true when the corresponding

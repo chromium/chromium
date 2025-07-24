@@ -15363,7 +15363,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest,
                                                             prerender_url);
   FrameTreeNodeId host_id =
       test::PrerenderTestHelper::GetHostForUrl(*web_contents(), prerender_url);
-  EXPECT_TRUE(host_id) << host_id;
+  ASSERT_TRUE(host_id);
+
+  PrerenderHost* prerender_host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          host_id);
+  ASSERT_TRUE(prerender_host);
+  EXPECT_TRUE(prerender_host->should_pause_javascript_execution());
 }
 
 }  // namespace content

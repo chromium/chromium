@@ -472,10 +472,13 @@ bool RenderViewHostImpl::CreateRenderView(
           prerender_host.should_warm_up_compositor();
       prerender_param->should_prepare_paint_tree =
           prerender_host.should_prepare_paint_tree();
+      prerender_param->should_pause_javascript_execution =
+          prerender_host.should_pause_javascript_execution();
     } else {
       prerender_param->page_metric_suffix = ".Preview";
       prerender_param->should_warm_up_compositor = false;
       prerender_param->should_prepare_paint_tree = false;
+      prerender_param->should_pause_javascript_execution = false;
     }
     params->prerender_param = std::move(prerender_param);
   }

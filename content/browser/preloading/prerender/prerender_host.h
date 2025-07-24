@@ -388,6 +388,10 @@ class CONTENT_EXPORT PrerenderHost {
     return attributes_.should_prepare_paint_tree;
   }
 
+  bool should_pause_javascript_execution() const {
+    return attributes_.should_pause_javascript_execution;
+  }
+
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 
   bool were_headers_received() const { return were_headers_received_; }

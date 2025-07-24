@@ -281,7 +281,9 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         /*no_vary_search_hint=*/std::nullopt, rfh, contents()->GetWeakPtr(),
         ui::PAGE_TRANSITION_LINK,
         /*should_warm_up_compositor=*/false,
-        /*should_prepare_paint_tree=*/false, std::move(url_match_predicate),
+        /*should_prepare_paint_tree=*/false,
+        /*should_pause_javascript_execution=*/false,
+        std::move(url_match_predicate),
         /*prerender_navigation_handle_callback=*/{},
         PreloadPipelineInfoImpl::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrerender),

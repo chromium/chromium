@@ -50,6 +50,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       ui::PageTransition transition_type,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,
+      bool should_pause_javascript_execution,
       base::RepeatingCallback<bool(const GURL&,
                                    const std::optional<UrlMatchType>&)>
           url_match_predicate,
@@ -126,6 +127,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // Whether to dry run paint phase to pre-build a paint tree for the page, so
   // then the intermediate result can be reused after activation.
   bool should_prepare_paint_tree = false;
+
+  // Whether to pause the renderer process's JavaScript execution.
+  bool should_pause_javascript_execution = false;
 
   // If the caller wants to override the default holdback processing, they can
   // set this. Otherwise, it will be computed as part of

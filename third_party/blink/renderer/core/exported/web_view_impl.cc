@@ -653,6 +653,8 @@ WebViewImpl::WebViewImpl(
         prerender_param->should_warm_up_compositor);
     page_->SetShouldPreparePaintTreeOnPrerender(
         prerender_param->should_prepare_paint_tree);
+    page_->SetShouldPauseJavaScriptExecutionOnPrerender(
+        prerender_param->should_pause_javascript_execution);
   }
 
   if (fenced_frame_mode && features::IsFencedFramesEnabled()) {
