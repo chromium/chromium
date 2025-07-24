@@ -5,7 +5,7 @@ Version: 4.32.0-RC1
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: LICENSE
-CPEPrefix: unknown
+CPEPrefix: cpe:/a:google:protobuf-javalite
 Security Critical: yes
 Shipped: yes
 
