@@ -125,11 +125,19 @@ class StylePropertyShorthandWriter(json5_generator.Writer):
             for longhand_enum_key in longhand_enum_keys:
                 self._longhand_dictionary[longhand_enum_key].append(property_)
 
-        for longhands in self._longhand_dictionary.values():
-            # Sort first by number of longhands in decreasing order, then
-            # alphabetically
-            longhands.sort(key=lambda property_: (-len(property_.longhands),
-                                                  property_.name.original))
+        for shorthands in self._longhand_dictionary.values():
+            # https://drafts.csswg.org/cssom/#concept-shorthands-preferred-order
+            def shorthand_order(shorthand):
+                name = shorthand.ultimate_property.name.original
+                if name.startswith("-webkit-"):
+                    hyphen_order = 1
+                elif name.startswith("-"):
+                    hyphen_order = 2
+                else:
+                    hyphen_order = 0
+                return (-len(shorthand.longhands), hyphen_order, name)
+
+            shorthands.sort(key=shorthand_order)
 
     @template_expander.use_jinja(
         'core/css/templates/style_property_shorthand.cc.tmpl')
