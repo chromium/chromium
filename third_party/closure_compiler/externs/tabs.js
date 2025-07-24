@@ -129,6 +129,13 @@ chrome.tabs.WindowType = {
 };
 
 /**
+ * An ID that represents the absence of a split tab.
+ * @type {number}
+ * @see https://developer.chrome.com/extensions/tabs#type-SPLIT_VIEW_ID_NONE
+ */
+chrome.tabs.SPLIT_VIEW_ID_NONE;
+
+/**
  * An ID that represents the absence of a browser tab.
  * @type {number}
  * @see https://developer.chrome.com/extensions/tabs#type-TAB_ID_NONE

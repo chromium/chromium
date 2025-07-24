@@ -155,6 +155,11 @@
         "value": 2,
         "description": "The maximum number of times that $(ref:captureVisibleTab) can be called per second. $(ref:captureVisibleTab) is expensive and should not be called too often."
       },
+      "SPLIT_VIEW_ID_NONE": {
+        "value": -1,
+        "description": "An ID that represents the absence of a split tab.",
+        "nodoc": "true"
+      },
       "TAB_ID_NONE": {
         "value": -1,
         "description": "An ID that represents the absence of a browser tab."
@@ -528,7 +533,7 @@
                 "type": "integer",
                 "minimum": -1,
                 "optional": true,
-                "description": "The ID of the Split View that the tabs are in, or $(ref:tabs.SPLIT_TAB_ID_NONE) for tabs that aren't in a Split View."
+                "description": "The ID of the Split View that the tabs are in, or $(ref:tabs.SPLIT_VIEW_ID_NONE) for tabs that aren't in a Split View."
               },
               "windowId": {
                 "type": "integer",
