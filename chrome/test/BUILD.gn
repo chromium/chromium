@@ -11585,6 +11585,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/frame/browser_view_focus_uitest.cc",
         "../browser/ui/views/frame/browser_view_interactive_uitest.cc",
         "../browser/ui/views/frame/multi_contents_view_interactive_uitest.cc",
+        "../browser/ui/views/frame/multi_contents_view_tab_drag_interactive_uitest.cc",
         "../browser/ui/views/frame/picture_in_picture_browser_frame_view_interactive_uitest.cc",
         "../browser/ui/views/frame/tab_strip_region_view_interactive_uitest.cc",
         "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",
