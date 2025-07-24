@@ -195,10 +195,17 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PredictionModels) -->
 
 <variants name="PredictionModels">
+  <variant name="AIv1"/>
   <variant name="AIv3"/>
   <variant name="AIv4"/>
   <variant name="OnDevicePredictionService"/>
   <variant name="PredictionService"/>
+</variants>
+
+<variants name="RelevanceOutputPredictionModels">
+  <variant name="AIv1"/>
+  <variant name="AIv3"/>
+  <variant name="AIv4"/>
 </variants>
 
 <variants name="SnapshotBasedPredictionModels">
@@ -1833,6 +1840,17 @@ chromium-metrics-reviews@google.com.
   <token key="PredictionModel" variants="PredictionModels"/>
 </histogram>
 
+<histogram name="Permissions.{PredictionModel}.PermissionRequestRelevance"
+    enum="PermissionRequestRelevance" expires_after="2026-03-07">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the generated relevance signal after a successful execution of the
+    available model.
+  </summary>
+  <token key="PredictionModel" variants="RelevanceOutputPredictionModels"/>
+</histogram>
+
 <histogram name="Permissions.{PredictionModel}.SnapshotTaken"
     enum="BooleanSuccess" expires_after="2025-12-02">
   <owner>elklm@chromium.org</owner>
@@ -1856,20 +1874,6 @@ chromium-metrics-reviews@google.com.
     snapshot needed as the input for the {PredictionModel} model.
   </summary>
   <token key="PredictionModel" variants="SnapshotBasedPredictionModels"/>
-</histogram>
-
-<histogram name="Permissions.{Version}.PermissionRequestRelevance"
-    enum="PermissionRequestRelevance" expires_after="2026-03-07">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the generated relevance signal after a successful execution of the
-    available model.
-  </summary>
-  <token key="Version">
-    <variant name="AIv1"/>
-    <variant name="AIv3"/>
-  </token>
 </histogram>
 
 <histogram

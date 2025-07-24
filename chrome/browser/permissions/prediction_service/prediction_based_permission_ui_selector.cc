@@ -276,7 +276,8 @@ void PredictionBasedPermissionUiSelector::OnDeviceAiv3ModelExecutionCallback(
     features.permission_relevance = relevance.value();
 
     PermissionUmaUtil::RecordPermissionRequestRelevance(
-        request_metadata.request_type, features.permission_relevance, "AIv3");
+        request_metadata.request_type, features.permission_relevance,
+        PredictionModelType::kOnDeviceAiV3Model);
   } else {
     last_permission_request_relevance_ =
         PermissionRequestRelevance::kUnspecified;
@@ -510,7 +511,8 @@ void PredictionBasedPermissionUiSelector::OnDeviceAiv1ModelExecutionCallback(
   }
   features.permission_relevance = last_permission_request_relevance_.value();
   PermissionUmaUtil::RecordPermissionRequestRelevance(
-      request_metadata.request_type, features.permission_relevance, "AIv1");
+      request_metadata.request_type, features.permission_relevance,
+      PredictionModelType::kOnDeviceAiV1Model);
   InquireServerModel(features, std::move(request_metadata),
                      /*record_source=*/!response.has_value());
 }

@@ -1494,6 +1494,8 @@ std::string PermissionUmaUtil::GetPredictionModelString(
       return "PredictionService";
     case PredictionModelType::kOnDeviceCpssV1Model:
       return "OnDevicePredictionService";
+    case PredictionModelType::kOnDeviceAiV1Model:
+      return "AIv1";
     case PredictionModelType::kOnDeviceAiV3Model:
       return "AIv3";
     case PredictionModelType::kOnDeviceAiV4Model:
@@ -2009,17 +2011,27 @@ void PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
 void PermissionUmaUtil::RecordPermissionRequestRelevance(
     permissions::RequestType permission_request_type,
     PermissionRequestRelevance permission_request_relevance,
-    std::string model_version) {
-  std::string permission_request_type_string =
-      permission_request_type == permissions::RequestType::kNotifications
-          ? "Notifications"
-          : "Geolocation";
-
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Permissions.", model_version, ".",
-                    permission_request_type_string,
-                    ".PermissionRequestRelevance"}),
-      permission_request_relevance);
+    PredictionModelType model_type) {
+  switch (model_type) {
+    case permissions::PredictionModelType::kOnDeviceAiV1Model:
+      [[fallthrough]];
+    case permissions::PredictionModelType::kOnDeviceAiV3Model:
+      [[fallthrough]];
+    case permissions::PredictionModelType::kOnDeviceAiV4Model: {
+      std::string permission_request_type_string =
+          permission_request_type == permissions::RequestType::kNotifications
+              ? "Notifications"
+              : "Geolocation";
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Permissions.", GetPredictionModelString(model_type),
+                        ".", permission_request_type_string,
+                        ".PermissionRequestRelevance"}),
+          permission_request_relevance);
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
 }
 
 // static
@@ -2075,7 +2087,7 @@ void PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
     bool success,
     base::TimeTicks snapshot_inquire_start_time,
     PredictionModelType model_type) {
-  // Only AIv3 and AIV4 use snapshots as input.
+  // Only AIv3 and AIv4 models use snapshots as input.
   DCHECK(model_type == PredictionModelType::kOnDeviceAiV3Model ||
          model_type == PredictionModelType::kOnDeviceAiV4Model);
 

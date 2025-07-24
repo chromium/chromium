@@ -54,8 +54,9 @@ enum class PredictionModelType {
   kUnknown = 0,
   kServerSideCpssV3Model = 1,
   kOnDeviceCpssV1Model = 2,
-  kOnDeviceAiV3Model = 3,
-  kOnDeviceAiV4Model = 4,
+  kOnDeviceAiV1Model = 3,
+  kOnDeviceAiV3Model = 4,
+  kOnDeviceAiV4Model = 5,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PredictionModels)
 
@@ -870,7 +871,7 @@ class PermissionUmaUtil {
   static void RecordPermissionRequestRelevance(
       permissions::RequestType permission_request_type,
       PermissionRequestRelevance permission_request_relevance,
-      std::string model_version);
+      PredictionModelType model_type);
 
   // Records if the browser was always active while the prompt was
   // displaying.
