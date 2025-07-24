@@ -368,17 +368,6 @@ struct IsDecomposable<
         std::declval<Ts>()...))>,
     Policy, Hash, Eq, Ts...> : std::true_type {};
 
-// TODO(alkis): Switch to std::is_nothrow_swappable when gcc/clang supports it.
-template <class T>
-constexpr bool IsNoThrowSwappable(std::true_type = {} /* is_swappable */) {
-  using std::swap;
-  return noexcept(swap(std::declval<T&>(), std::declval<T&>()));
-}
-template <class T>
-constexpr bool IsNoThrowSwappable(std::false_type /* is_swappable */) {
-  return false;
-}
-
 ABSL_DLL extern ctrl_t kDefaultIterControl;
 
 // We use these sentinel capacity values in debug mode to indicate different
@@ -400,7 +389,7 @@ inline ctrl_t* DefaultIterControl() { return &kDefaultIterControl; }
 // For use in SOO iterators.
 // TODO(b/289225379): we could potentially get rid of this by adding an is_soo
 // bit in iterators. This would add branches but reduce cache misses.
-ABSL_DLL extern const ctrl_t kSooControl[17];
+ABSL_DLL extern const ctrl_t kSooControl[2];
 
 // Returns a pointer to a full byte followed by a sentinel byte.
 inline ctrl_t* SooControl() {
@@ -1794,8 +1783,9 @@ void ResizeAllocatedTableWithSeedChange(CommonFields& common,
 void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
                        void* alloc, bool reuse, bool soo_enabled);
 
-// Type-erased version of raw_hash_set::erase_meta_only.
-void EraseMetaOnly(CommonFields& c, const ctrl_t* ctrl, size_t slot_size);
+// Type-erased versions of raw_hash_set::erase_meta_only_{small,large}.
+void EraseMetaOnlySmall(CommonFields& c, bool soo_enabled, size_t slot_size);
+void EraseMetaOnlyLarge(CommonFields& c, const ctrl_t* ctrl, size_t slot_size);
 
 // For trivially relocatable types we use memcpy directly. This allows us to
 // share the same function body for raw_hash_set instantiations that have the
@@ -2062,20 +2052,8 @@ class raw_hash_set {
     // `slot_` until they reach one.
     void skip_empty_or_deleted() {
       while (IsEmptyOrDeleted(*ctrl_)) {
-        auto mask = GroupFullEmptyOrDeleted{ctrl_}.MaskFullOrSentinel();
-        // Generally it is possible to compute `shift` branchless.
-        // This branch is useful to:
-        // 1. Avoid checking `IsEmptyOrDeleted` after the shift for the most
-        //    common dense table case.
-        // 2. Avoid the cost of `LowestBitSet` for extremely sparse tables.
-        if (ABSL_PREDICT_TRUE(mask)) {
-          auto shift = mask.LowestBitSet();
-          ctrl_ += shift;
-          slot_ += shift;
-          return;
-        }
-        ctrl_ += Group::kWidth;
-        slot_ += Group::kWidth;
+        ++ctrl_;
+        ++slot_;
       }
     }
 
@@ -2333,7 +2311,7 @@ class raw_hash_set {
   }
 
   raw_hash_set& operator=(raw_hash_set&& that) noexcept(
-      absl::allocator_traits<allocator_type>::is_always_equal::value &&
+      AllocTraits::is_always_equal::value &&
       std::is_nothrow_move_assignable<hasher>::value &&
       std::is_nothrow_move_assignable<key_equal>::value) {
     // TODO(sbenza): We should only use the operations from the noexcept clause
@@ -2703,7 +2681,7 @@ class raw_hash_set {
     if (first == last) return last.inner_;
     if (is_small()) {
       destroy(single_slot());
-      erase_meta_only(single_iterator());
+      erase_meta_only_small();
       return end();
     }
     if (first == begin() && last == end()) {
@@ -2738,12 +2716,12 @@ class raw_hash_set {
     if (src.is_small()) {
       if (src.empty()) return;
       if (insert_slot(src.single_slot()))
-        src.erase_meta_only(src.single_iterator());
+        src.erase_meta_only_small();
       return;
     }
     for (auto it = src.begin(), e = src.end(); it != e;) {
       auto next = std::next(it);
-      if (insert_slot(it.slot())) src.erase_meta_only(it);
+      if (insert_slot(it.slot())) src.erase_meta_only_large(it);
       it = next;
     }
   }
@@ -2770,9 +2748,9 @@ class raw_hash_set {
   }
 
   void swap(raw_hash_set& that) noexcept(
-      IsNoThrowSwappable<hasher>() && IsNoThrowSwappable<key_equal>() &&
-      IsNoThrowSwappable<allocator_type>(
-          typename AllocTraits::propagate_on_container_swap{})) {
+      AllocTraits::is_always_equal::value &&
+      std::is_nothrow_swappable<hasher>::value &&
+      std::is_nothrow_swappable<key_equal>::value) {
     AssertNotDebugCapacity();
     that.AssertNotDebugCapacity();
     using std::swap;
@@ -3085,11 +3063,17 @@ class raw_hash_set {
   // This merely updates the pertinent control byte. This can be used in
   // conjunction with Policy::transfer to move the object to another place.
   void erase_meta_only(const_iterator it) {
-    if (is_soo()) {
-      common().set_empty_soo();
+    if (is_small()) {
+      erase_meta_only_small();
       return;
     }
-    EraseMetaOnly(common(), it.control(), sizeof(slot_type));
+    erase_meta_only_large(it);
+  }
+  void erase_meta_only_small() {
+    EraseMetaOnlySmall(common(), SooEnabled(), sizeof(slot_type));
+  }
+  void erase_meta_only_large(const_iterator it) {
+    EraseMetaOnlyLarge(common(), it.control(), sizeof(slot_type));
   }
 
   template <class K>
@@ -3636,7 +3620,7 @@ struct HashtableFreeFunctionsAccess {
         return 0;
       }
       c->destroy(it.slot());
-      c->erase_meta_only(it);
+      c->erase_meta_only_small();
       return 1;
     }
     [[maybe_unused]] const size_t original_size_for_assert = c->size();
@@ -3648,7 +3632,7 @@ struct HashtableFreeFunctionsAccess {
           auto* slot = static_cast<SlotType*>(slot_void);
           if (pred(Set::PolicyTraits::element(slot))) {
             c->destroy(slot);
-            EraseMetaOnly(c->common(), ctrl, sizeof(*slot));
+            EraseMetaOnlyLarge(c->common(), ctrl, sizeof(*slot));
             ++num_deleted;
           }
         });

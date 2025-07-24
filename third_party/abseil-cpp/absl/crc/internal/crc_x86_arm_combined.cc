@@ -137,6 +137,13 @@ constexpr uint32_t kCRC32CPowers[] = {
 
 // Compute a magic constant, so that multiplying by it is the same as
 // extending crc by length zeros.
+#if defined(NDEBUG) && ABSL_HAVE_CPP_ATTRIBUTE(clang::no_sanitize)
+// The array accesses in this are safe:
+// length > 3, so countr_zero(length >> 2) < 62, and length & (length - 1)
+// cannot introduce bits >= 62.
+// The compiler cannot prove this, so manually disable bounds checking.
+[[clang::no_sanitize("array-bounds")]]
+#endif
 uint32_t CRC32AcceleratedX86ARMCombined::ComputeZeroConstant(
     size_t length) const {
   // Lowest 2 bits are handled separately in ExtendByZeroes

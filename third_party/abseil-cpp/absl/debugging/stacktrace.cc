@@ -124,6 +124,19 @@ ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_NO_TAIL_CALL int
 internal_stacktrace::GetStackFrames(void** result, uintptr_t* frames,
                                     int* sizes, int max_depth, int skip_count) {
   if (internal_stacktrace::ShouldFixUpStack()) {
+    if constexpr (kHaveAlloca) {
+      // Some implementations of FixUpStack may need to be passed frame
+      // information from Unwind, even if the caller doesn't need that
+      // information. We allocate the necessary buffers for such implementations
+      // here.
+      const size_t nmax = static_cast<size_t>(max_depth);
+      if (frames == nullptr) {
+        frames = static_cast<uintptr_t*>(alloca(nmax * sizeof(*frames)));
+      }
+      if (sizes == nullptr) {
+        sizes = static_cast<int*>(alloca(nmax * sizeof(*sizes)));
+      }
+    }
     size_t depth = static_cast<size_t>(Unwind<true, true>(
         result, frames, sizes, max_depth, skip_count, nullptr, nullptr));
     internal_stacktrace::FixUpStack(result, frames, sizes,
@@ -141,6 +154,19 @@ internal_stacktrace::GetStackFramesWithContext(void** result, uintptr_t* frames,
                                                int skip_count, const void* uc,
                                                int* min_dropped_frames) {
   if (internal_stacktrace::ShouldFixUpStack()) {
+    if constexpr (kHaveAlloca) {
+      // Some implementations of FixUpStack may need to be passed frame
+      // information from Unwind, even if the caller doesn't need that
+      // information. We allocate the necessary buffers for such implementations
+      // here.
+      const size_t nmax = static_cast<size_t>(max_depth);
+      if (frames == nullptr) {
+        frames = static_cast<uintptr_t*>(alloca(nmax * sizeof(*frames)));
+      }
+      if (sizes == nullptr) {
+        sizes = static_cast<int*>(alloca(nmax * sizeof(*sizes)));
+      }
+    }
     size_t depth = static_cast<size_t>(Unwind<true, true>(
         result, frames, sizes, max_depth, skip_count, uc, min_dropped_frames));
     internal_stacktrace::FixUpStack(result, frames, sizes,

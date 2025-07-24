@@ -75,7 +75,7 @@ class SampleRecorder {
 
   // Iterates over all the registered `StackInfo`s.  Returning the number of
   // samples that have been dropped.
-  int64_t Iterate(const std::function<void(const T& stack)>& f);
+  size_t Iterate(const std::function<void(const T& stack)>& f);
 
   size_t GetMaxSamples() const;
   void SetMaxSamples(size_t max);
@@ -222,7 +222,7 @@ void SampleRecorder<T>::Unregister(T* sample) {
 }
 
 template <typename T>
-int64_t SampleRecorder<T>::Iterate(
+size_t SampleRecorder<T>::Iterate(
     const std::function<void(const T& stack)>& f) {
   T* s = all_.load(std::memory_order_acquire);
   while (s != nullptr) {

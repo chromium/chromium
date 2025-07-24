@@ -45,15 +45,9 @@ constexpr ctrl_t ZeroCtrlT() { return static_cast<ctrl_t>(0); }
 // uninitialized because reading this memory is a bug.
 ABSL_DLL ctrl_t kDefaultIterControl;
 
-// We need one full byte followed by a sentinel byte for iterator::operator++ to
-// work. We have a full group after kSentinel to be safe (in case operator++ is
-// changed to read a full group).
-ABSL_CONST_INIT ABSL_DLL const ctrl_t kSooControl[17] = {
-    ZeroCtrlT(),    ctrl_t::kSentinel, ZeroCtrlT(),    ctrl_t::kEmpty,
-    ctrl_t::kEmpty, ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty,
-    ctrl_t::kEmpty, ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty,
-    ctrl_t::kEmpty, ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty,
-    ctrl_t::kEmpty};
+// We need one full byte followed by a sentinel byte for iterator::operator++.
+ABSL_CONST_INIT ABSL_DLL const ctrl_t kSooControl[2] = {ZeroCtrlT(),
+                                                        ctrl_t::kSentinel};
 
 namespace {
 
@@ -521,15 +515,22 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void InitializeThreeElementsControlBytes(
 
 }  // namespace
 
-void EraseMetaOnly(CommonFields& c, const ctrl_t* ctrl, size_t slot_size) {
+void EraseMetaOnlySmall(CommonFields& c, bool soo_enabled, size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(c.is_small());
+  if (soo_enabled) {
+    c.set_empty_soo();
+    return;
+  }
+  c.decrement_size();
+  c.infoz().RecordErase();
+  SanitizerPoisonMemoryRegion(c.slot_array(), slot_size);
+}
+
+void EraseMetaOnlyLarge(CommonFields& c, const ctrl_t* ctrl, size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(!c.is_small());
   ABSL_SWISSTABLE_ASSERT(IsFull(*ctrl) && "erasing a dangling iterator");
   c.decrement_size();
   c.infoz().RecordErase();
-
-  if (c.is_small()) {
-    SanitizerPoisonMemoryRegion(c.slot_array(), slot_size);
-    return;
-  }
 
   size_t index = static_cast<size_t>(ctrl - c.control());
 

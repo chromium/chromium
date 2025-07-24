@@ -15,13 +15,12 @@
 // Alternate options.h file, used in continuous integration testing to exercise
 // option settings not used by default.
 
+// SKIP_ABSL_INLINE_NAMESPACE_CHECK
+
 #ifndef ABSL_CI_ABSL_ALTERNATE_OPTIONS_H_
 #define ABSL_CI_ABSL_ALTERNATE_OPTIONS_H_
 
-#define ABSL_OPTION_USE_STD_ANY 0
-#define ABSL_OPTION_USE_STD_OPTIONAL 0
 #define ABSL_OPTION_USE_STD_STRING_VIEW 0
-#define ABSL_OPTION_USE_STD_VARIANT 0
 #define ABSL_OPTION_USE_STD_ORDERING 0
 #define ABSL_OPTION_USE_INLINE_NAMESPACE 1
 #define ABSL_OPTION_INLINE_NAMESPACE_NAME ns
