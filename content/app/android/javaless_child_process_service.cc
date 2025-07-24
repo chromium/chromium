@@ -323,8 +323,6 @@ bool onUnbind(ANativeService* service, void const* bindToken) {
   return false;
 }
 
-void onLowMemory(ANativeService* service) {}
-
 }  // namespace
 }  // namespace content
 
@@ -336,5 +334,4 @@ EXPORT_TO_ANDROID void NativeChildProcessService_onCreate(
   ANativeService_setOnUnbindCallback(service, &content::onUnbind);
   ANativeService_setOnRebindCallback(service, &content::onRebind);
   ANativeService_setOnDestroyCallback(service, &content::onDestroy);
-  ANativeService_setOnLowMemoryCallback(service, &content::onLowMemory);
 }
