@@ -7,9 +7,8 @@ package org.chromium.components.location;
 import android.Manifest;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -48,22 +47,8 @@ public class LocationSettings {
     private static void promptToEnableSystemLocationSetting(
             @LocationSettingsDialogContext int promptContext,
             WindowAndroid window,
-            final long nativeCallback) {
+            JniOnceCallback<Integer> callback) {
         LocationUtils.getInstance()
-                .promptToEnableSystemLocationSetting(
-                        promptContext,
-                        window,
-                        new Callback<Integer>() {
-                            @Override
-                            public void onResult(Integer result) {
-                                LocationSettingsJni.get()
-                                        .onLocationSettingsDialogOutcome(nativeCallback, result);
-                            }
-                        });
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onLocationSettingsDialogOutcome(long callback, int result);
+                .promptToEnableSystemLocationSetting(promptContext, window, callback);
     }
 }
