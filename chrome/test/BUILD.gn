@@ -5459,7 +5459,6 @@ if (!is_android) {
         "//chrome/browser/ui/ash/login:test_support",
         "//chrome/browser/ui/ash/login/login_screen_extension_ui",
         "//chrome/browser/ui/ash/multi_user",
-        "//chrome/browser/ui/ash/multi_user:test_support",
         "//chrome/browser/ui/ash/network",
         "//chrome/browser/ui/ash/quick_answers",
         "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",

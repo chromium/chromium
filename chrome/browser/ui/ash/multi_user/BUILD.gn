@@ -58,23 +58,6 @@ static_library("multi_user") {
   ]
 }
 
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "test_multi_user_window_manager.cc",
-    "test_multi_user_window_manager.h",
-  ]
-
-  deps = [
-    ":multi_user",
-    "//ash/public/cpp",
-    "//base",
-    "//chrome/browser/ui",
-    "//components/account_id",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
