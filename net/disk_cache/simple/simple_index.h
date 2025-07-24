@@ -175,7 +175,7 @@ class NET_EXPORT_PRIVATE SimpleIndex final {
   // index. This should be the total disk-file size including all streams of the
   // entry.
   bool UpdateEntrySize(uint64_t entry_hash,
-                       base::StrictNumeric<uint32_t> entry_size);
+                       base::StrictNumeric<uint64_t> entry_size);
 
   using EntrySet = absl::flat_hash_map<uint64_t, EntryMetadata>;
 
@@ -259,7 +259,7 @@ class NET_EXPORT_PRIVATE SimpleIndex final {
   // Update the size of the entry pointed to by the given iterator.  Return
   // true if the new size actually results in a change.
   bool UpdateEntryIteratorSize(EntrySet::iterator* it,
-                               base::StrictNumeric<uint32_t> entry_size);
+                               base::StrictNumeric<uint64_t> entry_size);
 
   // Must run on IO Thread.
   void MergeInitializingSet(std::unique_ptr<SimpleIndexLoadResult> load_result);

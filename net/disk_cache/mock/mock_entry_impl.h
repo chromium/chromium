@@ -22,11 +22,11 @@ class EntryMock : public Entry {
   MOCK_METHOD(void, Doom, (), (override));
   MOCK_METHOD(std::string, GetKey, (), (const, override));
   MOCK_METHOD(base::Time, GetLastUsed, (), (const, override));
-  MOCK_METHOD(int32_t, GetDataSize, (int index), (const, override));
+  MOCK_METHOD(int64_t, GetDataSize, (int index), (const, override));
   MOCK_METHOD(int,
               ReadData,
               (int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback),
@@ -34,7 +34,7 @@ class EntryMock : public Entry {
   MOCK_METHOD(int,
               WriteData,
               (int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback,

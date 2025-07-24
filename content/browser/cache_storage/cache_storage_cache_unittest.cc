@@ -222,18 +222,18 @@ class FailableCacheEntry : public disk_cache::Entry {
   void Close() override { entry_->Close(); }
   std::string GetKey() const override { return entry_->GetKey(); }
   base::Time GetLastUsed() const override { return entry_->GetLastUsed(); }
-  int32_t GetDataSize(int index) const override {
+  int64_t GetDataSize(int index) const override {
     return entry_->GetDataSize(index);
   }
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override {
     return entry_->ReadData(index, offset, buf, buf_len, std::move(callback));
   }
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,

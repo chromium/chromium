@@ -104,7 +104,7 @@ base::Time SqlEntryImpl::GetLastUsed() const {
   return last_used_;
 }
 
-int32_t SqlEntryImpl::GetDataSize(int index) const {
+int64_t SqlEntryImpl::GetDataSize(int index) const {
   if (index != 0 && index != 1) {
     return net::ERR_INVALID_ARGUMENT;
   }
@@ -116,7 +116,7 @@ int32_t SqlEntryImpl::GetDataSize(int index) const {
 }
 
 int SqlEntryImpl::ReadData(int index,
-                           int offset,
+                           int64_t offset,
                            IOBuffer* buf,
                            int buf_len,
                            CompletionOnceCallback callback) {
@@ -132,7 +132,13 @@ int SqlEntryImpl::ReadData(int index,
   // the requested range would overflow, the underlying SqlPersistentStore will
   // truncate the read length to fit within the `int64_t` range, allowing a
   // partial read up to the maximum possible offset.
-  if (!buf || buf_len < 0 || offset < 0) {
+  //
+  // TODO(crbug.com/422065015): To enable int64_t offset writes for stream 1 in
+  // the SQL backend, the check for offset against int max should be moved to
+  // the index == 0 logic path, as stream 1 of SQL backend is designed to handle
+  // offsets larger than int max.
+  if (!buf || buf_len < 0 || offset < 0 ||
+      offset > std::numeric_limits<int>::max()) {
     return net::ERR_INVALID_ARGUMENT;
   }
 
@@ -145,9 +151,9 @@ int SqlEntryImpl::ReadData(int index,
   if (head_->size() <= offset) {
     return 0;
   }
-  buf_len = std::min(buf_len, head_->size() - offset);
+  buf_len = std::min(buf_len, head_->size() - static_cast<int>(offset));
   buf->first(buf_len).copy_from_nonoverlapping(head_->span().subspan(
-      base::checked_cast<size_t>(offset), base::checked_cast<size_t>(buf_len)));
+      static_cast<size_t>(offset), static_cast<size_t>(buf_len)));
   return buf_len;
 }
 
@@ -175,7 +181,7 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
 }
 
 int SqlEntryImpl::WriteData(int index,
-                            int offset,
+                            int64_t offset,
                             IOBuffer* buf,
                             int buf_len,
                             CompletionOnceCallback callback,
@@ -185,6 +191,14 @@ int SqlEntryImpl::WriteData(int index,
       (!buf && buf_len > 0) || !base::CheckAdd(offset, buf_len).IsValid()) {
     return net::ERR_INVALID_ARGUMENT;
   }
+
+  // TODO(crbug.com/422065015): To enable int64_t offset reads for stream 1 in
+  // the SQL backend, the check should be moved to the index == 0 logic path, as
+  // stream 1 of SQL backend is designed to handle offsets larger than int max.
+  if (offset + buf_len > std::numeric_limits<int>::max()) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   if (index == 1) {
     return WriteDataInternal(offset, buf, buf_len, std::move(callback),
                              truncate, /*sparse_write=*/false);
@@ -197,30 +211,29 @@ int SqlEntryImpl::WriteData(int index,
     previous_header_size_in_storage_ = head_->size();
   }
 
+  size_t u_offset = base::checked_cast<size_t>(offset);
+  size_t u_buf_len = base::checked_cast<size_t>(buf_len);
   if (offset == 0 && truncate) {
     head_->SetCapacity(buf_len);
     if (buf_len) {
-      head_->span().copy_from(buf->first(base::checked_cast<size_t>(buf_len)));
+      head_->span().copy_from(buf->first(u_buf_len));
     }
   } else {
-    const int original_size = head_->size();
-    const int buffer_size =
-        truncate ? offset + buf_len : std::max(offset + buf_len, original_size);
-    head_->SetCapacity(buffer_size);
+    const size_t original_size = head_->size();
+    const size_t buffer_size =
+        truncate ? u_offset + u_buf_len
+                 : std::max(u_offset + u_buf_len, original_size);
+    head_->SetCapacity(base::checked_cast<int>(buffer_size));
 
     // Fill any gap with zeros if writing beyond current size.
-    const int fill_size = offset <= original_size ? 0 : offset - original_size;
+    const size_t fill_size =
+        u_offset <= original_size ? 0 : u_offset - original_size;
     if (fill_size > 0) {
-      std::ranges::fill(
-          head_->span().subspan(base::checked_cast<size_t>(original_size),
-                                base::checked_cast<size_t>(fill_size)),
-          0);
+      std::ranges::fill(head_->span().subspan(original_size, fill_size), 0);
     }
     // Copy new data into the buffer.
     if (buf) {
-      head_->span()
-          .subspan(base::checked_cast<size_t>(offset))
-          .copy_prefix_from(buf->first(base::checked_cast<size_t>(buf_len)));
+      head_->span().subspan(u_offset).copy_prefix_from(buf->first(u_buf_len));
     }
   }
   return buf_len;

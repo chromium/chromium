@@ -347,36 +347,40 @@ class NET_EXPORT Entry {
   virtual base::Time GetLastUsed() const = 0;
 
   // Returns the size of the cache data with the given index.
-  virtual int32_t GetDataSize(int index) const = 0;
+  virtual int64_t GetDataSize(int index) const = 0;
 
-  // Copies cached data into the given buffer of length |buf_len|. Returns the
+  // Copies cached data into the given buffer of length `buf_len`. Returns the
   // number of bytes read or a network error code. If this function returns
   // ERR_IO_PENDING, the completion callback will be called on the current
-  // thread when the operation completes, and a reference to |buf| will be
+  // thread when the operation completes, and a reference to `buf` will be
   // retained until the callback is called. Note that as long as the function
   // does not complete immediately, the callback will always be invoked, even
   // after Close has been called; in other words, the caller may close this
   // entry without having to wait for all the callbacks, and still rely on the
   // cleanup performed from the callback code.
+  // Note that `offset` larger than int32 max is supported only by Simple Cache
+  // backend. It will return ERR_INVALID_ARGUMENT for other backends.
   virtual int ReadData(int index,
-                       int offset,
+                       int64_t offset,
                        IOBuffer* buf,
                        int buf_len,
                        CompletionOnceCallback callback) = 0;
 
-  // Copies data from the given buffer of length |buf_len| into the cache.
+  // Copies data from the given buffer of length `buf_len` into the cache.
   // Returns the number of bytes written or a network error code. If this
   // function returns ERR_IO_PENDING, the completion callback will be called
   // on the current thread when the operation completes, and a reference to
-  // |buf| will be retained until the callback is called. Note that as long as
+  // `buf` will be retained until the callback is called. Note that as long as
   // the function does not complete immediately, the callback will always be
   // invoked, even after Close has been called; in other words, the caller may
   // close this entry without having to wait for all the callbacks, and still
   // rely on the cleanup performed from the callback code.
   // If truncate is true, this call will truncate the stored data at the end of
   // what we are writing here.
+  // Note that `offset` larger than int32 max is supported only by Simple Cache
+  // backend. It will return ERR_INVALID_ARGUMENT for other backends.
   virtual int WriteData(int index,
-                        int offset,
+                        int64_t offset,
                         IOBuffer* buf,
                         int buf_len,
                         CompletionOnceCallback callback,

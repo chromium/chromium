@@ -80,13 +80,13 @@ base::Time MockDiskEntry::GetLastUsed() const {
   return base::Time::Now();
 }
 
-int32_t MockDiskEntry::GetDataSize(int index) const {
+int64_t MockDiskEntry::GetDataSize(int index) const {
   DCHECK(index >= 0 && index < kNumCacheEntryDataIndices);
-  return static_cast<int32_t>(data_[index].size());
+  return static_cast<int64_t>(data_[index].size());
 }
 
 int MockDiskEntry::ReadData(int index,
-                            int offset,
+                            int64_t offset,
                             IOBuffer* buf,
                             int buf_len,
                             CompletionOnceCallback callback) {
@@ -100,11 +100,14 @@ int MockDiskEntry::ReadData(int index,
   if (offset < 0 || offset > static_cast<int>(data_[index].size())) {
     return ERR_FAILED;
   }
-  if (static_cast<size_t>(offset) == data_[index].size()) {
+
+  // `offset` is not larger than int max so it's in size_t range.
+  if (base::checked_cast<size_t>(offset) == data_[index].size()) {
     return 0;
   }
 
-  int num = std::min(buf_len, static_cast<int>(data_[index].size()) - offset);
+  int num = std::min(buf_len, static_cast<int>(data_[index].size()) -
+                                  base::checked_cast<int>(offset));
   buf->span().copy_prefix_from(base::span(data_[index])
                                    .subspan(base::checked_cast<size_t>(offset),
                                             base::checked_cast<size_t>(num)));
@@ -132,7 +135,7 @@ void MockDiskEntry::ResumeDiskEntryOperation() {
 }
 
 int MockDiskEntry::WriteData(int index,
-                             int offset,
+                             int64_t offset,
                              IOBuffer* buf,
                              int buf_len,
                              CompletionOnceCallback callback,
@@ -150,8 +153,13 @@ int MockDiskEntry::WriteData(int index,
     return ERR_FAILED;
   }
 
-  DCHECK_LT(offset + buf_len, kMaxMockCacheEntrySize);
-  if (offset + buf_len > max_file_size_ && index == 1) {
+  if (offset + buf_len > kMaxMockCacheEntrySize) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
+  // `offset` is not larger than int max so it's in size_t range.
+  if (base::checked_cast<int>(offset) + buf_len > max_file_size_ &&
+      index == 1) {
     return ERR_FAILED;
   }
 

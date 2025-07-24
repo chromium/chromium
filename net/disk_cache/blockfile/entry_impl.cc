@@ -815,7 +815,7 @@ Time EntryImpl::GetLastUsed() const {
   return Time::FromInternalValue(node->Data()->last_used);
 }
 
-int32_t EntryImpl::GetDataSize(int index) const {
+int64_t EntryImpl::GetDataSize(int index) const {
   if (index < 0 || index >= kNumStreams)
     return 0;
 
@@ -824,12 +824,17 @@ int32_t EntryImpl::GetDataSize(int index) const {
 }
 
 int EntryImpl::ReadData(int index,
-                        int offset,
+                        int64_t offset,
                         IOBuffer* buf,
                         int buf_len,
                         CompletionOnceCallback callback) {
+  if (offset > std::numeric_limits<int32_t>::max()) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   if (callback.is_null())
-    return ReadDataImpl(index, offset, buf, buf_len, std::move(callback));
+    return ReadDataImpl(index, base::checked_cast<int32_t>(offset), buf,
+                        buf_len, std::move(callback));
 
   DCHECK(node_.Data()->dirty || read_only_);
   if (index < 0 || index >= kNumStreams)
@@ -847,20 +852,25 @@ int EntryImpl::ReadData(int index,
   if (!background_queue_.get())
     return net::ERR_UNEXPECTED;
 
-  background_queue_->ReadData(this, index, offset, buf, buf_len,
-                              std::move(callback));
+  background_queue_->ReadData(this, index, base::checked_cast<int32_t>(offset),
+                              buf, buf_len, std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
 int EntryImpl::WriteData(int index,
-                         int offset,
+                         int64_t offset,
                          IOBuffer* buf,
                          int buf_len,
                          CompletionOnceCallback callback,
                          bool truncate) {
+  // TODO(crbug.com/391398191): Support `offset` larger than int32_t max.
+  if (offset > std::numeric_limits<int32_t>::max()) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   if (callback.is_null()) {
-    return WriteDataImpl(index, offset, buf, buf_len, std::move(callback),
-                         truncate);
+    return WriteDataImpl(index, base::checked_cast<int32_t>(offset), buf,
+                         buf_len, std::move(callback), truncate);
   }
 
   DCHECK(node_.Data()->dirty || read_only_);
@@ -877,8 +887,8 @@ int EntryImpl::WriteData(int index,
   if (!background_queue_.get())
     return net::ERR_UNEXPECTED;
 
-  background_queue_->WriteData(this, index, offset, buf, buf_len, truncate,
-                               std::move(callback));
+  background_queue_->WriteData(this, index, base::checked_cast<int32_t>(offset),
+                               buf, buf_len, truncate, std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
