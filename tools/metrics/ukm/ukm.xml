@@ -17073,18 +17073,11 @@ be describing additional metrics about the same event.
       did not complete successfully.
     </summary>
   </metric>
-  <metric name="RegisteredOptimizationTargets">
-    <summary>
-      A bitmask of the optimization targets that were registered at the start of
-      the page load where each flipped bit corresponds to its int value in
-      |optimization_guide::proto::OptimizationTarget|.
-    </summary>
-  </metric>
   <metric name="RegisteredOptimizationTypes">
     <summary>
       A bitmask of the optimization types that were registered at the start of
       the page load where each flipped bit corresponds to its int value in
-      |optimization_guide::proto::OptimizationTarget|.
+      |optimization_guide::proto::OptimizationType|.
     </summary>
   </metric>
 </event>

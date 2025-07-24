@@ -382,8 +382,6 @@ void OptimizationGuideKeyedService::OnNavigationStartOrRedirect(
   if (navigation_data) {
     navigation_data->set_registered_optimization_types(
         hints_manager_->registered_optimization_types());
-    navigation_data->set_registered_optimization_targets(
-        prediction_manager_->GetRegisteredOptimizationTargets());
   }
 }
 

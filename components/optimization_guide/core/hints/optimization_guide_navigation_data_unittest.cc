@@ -62,33 +62,6 @@ TEST(OptimizationGuideNavigtaionDataTest,
       6);
 }
 
-TEST(OptimizationGuideNavigtaionDataTest,
-     RecordMetricsRegisteredOptimizationTargets) {
-  base::test::TaskEnvironment env;
-
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(
-          /*navigation_id=*/3, /*navigation_start=*/base::TimeTicks::Now());
-  data->set_registered_optimization_targets(
-      {optimization_guide::proto::OPTIMIZATION_TARGET_UNKNOWN,
-       optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
-  data.reset();
-
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::OptimizationGuide::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0].get();
-  EXPECT_TRUE(ukm_recorder.EntryHasMetric(
-      entry,
-      ukm::builders::OptimizationGuide::kRegisteredOptimizationTargetsName));
-  // The bitmask should be 11 since UNKNOWN=0 and PAINFUL_PAGE_LOAD=1.
-  ukm_recorder.ExpectEntryMetric(
-      entry,
-      ukm::builders::OptimizationGuide::kRegisteredOptimizationTargetsName, 3);
-}
-
 TEST(OptimizationGuideNavigationDataTest,
      RecordMetricsFetchAttemptStatusForNavigation) {
   base::test::TaskEnvironment env;
