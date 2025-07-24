@@ -3674,8 +3674,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
                            PdfInkInputData(gfx::PointF(35.0, 20.0))});
   ASSERT_TRUE(expected_selection0_batch.has_value());
   std::optional<ink::StrokeInputBatch> expected_selection1_batch =
-      CreateInkInputBatch({PdfInkInputData(gfx::PointF(17.5, 27.0)),
-                           PdfInkInputData(gfx::PointF(22.5, 27.0))});
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(17.5, 27.5)),
+                           PdfInkInputData(gfx::PointF(22.5, 27.5))});
   ASSERT_TRUE(expected_selection1_batch.has_value());
 
   std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =

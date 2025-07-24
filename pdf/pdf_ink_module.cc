@@ -1040,7 +1040,8 @@ ink::Stroke PdfInkModule::GetHighlightStrokeFromSelectionRect(
 
   // Strokes will be drawn using one or two input points.
   std::pair<gfx::PointF, gfx::PointF> points =
-      GetPointsForTextSelectionHighlightStroke(selection_rect, brush_size);
+      GetPointsForTextSelectionHighlightStroke(gfx::RectF(selection_rect),
+                                               brush_size);
 
   ink::StrokeInputBatch batch;
   ink::StrokeInput input =
@@ -1067,7 +1068,7 @@ ink::Stroke PdfInkModule::GetHighlightStrokeFromSelectionRect(
 
 std::pair<gfx::PointF, gfx::PointF>
 PdfInkModule::GetPointsForTextSelectionHighlightStroke(
-    const gfx::Rect& selection_rect,
+    const gfx::RectF& selection_rect,
     float brush_size) {
   bool is_vertical_stroke = selection_rect.height() > selection_rect.width();
   PageOrientation orientation = client_->GetOrientation();
@@ -1076,8 +1077,8 @@ PdfInkModule::GetPointsForTextSelectionHighlightStroke(
   // characters or the left center of the text characters, depending on the
   // orientation and whether `selection_rect` is longer vertically. The second
   // input point will be on the opposite end of the rect.
-  gfx::Point start;
-  gfx::Point end;
+  gfx::PointF start;
+  gfx::PointF end;
   if (is_vertical_stroke) {
     start = selection_rect.top_center();
     end = selection_rect.bottom_center();
@@ -1094,12 +1095,11 @@ PdfInkModule::GetPointsForTextSelectionHighlightStroke(
     }
   }
 
-  int page_index =
-      client_->PageIndexFromPoint(gfx::PointF(selection_rect.origin()));
+  int page_index = client_->PageIndexFromPoint(selection_rect.origin());
   CHECK_GE(page_index, 0);
   gfx::Transform transform = GetEventToCanonicalTransformForPage(page_index);
-  gfx::PointF start_f = transform.MapPoint(gfx::PointF(start));
-  gfx::PointF end_f = transform.MapPoint(gfx::PointF(end));
+  start = transform.MapPoint(start);
+  end = transform.MapPoint(end);
 
   // These points need to be offset to account for brush size. Depending on the
   // direction of the stroke, the points will need to be offset in either the x
@@ -1111,10 +1111,10 @@ PdfInkModule::GetPointsForTextSelectionHighlightStroke(
       (!is_vertical_stroke && (orientation == PageOrientation::kClockwise90 ||
                                orientation == PageOrientation::kClockwise270));
   float offset = brush_size / 2;
-  start_f.Offset(should_offset_y ? 0 : offset, should_offset_y ? offset : 0);
-  end_f.Offset(should_offset_y ? 0 : -offset, should_offset_y ? -offset : 0);
+  start.Offset(should_offset_y ? 0 : offset, should_offset_y ? offset : 0);
+  end.Offset(should_offset_y ? 0 : -offset, should_offset_y ? -offset : 0);
 
-  return {start_f, end_f};
+  return {start, end};
 }
 
 std::map<int, std::vector<ink::Stroke>>

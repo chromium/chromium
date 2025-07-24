@@ -316,7 +316,7 @@ class PdfInkModule {
   // `selection_rect`'s smallest dimension. `selection_rect` must be in screen
   // coordinates.
   std::pair<gfx::PointF, gfx::PointF> GetPointsForTextSelectionHighlightStroke(
-      const gfx::Rect& selection_rect,
+      const gfx::RectF& selection_rect,
       float brush_size);
 
   // Converts PdfInkModuleClient's text selection to strokes and returns a
