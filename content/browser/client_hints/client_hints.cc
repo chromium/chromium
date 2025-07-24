@@ -1061,24 +1061,26 @@ bool AreCriticalHintsMissing(
   return false;
 }
 
-std::vector<network::mojom::WebClientHintsType> GetEnabledClientHints(
-    const url::Origin& origin,
-    FrameTreeNode* frame_tree_node,
-    ClientHintsControllerDelegate* delegate) {
-  std::vector<network::mojom::WebClientHintsType> hints;
+network::ResourceRequest::TrustedParams::EnabledClientHints
+GetEnabledClientHints(const url::Origin& origin,
+                      FrameTreeNode* frame_tree_node,
+                      ClientHintsControllerDelegate* delegate) {
   ClientHintsExtendedData data(origin, frame_tree_node, delegate, std::nullopt);
 
+  network::ResourceRequest::TrustedParams::EnabledClientHints
+      enabled_client_hints;
+  enabled_client_hints.is_outermost_main_frame = data.is_outermost_main_frame;
   const auto& client_hints_map = network::GetClientHintToNameMap();
   // Note: these only check for per-hint origin/permissions policy settings, not
   // origin-level or "browser-level" policies like disabiling JS or other
   // features.
   for (const auto& [hint, _] : client_hints_map) {
     if (ShouldAddClientHint(data, hint)) {
-      hints.push_back(hint);
+      enabled_client_hints.hints.push_back(hint);
     }
   }
-
-  return hints;
+  enabled_client_hints.origin = data.main_frame_origin;
+  return enabled_client_hints;
 }
 
 }  // namespace content

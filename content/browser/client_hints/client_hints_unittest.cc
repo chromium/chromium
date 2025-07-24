@@ -313,8 +313,10 @@ TEST_F(ClientHintsTest, SubFrame) {
   EXPECT_EQ(existing_hints, current_hints.GetEnabledHints());
 }
 
-TEST_F(ClientHintsTest, GetEnabledClientHints) {
-  url::Origin origin = url::Origin::Create(GURL(ClientHintsTest::kOriginUrl));
+TEST_F(ClientHintsTest, GetEnabledClientHintsMainFrame) {
+  GURL main_url(kOriginUrl);
+  contents()->NavigateAndCommit(main_url);
+  url::Origin origin = url::Origin::Create(main_url);
 
   FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
   FrameTreeNode* main_frame_node = frame_tree.root();
@@ -333,11 +335,50 @@ TEST_F(ClientHintsTest, GetEnabledClientHints) {
       expected_types.push_back(hint);
     }
   }
-  std::vector<network::mojom::WebClientHintsType> actual_types =
+
+  const auto& actual_hints =
       GetEnabledClientHints(origin, main_frame_node, &delegate);
 
+  EXPECT_EQ(origin, actual_hints.origin);
+  EXPECT_TRUE(actual_hints.is_outermost_main_frame);
   // We do not care the order of contents.
-  EXPECT_THAT(actual_types, testing::UnorderedElementsAreArray(expected_types));
+  EXPECT_THAT(actual_hints.hints,
+              testing::UnorderedElementsAreArray(expected_types));
+}
+
+TEST_F(ClientHintsTest, GetEnabledClientHintsSubframe) {
+  GURL main_url(kOriginUrl);
+  contents()->NavigateAndCommit(main_url);
+  url::Origin origin = url::Origin::Create(main_url);
+
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+  AddOneChildNode();
+  FrameTreeNode* sub_frame_node = main_frame_node->child_at(0);
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  // Add default ClientHints.
+  std::vector<network::mojom::WebClientHintsType> expected_types;
+  for (const auto& [hint, _] : network::GetClientHintToNameMap()) {
+    if (blink::IsClientHintSentByDefault(hint)) {
+      expected_types.push_back(hint);
+    }
+  }
+
+  // The origin passed to GetEnabledClientHints is the resource origin.
+  // The origin in the result is the main frame origin.
+  GURL sub_url("https://sub.example.com");
+  const auto& actual_hints = GetEnabledClientHints(url::Origin::Create(sub_url),
+                                                   sub_frame_node, &delegate);
+
+  EXPECT_EQ(origin, actual_hints.origin);
+  EXPECT_FALSE(actual_hints.is_outermost_main_frame);
+  // Just check if the hints has the default low entropy client hints.
+  // We do not care the order of contents.
+  EXPECT_THAT(actual_hints.hints,
+              testing::UnorderedElementsAreArray(expected_types));
 }
 
 }  // namespace content

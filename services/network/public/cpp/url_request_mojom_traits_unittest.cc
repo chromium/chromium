@@ -125,7 +125,11 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.trusted_params->disable_secure_dns = true;
   original.trusted_params->allow_cookies_from_browser = true;
   original.trusted_params->include_request_cookies_with_response = true;
-  original.trusted_params->enabled_client_hints = {
+  original.trusted_params->enabled_client_hints.emplace();
+  original.trusted_params->enabled_client_hints->origin =
+      url::Origin::Create(GURL("https://a.com"));
+  original.trusted_params->enabled_client_hints->is_outermost_main_frame = true;
+  original.trusted_params->enabled_client_hints->hints = {
       network::mojom::WebClientHintsType::kUAArch,
       network::mojom::WebClientHintsType::kUAWoW64,
   };
@@ -180,7 +184,11 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams) {
   original.disable_secure_dns = true;
   original.allow_cookies_from_browser = true;
   original.include_request_cookies_with_response = true;
-  original.enabled_client_hints = {
+  original.enabled_client_hints.emplace();
+  original.enabled_client_hints->origin =
+      url::Origin::Create(GURL("https://a.com"));
+  original.enabled_client_hints->is_outermost_main_frame = true;
+  original.enabled_client_hints->hints = {
       network::mojom::WebClientHintsType::kUAArch,
       network::mojom::WebClientHintsType::kUAWoW64,
   };

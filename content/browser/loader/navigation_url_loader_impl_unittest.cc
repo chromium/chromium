@@ -491,9 +491,11 @@ TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHints) {
                   ->enabled_client_hints.has_value());
   // The default types are added in addition, and that is why `IsSupersetOf()`
   // is used.
-  EXPECT_THAT(
-      *most_recent_resource_request_->trusted_params->enabled_client_hints,
-      testing::IsSupersetOf(expected_client_hints));
+  EXPECT_THAT(most_recent_resource_request_->trusted_params
+                  ->enabled_client_hints->hints,
+              testing::IsSupersetOf(expected_client_hints));
+  EXPECT_EQ(origin, most_recent_resource_request_->trusted_params
+                        ->enabled_client_hints->origin);
 }
 
 TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHintsDisabled) {

@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 
 namespace net {
@@ -39,13 +40,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
   static std::unique_ptr<AcceptCHFrameInterceptor> MaybeCreate(
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      std::optional<std::vector<network::mojom::WebClientHintsType>>
+      std::optional<ResourceRequest::TrustedParams::EnabledClientHints>
           enabled_client_hints);
 
   static std::unique_ptr<AcceptCHFrameInterceptor> CreateForTesting(
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      std::optional<std::vector<network::mojom::WebClientHintsType>>
+      std::optional<ResourceRequest::TrustedParams::EnabledClientHints>
           enabled_client_hints);
 
   AcceptCHFrameInterceptor(const AcceptCHFrameInterceptor&) = delete;
@@ -74,6 +75,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
                          net::CompletionOnceCallback callback);
 
   bool NeedsObserverCheckForTesting(
+      const url::Origin& origin,
       const std::vector<mojom::WebClientHintsType>& hints);
 
  private:
@@ -82,7 +84,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
   AcceptCHFrameInterceptor(
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      std::optional<std::vector<network::mojom::WebClientHintsType>>
+      std::optional<ResourceRequest::TrustedParams::EnabledClientHints>
           enabled_client_hints,
       base::PassKey<AcceptCHFrameInterceptor>);
 
@@ -96,7 +98,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
   // creation time (which is stored in `enabled_client_hints_`) to avoid sending
   // the IPCs if possible. The enabled hints may change after the request
   // creation, and the IPC is still needed for them.
-  bool NeedsObserverCheck(const std::vector<mojom::WebClientHintsType>& hints);
+  bool NeedsObserverCheck(const url::Origin& origin,
+                          const std::vector<mojom::WebClientHintsType>& hints);
 
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 
@@ -106,9 +109,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
   // `accept_ch_observer_` should be called to ensure the hints are enabled.
   // `enabled_client_hints_` is used beforehand to avoid an unnecessary observer
   // call.
-  // TODO(crbug.com/406407746): omit std::optional.
-  // This is optional to distinguish the feature is enabled or not.
-  const std::optional<std::vector<network::mojom::WebClientHintsType>>
+  const std::optional<ResourceRequest::TrustedParams::EnabledClientHints>
       enabled_client_hints_;
 };
 

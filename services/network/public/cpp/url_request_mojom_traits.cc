@@ -38,6 +38,20 @@
 
 namespace mojo {
 
+bool StructTraits<network::mojom::EnabledClientHintsDataView,
+                  network::ResourceRequest::TrustedParams::EnabledClientHints>::
+    Read(network::mojom::EnabledClientHintsDataView data,
+         network::ResourceRequest::TrustedParams::EnabledClientHints* out) {
+  if (!data.ReadOrigin(&out->origin)) {
+    return false;
+  }
+  out->is_outermost_main_frame = data.is_outermost_main_frame();
+  if (!data.ReadHints(&out->hints)) {
+    return false;
+  }
+  return true;
+}
+
 bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
                   network::ResourceRequest::TrustedParams>::
     Read(network::mojom::TrustedUrlRequestParamsDataView data,

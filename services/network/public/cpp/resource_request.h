@@ -61,6 +61,20 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // TODO(mmenke):  There are likely other fields that should be moved into this
   // class.
   struct COMPONENT_EXPORT(NETWORK_CPP_BASE) TrustedParams {
+    // Typemapped to network.mojom.EnabledClientHints, see comments there for
+    // details of each field.
+    struct COMPONENT_EXPORT(NETWORK_CPP_BASE) EnabledClientHints {
+      EnabledClientHints();
+      ~EnabledClientHints();
+      EnabledClientHints(const EnabledClientHints&);
+      EnabledClientHints& operator=(const EnabledClientHints&);
+      bool operator==(const EnabledClientHints& other) const;
+
+      url::Origin origin;
+      bool is_outermost_main_frame = false;
+      std::vector<network::mojom::WebClientHintsType> hints;
+    };
+
     TrustedParams();
     ~TrustedParams();
     // TODO(crbug.com/332706093): Make this move-only to avoid cloning mojo
@@ -77,8 +91,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool has_user_activation = false;
     bool allow_cookies_from_browser = false;
     bool include_request_cookies_with_response = false;
-    std::optional<std::vector<network::mojom::WebClientHintsType>>
-        enabled_client_hints;
+    std::optional<EnabledClientHints> enabled_client_hints;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
     mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer;
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>

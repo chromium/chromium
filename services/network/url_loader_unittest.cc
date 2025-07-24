@@ -1126,8 +1126,9 @@ class URLLoaderTest : public testing::Test {
     accept_ch_frame_observer_ = observer;
   }
   void set_enabled_client_hints_for_next_request(
-      std::vector<mojom::WebClientHintsType> enabled_client_hints) {
-    enabled_client_hints_ = std::move(enabled_client_hints);
+      std::optional<network::ResourceRequest::TrustedParams::EnabledClientHints>
+          enabled_client_hints) {
+    enabled_client_hints_.swap(enabled_client_hints);
   }
   void set_cookie_setting_overrides(
       const net::CookieSettingOverrides& overrides) {
@@ -1288,7 +1289,8 @@ class URLLoaderTest : public testing::Test {
   TestURLLoaderClient client_;
 
   raw_ptr<MockAcceptCHFrameObserver> accept_ch_frame_observer_ = nullptr;
-  std::optional<std::vector<mojom::WebClientHintsType>> enabled_client_hints_;
+  std::optional<network::ResourceRequest::TrustedParams::EnabledClientHints>
+      enabled_client_hints_;
 };
 
 class URLLoaderMockSocketTest : public URLLoaderTest {
@@ -8346,9 +8348,13 @@ TEST_F(URLLoaderTest, AcceptCHFrameHintsAlreadyEnabledSkipsObserver) {
   set_accept_ch_frame_observer_for_next_request(&accept_ch_frame_observer);
 
   // 3. Set enabled_client_hints.
-  set_enabled_client_hints_for_next_request(
-      std::vector<mojom::WebClientHintsType>{
-          mojom::WebClientHintsType::kUAPlatform});
+  network::ResourceRequest::TrustedParams::EnabledClientHints
+      enabled_client_hints;
+  enabled_client_hints.origin = url::Origin::Create(url);
+  enabled_client_hints.is_outermost_main_frame = true;
+  enabled_client_hints.hints = std::vector<mojom::WebClientHintsType>{
+      mojom::WebClientHintsType::kUAPlatform};
+  set_enabled_client_hints_for_next_request(enabled_client_hints);
 
   // 4. Load, expecting net::OK.
   EXPECT_THAT(Load(url), IsOk());
@@ -8373,8 +8379,10 @@ TEST_F(URLLoaderTest, AcceptCHFrameNewHintsCallsObserver) {
   set_accept_ch_frame_observer_for_next_request(&accept_ch_frame_observer);
 
   // Ensure the client hints is an empty, and not hitting the hints.
-  set_enabled_client_hints_for_next_request(
-      std::vector<mojom::WebClientHintsType>{});
+  network::ResourceRequest::TrustedParams::EnabledClientHints
+      enabled_client_hints;
+  enabled_client_hints.origin = url::Origin::Create(url);
+  set_enabled_client_hints_for_next_request(enabled_client_hints);
 
   EXPECT_THAT(Load(url), IsOk());
 

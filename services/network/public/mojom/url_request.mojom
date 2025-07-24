@@ -41,6 +41,21 @@ import "services/network/public/mojom/web_client_hints_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// Caches enabled client hints to allow handling `ACCEPT_CH` frames in the
+// network service, avoiding an IPC to the browser process.
+// This should be used only in TrustedUrlRequestParams so that only
+// trustworthy clients can pass it.
+struct EnabledClientHints {
+  // The origin for which the client hints are enabled.
+  url.mojom.Origin origin;
+
+  // Whether this is for an outermost main frame.
+  bool is_outermost_main_frame;
+
+  // The client hints enabled for the request.
+  array<WebClientHintsType> hints;
+};
+
 // See documentation at `URLRequest.trusted_params`.
 //
 // For values that have a corresponding value in URLLoaderFactoryParams
@@ -90,8 +105,7 @@ struct TrustedUrlRequestParams {
 
   // Enabled Client Hints to be evaluated quickly within the network layer
   // when it receives the AcceptCHFrame.
-  // The value is set only if the flag is enabled.
-  array<WebClientHintsType>? enabled_client_hints;
+  EnabledClientHints? enabled_client_hints;
 
   // Observer which should be notified when this URLRequest reads or writes
   // a cookie. If this is set to non-null, the observer passed to
