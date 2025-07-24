@@ -26,9 +26,7 @@
 
 namespace {
 
-// The size of the close button.
-const CGFloat kButtonImageSize = 28;
-const CGFloat kButtonSize = 44;
+const CGFloat kButtonImageSize = 18;
 
 typedef NSDiffableDataSourceSnapshot<NSString*, RecentActivityLogItem*>
     ActivityLogSnapshot;
@@ -71,31 +69,6 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
 
-  // Configure a close button.
-  UIImage* closeImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kButtonImageSize), @[
-        [UIColor colorNamed:kCloseButtonColor],
-        [UIColor colorNamed:kSecondaryBackgroundColor]
-      ]);
-  UIButtonConfiguration* closeButtonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  closeButtonConfiguration.image = closeImage;
-  UIButton* closeButton = [UIButton
-      buttonWithConfiguration:closeButtonConfiguration
-                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
-                  [weakSelf didTapCloseButton];
-                }]];
-  closeButton.accessibilityIdentifier = kRecentActivityLogCloseButtonIdentifier;
-  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [closeButton.widthAnchor constraintEqualToConstant:kButtonSize].active = YES;
-
-  // Configure the menu button.
-  UIImage* menuImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol, kButtonImageSize),
-      @[
-        [UIColor colorNamed:kCloseButtonColor],
-        [UIColor colorNamed:kSecondaryBackgroundColor]
-      ]);
   UIAction* showAllActivity =
       [UIAction actionWithTitle:l10n_util::GetNSString(
                                     IDS_IOS_SHARE_KIT_MANAGE_ACTIVITY_LOG_TITLE)
@@ -106,23 +79,18 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
                         }];
   UIMenu* menu = [UIMenu menuWithChildren:@[ showAllActivity ]];
 
-  UIButtonConfiguration* menuButtonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  menuButtonConfiguration.image = menuImage;
-  UIButton* menuButton =
-      [UIButton buttonWithConfiguration:menuButtonConfiguration
-                          primaryAction:nil];
-  menuButton.menu = menu;
-  menuButton.showsMenuAsPrimaryAction = YES;
-  menuButton.accessibilityIdentifier = kRecentActivityLogMenuButtonIdentifier;
-  menuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [menuButton.widthAnchor constraintEqualToConstant:kButtonSize].active = YES;
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(didTapCloseButton)];
+  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
+      kRecentActivityLogCloseButtonIdentifier;
 
-  self.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:closeButton];
-
-  self.navigationItem.leftBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:menuButton];
+  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+      initWithImage:DefaultSymbolWithPointSize(kMenuSymbol, kButtonImageSize)
+               menu:menu];
+  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+      kRecentActivityLogMenuButtonIdentifier;
 
   // Configure a table view.
   UITableView* tableView = self.tableView;
