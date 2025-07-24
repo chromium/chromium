@@ -216,8 +216,9 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   [NSLayoutConstraint activateConstraints:@[
     [_closeButton.topAnchor constraintEqualToAnchor:self.view.topAnchor
                                            constant:kCloseButtonPadding],
-    [_closeButton.rightAnchor constraintEqualToAnchor:self.view.rightAnchor
-                                             constant:-kCloseButtonPadding]
+    [_closeButton.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor
+                       constant:-kCloseButtonPadding]
   ]];
 }
 
