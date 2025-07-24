@@ -9248,7 +9248,7 @@ void WebGLRenderingContextBase::addProgramCompletionQuery(WebGLProgram* program,
     // exists in the list, too. Clear it out from there so that its
     // new addition doesn't introduce a duplicate.
     wtf_size_t old_index = program_completion_query_list_.Find(program);
-    DCHECK_NE(old_index, WTF::kNotFound);
+    DCHECK_NE(old_index, kNotFound);
     program_completion_query_list_.EraseAt(old_index);
   }
   program_completion_query_map_.Set(program, query);

@@ -83,7 +83,7 @@ class SvgTextLayoutAlgorithm {
     float length_adjust_scale = 1.0f;
     float text_length_shift_x = 0.0f;
     float text_length_shift_y = 0.0f;
-    wtf_size_t item_index = WTF::kNotFound;
+    wtf_size_t item_index = kNotFound;
   };
   // This data member represents "result" defined in the specification, but it
   // contains only addressable characters.

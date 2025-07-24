@@ -176,10 +176,10 @@ class ModuleMapTestModulator final : public DummyModulator {
    private:
     ResolvedModuleType ResolvedModuleTypeFromUrl() {
       const AtomicString& string_url = url_.GetString();
-      if (string_url.Find(".js") != WTF::kNotFound) {
+      if (string_url.Find(".js") != kNotFound) {
         return ResolvedModuleType::kJavaScript;
       }
-      CHECK_NE(string_url.Find(".wasm"), WTF::kNotFound);
+      CHECK_NE(string_url.Find(".wasm"), kNotFound);
       return ResolvedModuleType::kWasm;
     }
 

@@ -2698,7 +2698,7 @@ bool LineBreaker::ComputeTrailingCollapsibleSpaceHelper(LineInfo& line_info) {
       if (ComputeTrailingCollapsibleSpaceHelper(
               item_result.ruby_column->base_line)) {
         if (trailing_collapsible_space_ &&
-            trailing_collapsible_space_->item_result_index != WTF::kNotFound) {
+            trailing_collapsible_space_->item_result_index != kNotFound) {
           trailing_collapsible_space_->ancestor_ruby_columns.push_back(
               std::make_pair(line_info.MutableResults(),
                              std::distance(line_info.MutableResults()->data(),

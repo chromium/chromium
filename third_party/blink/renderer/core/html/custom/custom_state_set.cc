@@ -70,8 +70,9 @@ bool CustomStateSet::deleteForBinding(ScriptState*,
                                       const String& value,
                                       ExceptionState&) {
   wtf_size_t index = list_.Find(value);
-  if (index == WTF::kNotFound)
+  if (index == kNotFound) {
     return false;
+  }
   list_.EraseAt(index);
   for (auto& iterator : iterators_)
     iterator->DidEraseAt(index);

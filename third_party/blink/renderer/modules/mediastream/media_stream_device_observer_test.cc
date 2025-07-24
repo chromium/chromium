@@ -48,7 +48,7 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
       WebMediaStreamDeviceObserver::OnDeviceStoppedCb device_stopped_callback,
       WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
           request_state_change_callback) {
-    WTF::wtf_size_t previous_stream_size = observer_->label_stream_map_.size();
+    wtf_size_t previous_stream_size = observer_->label_stream_map_.size();
     blink::mojom::blink::StreamDevicesSet stream_devices_set;
     stream_devices_set.stream_devices.push_back(
         blink::mojom::blink::StreamDevices::New(
@@ -84,13 +84,12 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
     EXPECT_EQ(streams.size(), expected_labels.size());
     for (size_t stream_index = 0; stream_index < streams.size();
          ++stream_index) {
-      EXPECT_EQ(streams[static_cast<WTF::wtf_size_t>(stream_index)]
-                    .video_devices.size(),
-                1u);
-      EXPECT_EQ(streams[static_cast<WTF::wtf_size_t>(stream_index)]
-                    .video_devices[0]
-                    .id,
-                expected_labels[stream_index]);
+      EXPECT_EQ(
+          streams[static_cast<wtf_size_t>(stream_index)].video_devices.size(),
+          1u);
+      EXPECT_EQ(
+          streams[static_cast<wtf_size_t>(stream_index)].video_devices[0].id,
+          expected_labels[stream_index]);
     }
   }
 
@@ -103,7 +102,7 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
 
   const MediaStreamDeviceObserver::Stream& GetStream(
       const WTF::String& label,
-      WTF::wtf_size_t stream_index) const {
+      wtf_size_t stream_index) const {
     return GetStreams(label)[stream_index];
   }
 

@@ -135,7 +135,7 @@ FrameShapeCache::NodeEntry* FrameShapeCache::FindOrCreateNodeEntry(
   NodeEntry* entry =
       FindOrCreateEntry(text, direction, node_map_, node_lru_list_);
   const PlainTextNode* node = entry->node;
-  if (node && entry->list_index != WTF::kNotFound) {
+  if (node && entry->list_index != kNotFound) {
     // Touch ShapeResult cache entries for words in the hit node.
     for (const auto& item : node->ItemList()) {
       ShapeEntry* shape_entry =

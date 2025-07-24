@@ -270,7 +270,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
 
     new_parameters.degradation_preference = degradation_preference;
 
-    for (WTF::wtf_size_t i = 0; i < new_parameters.encodings.size(); ++i) {
+    for (wtf_size_t i = 0; i < new_parameters.encodings.size(); ++i) {
       // Encodings have other parameters in the native layer that aren't exposed
       // to the blink layer. So instead of copying the new struct over the old
       // one, we copy the members one by one over the old struct, effectively
@@ -500,10 +500,10 @@ MediaStreamComponent* RTCRtpSenderImpl::Track() const {
 
 Vector<String> RTCRtpSenderImpl::StreamIds() const {
   const auto& stream_ids = internal_->state().stream_ids();
-  Vector<String> wtf_stream_ids(
-      static_cast<WTF::wtf_size_t>(stream_ids.size()));
-  for (WTF::wtf_size_t i = 0; i < stream_ids.size(); ++i)
+  Vector<String> wtf_stream_ids(static_cast<wtf_size_t>(stream_ids.size()));
+  for (wtf_size_t i = 0; i < stream_ids.size(); ++i) {
     wtf_stream_ids[i] = String::FromUTF8(stream_ids[i]);
+  }
   return wtf_stream_ids;
 }
 

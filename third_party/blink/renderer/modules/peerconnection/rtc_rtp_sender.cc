@@ -492,7 +492,7 @@ webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
   webrtc::RtpCodec webrtc_codec;
   std::string mime_type = codec->mimeType().Utf8();
   auto slash_index = codec->mimeType().Find("/");
-  if (slash_index == WTF::kNotFound) {
+  if (slash_index == kNotFound) {
     webrtc_codec.kind = webrtc::MediaType::UNSUPPORTED;
     return webrtc_codec;
   }
@@ -519,7 +519,7 @@ webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
       WTF::String parameter = fmtp_split.StripWhiteSpace();
       auto equal_index = parameter.Find("=");
       std::string name, value;
-      if (equal_index == WTF::kNotFound) {
+      if (equal_index == kNotFound) {
         // Handle parameters without any equal signs, such as RED "111/111"
         name = "";
         value = parameter.Utf8();

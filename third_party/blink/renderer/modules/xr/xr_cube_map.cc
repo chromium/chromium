@@ -122,8 +122,8 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
     // Since ARCore provides texture as half float components, we need to do a
     // conversion first to support this path.
     // TODO(https://crbug.com/1148605): Do conversions off the main JS thread.
-    WTF::wtf_size_t component_count = width_and_height_ * width_and_height_ * 4;
-    WTF::Vector<uint8_t> sRGB(component_count);
+    wtf_size_t component_count = width_and_height_ * width_and_height_ * 4;
+    Vector<uint8_t> sRGB(component_count);
     for (int i = 0; i < 6; ++i) {
       Rgba16fToSrgba8(cubemap_images[i], sRGB);
       auto target = cubemap_targets[i];

@@ -799,7 +799,7 @@ inline wtf_size_t Find(base::span<const CharType> characters,
 }
 
 // Search the `characters` span for `match_character` from the end of the span,
-// and returns the found index or WTF::kNotFound.
+// and returns the found index or kNotFound.
 //
 // If the optional `index` parameter is specified, this function searches from
 // characters[min(index, characters.size()-1)] to characters[0].

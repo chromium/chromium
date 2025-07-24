@@ -43,7 +43,7 @@ struct EqualsTraits<blink::Vector<T>> {
   static bool Equals(const blink::Vector<T>& a, const blink::Vector<T>& b) {
     if (a.size() != b.size())
       return false;
-    for (wtf_size_t i = 0; i < a.size(); ++i) {
+    for (blink::wtf_size_t i = 0; i < a.size(); ++i) {
       if (!mojo::Equals(a[i], b[i]))
         return false;
     }

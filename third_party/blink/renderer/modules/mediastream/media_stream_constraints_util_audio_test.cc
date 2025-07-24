@@ -267,8 +267,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     ProcessingType expected_type = ProcessingType::kUnprocessed;
     const auto& properties = result.audio_processing_properties();
     bool properties_value = false;
-    for (WTF::wtf_size_t i = 0; i < GetAudioProcessingProperties().size();
-         ++i) {
+    for (wtf_size_t i = 0; i < GetAudioProcessingProperties().size(); ++i) {
       properties_value |= properties.*GetAudioProcessingProperties()[i];
     }
 
@@ -568,7 +567,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
           accessor == kFactoryAccessors[1]) {
         continue;
       }
-      for (WTF::wtf_size_t i = 0; i < kMainSettings.size(); ++i) {
+      for (wtf_size_t i = 0; i < kMainSettings.size(); ++i) {
         for (bool value : kBoolValues) {
           ResetFactory();
           (((constraint_factory_.*accessor)().*kMainBoolConstraints[i]).*
@@ -600,8 +599,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
           accessor == kFactoryAccessors[1]) {
         continue;
       }
-      for (WTF::wtf_size_t i = 0; i < GetAudioProcessingProperties().size();
-           ++i) {
+      for (wtf_size_t i = 0; i < GetAudioProcessingProperties().size(); ++i) {
         for (bool value : kBoolValues) {
           ResetFactory();
           (((constraint_factory_.*accessor)().*kAudioProcessingConstraints[i]).*
@@ -1372,8 +1370,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
       auto set_bool_function = kBoolSetFunctions[function_idx];
       auto set_bool_or_string_function =
           kBoolOrStringSetBooleanFunctions[function_idx];
-      for (WTF::wtf_size_t i = 0; i < GetAudioProcessingProperties().size();
-           ++i) {
+      for (wtf_size_t i = 0; i < GetAudioProcessingProperties().size(); ++i) {
         ResetFactory();
         ((constraint_factory_.*accessor)().echo_cancellation.*
          set_bool_or_string_function)(false);
@@ -1386,8 +1383,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
                   result.audio_processing_properties().echo_cancellation_mode);
         EXPECT_TRUE(result.audio_processing_properties().*
                     GetAudioProcessingProperties()[i]);
-        for (WTF::wtf_size_t j = 0; j < GetAudioProcessingProperties().size();
-             ++j) {
+        for (wtf_size_t j = 0; j < GetAudioProcessingProperties().size(); ++j) {
           if (i == j)
             continue;
           EXPECT_FALSE(result.audio_processing_properties().*
@@ -1559,7 +1555,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithNoAudioProcessing) {
             &MediaTrackConstraintSetPlatform::render_to_associated_sink,
         };
 
-    for (WTF::wtf_size_t i = 0; i < kConstraints.size(); ++i) {
+    for (wtf_size_t i = 0; i < kConstraints.size(); ++i) {
       SCOPED_TRACE(i);
       constraint_factory_.Reset();
       (constraint_factory_.basic().*kConstraints[i])
@@ -1619,7 +1615,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
     ASSERT_EQ(kAudioProcessingConstraints.size(),
               GetAudioProcessingProperties().size());
 
-    for (WTF::wtf_size_t i = 0; i < kAudioProcessingConstraints.size(); ++i) {
+    for (wtf_size_t i = 0; i < kAudioProcessingConstraints.size(); ++i) {
       constraint_factory_.Reset();
       (constraint_factory_.basic().*kAudioProcessingConstraints[i])
           .SetExact(properties.*GetAudioProcessingProperties()[i]);
@@ -1686,7 +1682,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
             &MediaTrackConstraintSetPlatform::disable_local_echo,
             &MediaTrackConstraintSetPlatform::render_to_associated_sink,
         };
-    for (WTF::wtf_size_t i = 0; i < kAudioBrowserConstraints.size(); ++i) {
+    for (wtf_size_t i = 0; i < kAudioBrowserConstraints.size(); ++i) {
       constraint_factory_.Reset();
       (constraint_factory_.basic().*kAudioBrowserConstraints[i])
           .SetExact(use_defaults);

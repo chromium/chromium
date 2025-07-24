@@ -191,8 +191,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
     // secondary thread, which is the WebRTC worker thread.
     auto webrtc_sources = webrtc_receiver_->GetSources();
     Vector<std::unique_ptr<RTCRtpSource>> sources(
-        static_cast<WTF::wtf_size_t>(webrtc_sources.size()));
-    for (WTF::wtf_size_t i = 0; i < webrtc_sources.size(); ++i) {
+        static_cast<wtf_size_t>(webrtc_sources.size()));
+    for (wtf_size_t i = 0; i < webrtc_sources.size(); ++i) {
       sources[i] = std::make_unique<RTCRtpSource>(webrtc_sources[i]);
     }
     return sources;
@@ -329,10 +329,10 @@ MediaStreamComponent* RTCRtpReceiverImpl::Track() const {
 
 Vector<String> RTCRtpReceiverImpl::StreamIds() const {
   const auto& stream_ids = internal_->state().stream_ids();
-  Vector<String> wtf_stream_ids(
-      static_cast<WTF::wtf_size_t>(stream_ids.size()));
-  for (WTF::wtf_size_t i = 0; i < stream_ids.size(); ++i)
+  Vector<String> wtf_stream_ids(static_cast<wtf_size_t>(stream_ids.size()));
+  for (wtf_size_t i = 0; i < stream_ids.size(); ++i) {
     wtf_stream_ids[i] = String::FromUTF8(stream_ids[i]);
+  }
   return wtf_stream_ids;
 }
 

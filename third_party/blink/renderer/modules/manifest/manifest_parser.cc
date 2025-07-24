@@ -259,7 +259,7 @@ String ResolveRelativePathnamePattern(const KURL& base_url, String pathname) {
   if (base_url.IsStandard() && !IsAbsolutePathname(pathname)) {
     String base_path = EscapePatternString(base_url.GetPath());
     auto slash_index = base_path.ReverseFind('/');
-    if (slash_index != WTF::kNotFound) {
+    if (slash_index != kNotFound) {
       // Extract the base_url path up to and including the last slash. Append
       // the relative pathname to it.
       base_path.Truncate(slash_index + 1);

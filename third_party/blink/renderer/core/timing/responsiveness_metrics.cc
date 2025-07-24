@@ -114,7 +114,7 @@ base::TimeDelta TotalEventDuration(
   base::TimeDelta total_duration =
       timestamps[0].end_time - timestamps[0].creation_time;
   base::TimeTicks current_end_time = timestamps[0].end_time;
-  for (WTF::wtf_size_t i = 1; i < timestamps.size(); ++i) {
+  for (wtf_size_t i = 1; i < timestamps.size(); ++i) {
     total_duration += timestamps[i].end_time - timestamps[i].creation_time;
     if (timestamps[i].creation_time < current_end_time) {
       total_duration -= std::min(current_end_time, timestamps[i].end_time) -

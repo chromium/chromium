@@ -139,7 +139,7 @@ template <
     typename OutElement = decltype(ConvertToBlink(std::declval<InElement>()))>
 ::blink::Vector<OutElement> ConvertToBlink(const std::vector<InElement>& in) {
   ::blink::Vector<OutElement> out;
-  out.reserve(base::checked_cast<wtf_size_t>(in.size()));
+  out.reserve(base::checked_cast<::blink::wtf_size_t>(in.size()));
   for (const auto& element : in) {
     out.push_back(ConvertToBlink(element));
   }

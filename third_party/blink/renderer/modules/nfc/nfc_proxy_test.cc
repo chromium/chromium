@@ -44,7 +44,7 @@ MATCHER_P(MessageEquals, expected, "") {
   if (received_data.size() != expected.size())
     return false;
 
-  for (WTF::wtf_size_t i = 0; i < received_data.size(); i++) {
+  for (wtf_size_t i = 0; i < received_data.size(); i++) {
     if (received_data[i] != expected[i]) {
       return false;
     }

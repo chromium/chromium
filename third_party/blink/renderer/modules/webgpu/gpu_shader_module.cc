@@ -48,7 +48,7 @@ GPUShaderModule* GPUShaderModule::Create(
   }
 
   wgpu::ShaderModule shader_module;
-  bool has_null_character = (wtf_wgsl_code.find('\0') != WTF::kNotFound);
+  bool has_null_character = (wtf_wgsl_code.find('\0') != kNotFound);
   if (has_null_character) {
     shader_module = device->GetHandle().CreateErrorShaderModule(
         &dawn_desc, "The WGSL shader contains an illegal character '\\0'");

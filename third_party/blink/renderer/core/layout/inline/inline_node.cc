@@ -1763,8 +1763,8 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
   HeapHashSet<Member<LayoutObject>> associated_objects;
 #endif
   InlineItems& items = data->items;
-  WTF::wtf_size_t size = items.size();
-  for (WTF::wtf_size_t i = 0; i != size;) {
+  wtf_size_t size = items.size();
+  for (wtf_size_t i = 0; i != size;) {
     LayoutObject* object = items[i]->GetLayoutObject();
     auto* layout_text = DynamicTo<LayoutText>(object);
     if (layout_text && !layout_text->IsBR()) {
@@ -1774,7 +1774,7 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
 #endif
       layout_text->ClearHasBidiControlInlineItems();
       bool has_bidi_control = false;
-      WTF::wtf_size_t begin = i;
+      wtf_size_t begin = i;
       for (++i; i != size; ++i) {
         const InlineItem& item = *items[i];
         if (item.GetLayoutObject() != object)

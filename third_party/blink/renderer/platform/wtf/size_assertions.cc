@@ -43,6 +43,8 @@
 
 namespace WTF {
 
+using blink::wtf_size_t;
+
 struct SameSizeAsRefCounted {
   uint32_t a;
   // Don't add anything here because this should stay small.

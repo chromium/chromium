@@ -1512,7 +1512,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   // add repeated elements to every fragmentainer that exists, but if there's a
   // nested OOF that triggers creation of additional fragmentainers, we'll need
   // to add the fixed-positioned elements to those as well.
-  wtf_size_t previous_repeaded_fixedpos_resume_idx = WTF::kNotFound;
+  wtf_size_t previous_repeaded_fixedpos_resume_idx = kNotFound;
 
   while (!descendants->empty()) {
     ComputeInlineContainingBlocksForFragmentainer(*descendants);
@@ -1690,7 +1690,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // fragmentainers in the next iteration (because of nested OOFs), we
         // need to resume those when a new fragmentainer is added.
         DCHECK(container_builder_->Node().IsPaginatedRoot());
-        DCHECK(previous_repeaded_fixedpos_resume_idx == WTF::kNotFound ||
+        DCHECK(previous_repeaded_fixedpos_resume_idx == kNotFound ||
                previous_repeaded_fixedpos_resume_idx <=
                    descendants_to_layout.size());
         previous_repeaded_fixedpos_resume_idx = descendants_to_layout.size();

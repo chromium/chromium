@@ -608,7 +608,7 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
   }
 
   wtf_size_t range_index = 0;
-  wtf_size_t in_path_index = WTF::kNotFound;
+  wtf_size_t in_path_index = kNotFound;
   std::unique_ptr<PathPositionMapper> path_mapper;
 
   // 2. Set the "in path" flag to false.

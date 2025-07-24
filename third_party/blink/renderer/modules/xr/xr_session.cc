@@ -1985,7 +1985,7 @@ void XRSession::ProcessTrackedImagesData(
     DVLOG(3) << ": got image_trackable_scores";
     DCHECK(!tracked_image_scores_available_);
     auto& scores = images_data->image_trackable_scores.value();
-    for (WTF::wtf_size_t index = 0; index < scores.size(); ++index) {
+    for (wtf_size_t index = 0; index < scores.size(); ++index) {
       tracked_image_scores_.push_back(V8XRImageTrackingScore(
           scores[index] ? V8XRImageTrackingScore::Enum::kTrackable
                         : V8XRImageTrackingScore::Enum::kUntrackable));

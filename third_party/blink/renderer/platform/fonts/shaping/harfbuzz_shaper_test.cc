@@ -183,7 +183,7 @@ class HarfBuzzShaperTest : public FontTestBase {
 
   StringView MaybeStripFontationsSuffix(const String& font_name) {
     wtf_size_t found_index = font_name.ReverseFind(" (Fontations)");
-    if (found_index != WTF::kNotFound) {
+    if (found_index != kNotFound) {
       return StringView(font_name, 0, found_index);
     } else {
       return font_name;

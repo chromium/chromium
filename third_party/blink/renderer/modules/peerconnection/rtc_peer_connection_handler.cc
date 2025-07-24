@@ -1545,8 +1545,9 @@ RTCPeerConnectionHandler::AddTrack(
   std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
       track_ref = track_adapter_map_->GetOrCreateLocalTrackAdapter(component);
   std::vector<std::string> stream_ids(descriptors.size());
-  for (WTF::wtf_size_t i = 0; i < descriptors.size(); ++i)
+  for (wtf_size_t i = 0; i < descriptors.size(); ++i) {
     stream_ids[i] = descriptors[i]->Id().Utf8();
+  }
 
   // Invoke native AddTrack() on the signaling thread and surface the resulting
   // transceiver.
@@ -1959,7 +1960,7 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
     bool is_rollback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers(
-      base::checked_cast<WTF::wtf_size_t>(transceiver_states.size()));
+      base::checked_cast<wtf_size_t>(transceiver_states.size()));
   PeerConnectionTracker::TransceiverUpdatedReason update_reason =
       !is_remote_description ? PeerConnectionTracker::TransceiverUpdatedReason::
                                    kSetLocalDescription
@@ -1967,7 +1968,7 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
                                    kSetRemoteDescription;
   Vector<uintptr_t> ids(
       base::checked_cast<wtf_size_t>(transceiver_states.size()));
-  for (WTF::wtf_size_t i = 0; i < transceiver_states.size(); ++i) {
+  for (wtf_size_t i = 0; i < transceiver_states.size(); ++i) {
     // Figure out if this transceiver is new or if setting the state modified
     // the transceiver such that it should be logged by the
     // |peer_connection_tracker_|.

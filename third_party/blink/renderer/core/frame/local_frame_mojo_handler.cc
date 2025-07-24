@@ -1016,8 +1016,8 @@ void LocalFrameMojoHandler::GetStringForRange(
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
   base::apple::ScopedCFTypeRef<CFAttributedStringRef> string =
       SubstringUtil::AttributedSubstringInRange(
-          frame_, base::checked_cast<WTF::wtf_size_t>(range.start()),
-          base::checked_cast<WTF::wtf_size_t>(range.length()), baseline_point);
+          frame_, base::checked_cast<wtf_size_t>(range.start()),
+          base::checked_cast<wtf_size_t>(range.length()), baseline_point);
   if (string) {
     attributed_string = ui::mojom::blink::AttributedString::From(string.get());
   }

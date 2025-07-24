@@ -1038,8 +1038,7 @@ void AppendDistancesFromDefault(
           : 0.0);
 
   // Favor IDs that appear first in the enumeration.
-  for (WTF::wtf_size_t i = 0; i < capabilities.device_capabilities.size();
-       ++i) {
+  for (wtf_size_t i = 0; i < capabilities.device_capabilities.size(); ++i) {
     if (device.device_id == capabilities.device_capabilities[i].device_id) {
       distance_vector->push_back(i);
       break;

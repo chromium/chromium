@@ -76,7 +76,7 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
   // instead of keeping some more efficient cache of display ids.
 
   // Check if any screens have been removed and remove them from `screens_`.
-  for (WTF::wtf_size_t i = 0; i < screens_.size();
+  for (wtf_size_t i = 0; i < screens_.size();
        /*conditionally incremented*/) {
     if (base::Contains(new_infos.screen_infos, screens_[i]->DisplayId(),
                        &display::ScreenInfo::display_id)) {

@@ -54,7 +54,7 @@ static String GetContentTypeFromFileName(const String& name,
                                          File::ContentTypeLookupPolicy policy) {
   String type;
   wtf_size_t index = name.ReverseFind('.');
-  if (index != WTF::kNotFound) {
+  if (index != kNotFound) {
     if (policy == File::kWellKnownContentTypes) {
       type = MIMETypeRegistry::GetWellKnownMIMETypeForExtension(
           name.Substring(index + 1));

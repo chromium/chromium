@@ -38,7 +38,7 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
       object_stores;
   data.GetObjectStoresDataView(&object_stores);
   out->object_stores.ReserveCapacityForSize(
-      base::checked_cast<wtf_size_t>(object_stores.size()));
+      base::checked_cast<blink::wtf_size_t>(object_stores.size()));
   for (size_t i = 0; i < object_stores.size(); ++i) {
     const int64_t key = object_stores.keys()[i];
     scoped_refptr<blink::IDBObjectStoreMetadata> object_store;
@@ -283,7 +283,7 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
       const auto& array = key_path.Array();
       blink::Vector<blink::String> result;
       result.ReserveInitialCapacity(
-          base::checked_cast<wtf_size_t>(array.size()));
+          base::checked_cast<blink::wtf_size_t>(array.size()));
       for (const auto& item : array)
         result.push_back(item);
       return blink::mojom::blink::IDBKeyPathData::NewStringArray(
@@ -347,7 +347,7 @@ bool StructTraits<blink::mojom::IDBObjectStoreMetadataDataView,
   MapDataView<int64_t, blink::mojom::IDBIndexMetadataDataView> indexes;
   data.GetIndexesDataView(&indexes);
   value->indexes.ReserveCapacityForSize(
-      base::checked_cast<wtf_size_t>(indexes.size()));
+      base::checked_cast<blink::wtf_size_t>(indexes.size()));
   for (size_t i = 0; i < indexes.size(); ++i) {
     const int64_t key = indexes.keys()[i];
     scoped_refptr<blink::IDBIndexMetadata> index;

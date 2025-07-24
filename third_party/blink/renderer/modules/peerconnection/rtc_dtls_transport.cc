@@ -150,7 +150,7 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
       }
     } else {
       // Replace certificates that have changed, if any
-      for (WTF::wtf_size_t i = 0; i < certs->GetSize(); i++) {
+      for (wtf_size_t i = 0; i < certs->GetSize(); i++) {
         auto& cert = certs->Get(i);
         webrtc::Buffer der_cert;
         cert.ToDER(&der_cert);

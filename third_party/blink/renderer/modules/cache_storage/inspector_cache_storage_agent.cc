@@ -76,7 +76,7 @@ namespace {
 String BuildCacheId(const String& storage_key,
                     const std::optional<String>& storage_bucket_name,
                     const String& cache_name) {
-  DCHECK(storage_key.find('|') == WTF::kNotFound);
+  DCHECK(storage_key.find('|') == kNotFound);
   StringBuilder id;
   id.Append(storage_key);
   if (storage_bucket_name.has_value()) {
@@ -262,7 +262,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
       for (auto& request : old_requests) {
         String urlPath(request->url.GetPath().ToString());
         if (urlPath.DeprecatedFindIgnoringCase(params_.path_filter) ==
-            WTF::kNotFound) {
+            kNotFound) {
           continue;
         }
         requests.push_back(std::move(request));

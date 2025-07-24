@@ -114,7 +114,7 @@ bool ViewTransitionTypeSet::deleteForBinding(ScriptState*,
                                              const String& value,
                                              ExceptionState&) {
   wtf_size_t index = types_.Find(value);
-  if (index == WTF::kNotFound) {
+  if (index == kNotFound) {
     return false;
   }
   types_.EraseAt(index);

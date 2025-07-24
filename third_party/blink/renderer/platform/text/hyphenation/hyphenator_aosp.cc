@@ -28,6 +28,8 @@
 
 namespace android {
 
+using blink::wtf_size_t;
+
 static const uint16_t CHAR_SOFT_HYPHEN = 0x00AD;
 
 // The following are structs that correspond to tables inside the hyb file
