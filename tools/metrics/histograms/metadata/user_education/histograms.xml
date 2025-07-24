@@ -33,6 +33,8 @@ chromium-metrics-reviews@google.com.
                saved state to resume.."/>
   <variant name="ComposeProactiveNudge"
       summary="For Compose feature; shown on autofill popup."/>
+  <variant name="DevToolsAiAssistanceFileAgent"
+      summary="Promotion forDevTools AI Assistance File Agent."/>
   <variant name="Glic" summary="Glic toggle on settings page."/>
   <variant name="GlicAppMenuNewBadge"
       summary="Glic menu item in the three dot menu."/>
