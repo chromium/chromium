@@ -14,25 +14,6 @@
 
 namespace crypto::hash {
 
-namespace {
-
-// TODO(https://issues.chromium.org/issues/430635196): Deduplicate.
-const EVP_MD* EVPMDForHashKind(HashKind kind) {
-  switch (kind) {
-    case HashKind::kSha1:
-      return EVP_sha1();
-    case HashKind::kSha256:
-      return EVP_sha256();
-    case HashKind::kSha384:
-      return EVP_sha384();
-    case HashKind::kSha512:
-      return EVP_sha512();
-  }
-  NOTREACHED();
-}
-
-}  // namespace
-
 void Hash(HashKind kind,
           base::span<const uint8_t> data,
           base::span<uint8_t> digest) {
@@ -75,6 +56,34 @@ std::array<uint8_t, kSha512Size> Sha512(base::span<const uint8_t> data) {
 
 std::array<uint8_t, kSha512Size> Sha512(std::string_view data) {
   return Sha512(base::as_byte_span(data));
+}
+
+const EVP_MD* EVPMDForHashKind(HashKind kind) {
+  switch (kind) {
+    case HashKind::kSha1:
+      return EVP_sha1();
+    case HashKind::kSha256:
+      return EVP_sha256();
+    case HashKind::kSha384:
+      return EVP_sha384();
+    case HashKind::kSha512:
+      return EVP_sha512();
+  }
+  NOTREACHED();
+}
+
+std::optional<HashKind> HashKindForEVPMD(const EVP_MD* evp_md) {
+  switch (EVP_MD_type(evp_md)) {
+    case NID_sha1:
+      return crypto::hash::kSha1;
+    case NID_sha256:
+      return crypto::hash::kSha256;
+    case NID_sha384:
+      return crypto::hash::kSha384;
+    case NID_sha512:
+      return crypto::hash::kSha512;
+  }
+  return std::nullopt;
 }
 
 Hasher::Hasher(HashKind kind) {

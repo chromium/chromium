@@ -129,3 +129,19 @@ TEST(HashTest, StringViewHash) {
       0x0a, 0x4b, 0x28, 0x68, 0x8a, 0x36, 0x21, 0x82, 0x98, 0x6f};
   EXPECT_EQ(hash, crypto::hash::Sha256("Hello, World!"));
 }
+
+TEST(HashTest, HashKindEVPMDConversions) {
+  constexpr auto kKinds = std::to_array<crypto::hash::HashKind>({
+      crypto::hash::kSha1,
+      crypto::hash::kSha256,
+      crypto::hash::kSha384,
+      crypto::hash::kSha512,
+  });
+  for (auto kind : kKinds) {
+    const EVP_MD* md = crypto::hash::EVPMDForHashKind(kind);
+    auto result_kind = crypto::hash::HashKindForEVPMD(md);
+    ASSERT_TRUE(result_kind.has_value());
+    EXPECT_EQ(kind, *result_kind);
+  }
+  EXPECT_FALSE(crypto::hash::HashKindForEVPMD(EVP_md5()).has_value());
+}

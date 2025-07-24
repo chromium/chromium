@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "crypto/crypto_export.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 
 namespace crypto::hash {
@@ -44,6 +45,13 @@ enum HashKind {
   kSha384,
   kSha512,
 };
+
+// Free functions to convert to/from bssl EVP_MDs. The functions to convert to
+// HashKind return optionals because HashKind can only represent a subset of the
+// algorithms BoringSSL supports - specifically the ones the //crypto OWNERS
+// recommend people use.
+CRYPTO_EXPORT const EVP_MD* EVPMDForHashKind(HashKind k);
+CRYPTO_EXPORT std::optional<HashKind> HashKindForEVPMD(const EVP_MD* evp_md);
 
 inline constexpr size_t DigestSizeForHashKind(HashKind k) {
   switch (k) {
