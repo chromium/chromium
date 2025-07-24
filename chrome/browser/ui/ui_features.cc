@@ -409,7 +409,7 @@ BASE_FEATURE(kEnableManagementPromotionBanner,
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kEnablePolicyPromotionBanner,
              "EnablePolicyPromotionBanner",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
 BASE_FEATURE(kEnablePolicyPromotionBanner,
              "EnablePolicyPromotionBanner",
