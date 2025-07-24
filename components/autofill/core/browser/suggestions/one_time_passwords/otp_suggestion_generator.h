@@ -15,7 +15,8 @@ namespace autofill {
 // TODO(crbug.com/409962888): Cleanup once AutofillNewSuggestionGeneration is
 // launched.
 std::vector<Suggestion> BuildOtpSuggestions(
-    std::vector<std::string> one_time_passwords);
+    std::vector<std::string> one_time_passwords,
+    const FieldGlobalId& field_id);
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_ONE_TIME_PASSWORDS_OTP_SUGGESTION_GENERATOR_H_

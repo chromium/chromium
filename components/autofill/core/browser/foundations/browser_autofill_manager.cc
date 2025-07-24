@@ -3193,7 +3193,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       }
       break;
     case FillingProduct::kOneTimePassword:
-      suggestions = BuildOtpSuggestions(one_time_passwords);
+      suggestions = BuildOtpSuggestions(one_time_passwords, field.global_id());
       break;
     default:
       // Skip other filling products.
