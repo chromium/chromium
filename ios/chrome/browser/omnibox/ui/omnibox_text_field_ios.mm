@@ -633,6 +633,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     return [self.omniboxKeyboardDelegate canPerformKeyboardAction:kLeftArrow];
   } else if (action == @selector(forwardKeyCommandRight)) {
     return [self.omniboxKeyboardDelegate canPerformKeyboardAction:kRightArrow];
+  } else if (action == @selector(forwardKeyCommandReturn)) {
+    return [self.omniboxKeyboardDelegate canPerformKeyboardAction:kReturnKey];
   }
 
   // Handle pre-edit shortcuts.
@@ -738,6 +740,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [self.omniboxKeyboardDelegate performKeyboardAction:kRightArrow];
 }
 
+- (void)forwardKeyCommandReturn {
+  [self.omniboxKeyboardDelegate performKeyboardAction:kReturnKey];
+}
+
 // Arrow keys are forwarded to the main OmniboxKeyboardDelegate that will
 // dispatch them to OmniboxPopupViewController or OmniboxViewController, if they
 // don't handle them, default behavior of UITextField applies.
@@ -759,11 +765,17 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                           modifierFlags:0
                                  action:@selector(forwardKeyCommandRight)];
 
+  UIKeyCommand* commandReturn =
+      [UIKeyCommand keyCommandWithInput:@"\r"
+                          modifierFlags:0
+                                 action:@selector(forwardKeyCommandReturn)];
+
   commandUp.wantsPriorityOverSystemBehavior = YES;
   commandDown.wantsPriorityOverSystemBehavior = YES;
   commandLeft.wantsPriorityOverSystemBehavior = YES;
   commandRight.wantsPriorityOverSystemBehavior = YES;
-  return @[ commandUp, commandDown, commandLeft, commandRight ];
+  commandReturn.wantsPriorityOverSystemBehavior = YES;
+  return @[ commandUp, commandDown, commandLeft, commandRight, commandReturn ];
 }
 
 #pragma mark - UIAccessibilityElement
