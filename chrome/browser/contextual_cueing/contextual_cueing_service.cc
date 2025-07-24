@@ -423,11 +423,6 @@ void ContextualCueingService::
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (!IsGlicTabContextEnabled(pref_service_)) {
-    std::move(callback).Run({});
-    return;
-  }
-
   // Initiate request for suggestions for pinned tabs.
   pinned_tabs_zero_state_suggestions_request_ = MakeZeroStateSuggestionsRequest(
       pinned_web_contents, is_fre, supported_tools, /*is_focused_tab=*/false);
