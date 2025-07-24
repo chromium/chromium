@@ -100,9 +100,6 @@ class CONTENT_EXPORT WebContentsViewDelegate {
   // callback once done.
   virtual void OnPerformingDrop(const DropData& drop_data,
                                 DropCompletionCallback callback);
-
-  // Notifies the delegate that the drag operation has ended.
-  virtual void WebContentsDragEnded();
 };
 
 }  // namespace content

@@ -65,6 +65,4 @@ void WebContentsViewDelegate::OnPerformingDrop(
   return std::move(callback).Run(drop_data);
 }
 
-void WebContentsViewDelegate::WebContentsDragEnded() {}
-
 }  // namespace content

@@ -6860,10 +6860,6 @@ void WebContentsImpl::NotifyWebContentsLostFocus(
 }
 
 void WebContentsImpl::SystemDragEnded(RenderWidgetHost* source_rwh) {
-  if (delegate_) {
-    delegate_->HandleDragEnded();
-  }
-
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SystemDragEnded",
                         "render_widget_host", source_rwh);
   if (source_rwh) {

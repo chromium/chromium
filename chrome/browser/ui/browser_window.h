@@ -528,7 +528,6 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void PreHandleDragUpdate(const content::DropData& drop_data,
                                    const gfx::PointF& point) = 0;
   virtual void PreHandleDragExit() = 0;
-  virtual void HandleDragEnded() = 0;
   // Allows the BrowserWindow object to handle the specified keyboard event
   // before sending it to the renderer.
   virtual content::KeyboardEventProcessingResult PreHandleKeyboardEvent(

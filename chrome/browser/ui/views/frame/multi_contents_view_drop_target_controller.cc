@@ -99,11 +99,6 @@ void MultiContentsViewDropTargetController::OnWebContentsDragExit() {
   ResetDropTargetTimer();
 }
 
-void MultiContentsViewDropTargetController::OnWebContentsDragEnded() {
-  ResetDropTargetTimer();
-  drop_target_view_->Hide();
-}
-
 bool MultiContentsViewDropTargetController::HandleDragUpdate(
     const gfx::PointF& point_in_view) {
   CHECK_LE(0, point_in_view.x());

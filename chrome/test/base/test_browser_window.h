@@ -148,7 +148,6 @@ class TestBrowserWindow : public BrowserWindow {
                            const gfx::PointF& point) override {}
 
   void PreHandleDragExit() override {}
-  void HandleDragEnded() override {}
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;

@@ -272,19 +272,6 @@ TEST_F(MultiContentsViewDropTargetControllerTest, OnWebContentsDragExit) {
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
-// Tests that the drop target is hidden when the drag ends.
-TEST_F(MultiContentsViewDropTargetControllerTest, OnWebContentsDragEnded) {
-  // First, show the drop target.
-  DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward();
-  EXPECT_TRUE(drop_target_view().GetVisible());
-
-  // Ending the drag should hide it.
-  controller().OnWebContentsDragEnded();
-  FastForward();
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
 // Tests that the drop target is hidden when dragging more than one tab.
 TEST_F(MultiContentsViewDropTargetControllerTest,
        OnTabDragUpdated_HidesTargetWhenDraggingMultipleTabs) {
