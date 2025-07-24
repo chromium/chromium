@@ -14,6 +14,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/switches.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 using ContextType = extensions::browser_test_util::ContextType;
