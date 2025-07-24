@@ -1,0 +1,69 @@
+rootWebArea htmlTag='#document' name='Material Web Menu'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++none ignored invisible
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button className='button' htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible

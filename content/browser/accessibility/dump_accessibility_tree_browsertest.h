@@ -25,6 +25,7 @@ constexpr const char kDisplayLocking[]{"display-locking"};
 constexpr const char kRelations[]{"relations"};
 constexpr const char kRegression[]{"regression"};
 constexpr const char kTestHarness[]{"test-harness"};
+inline constexpr const char kMaterialDesign[]{"material-design"};
 
 // See content/test/data/accessibility/readme.md for an overview.
 //
@@ -68,6 +69,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   TEST_TYPE(Crash)
   TEST_TYPE(Html)
   TEST_TYPE(MathML)
+  TEST_TYPE(MaterialDesign)
   TEST_TYPE(DisplayLocking)
   TEST_TYPE(Relations)
   TEST_TYPE(Regression)

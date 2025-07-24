@@ -1,0 +1,21 @@
+[document web] name='Material Web Switches'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++[section]
+++++++[section]
+++++++++[toggle button] checkable checkable:true
+++++++++[section]
+++++++++++[section]
+++++++++++[section]

@@ -1,0 +1,15 @@
+[document web] name='Material Web FAB'
+++[section] name='Ready'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]
+++++[push button] name='Extended FAB'
+++++++[section]
+++++++[static] name='Extended FAB'
+++++[push button]
+++++++[section]
+++++[push button]
+++++++[section]

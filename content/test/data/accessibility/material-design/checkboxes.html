@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Checkboxes</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-checkbox"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const checkboxes = [
+                { text: "Unchecked checkbox" },
+                { text: "Checked checkbox", checked: true },
+                { text: "Indeterminate checkbox", indeterminate: true },
+                { text: "Disabled checkbox", disabled: true },
+                { text: "Disabled checked checkbox", disabled: true, checked: true },
+                { text: "Required checkbox", required: true }
+            ];
+            checkboxes.forEach(checkboxInfo => {
+                const checkbox = document.createElement("md-checkbox");
+                checkbox.textContent = checkboxInfo.text;
+                if (checkboxInfo.checked) {
+                    checkbox.checked = true;
+                }
+                if (checkboxInfo.indeterminate) {
+                    checkbox.indeterminate = true;
+                }
+                if (checkboxInfo.disabled) {
+                    checkbox.disabled = true;
+                }
+                if (checkboxInfo.required) {
+                    checkbox.required = true;
+                }
+                statusDiv.appendChild(checkbox);
+            });
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

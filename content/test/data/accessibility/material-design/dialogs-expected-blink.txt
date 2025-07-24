@@ -1,0 +1,64 @@
+rootWebArea htmlTag='#document' name='Material Web Dialogs'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored invisible
+++++++++dialog ignored invisible
+++++++++++heading ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++sectionWithoutName ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++none ignored invisible
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++none ignored invisible
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++genericContainer ignored invisible
+++++++++alertDialog ignored invisible
+++++++++++heading ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible
+++++++++++sectionWithoutName ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++none ignored invisible
+++++++++++++none ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Open Basic Dialog'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Open Basic Dialog'
+++++++++++++++++++inlineTextBox name='Open Basic Dialog'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Open Alert Dialog'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Open Alert Dialog'
+++++++++++++++++++inlineTextBox name='Open Alert Dialog'

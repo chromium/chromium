@@ -1,0 +1,14 @@
+[document web] name='Material Web Cards'
+++[section] name='Ready'
+++++[section]
+++++[section]
+++++++[static] name='Card content goes here.'
+++++[section]
+++++[section]
+++++[section]
+++++++[static] name='This is a filled card with content.'
+++++[section]
+++++[section]
+++++[section]
+++++++[static] name='Content for the outlined card variant.'
+++++[section]

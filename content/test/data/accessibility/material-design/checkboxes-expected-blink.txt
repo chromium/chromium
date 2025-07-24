@@ -1,0 +1,37 @@
+rootWebArea htmlTag='#document' name='Material Web Checkboxes'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-checkbox'
+++++++++++genericContainer className='container  unselected prev-unselected ' htmlTag='div'
+++++++++++++checkBox htmlTag='input' checkedState=false
+++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-checkbox'
+++++++++++genericContainer className='container  selected checked prev-checked ' htmlTag='div'
+++++++++++++checkBox htmlTag='input' checkedState=true
+++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-checkbox'
+++++++++++genericContainer className='container  selected indeterminate prev-indeterminate ' htmlTag='div'
+++++++++++++checkBox htmlTag='input' checkedState=mixed
+++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++genericContainer ignored invisible
+++++++++genericContainer className='container  disabled unselected prev-unselected ' htmlTag='div'
+++++++++++checkBox htmlTag='input' restriction=disabled checkedState=false
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++genericContainer className='container  disabled selected checked prev-checked ' htmlTag='div'
+++++++++++checkBox htmlTag='input' restriction=disabled checkedState=true
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-checkbox' invalidState=true
+++++++++++genericContainer className='container  unselected prev-unselected ' htmlTag='div'
+++++++++++++checkBox required htmlTag='input' invalidState=true checkedState=false
+++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++genericContainer ignored invisible

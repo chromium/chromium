@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Dialogs</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-dialog",
+            "md-filled-button",
+            "md-text-button"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const dialog1 = document.createElement("md-dialog");
+            dialog1.id = "dialog1";
+            dialog1.innerHTML = `
+                <div slot="headline">Basic Dialog</div>
+                <form slot="content" method="dialog">
+                    <p>This is a basic dialog with content.</p>
+                </form>
+                <div slot="actions">
+                    <md-text-button form="dialog1" value="cancel">Cancel</md-text-button>
+                    <md-text-button form="dialog1" value="ok">OK</md-text-button>
+                </div>
+            `;
+            const dialog2 = document.createElement("md-dialog");
+            dialog2.id = "dialog2";
+            dialog2.type = "alert";
+            dialog2.innerHTML = `
+                <div slot="headline">Alert Dialog</div>
+                <form slot="content" method="dialog">
+                    <p>This is an alert dialog.</p>
+                </form>
+                <div slot="actions">
+                    <md-text-button form="dialog2" value="ok">OK</md-text-button>
+                </div>
+            `;
+            const button1 = document.createElement("md-filled-button");
+            button1.textContent = "Open Basic Dialog";
+            const button2 = document.createElement("md-filled-button");
+            button2.textContent = "Open Alert Dialog";
+
+            statusDiv.appendChild(dialog1);
+            statusDiv.appendChild(dialog2);
+            statusDiv.appendChild(button1);
+            statusDiv.appendChild(button2);
+
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

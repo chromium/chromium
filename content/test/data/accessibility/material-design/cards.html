@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Cards</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-elevated-card",
+            "md-filled-card",
+            "md-outlined-card"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const cards = [
+                {
+                    tag: "md-elevated-card",
+                    headline: "Elevated Card",
+                    subhead: "Card subheading",
+                    content: "Card content goes here."
+                },
+                {
+                    tag: "md-filled-card",
+                    headline: "Filled Card",
+                    subhead: "Another subheading",
+                    content: "This is a filled card with content."
+                },
+                {
+                    tag: "md-outlined-card",
+                    headline: "Outlined Card",
+                    subhead: "Outlined style",
+                    content: "Content for the outlined card variant."
+                }
+            ];
+            cards.forEach(cardInfo => {
+                const card = document.createElement(cardInfo.tag);
+                const headline = document.createElement("div");
+                headline.slot = "headline";
+                headline.textContent = cardInfo.headline;
+                const subhead = document.createElement("div");
+                subhead.slot = "subhead";
+                subhead.textContent = cardInfo.subhead;
+                const content = document.createElement("div");
+                content.textContent = cardInfo.content;
+                card.appendChild(headline);
+                card.appendChild(subhead);
+                card.appendChild(content);
+                statusDiv.appendChild(card);
+            });
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+</html>

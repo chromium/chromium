@@ -1,0 +1,39 @@
+rootWebArea htmlTag='#document' name='Material Web Progress'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++none ignored
+++++++++++progressIndicator className='progress   ' htmlTag='div' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+++++++++none ignored
+++++++++++progressIndicator className='progress   ' htmlTag='div' valueForRange=0.50 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+++++++++none ignored
+++++++++++progressIndicator className='progress   ' htmlTag='div' valueForRange=0.60 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++++genericContainer className='dots' htmlTag='div'
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+++++++++none ignored
+++++++++++progressIndicator className='progress  indeterminate ' htmlTag='div' minValueForRange=0.00 maxValueForRange=1.00
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+++++++++++++genericContainer className='bar secondary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+++++++++progressIndicator className='progress   ' htmlTag='div' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++image htmlTag='svg'
+++++++++progressIndicator className='progress   ' htmlTag='div' valueForRange=0.30 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++image htmlTag='svg'
+++++++++progressIndicator className='progress  indeterminate ' htmlTag='div' minValueForRange=0.00 maxValueForRange=1.00
+++++++++++genericContainer className='spinner' htmlTag='div'
+++++++++++++genericContainer className='left' htmlTag='div'
+++++++++++++++genericContainer className='circle' htmlTag='div'
+++++++++++++genericContainer className='right' htmlTag='div'
+++++++++++++++genericContainer className='circle' htmlTag='div'
+++++++++progressIndicator className='progress  four-color ' htmlTag='div' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++image htmlTag='svg'

@@ -1,0 +1,29 @@
+[document web] name='Material Web Checkboxes'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] checked checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[check box] checkable checkable:true
+++++++[section]
+++++++[section]
+++++[section]
+++++++[check box] checked checkable checkable:true
+++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] checkable checkable:true
+++++++++[section]
+++++++++[section]

@@ -2015,6 +2015,11 @@ test("content_browsertests") {
     "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
   ]
 
+  # Add Material Design components for accessibility tests on desktop platforms
+  if (!is_ios && !is_android) {
+    data += [ "//third_party/material_web_components/" ]
+  }
+
   if (is_ios) {
     entitlements_path = "//content/app/ios/appex/app.entitlements"
     bundle_deps = [

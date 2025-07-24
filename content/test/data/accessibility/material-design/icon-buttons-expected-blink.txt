@@ -1,0 +1,48 @@
+rootWebArea htmlTag='#document' name='Material Web Icon Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-icon-button'
+++++++++++button className='icon-button  standard ' htmlTag='button'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++none ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='md-filled-icon-button'
+++++++++++button className='icon-button  filled ' htmlTag='button'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++none ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='md-filled-tonal-icon-button'
+++++++++++button className='icon-button  filled-tonal ' htmlTag='button'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++none ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='md-outlined-icon-button'
+++++++++++button className='icon-button  outlined ' htmlTag='button'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++none ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored
+++++++++button className='icon-button  standard ' htmlTag='button' restriction=disabled
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored

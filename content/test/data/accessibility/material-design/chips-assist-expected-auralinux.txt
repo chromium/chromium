@@ -1,0 +1,12 @@
+[document web] name='Material Web Assist Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[push button] name='Assist chip'
+++++++[section]
+++++++++[section]
+++++++++++[push button] name='With icon'
+++++++[section]
+++++++++[section]
+++++++++++[push button] name='Disabled'

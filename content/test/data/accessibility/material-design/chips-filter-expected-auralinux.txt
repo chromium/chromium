@@ -1,0 +1,12 @@
+[document web] name='Material Web Filter Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[toggle button] name='Filter chip'
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='Selected'
+++++++[section]
+++++++++[section]
+++++++++++[toggle button] name='With icon'

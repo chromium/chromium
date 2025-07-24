@@ -1,0 +1,59 @@
+rootWebArea htmlTag='#document' name='Material Web Switches'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch  unselected ' htmlTag='div'
+++++++++++++switch className='touch' htmlTag='input' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch  unselected ' htmlTag='div'
+++++++++++++switch className='touch' htmlTag='input' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+++++++++genericContainer className='switch  unselected disabled ' htmlTag='div'
+++++++++++switch className='touch' htmlTag='input' restriction=disabled checkedState=false
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored
+++++++++genericContainer className='switch  unselected disabled ' htmlTag='div'
+++++++++++switch className='touch' htmlTag='input' restriction=disabled checkedState=false
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='md-switch' invalidState=true
+++++++++++genericContainer className='switch  unselected ' htmlTag='div'
+++++++++++++switch required className='touch' htmlTag='input' invalidState=true checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='md-switch'
+++++++++++genericContainer className='switch  unselected ' htmlTag='div'
+++++++++++++switch className='touch' htmlTag='input' checkedState=false
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='icons' htmlTag='div'
+++++++++++++++++++++genericContainer className='icon icon--on' htmlTag='slot'
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++++genericContainer className='icon icon--off' htmlTag='slot'
+++++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++staticText ignored invisible

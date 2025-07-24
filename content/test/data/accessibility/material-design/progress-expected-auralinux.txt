@@ -1,0 +1,10 @@
+[document web] name='Material Web Progress'
+++[section] name='Ready'
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.500000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.600000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.300000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000

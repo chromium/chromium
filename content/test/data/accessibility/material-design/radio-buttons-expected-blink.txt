@@ -1,0 +1,22 @@
+rootWebArea htmlTag='#document' name='Material Web Radio Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' invalidState=true checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible

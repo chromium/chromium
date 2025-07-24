@@ -1,0 +1,8 @@
+[document web] name='Material Web Dialogs'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++[push button] name='Open Basic Dialog'
+++++[section]
+++++++[section]
+++++++[push button] name='Open Alert Dialog'

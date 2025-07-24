@@ -1,0 +1,8 @@
+[document web] name='Material Web Radio Buttons'
+++[section] name='Ready'
+++++[radio button] checkable checkable:true
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true

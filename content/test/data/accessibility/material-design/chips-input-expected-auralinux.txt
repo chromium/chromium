@@ -1,0 +1,15 @@
+[document web] name='Material Web Input Chips'
+++[section] name='Ready'
+++++[tool bar] horizontal
+++++++[panel]
+++++++++[section]
+++++++++++[push button] name='Input chip'
+++++++++++[push button] name='Remove Input chip'
+++++++[section]
+++++++++[section]
+++++++++++[push button] name='With avatar'
+++++++++++[push button] name='Remove With avatar'
+++++++[section]
+++++++++[section]
+++++++++++[static] name='Removable'
+++++++++++[push button] name='Remove Removable'
