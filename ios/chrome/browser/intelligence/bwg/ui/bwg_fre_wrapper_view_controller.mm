@@ -99,10 +99,21 @@ const CGFloat kDamping = 1.0;
           id<UIViewControllerTransitionCoordinatorContext> context) {
         [weakSelf.sheetPresentationController invalidateDetents];
       }
-                      completion:nil];
+      completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        if ([weakSelf isShowingConsentView]) {
+          CGFloat newWidth = weakSelf.contentScrollView.frame.size.width;
+          weakSelf.contentScrollView.contentOffset = CGPointMake(newWidth, 0);
+        }
+      }];
 }
 
 #pragma mark - Private
+
+// Returns YES if the `_currentChildViewController` is the Consent View
+// Controller.
+- (BOOL)isShowingConsentView {
+  return _currentChildViewController == _consentViewController;
+}
 
 // Creates and returns the stack view containing the animated logos.
 - (UIStackView*)createLogosStackView {
@@ -181,15 +192,18 @@ const CGFloat kDamping = 1.0;
   self.contentScrollView = [[UIScrollView alloc] init];
   self.contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
   self.contentScrollView.showsHorizontalScrollIndicator = NO;
+  self.contentScrollView.scrollEnabled = NO;
 
   _contentHorizontalStackView = [[UIStackView alloc] init];
   _contentHorizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _contentHorizontalStackView.axis = UILayoutConstraintAxisHorizontal;
   _contentHorizontalStackView.distribution = UIStackViewDistributionFillEqually;
 
-  [self addChildViewController:_promoViewController];
-  [_contentHorizontalStackView addArrangedSubview:_promoViewController.view];
-  [_promoViewController didMoveToParentViewController:self];
+  if (_promoViewController) {
+    [self addChildViewController:_promoViewController];
+    [_contentHorizontalStackView addArrangedSubview:_promoViewController.view];
+    [_promoViewController didMoveToParentViewController:self];
+  }
 
   [self addChildViewController:_consentViewController];
   [_contentHorizontalStackView addArrangedSubview:_consentViewController.view];
@@ -200,9 +214,6 @@ const CGFloat kDamping = 1.0;
   [_mainStackView setCustomSpacing:kExtraSpacingTitleContent
                          afterView:_logosStackView];
   [_mainStackView addArrangedSubview:self.contentScrollView];
-
-  UILayoutGuide* contentLayoutGuide = self.contentScrollView.contentLayoutGuide;
-  UILayoutGuide* frameLayoutGuide = self.contentScrollView.frameLayoutGuide;
 
   [NSLayoutConstraint activateConstraints:@[
     // Main vertical stack view constraints.
@@ -228,30 +239,33 @@ const CGFloat kDamping = 1.0;
     [self.contentScrollView.bottomAnchor
         constraintEqualToAnchor:_contentHorizontalStackView.bottomAnchor],
 
-    // Horizontal stack view constraints within the scroll view.
-    [_contentHorizontalStackView.topAnchor
-        constraintEqualToAnchor:contentLayoutGuide.topAnchor],
-    [_contentHorizontalStackView.leadingAnchor
-        constraintEqualToAnchor:contentLayoutGuide.leadingAnchor],
-    [_contentHorizontalStackView.bottomAnchor
-        constraintEqualToAnchor:contentLayoutGuide.bottomAnchor],
-    [_contentHorizontalStackView.trailingAnchor
-        constraintEqualToAnchor:contentLayoutGuide.trailingAnchor],
     [_contentHorizontalStackView.widthAnchor
-        constraintEqualToAnchor:frameLayoutGuide.widthAnchor
-                     multiplier:2.0]
+        constraintEqualToAnchor:self.contentScrollView.frameLayoutGuide
+                                    .widthAnchor
+                     multiplier:[self contentStackViewWidthMultiplier]]
   ]];
+  AddSameConstraints(_contentHorizontalStackView,
+                     self.contentScrollView.contentLayoutGuide);
+}
+
+// Returns the width multiplier for the content stack view based on the number
+// of pages. The multiplier is 2.0 if showing both promo and consent,
+// otherwise 1.0.
+- (CGFloat)contentStackViewWidthMultiplier {
+  return _showPromo ? 2.0 : 1.0;
 }
 
 // Instantiates and configures the child view controllers.
 - (void)setupChildViewControllers {
+  if (_showPromo) {
+    _promoViewController = [[BWGPromoViewController alloc] init];
+    _promoViewController.BWGPromoDelegate = self;
+    _promoViewController.mutator = self.mutator;
+  }
+
   _consentViewController = [[BWGConsentViewController alloc]
       initWithIsAccountManaged:_isAccountManaged];
   _consentViewController.mutator = self.mutator;
-
-  _promoViewController = [[BWGPromoViewController alloc] init];
-  _promoViewController.BWGPromoDelegate = self;
-  _promoViewController.mutator = self.mutator;
 }
 
 // Configures the view controller to be presented as a sheet. It uses a

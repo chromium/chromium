@@ -390,7 +390,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   UIStackView* innerStackView = [[UIStackView alloc] init];
   innerStackView.axis = UILayoutConstraintAxisVertical;
-  innerStackView.alignment = UIStackViewAlignmentLeading;
+  innerStackView.alignment = UIStackViewAlignmentFill;
   innerStackView.spacing = kInnerStackViewSpacing;
 
   innerStackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -428,7 +428,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   UIStackView* innerStackView = [[UIStackView alloc] init];
   innerStackView.axis = UILayoutConstraintAxisVertical;
-  innerStackView.alignment = UIStackViewAlignmentLeading;
+  innerStackView.alignment = UIStackViewAlignmentFill;
   innerStackView.spacing = kInnerStackViewSpacing;
 
   innerStackView.translatesAutoresizingMaskIntoConstraints = NO;
