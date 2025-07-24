@@ -69,7 +69,7 @@ void ChromeWebAuthnCredentialsDelegate::LaunchSecurityKeyOrHybridFlow() {
 #else
   if (WebAuthnRequestDelegateAndroid* delegate =
           WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_)) {
-    delegate->ShowHybridSignIn();
+    delegate->OnHybridSignInSelected();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

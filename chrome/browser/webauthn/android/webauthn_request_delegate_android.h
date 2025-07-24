@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate.h"
 
 namespace content {
 class RenderFrameHost;
@@ -31,7 +32,9 @@ class TouchToFillController;
 // request handling for Conditional UI on Android. This is attached to a
 // WebContents via SetUserData. It caches a callback that will complete the
 // WebAuthn 'get' request when a user selects a credential.
-class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
+class WebAuthnRequestDelegateAndroid
+    : public base::SupportsUserData::Data,
+      public TouchToFillControllerWebAuthnDelegate::CredentialReceiver {
  public:
   explicit WebAuthnRequestDelegateAndroid(content::WebContents* web_contents);
 
@@ -59,17 +62,10 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
   // clean up conditional UI state.
   void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host);
 
-  // Tells the WebAuthn Java implementation that the user has selected a Web
-  // Authentication credential from a dialog, and provides the credential ID
-  // for the selected credential.
-  virtual void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id);
-
-  // Tells the WebAuthn Java implementation the the user has selected the
-  // option for hybrid sign-in, which should be handled by the platform.
-  virtual void ShowHybridSignIn();
-
-  // Returns the WebContents that owns this object.
-  content::WebContents* web_contents();
+  // TouchToFillControllerWebAuthnDelegate::CredentialReceiver:
+  void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id) override;
+  void OnHybridSignInSelected() override;
+  content::WebContents* web_contents() override;
 
   // Returns a delegate associated with the |web_contents|. It creates one if
   // one does not already exist.

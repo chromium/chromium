@@ -65,7 +65,7 @@ class MockWebAuthnRequestDelegateAndroid
               OnWebAuthnAccountSelected,
               (const std::vector<uint8_t>& id),
               (override));
-  MOCK_METHOD(void, ShowHybridSignIn, (), (override));
+  MOCK_METHOD(void, OnHybridSignInSelected, (), (override));
 };
 
 struct MockTouchToFillView : public TouchToFillView {
@@ -234,7 +234,7 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectHybrid) {
                            TouchToFillView::kShouldShowHybridOption));
   Show({}, credentials,
        MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/true));
-  EXPECT_CALL(request_delegate(), ShowHybridSignIn());
+  EXPECT_CALL(request_delegate(), OnHybridSignInSelected());
   touch_to_fill_controller().OnHybridSignInSelected();
 }
 

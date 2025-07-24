@@ -146,7 +146,7 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnAccountSelected(
   }
 }
 
-void WebAuthnRequestDelegateAndroid::ShowHybridSignIn() {
+void WebAuthnRequestDelegateAndroid::OnHybridSignInSelected() {
   if (hybrid_callback_) {
     hybrid_callback_.Run();
   }
