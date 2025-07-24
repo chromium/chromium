@@ -18,7 +18,8 @@ PermissionControllerDelegate::~PermissionControllerDelegate() {
 
 bool PermissionControllerDelegate::IsPermissionOverridable(
     blink::PermissionType permission,
-    const std::optional<url::Origin>& origin) {
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin) {
   return true;
 }
 

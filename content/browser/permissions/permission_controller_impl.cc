@@ -385,7 +385,11 @@ PermissionControllerImpl::SetPermissionOverride(
     const PermissionStatus& status) {
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
-  if (delegate && !delegate->IsPermissionOverridable(permission, origin)) {
+  // TODO(crbug.com/427175363): Once SetPermissionOverride accepts a requesting
+  // and embedding origin, we will pass those rather than just 'origin' to
+  // IsPermissionOverridable.
+  if (delegate &&
+      !delegate->IsPermissionOverridable(permission, origin, origin)) {
     return OverrideStatus::kOverrideNotSet;
   }
   const auto old_statuses = GetSubscriptionsStatuses(
@@ -404,7 +408,10 @@ PermissionControllerImpl::GrantPermissionOverrides(
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
     for (const auto permission : permissions) {
-      if (!delegate->IsPermissionOverridable(permission, origin)) {
+      // TODO(crbug.com/427175363): Once GrantPermissionOverrides accepts a
+      // requesting and embedding origin, we will pass those rather than just
+      // 'origin' to IsPermissionOverridable.
+      if (!delegate->IsPermissionOverridable(permission, origin, origin)) {
         return OverrideStatus::kOverrideNotSet;
       }
     }

@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/types/id_type.h"
+#include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
@@ -141,10 +142,12 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       WebContents* web_contents) const;
 
-  // Returns whether permission can be overridden.
+  // Returns whether permission can be overridden. A null requesting or
+  // embedding origin is always overridable.
   virtual bool IsPermissionOverridable(
       blink::PermissionType permission,
-      const std::optional<url::Origin>& origin);
+      base::optional_ref<const url::Origin> requesting_origin,
+      base::optional_ref<const url::Origin> embedding_origin);
 
   void SetSubscriptions(
       content::PermissionController::SubscriptionsMap* subscriptions);

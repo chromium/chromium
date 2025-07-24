@@ -218,7 +218,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
 
   bool IsPermissionOverridable(PermissionType permission,
                                const std::optional<url::Origin>& origin) {
-    return GetPermissionManager()->IsPermissionOverridable(permission, origin);
+    return GetPermissionManager()->IsPermissionOverridable(permission, origin,
+                                                           origin);
   }
 
   void ResetPermission(PermissionType permission,

@@ -64,7 +64,9 @@ class MockManagerWithRequests : public MockPermissionManager {
       (override));
   MOCK_METHOD(bool,
               IsPermissionOverridable,
-              (PermissionType, const std::optional<url::Origin>&),
+              (PermissionType,
+               base::optional_ref<const url::Origin>,
+               base::optional_ref<const url::Origin>),
               (override));
 };
 
@@ -478,7 +480,8 @@ TEST_F(PermissionControllerImplTest,
 
   // Delegate will be called, but prevents override from being set.
   EXPECT_CALL(*mock_manager(),
-              IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_))
+              IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_,
+                                      testing::_))
       .WillOnce(testing::Return(false));
   EXPECT_EQ(
       OverrideStatus::kOverrideNotSet,
@@ -503,10 +506,11 @@ TEST_F(PermissionControllerImplTest,
       kTestOrigin, PermissionType::BACKGROUND_SYNC, PermissionStatus::ASK);
   // Delegate will be called, but prevents override from being set.
   EXPECT_CALL(*mock_manager(),
-              IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_))
+              IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_,
+                                      testing::_))
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(*mock_manager(),
-              IsPermissionOverridable(PermissionType::MIDI, testing::_))
+  EXPECT_CALL(*mock_manager(), IsPermissionOverridable(PermissionType::MIDI,
+                                                       testing::_, testing::_))
       .WillOnce(testing::Return(true));
 
   // Since one cannot be overridden, none are overridden.
@@ -530,13 +534,15 @@ TEST_F(PermissionControllerImplTest,
                                          kTestOrigin));
 
   EXPECT_CALL(*mock_manager(),
-              IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_))
+              IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_,
+                                      testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_manager(), IsPermissionOverridable(PermissionType::MIDI,
+                                                       testing::_, testing::_))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*mock_manager(),
-              IsPermissionOverridable(PermissionType::MIDI, testing::_))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(*mock_manager(), IsPermissionOverridable(
-                                   PermissionType::BACKGROUND_SYNC, testing::_))
+              IsPermissionOverridable(PermissionType::BACKGROUND_SYNC,
+                                      testing::_, testing::_))
       .WillOnce(testing::Return(true));
   // If all can be set, overrides will be stored.
   result = permission_controller()->GrantOverridesForDevTools(

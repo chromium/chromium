@@ -385,7 +385,8 @@ PermissionStatus PermissionManager::GetPermissionStatusForEmbeddedRequester(
 
 bool PermissionManager::IsPermissionOverridable(
     PermissionType permission,
-    const std::optional<url::Origin>& origin) {
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin) {
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingsTypeSafe(permission);
   PermissionContextBase* context = GetPermissionContext(type);
@@ -393,8 +394,9 @@ bool PermissionManager::IsPermissionOverridable(
   if (!context || context->IsPermissionKillSwitchOn())
     return false;
 
-  return !origin || context->IsPermissionAvailableToOrigins(origin->GetURL(),
-                                                            origin->GetURL());
+  return !requesting_origin || !embedding_origin ||
+         context->IsPermissionAvailableToOrigins(requesting_origin->GetURL(),
+                                                 embedding_origin->GetURL());
 }
 
 void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
