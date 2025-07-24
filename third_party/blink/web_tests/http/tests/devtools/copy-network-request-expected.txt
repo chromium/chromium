@@ -323,7 +323,7 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl ^"http://example.org/path^" ^
   -H ^"Content-Type: application/binary^" ^
-  --data-raw ^"^^^^ÿ	^܀^"
+  --data-raw ^"^^^^ÿ^	^܀^"
 
 
 cURL Unix:
