@@ -58,6 +58,12 @@ void AgentSignalsCollector::GetDetectedAgentSignal(
     const SignalsAggregationRequest request,
     SignalsAggregationResponse response,
     AgentSignalsResponseCallback agent_response_cb) {
+  if (!request.agent_signal_parameters.contains(
+          AgentSignalCollectionType::kDetectedAgents)) {
+    agent_response_cb.Run(AgentSignalsResponse());
+    return;
+  }
+
   detected_agent_client_->GetAgents(base::BindOnce(
       &AgentSignalsCollector::OnDetectedAgentSignalCollected,
       weak_factory_.GetWeakPtr(), std::ref(response), agent_response_cb));
@@ -79,7 +85,9 @@ void AgentSignalsCollector::GetCrowdstrikeIdentifierSignals(
     const SignalsAggregationRequest request,
     SignalsAggregationResponse response,
     AgentSignalsResponseCallback agent_response_cb) {
-  if (permission != UserPermission::kGranted) {
+  if ((permission != UserPermission::kGranted) ||
+      (!request.agent_signal_parameters.contains(
+          AgentSignalCollectionType::kCrowdstrikeIdentifiers))) {
     agent_response_cb.Run(AgentSignalsResponse());
     return;
   }

@@ -63,6 +63,8 @@ base::Value::List GetExpectedMacAddresses() {
 device_signals::SignalsAggregationRequest CreateExpectedRequest() {
   device_signals::SignalsAggregationRequest request;
   request.signal_names.emplace(device_signals::SignalName::kAgent);
+  request.agent_signal_parameters.emplace(
+      device_signals::AgentSignalCollectionType::kCrowdstrikeIdentifiers);
   if (IsDTCAntivirusSignalEnabled()) {
     request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
   }

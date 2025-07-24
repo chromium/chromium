@@ -63,6 +63,13 @@ enum class SignalCollectionError {
   kMaxValue = kUnexpectedValue
 };
 
+// Enum representing the type of signals the AgentSignalCollector can collect.
+enum class AgentSignalCollectionType {
+  kDetectedAgents,
+  kCrowdstrikeIdentifiers,
+  kMaxValue = kCrowdstrikeIdentifiers
+};
+
 const std::string ErrorToString(SignalCollectionError error);
 
 // Base struct type that each specific signal bundle types should extend. The
@@ -311,6 +318,9 @@ struct SignalsAggregationRequest {
   // Parameters required when requesting the collection of signals living on
   // the device's file system.
   std::vector<GetFileSystemInfoOptions> file_system_signal_parameters;
+
+  // Parameters required when requesting the collection of agent signals.
+  std::unordered_set<AgentSignalCollectionType> agent_signal_parameters;
 
   std::vector<GetSettingsOptions> settings_signal_parameters;
 

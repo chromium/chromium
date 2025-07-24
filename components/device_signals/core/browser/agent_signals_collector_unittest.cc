@@ -57,6 +57,22 @@ class MockDetectedAgentClient : public DetectedAgentClient {
 MockDetectedAgentClient::MockDetectedAgentClient() = default;
 MockDetectedAgentClient::~MockDetectedAgentClient() = default;
 
+SignalsAggregationRequest CreateRequest(bool add_crowdstrike_ids = true,
+                                        bool add_detected_agents = true) {
+  SignalsAggregationRequest request;
+  if (add_crowdstrike_ids) {
+    request.agent_signal_parameters.emplace(
+        device_signals::AgentSignalCollectionType::kCrowdstrikeIdentifiers);
+  }
+
+  if (add_detected_agents) {
+    request.agent_signal_parameters.emplace(
+        device_signals::AgentSignalCollectionType::kDetectedAgents);
+  }
+
+  return request;
+}
+
 }  // namespace
 
 class AgentSignalsCollectorTest : public testing::Test,
@@ -105,12 +121,11 @@ class AgentSignalsCollectorTest : public testing::Test,
               }));
     }
 
-    SignalsAggregationRequest empty_request;
     SignalsAggregationResponse captured_response;
 
     base::RunLoop run_loop;
     collector_->GetSignal(SignalName::kAgent, UserPermission::kGranted,
-                          empty_request, captured_response,
+                          CreateRequest(), captured_response,
                           run_loop.QuitClosure());
 
     run_loop.Run();
@@ -191,10 +206,9 @@ TEST_P(AgentSignalsCollectorTest, SupportedSignalNames) {
 TEST_P(AgentSignalsCollectorTest, GetSignal_Unsupported) {
   CreateCollector();
   SignalName signal_name = SignalName::kAntiVirus;
-  SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  collector_->GetSignal(signal_name, UserPermission::kGranted, empty_request,
+  collector_->GetSignal(signal_name, UserPermission::kGranted, CreateRequest(),
                         response, run_loop.QuitClosure());
 
   run_loop.Run();
@@ -204,6 +218,77 @@ TEST_P(AgentSignalsCollectorTest, GetSignal_Unsupported) {
             SignalCollectionError::kUnsupported);
 }
 
+// Tests the scenario where the CrowdStrikeIdentifier signal request parameter
+// is missing but the DetectedAgents signal request parameter is present.
+TEST_P(AgentSignalsCollectorTest,
+       GetSignal_MissingCrowdstrikeIdentifierSignalCollectionTypeOnly) {
+  CreateCollector();
+  SignalName signal_name = SignalName::kAgent;
+  SignalsAggregationResponse response;
+  std::vector<Agents> detected_agents = {Agents::kCrowdStrikeFalcon};
+  base::RunLoop run_loop;
+  if (is_detected_agent_signal_collection_enabled()) {
+    EXPECT_CALL(*mocked_detected_agent_client_, GetAgents(_))
+        .WillOnce(
+            Invoke([&detected_agents](
+                       base::OnceCallback<void(std::vector<Agents>)> callback) {
+              std::move(callback).Run(detected_agents);
+            }));
+  }
+
+  collector_->GetSignal(signal_name, UserPermission::kGranted,
+                        CreateRequest(/*add_crowdstrike_ids=*/false,
+                                      /*add_detected_agents=*/true),
+                        response, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  if (is_detected_agent_signal_collection_enabled()) {
+    ASSERT_TRUE(response.agent_signals_response);
+    ASSERT_FALSE(response.agent_signals_response->crowdstrike_signals);
+    EXPECT_EQ(response.agent_signals_response->detected_agents,
+              detected_agents);
+  } else {
+    ASSERT_FALSE(response.agent_signals_response);
+  }
+}
+
+// Tests the scenario where the DetectedAgents signal request parameter is
+// missing but the CrowdStrikeIdentifier signal request parameter is present.
+TEST_P(AgentSignalsCollectorTest,
+       GetSignal_MissingDetectedAgentSignalCollectionTypeOnly) {
+  CreateCollector();
+  SignalName signal_name = SignalName::kAgent;
+  SignalsAggregationResponse response;
+  CrowdStrikeSignals crowdstrike_signal;
+  crowdstrike_signal.agent_id = "1234";
+  crowdstrike_signal.customer_id = "abcd";
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mocked_crowdstrike_client_, GetIdentifiers(_))
+      .WillOnce(Invoke(
+          [&crowdstrike_signal](
+              base::OnceCallback<void(std::optional<CrowdStrikeSignals>,
+                                      std::optional<SignalCollectionError>)>
+                  callback) {
+            std::move(callback).Run(crowdstrike_signal, std::nullopt);
+          }));
+
+  collector_->GetSignal(signal_name, UserPermission::kGranted,
+                        CreateRequest(/*add_crowdstrike_ids=*/true,
+                                      /*add_detected_agents=*/false),
+                        response, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.agent_signals_response);
+  ASSERT_TRUE(response.agent_signals_response->detected_agents.empty());
+  ASSERT_TRUE(response.agent_signals_response->crowdstrike_signals);
+  EXPECT_EQ(response.agent_signals_response->crowdstrike_signals.value(),
+            crowdstrike_signal);
+}
+
 // Tests the scenario where CrowdStrike signal collection fails due to
 // insufficient permissions, but DetectedAgent signals are still collected and
 // are not empty.
@@ -211,7 +296,6 @@ TEST_P(AgentSignalsCollectorTest,
        GetSignal_MissingConsent_DetectedAgentSignalPresent) {
   CreateCollector();
   SignalName signal_name = SignalName::kAgent;
-  SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
   std::vector<Agents> detected_agents = {Agents::kCrowdStrikeFalcon};
   base::RunLoop run_loop;
@@ -225,7 +309,7 @@ TEST_P(AgentSignalsCollectorTest,
   }
 
   collector_->GetSignal(signal_name, UserPermission::kMissingConsent,
-                        empty_request, response, run_loop.QuitClosure());
+                        CreateRequest(), response, run_loop.QuitClosure());
 
   run_loop.Run();
 
@@ -247,7 +331,6 @@ TEST_P(AgentSignalsCollectorTest,
        GetSignal_MissingConsent_DetectedAgentSignalEmpty) {
   CreateCollector();
   SignalName signal_name = SignalName::kAgent;
-  SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
   if (is_detected_agent_signal_collection_enabled()) {
@@ -259,7 +342,7 @@ TEST_P(AgentSignalsCollectorTest,
   }
 
   collector_->GetSignal(signal_name, UserPermission::kMissingConsent,
-                        empty_request, response, run_loop.QuitClosure());
+                        CreateRequest(), response, run_loop.QuitClosure());
 
   run_loop.Run();
 
