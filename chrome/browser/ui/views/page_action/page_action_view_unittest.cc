@@ -389,6 +389,21 @@ TEST_F(PageActionViewTest, Highlight) {
   EXPECT_FALSE(ink_drop->GetHighlighted());
 }
 
+// Regression test to ensure proper clean up when the view is destroyed while
+// highlighted.
+TEST_F(PageActionViewTest, HandleDestructionWhileHighlighted) {
+  auto scoped_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  views::InkDropHost* const ink_drop =
+      views::InkDrop::Get(page_action_view()->ink_drop_view());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(ink_drop->GetHighlighted());
+}
+
 // Test that OnThemeChanged updates the icon image correctly.
 TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
   // If the default size is the intended icon size, this test is useless.

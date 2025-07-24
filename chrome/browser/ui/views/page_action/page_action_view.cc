@@ -69,7 +69,12 @@ PageActionView::PageActionView(actions::ActionItem* action_item,
           &PageActionView::OnLabelVisibilityChanged, base::Unretained(this)));
 }
 
-PageActionView::~PageActionView() = default;
+PageActionView::~PageActionView() {
+  // If this is currently highlighted, destroying the `ScopedAnchorHighlight`
+  // might attempt to trigger an ink drop change even though we're
+  // mid-destruction. Disable the ink drop to prevent this.
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+}
 
 bool PageActionView::IsChipVisible() const {
   return ShouldShowLabel();
