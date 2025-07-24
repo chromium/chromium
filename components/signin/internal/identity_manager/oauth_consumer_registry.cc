@@ -9,6 +9,9 @@
 
 namespace {
 constexpr char kSyncOAuthConsumerName[] = "sync";
+constexpr char kWallpaperGooglePhotosFetcherName[] =
+    "wallpaper_google_photos_fetcher";
+constexpr char kWallpaperFetcherDelegateName[] = "wallpaper_fetcher_delegate";
 }
 
 namespace signin {
@@ -32,8 +35,17 @@ ScopeSet OAuthConsumer::GetScopes() const {
 OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
   switch (oauth_consumer_id) {
     case OAuthConsumerId::kSync:
-      return OAuthConsumer(/* name= */ kSyncOAuthConsumerName, /* scopes= */ {
-                               GaiaConstants::kChromeSyncOAuth2Scope});
+      return OAuthConsumer(
+          /*name=*/kSyncOAuthConsumerName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kWallpaperGooglePhotosFetcher:
+      return OAuthConsumer(
+          /*name=*/kWallpaperGooglePhotosFetcherName,
+          /*scopes=*/{GaiaConstants::kPhotosModuleOAuth2Scope});
+    case OAuthConsumerId::kWallpaperFetcherDelegate:
+      return OAuthConsumer(
+          /*name=*/kWallpaperFetcherDelegateName,
+          /*scopes=*/{GaiaConstants::kPhotosModuleImageOAuth2Scope});
   }
   NOTREACHED();
 }

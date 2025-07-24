@@ -12,7 +12,9 @@ namespace signin {
 // numeric values should never be reused.
 enum class OAuthConsumerId {
   kSync = 0,
-  kMaxValue = kSync,
+  kWallpaperGooglePhotosFetcher = 1,
+  kWallpaperFetcherDelegate = 2,
+  kMaxValue = kWallpaperFetcherDelegate,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

@@ -11,8 +11,34 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace signin {
+
+PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
+    OAuthConsumerId oauth_consumer_id,
+    IdentityManager* identity_manager,
+    Mode mode,
+    ConsentLevel consent)
+    : client_info_(oauth_consumer_id),
+      identity_manager_(identity_manager),
+      mode_(mode),
+      consent_(consent) {
+  identity_manager_observation_.Observe(identity_manager_.get());
+}
+
+PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
+    OAuthConsumerId oauth_consumer_id,
+    IdentityManager* identity_manager,
+    AccessTokenFetcher::TokenCallback callback,
+    Mode mode,
+    ConsentLevel consent)
+    : PrimaryAccountAccessTokenFetcher(oauth_consumer_id,
+                                       identity_manager,
+                                       mode,
+                                       consent) {
+  Start(std::move(callback));
+}
 
 PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
     const std::string& oauth_consumer_name,
@@ -20,9 +46,8 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
     const ScopeSet& scopes,
     Mode mode,
     ConsentLevel consent)
-    : oauth_consumer_name_(oauth_consumer_name),
+    : client_info_(std::pair(oauth_consumer_name, scopes)),
       identity_manager_(identity_manager),
-      scopes_(scopes),
       mode_(mode),
       consent_(consent) {
   identity_manager_observation_.Observe(identity_manager_.get());
@@ -85,12 +110,27 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
   // request should be started when the account is primary AND has a refresh
   // token available. AccessTokenFetcher used in
   // |kWaitUntilRefreshTokenAvailable| mode would guarantee only the latter.
-  access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      GetAccountId(), oauth_consumer_name_, scopes_,
-      base::BindOnce(
-          &PrimaryAccountAccessTokenFetcher::OnAccessTokenFetchComplete,
-          base::Unretained(this)),
-      AccessTokenFetcher::Mode::kImmediate);
+  std::visit(absl::Overload{
+                 [&](const std::pair<std::string, ScopeSet>& client_info) {
+                   access_token_fetcher_ =
+                       identity_manager_->CreateAccessTokenFetcherForAccount(
+                           GetAccountId(), client_info.first,
+                           client_info.second,
+                           base::BindOnce(&PrimaryAccountAccessTokenFetcher::
+                                              OnAccessTokenFetchComplete,
+                                          base::Unretained(this)),
+                           AccessTokenFetcher::Mode::kImmediate);
+                 },
+                 [&](const OAuthConsumerId& consumer_id) {
+                   access_token_fetcher_ =
+                       identity_manager_->CreateAccessTokenFetcherForAccount(
+                           GetAccountId(), consumer_id,
+                           base::BindOnce(&PrimaryAccountAccessTokenFetcher::
+                                              OnAccessTokenFetchComplete,
+                                          base::Unretained(this)),
+                           AccessTokenFetcher::Mode::kImmediate);
+                 }},
+             client_info_);
 }
 
 void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountChanged(

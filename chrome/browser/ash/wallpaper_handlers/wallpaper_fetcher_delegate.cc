@@ -88,9 +88,8 @@ void WallpaperFetcherDelegateImpl::FetchGooglePhotosAccessToken(
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "wallpaper_fetcher_delegate",
+      signin::OAuthConsumerId::kWallpaperFetcherDelegate,
       IdentityManagerFactory::GetForProfile(profile),
-      signin::ScopeSet({GaiaConstants::kPhotosModuleImageOAuth2Scope}),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSignin);
   auto* fetcher_ptr = fetcher.get();

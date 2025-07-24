@@ -266,11 +266,8 @@ void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
     return;
   }
 
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kPhotosModuleOAuth2Scope);
-
   auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "wallpaper_google_photos_fetcher", identity_manager_, scopes,
+      signin::OAuthConsumerId::kWallpaperGooglePhotosFetcher, identity_manager_,
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
       signin::ConsentLevel::kSignin);
   auto* fetcher_ptr = fetcher.get();
