@@ -52,6 +52,8 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
       return CategoryResolvedKeyMetricBucket::kAccountHome;
     case AutofillProfileRecordTypeCategory::kAccountWork:
       return CategoryResolvedKeyMetricBucket::kAccountWork;
+    case AutofillProfileRecordTypeCategory::kAccountNameEmail:
+      return CategoryResolvedKeyMetricBucket::kAccountNameEmail;
   }
 }
 

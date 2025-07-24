@@ -336,6 +336,12 @@ std::string_view GetLegacyProfileMetadataTable(
     case AutofillProfile::RecordType::kAccountHome:
     case AutofillProfile::RecordType::kAccountWork:
       return kContactInfoTable;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      // This code is used for migration between old multi-table schema and new
+      // single-table schema. Users won't ever have a `kAccountNameEmail`
+      // address in either of the two tables, since the schema is migrated on
+      // browser startup.
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -348,6 +354,12 @@ std::string_view GetLegacyProfileTypeTokensTable(
     case AutofillProfile::RecordType::kAccountHome:
     case AutofillProfile::RecordType::kAccountWork:
       return kContactInfoTypeTokensTable;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      // This code is used for migration between old multi-table schema and new
+      // single-table schema. Users won't ever have a `kAccountNameEmail`
+      // address in either of the two tables, since the schema is migrated on
+      // browser startup.
+      NOTREACHED();
   }
   NOTREACHED();
 }

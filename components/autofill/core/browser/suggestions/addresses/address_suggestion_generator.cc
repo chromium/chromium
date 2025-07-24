@@ -577,6 +577,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
             break;
           case AutofillProfile::RecordType::kLocalOrSyncable:
           case AutofillProfile::RecordType::kAccount:
+          case AutofillProfile::RecordType::kAccountNameEmail:
             suggestion.icon = Suggestion::Icon::kAccount;
         }
       } else {

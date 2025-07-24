@@ -27,6 +27,9 @@ ContactInfoSpecifics::AddressType RecordTypeToAddressType(
   switch (record_type) {
     case AutofillProfile::RecordType::kLocalOrSyncable:
       // Local profiles are not synced through CONTACT_INFO.
+      // For that reason there is an early return in
+      // `ContactInfoSyncBridge::AutofillProfileChanged`,
+      // the program won't enter this case.
       NOTREACHED();
     case AutofillProfile::RecordType::kAccount:
       return ContactInfoSpecifics::REGULAR;
@@ -34,6 +37,11 @@ ContactInfoSpecifics::AddressType RecordTypeToAddressType(
       return ContactInfoSpecifics::HOME;
     case AutofillProfile::RecordType::kAccountWork:
       return ContactInfoSpecifics::WORK;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      // Since there is an early return in
+      // `ContactInfoSyncBridge::AutofillProfileChanged`,
+      // the program won't enter this case.
+      NOTREACHED();
   }
 }
 

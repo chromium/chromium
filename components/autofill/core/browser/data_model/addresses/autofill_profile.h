@@ -57,7 +57,12 @@ class AutofillProfile : public FormGroup {
     kAccount = 1,
     kAccountHome = 2,
     kAccountWork = 3,
-    kMaxValue = kAccountWork,
+    // This profile is stored locally. Data for this profile comes from the
+    // account. Not synced at all.
+    // TODO(crbug.com/356845298): Update the comment with the name of the
+    // manager handling the metadata updates once implemented.
+    kAccountNameEmail = 4,
+    kMaxValue = kAccountNameEmail,
   };
 
   // These fields are, by default, the only candidates for being added to the

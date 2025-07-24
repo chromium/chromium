@@ -638,16 +638,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PHONE_HOME_WHOLE_NUMBER"/>
 </variants>
 
-<variants name="AutofillProfileCategory">
-  <variant name="AccountChrome"
-      summary="kAccount profiles originating from Chrome"/>
-  <variant name="AccountHome" summary="kAccountHome profile"/>
-  <variant name="AccountNonChrome"
-      summary="kAccount profiles originating from outside Chrome"/>
-  <variant name="AccountWork" summary="kAccountWork profile"/>
-  <variant name="Legacy" summary="kLegacyOrSyncable profiles"/>
-</variants>
-
 <variants name="AutofillSaveCreditCardPromptDestination">
   <variant name="Local" summary="locally"/>
   <variant name="Upload" summary="to server"/>
@@ -721,6 +711,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <variants name="IbanTypeToBeSaved">
   <variant name="Local" summary="Local IBAN save"/>
   <variant name="Upload" summary="Server IBAN save"/>
+</variants>
+
+<variants name="StoredProfileCategories">
+  <variant name="AccountChrome"
+      summary="kAccount profiles originating from Chrome"/>
+  <variant name="AccountHome" summary="kAccountHome profile"/>
+  <variant name="AccountNameEmail" summary="kAccountNameEmail profile"/>
+  <variant name="AccountNonChrome"
+      summary="kAccount profiles originating from outside Chrome"/>
+  <variant name="AccountWork" summary="kAccountWork profile"/>
+  <variant name="Legacy" summary="kLegacyOrSyncable profiles"/>
 </variants>
 
 <variants name="Vcn3ds.ConsentAlreadyGiven">
@@ -2694,7 +2695,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     This is logged for each Autofill address profile of the given category once
     per Chrome User Profile load.
   </summary>
-  <token key="Category" variants="AutofillProfileCategory"/>
+  <token key="Category" variants="StoredProfileCategories"/>
 </histogram>
 
 <histogram name="Autofill.DaysUntilFirstUsage.Profile" units="day"
@@ -6366,7 +6367,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     The number of Autofill addresses a user has stored of the given category or
     in total, measured at launch time.
   </summary>
-  <token key="Suffix" variants="AutofillProfileCategory">
+  <token key="Suffix" variants="StoredProfileCategories">
     <variant name="Total"/>
   </token>
 </histogram>
@@ -6391,7 +6392,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     disused. Measured once per Chrome user profile launch. This metric is only
     recorded if the user has at least one profile of that category.
   </summary>
-  <token key="Category" variants="AutofillProfileCategory"/>
+  <token key="Category" variants="StoredProfileCategories"/>
 </histogram>
 
 <histogram name="Autofill.StoredProfileUsedCount.{Category}" units="Profiles"
@@ -6404,7 +6405,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     This metric is only recorded if the user has at least one profile of that
     category.
   </summary>
-  <token key="Category" variants="AutofillProfileCategory"/>
+  <token key="Category" variants="StoredProfileCategories"/>
 </histogram>
 
 <histogram name="Autofill.StoredProfileUsedPercentage.{Category}"
@@ -6417,7 +6418,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     launch. This metric is only recorded if the user has at least one profile of
     that category.
   </summary>
-  <token key="Category" variants="AutofillProfileCategory"/>
+  <token key="Category" variants="StoredProfileCategories"/>
 </histogram>
 
 <histogram

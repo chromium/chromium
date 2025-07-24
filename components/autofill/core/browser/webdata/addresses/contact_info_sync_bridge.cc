@@ -238,6 +238,9 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
       // Home and work record types are read-only on the client side. Changes
       // are only persisted locally, but not uploaded.
       return;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      // Name and email record type should not be synced.
+      return;
     case AutofillProfile::RecordType::kLocalOrSyncable:
       // kLocalOrSyncable addresses are synced through AUTOFILL_PROFILE.
       return;
