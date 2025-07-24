@@ -817,7 +817,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
             CookieControlsContentView::kTrackingProtectionsButton,
             &views::LabelButton::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL)),
+                IDS_TRACKING_PROTECTIONS_BUTTON_PAUSE_PROTECTIONS_LABEL)),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetStringUTF16(
@@ -825,7 +825,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION)));
+                IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION)));
   }
 
   auto CheckTrackingProtectionsActiveStateReloading() {
@@ -834,7 +834,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
             CookieControlsContentView::kTrackingProtectionsButton,
             &views::LabelButton::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL)),
+                IDS_TRACKING_PROTECTIONS_BUTTON_RELOADING_SITE_LABEL)),
         CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
                           &views::View::GetEnabled, false),
         CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
@@ -847,7 +847,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION)));
+                IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION)));
   }
 
   auto CheckTrackingProtectionsPausedState() {
@@ -856,15 +856,15 @@ class CookieControlsInteractiveUiTrackingProtectionTest
             CookieControlsContentView::kTrackingProtectionsButton,
             &views::LabelButton::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL)),
+                IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL)),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE)),
+                IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE)),
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION)));
+                IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_DESCRIPTION)));
   }
 
   auto CheckTrackingProtectionsPausedReloadingState() {
@@ -873,7 +873,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
             CookieControlsContentView::kTrackingProtectionsButton,
             &views::LabelButton::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL)),
+                IDS_TRACKING_PROTECTIONS_BUTTON_RELOADING_SITE_LABEL)),
         CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
                           &views::View::GetEnabled, false),
         CheckViewProperty(CookieControlsContentView::kTrackingProtectionsButton,
@@ -882,11 +882,11 @@ class CookieControlsInteractiveUiTrackingProtectionTest
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE)),
+                IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE)),
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION)));
+                IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_DESCRIPTION)));
   }
 };
 

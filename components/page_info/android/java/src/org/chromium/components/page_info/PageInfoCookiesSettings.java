@@ -334,8 +334,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     private void setPausedTrackingProtectionsTitleAndSummary() {
         mThirdPartyCookiesTitle.setTitle(
-                getString(R.string.tracking_protections_bubble_paused_protections_title));
-        int resId = R.string.tracking_protections_bubble_paused_protections_description_android;
+                getString(R.string.tracking_protections_paused_protections_title));
+        int resId = R.string.page_info_privacy_site_data_paused_protections_description_android;
         mThirdPartyCookiesSummary.setSummary(
                 SpanApplier.applySpans(
                         getString(resId),
@@ -353,14 +353,14 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mThirdPartyCookiesTitle.setTitle(
                 getString(R.string.page_info_cookies_site_not_working_title));
         mThirdPartyCookiesSummary.setSummary(
-                getString(R.string.tracking_protections_bubble_active_protections_description));
+                getString(R.string.tracking_protections_active_protections_description));
     }
 
     private void updateTrackingProtectionsButton(boolean protectionsPaused) {
         mTrackingProtectionsButton.setTitle(
                 protectionsPaused
-                        ? R.string.tracking_protections_bubble_resume_protections_label
-                        : R.string.tracking_protections_bubble_pause_protections_label);
+                        ? R.string.tracking_protections_button_resume_protections_label
+                        : R.string.tracking_protections_button_pause_protections_label);
         // Cookies switch should be hidden if tracking protections button is shown.
         mCookieSwitch.setVisible(false);
     }

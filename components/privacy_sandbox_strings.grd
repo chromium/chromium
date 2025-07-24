@@ -317,116 +317,125 @@
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
         Third-party cookies limited
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL" desc="" formatter_data="android_java" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_TITLE" desc="Title shown on the tracking protections bubble. 'Tracking protections' is the term used for features that try to protect users from being tracked across different sites." translateable="false">
+        Tracking protections
+      </message>
+      <message name="IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL" desc="Label for a button in the tracking protections bubble that allows the user to re-enable tracking protections on the current site." formatter_data="android_java" translateable="false">
         Resume tracking protections
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL" desc="" formatter_data="android_java" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUTTON_PAUSE_PROTECTIONS_LABEL" desc="Label for a button in the tracking protections bubble that allows the user to pause tracking protections on the curent site." formatter_data="android_java" translateable="false">
         Pause tracking protections
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUTTON_RELOADING_SITE_LABEL" desc="Label for a button in the tracking protections bubble that is shown after a user triggers a reload by pausing or resuming tracking protections on the current site. This button is disabled and can't be clicked as it's just meant to indicate to the user that there is no action for them to take while the site is reloading." translateable="false">
         Reloading site
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION" desc="Descriptive text in the tracking protections bubble shown when tracking protections are active on the current site. Explains that pausing tracking protections may help fix features on the site that are not working." formatter_data="android_java" translateable="false">
         Try pausing tracking protections on this site, which can help site features work as expected.
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_DESCRIPTION" desc="Descriptive text in the tracking protections bubble shown when tracking protections are paused on the current site. Explains that tracking protections will remain paused on this site until the user closes all Incognito windows." translateable="false">
         Protections are paused until all Incognito windows are closed.
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION_ANDROID" formatter_data="android_java" desc="" translateable="false">
-        Protections are paused until all Incognito windows are closed. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE" desc="" formatter_data="android_java" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE" desc="Subtitle in the tracking protections bubble shown when tracking protections are paused on the current site." formatter_data="android_java" translateable="false">
         Tracking protections are paused on this site
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL" desc="" translateable="false">
-        Tracking protections paused
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL" desc="" translateable="false">
-        Tracking protections resumed
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL" desc="" translateable="false">
-        Tracking protections enabled
-      </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="" translateable="false">
-        Tell us why you paused tracking protections on this site
-      </message>
-      <!-- Page Info -->
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="" formatter_data="android_java" translateable="false">
-        Privacy and site data
-      </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_TOOLTIP" desc="" translateable="false">
-        Options for privacy and site data
-      </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION" desc="" translateable="false">
-        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-      </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <if expr="_google_chrome">
         <then>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="Text asking the user for feedback on why they paused tracking protections on the current site." translateable="false">
             Help us improve Chrome by telling us why you paused tracking protections
           </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="Descriptive text in the tracking protections bubble explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator." translateable="false">
             Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site.
           </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="Descriptive text in the tracking protections bubble explaining that third-party cookies are allowed on the current site due to an exception made by an extension." translateable="false">
             Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
           </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="Descriptive text in the tracking protections bubble explaining that third-party cookies are allowed on the current site due to an exception made by the user." translateable="false">
             Chrome blocks third-party cookies in Incognito, but you made an exception for this site.
           </message>
         </then>
         <else>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="Text asking the user for feedback on why they paused tracking protections on the current site." translateable="false">
             Help us improve Chromium by telling us why you paused tracking protections
           </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="Descriptive text in the tracking protections bubble explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator." translateable="false">
             Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site.
           </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="Descriptive text in the tracking protections bubble explaining that third-party cookies are allowed on the current site due to an exception made by an extension." translateable="false">
             Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
           </message>
-          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="Descriptive text in the tracking protections bubble explaining that third-party cookies are allowed on the current site due to an exception made by the user." translateable="false">
             Chromium blocks third-party cookies in Incognito, but you made an exception for this site.
           </message>
         </else>
       </if>
-      <message name="IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_TITLE" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="In the feedback text box accessible from the tracking protections bubble, this is the default text the user replaces with their feedback." translateable="false">
+        Tell us why you paused tracking protections on this site
+      </message>
+      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that tracking protections have been paused on the current site." translateable="false">
+        Tracking protections paused
+      </message>
+      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that tracking protections have been resumed on the current site." translateable="false">
+        Tracking protections resumed
+      </message>
+      <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that tracking protections are enabled on the current site." translateable="false">
+        Tracking protections enabled
+      </message>
+      <!-- Page Info -->
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="The header for the 'Privacy and site data' subpage in the page info bubble." formatter_data="android_java" translateable="false">
+        Privacy and site data
+      </message>
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Privacy and site data' button. Options on the next screen include: a button to pause or resume tracking protections, a link to the tracking protections settings page, and a button for the on-device site data dialog." translateable="false">
+        Options for privacy and site data
+      </message>
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are blocked and that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text)." translateable="false">
+        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+      </message>
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are blocked and that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text). Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java" translateable="false">
+        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_PAUSED_PROTECTIONS_DESCRIPTION_ANDROID" formatter_data="android_java" desc="Descriptive text in the 'Privacy and site data' subpage shown when tracking protections are paused on the current site. Explains that tracking protections will remain paused on this site until the user closes all Incognito windows. Additionally contains a feedback link so the user can given feedback as to why they paused tracking protections on this site." translateable="false">
+        Protections are paused until all Incognito windows are closed. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text)." translateable="false">
+            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by an extension. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text)." translateable="false">
+            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text)." translateable="false">
+            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text). Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text). Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text)." translateable="false">
+            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by an extension. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text)." translateable="false">
+            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text)." translateable="false">
+            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text). Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional features available in Incognito that can limit information accessed by companies via their embedded content (e.g. images, ads, or text). Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+          </message>
+        </else>
+      </if>
+      <message name="IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_TITLE" desc="Title of the button that opens the settings page for Incognito tracking protections." translateable="false">
         Settings
       </message>
-      <message name="IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_SUBTITLE" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_SUBTITLE" desc="Subtitle of the button that opens the settings page for Incognito tracking protections." translateable="false">
         Manage Incognito tracking protections
       </message>
       <!-- Privacy UX WebUI -->

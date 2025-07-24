@@ -299,7 +299,7 @@ void CookieControlsContentView::AddFeedbackSection() {
 
 void CookieControlsContentView::SetTrackingProtectionsButtonReloadingState() {
   auto reloading_text = l10n_util::GetStringUTF16(
-      IDS_TRACKING_PROTECTIONS_BUBBLE_RELOADING_SITE_LABEL);
+      IDS_TRACKING_PROTECTIONS_BUTTON_RELOADING_SITE_LABEL);
   tracking_protections_button_->SetText(reloading_text);
   tracking_protections_button_->SetEnabled(false);
   tracking_protections_button_->SetSpinnerVisible(true);

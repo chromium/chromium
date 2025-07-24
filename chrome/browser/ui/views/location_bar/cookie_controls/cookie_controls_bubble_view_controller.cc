@@ -219,20 +219,20 @@ void CookieControlsBubbleViewController::FillViewForTrackingProtections(
   bool tp_paused = controls_state_ == CookieControlsState::kPausedTp;
   int desc_title, desc, button_label;
   if (tp_paused) {
-    desc_title = IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE;
-    desc = IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION;
-    button_label = IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL;
+    desc_title = IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE;
+    desc = IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_DESCRIPTION;
+    button_label = IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL;
   } else {
     desc_title = IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE;
-    desc = IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION;
-    button_label = IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL;
+    desc = IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION;
+    button_label = IDS_TRACKING_PROTECTIONS_BUTTON_PAUSE_PROTECTIONS_LABEL;
   }
   bubble_view_->GetContentView()->SetIncognitoTrackingProtections3pcSummary(
       tp_paused ? u"" : Get3pcSummaryStringForEnforcement(enforcement));
   bubble_view_->GetContentView()->SetTrackingProtectionsButtonVisible(true);
   bubble_view_->GetContentView()->SetCookiesRowVisible(false);
   bubble_view_->UpdateTitle(
-      l10n_util::GetStringUTF16(IDS_INCOGNITO_TRACKING_PROTECTIONS_HEADER));
+      l10n_util::GetStringUTF16(IDS_TRACKING_PROTECTIONS_BUBBLE_TITLE));
   bubble_view_->GetContentView()->UpdateContentLabels(
       l10n_util::GetStringUTF16(desc_title), l10n_util::GetStringUTF16(desc));
   bubble_view_->GetContentView()->SetTrackingProtectionsButtonLabel(

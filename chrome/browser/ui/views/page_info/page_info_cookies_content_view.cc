@@ -210,15 +210,15 @@ void PageInfoCookiesContentView::
           PageInfoViewFactory::GetImageModel(
               vector_icons::kSettingsChromeRefreshIcon),
           l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_TITLE),
+              IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_SUBTITLE),
+              IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_SUBTITLE),
           PageInfoViewFactory::GetLaunchIcon()));
   tp_settings_button_->SetID(
       PageInfoViewFactory::
           VIEW_ID_PAGE_INFO_BUTTON_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS);
   tp_settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_SUBTITLE));
+      IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_SUBTITLE));
   tp_settings_button_->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   tp_settings_button_->SetSubtitleTextStyleAndColor(
@@ -311,14 +311,12 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
     case CookieControlsState::kActiveTp:
       title_text = l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
-      description =
-          IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION;
+      description = IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION;
       break;
     case CookieControlsState::kPausedTp:
       title_text = l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE);
-      description =
-          IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION;
+          IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE);
+      description = IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_DESCRIPTION;
       break;
     default:
       NOTREACHED();
@@ -353,8 +351,8 @@ void PageInfoCookiesContentView::SetTrackingProtectionButtonLabel(
     CookieControlsState controls_state) {
   auto label = l10n_util::GetStringUTF16(
       controls_state == CookieControlsState::kPausedTp
-          ? IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL
-          : IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL);
+          ? IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL
+          : IDS_TRACKING_PROTECTIONS_BUTTON_PAUSE_PROTECTIONS_LABEL);
   tracking_protection_button_->SetText(label);
   tracking_protection_button_->GetViewAccessibility().SetName(label);
 }

@@ -249,13 +249,13 @@ public class PageInfoViewTest {
                     new ParameterSet()
                             .value(
                                     CookieControlsState.ACTIVE_TP,
-                                    R.string.tracking_protections_bubble_pause_protections_label,
+                                    R.string.tracking_protections_button_pause_protections_label,
                                     "PageInfo.PrivacySubpage.TrackingProtectionsPaused")
                             .name("ProtectionsPaused"),
                     new ParameterSet()
                             .value(
                                     CookieControlsState.PAUSED_TP,
-                                    R.string.tracking_protections_bubble_resume_protections_label,
+                                    R.string.tracking_protections_button_resume_protections_label,
                                     "PageInfo.PrivacySubpage.TrackingProtectionsReenabled")
                             .name("ProtectionsReenabled"));
         }
@@ -1438,9 +1438,9 @@ public class PageInfoViewTest {
         onView(withText(description)).check(matches(isDisplayed()));
         onViewWaiting(
                 allOf(
-                        withText(R.string.tracking_protections_bubble_pause_protections_label),
+                        withText(R.string.tracking_protections_button_pause_protections_label),
                         isDisplayed()));
-        int resId = R.string.tracking_protections_bubble_active_protections_description;
+        int resId = R.string.tracking_protections_active_protections_description;
         onViewWaiting(allOf(withText(resId), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), renderId);
     }
@@ -1458,7 +1458,7 @@ public class PageInfoViewTest {
                 });
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         Context context = ApplicationProvider.getApplicationContext();
-        int resId = R.string.tracking_protections_bubble_paused_protections_description_android;
+        int resId = R.string.page_info_privacy_site_data_paused_protections_description_android;
         String description = context.getString(resId).replaceAll("<link>|</link>", "");
 
         onViewWaiting(allOf(withText(description), isDisplayed()));
