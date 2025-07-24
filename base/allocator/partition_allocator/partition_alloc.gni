@@ -338,9 +338,9 @@ declare_args() {
 }
 
 declare_args() {
-  # Shadow metadata is still under development and only supports Linux
-  # for now.
-  enable_shadow_metadata = false && is_linux && has_64_bit_pointers
+  # Because of address space issue, this feature cannot be enabled on
+  # 32bit OS and iOS, i.e. has_64_bit_pointers && !is_ios
+  move_metadata_outside_gigacage = false && has_64_bit_pointers && !is_ios
 }
 
 declare_args() {

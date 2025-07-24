@@ -33,7 +33,7 @@
 #include <windows.h>
 #endif  // PA_BUILDFLAG(IS_WIN)
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA) || PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include <sys/mman.h>
 #endif
 
@@ -80,26 +80,37 @@ PA_NOINLINE void HandlePoolAllocFailure() {
   }
 }
 
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
+MetadataInnerOffset(pool_handle pool) {
+  PA_DCHECK(kRegularPoolHandle <= pool && pool < kMaxPoolHandle);
+  // Each metadata needs 2 SystemPage, i.e. 1 SystemPage for Guardian
+  // and another SystemPage for actual metadata.
+  // To make the first SystemPage a guardian, need `+ 1`.
+  return SystemPageSize() * (2 * (pool - kRegularPoolHandle) + 1);
+}
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+
 }  // namespace
 
 PA_CONSTINIT PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-std::ptrdiff_t PartitionAddressSpace::regular_pool_shadow_offset_ = 0;
-std::ptrdiff_t PartitionAddressSpace::brp_pool_shadow_offset_ = 0;
-std::ptrdiff_t PartitionAddressSpace::configurable_pool_shadow_offset_ = 0;
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+PA_CONSTINIT std::array<std::ptrdiff_t, kMaxPoolHandle>
+    PartitionAddressSpace::offsets_to_metadata_ = {
+        0, 0, 0, 0,
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+        0,
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+};
 
-// File descriptors for shared mappings.
-base::PlatformFile PartitionAddressSpace::regular_pool_fd_ =
-    base::kInvalidPlatformFile;
-base::PlatformFile PartitionAddressSpace::brp_pool_fd_ =
-    base::kInvalidPlatformFile;
-base::PlatformFile PartitionAddressSpace::configurable_pool_fd_ =
-    base::kInvalidPlatformFile;
-
-uintptr_t PartitionAddressSpace::pool_shadow_address_ =
+uintptr_t PartitionAddressSpace::metadata_region_start_ =
     PartitionAddressSpace::kUninitializedPoolBaseAddress;
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+size_t PartitionAddressSpace::metadata_region_size_ = 0;
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #if !PA_BUILDFLAG(IS_IOS)
@@ -138,16 +149,6 @@ bool PartitionAddressSpace::IsIOSTestProcess() {
   return has_suffix("Runner") || has_suffix("ios_web_view_inttests");
 }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-size_t PartitionAddressSpace::CorePoolShadowSize() {
-  return CorePoolSize();
-}
-
-size_t PartitionAddressSpace::ConfigurablePoolShadowSize() {
-  return kConfigurablePoolMaxSize;
-}
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 void PartitionAddressSpace::Init() {
   if (IsInitialized()) {
@@ -224,6 +225,10 @@ void PartitionAddressSpace::Init() {
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::SetBase(setup_.regular_pool_base_address_);
 #endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  InitMetadataRegionAndOffsets();
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
 
 void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
@@ -258,6 +263,21 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
     WriteProtectThreadIsolatedGlobals(setup_.thread_isolation_);
   }
 #endif
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  // Initialize metadata for configurable pool without PartitionAlloc enabled.
+  // This will happen when there exists a test which uses configurable pool
+  // and a sanitizer is enabled.
+  if (metadata_region_start_ != kUninitializedPoolBaseAddress) {
+    // Set offset from ConfigurablePool to MetadataRegion.
+    offsets_to_metadata_[kConfigurablePoolHandle] =
+        metadata_region_start_ - ConfigurablePoolBase() +
+        MetadataInnerOffset(kConfigurablePoolHandle);
+  } else {
+    // If no metadata region is available, use `SystemPageSize()`.
+    offsets_to_metadata_[kConfigurablePoolHandle] = SystemPageSize();
+  }
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -293,7 +313,11 @@ void PartitionAddressSpace::InitThreadIsolatedPool(
   PA_DCHECK(!IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ +
                                     pool_size));
 
-  // TODO(crbug.com/40238514): support PA_ENABLE_SHADOW_METADATA
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  offsets_to_metadata_[kThreadIsolatedPoolHandle] =
+      metadata_region_start_ - setup_.thread_isolated_pool_base_address_ +
+      MetadataInnerOffset(kThreadIsolatedPoolHandle);
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
 #endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
@@ -314,6 +338,17 @@ void PartitionAddressSpace::UninitForTesting() {
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::ResetBaseForTesting();
 #endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  FreePages(metadata_region_start_, MetadataRegionSize());
+  metadata_region_start_ = kUninitializedPoolBaseAddress;
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+  metadata_region_size_ = 0;
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+  for (size_t i = 0; i < kMaxPoolHandle; ++i) {
+    offsets_to_metadata_[i] = SystemPageSize();
+  }
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
 
 void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
@@ -334,6 +369,9 @@ void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
     WriteProtectThreadIsolatedGlobals(setup_.thread_isolation_);
   }
 #endif
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  offsets_to_metadata_[kConfigurablePoolHandle] = SystemPageSize();
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -353,194 +391,42 @@ void PartitionAddressSpace::UninitThreadIsolatedPoolForTesting() {
 }
 #endif
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-
-namespace {
-
-base::PlatformFile CreateAnonymousFileForMapping(
-    [[maybe_unused]] const char* name,
-    [[maybe_unused]] size_t size) {
-  base::PlatformFile fd = base::kInvalidPlatformFile;
-#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/40238514): if memfd_secret() is available, try
-  // memfd_secret() first.
-  fd = memfd_create(name, MFD_CLOEXEC);
-  PA_CHECK(0 == ftruncate(fd, size));
-#else
-  // Not implemented yet.
-  PA_NOTREACHED();
-#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
-  return fd;
-}
-
-}  // namespace
-
-void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+// Allocate virtual address space of metadata and initialize metadata offsets
+// of regular, brp and configurable pools.
+void PartitionAddressSpace::InitMetadataRegionAndOffsets() {
   // Set up an address space only once.
-  if (pool_shadow_address_ == kUninitializedPoolBaseAddress) {
-    // Reserve 1 address space for all pools.
-    const size_t shadow_pool_size =
-        std::max(ConfigurablePoolShadowSize(), CorePoolShadowSize());
-
-    // Reserve virtual address space for the shadow pool.
-    uintptr_t pool_shadow_address =
-        AllocPages(shadow_pool_size, PageAllocationGranularity(),
-                   PageAccessibilityConfiguration(
-                       PageAccessibilityConfiguration::kInaccessible),
-                   PageTag::kPartitionAlloc);
-    if (!pool_shadow_address) {
-      HandlePoolAllocFailure();
-    }
-
-    pool_shadow_address_ = pool_shadow_address;
+  if (metadata_region_start_ != kUninitializedPoolBaseAddress) {
+    return;
   }
 
-  // Set up a memory file for the given pool, and init |offset|.
-  if (ContainsFlags(mask, PoolHandleMask::kConfigurable)) {
-    if (configurable_pool_fd_ == base::kInvalidPlatformFile) {
-      PA_DCHECK(pool_shadow_address_);
-      PA_DCHECK(configurable_pool_shadow_offset_ == 0);
-      configurable_pool_fd_ = CreateAnonymousFileForMapping(
-          "configurable_pool_shadow", ConfigurablePoolShadowSize());
-      configurable_pool_shadow_offset_ =
-          pool_shadow_address_ - ConfigurablePoolBase() +
-          SystemPageSize() * kSystemPageOffsetOfConfigurablePoolShadow;
-    }
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+  metadata_region_size_ = std::max(kConfigurablePoolMaxSize, CorePoolSize());
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+
+  uintptr_t address =
+      AllocPages(MetadataRegionSize(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
+                 PageTag::kPartitionAlloc);
+  if (!address) {
+    HandlePoolAllocFailure();
   }
-  if (ContainsFlags(mask, PoolHandleMask::kBRP)) {
-    if (brp_pool_fd_ == base::kInvalidPlatformFile) {
-      PA_DCHECK(pool_shadow_address_);
-      PA_DCHECK(brp_pool_shadow_offset_ == 0);
-      brp_pool_fd_ = CreateAnonymousFileForMapping("brp_pool_shadow",
-                                                   CorePoolShadowSize());
-      brp_pool_shadow_offset_ =
-          pool_shadow_address_ - BRPPoolBase() +
-          SystemPageSize() * kSystemPageOffsetOfBRPPoolShadow;
-    }
-  }
-  if (ContainsFlags(mask, PoolHandleMask::kRegular)) {
-    if (regular_pool_fd_ == base::kInvalidPlatformFile) {
-      PA_DCHECK(pool_shadow_address_);
-      PA_DCHECK(regular_pool_shadow_offset_ == 0);
-      regular_pool_fd_ = CreateAnonymousFileForMapping("regular_pool_shadow",
-                                                       CorePoolShadowSize());
-      regular_pool_shadow_offset_ =
-          pool_shadow_address_ - RegularPoolBase() +
-          SystemPageSize() * kSystemPageOffsetOfRegularPoolShadow;
-    }
-  }
+
+  metadata_region_start_ = address;
+
+  PA_DCHECK(RegularPoolBase() != kUninitializedPoolBaseAddress);
+  PA_DCHECK(BRPPoolBase() != kUninitializedPoolBaseAddress);
+
+  offsets_to_metadata_[kRegularPoolHandle] =
+      address - RegularPoolBase() + MetadataInnerOffset(kRegularPoolHandle);
+  offsets_to_metadata_[kBRPPoolHandle] =
+      address - BRPPoolBase() + MetadataInnerOffset(kBRPPoolHandle);
+
+  // ConfigurablePool has not been initialized yet at this time.
+  offsets_to_metadata_[kConfigurablePoolHandle] = SystemPageSize();
 }
-
-// Share a read-only metadata inside the given SuperPage with its writable
-// metadata.
-void PartitionAddressSpace::MapMetadata(uintptr_t super_page,
-                                        bool copy_metadata) {
-  PA_DCHECK(pool_shadow_address_);
-  PA_DCHECK(0u == (super_page & kSuperPageOffsetMask));
-  std::ptrdiff_t offset;
-  base::PlatformFile pool_fd = base::kInvalidPlatformFile;
-  uintptr_t base_address;
-
-  if (IsInRegularPool(super_page)) {
-    pool_fd = regular_pool_fd_;
-    offset = regular_pool_shadow_offset_;
-    base_address = RegularPoolBase();
-  } else if (IsInBRPPool(super_page)) {
-    offset = brp_pool_shadow_offset_;
-    pool_fd = brp_pool_fd_;
-    base_address = BRPPoolBase();
-  } else if (IsInConfigurablePool(super_page)) {
-    offset = configurable_pool_shadow_offset_;
-    pool_fd = configurable_pool_fd_;
-    base_address = ConfigurablePoolBase();
-  } else {
-    PA_NOTREACHED();
-  }
-
-  uintptr_t metadata = super_page + SystemPageSize();
-  size_t file_offset = (super_page - base_address) >> kSuperPageShift
-                                                          << SystemPageShift();
-
-#if PA_BUILDFLAG(IS_POSIX)
-  uintptr_t writable_metadata = metadata + offset;
-  void* ptr = mmap(reinterpret_cast<void*>(writable_metadata), SystemPageSize(),
-                   PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, pool_fd,
-                   file_offset);
-  PA_CHECK(ptr != MAP_FAILED);
-  PA_CHECK(ptr == reinterpret_cast<void*>(writable_metadata));
-
-  if (copy_metadata) [[unlikely]] {
-    // Copy the metadata from the private and copy-on-write page to
-    // the shared page. (=update the memory file)
-    memcpy(reinterpret_cast<void*>(writable_metadata),
-           reinterpret_cast<void*>(metadata), SystemPageSize());
-  }
-
-  ptr = mmap(reinterpret_cast<void*>(metadata), SystemPageSize(), PROT_READ,
-             MAP_FIXED | MAP_SHARED, pool_fd, file_offset);
-  PA_CHECK(ptr != MAP_FAILED);
-  PA_CHECK(ptr == reinterpret_cast<void*>(metadata));
-#else
-  // Not implemneted yet.
-  PA_NOTREACHED();
-#endif  // PA_BUILDFLAG(IS_POSIX)
-}
-
-// Regarding normal buckets, metadata will not be decommitted. However,
-// regarding direct-mapped, metadata will be decommitted (see UnmapNow()).
-// So shadow metadata must be also decommitted (including zero-initialization).
-void PartitionAddressSpace::UnmapShadowMetadata(uintptr_t super_page,
-                                                pool_handle pool) {
-  PA_DCHECK(0u == (super_page & kSuperPageOffsetMask));
-  std::ptrdiff_t offset;
-
-  switch (pool) {
-    case kRegularPoolHandle:
-      PA_DCHECK(RegularPoolBase() <= super_page);
-      PA_DCHECK((super_page - RegularPoolBase()) < CorePoolSize());
-      PA_DCHECK(IsShadowMetadataEnabled(kRegularPoolHandle));
-      offset = regular_pool_shadow_offset_;
-      break;
-    case kBRPPoolHandle:
-      PA_DCHECK(BRPPoolBase() <= super_page);
-      PA_DCHECK((super_page - BRPPoolBase()) < CorePoolSize());
-      PA_DCHECK(IsShadowMetadataEnabled(kBRPPoolHandle));
-      offset = brp_pool_shadow_offset_;
-      break;
-    case kConfigurablePoolHandle:
-      PA_DCHECK(IsShadowMetadataEnabled(kConfigurablePoolHandle));
-      offset = configurable_pool_shadow_offset_;
-      break;
-    default:
-      return;
-  }
-
-  uintptr_t writable_metadata = super_page + SystemPageSize() + offset;
-
-  void* ptr = reinterpret_cast<void*>(writable_metadata);
-
-  // When mapping the page again, we will use mmap() with MAP_FIXED |
-  // MAP_SHARED. Not with MAP_ANONYMOUS. If we don't clear the page here, the
-  // page will have the same content when re-mapped.
-  // TODO(crbug.com/40238514): Make PartitionAlloc not depend on that metadata
-  // pages have been already initialized to be zero. i.e. remove memset() below
-  // and make the constructors of SlotSpanMetadata, PartitionPageMetadata (and
-  // more struct/class if needed) initialize their members. Add test to check
-  // if the initialization is correctly done.
-  memset(ptr, 0, SystemPageSize());
-
-#if PA_BUILDFLAG(IS_POSIX)
-  void* ret = mmap(ptr, SystemPageSize(), PROT_NONE,
-                   MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-  PA_CHECK(ret != MAP_FAILED);
-  PA_CHECK(ret == ptr);
-#else
-  // Not implemented yet.
-  PA_NOTREACHED();
-#endif  // PA_BUILDFLAG(IS_POSIX)
-}
-
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
 #if defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
 

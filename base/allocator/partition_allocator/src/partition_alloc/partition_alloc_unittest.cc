@@ -467,10 +467,6 @@ class PartitionAllocTest
     PartitionRoot::SetSortActiveSlotSpansEnabled(true);
     PartitionAllocGlobalInit(HandleOOM);
     InitializeMainTestAllocators();
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-    PartitionRoot::EnableShadowMetadata(internal::PoolHandleMask::kRegular |
-                                        internal::PoolHandleMask::kBRP);
-#endif
 
     test_bucket_index_ = SizeToIndex(ActualTestAllocSize());
   }

@@ -69,7 +69,6 @@
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_shared_mutex.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/tagging.h"
@@ -289,8 +288,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     static inline constexpr uint32_t extras_size = 0;
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-    std::ptrdiff_t shadow_pool_offset_ = 0;
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+    std::ptrdiff_t metadata_offset_ = 0;
 #endif
   };
 
@@ -396,12 +395,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Not overriding the global one to only change it for this partition.
   internal::base::TimeTicks (*now_maybe_overridden_for_testing)() =
       internal::base::TimeTicks::Now;
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  // Locks not to run EnableShadowMetadata() and PartitionDirectMap()
-  // at the same time.
-  static internal::SharedMutex g_shadow_metadata_init_mutex_;
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
   PartitionRoot();
   explicit PartitionRoot(PartitionOptions opts);
@@ -870,19 +863,15 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
         scheduler_loop_quarantine_root, config);
   }
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  // TODO(crbug.com/40238514) This is an unused function. Start using it in
-  // tests and/or in production code.
-  static void EnableShadowMetadata(internal::PoolHandleMask mask);
-
-  PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset() const {
-    return settings.shadow_pool_offset_;
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  PA_ALWAYS_INLINE std::ptrdiff_t MetadataOffset() const {
+    return settings.metadata_offset_;
   }
 #else
-  PA_ALWAYS_INLINE constexpr std::ptrdiff_t ShadowPoolOffset() const {
-    return 0;
-  }
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+  PA_ALWAYS_INLINE
+  PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR
+  size_t MetadataOffset() const { return internal::SystemPageSize(); }
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
   PA_NOINLINE static void CheckMetadataIntegrity(const void* object);
 
