@@ -768,6 +768,10 @@ DeviceManagementService::CreateJobForTesting(
   return std::make_pair(std::move(job), std::move(job_for_testing));
 }
 
+const scoped_refptr<base::SequencedTaskRunner> DeviceManagementService::GetTaskRunnerForTesting() {
+  return task_runner_;
+}
+
 std::unique_ptr<DeviceManagementService::Job>
 DeviceManagementService::CreateJob(std::unique_ptr<JobConfiguration> config) {
   CHECK(config);
