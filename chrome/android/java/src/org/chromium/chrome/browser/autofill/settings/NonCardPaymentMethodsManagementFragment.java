@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -40,15 +41,22 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
     private static @Nullable Callback<Fragment> sObserverForTest;
 
     // Histograms
+    @VisibleForTesting
     static final String FRAGMENT_SHOWN_HISTOGRAM =
             "FacilitatedPayments.SettingsPage.NonCardPaymentMethodsManagement.Shown";
 
+    @VisibleForTesting
     static final String NON_CARD_PAYMENT_METHODS_EWALLET_TOGGLE_UPDATED_HISTOGRAM =
             "FacilitatedPayments.SettingsPage.NonCardPaymentMethodsManagement.Ewallet.ToggleUpdated";
+
+    @VisibleForTesting
+    static final String NON_CARD_PAYMENT_METHODS_A2A_TOGGLE_UPDATED_HISTOGRAM =
+            "FacilitatedPayments.SettingsPage.NonCardPaymentMethodsManagement.A2A.ToggleUpdated";
 
     // Preference keys
     @VisibleForTesting static final String PREFERENCE_KEY_EWALLET = "ewallet";
     @VisibleForTesting static final String PREFERENCE_KEY_EWALLET_ACCOUNT = "ewallet_account:%s";
+    @VisibleForTesting static final String PREFERENCE_KEY_A2A = "a2a";
     private final Callback<String> mFinancialAccountManageLinkOpenerCallback =
             url -> CustomTabActivity.showInfoPage(getActivity(), url);
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
@@ -110,13 +118,24 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
             ewalletSwitch.setChecked(isFacilitatedPaymentsEwalletEnabled);
             ewalletSwitch.setKey(PREFERENCE_KEY_EWALLET);
             ewalletSwitch.setTitle(R.string.settings_manage_other_financial_accounts_ewallet);
+            ewalletSwitch.setOnPreferenceChangeListener(this);
             getPreferenceScreen().addPreference(ewalletSwitch);
             if (isFacilitatedPaymentsEwalletEnabled) {
                 for (Ewallet ewallet : mEwallets) {
                     getPreferenceScreen().addPreference(getEwalletRowItem(ewallet));
                 }
             }
-            ewalletSwitch.setOnPreferenceChangeListener(this);
+        }
+        if (mPersonalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT)) {
+            ChromeSwitchPreference a2aSwitch = new ChromeSwitchPreference(getStyledContext());
+            a2aSwitch.setChecked(mPersonalDataManager.getFacilitatedPaymentsA2AEnabledPref());
+            a2aSwitch.setKey(PREFERENCE_KEY_A2A);
+            a2aSwitch.setTitle(R.string.settings_manage_non_card_payment_methods_a2a_title);
+            a2aSwitch.setSummary(R.string.settings_manage_non_card_payment_methods_a2a_description);
+            a2aSwitch.setOnPreferenceChangeListener(this);
+            getPreferenceScreen().addPreference(a2aSwitch);
         }
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
@@ -165,6 +184,14 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
                     NON_CARD_PAYMENT_METHODS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
                     /* sample= */ isEwalletEnabled);
             mPersonalDataManager.setFacilitatedPaymentsEwalletPref(isEwalletEnabled);
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::rebuildPage);
+            return true;
+        } else if (preference.getKey().equals(PREFERENCE_KEY_A2A)) {
+            boolean isA2aEnabled = (boolean) newValue;
+            RecordHistogram.recordBooleanHistogram(
+                    NON_CARD_PAYMENT_METHODS_A2A_TOGGLE_UPDATED_HISTOGRAM,
+                    /* sample= */ isA2aEnabled);
+            mPersonalDataManager.setFacilitatedPaymentsA2AEnabledPref(isA2aEnabled);
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::rebuildPage);
             return true;
         }

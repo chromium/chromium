@@ -505,6 +505,22 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.SettingsPage.NonCardPaymentMethodsManagement.A2A.ToggleUpdated"
+    enum="Boolean" expires_after="2026-07-01">
+  <owner>joshuatan@google.com</owner>
+  <owner>junhuihe@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when the toggle for A2A is enabled and false otherwise. Does not
+    log if the toggle is not updated. [Trigger] User updates the toggle for A2A
+    from the &quot;Pay with non-card payment methods&quot; settings page.
+    [Frequency] Logged once per toggle update.
+  </summary>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.SettingsPage.NonCardPaymentMethodsManagement.Ewallet.ToggleUpdated"
     enum="Boolean" expires_after="2026-07-01">
   <owner>joshuatan@google.com</owner>

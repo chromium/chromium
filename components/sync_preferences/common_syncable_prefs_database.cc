@@ -135,6 +135,8 @@ enum {
   kShowSearchTools = 87,
   kAutofillHomeMetadata = 88,
   kAutofillWorkMetadata = 89,
+  kFacilitatedPaymentsA2AEnabled = 90,
+  kFacilitatedPaymentsA2ATriggeredOnce = 91,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -324,6 +326,12 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {autofill::prefs::kFacilitatedPaymentsPixAccountLinking,
          {syncable_prefs_ids::kFacilitatedPaymentsPixAccountLinking,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kFacilitatedPaymentsA2AEnabled,
+         {syncable_prefs_ids::kFacilitatedPaymentsA2AEnabled,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kFacilitatedPaymentsA2ATriggeredOnce,
+         {syncable_prefs_ids::kFacilitatedPaymentsA2ATriggeredOnce,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

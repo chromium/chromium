@@ -1118,6 +1118,21 @@ public class PersonalDataManager implements Destroyable {
         return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_EWALLET);
     }
 
+    /** Sets the preference value for supporting payments using A2A. */
+    public void setFacilitatedPaymentsA2AEnabledPref(boolean value) {
+        mPrefService.setBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED, value);
+    }
+
+    /** Returns the preference value for supporting payments using A2A. */
+    public boolean getFacilitatedPaymentsA2AEnabledPref() {
+        return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_A2A_ENABLED);
+    }
+
+    /** Returns the preference value for whether A2A has already been triggered once. */
+    public boolean getFacilitatedPaymentsA2ATriggeredOncePref() {
+        return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

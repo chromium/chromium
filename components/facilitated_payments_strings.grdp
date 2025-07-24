@@ -13,6 +13,12 @@
   <message name="IDS_SETTINGS_MANAGE_NON_CARD_PAYMENT_METHODS_DESCRIPTION" desc="Description for the preference that allows the user to manage non-card payment methods." formatter_data="android_java">
     When you make purchases in Chrome, see non-card payment methods as an option
   </message>
+    <message name="IDS_SETTINGS_MANAGE_NON_CARD_PAYMENT_METHODS_A2A_TITLE" desc="Title for the toggle preference when the user has payment apps that can be used to make payments via the account to account flow." formatter_data="android_java">
+    Payments apps
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_NON_CARD_PAYMENT_METHODS_A2A_DESCRIPTION" desc="Description for the toggle preference when the user has payment apps that can be used to make payments via the account to account flow." formatter_data="android_java">
+    Enable redirection to supported payment apps
+  </message>
   <!--Ewallet and Pix payment method settings pages-->
   <message name="IDS_SETTINGS_MANAGE_EWALLET_TITLE" desc="Title for the preference that allows the user to manage eWallet accounts when user has only eWallet accounts available to be used. 'eWallet' is a payment system that should not be translated." formatter_data="android_java">
     Pay with eWallet

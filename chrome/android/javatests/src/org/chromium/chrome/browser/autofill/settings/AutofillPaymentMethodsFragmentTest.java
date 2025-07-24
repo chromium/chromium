@@ -1589,6 +1589,94 @@ public class AutofillPaymentMethodsFragmentTest {
         assertThat(nonCardPaymentMethodsPref).isNull();
     }
 
+    // This test verifies that when the A2A flow has been shown at least once (as tracked by the
+    // FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE pref), the non-card payment preferences are shown.
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
+        ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
+        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
+        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT
+    })
+    public void a2aFlowShownAtLeastOnce_noEwalletAdded_showNonCardPaymentPreferences()
+            throws Exception {
+        // Note: no eWallet added.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference for 'Pay with non-card payment methods' is displayed.
+        Preference nonCardPaymentMethodsPref =
+                getPreferenceScreen(activity)
+                        .findPreference(
+                                AutofillPaymentMethodsFragment
+                                        .PREF_NON_CARD_PAYMENT_METHODS_MANAGEMENT);
+        assertThat(nonCardPaymentMethodsPref).isNotNull();
+    }
+
+    // This test verifies that when the A2A flow has never been shown (as tracked by the
+    // FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE pref), the non-card payment preferences are not
+    // shown.
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
+        ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
+        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
+        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT
+    })
+    public void a2aFlowNeverShown_noEwalletAdded_nonCardPaymentPreferencesNotShown()
+            throws Exception {
+        // Note: no eWallet added.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, false);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference for 'Pay with non-card payment methods' is not displayed.
+        Preference nonCardPaymentMethodsPref =
+                getPreferenceScreen(activity)
+                        .findPreference(
+                                AutofillPaymentMethodsFragment
+                                        .PREF_NON_CARD_PAYMENT_METHODS_MANAGEMENT);
+        assertThat(nonCardPaymentMethodsPref).isNull();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
+        ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
+        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
+    })
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void
+            a2aShownAtLeastOnce_a2aFlagDisabled_noEwalletAdded_nonCardPaymentPreferencesNotShown()
+                    throws Exception {
+        // Note: no eWallet added.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference for 'Pay with non-card payment methods' is not displayed.
+        Preference nonCardPaymentMethodsPref =
+                getPreferenceScreen(activity)
+                        .findPreference(
+                                AutofillPaymentMethodsFragment
+                                        .PREF_NON_CARD_PAYMENT_METHODS_MANAGEMENT);
+        assertThat(nonCardPaymentMethodsPref).isNull();
+    }
+
     @Test
     @MediumTest
     @EnableFeatures({

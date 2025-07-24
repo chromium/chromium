@@ -146,6 +146,11 @@ inline constexpr char kFacilitatedPaymentsEwallet[] =
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
 inline constexpr char kFacilitatedPaymentsPixAccountLinking[] =
     "facilitated_payments.pix_account_linking";
+inline constexpr char kFacilitatedPaymentsA2AEnabled[] =
+    "facilitated_payments.a2a_enabled";
+// Whether the user has seen the A2A flow at least once.
+inline constexpr char kFacilitatedPaymentsA2ATriggeredOnce[] =
+    "facilitated_payments.a2a_triggered_once";
 #endif  // BUILDFLAG(IS_ANDROID)
 // Dictionaries containing metadata for Home and Work addresses. See
 // HomeAndWorkMetadataStore.

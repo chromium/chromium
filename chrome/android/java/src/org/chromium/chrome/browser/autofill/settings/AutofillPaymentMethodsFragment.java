@@ -223,7 +223,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     pixFinancialAccountsPref.setOnPreferenceClickListener(
                             this::showOtherFinancialAccountsFragment);
                 }
-                if (hasEwallets) {
+                boolean shouldShowA2aToggle =
+                        personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
+                                && ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+                if (hasEwallets || shouldShowA2aToggle) {
                     Preference nonCardPaymentMethodsPref = new Preference(getStyledContext());
                     nonCardPaymentMethodsPref.setKey(PREF_NON_CARD_PAYMENT_METHODS_MANAGEMENT);
                     nonCardPaymentMethodsPref.setSingleLineTitle(false);
