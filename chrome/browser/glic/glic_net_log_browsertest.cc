@@ -29,12 +29,6 @@ namespace {
 const char kTestGlicURL[] = "about:blank?main-page";
 const char kTestGlicFreURL[] = "about:blank?fre-page";
 
-// TODO(b/421426722): Update "missing" to the network annotation's unique ID.
-constexpr char kGlicAnnotationUniqueId[] = "missing";
-
-constexpr int kGlicAnnotationUniqueIdHashCode =
-    COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(kGlicAnnotationUniqueId);
-
 }  // namespace
 
 class GlicNetLogBrowserTest : public InProcessBrowserTest {
@@ -81,12 +75,12 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicFreRequestOnOpenUI) {
     std::optional<int> traffic_annotation =
         entry.params.FindInt("traffic_annotation");
     return traffic_annotation.has_value() &&
-           traffic_annotation.value() == kGlicAnnotationUniqueIdHashCode;
+           traffic_annotation.value() ==
+               COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("glic_fre_web_ui");
   });
 
   EXPECT_NE(it, entries.end())
-      << "NetLog did not contain URL_REQUEST_START_JOB for "
-      << kGlicAnnotationUniqueId;
+      << "NetLog did not contain URL_REQUEST_START_JOB for Glic FRE WeUI";
   EXPECT_EQ(true, it->params.FindBool("dummy_request"));
   const std::string* url = it->params.FindString("url");
   EXPECT_NE(nullptr, url);
@@ -117,12 +111,12 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
     std::optional<int> traffic_annotation =
         entry.params.FindInt("traffic_annotation");
     return traffic_annotation.has_value() &&
-           traffic_annotation.value() == kGlicAnnotationUniqueIdHashCode;
+           traffic_annotation.value() ==
+               COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("glic_web_ui");
   });
 
   EXPECT_NE(it, entries.end())
-      << "NetLog did not contain URL_REQUEST_START_JOB for "
-      << kGlicAnnotationUniqueId;
+      << "NetLog did not contain URL_REQUEST_START_JOB for Glic WebUI";
   EXPECT_EQ(true, it->params.FindBool("dummy_request"));
   const std::string* url = it->params.FindString("url");
   EXPECT_NE(nullptr, url);

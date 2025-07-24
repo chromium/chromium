@@ -212,14 +212,6 @@ class GlicKeyedService : public KeyedService {
   // chrome://glic.
   bool IsGlicWebUi(content::WebContents* web_contents);
 
-  // Log a fake network request to NetLog with a Glic traffic annotation. This
-  // doesn't *send* a request, it just logs it for chrome://net-export.
-  //
-  // Unfortunately there's no way to pass `traffic_annotation` to
-  // LoadURLWithParams() or to tag the WebContents with an annotation, so we
-  // use this hacky workaround to capture the annotation at runtime.
-  void LogDummyNetworkRequestForTrafficAnnotation(const GURL& url);
-
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.

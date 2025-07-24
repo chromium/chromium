@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
@@ -99,9 +99,8 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up guest URL via cli flag or default to finch param value.
   const GURL guest_url = GetGuestURL();
   source->AddString("glicGuestURL", guest_url.spec());
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
-  glic_service->LogDummyNetworkRequestForTrafficAnnotation(guest_url);
+  net_log::LogDummyNetworkRequestForTrafficAnnotation(guest_url,
+                                                      net_log::GlicPage::kGlic);
 
   // Set up loading notice timeout values.
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());

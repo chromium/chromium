@@ -381,6 +381,8 @@ after discussions on the right group.
       <annotation id="keepalive_fetch_retry"/>
       <annotation id="ntp_composebox_query_controller"/>
       <annotation id="password_change_submission_model_execution"/>
+      <annotation id="glic_web_ui"/>
+      <annotation id="glic_fre_web_ui"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
