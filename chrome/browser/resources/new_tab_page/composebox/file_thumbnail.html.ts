@@ -13,13 +13,13 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
   return html`<!--_html_template_start_-->
 <div id="container">
   ${this.file.objectUrl ? html`
-    <div id="imgChip" aria-label="${this.file.name}">
+    <div id="imgChip">
       ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
         <img class="img-thumbnail"
-          src="${this.file.objectUrl}">
-        </img>
+          src="${this.file.objectUrl}"
+          aria-label="${this.file.name}">
       ` : html`
-        <svg class="spinner" viewBox="0 0 100 100">
+        <svg role="image" class="spinner" viewBox="0 0 100 100">
           <circle class="spinner-circle" cx="50" cy="50" r="40" />
         </svg>
       `}
