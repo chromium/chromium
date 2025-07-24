@@ -8,6 +8,12 @@
 
 namespace autofill::autofill_metrics {
 
+void LogNumberOfNamesMigratedDuringCleanup(size_t num_names) {
+  base::UmaHistogramCounts100(
+      "Autofill.NumberOfNamesMigratedToAlternativeNamesDuringCleanUp",
+      num_names);
+}
+
 void LogNumberOfProfilesConsideredForDedupe(size_t num_considered) {
   base::UmaHistogramCounts100("Autofill.NumberOfProfilesConsideredForDedupe",
                               num_considered);

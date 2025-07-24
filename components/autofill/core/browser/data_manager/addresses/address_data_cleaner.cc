@@ -265,7 +265,7 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
       chrome_version_major) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               chrome_version_major);
-    // Since the milesone changed the extra deduplication can be run again.
+    // Since the milestone changed the extra deduplication can be run again.
     pref_service_->ClearPref(
         prefs::kAutofillRanExtraDeduplication);
     ApplyDeduplicationRoutine();
@@ -279,6 +279,7 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   }
 
   // Other cleanups are performed on every browser start.
+  MigratePhoneticNames();
   DeleteDisusedAddresses();
 }
 
@@ -333,6 +334,23 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
       AutofillProfileComparator(address_data_manager_->app_locale()),
       std::move(deduplicated_profiles), *address_data_manager_);
   }
+}
+
+void AddressDataCleaner::MigratePhoneticNames() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    return;
+  }
+  int migrated_names = 0;
+  for (const AutofillProfile* profile : address_data_manager_->GetProfiles()) {
+    if (profile->GetNameInfo().HasNameEligibleForPhoneticNameMigration()) {
+      AutofillProfile profile_to_migrate = *profile;
+      profile_to_migrate.MigrateRegularNameToPhoneticName();
+      address_data_manager_->UpdateProfile(profile_to_migrate);
+      migrated_names++;
+    }
+  }
+  autofill_metrics::LogNumberOfNamesMigratedDuringCleanup(migrated_names);
 }
 
 void AddressDataCleaner::DeleteDisusedAddresses() {

@@ -74,6 +74,11 @@ class AddressDataCleaner : public AddressDataManager::Observer,
   // Virtual for testing.
   virtual void ApplyDeduplicationRoutine();
 
+  // Migrates the phonetic names that were stored in the regular name fields to
+  // alternative name fields.
+  // TODO(crbug.com/359768803): Remove this method once the migration is done.
+  virtual void MigratePhoneticNames();
+
   // Delete profiles unused for at least `kDisusedDataModelDeletionTimeDelta`.
   void DeleteDisusedAddresses();
 
