@@ -2353,11 +2353,6 @@ BASE_FEATURE(kSecPurposePrefetchHeaderRelPrefetch,
 BASE_FEATURE(kSelectiveInOrderScript,
              "SelectiveInOrderScript",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kSelectiveInOrderScriptTarget,
-             "SelectiveInOrderScriptTarget",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kSelectiveInOrderScriptAllowList{
-    &kSelectiveInOrderScriptTarget, "allow_list", ""};
 
 // When enabled, the SubresourceFilter receives calls from the ResourceLoader
 // to perform additional checks against any aliases found from DNS CNAME records

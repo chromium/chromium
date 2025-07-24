@@ -451,28 +451,6 @@ bool IsEligibleForDelay(const Resource& resource,
   }
 }
 
-// [Intervention, SelectiveInOrderScript, crbug.com/1356396]
-bool IsEligibleForSelectiveInOrder(const Resource& resource,
-                                   const Document& element_document) {
-  // The feature flag is checked separately.
-
-  if (!IsEligibleCommon(element_document)) {
-    return false;
-  }
-
-  // Cross-site scripts only: 1st party scripts are out of scope of the
-  // intervention.
-  if (IsSameSite(resource.Url(), element_document)) {
-    return false;
-  }
-
-  // Only script request URLs in the allowlist.
-  DEFINE_STATIC_LOCAL(
-      UrlMatcher, url_matcher,
-      (UrlMatcher(features::kSelectiveInOrderScriptAllowList.Get())));
-  return url_matcher.Match(resource.Url());
-}
-
 ScriptRunner::DelayReasons DetermineDelayReasonsToWait(
     ScriptRunner* script_runner,
     bool is_eligible_for_delay) {
@@ -765,7 +743,6 @@ PendingScript* ScriptLoader::PrepareScript(
       ToScriptStateForMainWorld(context_window->GetFrame());
 
   bool is_eligible_for_delay = false;
-  bool is_eligible_for_selective_in_order = false;
 
   // <spec step="31">If el has a src content attribute, then:</spec>
   if (element_->HasSourceAttribute()) {
@@ -901,8 +878,6 @@ PendingScript* ScriptLoader::PrepareScript(
         is_eligible_for_delay =
             IsEligibleForDelay(*resource, element_document, *element_,
                                parser_inserted_, is_in_document_write);
-        is_eligible_for_selective_in_order =
-            IsEligibleForSelectiveInOrder(*resource, element_document);
         break;
       }
       case ScriptTypeAtPrepare::kModule: {
@@ -1105,26 +1080,6 @@ PendingScript* ScriptLoader::PrepareScript(
 
   ScriptSchedulingType script_scheduling_type = GetScriptSchedulingTypePerSpec(
       element_document, parser_blocking_inline_option);
-
-  // [Intervention, SelectiveInOrderScript, crbug.com/1356396]
-  // Check for external script that
-  // should be in-order. This simply marks the parser blocking scripts as
-  // kInOrder if it's eligible. We use ScriptSchedulingType::kInOrder
-  // rather than kForceInOrder here since we don't preserve evaluation order
-  // between intervened scripts and ordinary parser-blocking/inline scripts.
-  if (is_eligible_for_selective_in_order) {
-    switch (script_scheduling_type) {
-      case ScriptSchedulingType::kParserBlocking:
-        UseCounter::Count(context_window->document()->TopDocument(),
-                          WebFeature::kSelectiveInOrderScript);
-        if (base::FeatureList::IsEnabled(features::kSelectiveInOrderScript)) {
-          script_scheduling_type = ScriptSchedulingType::kInOrder;
-        }
-        break;
-      default:
-        break;
-    }
-  }
 
   // [Intervention, ForceInOrderScript, crbug.com/1344772]
   // Check for external script that

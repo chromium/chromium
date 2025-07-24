@@ -1596,7 +1596,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSecPurposePrefetchHeaderRelPrefetch);
 // scripts are selectively applied via the allowlist provided from the feature
 // param. See https://crbug.com/1356396
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectiveInOrderScript);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectiveInOrderScriptTarget);
 // Note: declared without BASE_DECLARE_FEATURE_PARAM because the production code
 // gets this value only once to construct a static local variable.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
