@@ -1799,8 +1799,8 @@ void ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin(
         CreateTaskCompletionClosure(
             TracingDataType::kDisableAutoSigninForProfilePasswords));
   }
-  if (account_store && password_manager::features_util::IsAccountStorageEnabled(
-                           profile_->GetPrefs(), sync_service)) {
+  if (account_store &&
+      password_manager::features_util::IsAccountStorageEnabled(sync_service)) {
     account_store->DisableAutoSignInForOrigins(
         url_filter,
         CreateTaskCompletionClosure(

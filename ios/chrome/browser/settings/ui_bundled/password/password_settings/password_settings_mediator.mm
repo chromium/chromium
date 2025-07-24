@@ -451,8 +451,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 // Computes the amount of local passwords and passes that on to the consumer.
 - (void)updateShowBulkMovePasswordsToAccount {
   [self.consumer setCanBulkMove:password_manager::features_util::
-                                    IsAccountStorageEnabled(_prefService,
-                                                            _syncService)
+                                    IsAccountStorageEnabled(_syncService)
             localPasswordsCount:[self computeLocalPasswordsCount]];
 }
 

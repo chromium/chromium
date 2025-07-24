@@ -840,7 +840,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
 
 bool PasswordsPrivateDelegateImpl::IsAccountStorageEnabled() {
   return password_manager::features_util::IsAccountStorageEnabled(
-      profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
+      SyncServiceFactory::GetForProfile(profile_));
 }
 
 void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
@@ -859,7 +859,7 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
 
 bool PasswordsPrivateDelegateImpl::ShouldShowAccountStorageSettingToggle() {
   return password_manager::features_util::ShouldShowAccountStorageSettingToggle(
-      profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
+      SyncServiceFactory::GetForProfile(profile_));
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>

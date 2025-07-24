@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -35,9 +34,6 @@ class PasswordDataTypeControllerTest : public ::testing::Test {
  public:
   PasswordDataTypeControllerTest() {
 #if BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kAccountStorageNoticeShown, false);
 #endif
@@ -82,49 +78,7 @@ class PasswordDataTypeControllerTest : public ::testing::Test {
 };
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordDataTypeControllerTest,
-       OverrideFullSyncModeIfUPMLocalOn_LoginDbDeprecationOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
-  pref_service()->SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-  // `transport_only_delegate` should be used, despite syncer::SyncMode::kFull
-  // being passed below.
-  EXPECT_CALL(*full_sync_delegate(), OnSyncStarting).Times(0);
-  EXPECT_CALL(*transport_only_delegate(), OnSyncStarting);
-
-  syncer::ConfigureContext context;
-  context.authenticated_gaia_id = GaiaId("gaia");
-  context.cache_guid = "cache_guid";
-  context.sync_mode = syncer::SyncMode::kFull;
-  context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
-  context.configuration_start_time = base::Time::Now();
-  controller()->LoadModels(context, base::DoNothing());
-}
-
-TEST_F(PasswordDataTypeControllerTest,
-       DoNotOverrideFullSyncModeIfUPMLocalOff_LoginDbDeprecationOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
-  // `full_sync_delegate` should be used for syncer::SyncMode::kFull, as
-  // expected.
-  EXPECT_CALL(*full_sync_delegate(), OnSyncStarting);
-  EXPECT_CALL(*transport_only_delegate(), OnSyncStarting).Times(0);
-
-  syncer::ConfigureContext context;
-  context.authenticated_gaia_id = GaiaId("gaia");
-  context.cache_guid = "cache_guid";
-  context.sync_mode = syncer::SyncMode::kFull;
-  context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
-  context.configuration_start_time = base::Time::Now();
-  controller()->LoadModels(context, base::DoNothing());
-}
-
-TEST_F(PasswordDataTypeControllerTest,
-       OverrideFullSyncMode_LoginDbDeprecationOn) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLoginDbDeprecationAndroid);
+TEST_F(PasswordDataTypeControllerTest, OverrideFullSyncMode) {
   // `transport_only_delegate` should be used, despite syncer::SyncMode::kFull
   // being passed below.
   EXPECT_CALL(*full_sync_delegate(), OnSyncStarting).Times(0);

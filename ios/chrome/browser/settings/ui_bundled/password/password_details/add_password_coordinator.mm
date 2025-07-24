@@ -77,7 +77,6 @@
              passwordCheckManager:IOSChromePasswordCheckManagerFactory::
                                       GetForProfile(profile)
                                           .get()
-                      prefService:profile->GetPrefs()
                       syncService:SyncServiceFactory::GetForProfile(profile)
       passwordRequirementsService:IOSPasswordRequirementsServiceFactory::
                                       GetForProfile(profile)];

@@ -886,11 +886,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SignIn(SyncTestAccount::kConsumerAccount1, /*explicit_signin=*/false);
   EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
   SignOut();
   SignIn(SyncTestAccount::kConsumerAccount2, /*explicit_signin=*/false);
   EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
@@ -911,11 +911,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SignIn(SyncTestAccount::kConsumerAccount1);
   EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
   SignOut();
   SignIn(SyncTestAccount::kConsumerAccount2);
   EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -939,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   ASSERT_EQ(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size(),
             1u);
   EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 
   // Clear cookies and account passwords.
   content::BrowsingDataRemover* remover =
@@ -959,12 +959,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // Account storage is still enabled (because the user is still signed in).
   EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 
   // The preference is reset as the account is removed from Chrome.
   SignOut();
   EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 }
 
 // TODO(b/327118794): Delete this test once implicit signin no longer exists.
@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
 
   // Since we mangled the prefs file, account storage should be disabled.
   ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // The account-scoped store should have been cleared during startup, and the

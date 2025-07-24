@@ -65,13 +65,12 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
 }
 
 bool PasswordFeatureManagerImpl::IsAccountStorageEnabled() const {
-  return features_util::IsAccountStorageEnabled(pref_service_, sync_service_);
+  return features_util::IsAccountStorageEnabled(sync_service_);
 }
 
 features_util::PasswordAccountStorageUsageLevel
 PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
-  return features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
-                                                                sync_service_);
+  return features_util::ComputePasswordAccountStorageUsageLevel(sync_service_);
 }
 
 #if BUILDFLAG(IS_ANDROID)

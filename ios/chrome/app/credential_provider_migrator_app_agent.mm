@@ -217,7 +217,7 @@ void MigrationCompleteForProfile(
 
   password_manager::PasswordForm::Store defaultStore =
       password_manager::features_util::IsAccountStorageEnabled(
-          profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile))
+          SyncServiceFactory::GetForProfile(profile))
           ? password_manager::PasswordForm::Store::kAccountStore
           : password_manager::PasswordForm::Store::kProfileStore;
   scoped_refptr<password_manager::PasswordStoreInterface> storeToSave =

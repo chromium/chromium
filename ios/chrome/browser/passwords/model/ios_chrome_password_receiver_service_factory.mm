@@ -65,7 +65,7 @@ IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
   return std::make_unique<password_manager::PasswordReceiverServiceImpl>(
-      profile->GetPrefs(), std::move(sync_bridge),
+      std::move(sync_bridge),
       IOSChromeProfilePasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),

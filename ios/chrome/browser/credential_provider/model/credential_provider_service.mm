@@ -167,7 +167,6 @@ CredentialProviderService::CredentialProviderService(
     affiliations::AffiliationService* affiliation_service,
     FaviconLoader* favicon_loader)
     : profile_name_(profile_name),
-      prefs_(prefs),
       local_state_(local_state),
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
@@ -566,7 +565,7 @@ void CredentialProviderService::UpdateUserEmail() {
   }
 
   std::optional accountForSaving =
-      password_manager::sync_util::GetAccountForSaving(prefs_, sync_service_);
+      password_manager::sync_util::GetAccountForSaving(sync_service_);
   [app_group::GetGroupUserDefaults()
       setObject:accountForSaving ? base::SysUTF8ToNSString(*accountForSaving)
                                  : nil

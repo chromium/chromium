@@ -753,7 +753,7 @@ StoreMetricsReporter::StoreMetricsReporter(
       password_manager::sync_util::GetPasswordSyncState(sync_service));
 
   is_account_storage_enabled_ =
-      features_util::IsAccountStorageEnabled(prefs_, sync_service);
+      features_util::IsAccountStorageEnabled(sync_service);
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs_);
 

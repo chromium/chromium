@@ -188,12 +188,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kBiometricAuthenticationBeforeFilling, false);
 #endif
-#if BUILDFLAG(IS_ANDROID)
-    prefs_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-#endif
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -1437,13 +1431,6 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
 // A test that covers multi-store metrics, which are recorded by the
 // StoreMetricsReporter directly.
 TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
-#if BUILDFLAG(IS_ANDROID)
-  prefs_.SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
-#endif  // BUILDFLAG(IS_ANDROID)
-
   auto profile_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   auto account_store =
@@ -1510,9 +1497,8 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       test_sync_service()->GetUserSettings()->SetSelectedTypes(
           /*sync_everything=*/false, syncer::UserSelectableTypeSet());
     }
-    ASSERT_EQ(
-        features_util::IsAccountStorageEnabled(pref_service(), sync_service()),
-        account_storage_enabled);
+    ASSERT_EQ(features_util::IsAccountStorageEnabled(sync_service()),
+              account_storage_enabled);
 
     // In every pass in the loop, StoreMetricsReporter uses the same pref
     // service. Set the kLastTimePasswordStoreMetricsReported to make sure

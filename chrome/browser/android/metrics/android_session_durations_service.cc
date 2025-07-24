@@ -102,8 +102,7 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
           sync_service, identity_manager);
 
   password_session_duration_metrics_recorder_ = std::make_unique<
-      password_manager::PasswordSessionDurationsMetricsRecorder>(pref_service,
-                                                                 sync_service);
+      password_manager::PasswordSessionDurationsMetricsRecorder>(sync_service);
 
   msbb_session_metrics_recorder_ =
       std::make_unique<unified_consent::MsbbSessionDurationsMetricsRecorder>(

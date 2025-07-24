@@ -147,8 +147,7 @@
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                        GetForProfile(profile)
                      faviconLoader:faviconLoader
-                       syncService:SyncServiceFactory::GetForProfile(profile)
-                       prefService:profile->GetPrefs()];
+                       syncService:SyncServiceFactory::GetForProfile(profile)];
   self.mediator.tracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
 

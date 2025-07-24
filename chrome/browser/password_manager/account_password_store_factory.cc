@@ -114,8 +114,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  CHECK(password_manager::features_util::CanCreateAccountStore(
-      profile->GetPrefs()));
   DCHECK(!profile->IsOffTheRecord());
 
   os_crypt_async::OSCryptAsync* os_crypt_async =
@@ -171,11 +169,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 scoped_refptr<PasswordStoreInterface>
 AccountPasswordStoreFactory::GetForProfile(Profile* profile,
                                            ServiceAccessType access_type) {
-  if (!password_manager::features_util::CanCreateAccountStore(
-          profile->GetPrefs())) {
-    return nullptr;
-  }
-
   // |profile| gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.

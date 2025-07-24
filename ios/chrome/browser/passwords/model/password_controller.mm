@@ -439,14 +439,13 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   }
 
   CHECK(self.profile);
-  PrefService* prefs = self.profile->GetPrefs();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(self.profile);
   const std::optional<std::string> accountToStorePassword =
-      password_manager::sync_util::GetAccountForSaving(prefs, syncService);
+      password_manager::sync_util::GetAccountForSaving(syncService);
   const password_manager::features_util::PasswordAccountStorageUserState
       accountStorageUserState = password_manager::features_util::
-          ComputePasswordAccountStorageUserState(prefs, syncService);
+          ComputePasswordAccountStorageUserState(syncService);
 
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(_webState);

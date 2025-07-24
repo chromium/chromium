@@ -27,8 +27,7 @@ namespace password_manager::features_util {
 
 namespace {
 
-bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
-                                     const syncer::SyncService* sync_service) {
+bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
   if (!sync_service) {
     return false;
   }
@@ -79,56 +78,19 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
     return false;
   }
 
-  // Check last to avoid tests for signed-out users unnecessarily having to
-  // register some prefs to avoid a crash.
-  return CanCreateAccountStore(pref_service);
+  return true;
 }
 
 }  // namespace
 
-bool CanCreateAccountStore(const PrefService* pref_service) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kLoginDbDeprecationAndroid)) {
-    // The login DB deprecation stops migrations to UPM, so the migration
-    // status becomes irrelevant. Depending on the GMS Core version, the account
-    // store might be backed by an empty backend instead of a real one,
-    // but it can be created nonetheless.
-    return true;
-  }
-  using prefs::UseUpmLocalAndSeparateStoresState;
-  switch (
-      static_cast<UseUpmLocalAndSeparateStoresState>(pref_service->GetInteger(
-          prefs::kPasswordsUseUPMLocalAndSeparateStores))) {
-    case UseUpmLocalAndSeparateStoresState::kOff:
-      return false;
-    // The decision regarding the presence/absence of the account store happens
-    // before the outcome of the migration is known. The decision shouldn't
-    // change, many layers cache a pointer to the store and never update it.
-    // The solution is to optimistically return true in the "migration pending"
-    // state. If the migration later fails, the store will continue to exist
-    // until the next restart, but won't actually be used (this is enforced by
-    // other predicates).
-    case UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
-    case UseUpmLocalAndSeparateStoresState::kOn:
-      return true;
-  }
-  NOTREACHED();
-#else
-  return true;
-#endif
-}
-
-bool IsAccountStorageEnabled(const PrefService* pref_service,
-                             const syncer::SyncService* sync_service) {
-  return IsUserEligibleForAccountStorage(pref_service, sync_service) &&
+bool IsAccountStorageEnabled(const syncer::SyncService* sync_service) {
+  return IsUserEligibleForAccountStorage(sync_service) &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPasswords);
 }
 
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
-    const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
   // The SyncService can be null in incognito, or due to a commandline flag. In
   // those cases, simply consider the user as signed out.
   if (!sync_service) {
@@ -146,7 +108,7 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     return PasswordAccountStorageUserState::kSignedOutUser;
   }
 
-  if (IsAccountStorageEnabled(pref_service, sync_service)) {
+  if (IsAccountStorageEnabled(sync_service)) {
     return PasswordAccountStorageUserState::kSignedInAccountStoreUser;
   }
 
@@ -154,11 +116,10 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
 }
 
 PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
-    const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
   using UserState = PasswordAccountStorageUserState;
   using UsageLevel = PasswordAccountStorageUsageLevel;
-  switch (ComputePasswordAccountStorageUserState(pref_service, sync_service)) {
+  switch (ComputePasswordAccountStorageUserState(sync_service)) {
     case UserState::kSignedOutUser:
     case UserState::kSignedInUser:
       return UsageLevel::kNotUsingAccountStorage;
@@ -171,12 +132,11 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool ShouldShowAccountStorageSettingToggle(
-    const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
   // TODO(crbug.com/303613699): Merge IsUserEligibleForAccountStorage() and
   // IsAccountStorageEnabled() after kReplaceSyncPromosWithSignInPromos is
   // launched and cleaned-up.
-  return IsUserEligibleForAccountStorage(pref_service, sync_service) &&
+  return IsUserEligibleForAccountStorage(sync_service) &&
          !base::FeatureList::IsEnabled(
              syncer::kReplaceSyncPromosWithSignInPromos);
 }

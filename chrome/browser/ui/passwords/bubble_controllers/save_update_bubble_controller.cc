@@ -300,7 +300,7 @@ void SaveUpdateBubbleController::ReportInteractions() {
     if (profile) {
       user_state = password_manager::features_util::
           ComputePasswordAccountStorageUserState(
-              profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
+              SyncServiceFactory::GetForProfile(profile));
     }
 
     // Log additional UMA for users who don't yet have any passwords saved in

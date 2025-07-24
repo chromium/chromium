@@ -12,7 +12,6 @@
 @protocol AddPasswordDetailsConsumer;
 @protocol AddPasswordMediatorDelegate;
 class IOSChromePasswordCheckManager;
-class PrefService;
 
 namespace syncer {
 class SyncService;
@@ -27,7 +26,6 @@ class PasswordRequirementsService;
 
 - (instancetype)initWithDelegate:(id<AddPasswordMediatorDelegate>)delegate
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-                     prefService:(PrefService*)prefService
                      syncService:(syncer::SyncService*)syncService
      passwordRequirementsService:
          (password_manager::PasswordRequirementsService*)

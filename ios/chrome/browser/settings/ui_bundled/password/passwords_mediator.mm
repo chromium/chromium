@@ -101,21 +101,16 @@ struct PasswordManagerActiveWidgetPromoData
 
   // Service to know whether passwords are synced.
   raw_ptr<syncer::SyncService> _syncService;
-
-  // The user pref service.
-  raw_ptr<PrefService> _prefService;
 }
 
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
                                faviconLoader:(FaviconLoader*)faviconLoader
-                                 syncService:(syncer::SyncService*)syncService
-                                 prefService:(PrefService*)prefService {
+                                 syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _syncService = syncService;
-    _prefService = prefService;
     _faviconLoader = faviconLoader;
 
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
@@ -164,7 +159,6 @@ struct PasswordManagerActiveWidgetPromoData
   _passwordCheckManager.reset();
   _savedPasswordsPresenter = nullptr;
   _faviconLoader = nullptr;
-  _prefService = nullptr;
   _syncService = nullptr;
 }
 
@@ -366,7 +360,7 @@ struct PasswordManagerActiveWidgetPromoData
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
   return password_manager::features_util::IsAccountStorageEnabled(
-             _prefService, _syncService) &&
+             _syncService) &&
          !_syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 

@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -48,12 +47,10 @@ void PasswordDataTypeController::LoadModels(
   DCHECK(CalledOnValidThread());
   syncer::ConfigureContext overridden_context = configure_context;
 #if BUILDFLAG(IS_ANDROID)
-  if (features_util::CanCreateAccountStore(pref_service_)) {
-    // Make syncing users behave like signed-in users, storage-wise.
-    // TODO(crbug.com/40067058): Drop when kForceMigrateSyncingUserToSignedIn
-    // is launched on Android, since there won't be syncing users anymore.
-    overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
-  }
+  // Make syncing users behave like signed-in users, storage-wise.
+  // TODO(crbug.com/40067058): Drop when kForceMigrateSyncingUserToSignedIn
+  // is launched on Android, since there won't be syncing users anymore.
+  overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
 #endif
   sync_mode_ = overridden_context.sync_mode;
   DataTypeController::LoadModels(overridden_context, model_load_callback);

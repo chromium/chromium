@@ -820,7 +820,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        ClearingCookiesAlsoClearsPasswordAccountStorageOptIn) {
   const char kTestEmail[] = "foo@gmail.com";
-  PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   signin::IdentityManager* identity_manager =
@@ -831,23 +830,22 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // TODO(crbug.com/375024026): Revisit.
   sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
+  ASSERT_FALSE(
+      password_manager::features_util::IsAccountStorageEnabled(sync_service));
 
   signin::ClearPrimaryAccount(identity_manager);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
 
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
+  EXPECT_TRUE(
+      password_manager::features_util::IsAccountStorageEnabled(sync_service));
 }
 
 IN_PROC_BROWSER_TEST_F(
     BrowsingDataRemoverBrowserTest,
     ClearingCookiesWithFilterAlsoClearsPasswordAccountStorageSetting) {
   const char kTestEmail[] = "foo@gmail.com";
-  PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   signin::IdentityManager* identity_manager =
@@ -857,8 +855,8 @@ IN_PROC_BROWSER_TEST_F(
 
   sync_service->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
+  ASSERT_FALSE(
+      password_manager::features_util::IsAccountStorageEnabled(sync_service));
 
   // Clearing cookies for some random domain should have no effect on the
   // setting.
@@ -873,8 +871,8 @@ IN_PROC_BROWSER_TEST_F(
   }
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
+  EXPECT_FALSE(
+      password_manager::features_util::IsAccountStorageEnabled(sync_service));
 
   // Clearing cookies for google.com should clear the setting.
   signin::ClearPrimaryAccount(identity_manager);
@@ -888,13 +886,12 @@ IN_PROC_BROWSER_TEST_F(
   }
   signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
                                       signin::ConsentLevel::kSignin);
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
+  EXPECT_TRUE(
+      password_manager::features_util::IsAccountStorageEnabled(sync_service));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
   const char kTestEmail[] = "foo@gmail.com";
-  PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   signin::IdentityManager* identity_manager =
@@ -959,8 +956,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
 
     sync_service->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPasswords, false);
-    ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-        prefs, sync_service));
+    ASSERT_FALSE(
+        password_manager::features_util::IsAccountStorageEnabled(sync_service));
     signin::ClearPrimaryAccount(identity_manager);
     ClearSiteDataAndWait(test_case.origin, test_case.cookie_partition_key,
                          test_case.storage_key, {});
@@ -969,10 +966,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
 
     if (test_case.expects_keep_optin_pref) {
       EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-          prefs, sync_service));
+          sync_service));
     } else {
       EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-          prefs, sync_service));
+          sync_service));
     }
   }
 }

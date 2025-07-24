@@ -4042,7 +4042,7 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
 #endif
     );
     ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-        GetProfile()->GetPrefs(), sync_service()));
+        sync_service()));
   }
 };
 

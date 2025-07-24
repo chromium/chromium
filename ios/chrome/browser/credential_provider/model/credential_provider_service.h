@@ -189,9 +189,6 @@ class CredentialProviderService
   // The name of the profile used to create this CredentialProviderService.
   const std::string profile_name_;
 
-  // The pref service.
-  const raw_ptr<PrefService> prefs_;
-
   // The local state. Used to query the last used profile.
   const raw_ptr<PrefService> local_state_;
 

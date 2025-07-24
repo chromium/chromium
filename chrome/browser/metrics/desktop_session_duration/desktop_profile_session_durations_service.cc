@@ -27,7 +27,6 @@ DesktopProfileSessionDurationsService::DesktopProfileSessionDurationsService(
       password_metrics_recorder_(
           std::make_unique<
               password_manager::PasswordSessionDurationsMetricsRecorder>(
-              pref_service,
               sync_service)) {
   session_duration_observation_.Observe(tracker);
   if (tracker->in_session()) {

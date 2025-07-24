@@ -70,11 +70,10 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
-void SetupAccountPasswordStore(syncer::TestSyncService* sync_service,
-                               PrefService* pref_service) {
+void SetupAccountPasswordStore(syncer::TestSyncService* sync_service) {
   sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      pref_service, sync_service));
+  ASSERT_TRUE(
+      password_manager::features_util::IsAccountStorageEnabled(sync_service));
 }
 
 }  // namespace
@@ -677,7 +676,7 @@ TEST_F(SaveUpdateBubbleControllerTest, PasswordsRevealedReported) {
 
 TEST_F(SaveUpdateBubbleControllerTest,
        UpdateAccountStoreAffectsTheAccountStore) {
-  SetupAccountPasswordStore(sync_service(), prefs());
+  SetupAccountPasswordStore(sync_service());
   EXPECT_CALL(*delegate(), GetPendingPassword())
       .WillOnce(ReturnRef(pending_password()));
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
@@ -695,7 +694,7 @@ TEST_F(SaveUpdateBubbleControllerTest,
 
 TEST_F(SaveUpdateBubbleControllerTest,
        UpdateProfileStoreDoesnotAffectTheAccountStore) {
-  SetupAccountPasswordStore(sync_service(), prefs());
+  SetupAccountPasswordStore(sync_service());
 
   EXPECT_CALL(*delegate(), GetPendingPassword())
       .WillOnce(ReturnRef(pending_password()));
@@ -713,7 +712,7 @@ TEST_F(SaveUpdateBubbleControllerTest,
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, UpdateBothStoresAffectsTheAccountStore) {
-  SetupAccountPasswordStore(sync_service(), prefs());
+  SetupAccountPasswordStore(sync_service());
   EXPECT_CALL(*delegate(), GetPendingPassword())
       .WillOnce(ReturnRef(pending_password()));
 
@@ -739,7 +738,7 @@ TEST_F(SaveUpdateBubbleControllerTest, UpdateBothStoresAffectsTheAccountStore) {
 
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInAccountStoreAffectsTheAccountStore) {
-  SetupAccountPasswordStore(sync_service(), prefs());
+  SetupAccountPasswordStore(sync_service());
   ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(true));
   PretendPasswordWaiting();
@@ -749,7 +748,7 @@ TEST_F(SaveUpdateBubbleControllerTest,
 
 TEST_F(SaveUpdateBubbleControllerTest,
        SaveInProfileStoreDoesntAffectTheAccountStore) {
-  SetupAccountPasswordStore(sync_service(), prefs());
+  SetupAccountPasswordStore(sync_service());
   ON_CALL(*password_feature_manager(), IsAccountStorageEnabled)
       .WillByDefault(Return(false));
   PretendPasswordWaiting();

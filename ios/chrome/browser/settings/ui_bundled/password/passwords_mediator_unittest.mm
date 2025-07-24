@@ -168,8 +168,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
         initWithPasswordCheckManager:password_check_
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile_.get())
-                         syncService:&sync_service_
-                         prefService:profile_->GetPrefs()];
+                         syncService:&sync_service_];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile()));
