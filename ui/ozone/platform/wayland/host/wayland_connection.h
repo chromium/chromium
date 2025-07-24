@@ -149,6 +149,8 @@ class WaylandConnection {
                        const gfx::Point& hotspot_in_dips,
                        int buffer_scale);
 
+  void ResetCursor();
+
   WaylandEventSource* event_source() const { return event_source_.get(); }
 
   WaylandSeat* seat() const { return seat_.get(); }
