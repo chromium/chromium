@@ -230,7 +230,7 @@ if (use_clang_modules) {
       ]
     }
   } else if (is_mac) {
-    DarwinBasic_modules("MachO") {
+    DarwinBasic_module("MachO") {
       public_deps = [
         ":_Builtin_stdbool",
         ":_Builtin_stdint",
@@ -243,29 +243,29 @@ if (use_clang_modules) {
       ]
     }
 
-    DarwinBasic_modules("_strings") {
+    DarwinBasic_module("_strings") {
       public_deps = [ ":DarwinFoundation" ]
     }
 
-    DarwinBasic_modules("alloca") {
+    DarwinBasic_module("alloca") {
       public_deps = [ ":DarwinFoundation" ]
     }
 
-    DarwinBasic_modules("gethostuuid") {
+    DarwinBasic_module("gethostuuid") {
       public_deps = [
         ":_time",
         ":uuid",
       ]
     }
 
-    DarwinBasic_modules("nl_types") {
+    DarwinBasic_module("nl_types") {
       public_deps = [
         ":DarwinFoundation",
         ":sys_types",
       ]
     }
 
-    DarwinBasic_modules("pthread") {
+    DarwinBasic_module("pthread") {
       public_deps = [
         ":DarwinFoundation",
         ":_signal",
@@ -274,11 +274,11 @@ if (use_clang_modules) {
       ]
     }
 
-    DarwinBasic_modules("runetype") {
+    DarwinBasic_module("runetype") {
       public_deps = [ ":DarwinFoundation" ]
     }
 
-    DarwinBasic_modules("sys_select") {
+    DarwinBasic_module("sys_select") {
       public_deps = [
         ":DarwinFoundation",
         ":_signal",
@@ -288,7 +288,7 @@ if (use_clang_modules) {
       ]
     }
 
-    DarwinBasic_modules("sys_types") {
+    DarwinBasic_module("sys_types") {
       public_deps = [
         ":DarwinFoundation",
         ":_errno",
@@ -298,7 +298,7 @@ if (use_clang_modules) {
       ]
     }
 
-    DarwinBasic_modules("sys_wait") {
+    DarwinBasic_module("sys_wait") {
       public_deps = [
         ":DarwinFoundation",
         ":_signal",
@@ -307,7 +307,7 @@ if (use_clang_modules) {
       ]
     }
 
-    DarwinBasic_modules("sys_resource") {
+    DarwinBasic_module("sys_resource") {
       public_deps = [
         ":DarwinFoundation",
         ":_Builtin_stdint",
@@ -316,7 +316,7 @@ if (use_clang_modules) {
       ]
     }
 
-    DarwinBasic_modules("unistd") {
+    DarwinBasic_module("unistd") {
       public_deps = [
         ":DarwinFoundation",
         ":_limits",
@@ -327,7 +327,7 @@ if (use_clang_modules) {
       ]
     }
 
-    DarwinBasic_modules("xlocale") {
+    DarwinBasic_module("xlocale") {
       public_deps = [
         ":DarwinFoundation",
         ":_locale",
@@ -366,7 +366,10 @@ if (use_clang_modules) {
     }
 
     c_standard_library_module("__wctype") {
-      public_deps = [ ":_ctype" ]
+      public_deps = [
+        ":_ctype",
+        ":std_ctype_h",
+      ]
     }
 
     c_standard_library_module("_assert") {
@@ -807,7 +810,7 @@ target(libcxx_target_type, "libc++") {
   # need to explicitly depend on libc++.
   visibility = [
     "//build/config:common_deps",
-    "//third_party/catapult/devil:devil",
+    "//third_party/catapult/devil",
   ]
   if (is_linux) {
     # This target packages libc++.so, so must have an explicit dependency on
