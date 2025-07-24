@@ -551,6 +551,18 @@
     <methods>;
 }
 
+# File: obj/third_party/androidx/androidx_datastore_datastore_core_android_java/proguard.txt
+# make sure r8 can remove the fake counter that is only in the code to handle the
+# robolectric tests.
+-assumenosideeffects class androidx.datastore.core.SharedCounter$Factory {
+    private boolean isDalvik() return true;
+}
+
+# File: obj/third_party/androidx/androidx_datastore_datastore_preferences_core_android_java/proguard.txt
+-keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
+    <fields>;
+}
+
 # File: obj/third_party/androidx/androidx_fragment_fragment_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
 #
@@ -874,16 +886,27 @@
 -dontwarn com.google.firebase.components.Component$Instantiation
 -dontwarn com.google.firebase.components.Component$ComponentType
 
--keep class * implements com.google.firebase.components.ComponentRegistrar
+-keep class * implements com.google.firebase.components.ComponentRegistrar { void <init>(); }
 -keep,allowshrinking interface com.google.firebase.components.ComponentRegistrar
 
 # File: obj/third_party/android_deps/google_play_services_auth_base_java/proguard.txt
 # We keep all fields for every generated proto file as the runtime uses
 # reflection over them that ProGuard cannot detect. Without this keep
 # rule, fields may be removed that would cause runtime failures.
--keepclassmembers class * extends com.google.android.gms.internal.auth.zzew {
+-keepclassmembers class * extends com.google.android.gms.internal.auth.zzaay {
   <fields>;
 }
+
+# Checkdiscard flags for the auth frp client. Add these flags to ensure
+# no accidental API leakage.
+# This file is only applied when making the SDK, and is not forwarded to end developers.
+-checkdiscard class com.google.android.gms.auth.frp.FrpClient {
+  public *** FrpClient;
+  public *** isChallengeSupported();
+  public *** isChallengeRequired();
+}
+
+-dontwarn dalvik.system.VMStack
 
 # File: obj/third_party/android_deps/google_play_services_base_java/proguard.txt
 # b/35135904 Ensure that proguard will not strip the mResultGuardian.

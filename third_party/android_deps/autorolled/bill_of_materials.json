@@ -405,29 +405,64 @@
         "version": "1.1.0"
     },
     {
+        "name": "datastore",
+        "group": "androidx.datastore",
+        "version": "1.2.0-alpha02"
+    },
+    {
         "name": "datastore-android",
         "group": "androidx.datastore",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0-alpha02"
     },
     {
         "name": "datastore-core",
         "group": "androidx.datastore",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0-alpha02"
     },
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0-alpha02"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0-alpha02"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0-alpha02"
+    },
+    {
+        "name": "datastore-preferences",
+        "group": "androidx.datastore",
+        "version": "1.2.0-alpha02"
+    },
+    {
+        "name": "datastore-preferences-android",
+        "group": "androidx.datastore",
+        "version": "1.2.0-alpha02"
+    },
+    {
+        "name": "datastore-preferences-core",
+        "group": "androidx.datastore",
+        "version": "1.2.0-alpha02"
+    },
+    {
+        "name": "datastore-preferences-core-android",
+        "group": "androidx.datastore",
+        "version": "1.2.0-alpha02"
+    },
+    {
+        "name": "datastore-preferences-external-protobuf",
+        "group": "androidx.datastore",
+        "version": "1.2.0-alpha02"
+    },
+    {
+        "name": "datastore-preferences-proto",
+        "group": "androidx.datastore",
+        "version": "1.2.0-alpha02"
     },
     {
         "name": "documentfile",
@@ -812,17 +847,17 @@
     {
         "name": "pdf-document-service",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "pdf-viewer",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "pdf-viewer-fragment",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "preference",
@@ -1172,7 +1207,7 @@
     {
         "name": "play-services-auth",
         "group": "com.google.android.gms",
-        "version": "21.3.0"
+        "version": "21.4.0"
     },
     {
         "name": "play-services-auth-api-phone",
@@ -1182,7 +1217,7 @@
     {
         "name": "play-services-auth-base",
         "group": "com.google.android.gms",
-        "version": "18.1.0"
+        "version": "18.3.0"
     },
     {
         "name": "play-services-auth-blockstore",
@@ -1247,7 +1282,7 @@
     {
         "name": "play-services-instantapps",
         "group": "com.google.android.gms",
-        "version": "18.1.0"
+        "version": "18.2.0"
     },
     {
         "name": "play-services-location",
@@ -1287,7 +1322,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.14.0-alpha02"
+        "version": "1.14.0-alpha03"
     },
     {
         "name": "core-common",
@@ -1342,22 +1377,17 @@
     {
         "name": "firebase-annotations",
         "group": "com.google.firebase",
-        "version": "16.2.0"
+        "version": "17.0.0"
     },
     {
         "name": "firebase-common",
         "group": "com.google.firebase",
-        "version": "21.0.0"
-    },
-    {
-        "name": "firebase-common-ktx",
-        "group": "com.google.firebase",
-        "version": "21.0.0"
+        "version": "22.0.0"
     },
     {
         "name": "firebase-components",
         "group": "com.google.firebase",
-        "version": "18.0.0"
+        "version": "19.0.0"
     },
     {
         "name": "firebase-datatransport",
@@ -1387,7 +1417,7 @@
     {
         "name": "firebase-installations",
         "group": "com.google.firebase",
-        "version": "17.2.0"
+        "version": "18.0.0"
     },
     {
         "name": "firebase-installations-interop",
@@ -1402,7 +1432,7 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "24.1.2"
+        "version": "25.0.0"
     },
     {
         "name": "failureaccess",
@@ -1427,7 +1457,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.31.1"
+        "version": "4.32.0-RC1"
     },
     {
         "name": "protobuf-lite",
@@ -1657,7 +1687,7 @@
     {
         "name": "kotlin-stdlib-jdk8",
         "group": "org.jetbrains.kotlin",
-        "version": "1.8.22"
+        "version": "1.8.21"
     },
     {
         "name": "atomicfu-jvm",
@@ -1692,7 +1722,7 @@
     {
         "name": "kotlinx-coroutines-play-services",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.6.4"
+        "version": "1.9.0"
     },
     {
         "name": "kotlinx-coroutines-reactive",

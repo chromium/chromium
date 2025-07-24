@@ -125,7 +125,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_auth_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth/play-services-auth-21.3.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth/play-services-auth-21.4.0.aar"
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
         enable_bytecode_checks = false
         deps = [
@@ -161,7 +161,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_auth_base_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.1.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.3.0.aar"
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
         enable_bytecode_checks = false
         deps = [
@@ -169,6 +169,7 @@ template("define_autorolled_targets") {
           "$google_play_services_package:google_play_services_basement_java",
           "$google_play_services_package:google_play_services_tasks_java",
           "//third_party/androidx:androidx_collection_collection_java",
+          "//third_party/kotlin_stdlib:kotlin_stdlib_java",
         ]
       }
     }
@@ -346,7 +347,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_instantapps_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_instantapps/play-services-instantapps-18.1.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_instantapps/play-services-instantapps-18.2.0.aar"
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_instantapps/com_google_android_gms_play_services_instantapps.info"
         enable_bytecode_checks = false
         deps = [
@@ -431,7 +432,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (!defined(material_design_target)) {
       android_aar_prebuilt("com_google_android_material_material_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_material_material/material-1.14.0-alpha02.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_material_material/material-1.14.0-alpha03.aar"
         info_path = "autorolled/committed/libs/com_google_android_material_material/com_google_android_material_material.info"
         enable_bytecode_checks = false
 
@@ -526,12 +527,11 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_messaging_java") {
-        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_messaging/firebase-messaging-24.1.2.aar"
+        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_messaging/firebase-messaging-25.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
         enable_bytecode_checks = false
         deps = [
           "$google_play_services_package:google_firebase_firebase_common_java",
-          "$google_play_services_package:google_firebase_firebase_common_ktx_java",
           "$google_play_services_package:google_firebase_firebase_components_java",
           "$google_play_services_package:google_firebase_firebase_datatransport_java",
           "$google_play_services_package:google_firebase_firebase_encoders_java",
@@ -559,7 +559,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (!defined(android_proto_runtime)) {
       java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.31.1.jar"
+        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.32.0-RC1.jar"
         output_name = "com_google_protobuf_protobuf_javalite"
         supports_android = true
         requires_android = true
@@ -998,7 +998,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       java_prebuilt("google_firebase_firebase_annotations_java") {
-        jar_path = "autorolled/cipd/libs/com_google_firebase_firebase_annotations/firebase-annotations-16.2.0.jar"
+        jar_path = "autorolled/cipd/libs/com_google_firebase_firebase_annotations/firebase-annotations-17.0.0.jar"
         output_name = "com_google_firebase_firebase_annotations"
         supports_android = true
         requires_android = true
@@ -1017,7 +1017,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_common_java") {
-        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_common/firebase-common-21.0.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_common/firebase-common-22.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
         enable_bytecode_checks = false
 
@@ -1035,28 +1035,7 @@ template("define_autorolled_targets") {
           "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_play_services_java",
           "//third_party/androidx:androidx_annotation_annotation_java",
           "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
-          "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-        ]
-      }
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-    if (google_play_services_package == "//third_party/android_deps") {
-      android_aar_prebuilt("google_firebase_firebase_common_ktx_java") {
-        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_common_ktx/firebase-common-ktx-21.0.0.aar"
-        info_path = "autorolled/committed/libs/com_google_firebase_firebase_common_ktx/com_google_firebase_firebase_common_ktx.info"
-        enable_bytecode_checks = false
-
-        # To remove visibility constraint, add this dependency to
-        # //third_party/android_deps/autorolled/build.gradle.
-        visibility = [
-          ":*",
-          "//third_party/androidx:*",
-        ]
-        deps = [
-          "$google_play_services_package:google_firebase_firebase_annotations_java",
-          "$google_play_services_package:google_firebase_firebase_common_java",
-          "$google_play_services_package:google_firebase_firebase_components_java",
+          "//third_party/androidx:androidx_datastore_datastore_preferences_java",
           "//third_party/kotlin_stdlib:kotlin_stdlib_java",
         ]
       }
@@ -1065,7 +1044,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_components_java") {
-        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_components/firebase-components-18.0.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_components/firebase-components-19.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_firebase_firebase_components/com_google_firebase_firebase_components.info"
         enable_bytecode_checks = false
 
@@ -1189,7 +1168,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_installations_java") {
-        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_installations/firebase-installations-17.2.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_installations/firebase-installations-18.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_firebase_firebase_installations/com_google_firebase_firebase_installations.info"
         enable_bytecode_checks = false
 
@@ -1202,7 +1181,6 @@ template("define_autorolled_targets") {
         deps = [
           "$google_play_services_package:google_firebase_firebase_annotations_java",
           "$google_play_services_package:google_firebase_firebase_common_java",
-          "$google_play_services_package:google_firebase_firebase_common_ktx_java",
           "$google_play_services_package:google_firebase_firebase_components_java",
           "$google_play_services_package:google_firebase_firebase_installations_interop_java",
           "$google_play_services_package:google_play_services_tasks_java",
@@ -1464,7 +1442,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt(
         "org_jetbrains_kotlinx_kotlinx_coroutines_play_services_java") {
-      jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_play_services/kotlinx-coroutines-play-services-1.6.4.jar"
+      jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_play_services/kotlinx-coroutines-play-services-1.9.0.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_play_services"
       supports_android = true
       requires_android = true

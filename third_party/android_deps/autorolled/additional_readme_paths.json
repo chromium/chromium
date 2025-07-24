@@ -37,7 +37,6 @@
     "committed/libs/com_google_errorprone_error_prone_annotations",
     "committed/libs/com_google_firebase_firebase_annotations",
     "committed/libs/com_google_firebase_firebase_common",
-    "committed/libs/com_google_firebase_firebase_common_ktx",
     "committed/libs/com_google_firebase_firebase_components",
     "committed/libs/com_google_firebase_firebase_datatransport",
     "committed/libs/com_google_firebase_firebase_encoders",
