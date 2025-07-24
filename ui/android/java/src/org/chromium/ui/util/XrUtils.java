@@ -28,6 +28,8 @@ public class XrUtils {
     }
 
     private static boolean isXrDeviceInternal() {
+        // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
+        // properties.
         return PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_OPENXR_FEATURE_NAME);
     }
 }

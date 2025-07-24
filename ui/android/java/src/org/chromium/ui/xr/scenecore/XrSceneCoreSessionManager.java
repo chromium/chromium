@@ -13,58 +13,44 @@ import org.chromium.build.annotations.NullMarked;
  * (https://developer.android.com/reference/androidx/xr/scenecore/package-summary.html). It's used
  * by activities to control XR space modes transitions. See implementation in {@link
  * org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionManagerImpl}.
- *
- * <p>Usage: There are two ways to switch between XR space modes.
- *
- * <p>1. Visibility of an activity is controlled internally. Call {@link
- * XrSceneCoreSessionManager#requestSpaceModeChange}.
- *
- * <p>2. Visibility of an activity has to be controlled manually by a caller. This 3-steps flow is
- * necessary to adjust the background of the activity, hide some UI elements and avoid UI flicker.
- * Flow:
- *
- * <p>2.1. Call {@link XrSceneCoreSessionManager#startSpaceModeChange} and provide a callback. It
- * will start the XR mode transition flow and will make the activity invisible for up to 1 second.
- *
- * <p>2.2. After XR space mode transition is completed, the callback from (2.1) will be called on
- * the main thread.
- *
- * <p>2.3. The activity will still be invisible at this moment. To make it visible, finish the
- * transition by calling {@link XrSceneCoreSessionManager#finishSpaceModeChange}. All XR space mode
- * transitions requests must be called on the main thread.
  */
 @NullMarked
 public interface XrSceneCoreSessionManager extends Destroyable {
 
     /**
-     * @param fsmModeRequested Requested XR space mode (true for XR full space mode).
-     * @param completedCallback Callback function, signaling that XR space mode transition is
-     *     completed. Caller still need to call 'finishSpaceModeChange' to make the activity
-     *     visible.
-     * @return Success status. True: if the activity has focus and it's not in the middle of
-     *     transition between XR space modes. False: the 'completedCallback' will not be called.
+     * Request to change XR space mode.
+     *
+     * @param requestFullSpaceMode True: to request Full Space mode, false to exit Full Space mode.
+     * @return Success status. True: if request is handled and transition has started (the activity
+     *     has focus and it's not in the middle of transition between XR space modes), false
+     *     otherwise.
      */
-    boolean startSpaceModeChange(boolean fsmModeRequested, Runnable completedCallback);
+    boolean requestSpaceModeChange(boolean requestFullSpaceMode);
+
+    /**
+     * Request to change XR space mode.
+     *
+     * @param requestFullSpaceMode True: to request Full Space mode, false to exit Full Space mode.
+     * @param completedCallback Callback function, signaling that XR space mode transition is
+     *     complete.
+     * @return Success status. True: if request is handled and transition has started (the activity
+     *     has focus and it's not in the middle of transition between XR space modes), false
+     *     otherwise (the 'completedCallback' will not be called).
+     */
+    boolean requestSpaceModeChange(boolean requestFullSpaceMode, Runnable completedCallback);
 
     /**
      * Get XR space mode observable supplier. The supplier provides boolean value: true for XR Full
-     * space mode.
+     * Space mode.
      */
     ObservableSupplier<Boolean> getXrSpaceModeObservableSupplier();
 
     /**
-     * Call to complete XR space mode transition initiated in {@link
-     * XrSceneCoreSessionManager#startSpaceModeChange}.
+     * Is the activity in the Full Space mode. It will report the previous mode until the current
+     * transition is complete.
      */
-    void finishSpaceModeChange();
+    boolean isXrFullSpaceMode();
 
-    /**
-     * Request to change XR space mode synchronously. Visibility of the activity is controlled
-     * internally.
-     *
-     * @param fsmModeRequested Requested XR space mode (true for XR full space mode).
-     * @return success status. True: if the activity has focus and it's not in the middle of
-     *     transition between XR space modes.
-     */
-    boolean requestSpaceModeChange(boolean fsmModeRequested);
+    /** Update visibility of main panel in the Full Space mode. */
+    void setMainPanelVisibility(boolean visible);
 }

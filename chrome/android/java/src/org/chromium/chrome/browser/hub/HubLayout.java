@@ -70,7 +70,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
-import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 import java.util.Collections;
 import java.util.function.DoubleConsumer;
@@ -129,6 +128,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final HubShowPaneHelper mHubShowPaneHelper;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final Supplier<Boolean> mXrFullSpaceModeSupplier;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
@@ -151,8 +151,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private @Nullable SolidColorSceneLayer mEmptySceneLayer;
 
     private @Nullable HubLayoutAnimationRunner mCurrentAnimationRunner;
-
-    private @Nullable XrSceneCoreSessionManager mXrSessionManager;
 
     /**
      * Create the {@link Layout} to show the Hub on.
@@ -216,14 +214,13 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mHubShowPaneHelper = mHubManager.getHubShowPaneHelper();
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnOverviewAlphaChange();
+        mXrFullSpaceModeSupplier = dependencyHolder.getXrFullSpaceModeSupplier();
         mTabModelSelector = tabModelSelectorSupplier.get();
         mDesktopWindowStateManager = desktopWindowStateManager;
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.addObserver(this);
             maybeUpdateLayout();
         }
-
-        mXrSessionManager = dependencyHolder.getXrSceneCoreSessionManager();
     }
 
     @Override
@@ -279,7 +276,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
-        mXrSessionManager = null;
     }
 
     @Override
@@ -310,7 +306,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void show(long time, boolean animate) {
-        final boolean isXrFullSpaceMode = isActivityInXrFullSpaceModeNow();
+        final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
         if (isStartingToShow()) return;
         if (isXrFullSpaceMode && animate && !ChromeFeatureList.sShowTabListAnimations.isEnabled()) {
             animate = false;
@@ -356,15 +352,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             mCurrentAnimationRunner = mHubLayoutAnimationRunnerFactory.apply(animatorProvider);
             mCurrentAnimationRunner.addListener(
                     new HubLayoutAnimationListenerImpl(mIsAnimatingSupplier) {
-                        @Override
-                        public void onStart() {
-                            super.onStart();
-                            // Show HubLayout (in XR full space mode) when animation starts.
-                            if (isActivityInXrFullSpaceModeNow()) {
-                                mXrSessionManager.finishSpaceModeChange();
-                            }
-                        }
-
                         @Override
                         public void onEnd(boolean wasForcedToFinish) {
                             super.onEnd(wasForcedToFinish);
@@ -429,7 +416,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
             // Since we are hiding this is no-longer fully shown.
             mFullyShown = false;
-            final boolean isXrFullSpaceMode = isActivityInXrFullSpaceModeNow();
+            final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
             // Use the EXPAND_NEW_TAB animation if it is already prepared.
             if (getCurrentAnimationType() == HubLayoutAnimationType.EXPAND_NEW_TAB) {
@@ -485,15 +472,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         public void onEnd(boolean wasForcedToFinish) {
                             super.onEnd(wasForcedToFinish);
                             doneHiding();
-
-                            if (isActivityInXrFullSpaceModeNow()) {
-                                mXrSessionManager.startSpaceModeChange(
-                                        false,
-                                        () -> {
-                                            assumeNonNull(mXrSessionManager);
-                                            mXrSessionManager.finishSpaceModeChange();
-                                        });
-                            }
                         }
                     });
             maybeAddPaneAnimationListener(mCurrentAnimationRunner);
@@ -711,7 +689,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         // Fixes being able to click the toolbar through the Hub on LFF devices see b/337616153.
         // This is not always `true` because it results in a visible flicker when exiting the Hub
         // into an NTP when using the expand animation.
-        return mFullyShown || isActivityInXrFullSpaceModeNow();
+        return mFullyShown || mXrFullSpaceModeSupplier.get();
     }
 
     @Override
@@ -736,7 +714,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     HubLayoutAnimatorProvider createShowAnimatorProvider(HubContainerView containerView) {
         @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
-        final boolean isXrFullSpaceMode = isActivityInXrFullSpaceModeNow();
+        final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()) && !isXrFullSpaceMode) {
             return TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
@@ -755,7 +733,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     HubLayoutAnimatorProvider createHideAnimatorProvider(HubContainerView containerView) {
         @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
-        final boolean isXrFullSpaceMode = isActivityInXrFullSpaceModeNow();
+        final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()) && !isXrFullSpaceMode) {
             return TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
@@ -960,12 +938,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                     TaskTraits.UI_DEFAULT,
                     () -> mHubController.getContainerView().setY(getContainerYOffset()));
         }
-    }
-
-    @EnsuresNonNullIf("mXrSessionManager")
-    private boolean isActivityInXrFullSpaceModeNow() {
-        return mXrSessionManager != null
-                && mXrSessionManager.getXrSpaceModeObservableSupplier().get();
     }
 
     public HubController getHubControllerForTesting() {

@@ -917,7 +917,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         rootViewSupplier::get,
                         incognitoSupplier,
                         adaptOnOverviewColorAlphaChange(),
-                        mXrSceneCoreSessionManagerSupplier.get());
+                        getXrSpaceModeObservableSupplier());
 
         return hubLayoutDependencyHolder;
     }
@@ -990,7 +990,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             mRootUiCoordinator.getDataSharingTabManager(),
                             mRootUiCoordinator.getBottomSheetController(),
                             mRootUiCoordinator.getShareDelegateSupplier(),
-                            getXrSpaceModeObservableSupplier(),
+                            mXrSceneCoreSessionManagerSupplier.get(),
                             mRootUiCoordinator.getTopControlsStacker());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
@@ -1184,17 +1184,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private void onTabSwitcherClicked() {
-        var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
-        if (xrSceneCoreSessionManager != null) {
-            // Do nothing if space mode switch is already started.
-            xrSceneCoreSessionManager.startSpaceModeChange(
-                    true, this::onTabSwitcherClickedInternal);
-        } else {
-            onTabSwitcherClickedInternal();
-        }
-    }
-
-    private void onTabSwitcherClickedInternal() {
         Profile profile = mTabModelProfileSupplier.get();
         if (profile != null) {
             TrackerFactory.getTrackerForProfile(profile)
@@ -1611,13 +1600,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 // Request switching to Home Space mode on XR.
                 var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
                 if (xrSceneCoreSessionManager != null) {
-                    boolean isFsm =
-                            xrSceneCoreSessionManager.getXrSpaceModeObservableSupplier().get();
-                    if (isFsm) {
-                        xrSceneCoreSessionManager.startSpaceModeChange(
-                                /* fsmModeRequested= */ false,
-                                () -> xrSceneCoreSessionManager.finishSpaceModeChange());
-                    }
+                    xrSceneCoreSessionManager.requestSpaceModeChange(
+                            /* requestFullSpaceMode= */ false);
                 }
                 hideOverview(/* animate= */ true);
             }
@@ -4559,8 +4543,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         XrSceneCoreSessionManager xrSceneCoreSessionManager = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
-            // properties.
             if (XrUtils.isXrDevice()) {
                 xrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
                 xrSceneCoreSessionManager

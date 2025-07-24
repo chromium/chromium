@@ -330,7 +330,7 @@ public class HubLayoutUnitTest {
                         rootViewSupplier,
                         mScrimController,
                         mOnAlphaChange,
-                        /* xrSceneCoreSessionManager= */ null);
+                        /* xrFullSpaceModeSupplier= */ null);
 
         mTabModelSelectorSupplier = () -> mTabModelSelector;
         mHubLayout =
@@ -747,7 +747,7 @@ public class HubLayoutUnitTest {
                         rootViewSupplier,
                         mScrimController,
                         mOnAlphaChange,
-                        /* xrSceneCoreSessionManager= */ null);
+                        /* xrFullSpaceModeSupplier= */ null);
         mHubLayout =
                 new HubLayout(
                         mActivity,
