@@ -192,6 +192,7 @@ source_set("signin_impl") {
     deps += [
       ":login",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/keyed_service/content",
       "//components/policy/core/browser",

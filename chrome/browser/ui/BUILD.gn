@@ -92,8 +92,6 @@ static_library("ui") {
     "startup/test_third_party_cookie_phaseout_infobar_delegate.h",
     "status_bubble.h",
     "storage_pressure_bubble.h",
-    "sync/tab_contents_synced_tab_delegate.cc",
-    "sync/tab_contents_synced_tab_delegate.h",
     "tab_dialogs.cc",
     "tab_dialogs.h",
     "tab_helpers.cc",
@@ -382,6 +380,8 @@ static_library("ui") {
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
+    "//chrome/browser/ui/sync",
+    "//chrome/browser/ui/sync:impl",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/toolbar",
@@ -1107,14 +1107,6 @@ static_library("ui") {
       "startup/startup_tab_provider.cc",
       "startup/startup_tab_provider.h",
       "startup/startup_types.h",
-      "sync/browser_synced_tab_delegate.cc",
-      "sync/browser_synced_tab_delegate.h",
-      "sync/browser_synced_window_delegate.cc",
-      "sync/browser_synced_window_delegate.h",
-      "sync/browser_synced_window_delegates_getter.cc",
-      "sync/browser_synced_window_delegates_getter.h",
-      "sync/profile_signin_confirmation_helper.cc",
-      "sync/profile_signin_confirmation_helper.h",
       "tab_modal_confirm_dialog_delegate.cc",
       "tab_modal_confirm_dialog_delegate.h",
       "tabs/glic_actor_task_icon_controller.cc",
@@ -1851,6 +1843,10 @@ static_library("ui") {
       # TODO(crbug.com/430078439): Remove this circular dependency when
       # .cc files stop including browser.h, browser_window.h and browser_navigator.h.
       "//chrome/browser/ui/user_education:impl",
+
+      # TODO(crbug.com/432421124): Remove when the following headers aren't included
+      # or get componentized: c/b/ui/browser_dialogs.h, browser_navigation.h, browser.h.
+      "//chrome/browser/ui/sync:impl",
     ]
 
     if (is_mac) {
@@ -3502,9 +3498,6 @@ static_library("ui") {
   if (toolkit_views) {
     sources += [
       "bubble_anchor_util.h",
-      "sync/one_click_signin_links_delegate.h",
-      "sync/one_click_signin_links_delegate_impl.cc",
-      "sync/one_click_signin_links_delegate_impl.h",
       "toolbar_controller_util.cc",
       "toolbar_controller_util.h",
       "views/accelerator_table.cc",
@@ -5027,8 +5020,6 @@ static_library("ui") {
     if (!is_chromeos) {
       sources += [
         "idle_dialog.h",
-        "sync/sync_passphrase_dialog.cc",
-        "sync/sync_passphrase_dialog.h",
         "views/accessibility/accessibility_focus_highlight.cc",
         "views/accessibility/accessibility_focus_highlight.h",
         "views/frame/opaque_browser_frame_view.cc",

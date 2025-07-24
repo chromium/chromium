@@ -2446,6 +2446,7 @@ if (!is_android) {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:browser_tests",
       "//chrome/browser/ui/startup:startup_tab",
+      "//chrome/browser/ui/sync:browser_tests",
       "//chrome/browser/ui/tab_contents:browser_tests",
       "//chrome/browser/ui/tab_contents:browser_tests",
       "//chrome/browser/ui/tab_sharing",
@@ -3553,7 +3554,6 @@ if (!is_android) {
       "../browser/ui/promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
       "../browser/ui/startup/startup_browser_creator_browsertest.cc",
-      "../browser/ui/sync/one_click_signin_links_delegate_impl_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.h",
       "../browser/ui/tab_ui_helper_browsertest.cc",
@@ -3948,6 +3948,7 @@ if (!is_android) {
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/sync",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
@@ -6587,7 +6588,6 @@ test("unit_tests") {
     "../browser/ui/passwords/display_account_info_unittest.cc",
     "../browser/ui/passwords/manage_passwords_state_unittest.cc",
     "../browser/ui/passwords/settings/password_manager_porter_unittest.cc",
-    "../browser/ui/sync/tab_contents_synced_tab_delegate_unittest.cc",
     "../browser/ui/webui/chrome_urls/chrome_urls_handler_unittest.cc",
     "../browser/ui/webui/fileicon_source_unittest.cc",
     "../browser/ui/webui/log_web_ui_url_unittest.cc",
@@ -6928,6 +6928,7 @@ test("unit_tests") {
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/browser/ui/search_engines:unit_tests",
     "//chrome/browser/ui/serial:unit_tests",
+    "//chrome/browser/ui/sync:unit_tests",
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui",
@@ -8119,7 +8120,6 @@ test("unit_tests") {
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
       "../browser/ui/startup/launch_mode_recorder_unittest.cc",
-      "../browser/ui/sync/profile_signin_confirmation_helper_unittest.cc",
       "../browser/ui/tabs/organization/tab_organization_service_unittest.cc",
       "../browser/ui/tabs/organization/tab_organization_unittest.cc",
       "../browser/ui/tabs/organization/trigger_policies_unittest.cc",
@@ -8290,6 +8290,7 @@ test("unit_tests") {
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/search:unit_tests",
       "//chrome/browser/ui/startup:startup_tab",
+      "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tab_sharing:unit_tests",
       "//chrome/browser/ui/tabs:tab_group",
@@ -8352,7 +8353,6 @@ test("unit_tests") {
     if (is_linux || is_mac || is_win) {
       sources += [
         "../browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl_unittest.cc",
-        "../browser/ui/sync/sync_passphrase_dialog_unittest.cc",
         "../browser/ui/webui/settings/accessibility_main_handler_unittest.cc",
       ]
     }
@@ -11179,7 +11179,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac || is_linux || is_win) {
       sources += [
-        "../browser/ui/sync/sync_passphrase_dialog_browsertest.cc",
         "../browser/ui/views/default_link_capturing_interactive_uitest.cc",
         "../browser/ui/views/media_preview/permission_prompt_preview_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_navigation_capturing_iph_interactive_uitest.cc",
@@ -11289,6 +11288,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search:interactive_ui_tests",
       "//chrome/browser/ui/startup:startup_tab",
+      "//chrome/browser/ui/sync:interactive_ui_tests",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:interactive_ui_tests",
       "//chrome/browser/ui/tabs:tab_strip",

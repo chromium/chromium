@@ -1878,6 +1878,10 @@ static_library("browser") {
     # - account_password_store_factory.h"
     # - profile_password_store_factory.h"
     "//chrome/browser/ui/webauthn:impl",
+
+    # TODO(crbug.com/432421124): Remove this circular dependency when history_service_factory.h,
+    # task_tab_helper.h and supervised_user_navigation_observer.h get componentized.
+    "//chrome/browser/ui/sync:impl",
   ]
 
   public_deps = [
@@ -2081,6 +2085,8 @@ static_library("browser") {
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/side_search",
+    "//chrome/browser/ui/sync",
+    "//chrome/browser/ui/sync:impl",
     "//chrome/browser/ui/translate",
     "//chrome/browser/ui/webid",
     "//chrome/browser/webauthn",
