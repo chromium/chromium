@@ -23,6 +23,7 @@ source_set("web_navigation") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_tab_strip",
     "//content/public/browser",
     "//extensions/browser",
     "//ui/base",

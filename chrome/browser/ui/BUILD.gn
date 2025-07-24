@@ -996,10 +996,7 @@ static_library("ui") {
       "browser_tab_menu_model_delegate.h",
       "browser_tab_restorer.cc",
       "browser_tab_strip_model_delegate.cc",
-      "browser_tab_strip_model_delegate.h",
       "browser_tab_strip_tracker.cc",
-      "browser_tab_strip_tracker.h",
-      "browser_tab_strip_tracker_delegate.h",
       "browser_tabrestore.cc",
       "browser_tabrestore.h",
       "browser_tabstrip.cc",
@@ -1499,6 +1496,7 @@ static_library("ui") {
 
     # Non-android deps for "ui" target.
     deps += [
+      ":browser_tab_strip",
       "//base",
       "//chrome/app/vector_icons",
       "//chrome/browser:shell_integration",
@@ -5669,6 +5667,19 @@ if (!is_android) {
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_list",
+    ]
+  }
+
+  source_set("browser_tab_strip") {
+    sources = [
+      "browser_tab_strip_model_delegate.h",
+      "browser_tab_strip_tracker.h",
+      "browser_tab_strip_tracker_delegate.h",
+    ]
+    public_deps = [
+      ":browser_list",
+      "//base",
+      "//chrome/browser/ui/tabs:tab_strip",
     ]
   }
 }

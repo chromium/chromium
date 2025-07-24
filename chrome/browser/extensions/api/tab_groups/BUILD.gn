@@ -22,6 +22,7 @@ source_set("tab_groups") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/common/extensions/api",
     "//components/tab_groups",

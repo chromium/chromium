@@ -3944,6 +3944,7 @@ if (!is_android) {
       "//chrome/browser/infobars:test_support",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/supervised_user",
+      "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/profiles",

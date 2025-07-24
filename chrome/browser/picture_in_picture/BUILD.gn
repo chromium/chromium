@@ -112,6 +112,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/color:color_headers",
       "//components/strings:components_strings",
       "//components/url_formatter",

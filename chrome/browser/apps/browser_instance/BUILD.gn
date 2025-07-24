@@ -19,6 +19,8 @@ source_set("browser_instance") {
     "web_contents_instance_id_utils.h",
   ]
 
+  public_deps = [ "//chrome/browser/ui:browser_tab_strip" ]
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [

@@ -874,6 +874,7 @@ source_set("extensions") {
       "//chrome/browser/media/webrtc",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/tab_contents",
