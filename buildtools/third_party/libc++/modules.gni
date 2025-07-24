@@ -1,0 +1,102 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/c++/modules.gni")
+import("//build/config/clang/clang.gni")
+
+configs_to_add = [
+  "//buildtools/third_party/libc++:config",
+  "//build/config/compiler:no_chromium_code",
+]
+
+configs_to_remove = [
+  "//build/config/compiler:chromium_code",
+  "//build/config/coverage:default_coverage",
+]
+
+if (use_clang_modules) {
+  template("modulemap") {
+    source_set(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "public_configs",
+                               "public_deps",
+                             ])
+      use_libcxx_modules = false
+      sources = [ invoker.modulemap ]
+
+      # By always including all module maps, we can get it to error out if
+      # we attempt to include something not in your dependencies.
+      # Otherwise, it would silently add it to your own AST.
+      cflags = module_map_flags
+      configs -= configs_to_remove
+      configs += configs_to_add
+    }
+  }
+
+  # When I change sysroot_features from an alias to a group, it omits
+  # -fmodule-file for the aliased target from the command-line.
+  # This seems like it might be a bug in GN, but I'm not waiting for a fix
+  # before submitting this.
+  template("alias") {
+    source_set(target_name) {
+      public_deps = invoker.actual
+      use_libcxx_modules = false
+    }
+  }
+
+  template("builtin_module") {
+    # This is a template to build clang builtin's module file.
+    modulemap(target_name) {
+      forward_variables_from(invoker, "*")
+      modulemap = "${clang_base_path}/lib/clang/${clang_version}/include/module.modulemap"
+    }
+  }
+
+  template("libcxx_module") {
+    # This is a template to build libc++'s module file.
+    modulemap(target_name) {
+      forward_variables_from(invoker, "*")
+      modulemap =
+          "${root_gen_dir}/third_party/libc++/src/include/module.modulemap"
+      deps = [
+        "//buildtools/third_party/libc++:copy_custom_headers",
+        "//buildtools/third_party/libc++:copy_libcxx_headers",
+      ]
+    }
+  }
+
+  if (is_mac || is_ios) {
+    template("DarwinBasic_module") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, "*")
+        modulemap = "$mac_sdk_path/usr/include/DarwinBasic.modulemap"
+      }
+    }
+    template("DarwinFoundation_module") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, "*")
+        modulemap = "$mac_sdk_path/usr/include/DarwinFoundation.modulemap"
+      }
+    }
+    template("c_standard_library_module") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, "*")
+        modulemap = "$mac_sdk_path/usr/include/c_standard_library.modulemap"
+      }
+    }
+  } else {
+    template("sysroot_module") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, "*")
+        modulemap = sysroot_modulemap
+        deps = [
+          ":copy_custom_headers",
+          ":copy_libcxx_headers",
+        ]
+      }
+    }
+  }
+}
