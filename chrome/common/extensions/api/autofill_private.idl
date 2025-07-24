@@ -164,9 +164,7 @@ namespace autofillPrivate {
     // to user's account.
     ACCOUNT,
     ACCOUNT_HOME,
-    ACCOUNT_WORK,
-    // The address is stored locally. Not synced at all.
-    ACCOUNT_NAME_EMAIL
+    ACCOUNT_WORK
   };
 
   // The type of data that can be stored for an attribute type.

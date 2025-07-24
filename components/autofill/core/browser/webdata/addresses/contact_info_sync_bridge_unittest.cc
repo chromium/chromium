@@ -332,16 +332,6 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_IgnoresLocalProfiles) {
        TestProfile(kGUID1, AutofillProfile::RecordType::kLocalOrSyncable)});
 }
 
-// Tests that AccountNameEmail profiles are not synced.
-TEST_F(ContactInfoSyncBridgeTest,
-       AutofillProfileChange_IgnoresAccountNameEmailProfiles) {
-  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  bridge().AutofillProfileChanged(
-      {AutofillProfileChange::ADD, kGUID1,
-       TestProfile(kGUID1, AutofillProfile::RecordType::kAccountNameEmail)});
-}
-
 // Tests that new local profiles are pushed to Sync.
 TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Add) {
   ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));

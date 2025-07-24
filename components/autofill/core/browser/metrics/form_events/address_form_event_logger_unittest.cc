@@ -146,8 +146,6 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
   histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountNameEmail", 0);
-  histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
 
@@ -179,8 +177,6 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
       "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountNameEmail", 0);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
@@ -214,8 +210,6 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
   histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountNameEmail", 0);
-  histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
 
@@ -247,8 +241,6 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountHome) {
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
   histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountNameEmail", 0);
-  histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
 
@@ -279,42 +271,6 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountWork) {
       "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingCorrectness.AccountWork", !ShouldEditField(), 1);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountNameEmail", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
-}
-
-TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNameEmail) {
-  FormData form = CreateAndSeeForm();
-  FillFormWithProfile(
-      form, CreateProfileOfCategory(
-                AutofillProfileRecordTypeCategory::kAccountNameEmail));
-  if (ShouldEditField()) {
-    SimulateUserChangedField(form, form.fields().front());
-  }
-  SubmitForm(form);
-
-  ResetDriverToCommitMetrics();
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.Leipzig.FillingReadinessCategory",
-      CategoryResolvedKeyMetricBucket::kAccountNameEmail, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.Leipzig.FillingAssistanceCategory",
-      CategoryResolvedKeyMetricBucket::kAccountNameEmail, 1);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.Legacy", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountChrome", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.Leipzig.FillingCorrectness.AccountNameEmail",
-      !ShouldEditField(), 1);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Mixed", 0);
 }
@@ -360,8 +316,6 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
       "Autofill.Leipzig.FillingCorrectness.AccountHome", 0);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.AccountWork", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Leipzig.FillingCorrectness.AccountNameEmail", 0);
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingCorrectness.Mixed", !ShouldEditField(), 1);
 }

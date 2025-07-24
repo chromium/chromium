@@ -46,8 +46,7 @@ enum class AutofillProfileRecordTypeCategory {
   kAccountNonChrome = 2,
   kAccountHome = 3,
   kAccountWork = 4,
-  kAccountNameEmail = 5,
-  kMaxValue = kAccountNameEmail
+  kMaxValue = kAccountWork
 };
 
 // Maps the `profile` to its category, depending on the profile's

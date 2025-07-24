@@ -696,10 +696,6 @@ bool AutofillProfile::IsAccountProfile() const {
     case RecordType::kAccountHome:
     case RecordType::kAccountWork:
       return true;
-    case RecordType::kAccountNameEmail:
-      // TODO(crbug.com/356845298): Find alternative way of doing what this
-      // function does, since kAccountNameEmail doesn't fit either scenarios.
-      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -708,7 +704,6 @@ bool AutofillProfile::IsHomeAndWorkProfile() const {
   switch (record_type()) {
     case RecordType::kLocalOrSyncable:
     case RecordType::kAccount:
-    case RecordType::kAccountNameEmail:
       return false;
     case RecordType::kAccountHome:
     case RecordType::kAccountWork:

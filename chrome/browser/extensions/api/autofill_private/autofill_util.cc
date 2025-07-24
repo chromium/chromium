@@ -86,8 +86,6 @@ autofill_private::AddressRecordType ConvertProfileRecordType(
       return autofill_private::AddressRecordType::kAccountHome;
     case autofill::AutofillProfile::RecordType::kAccountWork:
       return autofill_private::AddressRecordType::kAccountWork;
-    case autofill::AutofillProfile::RecordType::kAccountNameEmail:
-      return autofill_private::AddressRecordType::kAccountNameEmail;
   }
   NOTREACHED();
 }

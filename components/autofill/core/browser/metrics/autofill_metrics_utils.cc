@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 
@@ -120,8 +119,6 @@ AutofillProfileRecordTypeCategory GetCategoryOfProfile(
       return AutofillProfileRecordTypeCategory::kAccountHome;
     case AutofillProfile::RecordType::kAccountWork:
       return AutofillProfileRecordTypeCategory::kAccountWork;
-    case AutofillProfile::RecordType::kAccountNameEmail:
-      return AutofillProfileRecordTypeCategory::kAccountNameEmail;
   }
 }
 
@@ -138,8 +135,6 @@ const char* GetProfileCategorySuffix(
       return "AccountHome";
     case AutofillProfileRecordTypeCategory::kAccountWork:
       return "AccountWork";
-    case AutofillProfileRecordTypeCategory::kAccountNameEmail:
-      return "AccountNameEmail";
   }
 }
 
