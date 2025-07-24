@@ -2110,12 +2110,6 @@ BASE_FEATURE(kPrefetchFontLookupTables,
 );
 #endif
 
-// Prefetch request properties are updated to be privacy-preserving. See
-// crbug.com/988956.
-BASE_FEATURE(kPrefetchPrivacyChanges,
-             "PrefetchPrivacyChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPreloadingHeuristicsMLModel,
              "PreloadingHeuristicsMLModel",
              base::FEATURE_DISABLED_BY_DEFAULT);

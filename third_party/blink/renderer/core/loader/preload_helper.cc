@@ -781,13 +781,6 @@ void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
   resource_request.SetFetchPriorityHint(
       GetFetchPriorityAttributeValue(params.fetch_priority_hint));
 
-  if (base::FeatureList::IsEnabled(features::kPrefetchPrivacyChanges)) {
-    resource_request.SetRedirectMode(network::mojom::RedirectMode::kError);
-    resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
-    // TODO(domfarolino): Implement more privacy-preserving prefetch changes.
-    // See crbug.com/988956.
-  }
-
   ResourceLoaderOptions options(
       document.GetExecutionContext()->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kLink;
