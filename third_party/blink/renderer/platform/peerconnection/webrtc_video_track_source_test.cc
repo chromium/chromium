@@ -340,14 +340,18 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
         EXPECT_EQ(frame.color_space().value().range(),
                   webrtc::ColorSpace::RangeID::kFull);
       }));
-
-  // For default REC709{BT709,BT709,BT709,Limited}, we will not set color space
-  // and transmit it by RTP since decoder side would guess it if color space is
-  // invalid.
   EXPECT_CALL(mock_sink_, OnFrame(_))
       .InSequence(s)
       .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
-        EXPECT_FALSE(frame.color_space().has_value());
+        ASSERT_TRUE(frame.color_space().has_value());
+        EXPECT_EQ(frame.color_space().value().matrix(),
+                  webrtc::ColorSpace::MatrixID::kSMPTE170M);
+        EXPECT_EQ(frame.color_space().value().transfer(),
+                  webrtc::ColorSpace::TransferID::kSMPTE170M);
+        EXPECT_EQ(frame.color_space().value().primaries(),
+                  webrtc::ColorSpace::PrimaryID::kSMPTE170M);
+        EXPECT_EQ(frame.color_space().value().range(),
+                  webrtc::ColorSpace::RangeID::kLimited);
       }));
 
   gfx::ColorSpace color_range_limited(

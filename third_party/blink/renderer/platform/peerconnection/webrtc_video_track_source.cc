@@ -499,7 +499,8 @@ void WebRtcVideoTrackSource::DeliverFrame(
         update_rect->height()});
   }
 
-  if (ShouldSetColorSpace(frame->ColorSpace())) {
+  if (frame->ColorSpace().IsValid() &&
+      base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
     frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
   }
   OnFrame(frame_builder.build());
@@ -508,17 +509,6 @@ void WebRtcVideoTrackSource::DeliverFrame(
   accumulated_update_rect_ = gfx::Rect();
 }
 
-bool WebRtcVideoTrackSource::ShouldSetColorSpace(
-    const gfx::ColorSpace& color_space) {
-  if (!base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
-    return false;
-  }
-
-  // The remote end will assume REC601 if not instructed otherwise, so there's
-  // no need to pass this information on the wire.
-  return color_space.IsValid() &&
-         color_space != gfx::ColorSpace::CreateREC601();
-}
 
 void WebRtcVideoTrackSource::Dispose() {
   callback_proxy_->Reset();

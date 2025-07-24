@@ -527,14 +527,16 @@ HRESULT ConvertToVideoSinkMediaType(IMFMediaType* source_media_type,
   // nominal range attribute from source to sink instead of rewriting it to
   // limited range. See https://crbug.com/1449570 for more details.
   if (base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
-    hr = CopyAttribute(source_media_type, sink_media_type,
-                       MF_MT_VIDEO_NOMINAL_RANGE);
+    // Not checking return value, since the attribute may be missing.
+    CopyAttribute(source_media_type, sink_media_type,
+                  MF_MT_VIDEO_NOMINAL_RANGE);
   } else {
     hr = sink_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
                                     MFNominalRange_16_235);
+    if (FAILED(hr)) {
+      return hr;
+    }
   }
-  if (FAILED(hr))
-    return hr;
 
   // Next three attributes may be missing, unless a HDR video is captured so
   // ignore errors.

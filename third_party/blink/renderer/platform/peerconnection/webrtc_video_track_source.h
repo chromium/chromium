@@ -127,10 +127,6 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   void TryProcessPendingFrames();
 
-  // This checks if the colorspace information should be passed to webrtc. Avoid
-  // sending unknown or unnecessary color space.
-  bool ShouldSetColorSpace(const gfx::ColorSpace& color_space);
-
   // |thread_checker_| is bound to the libjingle worker thread.
   THREAD_CHECKER(thread_checker_);
   scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> adapter_resources_;
