@@ -476,6 +476,10 @@ const char kDisableRollbackOption[] = "disable-rollback-option";
 // Disables volume adjust sound.
 const char kDisableVolumeAdjustSound[] = "disable-volume-adjust-sound";
 
+// Disables the Welcome Recap feature for factory testing.
+const char kDisableWelcomeRecapForFactoryTest[] =
+    "disable-welcome-recap-for-factory-testing";
+
 // DEPRECATED. Please use --arc-availability=officially-supported.
 // Enables starting the ARC instance upon session start.
 const char kEnableArc[] = "enable-arc";

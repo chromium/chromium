@@ -818,4 +818,17 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 }
 
+// If the welcome recap switch is disabled for factory testing, don't show the
+// informed restore dialog.
+TEST_F(FullRestoreServiceTest, DisableWelcomeRecapForFactoryTest) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableWelcomeRecapForFactoryTest);
+
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+}
+
 }  // namespace ash::full_restore

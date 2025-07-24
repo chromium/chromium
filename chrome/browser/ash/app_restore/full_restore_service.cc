@@ -242,6 +242,11 @@ void FullRestoreService::Init(bool& show_notification) {
   if (is_shut_down_)
     return;
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kDisableWelcomeRecapForFactoryTest)) {
+    return;
+  }
+
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
 
