@@ -341,7 +341,7 @@ const base::FeatureParam<int> kAutofillVcnEnrollStrikeExpiryTimeDays{
 // and displayed on the payment methods settings page.
 BASE_FEATURE(kAutofillSyncEwalletAccounts,
              "AutofillSyncEwalletAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If enabled, the Autofill strike system will not block features. Intended for

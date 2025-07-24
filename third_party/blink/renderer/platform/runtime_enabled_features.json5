@@ -3531,7 +3531,7 @@
     {
       // https://chromestatus.com/feature/5198846820352000
       name: "PaymentLinkDetection",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PaymentMethodChangeEvent",

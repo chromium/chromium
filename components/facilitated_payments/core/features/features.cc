@@ -30,7 +30,7 @@ BASE_FEATURE(kEnablePixAccountLinking,
 // link is detected.
 BASE_FEATURE(kEwalletPayments,
              "EwalletPayments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, Pix will be able to send multiple server request at a time.
