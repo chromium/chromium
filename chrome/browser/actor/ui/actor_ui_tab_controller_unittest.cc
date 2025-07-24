@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,6 +54,9 @@ class ActorUiTabControllerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActorUi,
+        {{features::kGlicActorUiHandoffButtonName, "true"}});
     // TODO(crbug.com/425952887): Refactor unit test to get rid of
     // TestingFactory and pass in the actor_keyed_service() directly.
     profile_ = TestingProfile::Builder()
@@ -122,6 +126,7 @@ class ActorUiTabControllerTest : public testing::Test {
   std::unique_ptr<ActorUiTabControllerFake> actor_ui_tab_controller_;
   MockTabInterface mock_tab_;
   MockBrowserWindowInterface mock_browser_window_interface_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TaskId task_id_;
 };
 
