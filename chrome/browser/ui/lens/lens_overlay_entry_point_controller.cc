@@ -178,6 +178,14 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
     }
   }
   UpdatePageActionState();
+
+  // Update the homework action chip.
+  // TODO(crbug.com/433813408): Remove GetBrowserForMigrationOnly after Page
+  // Actions migration.
+  CHECK(browser_window_interface_);
+  browser_window_interface_->GetBrowserForMigrationOnly()
+      ->window()
+      ->UpdatePageActionIcon(PageActionIconType::kLensOverlayHomework);
 }
 
 bool LensOverlayEntryPointController::IsUrlEduEligible(const GURL& url) const {
