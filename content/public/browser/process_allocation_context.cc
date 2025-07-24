@@ -40,10 +40,12 @@ bool ProcessAllocationContext::IsForNavigation() const {
 
 ProcessAllocationContext ProcessAllocationContext::CreateForNavigationRequest(
     ProcessAllocationNavigationStage stage,
-    int64_t navigation_id) {
+    int64_t navigation_id,
+    bool is_outermost_main_frame) {
   return ProcessAllocationContext{
       ProcessAllocationSource::kNavigationRequest,
-      NavigationProcessAllocationContext{stage, navigation_id}};
+      NavigationProcessAllocationContext{stage, navigation_id,
+                                         is_outermost_main_frame}};
 }
 
 }  // namespace content

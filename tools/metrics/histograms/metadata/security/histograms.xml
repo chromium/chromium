@@ -997,6 +997,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.MissedReuseOpportunity.Found.MainFrame"
+    enum="Boolean" expires_after="2026-07-18">
+  <owner>aattar@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Records whether a recently destroyed RenderProcessHost was found (true) or
+    not (false) that could have been reused for a new main frame navigation.
+    This is recorded when a live reusable process could not be found, by
+    checking for hosts destroyed within the last 2 hours.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.MissedReuseOpportunity.Found.Subframe"
+    enum="Boolean" expires_after="2026-07-18">
+  <owner>aattar@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Records whether a recently destroyed RenderProcessHost was found (true) or
+    not (false) that could have been reused for a new subframe navigation. This
+    is recorded when a live reusable process could not be found, by checking for
+    hosts destroyed within the last 60 seconds.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
     expires_after="2026-02-10">
   <owner>alexmos@chromium.org</owner>
@@ -1080,16 +1104,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed"
-    units="ms" expires_after="2024-04-28">
-  <owner>jessemckenna@google.com</owner>
+    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed.MainFrame"
+    units="ms" expires_after="2026-07-18">
+  <owner>aattar@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
-    Recorded on navigations with a ProcessReusePolicy of
-    REUSE_PENDING_OR_COMMITTED_SITE (mostly subframe navigations). Measures the
-    time since a RenderProcessHost hosting the destination URL was last
-    destroyed, up to 10 seconds. If no host matching the destination was
-    recently destroyed, a sentinel value of 20 seconds is used.
+    Recorded when creating a new process for a main frame navigation, after
+    failing to find a live one to reuse. Measures the time since a
+    RenderProcessHost for the same site was last destroyed, up to 2 hours. This
+    metric does not record a value for misses; use
+    SiteIsolation.MissedReuseOpportunity.Found.MainFrame to determine hit rate.
+  </summary>
+</histogram>
+
+<histogram
+    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed.Subframe"
+    units="ms" expires_after="2026-07-18">
+  <owner>aattar@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Recorded on subframe navigations when a live reusable process could not be
+    found. Measures the time since a RenderProcessHost for the same site was
+    last destroyed, up to 60 seconds. This metric does not record a value for
+    misses; use SiteIsolation.MissedReuseOpportunity.Found.Subframe to determine
+    hit rate.
   </summary>
 </histogram>
 

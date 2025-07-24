@@ -4875,10 +4875,14 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         is_unmatched_service_worker = false;
         render_process_host->StopTrackingProcessForShutdownDelay();
       } else {
-        RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
-            reusable_host_lookup_time,
-            ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
-            site_instance->GetBrowserContext());
+        if (process_reuse_policy ==
+            ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME) {
+          RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+              RecentlyDestroyedHosts::Context::kSubframe,
+              reusable_host_lookup_time,
+              ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
+              site_instance->GetBrowserContext());
+        }
       }
       break;
     }
@@ -4979,6 +4983,17 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
 
   // Otherwise, create a new RenderProcessHost.
   if (!render_process_host) {
+    // This is our last chance before creating a new process. If this is for
+    // a main frame navigation, check if we recently destroyed a suitable
+    // process to record a corresponding metric.
+    if (allocation_context.IsForNavigation() &&
+        allocation_context.navigation_context->is_outermost_main_frame) {
+      RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+          RecentlyDestroyedHosts::Context::kMainFrame, base::TimeTicks::Now(),
+          ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()),
+          site_instance->GetBrowserContext());
+    }
+
     // Pass a null StoragePartition. Tests with TestBrowserContext using a
     // RenderProcessHostFactory may not instantiate a StoragePartition, and
     // creating one here with GetStoragePartition() can run into cross-thread

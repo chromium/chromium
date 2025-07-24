@@ -1558,7 +1558,7 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
           request, &ignored_bcg_swap_info,
           ProcessAllocationContext::CreateForNavigationRequest(
               ProcessAllocationNavigationStage::kBeforeNetworkRequest,
-              request->GetNavigationId()));
+              request->GetNavigationId(), request->IsInOutermostMainFrame()));
       if (result.has_value()) {
         DCHECK(result.value());
       } else if (result.error() ==
