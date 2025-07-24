@@ -4051,6 +4051,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
 
   AttachSucceedingPseudoElements(children_context);
+  AttachTransitionPseudo();
 
   if (!IsPseudoElement() && layout_object) {
     context.counters_context.LeaveObject(*layout_object);
@@ -4112,6 +4113,9 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   // https://crbug.com/939769
   if (ChildNeedsReattachLayoutTree() || GetComputedStyle() ||
       (!performing_reattach && IsUserActionElement())) {
+    if (performing_reattach) {
+      DetachTransitionPseudo();
+    }
     if (ShadowRoot* shadow_root = GetShadowRoot()) {
       shadow_root->DetachLayoutTree(performing_reattach);
       Node::DetachLayoutTree(performing_reattach);
@@ -4143,6 +4147,52 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   if (context) {
     context->DetachLayoutTree();
   }
+}
+
+void Element::DetachTransitionPseudo() {
+  if (!RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    return;
+  }
+
+  auto* transition_pseudo = GetPseudoElement(kPseudoIdViewTransition);
+  if (!transition_pseudo || IsDocumentElement()) {
+    return;
+  }
+
+  auto* scope_layout_object = GetLayoutObject();
+  auto* pseudo_layout_object = transition_pseudo->GetLayoutObject();
+  if (!scope_layout_object || !pseudo_layout_object) {
+    return;
+  }
+
+  // Disconnect the pseudo's layout object from the scope's layout object.
+  // This is done so that when the scope runs LayoutObject::Destroy, it does
+  // not recurse into the pseudo tree. Instead the pseudo holds on to its
+  // layout tree until it is reattached in AttachTransitionPseudo.
+  scope_layout_object->RemoveChild(pseudo_layout_object);
+}
+
+void Element::AttachTransitionPseudo() {
+  if (!RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    return;
+  }
+
+  auto* transition_pseudo = GetPseudoElement(kPseudoIdViewTransition);
+  if (!transition_pseudo || IsDocumentElement()) {
+    return;
+  }
+
+  auto* scope_layout_object = GetLayoutObject();
+  auto* pseudo_layout_object = transition_pseudo->GetLayoutObject();
+  if (!scope_layout_object || !pseudo_layout_object) {
+    return;
+  }
+
+  // Reconnect the existing pseudo layout object to the scope parent.
+  // Note: this method only handles the scenario of the scope being reattached
+  // after acquiring transition pseudos. Construction of the transition pseudo
+  // layout objects is handled in RebuildTransitionPseudoLayoutTree.
+  scope_layout_object->AddChild(pseudo_layout_object);
 }
 
 void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {

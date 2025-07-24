@@ -1894,6 +1894,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       PseudoId,
       const AtomicString& view_transition_name = g_null_atom);
   void ClearTransitionPseudoTreeIfNeeded(const StyleRecalcChange);
+  void DetachTransitionPseudo();
+  void AttachTransitionPseudo();
 
   bool IsElementNode() const =
       delete;  // This will catch anyone doing an unnecessary check.
