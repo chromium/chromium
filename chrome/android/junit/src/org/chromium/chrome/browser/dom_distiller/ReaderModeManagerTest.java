@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationResult;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
@@ -516,6 +517,16 @@ public class ReaderModeManagerTest {
         verify(mMessageDispatcher)
                 .enqueueMessage(
                         any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testHideReadingMode() {
+        UserActionTester userActionTester = new UserActionTester();
+
+        mManager.hideReaderMode();
+        verify(mTab).goBack();
+        assertEquals(1, userActionTester.getActionCount("MobileReaderModeHidden"));
     }
 
     /**

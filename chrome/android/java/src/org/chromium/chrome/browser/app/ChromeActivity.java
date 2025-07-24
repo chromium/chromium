@@ -208,6 +208,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubbleBackPressHandler;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -2371,13 +2372,19 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 getActivityTab());
     }
 
-    private void openReaderMode() {
-        Tab currentTab = getActivityTab();
+    private void onReaderModeMenuItemClick(Tab currentTab) {
         ReaderModeManager readerModeManager =
                 currentTab.getUserDataHost().getUserData(ReaderModeManager.class);
         if (readerModeManager == null) return;
-
-        readerModeManager.activateReaderMode();
+        if (DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
+            // Hide Reading Mode menu option is visible.
+            readerModeManager.hideReaderMode();
+            RecordUserAction.record("MobileMenuHideReaderMode");
+        } else {
+            // Show Reading Mode menu option is visible.
+            readerModeManager.activateReaderMode();
+            RecordUserAction.record("MobileMenuShowReaderMode");
+        }
     }
 
     /**
@@ -2641,8 +2648,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.reader_mode_menu_id) {
-            openReaderMode();
-            RecordUserAction.record("MobileMenuReaderMode");
+            onReaderModeMenuItemClick(currentTab);
             return true;
         }
 

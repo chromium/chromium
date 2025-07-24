@@ -122,6 +122,7 @@ import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
@@ -234,6 +235,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeJni;
+    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -360,6 +362,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
 
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
+
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
     }
 
     @After
@@ -1321,14 +1325,38 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @EnableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/true")
-    public void readerModeEntryPointEnabled() {
+    public void readerModeEntryPointEnabled_ShowReadingMode() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
-        assertTrue(isMenuVisible(modelList, R.id.reader_mode_menu_id));
+        Context context = ContextUtils.getApplicationContext();
+        assertTrue(
+                isMenuVisibleWithCorrectTitle(
+                        modelList,
+                        R.id.reader_mode_menu_id,
+                        context.getString(R.string.show_reading_mode_text)));
+    }
+
+    @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/true")
+    public void readerModeEntryPointEnabled_HideReadingMode() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_DISTILLER_EXAMPLE_URL);
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        Context context = ContextUtils.getApplicationContext();
+        assertTrue(
+                isMenuVisibleWithCorrectTitle(
+                        modelList,
+                        R.id.reader_mode_menu_id,
+                        context.getString(R.string.hide_reading_mode_text)));
     }
 
     private MVCListAdapter.ModelList setUpMenuWithIncognitoReauthPage(boolean isShowing) {
@@ -2151,6 +2179,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     private boolean isMenuVisible(MVCListAdapter.ModelList modelList, int itemId) {
         return findItemById(modelList, itemId) != null;
+    }
+
+    private boolean isMenuVisibleWithCorrectTitle(
+            MVCListAdapter.ModelList modelList, int itemId, String expectedTitle) {
+        MVCListAdapter.ListItem menuItem = findItemById(modelList, itemId);
+        if (menuItem == null) return false;
+        return menuItem.model.get(AppMenuItemProperties.TITLE) == expectedTitle;
     }
 
     private String getMenuTitles(MVCListAdapter.ModelList modelList) {

@@ -34,4 +34,6 @@ public class JUnitTestGURLs {
     public static final GURL GOOGLE_URL_CAT = new GURL("http://www.google.com/cat");
     public static final GURL ABOUT_BLANK = new GURL("about:blank");
     public static final GURL CHROME_ABOUT = new GURL("chrome://about");
+    public static final GURL CHROME_DISTILLER_EXAMPLE_URL =
+            new GURL("chrome-distiller://abc123/?url=https://www.example.com");
 }

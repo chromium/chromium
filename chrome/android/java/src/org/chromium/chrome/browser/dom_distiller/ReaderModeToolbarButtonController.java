@@ -137,16 +137,16 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
         Tab currentTab = mActiveTabSupplier.get();
         if (currentTab == null) return;
 
-        // Note: Hidden behind feature flag.
-        if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
-                && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
-            currentTab.goBack();
-            return;
-        }
-
         ReaderModeManager readerModeManager =
                 currentTab.getUserDataHost().getUserData(ReaderModeManager.class);
         if (readerModeManager == null) return;
+
+        // Note: Hidden behind feature flag.
+        if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
+                && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
+            readerModeManager.hideReaderMode();
+            return;
+        }
 
         readerModeManager.activateReaderMode();
     }

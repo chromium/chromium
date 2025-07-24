@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -313,8 +314,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         observeAndMaybeAddReadAloud(modelList, currentTab);
 
         // Reader mode
-        if (DomDistillerFeatures.showAlwaysOnEntryPoint()) {
-            modelList.add(buildReaderModeItem());
+        if (shouldShowReaderModeItem(currentTab)) {
+            modelList.add(buildReaderModeItem(currentTab));
         }
 
         // Open with ...
@@ -673,13 +674,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.sharing_print : 0));
     }
 
-    private MVCListAdapter.ListItem buildReaderModeItem() {
-        assert DomDistillerFeatures.showAlwaysOnEntryPoint();
+    private boolean shouldShowReaderModeItem(@Nullable Tab currentTab) {
+        return currentTab != null && DomDistillerFeatures.showAlwaysOnEntryPoint();
+    }
+
+    private MVCListAdapter.ListItem buildReaderModeItem(Tab currentTab) {
+        assert shouldShowReaderModeItem(currentTab);
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
                         R.id.reader_mode_menu_id,
-                        R.string.show_reading_mode_text,
+                        DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
+                                ? R.string.hide_reading_mode_text
+                                : R.string.show_reading_mode_text,
                         shouldShowIconBeforeItem() ? R.drawable.ic_reader_mode_24dp : 0));
     }
 

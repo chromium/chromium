@@ -752,6 +752,12 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         assumeNonNull(provider).addObserver(mDistillabilityObserver);
     }
 
+    // Navigates away from reader mode. This is intended for in-app distillation, not for CCT.
+    public void hideReaderMode() {
+        mTab.goBack();
+        RecordUserAction.record("MobileReaderModeHidden");
+    }
+
     /**
      * Returns whether reader mode should trigger through messages. This happens for CCTs and
      * incognito tabs.

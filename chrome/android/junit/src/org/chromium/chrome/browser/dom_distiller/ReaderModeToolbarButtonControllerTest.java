@@ -93,13 +93,27 @@ public class ReaderModeToolbarButtonControllerTest {
     }
 
     @Test
-    public void testButtonClickEnablesReaderMode() {
+    public void testButtonClickNonDistilledPage_EnablesReaderMode() {
         ReaderModeToolbarButtonController controller = createController();
 
         ButtonData readerModeButton = controller.get(mMockTab);
         readerModeButton.getButtonSpec().getOnClickListener().onClick(null);
 
         verify(mMockReaderModeManager).activateReaderMode();
+    }
+
+    @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
+    public void testButtonClickDistilledPage_HidesReaderMode() {
+        ReaderModeToolbarButtonController controller = createController();
+
+        when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+
+        ButtonData readerModeButton = controller.get(mMockTab);
+        readerModeButton.getButtonSpec().getOnClickListener().onClick(null);
+
+        verify(mMockReaderModeManager).hideReaderMode();
     }
 
     @Test
