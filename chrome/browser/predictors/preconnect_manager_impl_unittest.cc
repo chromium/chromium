@@ -23,6 +23,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/preconnect_request.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
