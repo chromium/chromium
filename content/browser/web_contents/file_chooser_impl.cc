@@ -219,20 +219,20 @@ void FileChooserImpl::FileSelected(
   for (const auto& file : files) {
     if (mode == blink::mojom::FileChooserParams::Mode::kSave) {
       policy->GrantCreateReadWriteFile(pid, file->get_native_file()->file_path);
-    } else {
-      if (file->is_file_system()) {
-        if (!file_system_context) {
-          file_system_context = render_frame_host()
-                                    ->GetStoragePartition()
-                                    ->GetFileSystemContext();
-        }
-        policy->GrantReadFileSystem(
-            pid, file_system_context
-                     ->CrackURLInFirstPartyContext(file->get_file_system()->url)
-                     .mount_filesystem_id());
-      } else {
-        policy->GrantReadFile(pid, file->get_native_file()->file_path);
+      continue;
+    }
+
+    if (file->is_file_system()) {
+      if (!file_system_context) {
+        file_system_context =
+            render_frame_host()->GetStoragePartition()->GetFileSystemContext();
       }
+      policy->GrantReadFileSystem(
+          pid, file_system_context
+                   ->CrackURLInFirstPartyContext(file->get_file_system()->url)
+                   .mount_filesystem_id());
+    } else {
+      policy->GrantReadFile(pid, file->get_native_file()->file_path);
     }
   }
   std::move(callback_).Run(FileChooserResult::New(std::move(files), base_dir));
@@ -245,10 +245,7 @@ void FileChooserImpl::FileSelectionCanceled() {
 
 RenderFrameHostImpl* FileChooserImpl::render_frame_host() {
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_frame_host_id_);
-  if (rfh && rfh->IsRenderFrameLive()) {
-    return rfh;
-  }
-  return nullptr;
+  return (rfh && rfh->IsRenderFrameLive()) ? rfh : nullptr;
 }
 
 }  // namespace content
