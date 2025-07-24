@@ -252,7 +252,7 @@
 <translation id="1989404831625305000">비밀번호 관리자 숨기기</translation>
 <translation id="1989858546814009832">{count,plural, =1{Google 계정에 북마크 1개 저장}other{Google 계정에 북마크 {count}개 저장}}</translation>
 <translation id="1990820278544963435">찾기</translation>
-<translation id="1992055602764528852">다른 기기에서 탭을 보려면 로그인하세요.</translation>
+<translation id="1992055602764528852">다른 기기의 탭을 보려면 로그인하세요.</translation>
 <translation id="1993126639825654370">링크 URL 복사</translation>
 <translation id="199425419756152024">비밀번호 보기</translation>
 <translation id="1996318269856535896">이 기기에서 기존 인터넷 사용 기록을 계속 사용할 수 있습니다. 이를 사용하려면 관리 계정에서 로그아웃하세요.</translation>
@@ -835,7 +835,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4490794477009017910">이전 탭으로 이동</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> 계정으로 로그인했습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="4495516234578759322">다음 항목 찾기</translation>
-<translation id="4502423230170890588">기기에서 삭제</translation>
+<translation id="4502423230170890588">이 기기에서 삭제</translation>
 <translation id="4508750114462689118">로그인 프로모션 닫기</translation>
 <translation id="4509345063551561634">위치:</translation>
 <translation id="4517684186578051919">기기 정보</translation>

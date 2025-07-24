@@ -81,7 +81,7 @@
 <translation id="1331212799747679585">Chrome을 업데이트할 수 없습니다. 옵션 더보기</translation>
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
 <translation id="1333491156693005331">최근에 확인됨</translation>
-<translation id="1336996151357442890"><ph name="SITE_NAME" /> 사이트 구독을 취소했습니다. 다음에 사이트를 방문할 때 설정을 다시 확인합니다.</translation>
+<translation id="1336996151357442890"><ph name="SITE_NAME" /> 사이트의 알림 수신을 거부했습니다. 다음에 사이트를 방문할 때 설정을 다시 확인합니다.</translation>
 <translation id="1340839264183302272">그룹 나가기</translation>
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
 <translation id="1344653310988386453">하이라이트 링크 포함</translation>
@@ -1311,7 +1311,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6883606786470492001">사이트에서 개인 맞춤 광고를 표시할 때 나에 관해 알아볼 수 있는 정보를 제한하기 위해 광고 주제 및 기타 설정을 관리하세요.</translation>
 <translation id="6883906387682976294">이 사이트의 알림 수신 거부</translation>
 <translation id="688398477366397178">사용하는 언어를 웹사이트에 알려주세요. 가능한 경우 해당 언어로 콘텐츠가 표시됩니다.</translation>
-<translation id="6885933993535178919">{NUM_SITES,plural, =1{사이트 1개의 구독을 취소함}other{사이트 #개의 구독을 취소함}}</translation>
+<translation id="6885933993535178919">{NUM_SITES,plural, =1{사이트 1개의 알림 수신 거부함}other{사이트 #개의 알림 수신 거부함}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{비밀번호 1개}other{비밀번호 #개}}</translation>
 <translation id="688730033107341407">로그아웃하면 Google 계정의 북마크, 비밀번호 등이 이 기기에서 삭제됩니다.</translation>
 <translation id="688738109438487280"><ph name="TO_ACCOUNT" />에 기존 데이터 추가</translation>

@@ -1789,7 +1789,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2229161054156947610">Mais de 1 hora restante</translation>
 <translation id="222931766245975952">Arquivo truncado</translation>
 <translation id="2231160360698766265">Os sites podem abrir conteúdo protegido</translation>
-<translation id="2231351769755997720">Nenhuma sugestão disponível. Tente fazer sua própria pergunta sobre a página.</translation>
+<translation id="2231351769755997720">Nenhuma sugestão disponível. Tente fazer uma pergunta sobre a página.</translation>
 <translation id="2232751457155581899">Os sites podem pedir para rastrear a posição da câmera</translation>
 <translation id="2233502537820838181">&amp;Mais informações</translation>
 <translation id="223356358902285214">Atividade na Web e de apps</translation>
@@ -7197,7 +7197,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6071181508177083058">confirmar senha</translation>
 <translation id="6071576563962215370">Falha do sistema ao estabelecer o bloqueio de atributos do tempo de instalação do dispositivo.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de memória economizados</translation>
-<translation id="6071995715087444295">Para verificar se há senhas comprometidas, faça login na sua Conta do Google</translation>
+<translation id="6071995715087444295">Para checar se há senhas comprometidas, faça login na sua Conta do Google</translation>
 <translation id="6072442788591997866">O app <ph name="APP_NAME" /> não é permitido neste dispositivo. Entre em contato com o administrador. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073292342939316679">diminuir brilho do teclado</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
@@ -7342,7 +7342,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6170313103929479668">Organizar a visualização dividida</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
 <translation id="6170498031581934115">Não foi possível ativar a depuração do adb. Acesse "Configurações" e tente novamente.</translation>
-<translation id="6170675927290506430">Acessar configurações de notificação</translation>
+<translation id="6170675927290506430">Acessar as configurações de notificação</translation>
 <translation id="6171779718418683144">Perguntar sempre</translation>
 <translation id="6172020488605056255">Clique com o botão direito do mouse para usar o recurso Quero ajuda para ler</translation>
 <translation id="617213288191670920">Nenhum idioma adicionado</translation>
@@ -11299,7 +11299,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8962083179518285172">Ocultar detalhes</translation>
 <translation id="8962863356073277855">O formato do URL precisa ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este site está usando sensores de luz ou movimento.</translation>
-<translation id="8963117664422609631">Acessar configurações do site</translation>
+<translation id="8963117664422609631">Acessar as configurações do site</translation>
 <translation id="8964927371396953727">Confirme sua identidade para usar e salvar senhas na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Digite a senha antiga</translation>
 <translation id="8967403839792635452">Você desenvolve extensões? Fique por dentro das <ph name="BEGIN_LINK" />novidades<ph name="END_LINK" /> com a documentação para desenvolvedores sobre extensões do Chrome.</translation>

@@ -625,7 +625,7 @@
 <translation id="3866863539038222107">Просмотр ресурсов</translation>
 <translation id="3870908470613821006">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
 <translation id="3873174561423636563">Чтобы вы могли продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши <ph name="FIELDS_STRING" />. Ознакомьтесь с <ph name="BEGIN_LINK1" />условиями использования<ph name="END_LINK1" /> сайта.</translation>
-<translation id="3892148308691398805">Копировать текст</translation>
+<translation id="3892148308691398805">Скопировать текст</translation>
 <translation id="3898498281932368596">Заблокировать и выйти</translation>
 <translation id="3899682235662194879">Закрыть все вкладки инкогнито</translation>
 <translation id="3900966090527141178">Экспорт паролей</translation>

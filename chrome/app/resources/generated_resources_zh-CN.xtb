@@ -1299,7 +1299,7 @@
 <translation id="1896043844785689584">若要设置指纹，请让您的孩子轻触键盘右下角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="1897120393475391208">使用安全系数高的密码</translation>
 <translation id="1897860317037652061">扫描失败</translation>
-<translation id="1898804291554630487">询问关于此页面的问题</translation>
+<translation id="1898804291554630487">询问与此页面有关的问题</translation>
 <translation id="1900305421498694955">Google Play 中的应用可能需要获得完整的文件系统访问权限，才能在外部存储设备上读取和写入文件。任何使用外部驱动器的人员都能看到在此设备上创建的文件和文件夹。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">请让您的管理员更新此应用</translation>
 <translation id="1901303067676059328">全选(&amp;A)</translation>
@@ -1771,7 +1771,7 @@
 <translation id="2229161054156947610">剩余时间超过 1 小时</translation>
 <translation id="222931766245975952">文件被截断</translation>
 <translation id="2231160360698766265">网站可以播放受保护内容</translation>
-<translation id="2231351769755997720">没有建议。请尝试就此页面提出自己的问题。</translation>
+<translation id="2231351769755997720">没有可用建议。试试询问与此页面有关的问题吧。</translation>
 <translation id="2232751457155581899">网站可以请求跟踪您的摄像头位置</translation>
 <translation id="2233502537820838181">详细信息(&amp;M)</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
@@ -5709,7 +5709,7 @@
 <translation id="4989966318180235467">检查背景页(&amp;B)</translation>
 <translation id="4990673372047946816">无可用摄像头</translation>
 <translation id="4991420928586866460">将顶行键设置为功能键</translation>
-<translation id="4991873517942703737">就此文档提出问题</translation>
+<translation id="4991873517942703737">询问与此文档有关的问题</translation>
 <translation id="4992443049233195791">Microsoft 365 文件设置</translation>
 <translation id="4992458225095111526">确认 Powerwash 操作</translation>
 <translation id="4992473555164495036">您的管理员限制了可用的输入法。</translation>
@@ -7275,7 +7275,7 @@
 <translation id="6147020289383635445">打印预览失败。</translation>
 <translation id="6147253937684562370">要解锁该个人资料，请使用您的主账号电子邮件地址登录：<ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">立即打开</translation>
-<translation id="614890671148262506">始终允许此网站传送通知</translation>
+<translation id="614890671148262506">始终允许此网站发送通知</translation>
 <translation id="6149015141270619212">无法连接到互联网</translation>
 <translation id="6149061208933997199">使用密码</translation>
 <translation id="6149791593592044995">使用新型声调标记位置</translation>
