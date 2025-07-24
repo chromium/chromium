@@ -484,10 +484,6 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
 
   NSUInteger number_of_action_items = 6;
 
-  if (IsLensOverlayAvailable(profilePrefs_.get())) {
-    number_of_action_items++;
-  }
-
   if (ios::provider::IsTextZoomEnabled()) {
     number_of_action_items++;
   }
