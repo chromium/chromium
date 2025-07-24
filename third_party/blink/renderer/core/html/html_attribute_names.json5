@@ -302,6 +302,7 @@
     "parseparts",
     "part",
     "patchfor",
+    "patchsrc",
     "pattern",
     "placeholder",
     "playsinline",

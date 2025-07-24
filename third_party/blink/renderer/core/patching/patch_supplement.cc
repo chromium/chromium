@@ -90,10 +90,10 @@ class SinglePatchSink : public UnderlyingSinkBase {
               return ToResolvedUndefinedPromise(script_state);
             },
             [&](std::monostate) {
-              auto* exception = DOMException::Create(
+              auto* exception = MakeGarbageCollected<DOMException>(
+                  DOMExceptionCode::kDataError,
                   "Patch stream only accepts byte buffers or values that can "
-                  "be stringified",
-                  DOMException::GetErrorName(DOMExceptionCode::kDataError));
+                  "be stringified");
               patch_->Terminate(ScriptValue::From(script_state, exception));
               return ScriptPromise<IDLUndefined>::RejectWithDOMException(
                   script_state, exception);
@@ -155,9 +155,8 @@ class SubtreePatchSink : public UnderlyingSinkBase {
       return ScriptPromise<IDLUndefined>::RejectWithDOMException(
           script_state,
           // TODO(nrodsenthal): add test
-          DOMException::Create("Patch is closed",
-                               DOMException::GetErrorName(
-                                   DOMExceptionCode::kInvalidStateError)));
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kInvalidStateError, "Patch is closed"));
     }
     return std::visit(
         absl::Overload{
@@ -176,10 +175,10 @@ class SubtreePatchSink : public UnderlyingSinkBase {
               return ToResolvedUndefinedPromise(script_state);
             },
             [&](std::monostate) {
-              auto* exception = DOMException::Create(
+              auto* exception = MakeGarbageCollected<DOMException>(
+                  DOMExceptionCode::kDataError,
                   "Patch stream only accepts byte buffers or values that can "
-                  "be stringified",
-                  DOMException::GetErrorName(DOMExceptionCode::kDataError));
+                  "be stringified");
               parser_.Clear();
               return ScriptPromise<IDLUndefined>::RejectWithDOMException(
                   script_state, exception);
@@ -230,7 +229,7 @@ DOMPatchStatus* PatchSupplement::CurrentPatchFor(const Node& target) {
 
 std::optional<size_t> PatchSupplement::IndexOfPatch(const Node& target) {
   for (size_t i = 0; i < patches_.size(); ++i) {
-    if (patches_[i]->GetTarget() == target) {
+    if (patches_[i]->Target() == target) {
       return i;
     }
   }
@@ -259,10 +258,9 @@ WritableStream* PatchSupplement::CreateSinglePatchStream(
   DOMPatchStatus* previous = CurrentPatchFor(target);
   if (previous) {
     previous->Terminate(ScriptValue::From(
-        script_state,
-        DOMException::Create(
-            "Patch aborted by another patch call",
-            DOMException::GetErrorName(DOMExceptionCode::kAbortError))));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kAbortError,
+                          "Patch aborted by another patch call")));
   };
   return WritableStream::CreateWithCountQueueingStrategy(
       script_state, MakeGarbageCollected<SinglePatchSink>(target), 1);

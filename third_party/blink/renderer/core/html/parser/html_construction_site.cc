@@ -937,9 +937,15 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
         // Like with shadowrootmode, the template is discarded.
         should_attach_template = false;
 
+        String patch_src;
+        if (Attribute* patchsrc_attribute =
+                token->GetAttributeItem(html_names::kPatchsrcAttr)) {
+          patch_src = patchsrc_attribute->Value();
+        }
+
         // From now on, parsed children of the template are inserted directly to
-        // the patch target.
-        template_element->BeginPatch(*patch_target);
+        // the patch target, and patch_src will be fetched.
+        template_element->BeginPatch(*patch_target, patch_src);
       }
     }
   }

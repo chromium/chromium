@@ -79,7 +79,7 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
 
   void ResetOverrideInsertionTarget() { override_insertion_target_.Release(); }
 
-  void BeginPatch(ContainerNode& target);
+  void BeginPatch(ContainerNode& target, const String& src);
   DOMPatchStatus* OutgoingPatch() { return patch_status_; }
 
  private:

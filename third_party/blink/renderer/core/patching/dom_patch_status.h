@@ -12,12 +12,16 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/loader/threadable_loader.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 class HTMLTemplateElement;
@@ -28,13 +32,16 @@ class DOMPatchStatus : public ScriptWrappable {
 
  public:
   static DOMPatchStatus* Create(ContainerNode& target,
-                                HTMLTemplateElement* source = nullptr);
-  DOMPatchStatus(HTMLTemplateElement* source, ContainerNode& target);
+                                HTMLTemplateElement* source = nullptr,
+                                const KURL& source_url = KURL());
+  DOMPatchStatus(HTMLTemplateElement* source,
+                 ContainerNode& target,
+                 const KURL& source_url);
   ScriptPromise<IDLUndefined> finished(ScriptState*);
   HTMLTemplateElement* source() { return source_; }
   void Trace(Visitor*) const override;
   void OnComplete();
-  Node& GetTarget() { return *target_; }
+  Node& Target() { return *target_; }
   Document& GetDocument();
   void DispatchPatchEvent();
   void Append(const String&);
@@ -42,14 +49,18 @@ class DOMPatchStatus : public ScriptWrappable {
   void Finish();
   void Terminate(ScriptValue);
   void AppendBytes(base::span<uint8_t>);
+  void Commit();
 
  private:
+  void Fetch();
   enum class State { kPending, kActive, kTerminated, kFinished };
   State state_ = State::kPending;
   Member<HTMLTemplateElement> source_;
   Member<ContainerNode> target_;
   Member<ScriptPromiseProperty<IDLUndefined, IDLAny>> finished_;
   Member<DocumentParser> parser_;
+  KURL source_url_;
+  Member<ThreadableLoader> loader_;
 };
 }  // namespace blink
 
