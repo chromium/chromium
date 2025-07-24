@@ -22,7 +22,7 @@ import type {TextCopyButton} from 'chrome://privacy-sandbox-internals/text_copy_
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
 import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -869,6 +869,12 @@ suite('ExpandableJsonViewerElement', function() {
     jsonViewer.configure(preElement, kJsonViewerTitle);
   });
 
+  const getChildElementByIdOrFail = (id: string) => {
+    const elem = jsonViewer.$(`#${id}`);
+    assertTrue(!!elem);
+    return elem;
+  };
+
   test('rendersPassedChildElement', () => {
     const preElementFromDOM = jsonViewer.$('#json-content > pre');
     assertTrue(!!preElementFromDOM);
@@ -889,6 +895,63 @@ suite('ExpandableJsonViewerElement', function() {
 
   test('rendersTitleInJsonHeader', () => {
     assertEquals(jsonViewer.getTitleTextForTesting(), kJsonViewerTitle);
+  });
+
+  test('clickingJsonHeaderSwitchesIcons', async () => {
+    const jsonHeaderElement = jsonViewer.$('#json-header')!;
+    const openIcon = getChildElementByIdOrFail('open-icon');
+    const closeIcon = getChildElementByIdOrFail('close-icon');
+
+    // Only shows open icon by default
+    assertEquals(
+        window.getComputedStyle(openIcon).getPropertyValue('display'), 'block');
+    assertEquals(
+        window.getComputedStyle(closeIcon).getPropertyValue('display'), 'none');
+
+    // Check that only close-icon is visible when content is expanded
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertEquals(
+        window.getComputedStyle(openIcon).getPropertyValue('display'), 'none');
+    assertEquals(
+        window.getComputedStyle(closeIcon).getPropertyValue('display'),
+        'block');
+
+    // Only open-icon is visible when collapsed after being expanded
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertEquals(
+        window.getComputedStyle(openIcon).getPropertyValue('display'), 'block');
+    assertEquals(
+        window.getComputedStyle(closeIcon).getPropertyValue('display'), 'none');
+  });
+
+  test('clickingJsonHeaderTogglesJsonContentVisibility', async () => {
+    const jsonHeaderElement = jsonViewer.$('#json-header')!;
+    const jsonContent = getChildElementByIdOrFail('json-content');
+
+    // Hides json-content by default
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('height'), '0px');
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('overflow'),
+        'hidden');
+
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertNotEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('height'), '0px');
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('overflow'),
+        'auto');
+
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('height'), '0px');
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('overflow'),
+        'hidden');
   });
 });
 

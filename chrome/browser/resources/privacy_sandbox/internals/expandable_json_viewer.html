@@ -1,38 +1,35 @@
 <style>
-  :host {
-    &:not([expanded]) {
-      & #json-content {
-        border-top: none;
-        height: 0;
-        overflow: hidden;
-      }
-
-      & #open-icon {
-        display: block;
-      }
-
-      & #close-icon {
-        display: none;
-      }
+  :host([expanded]) {
+    #json-content {
+      max-height: 50vh;
+      overflow: auto;
+      border-top: 1px solid lightgray;
+      padding: 2px;
+      height: auto;
     }
 
-    &[expanded] {
-      & #json-content {
-        max-height: 50vh;
-        overflow: auto;
-        border-top: 1px solid lightgray;
-        padding: 2px;
-        height: auto;
-      }
-
-      & #close-icon {
-        display: block;
-      }
-
-      & #open-icon {
-        display: none;
-      }
+    #close-icon {
+      display: block;
     }
+
+    #open-icon {
+      display: none;
+    }
+  }
+
+  #json-content {
+    border-top: none;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s;
+  }
+
+  #close-icon {
+    display: none;
+  }
+
+  #open-icon {
+    display: block;
   }
 
   .container {
