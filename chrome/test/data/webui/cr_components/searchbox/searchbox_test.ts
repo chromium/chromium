@@ -531,6 +531,9 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(2, matchEls.length);
 
     // Left click does not query autocomplete when matches are showing.
+    // Need to manually focus in order to trigger `onFocusChanged()` since
+    // `autocompleteResultChanged` does not focus input.
+    realbox.$.input.focus();
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
     await testProxy.handler.whenCalled('onFocusChanged');
@@ -1130,6 +1133,30 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       queryAutocompleteOnEmptyInput: false,
     });
+  });
+
+  test('autocomplete result change does not impact focus', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    realbox.shadowRoot!.querySelector<HTMLElement>(
+                           '#voiceSearchButton')!.focus();
+    assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
+
+    const matches = [createSearchMatch(), createUrlMatch()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
   });
 
   //============================================================================
