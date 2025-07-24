@@ -151,14 +151,16 @@ void PredictionBasedPermissionUiSelector::InquireServerModel(
 void PredictionBasedPermissionUiSelector::
     InquireOnDeviceAiv1AndServerModelIfAvailable(
         content::RenderFrameHost* rfh,
-        PredictionRequestFeatures features,
+        permissions::PredictionRequestFeatures features,
         PredictionRequestMetadata request_metadata) {
+  VLOG(1) << "[PermissionsAIv1] On device AI prediction requested";
   content_extraction::GetInnerText(
       *rfh, /*node_id=*/std::nullopt,
       base::BindOnce(
           &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(), std::move(features),
-          std::move(request_metadata)));
+          weak_ptr_factory_.GetWeakPtr(),
+          ModelExecutionData{std::move(features), std::move(request_metadata),
+                             PredictionModelType::kOnDeviceAiV1Model}));
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -197,87 +199,50 @@ void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
 void PredictionBasedPermissionUiSelector::
     InquireOnDeviceAiv3AndServerModelIfAvailable(
         content::RenderWidgetHostView* host_view,
-        PredictionRequestFeatures features,
+        permissions::PredictionRequestFeatures features,
         PredictionRequestMetadata request_metadata) {
-  if (!host_view) {
-    VLOG(1) << "[CPSS] On device AIv3 model unavailable";
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
-    return;
-  }
-
-  if (snapshot_for_testing_.has_value()) {
-    PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
-        /*snapshot_inquire_start_time=*/base::TimeTicks::Now(),
-        std::move(features), std::move(request_metadata),
-        snapshot_for_testing_.value());
-    return;
-  }
-
-  host_view->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
-      base::BindOnce(
-          &PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(),
-          /*snapshot_inquire_start_time=*/base::TimeTicks::Now(),
-          std::move(features), std::move(request_metadata)));
+  VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
+  TakeSnapshot(host_view, {std::move(features), std::move(request_metadata),
+                           PredictionModelType::kOnDeviceAiV3Model});
 }
 
 void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
     base::TimeTicks snapshot_inquire_start_time,
-    PredictionRequestFeatures features,
-    PredictionRequestMetadata request_metadata,
+    ModelExecutionData model_data,
     const SkBitmap& snapshot) {
-  VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
   PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
       /*success=*/!snapshot.drawsNothing(), snapshot_inquire_start_time,
-      PredictionModelType::kOnDeviceAiV3Model);
+      model_data.model_type);
   if (snapshot.drawsNothing()) {
-    VLOG(1) << "[PermissionsAIv3] The page's snapshot is empty";
-  } else {
-    PredictionModelHandlerProvider* prediction_model_handler_provider =
-        PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_);
-    if (prediction_model_handler_provider) {
-      PermissionsAiv3Handler* aiv3_handler =
-          prediction_model_handler_provider->GetPermissionsAiv3Handler(
-              request_metadata.request_type);
-
-      if (aiv3_handler) {
-        VLOG(1) << "[PermissionsAIv3] Inquire model";
-
-        aiv3_handler->ExecuteModel(
-            base::BindOnce(&PredictionBasedPermissionUiSelector::
-                               OnDeviceAiv3ModelExecutionCallback,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           /*model_inquire_start_time=*/base::TimeTicks::Now(),
-                           std::move(features), std::move(request_metadata)),
-            std::make_unique<SkBitmap>(snapshot));
-        return;
-      }
-    }
-    VLOG(1) << "[PermissionsAIv3] On device AI model session unavailable";
+    VLOG(1) << "[PermissionsAI] The page's snapshot is empty";
+    return InquireServerModel(model_data.features,
+                              std::move(model_data.request_metadata),
+                              /*record_source=*/true);
   }
-  InquireServerModel(features, std::move(request_metadata),
-                     /*record_source=*/true);
+  model_data.snapshot = std::make_unique<SkBitmap>(snapshot);
+  ExecuteOnDeviceAivXModel(std::move(model_data));
 }
 
-void PredictionBasedPermissionUiSelector::OnDeviceAiv3ModelExecutionCallback(
-    base::TimeTicks model_inquire_start_time,
-    PredictionRequestFeatures features,
-    PredictionRequestMetadata request_metadata,
-    const std::optional<PermissionRequestRelevance>& relevance) {
+void PredictionBasedPermissionUiSelector::
+    OnDeviceTfliteAivXModelExecutionCallback(
+        base::TimeTicks model_inquire_start_time,
+        permissions::PredictionRequestFeatures features,
+        PredictionRequestMetadata request_metadata,
+        permissions::PredictionModelType model_type,
+        const std::optional<PermissionRequestRelevance>& relevance) {
   PermissionUmaUtil::RecordPredictionModelInquireTime(
       model_inquire_start_time, PredictionModelType::kOnDeviceAiV3Model);
-  VLOG(1) << "[PermissionsAIv3]: AI model execution callback called "
+  VLOG(1) << "[PermissionsAI]: Model execution callback called "
           << (relevance.has_value() ? "with value" : "without value");
   if (relevance.has_value()) {
-    VLOG(1) << "[PermissionsAIv3]: PermissionRequest has a relevance of "
+    VLOG(1) << "[PermissionsAI]: PermissionRequest has a relevance of "
             << static_cast<int>(relevance.value());
     last_permission_request_relevance_ = relevance.value();
     features.permission_relevance = relevance.value();
 
     PermissionUmaUtil::RecordPermissionRequestRelevance(
         request_metadata.request_type, features.permission_relevance,
-        PredictionModelType::kOnDeviceAiV3Model);
+        model_type);
   } else {
     last_permission_request_relevance_ =
         PermissionRequestRelevance::kUnspecified;
@@ -375,37 +340,22 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 }
 
 void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
-    PredictionRequestFeatures features,
-    PredictionRequestMetadata request_metadata,
+    ModelExecutionData model_data,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  VLOG(1) << "[PermissionsAIv1] On device AI prediction requested";
+  // TODO(crbug.com/382447738) Adapt textlength checks when calling this for
+  // AIv4
   if (result && result->inner_text.size() > kPageContentMinLength) {
-    std::string inner_text = std::move(result->inner_text);
+    model_data.inner_text = std::move(result->inner_text);
+    if (model_data.inner_text.size() > kPageContentMaxLength) {
+      model_data.inner_text.resize(kPageContentMaxLength);
+    }
 
-    if (inner_text.size() > kPageContentMaxLength) {
-      inner_text.resize(kPageContentMaxLength);
-    }
-    if (PredictionModelHandlerProvider* prediction_model_handler_provider =
-            PredictionModelHandlerProviderFactory::GetForBrowserContext(
-                profile_)) {
-      if (PermissionsAiv1Handler* aiv1_handler =
-              prediction_model_handler_provider->GetPermissionsAiv1Handler()) {
-        VLOG(1) << "[PermissionsAIv1] Inquire model";
-        permissions::RequestType request_type = request_metadata.request_type;
-        aiv1_handler->InquireAiOnDeviceModel(
-            std::move(inner_text), request_type,
-            base::BindOnce(&PredictionBasedPermissionUiSelector::
-                               OnDeviceAiv1ModelExecutionCallback,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(features),
-                           std::move(request_metadata)));
-        return;
-      }
-    }
-    VLOG(1) << "[PermissionsAIv1] On device AI model session unavailable";
-  } else {
-    VLOG(1) << "[PermissionsAIv1] The page's content is too short or empty";
+    return ExecuteOnDeviceAivXModel(std::move(model_data));
   }
-  InquireServerModel(features, std::move(request_metadata),
+
+  VLOG(1) << "[PermissionsAI] The page's content is too short or empty";
+  InquireServerModel(model_data.features,
+                     std::move(model_data.request_metadata),
                      /*record_source=*/true);
 }
 
@@ -696,4 +646,78 @@ void PredictionBasedPermissionUiSelector::set_snapshot_for_testing(
     SkBitmap snapshot) {
   CHECK_IS_TEST();
   snapshot_for_testing_ = snapshot;
+}
+
+void PredictionBasedPermissionUiSelector::TakeSnapshot(
+    content::RenderWidgetHostView* host_view,
+    ModelExecutionData model_data) {
+  auto snapshot_inquire_start_time = base::TimeTicks::Now();
+  if (snapshot_for_testing_.has_value()) {
+    OnSnapshotTakenForOnDeviceModel(snapshot_inquire_start_time,
+                                    std::move(model_data),
+                                    snapshot_for_testing_.value());
+  } else if (!host_view) {
+    VLOG(1) << "[CPSS] Snapshot cannot be taken because host_view is nullptr.";
+    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+  } else {
+    host_view->CopyFromSurface(
+        gfx::Rect(), gfx::Size(),
+        base::BindOnce(&PredictionBasedPermissionUiSelector::
+                           OnSnapshotTakenForOnDeviceModel,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       snapshot_inquire_start_time, std::move(model_data)));
+  }
+}
+void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
+    ModelExecutionData model_data) {
+  PredictionModelHandlerProvider* prediction_model_handler_provider =
+      PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_);
+  if (prediction_model_handler_provider) {
+    permissions::RequestType request_type =
+        model_data.request_metadata.request_type;
+
+    switch (model_data.model_type) {
+      case PredictionModelType::kOnDeviceAiV1Model: {
+        if (PermissionsAiv1Handler* aiv1_handler =
+                prediction_model_handler_provider
+                    ->GetPermissionsAiv1Handler()) {
+          VLOG(1) << "[PermissionsAIv1] Inquire model";
+          return aiv1_handler->InquireAiOnDeviceModel(
+              std::move(model_data.inner_text), request_type,
+              base::BindOnce(&PredictionBasedPermissionUiSelector::
+                                 OnDeviceAiv1ModelExecutionCallback,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(model_data.features),
+                             std::move(model_data.request_metadata)));
+        }
+        break;
+      }
+      case PredictionModelType::kOnDeviceAiV3Model: {
+        if (PermissionsAiv3Handler* aiv3_handler =
+                prediction_model_handler_provider->GetPermissionsAiv3Handler(
+                    request_type)) {
+          VLOG(1) << "[PermissionsAIv3] Inquire model";
+          return aiv3_handler->ExecuteModel(
+              base::BindOnce(
+                  &PredictionBasedPermissionUiSelector::
+                      OnDeviceTfliteAivXModelExecutionCallback,
+                  weak_ptr_factory_.GetWeakPtr(),
+                  /*model_inquire_start_time=*/base::TimeTicks::Now(),
+                  std::move(model_data.features),
+                  std::move(model_data.request_metadata),
+                  model_data.model_type),
+              std::move(model_data.snapshot));
+        }
+        break;
+      }
+      default:
+        NOTREACHED();
+    }
+  } else {
+    VLOG(1) << "[PermissionsAIvX] On device AI model session unavailable";
+  }
+
+  InquireServerModel(model_data.features,
+                     std::move(model_data.request_metadata),
+                     /*record_source=*/true);
 }

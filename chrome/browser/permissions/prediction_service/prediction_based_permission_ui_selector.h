@@ -57,6 +57,16 @@ class PredictionBasedPermissionUiSelector
     permissions::RequestType request_type;
   };
 
+  // Contains input data and metadata that are important for the
+  // superset of model execution workflows supported by the ui selector.
+  struct ModelExecutionData {
+    permissions::PredictionRequestFeatures features;
+    PredictionRequestMetadata request_metadata;
+    permissions::PredictionModelType model_type;
+    std::unique_ptr<SkBitmap>(snapshot);
+    std::string inner_text;
+  };
+
   using PredictionGrantLikelihood =
       permissions::PermissionUiSelector::PredictionGrantLikelihood;
   // Constructs an instance in the context of the given |profile|.
@@ -130,8 +140,7 @@ class PredictionBasedPermissionUiSelector
   // the AIv1 model. The first two parameters are set by the callee, to be used
   // by the server side model later.
   void OnGetInnerTextForOnDeviceModel(
-      permissions::PredictionRequestFeatures features,
-      PredictionRequestMetadata request_metadata,
+      ModelExecutionData model_data,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
   bool ShouldHoldBack(const PredictionRequestMetadata& request_metadata) const;
@@ -151,6 +160,8 @@ class PredictionBasedPermissionUiSelector
       permissions::PredictionRequestFeatures features,
       PredictionRequestMetadata request_metadata);
 
+  // Function that handles model execution for all AIvX models.
+  void ExecuteOnDeviceAivXModel(ModelExecutionData model_data);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // As the first part of the AIv3 model execution chain, this function triggers
   // AIv3 input collection and model execution, with its output being input of
@@ -168,22 +179,25 @@ class PredictionBasedPermissionUiSelector
   // be used by the server side model later and for logging.
   void OnSnapshotTakenForOnDeviceModel(
       base::TimeTicks snapshot_inquire_start_time,
-      permissions::PredictionRequestFeatures features,
-      PredictionRequestMetadata request_metadata,
+      ModelExecutionData model_data,
       const SkBitmap& screenshot);
 
-  // Callback for the Aiv3ModelHandler, with the first to parameters being
-  // curryed to be used for the server side model call.
-  void OnDeviceAiv3ModelExecutionCallback(
+  // Callback for tflite based AivX model handlers.
+  void OnDeviceTfliteAivXModelExecutionCallback(
       base::TimeTicks model_inquire_start_time,
       permissions::PredictionRequestFeatures features,
       PredictionRequestMetadata request_metadata,
+      permissions::PredictionModelType model_type,
       const std::optional<permissions::PermissionRequestRelevance>& relevance);
 
   // Use on device CPSSv1 tflite model.
   void InquireCpssV1OnDeviceModelIfAvailable(
       const permissions::PredictionRequestFeatures& features,
       PredictionRequestMetadata request_metadata);
+
+  void TakeSnapshot(content::RenderWidgetHostView* host_view,
+                    ModelExecutionData model_data);
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   raw_ptr<Profile> profile_;
