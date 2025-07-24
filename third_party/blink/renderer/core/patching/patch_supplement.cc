@@ -4,18 +4,27 @@
 
 #include "third_party/blink/renderer/core/patching/patch_supplement.h"
 
+#include <cstdint>
 #include <optional>
 
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
+#include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/patching/dom_patch_status.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -29,6 +38,27 @@ namespace blink {
 const char PatchSupplement::kSupplementName[] = "Patch";
 
 namespace {
+
+std::variant<String, base::span<uint8_t>, std::monostate>
+ExtractBytesOrStringFromChunk(ScriptValue chunk,
+                              ScriptState* script_state,
+                              ExceptionState& exception_state) {
+  v8::Local<v8::Value> value = chunk.V8ValueFor(script_state);
+  if (value->IsArrayBuffer() || value->IsArrayBufferView()) {
+    V8BufferSource* source = V8BufferSource::Create(
+        script_state->GetIsolate(), chunk.V8Value(), exception_state);
+    // TODO(nrosenthal): find cases where this can legitimately fail.
+    CHECK(!exception_state.HadException());
+    return DOMArrayPiece(source).ByteSpan();
+  }
+
+  String chunk_as_string;
+  if (value->IsSymbol() || !chunk.ToString(chunk_as_string)) {
+    return std::monostate();
+  }
+  return chunk_as_string;
+}
+
 class SinglePatchSink : public UnderlyingSinkBase {
  public:
   explicit SinglePatchSink(ContainerNode& target)
@@ -49,27 +79,26 @@ class SinglePatchSink : public UnderlyingSinkBase {
                                     ScriptValue chunk,
                                     WritableStreamDefaultController*,
                                     ExceptionState& exception_state) override {
-    v8::Local<v8::Value> value = chunk.V8ValueFor(script_state);
-    if (value->IsArrayBuffer() || value->IsArrayBufferView()) {
-      V8BufferSource* source = V8BufferSource::Create(
-          script_state->GetIsolate(), chunk.V8Value(), exception_state);
-      // TODO(nrosenthal): find cases where this can legitimately fail.
-      CHECK(!exception_state.HadException());
-      patch_->AppendBytes(DOMArrayPiece(source).ByteSpan());
-    } else {
-      String chunk_as_string;
-      if (value->IsSymbol() || !chunk.ToString(chunk_as_string)) {
-        auto* exception = DOMException::Create(
-            "Patch stream only accepts byte buffers or values that can be "
-            "stringified",
-            DOMException::GetErrorName(DOMExceptionCode::kDataError));
-        patch_->Terminate(ScriptValue::From(script_state, exception));
-        return ScriptPromise<IDLUndefined>::RejectWithDOMException(script_state,
-                                                                   exception);
-      }
-      patch_->Append(chunk_as_string);
-    }
-    return ToResolvedUndefinedPromise(script_state);
+    return std::visit(
+        absl::Overload{
+            [&](const String& str) {
+              patch_->Append(str);
+              return ToResolvedUndefinedPromise(script_state);
+            },
+            [&](base::span<uint8_t> bytes) {
+              patch_->AppendBytes(bytes);
+              return ToResolvedUndefinedPromise(script_state);
+            },
+            [&](std::monostate) {
+              auto* exception = DOMException::Create(
+                  "Patch stream only accepts byte buffers or values that can "
+                  "be stringified",
+                  DOMException::GetErrorName(DOMExceptionCode::kDataError));
+              patch_->Terminate(ScriptValue::From(script_state, exception));
+              return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+                  script_state, exception);
+            }},
+        ExtractBytesOrStringFromChunk(chunk, script_state, exception_state));
   }
 
   ScriptPromise<IDLUndefined> close(ScriptState* script_state,
@@ -86,6 +115,94 @@ class SinglePatchSink : public UnderlyingSinkBase {
 
   Member<DOMPatchStatus> patch_;
 };
+}  // namespace
+
+namespace {
+class SubtreePatchSink : public UnderlyingSinkBase {
+ public:
+  explicit SubtreePatchSink(ContainerNode& root) : root_(root) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(root_);
+    visitor->Trace(parser_);
+    UnderlyingSinkBase::Trace(visitor);
+  }
+
+ private:
+  ScriptPromise<IDLUndefined> start(ScriptState* script_state,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override {
+    // We're creating a detached template element as it would initiate
+    // the parser in fragment parsing mode without any context-specific rules.
+    // The template element is discarded and only the patches are applied to the
+    // patch target scope (the node which patchAll was called on).
+    HTMLTemplateElement* sink_template =
+        MakeGarbageCollected<HTMLTemplateElement>(root_->GetDocument());
+    HTMLDocumentParser* parser = MakeGarbageCollected<HTMLDocumentParser>(
+        sink_template->content(), sink_template,
+        ParserContentPolicy::kDisallowScriptingAndPluginContent,
+        ParserPrefetchPolicy::kDisallowPrefetching);
+    parser->SetPatchScope(root_);
+    parser_ = parser;
+    return ToResolvedUndefinedPromise(script_state);
+  }
+
+  ScriptPromise<IDLUndefined> write(ScriptState* script_state,
+                                    ScriptValue chunk,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState& exception_state) override {
+    if (!parser_) {
+      return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+          script_state,
+          // TODO(nrodsenthal): add test
+          DOMException::Create("Patch is closed",
+                               DOMException::GetErrorName(
+                                   DOMExceptionCode::kInvalidStateError)));
+    }
+    return std::visit(
+        absl::Overload{
+            [&](const String& str) {
+              parser_->Append(str);
+              return ToResolvedUndefinedPromise(script_state);
+            },
+            [&](base::span<uint8_t> bytes) {
+              if (parser_->NeedsDecoder()) {
+                parser_->SetDecoder(std::make_unique<TextResourceDecoder>(
+                    TextResourceDecoderOptions(
+                        TextResourceDecoderOptions::ContentType::kHTMLContent,
+                        root_->GetDocument().Encoding())));
+              }
+              parser_->AppendBytes(bytes);
+              return ToResolvedUndefinedPromise(script_state);
+            },
+            [&](std::monostate) {
+              auto* exception = DOMException::Create(
+                  "Patch stream only accepts byte buffers or values that can "
+                  "be stringified",
+                  DOMException::GetErrorName(DOMExceptionCode::kDataError));
+              parser_.Clear();
+              return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+                  script_state, exception);
+            }},
+        ExtractBytesOrStringFromChunk(chunk, script_state, exception_state));
+  }
+
+  ScriptPromise<IDLUndefined> close(ScriptState* script_state,
+                                    ExceptionState&) override {
+    parser_.Clear();
+    return ToResolvedUndefinedPromise(script_state);
+  }
+  ScriptPromise<IDLUndefined> abort(ScriptState* script_state,
+                                    ScriptValue reason,
+                                    ExceptionState&) override {
+    parser_.Clear();
+    return ToResolvedUndefinedPromise(script_state);
+  }
+
+  Member<ContainerNode> root_;
+  Member<DocumentParser> parser_;
+};
+
 }  // namespace
 
 // static
@@ -149,6 +266,13 @@ WritableStream* PatchSupplement::CreateSinglePatchStream(
   };
   return WritableStream::CreateWithCountQueueingStrategy(
       script_state, MakeGarbageCollected<SinglePatchSink>(target), 1);
+}
+
+WritableStream* PatchSupplement::CreateSubtreePatchStream(
+    ScriptState* script_state,
+    ContainerNode& target) {
+  return WritableStream::CreateWithCountQueueingStrategy(
+      script_state, MakeGarbageCollected<SubtreePatchSink>(target), 1);
 }
 
 void PatchSupplement::Trace(Visitor* visitor) const {

@@ -33,7 +33,8 @@ class PatchSupplement : public GarbageCollected<PatchSupplement>,
   DOMPatchStatus* CurrentPatchFor(const Node&);
   void DidStart(Node&, DOMPatchStatus*);
   void DidComplete(Node&);
-  WritableStream* CreateSinglePatchStream(ScriptState*, ContainerNode&);
+  WritableStream* CreateSinglePatchStream(ScriptState*, ContainerNode& target);
+  WritableStream* CreateSubtreePatchStream(ScriptState*, ContainerNode& target);
 
  private:
   std::optional<size_t> IndexOfPatch(const Node& target);

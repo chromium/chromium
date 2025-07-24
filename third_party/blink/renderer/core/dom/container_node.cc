@@ -1894,4 +1894,9 @@ WritableStream* ContainerNode::patchSelf(ScriptState* script_state) {
       ->CreateSinglePatchStream(script_state, *this);
 }
 
+WritableStream* ContainerNode::patchAll(ScriptState* script_state) {
+  return PatchSupplement::From(GetDocument())
+      ->CreateSubtreePatchStream(script_state, *this);
+}
+
 }  // namespace blink

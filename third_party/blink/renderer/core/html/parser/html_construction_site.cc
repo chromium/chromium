@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/attribute_part.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
@@ -534,6 +535,10 @@ HTMLConstructionSite::~HTMLConstructionSite() {
   DCHECK(pending_text_.IsEmpty());
 }
 
+void HTMLConstructionSite::SetPatchScope(ContainerNode* scope) {
+  patch_scope_ = scope;
+}
+
 void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(reentry_permit_);
   visitor->Trace(document_);
@@ -545,6 +550,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(task_queue_);
   visitor->Trace(pending_text_);
   visitor->Trace(pending_dom_parts_);
+  visitor->Trace(patch_scope_);
 }
 
 void HTMLConstructionSite::Detach() {
@@ -906,17 +912,25 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   if (RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
     if (Attribute* patchfor_attribute =
             token->GetAttributeItem(html_names::kPatchforAttr)) {
-      TreeScope* scope = &CurrentNode()->GetTreeScope();
-      if (HTMLTemplateElement* template_parent =
-              DynamicTo<HTMLTemplateElement>(CurrentNode())) {
-        if (ShadowRoot* shadow_root =
-                DynamicTo<ShadowRoot>(template_parent->InsertionTarget())) {
-          scope = shadow_root;
+      const AtomicString& id = patchfor_attribute->Value();
+      Element* patch_target = nullptr;
+      // If we have a patch scope, it is used as a scope to resolve patch
+      // target IDs.
+      if (patch_scope_) {
+        patch_target = patch_scope_->getElementById(id);
+      } else {
+        TreeScope* scope = &CurrentNode()->GetTreeScope();
+        if (HTMLTemplateElement* template_parent =
+                DynamicTo<HTMLTemplateElement>(CurrentNode())) {
+          if (ShadowRoot* shadow_root =
+                  DynamicTo<ShadowRoot>(template_parent->InsertionTarget())) {
+            scope = shadow_root;
+          }
         }
-      }
 
-      if (Element* patch_target =
-              scope->getElementById(patchfor_attribute->Value())) {
+        patch_target = scope->getElementById(id);
+      }
+      if (patch_target) {
         // For now, a template is either targeting a shadow root or a patch.
         declarative_shadow_root_mode = String();
 

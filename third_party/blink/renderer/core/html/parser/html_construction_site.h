@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
@@ -113,6 +114,8 @@ class HTMLConstructionSite final {
   HTMLConstructionSite(const HTMLConstructionSite&) = delete;
   HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;
   ~HTMLConstructionSite();
+
+  void SetPatchScope(ContainerNode* scope);
   void Trace(Visitor*) const;
 
   void Detach();
@@ -292,6 +295,11 @@ class HTMLConstructionSite final {
   mutable HTMLFormattingElementList active_formatting_elements_;
 
   TaskQueue task_queue_;
+
+  // When using node.patchAll(), that node would be used to select
+  // the patch target rather than the tree scope where the patch template is
+  // found.
+  Member<ContainerNode> patch_scope_;
 
   class PendingText final {
     DISALLOW_NEW();

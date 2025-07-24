@@ -473,6 +473,7 @@ class CORE_EXPORT ContainerNode : public Node {
   String getHTML(const GetHTMLOptions*, ExceptionState&) const;
 
   WritableStream* patchSelf(ScriptState*);
+  WritableStream* patchAll(ScriptState*);
 
   // DocumentOrElementEventHandlers:
   // These event listeners are only actually web-exposed on interfaces that

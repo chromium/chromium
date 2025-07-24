@@ -44,6 +44,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -680,6 +681,10 @@ void HTMLDocumentParser::RunScriptsForPausedTreeBuilder() {
 
 void HTMLDocumentParser::ForcePlaintextForTextDocument() {
   tokenizer_.SetState(HTMLTokenizer::kPLAINTEXTState);
+}
+
+void HTMLDocumentParser::SetPatchScope(ContainerNode* node) {
+  tree_builder_->SetPatchScope(node);
 }
 
 bool HTMLDocumentParser::PumpTokenizer() {

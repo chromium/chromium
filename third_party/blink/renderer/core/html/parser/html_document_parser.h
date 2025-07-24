@@ -137,6 +137,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void NotifyParserPauseByUserTiming() override;
   void NotifyParserResumeByUserTiming() override;
 
+  void SetPatchScope(ContainerNode* scope);
+
  protected:
   void insert(const String&) final;
   void Append(const String&) override;
