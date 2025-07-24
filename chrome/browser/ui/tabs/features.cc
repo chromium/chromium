@@ -44,7 +44,7 @@ BASE_FEATURE(kTabSearchPositionSetting,
 
 BASE_FEATURE(kTabGroupShortcuts,
              "TabGroupShortcuts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool CanShowTabSearchPositionSetting() {
   // Alternate tab search locations cannot be repositioned.
