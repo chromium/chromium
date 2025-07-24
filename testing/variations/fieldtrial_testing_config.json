@@ -19453,6 +19453,26 @@
             ]
         }
     ],
+    "PushMessagingGcmEndpointWebpushPath": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "PushMessagingGcmEndpointWebpushPath"
+                    ]
+                }
+            ]
+        }
+    ],
     "QUIC": [
         {
             "platforms": [

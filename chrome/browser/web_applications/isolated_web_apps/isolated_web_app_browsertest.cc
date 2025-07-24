@@ -1186,11 +1186,19 @@ var kApplicationServerKey = new Uint8Array([
 
   size_t last_slash = push_messaging_endpoint.rfind('/');
   ASSERT_NE(last_slash, std::string::npos);
-  ASSERT_EQ(base::FeatureList::IsEnabled(
-                features::kPushMessagingGcmEndpointEnvironment)
-                ? push_messaging::GetGcmEndpointForChannel(chrome::GetChannel())
-                : kPushMessagingGcmEndpoint,
-            push_messaging_endpoint.substr(0, last_slash + 1));
+
+  std::string push_messaging_endpoint_substr = push_messaging_endpoint.substr(0, last_slash + 1);
+  ASSERT_EQ(push_messaging::GetGcmEndpointForChannel(chrome::GetChannel()),
+            push_messaging_endpoint_substr);
+
+  if (base::FeatureList::IsEnabled(features::kPushMessagingGcmEndpointWebpushPath)) {
+    ASSERT_TRUE(push_messaging_endpoint_substr == kPushMessagingWebpushEndpoint ||
+                push_messaging_endpoint_substr == kPushMessagingStagingWebpushEndpoint);
+  } else {
+    ASSERT_TRUE(push_messaging_endpoint_substr == kPushMessagingGcmEndpoint ||
+                push_messaging_endpoint_substr == kPushMessagingStagingGcmEndpoint);
+  }
+
   PushMessagingAppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
   EXPECT_FALSE(app_identifier.is_null());
