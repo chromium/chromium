@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
+<translation id="1019990162050689579">‏نشاطك على تطبيقات Gemini</translation>
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1030376737535466765">فتح "مدير كلمات المرور"</translation>
 <translation id="1035980983510608210">سيؤدي إغلاق جميع علامات التبويب إلى إغلاق علامات التبويب المثبّتة أيضًا.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">تعذَّر فتح ملف <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">ستتم استعادة إعدادات المزامنة استنادًا إلى آخر نسخة احتياطية. <ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
+<translation id="110491332089958282">‏يمكنك مشاركة محتوى الصفحة مع Gemini للحصول على ردود أكثر صلة بطلبك. فعند مشاركة صفحة مع Gemini، يتم إرسال محتواها الكامل وعنوان URL الخاص بها إلى Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
 <translation id="1110772719190051587">فتح القفل باستخدام ميزة "التعرُّف على الوجه"</translation>
 <translation id="1112015203684611006">تعذّرت الطباعة.</translation>
@@ -282,6 +284,7 @@
 <translation id="2067852168641682340">الحفظ في هذا الحساب في كل مرة</translation>
 <translation id="2074119687904553223">{count,plural, =1{علامة تبويب واحدة}zero{‫{count} علامة تبويب}two{علامتا تبويب ({count})}few{‫{count} علامات تبويب}many{‫{count} علامة تبويب}other{‫{count} علامة تبويب}}</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
+<translation id="2074599390896964828">الموقع الجغرافي الدقيق</translation>
 <translation id="2078437078822043850">يمكنك الانتقال لليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2085876078937250610">حفظ…</translation>
@@ -310,6 +313,7 @@
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2196428379625389579">البحث على الويب</translation>
+<translation id="2198001751007276170">استبدال كلمات المرور</translation>
 <translation id="2199562093267256223">سيؤدي هذا الإجراء إلى حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" /> عليها.</translation>
 <translation id="2202084845446535117">لا تتوفر أي حسابات بريد إلكتروني</translation>
 <translation id="2214453882118345682">يمكنك التسوّق وترجمة النصوص والتعرّف على ما تراه باستخدام الكاميرا.</translation>
@@ -510,6 +514,7 @@
 <translation id="3010025794097054078">يمكنك تجنُّب عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="301080557829842765">دليل الخصوصية</translation>
 <translation id="3012310354105716927">لم يتم حفظ بعض البيانات إلى الآن</translation>
+<translation id="3013922155552460252">‏يمكنك الاطّلاع على نشاطك على Gemini وإدارته، مثل محادثاتك وملاحظاتك وطلباتك</translation>
 <translation id="3016518775797983090">تتعذَّر مشاركة الصفحة</translation>
 <translation id="3020183492814296499">الاختصارات</translation>
 <translation id="3021342271734507256">عليك رسم دائرة حول أي محتوى على شاشتك أو تمييزه أو النقر عليه للبحث عن معلومات حوله</translation>
@@ -534,6 +539,7 @@
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="309710370695886264">لديك كلمة مرور واحدة مستخدَمة لحساب آخر. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="3102790820790869053">البحث في علامات التبويب الأخيرة</translation>
+<translation id="3106258548858559536">إيقاف "وضع القراءة"</translation>
 <translation id="3106690631878101882">إخفاء الإجراء "ترجمة"</translation>
 <translation id="310900540163454140">هل تريد حذف كلمة مرور <ph name="WEBSITE" />؟</translation>
 <translation id="3112556859945124369">وضع علامة...</translation>
@@ -632,6 +638,7 @@
 <translation id="3533860663366814939">‏يُرجى فتح إعدادات "الملء التلقائي وكلمات المرور" (Autofill &amp; Password)</translation>
 <translation id="3546122170015471515">‏"معاينة الخرائط" (Maps Previews) على Google.com</translation>
 <translation id="3547356470684043247">اطّلِع على تقييمات العملاء للمنتجات أو الخدمات أو التجارب لمساعدتك في اتخاذ قرارات مدروسة بشأن المراجعات</translation>
+<translation id="3547933853190131743">‏البحث باستخدام "وضع AI"</translation>
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
 <translation id="355765753469272474">تراجع</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
@@ -1598,6 +1605,7 @@
 <translation id="7300448350764260141">يمكنك إضافة طبقة حماية إضافية من التهديدات على الإنترنت.</translation>
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
 <translation id="7313347584264171202">ستظهر لك علامات تبويب في وضع التصفّح المتخفي هنا</translation>
+<translation id="7334364820047587268">‏لديك كلمات مرور لهذه الحسابات في "مدير كلمات المرور في Google". وإذا اخترت استيراد إحدى كلمات المرور الموضَّحة أدناه، سيتم استبدال كلمة المرور الحالية بها.</translation>
 <translation id="7336264872878993241">تم تنزيل <ph name="PERCENT" /> بالمائة</translation>
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="7352651011704765696">حدث خطأ ما</translation>
@@ -1814,6 +1822,7 @@
 <translation id="8101409298456377967">يمكنك إنشاء كلمات المرور لحساباتك وحفظها وإدارتها لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">إيقاف</translation>
+<translation id="8106442513853561174">مشاركة الموقع الجغرافي الدقيق</translation>
 <translation id="8114753159095730575">أصبح بالإمكان تنزيل الملف. يمكنك مراجعة الخيارات في أسفل الشاشة.</translation>
 <translation id="8123502380991596210">إخفاء الميزات الجديدة</translation>
 <translation id="8123953306357309250">هل تريد إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت من الإعدادات.</translation>
@@ -2097,6 +2106,7 @@
 <translation id="913036870884277353">يمكنك بسهولة فتح الروابط المتوفّرة في التطبيقات الأخرى.</translation>
 <translation id="9137013805542155359">إظهار الصفحة الأصلية</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">تفعيل "وضع القراءة"</translation>
 <translation id="9144230693397287797">يمكنك تلقّي إشعارات بشأن ما تضبطه من تذكيرات أو علامات تبويب من أجهزة أخرى</translation>
 <translation id="914781932147356857">وضع علامة على الكل…</translation>
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>
@@ -2125,6 +2135,7 @@
 <translation id="94870150074703282">هل المطلوب حذف المجموعة؟</translation>
 <translation id="952704832371081537">إلغاء</translation>
 <translation id="954667170699278022">قائمة القراءة</translation>
+<translation id="956218893102219091">‏يمكنك استخدام موقعك الجغرافي الدقيق للحصول على نتائج أكثر دقة من Gemini، بدلاً من استخدام موقع جغرافي مقدَّر استنادًا إلى عنوان IP لجهازك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>
 <translation id="963102227019621224">النشاط على الويب وفي التطبيقات</translation>

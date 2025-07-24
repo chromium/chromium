@@ -3790,6 +3790,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3643962751030964445">Kjo pajisje menaxhohet nga <ph name="DEVICE_MANAGER" />. Një profil i ri kërkohet për llogarinë <ph name="USER_EMAIL_ADDRESS" /> nga <ph name="DEVICE_MANAGER" /></translation>
 <translation id="364418405912311456">Kliko dhe zvarrit mbi imazhe ose thekso tekstin për të kërkuar</translation>
 <translation id="3645372836428131288">Lëvize pak për të kapur një pjesë tjetër të gjurmës së gishtit.</translation>
+<translation id="3646789916214779970">Rivendose në motivin e parazgjedhur</translation>
 <translation id="3647654707956482440">Kjo lidhje nuk mund të përdoret. Kontrollo për gabime ose përdor një lidhje tjetër për ta provuar përsëri.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Marrja nga <ph name="DEVICE_NAME" /> me sukses: <ph name="ATTACHMENTS" />}other{Marrja nga <ph name="DEVICE_NAME" /> me sukses: <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">U zbulua <ph name="USB_DEVICE_NAME" /></translation>

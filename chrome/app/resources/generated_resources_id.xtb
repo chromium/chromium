@@ -3807,6 +3807,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3643962751030964445">Perangkat ini dikelola oleh <ph name="DEVICE_MANAGER" /> . <ph name="DEVICE_MANAGER" /> mengharuskan Anda membuat profil baru untuk akun <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Klik dan tarik gambar atau tandai teks yang akan ditelusuri</translation>
 <translation id="3645372836428131288">Gerakkan jari sedikit untuk merekam bagian sidik jari yang lain.</translation>
+<translation id="3646789916214779970">Reset ke tema default</translation>
 <translation id="3647654707956482440">Tidak dapat menggunakan link ini. Periksa apakah ada kesalahan ketik atau gunakan link lain untuk mencoba lagi.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> diterima dari <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> diterima dari <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> terdeteksi</translation>

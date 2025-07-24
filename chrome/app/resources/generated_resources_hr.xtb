@@ -3798,6 +3798,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3643962751030964445">Ovim uređajem upravlja <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> zahtijeva novi profil za račun <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Kliknite i povucite preko slika ili istaknite tekst da biste pretraživali</translation>
 <translation id="3645372836428131288">Lagano pomaknite prst da biste snimili različite dijelove otiska prsta.</translation>
+<translation id="3646789916214779970">Vrati na zadanu temu</translation>
 <translation id="3647654707956482440">Ta se veza ne može upotrijebiti. Da biste pokušali ponovo, provjerite je li točno napisana ili upotrijebite neku drugu vezu.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> primljena s uređaja <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> primljena s uređaja <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> primljene s uređaja <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> primljeno s uređaja <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Otkriven je uređaj <ph name="USB_DEVICE_NAME" /></translation>

@@ -3803,6 +3803,7 @@
 <translation id="3643962751030964445">Энэ төхөөрөмжийг <ph name="DEVICE_MANAGER" /> удирддаг. <ph name="DEVICE_MANAGER" /> <ph name="USER_EMAIL_ADDRESS" /> бүртгэлд шинэ профайл шаардаж байна</translation>
 <translation id="364418405912311456">Хайхын тулд зураг дээр товшиж чирч авчрах эсвэл текстийг тодруулна уу</translation>
 <translation id="3645372836428131288">Хурууны хээг өөр талаас нь авахын тулд хуруугаа бага зэрэг хөдөлгөнө үү</translation>
+<translation id="3646789916214779970">Анхдагч загвар руу дахин сэргээх</translation>
 <translation id="3647654707956482440">Энэ холбоосыг ашиглах боломжгүй. Буруу бичсэн эсэхийг шалгах эсвэл дахин оролдохын тулд өөр холбоос ашиглана уу.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авсан}other{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авсан}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> илэрсэн</translation>

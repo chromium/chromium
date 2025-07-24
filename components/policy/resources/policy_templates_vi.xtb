@@ -854,6 +854,33 @@ Nếu bạn đặt chính sách này thành Bật, thì nút bật tắt sẽ xu
 Nếu bạn không đặt chính sách này hoặc đặt chính sách này thành Tắt, thì nút bật tắt sẽ ẩn.
 
 Lưu ý: Chính sách này chỉ ảnh hưởng đến giao diện người dùng. ChromeOS sẽ giữ nguyên chế độ cài đặt hiện tại khi ẩn giao diện người dùng.</translation>
+<translation id="1579027593897822029">Danh sách thao tác sẽ diễn ra khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định.
+
+Cảnh báo: Nếu bạn đặt chính sách này thì dữ liệu cá nhân trên máy có thể bị ảnh hưởng và bị xoá vĩnh viễn. Bạn nên kiểm tra chế độ cài đặt của mình trước khi triển khai để tránh trường hợp vô tình xoá dữ liệu cá nhân.
+
+Nếu bạn không đặt chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" />, chính sách này sẽ không có hiệu lực.
+
+Khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định, trình duyệt sẽ thực hiện các thao tác được định cấu hình trong chính sách này.
+
+Nếu bạn để trống hoặc không đặt chính sách này thì chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> sẽ không có hiệu lực.
+
+Các thao tác được hỗ trợ là:
+
+"<ph name="CLOSE_BROWSERS_ACTION" />": đóng tất cả cửa sổ trình duyệt và PWA của hồ sơ này. Chưa hỗ trợ trên Android và iOS.
+
+"<ph name="CLOSE_TABS_ACTION" />": đóng toàn bộ thẻ đang mở trong các cửa sổ đang mở. Chỉ hỗ trợ trên iOS.
+
+"<ph name="SHOW_PROFILE_PICKER_ACTION" />": hiện cửa sổ Bộ chọn hồ sơ. Chưa hỗ trợ trên Android và iOS.
+
+"<ph name="SIGN_OUT_ACTION" />": Đăng xuất người dùng đang đăng nhập. Chỉ hỗ trợ trên iOS.
+
+"<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": xoá dữ liệu duyệt web tương ứng. Hãy xem chính sách <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> để biết thêm chi tiết. Các loại được hỗ trợ trên iOS là "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />" và "<ph name="CLEAR_AUTOFILL_ACTION" />"
+
+"<ph name="RELOAD_PAGES_ACTION" />": tải lại tất cả trang web. Đối với một số trang, người dùng có thể được nhắc xác nhận trước. Chưa hỗ trợ trên iOS.
+
+Người dùng sẽ vẫn đăng nhập vào Tài khoản Google khi xoá cookie bằng "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />".
+
+Việc đặt "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" và "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> và <ph name="BROWSER_SIGNIN_POLICY_NAME" /> cũng không bị tắt.</translation>
 <translation id="1583248206450240930">Sử dụng <ph name="PRODUCT_FRAME_NAME" /> theo mặc định</translation>
 <translation id="1587585749332985896">Không cho phép sử dụng Chế độ không có giao diện người dùng</translation>
 <translation id="1588240398285670601">Cài đặt của trình duyệt</translation>
@@ -5242,6 +5269,19 @@ Sau quá trình thiết lập ban đầu, người dùng có thể bật hoặc 
 <translation id="468822697351680932">Sử dụng chính sách SiteList của Internet Explorer làm nguồn quy tắc</translation>
 <translation id="4693190628432874457">Bật tính năng báo cáo vị trí của thiết bị</translation>
 <translation id="4693779768620889402">Đích dựa trên tiện ích</translation>
+<translation id="4693956469331697434">Định cấu hình chế độ cài đặt thời gian lưu giữ dữ liệu duyệt web cho <ph name="PRODUCT_NAME" />. Chính sách này cho phép quản trị viên định cấu hình (theo loại dữ liệu) thời điểm trình duyệt xoá dữ liệu. Điều này hữu ích đối với những khách hàng làm việc với dữ liệu nhạy cảm của khách hàng.
+
+Cảnh báo: Nếu bạn đặt chính sách này thì dữ liệu cá nhân trên máy có thể bị ảnh hưởng và bị xoá vĩnh viễn. Bạn nên kiểm tra chế độ cài đặt của mình trước khi triển khai để tránh trường hợp vô tình xoá dữ liệu cá nhân.
+
+Dữ liệu duyệt web gồm có các loại sau đây: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> và <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> và <ph name="DATA_TYPE_HOSTED_APP_DATA" /> không được hỗ trợ trên Android.
+
+Trình duyệt sẽ tự động xoá dữ liệu thuộc các loại đã chọn có khoảng thời gian lưu giữ quá <ph name="TIME_TO_LIVE_IN_HOURS" />. Giá trị tối thiểu có thể đặt là 1 giờ.
+
+Dữ liệu hết hạn sẽ bị xoá sau 15 giây kể từ khi trình duyệt khởi động, sau đó sẽ bị xoá sau mỗi 30 phút trong khi trình duyệt đang chạy.
+
+Người dùng sẽ vẫn đăng nhập vào Tài khoản Google của mình khi xoá cookie.
+
+Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Kể từ Chrome 115, việc bạn đặt chính sách này sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> và <ph name="BROWSER_SIGNIN_POLICY_NAME" /> cũng không bị tắt.</translation>
 <translation id="4694138212536142867">Bật tính năng báo cáo trạng thái phần cứng của thiết bị</translation>
 <translation id="4697581738794063407">Kiểm soát tính năng lọc tham số URL</translation>
 <translation id="4698895924806859508">Không báo cáo sự kiện mạng</translation>
@@ -5518,6 +5558,19 @@ Nếu bạn đặt chính sách này thành <ph name="ALLOW_PASSTHROUGH_OF_SEARC
 <translation id="4918261735182294270">Cho phép người dùng chọn có bật <ph name="CHROME_SYNC_NAME" /> hay không</translation>
 <translation id="491889618361437456">Bật tính năng tích hợp <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Cho phép thắt chặt việc xử lý nội dung hỗn hợp</translation>
+<translation id="4919341087029582581">Định cấu hình danh sách các loại dữ liệu duyệt web cần xoá khi người dùng đóng tất cả cửa sổ trình duyệt.
+
+Cảnh báo: Nếu bạn đặt chính sách này thì dữ liệu cá nhân trên máy có thể bị ảnh hưởng và bị xoá vĩnh viễn. Bạn nên kiểm tra chế độ cài đặt của mình trước khi triển khai để tránh trường hợp vô tình xoá dữ liệu cá nhân.
+
+Dữ liệu duyệt web gồm có các loại sau đây: nhật ký duyệt web (<ph name="DATA_TYPE_BROWSING_HISTORY" />), nhật ký tải xuống (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), bộ nhớ đệm (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), dữ liệu tự động điền (<ph name="DATA_TYPE_AUTOFILL" />), mật khẩu (<ph name="DATA_TYPE_PASSWORD" />), các chế độ cài đặt trang web (<ph name="DATA_TYPE_SITE_SETTINGS" />) và dữ liệu ứng dụng đã lưu trữ (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Chính sách này không được ưu tiên hơn <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Người dùng sẽ vẫn đăng nhập vào Tài khoản Google của mình khi xoá cookie.
+
+Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Kể từ Chrome 115, việc bạn đặt chính sách này sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> và <ph name="BROWSER_SIGNIN_POLICY_NAME" /> cũng không bị tắt.
+
+Nếu vì lý do nào đó mà quá trình xoá dữ liệu đã bắt đầu nhưng chưa hoàn tất, thì dữ liệu duyệt web sẽ bị xoá vào lần tải cấu hình tiếp theo.
+
+Nếu <ph name="PRODUCT_NAME" /> không thoát đúng cách (ví dụ: nếu trình duyệt hoặc hệ điều hành gặp sự cố), thì dữ liệu duyệt web sẽ không bị xoá vì trình duyệt đóng không phải là do việc đóng tất cả cửa sổ trình duyệt.</translation>
 <translation id="4921553515199936667">Nếu bạn đặt chính sách này thành true (đúng) hoặc không đặt, quá trình giải mã video sẽ được tăng tốc phần cứng khi có thể.
 
 Nếu bạn đặt chính sách này thành false (sai), quá trình giải mã video sẽ không bao giờ được tăng tốc phần cứng.

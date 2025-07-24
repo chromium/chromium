@@ -1307,7 +1307,7 @@
 <translation id="1896043844785689584">Чтобы настроить разблокировку по отпечатку, попросите ребенка приложить палец к сканеру отпечатков в правом нижнем углу клавиатуры. Данные отпечатков пальцев ребенка надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1897120393475391208">Используйте надежный пароль.</translation>
 <translation id="1897860317037652061">Не удалось выполнить сканирование.</translation>
-<translation id="1898804291554630487">Задайте вопрос об этой странице</translation>
+<translation id="1898804291554630487">Спросить об этой странице</translation>
 <translation id="1900305421498694955">Приложения из Google Play могут запрашивать разрешение на полный доступ к чтению и записи файлов на внешних запоминающих устройствах. При этом созданные на устройстве файлы и папки будут видны всем пользователям внешнего запоминающего устройства. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Попросите администратора обновить это приложение</translation>
 <translation id="1901303067676059328">Выделить &amp;все</translation>
@@ -3796,6 +3796,7 @@
 <translation id="3643962751030964445">Этим устройством управляет <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="364418405912311456">Выберите изображения перетаскиванием указателя или выделите текст.</translation>
 <translation id="3645372836428131288">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
+<translation id="3646789916214779970">Восстановить тему по умолчанию</translation>
 <translation id="3647654707956482440">Невозможно воспользоваться ссылкой. Проверьте, есть ли опечатки, или попробуйте другую ссылку.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="3648348069317717750">Обнаружено устройство "<ph name="USB_DEVICE_NAME" />"</translation>
@@ -5718,7 +5719,7 @@
 <translation id="4989966318180235467">Исследовать &amp;фоновую страницу</translation>
 <translation id="4990673372047946816">Камера не найдена</translation>
 <translation id="4991420928586866460">Использовать клавиши верхнего ряда как функциональные</translation>
-<translation id="4991873517942703737">Задать вопрос об этом документе</translation>
+<translation id="4991873517942703737">Спросить об этом документе</translation>
 <translation id="4992443049233195791">Настройки файлов Microsoft 365</translation>
 <translation id="4992458225095111526">Подтверждение Powerwash</translation>
 <translation id="4992473555164495036">Администратор запретил некоторые способы ввода.</translation>

@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">ติดต่อผู้ส่งเพื่อขอลิงก์ใหม่</translation>
 <translation id="1013952917065545813">คุณกลับมาที่นี่เพื่อเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้</translation>
 <translation id="1016495303386450659">อัปเดตรายการแล้ว</translation>
+<translation id="1019990162050689579">กิจกรรมบนแอป Gemini</translation>
 <translation id="102916930470544692">พาสคีย์</translation>
 <translation id="1030376737535466765">เปิดเครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="1035980983510608210">การปิดแท็บทั้งหมดจะเป็นการปิดแท็บที่ปักหมุดด้วยเช่นกัน</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">เปิด <ph name="FILENAME" /> ไม่ได้</translation>
 <translation id="1096992026380844478">ระบบจะกู้คืนการตั้งค่าการซิงค์ตามการสำรองข้อมูลครั้งล่าสุด <ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
+<translation id="110491332089958282">แชร์เนื้อหาของหน้าเว็บกับ Gemini เพื่อรับคำตอบที่เกี่ยวข้องมากขึ้น เมื่อคุณแชร์หน้าเว็บกับ Gemini ระบบจะส่งเนื้อหาและ URL แบบเต็มของหน้าเว็บไปยัง Google <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">ซิงค์ประวัติการเข้าชม</translation>
 <translation id="1110772719190051587">ปลดล็อกด้วย Face ID</translation>
 <translation id="1112015203684611006">การพิมพ์ล้มเหลว</translation>
@@ -107,7 +109,7 @@
 <translation id="1408847409015257906">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
 <translation id="1411386976162024013">การค้นหาภาพด้วย Lens</translation>
 <translation id="1417474386970818917">ออกจากระบบและลบ</translation>
-<translation id="1426410128494586442">ยอมรับ</translation>
+<translation id="1426410128494586442">ใช่</translation>
 <translation id="1429187656584513419">เปิดรหัสผ่าน</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1433478348197382180">โหมดการอ่าน</translation>
@@ -282,6 +284,7 @@
 <translation id="2067852168641682340">บันทึกลงในบัญชีนี้ทุกครั้ง</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 แท็บ}other{{count} แท็บ}}</translation>
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
+<translation id="2074599390896964828">ตำแหน่งที่แน่นอน</translation>
 <translation id="2078437078822043850">คุณสามารถเลื่อนไปทางขวาเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2085876078937250610">บันทึก…</translation>
@@ -310,6 +313,7 @@
 <translation id="219283042927675668">แท็บในกลุ่ม</translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
 <translation id="2196428379625389579">ค้นหาในเว็บ</translation>
+<translation id="2198001751007276170">แทนที่รหัสผ่าน</translation>
 <translation id="2199562093267256223">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">ไม่มีบัญชีอีเมล</translation>
 <translation id="2214453882118345682">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้อง</translation>
@@ -510,6 +514,7 @@
 <translation id="3010025794097054078">ปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ</translation>
 <translation id="301080557829842765">คู่มือความเป็นส่วนตัว</translation>
 <translation id="3012310354105716927">ยังไม่ได้บันทึกข้อมูลบางอย่าง</translation>
+<translation id="3013922155552460252">ดูและจัดการกิจกรรม Gemini เช่น แชท ความคิดเห็น และพรอมต์</translation>
 <translation id="3016518775797983090">แชร์หน้าเว็บไม่ได้</translation>
 <translation id="3020183492814296499">ทางลัด</translation>
 <translation id="3021342271734507256">วง ไฮไลต์ หรือแตะสิ่งใดก็ได้บนหน้าจอเพื่อค้นหา</translation>
@@ -534,6 +539,7 @@
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="309710370695886264">คุณมีรหัสผ่านที่ใช้ซ้ำ 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="3102790820790869053">ค้นหาในแท็บล่าสุด</translation>
+<translation id="3106258548858559536">ปิดโหมดการอ่าน</translation>
 <translation id="3106690631878101882">ซ่อน "แปลภาษา"</translation>
 <translation id="310900540163454140">ลบรหัสผ่านสำหรับ <ph name="WEBSITE" /> ใช่ไหม</translation>
 <translation id="3112556859945124369">ทำเครื่องหมาย…</translation>
@@ -632,6 +638,7 @@
 <translation id="3533860663366814939">เปิดการตั้งค่าการป้อนข้อความอัตโนมัติและรหัสผ่าน</translation>
 <translation id="3546122170015471515">Maps เวอร์ชันก่อนเปิดตัวใน Google.com</translation>
 <translation id="3547356470684043247">อ่านการประเมินผลิตภัณฑ์ บริการ หรือประสบการณ์ของลูกค้าเพื่อช่วยในการตัดสินด้วยรีวิว</translation>
+<translation id="3547933853190131743">ค้นหาด้วยโหมด AI</translation>
 <translation id="3557336313807607643">เพิ่มในรายชื่อติดต่อ</translation>
 <translation id="355765753469272474">เลิกทำ</translation>
 <translation id="3565930036634619844">แท็บ <ph name="TAB_INDEX" /> จาก <ph name="NUMBER_OF_TABS" /></translation>
@@ -1600,6 +1607,7 @@
 <translation id="7300448350764260141">เพิ่มการป้องกันภัยคุกคามทางออนไลน์ขึ้นอีกชั้น</translation>
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
+<translation id="7334364820047587268">คุณมีรหัสผ่านสำหรับบัญชีเหล่านี้อยู่แล้วในเครื่องมือจัดการรหัสผ่านบน Google หากคุณเลือกนำเข้ารหัสผ่านด้านล่าง รหัสผ่านดังกล่าวจะแทนที่รหัสผ่านที่มีอยู่</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
@@ -1816,6 +1824,7 @@
 <translation id="8101409298456377967">สร้าง บันทึก และจัดการรหัสผ่านเพื่อจะได้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">ปิด</translation>
+<translation id="8106442513853561174">แชร์ตำแหน่งที่แน่นอน</translation>
 <translation id="8114753159095730575">การดาวน์โหลดไฟล์พร้อมใช้งาน มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="8123502380991596210">ซ่อน "มีอะไรใหม่"</translation>
 <translation id="8123953306357309250">ยกเลิกการซิงค์ใช่ไหม คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
@@ -2098,6 +2107,7 @@
 <translation id="913036870884277353">เปิดลิงก์ในแอปอื่นๆ ได้อย่างง่ายดาย</translation>
 <translation id="9137013805542155359">แสดงหน้าเว็บเดิม</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">เปิดโหมดการอ่าน</translation>
 <translation id="9144230693397287797">รับข้อมูลอัปเดตสำหรับการช่วยเตือนที่คุณตั้งไว้และแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="914781932147356857">ทำเครื่องหมายทั้งหมด…</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
@@ -2126,6 +2136,7 @@
 <translation id="94870150074703282">ลบกลุ่มไหม</translation>
 <translation id="952704832371081537">ยกเลิก</translation>
 <translation id="954667170699278022">เรื่องรออ่าน</translation>
+<translation id="956218893102219091">ใช้ตำแหน่งที่แน่นอนเพื่อให้ Gemini แสดงผลลัพธ์ที่แม่นยำที่สุด แทนที่จะใช้ตำแหน่งโดยประมาณตามที่อยู่ IP ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">คุณกำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="963102227019621224">กิจกรรมบนเว็บและแอป</translation>

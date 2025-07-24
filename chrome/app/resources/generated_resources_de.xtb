@@ -3211,7 +3211,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3238192140106069382">Verbindung wird hergestellt und geprüft</translation>
 <translation id="3239373508713281971">Zeitlimit entfernt für <ph name="APP_NAME" /></translation>
 <translation id="3240299564104448052">Du bist anscheinend offline.</translation>
-<translation id="3240426699337459095">Link wurde kopiert.</translation>
+<translation id="3240426699337459095">Link kopiert</translation>
 <translation id="3241638166094654466">Zellen in jeder Zeile:</translation>
 <translation id="3241680850019875542">Wähle das Stammverzeichnis der Erweiterung, die gepackt werden soll. Zur Aktualisierung einer Erweiterung wähle außerdem den privaten Schlüssel zur Wiederverwendung.</translation>
 <translation id="3241810535741601486">Diese Änderung kann nicht rückgängig gemacht werden. Erweiterte Updates werden für alle Nutzer dieses Geräts übernommen. <ph name="LINK_START" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -3789,6 +3789,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3643962751030964445">Dieses Gerät wird von <ph name="DEVICE_MANAGER" /> verwaltet. <ph name="DEVICE_MANAGER" /> hat festgelegt, dass für das Konto <ph name="USER_EMAIL_ADDRESS" /> ein neues Profil erforderlich ist</translation>
 <translation id="364418405912311456">Zum Suchen klicken und über Bilder ziehen oder Text markieren</translation>
 <translation id="3645372836428131288">Bewege deinen Finger etwas, um einen anderen Teil des Fingerabdrucks zu erfassen.</translation>
+<translation id="3646789916214779970">Auf Standarddesign zurücksetzen</translation>
 <translation id="3647654707956482440">Dieser Link kann nicht verwendet werden. Prüfe die Rechtschreibung oder versuche es mit einem anderen Link.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> erhalten von <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> erhalten von <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> erkannt</translation>

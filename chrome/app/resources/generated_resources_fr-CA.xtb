@@ -3797,6 +3797,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3643962751030964445">Cet appareil est géré par <ph name="DEVICE_MANAGER" />. Un nouveau profil est requis pour le compte <ph name="USER_EMAIL_ADDRESS" /> par <ph name="DEVICE_MANAGER" /></translation>
 <translation id="364418405912311456">Cliquez et faites glisser sur les images ou mettez du texte en surbrillance pour effectuer une recherche</translation>
 <translation id="3645372836428131288">Déplacez votre doigt légèrement afin de capturer une autre partie de votre empreinte digitale.</translation>
+<translation id="3646789916214779970">Rétablir le thème par défaut</translation>
 <translation id="3647654707956482440">Impossible d'utiliser ce lien. Vérifiez s'il y a des fautes de frappe ou utilisez un autre lien pour réessayer.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> reçu de l'appareil <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> reçu de l'appareil <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> reçus de l'appareil <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Appareil <ph name="USB_DEVICE_NAME" /> détecté</translation>

@@ -3791,6 +3791,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3643962751030964445">Este dispositivo está administrado por <ph name="DEVICE_MANAGER" />; <ph name="DEVICE_MANAGER" /> solicita un nuevo perfil para la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Haz clic y arrastra sobre las imágenes o destaca el texto para buscar</translation>
 <translation id="3645372836428131288">Mueve el dedo ligeramente para capturar otra parte de la huella dactilar.</translation>
+<translation id="3646789916214779970">Restablecer el tema predeterminado</translation>
 <translation id="3647654707956482440">No se pudo usar este vínculo. Para intentarlo nuevamente, verifica que no haya errores ortográficos o usa otro vínculo.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recibido de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Se detectó <ph name="USB_DEVICE_NAME" /></translation>

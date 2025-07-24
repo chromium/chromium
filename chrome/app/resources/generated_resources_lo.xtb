@@ -3806,6 +3806,7 @@
 <translation id="3643962751030964445">ອຸປະກອນນີ້ຖືກຈັດການໂດຍ <ph name="DEVICE_MANAGER" />. ຕ້ອງໃຊ້ໂປຣໄຟລ໌ໃໝ່ສຳລັບບັນຊີ <ph name="USER_EMAIL_ADDRESS" /> ໂດຍ <ph name="DEVICE_MANAGER" /></translation>
 <translation id="364418405912311456">ຄລິກແລ້ວລາກຢູ່ຮູບພາບ ຫຼື ໄຮໄລ້ຂໍ້ຄວາມເພື່ອຊອກຫາ</translation>
 <translation id="3645372836428131288">ຍ້າຍຊ້າໆເພື່ອບັນທຶກເອົາສ່ວນຕ່າງໆຂອງລາຍນິ້ວມື.</translation>
+<translation id="3646789916214779970">ຕັ້ງຄ່າເປັນເທມມາດຕະຖານຄືນໃໝ່</translation>
 <translation id="3647654707956482440">ບໍ່ສາມາດໃຊ້ລິ້ງນີ້ໄດ້. ກະລຸນາກວດສອບການພິມຜິດ ຫຼື ໃຊ້ລິ້ງອື່ນເພື່ອລອງໃໝ່.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ທີ່ໄດ້ຮັບຈາກ <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> ທີ່ໄດ້ຮັບຈາກ <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ກວດ​ພົບ​ແລ້ວ</translation>

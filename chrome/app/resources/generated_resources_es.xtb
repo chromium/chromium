@@ -3795,6 +3795,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3643962751030964445">Este dispositivo está administrado por <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> requiere un nuevo perfil para la cuenta <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="364418405912311456">Haz clic y arrastra sobre imágenes o resalta texto para buscar</translation>
 <translation id="3645372836428131288">Mueve el dedo ligeramente para capturar otra parte de la huella digital.</translation>
+<translation id="3646789916214779970">Restablecer tema predeterminado</translation>
 <translation id="3647654707956482440">No se puede usar este enlace. Comprueba que no haya errores ortográficos o usa otro enlace y vuelve a intentarlo.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Se ha detectado <ph name="USB_DEVICE_NAME" /></translation>
@@ -5716,7 +5717,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4989966318180235467">Inspeccionar página &amp;en segundo plano</translation>
 <translation id="4990673372047946816">No hay ninguna cámara disponible</translation>
 <translation id="4991420928586866460">Tratar las teclas de la fila superior como teclas de función</translation>
-<translation id="4991873517942703737">Hacer preguntas sobre este documento</translation>
+<translation id="4991873517942703737">Preguntar sobre este documento</translation>
 <translation id="4992443049233195791">Ajustes de archivos de Microsoft 365</translation>
 <translation id="4992458225095111526">Confirmar Powerwash</translation>
 <translation id="4992473555164495036">Tu administrador ha limitado los métodos de introducción disponibles.</translation>
@@ -10876,7 +10877,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8665110742939124773">Has introducido un código de acceso incorrecto. Inténtalo de nuevo.</translation>
 <translation id="8665180165765946056">Copia de seguridad completada</translation>
 <translation id="8666268818656583275">Ahora las teclas de función se comportarán como las teclas del sistema de la fila superior</translation>
-<translation id="8666321716757704924">Se han vuelto a dar permisos a <ph name="WEBSITE" /></translation>
+<translation id="8666321716757704924">Se ha vuelto a dar permisos a <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Tienes contraseñas que se pueden mejorar</translation>
 <translation id="8668378421690365723">Es posible que tu dispositivo ya no funcione correctamente y que tenga problemas de seguridad y rendimiento.</translation>
 <translation id="8669284339312441707">Más cálido</translation>

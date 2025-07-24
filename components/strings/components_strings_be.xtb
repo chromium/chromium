@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб пагуляць у "Прабежку з дыназаўрам" у Chrome, націсніце Tab, затым Enter</translation>
 <translation id="1060136083665017312">Гульнявыя сістэмы і прыстаўкі</translation>
 <translation id="1060320201901229167">Канверт Kaku 5</translation>
+<translation id="1060985736456216896">Лагатыпы Google Pay і Zip</translation>
 <translation id="1062407476771304334">Замяніць</translation>
 <translation id="1063822554756965137">Файлы былі выдалены</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">Схаваць гэты раз</translation>
 <translation id="121201262018556460">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў сертыфікат, які змяшчае слабы ключ. Магчыма, зламыснік узламаў закрыты ключ, і сервер можа быць не тым серверам, які вам патрэбны (магчыма, вы абменьваецеся данымі са зламыснікам).</translation>
 <translation id="1212527389003717329">Спампоўванне пачалося. Каб паглядзець спампаваныя файлы, націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Выкарыстоўвайце даныя са свайго Уліковага запісу Google для аўтазапаўнення пры ўводзе пароляў, ключоў доступу, адрасоў, спосабаў аплаты і іншых звестак</translation>
 <translation id="1219129156119358924">Бяспека сістэмы</translation>
 <translation id="1222060260947439312">Правы латок</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1539,6 +1541,7 @@
 <translation id="3576616784287504635">Убудаваная старонка на сайце <ph name="SITE" /> кажа</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3577902790357386792">Гімнастыка</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome паведаміць, калі старонка будзе гатовая. &lt;a&gt;Скасаваць&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Дадаць імя</translation>
 <translation id="3583757800736429874">&amp;Узнавіць перамяшчэнне</translation>
@@ -1787,6 +1790,7 @@
 <translation id="398470910934384994">Птушкі</translation>
 <translation id="3985750352229496475">Кіраваць адрасамі...</translation>
 <translation id="3986506998755860149">даведацца больш пра функцыю аўтазапаўнення з дапамогай AI ў наладах</translation>
+<translation id="3986557181852957825">Лагатыпы Google Pay і Klarna</translation>
 <translation id="3986705137476756801">Выключыць Імгненныя субцітры</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Менш за 1 МБ</translation>
@@ -1860,6 +1864,7 @@
 <translation id="4104702906064390950">Захоўваюцца даныя IBAN</translation>
 <translation id="4106887816571530227">Убудаванае змесціва не дазволена</translation>
 <translation id="4107047499377819067">Пачалося ўсталяванне фонавых сэрвісаў VPN. Гэты працэс можа заняць некалькі хвілін.</translation>
+<translation id="4110642094637545339">Лагатыпы Google Pay і AfterPay</translation>
 <translation id="4110652170750985508">Праверце плацеж</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
@@ -2278,6 +2283,7 @@
 <translation id="4807098396393229769">Імя на картцы</translation>
 <translation id="4809079943450490359">Інструкцыі ад адміністратара прылады:</translation>
 <translation id="4811450222531576619">Даведайцеся пра яе крыніцу і тэму</translation>
+<translation id="4811918461974803225">Лагатыпы Google Pay і Affirm</translation>
 <translation id="4813512666221746211">Памылка сеткі</translation>
 <translation id="4814114628197290459">Выдаленне нумара IBAN</translation>
 <translation id="4816341377198595747">Кнопка "Пошук закладак". Актывуйце, каб выканаць пошук закладак.</translation>
@@ -2526,6 +2532,7 @@
 <translation id="5222812217790122047">Электронны адрас (абавязкова)</translation>
 <translation id="5225215474235602477">Захаваць пашпарт?</translation>
 <translation id="5228269245420405804">Дыстанцыйнае навучанне</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Адрас дастаўкі</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3293,6 +3300,7 @@
 <translation id="6493924760403974580">Праграма падтрымлівае толькі гэты памер.</translation>
 <translation id="6494750904506170417">усплывальныя вокны і перанакіраванні</translation>
 <translation id="6495664197699704593">Пароль захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць яго на іншых прыладах, вы можаце <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Каб карыстацца іншай службай аўтазапаўнення ў Chrome, выберыце пастаўшчыка адпаведнай службы ў наладах Android</translation>
 <translation id="6499038740797743453">Скінуць пароль?</translation>
 <translation id="6502510275417601303">Абвестка пра новую наладу аплаты закрыта</translation>
 <translation id="6502991525169604759">Без унесеных вамі змяненняў</translation>

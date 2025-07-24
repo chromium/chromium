@@ -3793,6 +3793,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3643962751030964445">Bu cihaz <ph name="DEVICE_MANAGER" /> tərəfindən idarə olunur. <ph name="DEVICE_MANAGER" /> tərəfindən <ph name="USER_EMAIL_ADDRESS" /> hesabı üçün yeni profil tələb olunur</translation>
 <translation id="364418405912311456">Axtarmaq üçün təsvirlərin üzərinə klikləyin və sürüşdürün və ya mətni vurğulayın</translation>
 <translation id="3645372836428131288">Barmaq izinin fərqli hissələrini tutmaq üçün barmağınızı yavaşca hərəkət etdirin.</translation>
+<translation id="3646789916214779970">Defolt temaya sıfırlayın</translation>
 <translation id="3647654707956482440">Bu keçiddən istifadə etmək mümkün deyil. Yazı xətalarını yoxlayın və ya yenidən cəhd etmək üçün başqa keçiddən istifadə edin.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> cihazından <ph name="ATTACHMENTS" /> alınıb}other{<ph name="DEVICE_NAME" /> cihazından <ph name="ATTACHMENTS" /> alınıb}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> aşkarlandı</translation>

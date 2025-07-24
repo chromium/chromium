@@ -3778,6 +3778,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3643962751030964445">Tym urządzeniem zarządza <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> wymaga nowego profilu dla konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Kliknij i przeciągnij po obrazach lub zaznacz tekst, aby wyszukać</translation>
 <translation id="3645372836428131288">Przesuń odrobinę, by zeskanować inną część odcisku palca.</translation>
+<translation id="3646789916214779970">Przywróć motyw domyślny</translation>
 <translation id="3647654707956482440">Nie można użyć tego linku. Sprawdź, czy nie ma literówek, lub użyj innego linku i spróbuj jeszcze raz.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Odebrano <ph name="ATTACHMENTS" /> z urządzenia <ph name="DEVICE_NAME" />}few{Odebrano <ph name="ATTACHMENTS" /> z urządzenia <ph name="DEVICE_NAME" />}many{Odebrano <ph name="ATTACHMENTS" /> z urządzenia <ph name="DEVICE_NAME" />}other{Odebrano <ph name="ATTACHMENTS" /> z urządzenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Wykryto <ph name="USB_DEVICE_NAME" /></translation>

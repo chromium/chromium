@@ -3796,6 +3796,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3643962751030964445">Bu – <ph name="DEVICE_MANAGER" /> tomonidan boshqariladigan qurilma. <ph name="DEVICE_MANAGER" /> <ph name="USER_EMAIL_ADDRESS" /> hisobi uchun yangi profil yaratilishini talab qiladi</translation>
 <translation id="364418405912311456">Qidirish uchun rasmlarni tortib tashlang yoki matnni belgilang</translation>
 <translation id="3645372836428131288">Barmoqning boshqa qismlari hamq qayd qilinishi uchun uni biroz siljiting.</translation>
+<translation id="3646789916214779970">Standart mavzuga qaytarish</translation>
 <translation id="3647654707956482440">Bu havola ishlamadi. Qayta urinish uchun imlo xatolarini tekshiring yoki boshqa havoladan foydalaning.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilindi}other{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilindi}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ulandi</translation>

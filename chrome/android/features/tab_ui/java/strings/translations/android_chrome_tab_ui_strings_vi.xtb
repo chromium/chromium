@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Mở <ph name="TITLE_OF_GROUP" /> có <ph name="TAB_COUNT2" /> thẻ}other{Mở <ph name="TITLE_OF_GROUP" /> có <ph name="TAB_COUNT2" /> thẻ}}</translation>
 <translation id="1273910660700874265">Các lựa chọn về nhóm thẻ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Chọn thời điểm tự động di chuyển các thẻ và nhóm thẻ vào phần không hoạt động.</translation>
+<translation id="1321004960118052490">Các mục không hoạt động sẽ không bị dồn lại</translation>
 <translation id="1329584516321524826">Vừa cập nhật xong</translation>
 <translation id="1340839264183302272">Rời khỏi nhóm</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}other{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}}</translation>
@@ -107,9 +108,11 @@
 <translation id="492284538114688557">Đã phát hiện có mặt hàng giảm giá</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}other{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Xem</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Di chuyển các thẻ sang cửa sổ mới}other{Di chuyển các thẻ sang một cửa sổ khác}}</translation>
 <translation id="5073204694187207510">Ẩn lưới toàn màn hình</translation>
 <translation id="5076161749301278626">Xem đánh giá về cửa hàng?</translation>
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome tự động đóng các thẻ và nhóm thẻ không hoạt động sau <ph name="AUTO_DELETE_DELAY_ONE" /> tháng. Bạn có thể thay đổi tuỳ chọn này trong phần cài đặt.}other{Chrome tự động đóng các thẻ và nhóm thẻ không hoạt động sau <ph name="AUTO_DELETE_DELAY_MANY" /> tháng. Bạn có thể thay đổi tuỳ chọn này trong phần cài đặt.}}</translation>
 <translation id="5339733443032484186">Thẻ bạn truy cập gần đây nhất</translation>
 <translation id="5380159289133845234">Lưu trữ các thẻ trùng lặp</translation>
 <translation id="5400836586163650660">Màu xám</translation>

@@ -3808,6 +3808,7 @@
 <translation id="3643962751030964445">इस डिवाइस को <ph name="DEVICE_MANAGER" /> मैनेज करता है. <ph name="DEVICE_MANAGER" /> के <ph name="USER_EMAIL_ADDRESS" /> खाते के लिए, नई प्रोफ़ाइल की ज़रूरत है</translation>
 <translation id="364418405912311456">खोजने के लिए, इमेज पर क्लिक करके खींचें और छोड़ें या टेक्स्ट को हाइलाइट करें</translation>
 <translation id="3645372836428131288">फ़िंगरप्रिंट के अलग हिस्से को कैप्चर करने के लिए उंगली धीरे से हिलाएं</translation>
+<translation id="3646789916214779970">सामान्य थीम पर रीसेट करें</translation>
 <translation id="3647654707956482440">इस लिंक का इस्तेमाल नहीं किया जा सकता. देख लें कि टाइप करने में कोई गड़बड़ी तो नहीं हुई है या किसी दूसरे लिंक का इस्तेमाल करके, दोबारा कोशिश करें.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिले}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> का पता चला</translation>

@@ -3790,6 +3790,7 @@
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" /> यो डिभाइस व्यवस्थापन गर्नुहुन्छ। <ph name="DEVICE_MANAGER" /> का अनुसार <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा नयाँ प्रोफाइल बनाउनु पर्छ</translation>
 <translation id="364418405912311456">आफूले चाहेको कुरा खोज्न फोटोमा क्लिक गरी ड्र्याग गर्नुहोस् वा टेक्स्ट हाइलाइट गर्नुहोस्</translation>
 <translation id="3645372836428131288">फिंगरप्रिन्टको कुनै अर्को भाग समावेश गर्न औँला थोरै सार्नुहोस्।</translation>
+<translation id="3646789916214779970">डिफल्ट थीममा रिसेट गर्नुहोस्</translation>
 <translation id="3647654707956482440">यो लिंक प्रयोग गर्न सकिएन। लिंक टाइप गर्दा गल्ती भएको छ कि छैन जाँच्नुहोस् वा अर्को लिंक हालेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> पत्ता लगाइयो</translation>

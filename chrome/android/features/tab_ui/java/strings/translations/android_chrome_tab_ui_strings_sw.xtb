@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Fungua <ph name="TITLE_OF_GROUP" /> yenye kichupo <ph name="TAB_COUNT2" />}other{Fungua <ph name="TITLE_OF_GROUP" /> yenye vichupo <ph name="TAB_COUNT2" />}}</translation>
 <translation id="1273910660700874265">Chaguo za kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Chagua wakati ambapo vichupo na vikundi vya vichupo vitahamishiwa kiotomatiki kwenye sehemu ya visivyotumika.</translation>
+<translation id="1321004960118052490">Vipengee vyako visivyotumika havitalundikana</translation>
 <translation id="1329584516321524826">Imesasishwa sasa hivi</translation>
 <translation id="1340839264183302272">Ondoka kwenye kikundi</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}other{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}}</translation>
@@ -107,9 +108,11 @@
 <translation id="492284538114688557">Punguo la bei limetambuliwa</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha pamoja kilicho na kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}other{Panua kikundi cha vichupo cha pamoja kilicho na vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Maoni</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Hamishia vichupo kwenye dirisha jipya}other{Hamishia vichupo kwenye dirisha lingine}}</translation>
 <translation id="5073204694187207510">Ficha gridi ya skrini nzima</translation>
 <translation id="5076161749301278626">Je, unaona maoni kuhusu duka?</translation>
 <translation id="5161254044473106830">Kichwa kinahitajika</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome hufunga kiotomatiki vichupo na vikundi vya vichupo visivyotumika baada ya mwezi <ph name="AUTO_DELETE_DELAY_ONE" />. Unaweza kubadilisha hali hii katika mipangilio.}other{Chrome hufunga kiotomatiki vichupo na vikundi vya vichupo visivyotumika baada ya miezi <ph name="AUTO_DELETE_DELAY_MANY" />. Unaweza kubadilisha hali hii katika mipangilio.}}</translation>
 <translation id="5339733443032484186">Kichupo chako cha mwisho</translation>
 <translation id="5380159289133845234">Hifadhi vichupo vinavyojirudia kwenye kumbukumbu</translation>
 <translation id="5400836586163650660">Kijivu</translation>

@@ -3803,6 +3803,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3643962751030964445">Това устройство се управлява от <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Кликнете и плъзнете върху изображения или откройте текст, за да търсите</translation>
 <translation id="3645372836428131288">Преместете малко пръста си, за да бъде заснета друга част от отпечатъка.</translation>
+<translation id="3646789916214779970">Възстановяване на темата по подразбиране</translation>
 <translation id="3647654707956482440">Тази връзка не е използваема. Проверете за правописни грешки или използвайте друга връзка, за да опитате отново.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Получихте <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}other{Получихте <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Открито е устройство <ph name="USB_DEVICE_NAME" /></translation>

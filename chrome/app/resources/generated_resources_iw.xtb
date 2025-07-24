@@ -998,6 +998,7 @@
 <translation id="1670399744444387456">בסיסי</translation>
 <translation id="1673137583248014546">האתר <ph name="URL" /> מבקש לראות את היצרן והדגם של מפתח האבטחה שלך</translation>
 <translation id="1674073353928166410">פתיחת כל החלונות (<ph name="URL_COUNT" />) במצב חלון אנונימי</translation>
+<translation id="1674142805528405174">‏מנהל הסיסמאות של Google יכול להגדיר לך סיסמה חזקה חדשה ולשמור אותה בחשבון <ph name="EMAIL" />.</translation>
 <translation id="1677306805708094828">אי אפשר להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
 <translation id="1678849866171627536">הסריקה נכשלה. הקובץ עשוי להיות וירוס או תוכנה זדונית.</translation>
@@ -2403,6 +2404,7 @@
 <translation id="2642111877055905627">כדורגל</translation>
 <translation id="2642206811783203764">תמיד באתר <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">תמיד אפשר למחוק את נתוני המדידה של ביצועי המודעות על ידי מחיקה של נתוני הגלישה</translation>
+<translation id="2643379881528582459">‏אם Chromium מוצא אחת מהסיסמאות בפרצה באבטחת המידע שפורסמה לציבור, תופיע הצעה לשנות את הסיסמה אם החשבון מחובר</translation>
 <translation id="2643698698624765890">אפשר לנהל את התוספים שלך באמצעות לחיצה על 'תוספים' בתפריט 'חלון'.</translation>
 <translation id="2645047101481282803">המכשיר שלך מנוהל על ידי <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">מתבצעת העברה של הכרטיסייה הזו אל <ph name="DEVICE_NAME" /></translation>
@@ -3806,6 +3808,7 @@
 <translation id="3643962751030964445">המכשיר הזה מנוהל על ידי <ph name="DEVICE_MANAGER" />. יצירת פרופיל חדש לחשבון <ph name="USER_EMAIL_ADDRESS" /> נדרשת על ידי <ph name="DEVICE_MANAGER" />.</translation>
 <translation id="364418405912311456">כדי לחפש, לוחצים על תמונות וגוררים אותן או מדגישים טקסט</translation>
 <translation id="3645372836428131288">יש להזיז קצת את האצבע כדי לסרוק חלק אחר של טביעת האצבע.</translation>
+<translation id="3646789916214779970">איפוס לנושא ברירת המחדל</translation>
 <translation id="3647654707956482440">אי אפשר להשתמש בקישור הזה. יש לבדוק אם הקישור מכיל שגיאות הקלדה או להשתמש בקישור אחר ולנסות שוב.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> התקבל מהמכשיר <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}two{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">המערכת זיהתה את <ph name="USB_DEVICE_NAME" /></translation>
@@ -4219,6 +4222,7 @@
 <translation id="3903696968689283281">‏פרטי הבעלים של Wi-Fi ישיר:</translation>
 <translation id="3904326018476041253">שירותי מיקום</translation>
 <translation id="3905761538810670789">תיקון האפליקציה</translation>
+<translation id="3906096710440765802">‏כדי לקבל גישה לסיסמאות, לסימניות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון ב-Chrome</translation>
 <translation id="3908288065506437185">‏חסימת קובצי cookie של צד שלישי במצב פרטי</translation>
 <translation id="3908501907586732282">הפעלת תוסף</translation>
 <translation id="3909456989251621103">‏אם מוחקים אישור שרת, Chrome לא ישתמש בו יותר כדי לזהות שרתים.</translation>
@@ -4701,6 +4705,7 @@
 <translation id="425573743389990240">שיעור פריקת סוללה בוואט (המשמעות של ערך שלילי היא שהסוללה בטעינה)</translation>
 <translation id="4255841059940367080">‏הגנה מבוססת-AI בזמן אמת מפני אתרים, הורדות ותוספים מסוכנים, המבוססת על נתוני הגלישה שלך שנשלחים אל Google</translation>
 <translation id="4256316378292851214">שמי&amp;רת סרטון וידאו כ...</translation>
+<translation id="4257175174234042421">שינוי סיסמה אוטומטי</translation>
 <translation id="4258348331913189841">מערכות קבצים</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{שמירת הקבוצה}one{שמירת הקבוצות}two{שמירת הקבוצות}other{שמירת הקבוצות}}</translation>
 <translation id="4259388776256904261">הפעולה עשויה להימשך זמן מה</translation>
@@ -7869,6 +7874,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> משתמשים</translation>
 <translation id="6555432686520421228">הסרת כל חשבונות המשתמשים ואיפוס המכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> כך שיהיה כמו חדש.</translation>
 <translation id="6555604601707417276">‏הגיבוי של Linux שוחזר</translation>
+<translation id="6555744145993174510">מקור: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">ביצוע מחדש</translation>
 <translation id="6556903358015358733">עיצוב וטפט</translation>
 <translation id="6557199166823345360">כדי לשפר את החיפוש, אפשר להוסיף עוד פרטים או לשאול שאלה לגבי הבחירה</translation>
@@ -7904,6 +7910,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - תוכן שולחן העבודה משותף</translation>
 <translation id="6580060371127789208">הושלמו: %<ph name="PERCENTAGE_COMPLETE" /></translation>
 <translation id="6580203076670148210">מהירות הסריקה</translation>
+<translation id="6581356304040102696">‏לא ניתן לייבא את הסיסמאות. גודל הקובץ צריך להיות פחות מ-1MB.</translation>
 <translation id="6582080224869403177">יש לאתחל את <ph name="DEVICE_TYPE" /> כדי לשדרג את האבטחה.</translation>
 <translation id="6582274660680936615">גלישה כאורח</translation>
 <translation id="6583328141350416497">להמשך ההורדה</translation>
@@ -9215,6 +9222,7 @@
 <translation id="7506242536428928412">כדי להשתמש במפתח האבטחה החדש, יש להגדיר קוד אימות חדש</translation>
 <translation id="7506541170099744506">הרישום של המכשיר שלך <ph name="DEVICE_TYPE" /> לניהול ארגוני הסתיים בהצלחה.</translation>
 <translation id="7507207699631365376">הצגת <ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של הספק הזה</translation>
+<translation id="7508127419095425107">‏מידע נוסף על התכונה הזו ועל נתונים רלוונטיים שנשלחים אל Google</translation>
 <translation id="7508707215237589321">למחוק את '<ph name="CERT_NAME" />'?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{לסגור את הכרטיסייה ולמחוק את הקבוצה?}=1{לסגור את הכרטיסיות ולמחוק את הקבוצה?}one{לסגור את הכרטיסיות ולמחוק את הקבוצות?}two{לסגור את הכרטיסיות ולמחוק את הקבוצות?}other{לסגור את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
 <translation id="7509097596023256288">מתבצעת הגדרה של הניהול</translation>
@@ -10947,6 +10955,7 @@
 <translation id="869884720829132584">תפריט יישומים</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699188901396699995">‏PPD עבור <ph name="PRINTER_NAME" /></translation>
+<translation id="8699296325072357994">‏תוכן מדפי סיסמאות ומידע קשור נשלחים אל Google ועוברים בדיקה אנושית. הסיסמה שלך מוצפנת ואף אחד לא יכול לראות אותה <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">‏כאן צריך לכתוב למה אישרת קובצי cookie של צד שלישי באתר הזה</translation>
 <translation id="8700087567921985940">‏שימוש בנתוני המיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר שלך. ‫Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את קביעת המיקום ואת האיכות של השירותים מבוססי-המיקום. <ph name="BEGIN_LINK1" />מידע נוסף על מיקום<ph name="BEGIN_LINK1_END" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">‏מרכז האפליקציות + מקש Backspace</translation>
@@ -11391,6 +11400,7 @@
 <translation id="8993059306046735527">‏אם שכחת את הסיסמה של <ph name="DEVICE_TYPE" />, עדיין אפשר לשחזר את הנתונים המקומיים. עליך להיכנס לחשבון Google או להשתמש בתכונת שחזור החשבון.</translation>
 <translation id="8993198843374358393">העתקת הגיבוב של האישור '<ph name="CERT_NAME" />'</translation>
 <translation id="8993737615451556423">מספקת פקדים כדי להאיץ, להאט ולהשהות את קול ההקראה</translation>
+<translation id="8993787625629280252">‏אם Chrome מוצא אחת מהסיסמאות בפרצה באבטחת המידע שפורסמה לציבור, תופיע הצעה לשנות את הסיסמה אם החשבון מחובר</translation>
 <translation id="899384117894244799">הסרה של משתמש מוגבל</translation>
 <translation id="8993853206419610596">הרחבת כל הבקשות</translation>
 <translation id="8993945059918628059">יש לגעת עם האצבע בחיישן טביעות האצבע. נתוני טביעות האצבע נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" />.</translation>

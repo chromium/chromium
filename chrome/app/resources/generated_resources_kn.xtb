@@ -3800,6 +3800,7 @@
 <translation id="3643962751030964445">ಈ ಸಾಧನವನ್ನು <ph name="DEVICE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="DEVICE_MANAGER" /> ಪ್ರಕಾರ, <ph name="USER_EMAIL_ADDRESS" /> ಖಾತೆಗಾಗಿ ಹೊಸ ಪ್ರೊಫೈಲ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="364418405912311456">ಚಿತ್ರಗಳನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ ಮತ್ತು ಡ್ರ್ಯಾಗ್‌ ಮಾಡಿ ಅಥವಾ ಹುಡುಕಲು ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್‌ ಮಾಡಿ</translation>
 <translation id="3645372836428131288">ಫಿಂಗರ್‌‌ಪ್ರಿಂಟ್‌‌ನ ಬೇರೊಂದು ಭಾಗವನ್ನು ಸೆರೆಹಿಡಿಯಲು ಬೆರಳನ್ನು ನಿಧಾನವಾಗಿ ಸರಿಸಿ.</translation>
+<translation id="3646789916214779970">ಡಿಫಾಲ್ಟ್ ಥೀಮ್‌ಗೆ ಮರುಹೊಂದಿಸು</translation>
 <translation id="3647654707956482440">ಈ ಲಿಂಕ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಲು, ಟೈಪಿಂಗ್ ದೋಷವಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಬೇರೊಂದು ಲಿಂಕ್ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ಪತ್ತೆ ಮಾಡಲಾಗಿದೆ</translation>

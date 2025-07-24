@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT2" /> ٹیب کے ساتھ <ph name="TITLE_OF_GROUP" /> کھولیں}other{‫<ph name="TAB_COUNT2" /> ٹیبز کے ساتھ <ph name="TITLE_OF_GROUP" /> کھولیں}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ٹیب گروپ کے اختیارات</translation>
 <translation id="1300188005269437765">منتخب کریں کہ کب ٹیبز اور ٹیب گروپس خود بخود غیر فعال سیکشن میں منتقل ہو جاتے ہیں۔</translation>
+<translation id="1321004960118052490">آپ کے غیر فعال آئٹمز جمع نہیں ہوں گے</translation>
 <translation id="1329584516321524826">ابھی اپ ڈیٹ ہوا ہے</translation>
 <translation id="1340839264183302272">گروپ چھوڑیں</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، رنگ <ph name="COLOR_NAME" />، لیبل <ph name="CARD_LABEL" /> کے ساتھ اشتراک کردہ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، رنگ <ph name="COLOR_NAME" />، لیبل <ph name="CARD_LABEL" /> کے ساتھ اشتراک کردہ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">پوری اسکرین گرڈ کو چھپائیں</translation>
 <translation id="5076161749301278626">اسٹور کے جائزے دیکھیں؟</translation>
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome خودکار طور پر غیر فعال ٹیبز اور ٹیب گروپس کو <ph name="AUTO_DELETE_DELAY_ONE" /> ماہ بعد بند کر دیتا ہے۔ آپ ترتیبات میں اسے تبدیل کر سکتے ہیں۔}other{‏‫Chrome خودکار طور پر غیر فعال ٹیبز اور ٹیب گروپس کو <ph name="AUTO_DELETE_DELAY_MANY" /> ماہ بعد بند کر دیتا ہے۔ آپ ترتیبات میں اسے تبدیل کر سکتے ہیں۔}}</translation>
 <translation id="5339733443032484186">آپ کا آخری ٹیب</translation>
 <translation id="5380159289133845234">ڈپلیکیٹ ٹیبز کو آرکائیو کریں</translation>
 <translation id="5400836586163650660">خاکستری</translation>

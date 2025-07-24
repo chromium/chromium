@@ -997,6 +997,7 @@
 <translation id="1670399744444387456">基本設定</translation>
 <translation id="1673137583248014546"><ph name="URL" /> よりセキュリティ キーのメーカーとモデルの読み取り許可を求められています</translation>
 <translation id="1674073353928166410">シークレット ウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
+<translation id="1674142805528405174">Google パスワード マネージャーで、Google アカウント「<ph name="EMAIL" />」に保存されているこのアカウントのパスワードを安全なものに変更できます。</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> を追加できません</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1678849866171627536">スキャンに失敗しました。このファイルはウイルスや不正なソフトウェアの可能性があります。</translation>
@@ -2385,6 +2386,7 @@
 <translation id="2642111877055905627">サッカーボール</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" /> では常に許可</translation>
 <translation id="2643064289437760082">閲覧データを消去することで、ユーザーは広告効果の測定データをいつでも削除できます</translation>
+<translation id="2643379881528582459">一般に報告されているデータ侵害でパスワードが検出された場合、ログイン時にパスワードの変更を促すメッセージを表示します</translation>
 <translation id="2643698698624765890">[ウィンドウ] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
 <translation id="2645047101481282803">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。</translation>
 <translation id="2645388244376970260">このタブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
@@ -3785,6 +3787,7 @@
 <translation id="3643962751030964445">このデバイスは <ph name="DEVICE_MANAGER" /> によって管理されています。<ph name="DEVICE_MANAGER" /> がアカウント <ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成するよう求めています</translation>
 <translation id="364418405912311456">画像上をクリックしてドラッグするかテキストを選択して検索します</translation>
 <translation id="3645372836428131288">指紋の別の部分を登録するため、指を少し移動してください。</translation>
+<translation id="3646789916214779970">デフォルトのテーマに戻す</translation>
 <translation id="3647654707956482440">このリンクは使用できません。入力ミスがないかご確認いただくか、別のリンクを使用してもう一度お試しください。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}}</translation>
 <translation id="3648348069317717750">「<ph name="USB_DEVICE_NAME" />」を検出しました</translation>
@@ -4198,6 +4201,7 @@
 <translation id="3903696968689283281">Wi-Fi Direct 所有者情報:</translation>
 <translation id="3904326018476041253">位置情報サービス</translation>
 <translation id="3905761538810670789">アプリを修復</translation>
+<translation id="3906096710440765802">Chrome にログインすると、すべてのデバイスでパスワード、ブックマーク、その他の設定にアクセスできます</translation>
 <translation id="3908288065506437185">シークレット モードでサードパーティ Cookie をブロックする</translation>
 <translation id="3908501907586732282">拡張機能を有効にする</translation>
 <translation id="3909456989251621103">サーバー証明書を削除すると、その証明書は Chrome によるサーバーの識別に使用されなくなります。</translation>
@@ -4679,6 +4683,7 @@
 <translation id="425573743389990240">バッテリーの放電率（ワット、負の値の場合は充電中）</translation>
 <translation id="4255841059940367080">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能からリアルタイムで AI を活用して保護します</translation>
 <translation id="4256316378292851214">名前を付けて動画を保存(&amp;V)...</translation>
+<translation id="4257175174234042421">自動パスワード変更</translation>
 <translation id="4258348331913189841">ファイル システム</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{グループを保持}other{グループを保持}}</translation>
 <translation id="4259388776256904261">しばらくお待ちください</translation>
@@ -7839,6 +7844,7 @@
 <translation id="655384502888039633">ユーザー数: <ph name="USER_COUNT" /> 人</translation>
 <translation id="6555432686520421228">すべてのユーザー アカウントを削除し、<ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスを出荷時と同じ状態にリセットします。</translation>
 <translation id="6555604601707417276">Linux バックアップを復元しました</translation>
+<translation id="6555744145993174510"><ph name="APP_ORIGIN" /> から</translation>
 <translation id="6556866813142980365">やり直す</translation>
 <translation id="6556903358015358733">テーマと壁紙</translation>
 <translation id="6557199166823345360">詳細情報を追加するか、選択内容について質問して、検索を絞り込みます</translation>
@@ -7874,6 +7880,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - パソコンのコンテンツが共有されています</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% 完了しました</translation>
 <translation id="6580203076670148210">スキャンの速度</translation>
+<translation id="6581356304040102696">パスワードをインポートできません。ファイルサイズを 1 MB より小さくしてください。</translation>
 <translation id="6582080224869403177">セキュリティをアップグレードするには <ph name="DEVICE_TYPE" /> をリセットしてください。</translation>
 <translation id="6582274660680936615">ゲスト モードでブラウジング中</translation>
 <translation id="6583328141350416497">ダウンロードを続行</translation>
@@ -9180,6 +9187,7 @@
 <translation id="7506242536428928412">新しいセキュリティ キーを使用するには、新しい PIN を設定してください</translation>
 <translation id="7506541170099744506">この <ph name="DEVICE_TYPE" /> は組織の管理対象として登録されました。</translation>
 <translation id="7507207699631365376">このプロバイダの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご覧ください</translation>
+<translation id="7508127419095425107">この機能と Google に送信される関連データの詳細</translation>
 <translation id="7508707215237589321">「<ph name="CERT_NAME" />」を削除しますか？</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{タブを閉じてグループを削除しますか？}=1{タブを閉じてグループを削除しますか？}other{タブを閉じてグループを削除しますか？}}</translation>
 <translation id="7509097596023256288">管理対象の設定</translation>
@@ -10910,6 +10918,7 @@
 <translation id="869884720829132584">アプリケーション メニュー</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" /> の PPD</translation>
+<translation id="8699296325072357994">パスワード ページのコンテンツと関連情報は Google に送信され、人間のレビュアーによって確認されます。パスワードは暗号化され、人間が見ることはありません。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">このサイトでサードパーティ Cookie を許可した理由をお聞かせください</translation>
 <translation id="8700087567921985940">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />位置情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">ランチャー+Backspace</translation>
@@ -11352,6 +11361,7 @@
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> のパスワードを忘れた場合でも、ローカルデータを復元できます。Google アカウントにログインするか、アカウント復元を使用する必要があります。</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" /> の証明書ハッシュをコピー</translation>
 <translation id="8993737615451556423">読み上げを早送り、巻き戻し、一時停止できる操作パネルを表示します</translation>
+<translation id="8993787625629280252">一般に報告されているデータ侵害でパスワードが検出された場合、ログイン時にパスワードの変更を促すメッセージを表示します</translation>
 <translation id="899384117894244799">制限付きユーザーの削除</translation>
 <translation id="8993853206419610596">すべてのリクエストを開く</translation>
 <translation id="8993945059918628059">指紋認証センサーに指を置いてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>

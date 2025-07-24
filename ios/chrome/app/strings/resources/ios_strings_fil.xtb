@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Makipag-ugnayan sa sender para humingi ng bagong link</translation>
 <translation id="1013952917065545813">Puwede kang bumalik dito para buksan ulit ang mga tab na isinara mo kamakailan</translation>
 <translation id="1016495303386450659">Na-update ang item</translation>
+<translation id="1019990162050689579">Aktibidad sa Gemini App</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Buksan ang Password Manager</translation>
 <translation id="1035980983510608210">Kapag isinara ang lahat ng tab, magsasara rin ang mga naka-pin na tab.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">Hindi mabuksan ang <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Ire-restore ang iyong mga setting ng pag-sync batay sa huli mong backup. <ph name="BEGIN_LINK" />Tingnan kung ano ang puwede mong i-sync<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">I-share ang content ng page sa Gemini para makakuha ng mga mas nauugnay na sagot. Kapag nag-share ka ng page sa Gemini, ipapadala sa Google ang buong content at URL ng page. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Pag-sync ng history</translation>
 <translation id="1110772719190051587">I-unlock gamit ang Face ID</translation>
 <translation id="1112015203684611006">Hindi na-print.</translation>
@@ -510,6 +512,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="3010025794097054078">Manatiling ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa.</translation>
 <translation id="301080557829842765">Gabay sa privacy</translation>
 <translation id="3012310354105716927">Hindi pa naka-save ang ilang data</translation>
+<translation id="3013922155552460252">Tingnan at pamahalaan ang aktibidad sa Gemini tulad ng iyong mga chat, feedback, at mga prompt</translation>
 <translation id="3016518775797983090">Hindi ma-share ang page</translation>
 <translation id="3020183492814296499">Mga Shortcut</translation>
 <translation id="3021342271734507256">Gumuhit, mag-highlight, o mag-tap sa anumang bagay sa iyong screen para hanapin ito</translation>
@@ -534,6 +537,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="309710370695886264">Mayroon kang 1 password na ginamit ulit. Ayusin ito ngayon para manatiling ligtas.</translation>
 <translation id="3102790820790869053">Maghanap sa mga kamakailang tab</translation>
+<translation id="3106258548858559536">I-off ang Reading Mode</translation>
 <translation id="3106690631878101882">I-hide ang Isalin</translation>
 <translation id="310900540163454140">I-delete ang password para sa <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Markahan…</translation>
@@ -632,6 +636,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3533860663366814939">Buksan ang mga setting ng Autofill &amp; Password</translation>
 <translation id="3546122170015471515">Mga Preview ng Maps sa Google.com</translation>
 <translation id="3547356470684043247">Magbasa ng mga pagsusuri ng customer sa mga produkto, serbisyo, o experience para makatulong na mapagbatayan mo ng iyong mga desisyon ang mga review</translation>
+<translation id="3547933853190131743">Maghanap gamit ang AI Mode</translation>
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>
 <translation id="355765753469272474">I-undo</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> sa <ph name="NUMBER_OF_TABS" />.</translation>
@@ -2099,6 +2104,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="913036870884277353">Madaling makapagbukas ng mga link sa iba pang app.</translation>
 <translation id="9137013805542155359">Ipakita ang orihinal</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">I-on ang Reading Mode</translation>
 <translation id="9144230693397287797">Makatanggap ng mga update para sa mga paalalang itatakda mo, at mga tab mula sa iba pang device</translation>
 <translation id="914781932147356857">Markahan lahat…</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
@@ -2127,6 +2133,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="94870150074703282">I-delete ang grupo?</translation>
 <translation id="952704832371081537">Kanselahin</translation>
 <translation id="954667170699278022">Listahan ng Babasahin</translation>
+<translation id="956218893102219091">Gamitin ang iyong eksaktong lokasyon para sa mga pinakatumpak na resulta sa Gemini, sa halip na ang tinatayang lokasyon batay sa IP address mo. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Sinusubaybayan mo ang <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>
 <translation id="963102227019621224">Aktibidad sa Web at App</translation>

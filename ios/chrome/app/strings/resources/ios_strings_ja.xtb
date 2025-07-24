@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
+<translation id="1019990162050689579">Gemini アプリ アクティビティ</translation>
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1030376737535466765">パスワード マネージャーを開く</translation>
 <translation id="1035980983510608210">すべてのタブを閉じると、固定されたタブも閉じます。</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> を開けませんでした</translation>
 <translation id="1096992026380844478">同期の設定は前回のバックアップに基づいて復元されます。<ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
+<translation id="110491332089958282">より関連性の高い回答を得るには、ページ コンテンツを Gemini と共有してください。ページを Gemini と共有すると、ページのコンテンツ全体と URL が Google に送信されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">履歴の同期</translation>
 <translation id="1110772719190051587">Face ID でロック解除</translation>
 <translation id="1112015203684611006">印刷できませんでした。</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">データ侵害や安全でないウェブサイトなどから保護してください。</translation>
 <translation id="301080557829842765">プライバシー ガイド</translation>
 <translation id="3012310354105716927">一部のデータがまだ保存されていません</translation>
+<translation id="3013922155552460252">チャット、フィードバック、プロンプトなどの Gemini アクティビティを表示、管理できます</translation>
 <translation id="3016518775797983090">ページを共有できません</translation>
 <translation id="3020183492814296499">ショートカット</translation>
 <translation id="3021342271734507256">画面上のコンテンツを囲むか、ハイライト表示またはタップして検索します</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">下</translation>
 <translation id="309710370695886264">使い回しのパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
 <translation id="3102790820790869053">最近使ったタブを検索</translation>
+<translation id="3106258548858559536">リーディング モードをオフにする</translation>
 <translation id="3106690631878101882">[翻訳] を非表示</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> のパスワードを削除しますか？</translation>
 <translation id="3112556859945124369">マーク...</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">[自動入力とパスワード] 設定を開く</translation>
 <translation id="3546122170015471515">Google.com のマップ プレビュー</translation>
 <translation id="3547356470684043247">レビューで製品、サービス、使い勝手に関する購入者の評価を確認し、判断材料にすることができます</translation>
+<translation id="3547933853190131743">AI モードで検索</translation>
 <translation id="3557336313807607643">連絡先に追加</translation>
 <translation id="355765753469272474">元に戻す</translation>
 <translation id="3565930036634619844">タブ <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />。</translation>
@@ -2098,6 +2103,7 @@
 <translation id="913036870884277353">他のアプリで簡単にリンクを開くことができます。</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">リーディング モードをオンにする</translation>
 <translation id="9144230693397287797">設定したリマインダーと、他のデバイスのタブに関する最新情報を受け取ります</translation>
 <translation id="914781932147356857">すべてマーク…</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
@@ -2126,6 +2132,7 @@
 <translation id="94870150074703282">グループを削除しますか？</translation>
 <translation id="952704832371081537">キャンセル</translation>
 <translation id="954667170699278022">リーディング リスト</translation>
+<translation id="956218893102219091">Gemini で最も正確な結果を得るには、IP アドレスに基づくおおよその現在地ではなく、正確な位置情報を使用してください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> をフォローしています</translation>
 <translation id="961856697154696964">閲覧履歴データを削除</translation>
 <translation id="963102227019621224">ウェブとアプリのアクティビティ</translation>

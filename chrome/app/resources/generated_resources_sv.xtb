@@ -3807,6 +3807,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3643962751030964445">Den här enheten hanteras av <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> kräver att du skapar en ny profil för kontot <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Klicka och dra över bilder eller markera text för att söka</translation>
 <translation id="3645372836428131288">Flytta fingret något så att en annan del av fingeravtrycket registreras.</translation>
+<translation id="3646789916214779970">Återställ till standardtema</translation>
 <translation id="3647654707956482440">Det gick inte att använda länken. Kontrollera om den innehåller stavfel eller testa med en annan länk.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> har tagits emot från <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> har tagits emot från <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> hittades</translation>

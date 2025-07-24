@@ -3792,6 +3792,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" /> domeinuak kudeatzen du gailu hau. <ph name="DEVICE_MANAGER" /> kudeatzaileak <ph name="USER_EMAIL_ADDRESS" /> konturako beste profil bat eskatzen du.</translation>
 <translation id="364418405912311456">Bilaketak egiteko, sakatu eta arrastatu irudiak edo nabarmendu testua</translation>
 <translation id="3645372836428131288">Mugitu hatza pixka bat, hatz-markaren beste zati bat hauteman dadin.</translation>
+<translation id="3646789916214779970">Berrezarri gai lehenetsia</translation>
 <translation id="3647654707956482440">Ezin da erabili esteka. Begiratu ea idazketa-akatsik daukan edo erabili beste esteka bat.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> jaso da <ph name="DEVICE_NAME" /> gailutik}other{<ph name="ATTACHMENTS" /> jaso dira <ph name="DEVICE_NAME" /> gailutik}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> hauteman da</translation>

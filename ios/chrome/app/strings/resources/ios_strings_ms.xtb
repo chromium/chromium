@@ -284,6 +284,7 @@
 <translation id="2067852168641682340">Simpan pada akaun ini setiap kali</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tab}other{{count} tab}}</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
+<translation id="2074599390896964828">Lokasi Tepat</translation>
 <translation id="2078437078822043850">Anda boleh menatal ke kanan untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2085876078937250610">Simpan…</translation>
@@ -312,6 +313,7 @@
 <translation id="219283042927675668">Tab dalam kumpulan</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2196428379625389579">Cari pada web</translation>
+<translation id="2198001751007276170">Gantikan Kata Laluan</translation>
 <translation id="2199562093267256223">Tindakan ini akan memadamkan kumpulan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Tiada akaun e-mel</translation>
 <translation id="2214453882118345682">Beli, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera anda.</translation>
@@ -1605,6 +1607,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7300448350764260141">Tambahkan lapisan perlindungan tambahan terhadap ancaman dalam talian.</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7313347584264171202">Anda dapat menemukan tab Inkognito anda di sini</translation>
+<translation id="7334364820047587268">Anda sudah mempunyai kata laluan untuk akaun ini dalam Google Password Manager anda. Jika anda memilih untuk mengimport salah satu kata laluan di bawah, kata laluan itu akan menggantikan kata laluan sedia ada.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> peratus dimuat turun</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
@@ -1821,6 +1824,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8101409298456377967">Buat, simpan dan urus kata laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Matikan</translation>
+<translation id="8106442513853561174">Kongsi lokasi tepat</translation>
 <translation id="8114753159095730575">Muat turun fail tersedia. Pilihan tersedia di bahagian bawah skrin.</translation>
 <translation id="8123502380991596210">Sembunyikan Perkara Baharu</translation>
 <translation id="8123953306357309250">Batalkan penyegerakan? Anda boleh menghidupkan penyegerakan pada bila-bila masa dalam tetapan.</translation>

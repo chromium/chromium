@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">请联系发送者获取新的链接</translation>
 <translation id="1013952917065545813">您只需回到这里，便可重新打开最近关闭的标签页</translation>
 <translation id="1016495303386450659">书签已更新</translation>
+<translation id="1019990162050689579">Gemini 应用活动记录</translation>
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1030376737535466765">打开密码管理工具</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">无法打开“<ph name="FILENAME" />”</translation>
 <translation id="1096992026380844478">系统将根据上次备份来恢复您的同步设置。<ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">与 Gemini 分享网页内容，以获得更贴合需求的回答。当您与 Gemini 分享网页时，系统会将网页的完整内容和网址发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1110772719190051587">使用面容 ID 解锁</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="301080557829842765">隐私保护指南</translation>
 <translation id="3012310354105716927">部分数据尚未保存</translation>
+<translation id="3013922155552460252">查看和管理 Gemini 活动记录，例如对话、反馈和提示</translation>
 <translation id="3016518775797983090">无法分享网页</translation>
 <translation id="3020183492814296499">快捷方式</translation>
 <translation id="3021342271734507256">在屏幕上绘制、突出显示或点按任何内容，即可开始搜索</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">底部</translation>
 <translation id="309710370695886264">您有 1 个重复使用的密码。请立即修正它以确保安全。</translation>
 <translation id="3102790820790869053">在最近打开的标签页中搜索</translation>
+<translation id="3106258548858559536">关闭阅读模式</translation>
 <translation id="3106690631878101882">隐藏“翻译”</translation>
 <translation id="310900540163454140">删除 <ph name="WEBSITE" /> 的密码？</translation>
 <translation id="3112556859945124369">标为…</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">打开“自动填充与密码”设置</translation>
 <translation id="3546122170015471515">Google.com 上的地图预览</translation>
 <translation id="3547356470684043247">查看客户对产品、服务或体验的评估结果，以根据评价做出明智决策</translation>
+<translation id="3547933853190131743">使用 AI 模式搜索</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="355765753469272474">撤消</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
@@ -2098,6 +2103,7 @@
 <translation id="913036870884277353">轻松地打开其他应用中的链接。</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">开启阅读模式</translation>
 <translation id="9144230693397287797">接收您在其他设备设置的提醒和标签页的最新动态</translation>
 <translation id="914781932147356857">全部标为…</translation>
 <translation id="9148126808321036104">重新登录</translation>
@@ -2126,6 +2132,7 @@
 <translation id="94870150074703282">要删除分组吗？</translation>
 <translation id="952704832371081537">取消</translation>
 <translation id="954667170699278022">阅读清单</translation>
+<translation id="956218893102219091">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">您已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963102227019621224">网络与应用活动记录</translation>

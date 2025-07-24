@@ -3810,6 +3810,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3643962751030964445">Šį įrenginį tvarko <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> turi sukurti naują paskyros <ph name="USER_EMAIL_ADDRESS" /> profilį</translation>
 <translation id="364418405912311456">Spustelėkite ir vilkite vaizdus arba paryškinkite tekstą, kad galėtumėte ieškoti</translation>
 <translation id="3645372836428131288">Truputį pajudinkite pirštą, kad būtų užfiksuota kita piršto antspaudo dalis.</translation>
+<translation id="3646789916214779970">Iš naujo nustatyti numatytąją temą</translation>
 <translation id="3647654707956482440">Negalima naudoti šios nuorodos. Patikrinkite, ar nėra rašybos klaidų, arba bandykite dar kartą naudodami kitą nuorodą.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Turinys (<ph name="ATTACHMENTS" />) gautas iš „<ph name="DEVICE_NAME" />“ įrenginio}one{Turinys (<ph name="ATTACHMENTS" />) gautas iš „<ph name="DEVICE_NAME" />“ įrenginio}few{Turinys (<ph name="ATTACHMENTS" />) gautas iš „<ph name="DEVICE_NAME" />“ įrenginio}many{Turinys (<ph name="ATTACHMENTS" />) gautas iš „<ph name="DEVICE_NAME" />“ įrenginio}other{Turinys (<ph name="ATTACHMENTS" />) gautas iš „<ph name="DEVICE_NAME" />“ įrenginio}}</translation>
 <translation id="3648348069317717750">Aptiktas „<ph name="USB_DEVICE_NAME" />“</translation>

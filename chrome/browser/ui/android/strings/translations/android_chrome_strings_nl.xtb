@@ -654,6 +654,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3985215325736559418">Wil je <ph name="FILE_NAME" /> opnieuw downloaden?</translation>
 <translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="4000212216660919741">Homepage voor offline</translation>
+<translation id="4000670338830950598">Google Chrome aanpassen en beheren met een gemarkeerd item</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 gehackt wachtwoord in je Google-account}other{# gehackte wachtwoorden in je Google-account}}</translation>
 <translation id="4016425174436051808">Volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="4024768890073681126">Je browser wordt beheerd door je ouder</translation>
@@ -1370,6 +1371,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6976811588313110624">Nieuwe sneltoets toevoegen.</translation>
 <translation id="6978717888677691380">Sites die je hebt geblokkeerd</translation>
 <translation id="6979737339423435258">Alles</translation>
+<translation id="6980258170429555165">Het menu <ph name="MENU_NAME" /> is gemarkeerd.</translation>
 <translation id="6983306615164277634">Je kunt ook je vinger op de adresbalk houden om de positie te wijzigen.</translation>
 <translation id="6987047470128880212">Incognito is niet beschikbaar op dit apparaat.</translation>
 <translation id="6991701761229081516">Je wachtwoorden worden gedownload als csv-bestand. Ze zijn zichtbaar voor iedereen die toegang heeft tot het bestand, waaronder apps. Geëxporteerde wachtwoorden worden verwijderd uit Chrome.</translation>

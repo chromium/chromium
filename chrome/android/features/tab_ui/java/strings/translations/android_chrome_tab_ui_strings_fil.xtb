@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Buksan ang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT2" /> tab}one{Buksan ang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT2" /> tab}other{Buksan ang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT2" /> na tab}}</translation>
 <translation id="1273910660700874265">Mga opsyon sa grupo ng tab na <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Piliin kung kailan awtomatikong ililipat sa seksyon ng mga hindi aktibong item ang mga tab at grupo ng tab.</translation>
+<translation id="1321004960118052490">Hindi maiipon ang iyong mga hindi aktibong item</translation>
 <translation id="1329584516321524826">Na-update ngayon lang</translation>
 <translation id="1340839264183302272">Umalis sa grupo</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, kulay na <ph name="COLOR_NAME" />, na may label na <ph name="CARD_LABEL" />.}one{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, kulay na <ph name="COLOR_NAME" />, na may label na <ph name="CARD_LABEL" />.}other{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, kulay na <ph name="COLOR_NAME" />, na may label na <ph name="CARD_LABEL" />.}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">Itago ang fullscreen grid</translation>
 <translation id="5076161749301278626">Tingnan ang mga review ng store?</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Awtomatikong isinasara ng Chrome ang mga hindi aktibong tab at grupo ng tab pagkalipas ng <ph name="AUTO_DELETE_DELAY_ONE" /> buwan. Mababago mo ito sa mga setting.}one{Awtomatikong isinasara ng Chrome ang mga hindi aktibong tab at grupo ng tab pagkalipas ng <ph name="AUTO_DELETE_DELAY_MANY" /> buwan. Mababago mo ito sa mga setting.}other{Awtomatikong isinasara ng Chrome ang mga hindi aktibong tab at grupo ng tab pagkalipas ng <ph name="AUTO_DELETE_DELAY_MANY" /> na buwan. Mababago mo ito sa mga setting.}}</translation>
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
 <translation id="5380159289133845234">Mag-archive ng mga duplicate na tab</translation>
 <translation id="5400836586163650660">Grey</translation>

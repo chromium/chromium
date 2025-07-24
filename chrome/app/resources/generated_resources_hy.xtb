@@ -3792,6 +3792,7 @@
 <translation id="3643962751030964445">Այս սարքը կառավարվում է <ph name="DEVICE_MANAGER" /> կազմակերպության կողմից։ Ձեր սարքի ադմինիստրատորին (<ph name="DEVICE_MANAGER" />) անհրաժեշտ է նոր պրոֆիլ <ph name="USER_EMAIL_ADDRESS" /> հաշվի համար։</translation>
 <translation id="364418405912311456">Սեղմեք և քաշեք պատկերների վրա կամ նշեք տեքստը՝ որոնելու համար</translation>
 <translation id="3645372836428131288">Թեթևակի շարժեք մատը` ամբողջական մատնահետքը ստանալու համար։</translation>
+<translation id="3646789916214779970">Վերակայել կանխադրված ոճը</translation>
 <translation id="3647654707956482440">Չհաջողվեց օգտագործել այս հղումը։ Ստուգեք տառասխալների առկայությունը կամ նորից փորձեք այլ հղումով։</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}one{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}other{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> սարքը հայտնաբերվել է</translation>

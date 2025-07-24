@@ -1063,7 +1063,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{नोटिफिकेसन देखाउनुहोस्}other{नोटिफिकेसनहरू देखाउनुहोस्}}</translation>
 <translation id="5814749351757353073">आफ्ना मन पर्ने साइटहरू फलो गर्नुहोस्</translation>
 <translation id="5823093032261493462">तपाईं जे भए पनि <ph name="DOWNLOAD_DOMAIN" /> बाट "<ph name="FILE_NAME" />" डाउनलोड गर्न चाहनुहुन्छ?</translation>
-<translation id="5825135637446025843">Chrome रिस्टार्ट भएपछि नयाँ प्रदायकमा सेभ गरिएको तपाईंको जानकारी पासवर्ड, पासकी, ठेगाना, भुक्तानी विधि र अन्य जानकारी अटोफिल गर्न प्रयोग गरिने छ।</translation>
+<translation id="5825135637446025843">Chrome रिस्टार्ट भएपछि नयाँ सेवा प्रदायकमार्फत सेभ गरिएको तपाईंको जानकारी पासवर्ड, पासकी, ठेगाना, भुक्तानी विधि र अन्य जानकारी अटोफिल गर्न प्रयोग गरिने छ।</translation>
 <translation id="5828921839638612740">तपाईं Chrome का सेटिङमा गई यो डेटा मेटाउन सक्नुहुन्छ</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> मा सेभ गरियो</translation>
 <translation id="583281660410589416">अज्ञात</translation>

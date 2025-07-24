@@ -1002,6 +1002,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1670399744444387456">Osnovno</translation>
 <translation id="1673137583248014546"><ph name="URL" /> si želi ogledati znamko in model varnostnega ključa</translation>
 <translation id="1674073353928166410">Odpiranje vseh (<ph name="URL_COUNT" />) v anonimnem oknu.</translation>
+<translation id="1674142805528405174">Googlov upravitelj gesel lahko posodobi vaš račun z močnim geslom, ki je shranjeno v vašem računu <ph name="EMAIL" />.</translation>
 <translation id="1677306805708094828">Ni mogoče dodati tega: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Pregledovanje ni uspelo. Ta datoteka je morda virus ali zlonamerna programska oprema.</translation>
@@ -2407,6 +2408,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2642111877055905627">Nogometna žoga</translation>
 <translation id="2642206811783203764">Vedno vklopljeno <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Podatke merjenja oglasov lahko kadar koli izbrišete tako, da izbrišete podatke brskanja.</translation>
+<translation id="2643379881528582459">Če Chromium v javni podatkovni kršitvi najde eno od vaših gesel, vam lahko ponudi, da ga spremeni, če ste prijavljeni</translation>
 <translation id="2643698698624765890">Razširitve lahko upravljate tako, da v meniju »Windows« kliknete »Extensions«.</translation>
 <translation id="2645047101481282803">Napravo upravlja <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Predvajanje tega zavihka v napravi <ph name="DEVICE_NAME" />.</translation>
@@ -3810,6 +3812,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3643962751030964445">To napravo upravlja <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> zahteva nov profil za račun <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="364418405912311456">Kliknite in povlecite po slikah ali označite besedilo za iskanje</translation>
 <translation id="3645372836428131288">Rahlo premaknite prst, da bo zajet drug del prstnega odtisa.</translation>
+<translation id="3646789916214779970">Ponastavi na privzeto temo</translation>
 <translation id="3647654707956482440">Te povezave ni mogoče uporabiti. Preverite, ali ima tipkarske napake, ali poskusite znova z drugo povezavo.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}one{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}two{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}few{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}other{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Zaznana naprava USB: <ph name="USB_DEVICE_NAME" /></translation>
@@ -4223,6 +4226,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3903696968689283281">Podatki o lastnikih Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Lokacijske storitve</translation>
 <translation id="3905761538810670789">Popravi aplikacijo</translation>
+<translation id="3906096710440765802">Prijavite se v Chrome, če želite dostopati do gesel, zaznamkov in drugega v vseh napravah</translation>
 <translation id="3908288065506437185">Blokiranje piškotkov tretjih oseb v anonimnem načinu.</translation>
 <translation id="3908501907586732282">Omogoči razširitev</translation>
 <translation id="3909456989251621103">Če izbrišete strežniško potrdilo, ga Chrome ne bo več uporabljal za prepoznavanje strežnikov.</translation>
@@ -4705,6 +4709,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="425573743389990240">Hitrost praznjenja akumulatorja v vatih (negativna vrednost pomeni, da se akumulator polni)</translation>
 <translation id="4255841059940367080">Proaktivna zaščita z uporabo umetne inteligence pred nevarnimi spletnimi mesti, prenosi in razširitvami, ki temelji na podatkih brskanja, poslanih Googlu</translation>
 <translation id="4256316378292851214">Shr&amp;ani videoposnetek kot ...</translation>
+<translation id="4257175174234042421">Samodejna sprememba gesla</translation>
 <translation id="4258348331913189841">Datotečni sistemi</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Ohrani skupino}one{Ohrani skupine}two{Ohrani skupine}few{Ohrani skupine}other{Ohrani skupine}}</translation>
 <translation id="4259388776256904261">To lahko traja nekaj časa.</translation>
@@ -7874,6 +7879,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="655384502888039633">št. uporabnikov: <ph name="USER_COUNT" /></translation>
 <translation id="6555432686520421228">Odstrani vse uporabniške račune in ponastavi napravo <ph name="IDS_SHORT_PRODUCT_NAME" /> na nastavitve kot pri novi.</translation>
 <translation id="6555604601707417276">Varnostna kopija Linuxa je obnovljena</translation>
+<translation id="6555744145993174510">iz aplikacije: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Uveljavi</translation>
 <translation id="6556903358015358733">Tema in zaslonsko ozadje</translation>
 <translation id="6557199166823345360">Dodajte več podrobnosti ali postavite vprašanje o svoji izbiri, da spremenite iskanje</translation>
@@ -7909,6 +7915,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – vsebina namizja v skupni rabi</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % dokončano</translation>
 <translation id="6580203076670148210">Hitrost iskanja</translation>
+<translation id="6581356304040102696">Gesel ni mogoče uvoziti. Velikost datoteke mora biti manjša od 1 MB.</translation>
 <translation id="6582080224869403177">Ponastavite napravo <ph name="DEVICE_TYPE" />, da nadgradite varnost.</translation>
 <translation id="6582274660680936615">Brskate kot gost</translation>
 <translation id="6583328141350416497">Nadaljevanje prenosa</translation>
@@ -9222,6 +9229,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7506242536428928412">Če želite uporabljati novi varnostni ključ, nastavite novo kodo PIN.</translation>
 <translation id="7506541170099744506">Naprava <ph name="DEVICE_TYPE" /> je bila uspešno prijavljena za upravljanje v podjetju.</translation>
 <translation id="7507207699631365376">Oglejte si <ph name="BEGIN_LINK" />pravilnik o zasebnosti<ph name="END_LINK" /> tega ponudnika</translation>
+<translation id="7508127419095425107">Več o tej funkciji in ustreznih podatkih, poslanih Googlu</translation>
 <translation id="7508707215237589321">Ali želite izbrisati »<ph name="CERT_NAME" />«?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite zapreti zavihek in izbrisati skupino?}=1{Želite zapreti zavihke in izbrisati skupino?}one{Želite zapreti zavihke in izbrisati skupine?}two{Želite zapreti zavihke in izbrisati skupine?}few{Želite zapreti zavihke in izbrisati skupine?}other{Želite zapreti zavihke in izbrisati skupine?}}</translation>
 <translation id="7509097596023256288">Nastavitev upravljanja</translation>
@@ -10953,6 +10961,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="869884720829132584">Meni programov</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699188901396699995">PPD za <ph name="PRINTER_NAME" /></translation>
+<translation id="8699296325072357994">Vsebina s strani z gesli in povezani podatki se pošiljajo Googlu in jih pregledajo pregledovalci. Vaše geslo je šifrirano in ga nihče ne vidi. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Povejte nam, zakaj ste na tem spletnem mestu dovolili piškotke tretjih oseb</translation>
 <translation id="8700087567921985940">Uporaba lokacije. Aplikacijam in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije vaše naprave. Google morda redno pridobiva podatke o lokaciji in te podatke anonimno uporablja za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije. <ph name="BEGIN_LINK1" />Več o lokaciji<ph name="BEGIN_LINK1_END" />Več o tem<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">zaganjalnik in vračalka</translation>
@@ -11398,6 +11407,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8993059306046735527">Če pozabite geslo za napravo <ph name="DEVICE_TYPE" />, lahko še vedno obnovite lokalne podatke. Prijaviti se boste morali v račun Google ali uporabiti račun za obnovitev.</translation>
 <translation id="8993198843374358393">Kopiraj zgoščeno vrednost potrdila za <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Omogoča kontrolnike za pospešitev, upočasnitev in zaustavitev bralnega glasu.</translation>
+<translation id="8993787625629280252">Če Chrome v javni podatkovni kršitvi najde eno od vaših gesel, vam lahko ponudi, da ga spremeni, če ste prijavljeni</translation>
 <translation id="899384117894244799">Odstranitev omejenega uporabnika</translation>
 <translation id="8993853206419610596">Razširi vse zahteve</translation>
 <translation id="8993945059918628059">S prstom se dotaknite tipala prstnih odtisov. Podatki o prstnih odtisih so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>

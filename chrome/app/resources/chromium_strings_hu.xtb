@@ -162,6 +162,7 @@
 <translation id="3032787606318309379">Hozzáadás a Chromiumhoz...</translation>
 <translation id="3038232873781883849">Várakozás a telepítésre…</translation>
 <translation id="3045032126857188731">Fordítás nyelve: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Visszajelzési párbeszédpanel bezárása</translation>
 <translation id="3068187312562070417">Egyéb Chromium-profilok</translation>
 <translation id="3068515742935458733">Segítse a Chromium fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chromium-bővítmény hozzáfért 1 USB-eszközhöz}=1{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér 1 USB-eszközhöz}other{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér # USB-eszközhöz}}</translation>

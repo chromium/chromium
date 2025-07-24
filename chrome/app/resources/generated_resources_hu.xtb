@@ -999,6 +999,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1670399744444387456">Alapok</translation>
 <translation id="1673137583248014546">A(z) <ph name="URL" /> szeretné látni a biztonsági kulcs márkáját és típusát</translation>
 <translation id="1674073353928166410">Összes (<ph name="URL_COUNT" />) megnyitása inkognitó ablakban</translation>
+<translation id="1674142805528405174">A Google Jelszókezelő képes arra, hogy az Ön <ph name="EMAIL" /> fiókjába mentett erős felszóval frissítse fiókját.</translation>
 <translation id="1677306805708094828">A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem adható hozzá</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> van hátra</translation>
 <translation id="1678849866171627536">Sikertelen ellenőrzés. Lehet, hogy ez a fájl vírus vagy rosszindulatú program.</translation>
@@ -2403,6 +2404,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2642111877055905627">Focilabda</translation>
 <translation id="2642206811783203764">Mindig engedélyezve itt: <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">A hirdetésmérési adatokat bármikor törölheti a böngészési adatok törlésével.</translation>
+<translation id="2643379881528582459">Ha a Chromium nyilvános adatvédelmi incidenst észlel az egyik jelszavával kapcsolatban, akkor a bejelentkezéskor felajánlhatja Önnek, hogy módosítsa a jelszavát</translation>
 <translation id="2643698698624765890">Bővítményeit az Ablak menü Bővítmények elemére kattintva kezelheti.</translation>
 <translation id="2645047101481282803">Az eszközét a következő kezeli: <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Az aktuális lap átküldése folyamatban van ide: <ph name="DEVICE_NAME" /></translation>
@@ -3806,6 +3808,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3643962751030964445">Az eszközt a következő kezeli: <ph name="DEVICE_MANAGER" />. A(z) <ph name="DEVICE_MANAGER" /> új profilt követel meg a következő fiókhoz: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">A kereséshez kattintson a képekre, és húzza az egérmutatót rajtuk, vagy jelöljön ki szöveget</translation>
 <translation id="3645372836428131288">Óvatosan mozgassa ujját az ujjlenyomat újabb részének rögzítéséhez.</translation>
+<translation id="3646789916214779970">Alapértelmezett téma visszaállítása</translation>
 <translation id="3647654707956482440">Ez a link nem használható. Ellenőrizze az elgépeléseket, vagy használjon másik linket az újrapróbálkozáshoz.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> fogadva a következőtől: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> fogadva a következőtől: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">A rendszer <ph name="USB_DEVICE_NAME" /> eszközt észlelt</translation>
@@ -4219,6 +4222,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3903696968689283281">Wi-Fi Direct tulajdonosi adatok:</translation>
 <translation id="3904326018476041253">Helyszolgáltatások</translation>
 <translation id="3905761538810670789">Alkalmazás javítása</translation>
+<translation id="3906096710440765802">Jelentkezzen be a Chrome-ba, hogy az összes eszközén hozzáférhessen jelszavaihoz, könyvjelzőihez és más beállításaihoz.</translation>
 <translation id="3908288065506437185">Harmadik felektől származó cookie-k letiltása inkognitó módban</translation>
 <translation id="3908501907586732282">Bővítmény engedélyezése</translation>
 <translation id="3909456989251621103">Ha töröl egy szervertanúsítványt, a Chrome többé nem fogja használni a szerverek azonosítására.</translation>
@@ -4700,6 +4704,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="425573743389990240">Akkumulátor kisütési teljesítménye wattban (a negatív érték azt jelenti, hogy az akkumulátor töltődik)</translation>
 <translation id="4255841059940367080">Valós idejű, AI-alapú védelem a veszélyes webhelyek, letöltések és bővítmények ellen, amely az Ön Google-nak küldött böngészési adatain alapul.</translation>
 <translation id="4256316378292851214">&amp;Videó mentése másként...</translation>
+<translation id="4257175174234042421">Automatikus jelszómódosítás</translation>
 <translation id="4258348331913189841">Fájlrendszerek</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Csoport megtartása}other{Csoportok megtartása}}</translation>
 <translation id="4259388776256904261">Ez eltarthat egy ideig</translation>
@@ -7868,6 +7873,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="655384502888039633"><ph name="USER_COUNT" /> felhasználó</translation>
 <translation id="6555432686520421228">Eltávolít minden felhasználói fiókot, és visszaállítja <ph name="IDS_SHORT_PRODUCT_NAME" /> eszközét a használat kezdetén fennálló állapotába.</translation>
 <translation id="6555604601707417276">A Linux biztonsági másolata visszaállításra került</translation>
+<translation id="6555744145993174510">forrás: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Újra</translation>
 <translation id="6556903358015358733">Téma és háttérkép</translation>
 <translation id="6557199166823345360">A keresés finomítása érdekében adjon meg további részleteket, vagy tegyen fel kérdést a kiválasztásról</translation>
@@ -7903,6 +7909,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Megosztott asztali tartalom</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% kész</translation>
 <translation id="6580203076670148210">Keresési sebesség</translation>
+<translation id="6581356304040102696">Nem lehet importálni a jelszavakat. A fájl mérete nem érheti el az 1 MB-ot.</translation>
 <translation id="6582080224869403177">A biztonsági frissítés alkalmazásához állítsa vissza <ph name="DEVICE_TYPE" /> eszközét.</translation>
 <translation id="6582274660680936615">Vendégként böngészik</translation>
 <translation id="6583328141350416497">Letöltés folytatása</translation>
@@ -9209,6 +9216,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7506242536428928412">Az új biztonsági kulcs használatához állítson be új PIN-kódot.</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> eszközének vállalati kezelés céljából történő rögzítése sikerült.</translation>
 <translation id="7507207699631365376">Olvassa el a szolgáltató <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" /></translation>
+<translation id="7508127419095425107">További információ erről a funkcióról és a Google-nak küldött releváns adatokról</translation>
 <translation id="7508707215237589321">Törli a következőt: „<ph name="CERT_NAME" />”?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Bezárja a lapot, és törli a csoportot?}=1{Bezárja a lapokat, és törli a csoportot?}other{Bezárja a lapokat, és törli a csoportokat?}}</translation>
 <translation id="7509097596023256288">Kezelés beállítása</translation>
@@ -10940,6 +10948,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="869884720829132584">Alkalmazások menü</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" /> PPD-je</translation>
+<translation id="8699296325072357994">A jelszóoldalakról származó tartalmakat és a kapcsolódó információkat a rendszer elküldi a Google-nak, és emberek ellenőrzik őket. Jelszava titkosítva van, és senki sem láthatja. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Mondja el, miért engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
 <translation id="8700087567921985940">Helyadatok használata. A helymeghatározási jogosultsággal rendelkező alkalmazások és szolgáltatások számára lehetővé teszi az eszköz tartózkodási helyének használatát. A Google a pontosság javítása és a helyalapú szolgáltatások továbbfejlesztése érdekében rendszeresen gyűjtheti és felhasználhatja ezeket az anonimizált helyadatokat. <ph name="BEGIN_LINK1" />További információ a helyadatokról<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="8700416429250425628">Indító + backspace</translation>
@@ -11382,6 +11391,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8993059306046735527">Akkor is visszaállíthatja a helyi adatait, ha elfelejtette <ph name="DEVICE_TYPE" /> eszköze jelszavát. Ehhez be kell jelentkeznie Google-fiókjába, vagy fiók-helyreállítást kell végeznie.</translation>
 <translation id="8993198843374358393">A(z) <ph name="CERT_NAME" /> tanúsítványkivonatának másolása</translation>
 <translation id="8993737615451556423">Vezérlőket biztosít az olvasás hangjának gyorsításához, lassításához és szüneteltetéséhez</translation>
+<translation id="8993787625629280252">Ha a Chrome nyilvános adatvédelmi incidenst észlel az egyik jelszavával kapcsolatban, akkor a bejelentkezéskor felajánlhatja Önnek, hogy módosítsa a jelszavát</translation>
 <translation id="899384117894244799">Korlátozott felhasználó eltávolítása</translation>
 <translation id="8993853206419610596">Az összes kérelem kibontása</translation>
 <translation id="8993945059918628059">Érintse meg az ujjlenyomat-érzékelőt. Az ujjlenyomatadatokat a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>

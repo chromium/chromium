@@ -164,6 +164,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3032787606318309379">Idinaragdag sa Chromium...</translation>
 <translation id="3038232873781883849">Naghihintay sa pag-install...</translation>
 <translation id="3045032126857188731">Isinaling wika: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Isara ang dialog ng feedback</translation>
 <translation id="3068187312562070417">Iba pang profile sa Chromium</translation>
 <translation id="3068515742935458733">Tumulong na gawing mas mahusay ang Chromium sa pamamagitan ng pagpapadala ng mga ulat ng pag-crash at <ph name="UMA_LINK" /> sa Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB device ang ina-access ng isa o higit pang extension ng Chromium}=1{1 USB device ang ina-access ng isa o higit pang extension ng Chromium}one{# USB device ang ina-access ng isa o higit pang extension ng Chromium}other{# na USB device ang ina-access ng isa o higit pang extension ng Chromium}}</translation>

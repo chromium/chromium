@@ -654,6 +654,7 @@
 <translation id="3985215325736559418">Chcete znova stiahnuť súbor <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="4000212216660919741">Offline domov</translation>
+<translation id="4000670338830950598">Prispôsobenie a ovládanie prehliadača Google Chrome so zvýraznenou položkou</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 odhalené heslo vo vašom účte Google}few{# odhalené heslá vo vašom účte Google}many{# compromised passwords in your Google Account}other{# odhalených hesiel vo vašom účte Google}}</translation>
 <translation id="4016425174436051808">Nedá sa sledovať. Vyskytol sa problém.</translation>
 <translation id="4024768890073681126">Váš prehliadač spravuje nadradená položka</translation>
@@ -1370,6 +1371,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6976811588313110624">Pridajte novú skratku.</translation>
 <translation id="6978717888677691380">Weby, ktoré ste zablokovali</translation>
 <translation id="6979737339423435258">Celé obdobie</translation>
+<translation id="6980258170429555165">Ponuka <ph name="MENU_NAME" /> je zvýraznená.</translation>
 <translation id="6983306615164277634">Pozíciu môžete zmeniť aj pridržaním panela s adresou.</translation>
 <translation id="6987047470128880212">Režim inkognito nie je k dispozícii v tomto zariadení</translation>
 <translation id="6991701761229081516">Vaše heslá budú stiahnuté ako súbor CSV. Budú viditeľné pre všetkých používateľov s prístupom k danému súboru vrátane aplikácií. Exportované heslá budú z Chromu odstránené.</translation>

@@ -3796,6 +3796,7 @@ Quer pará-lo?</translation>
 <translation id="3643962751030964445">Este dispositivo é gerido por <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> requer um novo perfil para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Clique e arraste sobre imagens ou realce texto para pesquisar</translation>
 <translation id="3645372836428131288">Mova ligeiramente para capturar uma parte diferente da impressão digital.</translation>
+<translation id="3646789916214779970">Repor o tema predefinido</translation>
 <translation id="3647654707956482440">Não é possível usar este link. Verifique se tem gralhas ou use outro link para tentar novamente.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recebido de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recebidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> detetado</translation>

@@ -1000,6 +1000,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1670399744444387456">Pangunahin</translation>
 <translation id="1673137583248014546">Gustong tingnan ng <ph name="URL" /> ang manufacturer at modelo ng iyong Security Key</translation>
 <translation id="1674073353928166410">Buksan lahat (<ph name="URL_COUNT" />) sa Incognito window</translation>
+<translation id="1674142805528405174">Puwedeng i-update ng Google Password Manager ang account mo para magkaroon ng malakas na password na ise-save para sa iyo sa account mong <ph name="EMAIL" />.</translation>
 <translation id="1677306805708094828">Hindi maidagdag ang <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
 <translation id="1678849866171627536">Hindi na-scan. Posibleng virus o malware ang file na ito.</translation>
@@ -2405,6 +2406,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2642111877055905627">Bola ng soccer</translation>
 <translation id="2642206811783203764">Palagi sa <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Made-delete mo sa anumang oras ang data ng pagsukat ng ad sa pamamagitan ng pag-delete ng iyong data mula sa pag-browse</translation>
+<translation id="2643379881528582459">Kung makikita ng Chromium ang isa sa iyong mga password sa isang pampublikong breach sa data, puwede itong mag-alok na palitan ang password mo para sa iyo kung naka-sign in ka</translation>
 <translation id="2643698698624765890">Pamahalaan ang iyong mga extension sa pamamagitan ng pag-click sa Mga Extension sa menu na Window.</translation>
 <translation id="2645047101481282803">Pinapamahalaan ng <ph name="PROFILE_NAME" /> ang iyong device</translation>
 <translation id="2645388244376970260">Kina-cast ang tab na ito sa <ph name="DEVICE_NAME" /></translation>
@@ -3808,6 +3810,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3643962751030964445">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang device na ito. Humihiling ang <ph name="DEVICE_MANAGER" /> ng bagong profile para sa account na <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Mag-click at mag-drag sa mga larawan o mag-highlight ng text para maghanap</translation>
 <translation id="3645372836428131288">Gumalaw nang bahagya para mag-capture ng ibang bahagi ng fingerprint.</translation>
+<translation id="3646789916214779970">Mag-reset sa default na tema</translation>
 <translation id="3647654707956482440">Hindi magamit ang link na ito. Tingnan kung may mga typo o gumamit ng ibang link para subukan ulit.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> ang natanggap mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Natukoy ang <ph name="USB_DEVICE_NAME" /></translation>
@@ -4221,6 +4224,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3903696968689283281">Impormasyon ng Mga Direktang May-ari ng WiFi:</translation>
 <translation id="3904326018476041253">Mga Serbisyo ng Lokasyon</translation>
 <translation id="3905761538810670789">Ayusin ang app</translation>
+<translation id="3906096710440765802">Mag-sign in sa Chrome para makuha ang iyong mga password, bookmark, at higit pa sa lahat ng device mo</translation>
 <translation id="3908288065506437185">I-block ang mga third-party na cookie sa Incognito mode</translation>
 <translation id="3908501907586732282">Paganahin ang extension</translation>
 <translation id="3909456989251621103">Kung magde-delete ka ng certificate ng server, hindi na ito gagamitin ng Chrome para tumukoy ng mga server.</translation>
@@ -4703,6 +4707,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="425573743389990240">Rate ng Pagdiskarga ng Baterya sa Watts (Ang ibig sabihin ng negatibong halaga ay nagcha-charge ang baterya)</translation>
 <translation id="4255841059940367080">Real-time at AI-powered na proteksyon laban sa mga mapanganib na site, download, at extension na nakabatay sa iyong data mula sa pag-browse na ipinapadala sa Google</translation>
 <translation id="4256316378292851214">I-sa&amp;ve ang Video Bilang...</translation>
+<translation id="4257175174234042421">Naka-automate na pagpapalit ng password</translation>
 <translation id="4258348331913189841">Mga system ng file</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Panatilihin ang grupo}one{Panatilihin ang mga grupo}other{Panatilihin ang mga grupo}}</translation>
 <translation id="4259388776256904261">Puwede itong magtagal nang ilang sandali</translation>
@@ -7870,6 +7875,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="655384502888039633"><ph name="USER_COUNT" /> )(na) user</translation>
 <translation id="6555432686520421228">Alisin ang lahat ng account ng user at i-reset ang iyong <ph name="IDS_SHORT_PRODUCT_NAME" /> na device upang maging parang bago.</translation>
 <translation id="6555604601707417276">Na-restore ang pag-back up ng Linux</translation>
+<translation id="6555744145993174510">mula sa: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6556903358015358733">Tema at Wallpaper</translation>
 <translation id="6557199166823345360">Magdagdag ng higit pang detalye o magtanong tungkol sa iyong pagpipilian para pinuhin ang iyong paghahanap</translation>
@@ -7905,6 +7911,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Ibinabahagi ang content ng desktop</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% na ang natapos</translation>
 <translation id="6580203076670148210">Bilis ng pag-scan</translation>
+<translation id="6581356304040102696">Hindi ma-import ang mga password. Dapat ay wala pang 1 MB ang laki ng file.</translation>
 <translation id="6582080224869403177">I-reset ang iyong <ph name="DEVICE_TYPE" /> para i-upgrade ang iyong seguridad.</translation>
 <translation id="6582274660680936615">Nagba-browse ka bilang isang Bisita</translation>
 <translation id="6583328141350416497">Ipagpatuloy ang pag-download</translation>
@@ -9214,6 +9221,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7506242536428928412">Para gamitin ang iyong bagong security key, magtakda ng bagong PIN</translation>
 <translation id="7506541170099744506">Matagumpay na na-enroll ang iyong <ph name="DEVICE_TYPE" /> para sa pamamahala ng enterprise.</translation>
 <translation id="7507207699631365376">Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng provider na ito</translation>
+<translation id="7508127419095425107">Higit pa tungkol sa feature na ito at nauugnay na data na ipinapadala sa Google</translation>
 <translation id="7508707215237589321">I-delete ang "<ph name="CERT_NAME" />"?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Isara ang tab at i-delete ang grupo?}=1{Isara ang mga tab at i-delete ang grupo?}one{Isara ang mga tab at i-delete ang mga grupo?}other{Isara ang mga tab at i-delete ang mga grupo?}}</translation>
 <translation id="7509097596023256288">Pag-set up sa pamamahala</translation>
@@ -10946,6 +10954,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="869884720829132584">Menu ng mga application</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699188901396699995">PPD para sa <ph name="PRINTER_NAME" /></translation>
+<translation id="8699296325072357994">Ipinapadala sa Google at sinusuri ng mga tao ang content mula sa mga page ng password at nauugnay na impormasyon. Naka-encrypt ang iyong password at hindi ito nakikita ng kahit sino. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Sabihin sa amin kung bakit mo pinayagan ang third-party na cookies sa site na ito</translation>
 <translation id="8700087567921985940">Gamitin ang lokasyon. Payagan ang mga app at serbisyong may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Posibleng pana-panahong mangolekta ang Google ng data ng lokasyon at gamitin ang data na ito sa anonymous na paraan para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa lokasyon<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">launcher + backspace</translation>
@@ -11390,6 +11399,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8993059306046735527">Kung nakalimutan mo ang iyong password sa <ph name="DEVICE_TYPE" />, puwede mo pa ring i-restore ang iyong lokal na data. Kakailanganin mong mag-sign in sa iyong Google Account o gamitin ang pag-recover ng account.</translation>
 <translation id="8993198843374358393">Kopyahin ang hash ng certificate para sa <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Nagbibigay ng mga kontrol para pabilisin, pabagalin, at i-pause ang boses sa pagbabasa</translation>
+<translation id="8993787625629280252">Kung makikita ng Chrome ang isa sa iyong mga password sa isang pampublikong breach sa data, puwede itong mag-alok na palitan ang password mo para sa iyo kung naka-sign in ka</translation>
 <translation id="899384117894244799">Alisin ang pinaghihigpitang user</translation>
 <translation id="8993853206419610596">I-expand ang lahat ng request</translation>
 <translation id="8993945059918628059">Pindutin ang sensor para sa fingerprint gamit ang iyong daliri. Secure na sino-store ang data ng iyong fingerprint at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> mo.</translation>

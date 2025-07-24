@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'tab' kisha 'Enter' ili ucheze mchezo wa Dinosau Anayekimbia katika Chrome</translation>
 <translation id="1060136083665017312">Mifumo na Dashibodi za Mchezo</translation>
 <translation id="1060320201901229167">Bahasha ya muundo wa Kaku ya ukubwa wa 5</translation>
+<translation id="1060985736456216896">Nembo ya Google Pay na ya Zip</translation>
 <translation id="1062407476771304334">Badilisha</translation>
 <translation id="1063822554756965137">Faili zimefutwa</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1209206284964581585">Ficha kwa sasa</translation>
 <translation id="121201262018556460">Umejaribu kufikia <ph name="DOMAIN" />, lakini seva iliwasilisha cheti kikiwa na ufunguo duni. Huenda mshambulizi alivunja ufunguo wa siri, na huenda seva isiwe seva ulioitarajia (unaweza kuwa unawasiliana na mshambulizi).</translation>
 <translation id="1212527389003717329">Shughuli ya kupakua imeanza. Ili uione, bonyeza na ushikilie |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Tumia maelezo uliyohifadhi katika Akaunti yako ya Google ili ujaze manenosiri, funguo za siri, anwani, njia za kulipa na maelezo mengine kiotomatiki</translation>
 <translation id="1219129156119358924">Usalama wa Mfumo</translation>
 <translation id="1222060260947439312">Trei ya Kulia</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1539,6 +1541,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3576616784287504635">Ukurasa uliopachikwa kwenye <ph name="SITE" /> unasema</translation>
 <translation id="3577473026931028326">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="3577902790357386792">Sarakasi</translation>
+<translation id="3580550219062570293"><ph name="LOGO_DESCRIPTION" /> <ph name="TOS_TITLE" /></translation>
 <translation id="3581089476000296252">Chrome itakujulisha ukurasa huu utakapokuwa tayari. &lt;a&gt;Ghairi&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ongeza jina</translation>
 <translation id="3583757800736429874">Rudia Hatua</translation>
@@ -1787,6 +1790,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="398470910934384994">Ndege</translation>
 <translation id="3985750352229496475">Dhibiti Anwani...</translation>
 <translation id="3986506998755860149">pata maelezo zaidi kuhusu kujaza kiotomatiki ukitumia AI katika mipangilio</translation>
+<translation id="3986557181852957825">Nembo ya Google Pay na ya Klarna</translation>
 <translation id="3986705137476756801">Zima kipengele cha Manukuu Papo Hapo kwa sasa</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Chini ya MB 1</translation>
@@ -1860,6 +1864,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4104702906064390950">Inahifadhi taarifa za IBAN</translation>
 <translation id="4106887816571530227">Maudhui yaliyopachikwa hayaruhusiwi</translation>
 <translation id="4107047499377819067">Imeanza kuweka huduma za chinichini za VPN, huenda hatua hii ikachukua muda.</translation>
+<translation id="4110642094637545339">Nembo ya Google Pay na ya AfterPay</translation>
 <translation id="4110652170750985508">Kagua malipo yako</translation>
 <translation id="4111546256784973544">Mchezo wa bunduki bandia ya rangi</translation>
 <translation id="4112140312785995938">Sogeza Nyuma</translation>
@@ -2278,6 +2283,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4807098396393229769">Jina kwenye kadi</translation>
 <translation id="4809079943450490359">Maagizo kutoka kwa msimamizi wa kifaa chako:</translation>
 <translation id="4811450222531576619">Fahamu kuhusu mada na chanzo chake</translation>
+<translation id="4811918461974803225">Nembo ya Google Pay na ya Affirm</translation>
 <translation id="4813512666221746211">Hitilafu ya mtandao</translation>
 <translation id="4814114628197290459">Futa IBAN</translation>
 <translation id="4816341377198595747">Kitufe cha Kutafuta Alamisho, washa ili utafute alamisho</translation>
@@ -2527,6 +2533,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5222812217790122047">Anwani ya barua pepe inahitajika</translation>
 <translation id="5225215474235602477">Ungependa kuhifadhi pasipoti?</translation>
 <translation id="5228269245420405804">Mafunzo ya Mbali</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Anwani ya Mahali Bidhaa Zitakapopelekwa</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3294,6 +3301,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6493924760403974580">Programu hii inaweza kutumika katika ukubwa huu pekee.</translation>
 <translation id="6494750904506170417">madirisha ibukizi na kuelekeza kwingine</translation>
 <translation id="6495664197699704593">Nenosiri hili limehifadhiwa kwenye kifaa hiki pekee. Ili ulitumie kwenye vifaa vyako vingine, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Ili utumie huduma nyingine ya kujaza kiotomatiki katika Chrome, chagua mtoa huduma wako wa kujaza kiotomatiki kwenye mipangilio ya Android</translation>
 <translation id="6499038740797743453">Ungependa kubadilisha nenosiri?</translation>
 <translation id="6502510275417601303">Arifa kuhusu mipangilio mipya ya malipo imefungwa</translation>
 <translation id="6502991525169604759">Bila mabadiliko uliyoyafanya</translation>

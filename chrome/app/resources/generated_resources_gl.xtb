@@ -3793,6 +3793,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3643962751030964445">Este dispositivo está xestionado por <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> require a creación dun perfil novo para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Destaca texto ou fai clic nas imaxes e arrástraas para facer buscas</translation>
 <translation id="3645372836428131288">Move lixeiramente o dedo para capturar unha parte diferente da impresión dixital.</translation>
+<translation id="3646789916214779970">Restablecer ao tema predeterminado</translation>
 <translation id="3647654707956482440">Non se pode usar esta ligazón. Comproba se ten erros ortográficos ou téntao de novo con outra.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}other{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Detectouse <ph name="USB_DEVICE_NAME" /></translation>

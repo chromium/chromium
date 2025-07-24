@@ -3803,6 +3803,7 @@
 <translation id="3643962751030964445">ይህ መሣሪያ በ<ph name="DEVICE_MANAGER" /> የሚተዳደር ነው። ለ<ph name="USER_EMAIL_ADDRESS" /> መለያ አዲስ መገለጫ በ<ph name="DEVICE_MANAGER" /> ይፈለጋል</translation>
 <translation id="364418405912311456">ለመፈለግ ጠቅ ያድርጉ እና ምስሎችን ይጎትቱ ወይም ጽሁፍን ያደምቁ</translation>
 <translation id="3645372836428131288">የጣት አሻራውን የተለየ ክፍል ለመያዝ በቀስታ ያንቀሳቅሱት።</translation>
+<translation id="3646789916214779970">ወደ እንደወረደ ገጽታ አስተካክል</translation>
 <translation id="3647654707956482440">ይህን አገናኝ መጠቀም አይችሉም። እንደገና ለመሞከር የፊደል ስህተቶችን ይፈትሹ ወይም ሌላ አገናኝ ይጠቀሙ።</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ከ<ph name="DEVICE_NAME" /> መጥቷል}one{<ph name="ATTACHMENTS" /> ከ<ph name="DEVICE_NAME" /> መጥቷል}other{<ph name="ATTACHMENTS" /> ከ<ph name="DEVICE_NAME" /> መጥተዋል}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ተገኝቷል</translation>

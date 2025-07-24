@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Új link kéréséhez felveheti a kapcsolatot a küldővel</translation>
 <translation id="1013952917065545813">Ide visszatérve újra megnyithatja a nemrég bezárt lapokat</translation>
 <translation id="1016495303386450659">Elem frissítve</translation>
+<translation id="1019990162050689579">Gemini-appokban végzett tevékenységek</translation>
 <translation id="102916930470544692">Azonosítókulcs</translation>
 <translation id="1030376737535466765">Jelszókezelő megnyitása</translation>
 <translation id="1035980983510608210">Az összes lap bezárásával a rögzített lapok is bezáródnak.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">A(z) <ph name="FILENAME" /> megnyitása nem sikerült</translation>
 <translation id="1096992026380844478">A legutóbbi biztonsági mentés alapján a rendszer visszaállítja a szinkronizálási beállításokat. <ph name="BEGIN_LINK" />Tekintse át, hogy mit szinkronizálhat<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> - mindig legyen lefordítva</translation>
+<translation id="110491332089958282">Megoszthatja az oldal tartalmát a Geminivel, hogy relevánsabb válaszokat kaphasson. Amikor megoszt egy oldalt a Geminivel, az oldal teljes tartalma és URL-je elküldésre kerül a Google-nak. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1108938384783527433">Előzmények szinkronizálása</translation>
 <translation id="1110772719190051587">Feloldás Face ID-vel</translation>
 <translation id="1112015203684611006">A nyomtatás sikertelen.</translation>
@@ -510,6 +512,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="3010025794097054078">Védelmet élvezhet az adatvédelmi incidensekkel, a nem biztonságos webhelyekkel és egyebekkel szemben.</translation>
 <translation id="301080557829842765">Adatvédelmi útmutató</translation>
 <translation id="3012310354105716927">Egyes adatok még nincsenek mentve</translation>
+<translation id="3013922155552460252">Megtekintheti és kezelheti a Gemini-tevékenységeket, például a csevegéseket, a visszajelzéseket és az utasításokat</translation>
 <translation id="3016518775797983090">Az oldal megosztása sikertelen</translation>
 <translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3021342271734507256">Rajzolással, kijelöléssel vagy koppintással válasszon ki bármit a képernyőn, amire rá szeretne keresni.</translation>
@@ -534,6 +537,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3087734570205094154">Alja</translation>
 <translation id="309710370695886264">1 újrafelhasznált jelszava van. A biztonság megőrzése érdekében javítsa ki most.</translation>
 <translation id="3102790820790869053">Keresés a legutóbb megnyitott lapokon</translation>
+<translation id="3106258548858559536">Olvasási mód kikapcsolása</translation>
 <translation id="3106690631878101882">A Fordító elrejtése</translation>
 <translation id="310900540163454140">Törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó jelszót?</translation>
 <translation id="3112556859945124369">Megjelölés…</translation>
@@ -632,6 +636,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3533860663366814939">Nyissa meg az Automatikus kitöltés és jelszavak beállításait</translation>
 <translation id="3546122170015471515">Térkép-előzetesek a Google.com-on</translation>
 <translation id="3547356470684043247">Olvassa el az ügyfelek által a termékekről, a szolgáltatásokról vagy az élményekről készített értékeléseket, amelyek segítségével megalapozott döntéseket hozhat.</translation>
+<translation id="3547933853190131743">Keresés AI módban</translation>
 <translation id="3557336313807607643">Hozzáadás a névjegyekhez</translation>
 <translation id="355765753469272474">Visszavonás</translation>
 <translation id="3565930036634619844">Lap. <ph name="NUMBER_OF_TABS" />/<ph name="TAB_INDEX" />.</translation>
@@ -2098,6 +2103,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="913036870884277353">Egyszerűen megnyithatja a más alkalmazásokban lévő linkeket.</translation>
 <translation id="9137013805542155359">Eredeti megjelenítése</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Olvasási mód bekapcsolása</translation>
 <translation id="9144230693397287797">Friss információkat kaphat a beállított emlékeztetőkről és a más eszközökön megnyitott lapokról.</translation>
 <translation id="914781932147356857">Az összes megjelölése…</translation>
 <translation id="9148126808321036104">Jelentkezzen be újra</translation>
@@ -2126,6 +2132,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="94870150074703282">Törli a csoportot?</translation>
 <translation id="952704832371081537">Mégse</translation>
 <translation id="954667170699278022">Olvasólista</translation>
+<translation id="956218893102219091">A pontos hely használatával a legpontosabb Gemini-találatokat kaphatja, az IP-címe alapján becsült hely helyett. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="959066944189734975">Követi a következőt: <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Böngészési adatok törlése</translation>
 <translation id="963102227019621224">Internetes és alkalmazástevékenységek</translation>

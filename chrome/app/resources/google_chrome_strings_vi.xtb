@@ -172,6 +172,7 @@
 <translation id="3037838751736561277">Google Chrome đang chạy trong nền.</translation>
 <translation id="3038232873781883849">Đang chờ cài đặt...</translation>
 <translation id="3045032126857188731">Ngôn ngữ dịch: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Đóng hộp thoại phản hồi</translation>
 <translation id="306179102415443347">Sử dụng lối tắt để nhanh chóng truy cập vào Trình quản lý mật khẩu của Google. Bạn có thể di chuyển lối tắt đến màn hình chính hoặc trình chạy ứng dụng của máy tính.</translation>
 <translation id="3065168410429928842">Thẻ trình duyệt Chrome</translation>
 <translation id="3080151273017101988">Tiếp tục chạy các ứng dụng nền khi Google Chrome đóng</translation>
@@ -637,7 +638,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8914504000324227558">Chạy lại Chrome</translation>
 <translation id="8922193594870374009">Để gửi số điện thoại từ <ph name="ORIGIN" /> đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
 <translation id="8948460679427074738">Tiện ích này chưa công bố các phương thức bảo vệ quyền riêng tư, chẳng hạn như cách tiện ích thu thập và sử dụng dữ liệu. Chrome khuyên bạn nên xoá tiện ích này.</translation>
-<translation id="8958307504142971576">Giờ đây, bạn sẽ có thể sử dụng nhiều tính năng hơn trong Chrome</translation>
+<translation id="8958307504142971576">Giờ đây, bạn có thể sử dụng nhiều tính năng hơn trong Chrome</translation>
 <translation id="8989968390305463310">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy cũng như mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome tự động xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="8992769679401294069">Dữ liệu đã được mã hoá bằng cụm mật khẩu của bạn. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google của bạn.</translation>
 <translation id="8999117580775242387">Khi không có giao thức HTTPS, Chrome sẽ sử dụng kết nối không an toàn mà không cảnh báo bạn</translation>

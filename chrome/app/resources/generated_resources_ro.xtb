@@ -3794,6 +3794,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3643962751030964445">Acest dispozitiv este gestionat de <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> solicită un profil nou pentru contul <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="364418405912311456">Dă clic și trage peste imagini sau evidențiază text pentru a căuta</translation>
 <translation id="3645372836428131288">Mută ușor pentru a înregistra o altă parte a amprentei</translation>
+<translation id="3646789916214779970">Resetează la tema prestabilită</translation>
 <translation id="3647654707956482440">Linkul nu poate fi folosit. Verifică dacă există greșeli de scriere sau folosește alt link pentru a încerca din nou.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}few{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}other{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">S-a detectat <ph name="USB_DEVICE_NAME" /></translation>

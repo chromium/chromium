@@ -654,6 +654,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3985215325736559418">Vil du laste ned <ph name="FILE_NAME" /> igjen?</translation>
 <translation id="3987993985790029246">Kopiér link</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
+<translation id="4000670338830950598">Tilpass og kontroller Google Chrome med et element som er uthevet</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kompromittert passord i Google-kontoen din}other{# kompromitterte passord i Google-kontoen din}}</translation>
 <translation id="4016425174436051808">Kan ikke følge. Noe gikk galt.</translation>
 <translation id="4024768890073681126">Nettleseren administreres av forelderen din</translation>
@@ -1370,6 +1371,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6976811588313110624">Legg til en ny snarvei.</translation>
 <translation id="6978717888677691380">Nettsteder du har blokkert</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
+<translation id="6980258170429555165"><ph name="MENU_NAME" />-menyen er uthevet.</translation>
 <translation id="6983306615164277634">Du kan også trykke og holde på adressefeltet for å endre posisjonen.</translation>
 <translation id="6987047470128880212">Inkognito er ikke tilgjengelig på denne enheten</translation>
 <translation id="6991701761229081516">Passordene dine lastes ned som en CSV-fil. De blir synlige for alle som har tilgang til filen, inkludert apper. Eksporterte passord slettes fra Chrome.</translation>

@@ -3806,6 +3806,7 @@
 <translation id="3643962751030964445">ဤစက်ကို <ph name="DEVICE_MANAGER" /> က စီမံခန့်ခွဲသည်။ <ph name="DEVICE_MANAGER" /> က <ph name="USER_EMAIL_ADDRESS" /> အကောင့်အတွက် ပရိုဖိုင်အသစ် တောင်းဆိုသည်</translation>
 <translation id="364418405912311456">ပုံများပေါ်တွင် နှိပ်ပြီး ဖိဆွဲပါ (သို့) ရှာရန် စာသားကို မြင်သာအောင်လုပ်ပါ</translation>
 <translation id="3645372836428131288">လက်ဗွေ၏ အခြားအပိုင်းကို ရိုက်ကူးရန် အနည်းငယ် ရွှေ့လိုက်ပါ။</translation>
+<translation id="3646789916214779970">ပုံသေ အပြင်အဆင်သို့ ပြန်ညှိ</translation>
 <translation id="3647654707956482440">ဤလင့်ခ်ကို သုံး၍မရပါ။ စာလုံးပေါင်းမှားယွင်းမှု ရှိ၊ မရှိ စစ်ဆေးပါ (သို့) ထပ်စမ်းကြည့်ရန် လင့်ခ်နောက်တစ်ခု သုံးပါ။</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ထံမှရသော <ph name="ATTACHMENTS" /> ခု}other{<ph name="DEVICE_NAME" /> ထံမှရသော <ph name="ATTACHMENTS" /> ခု}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ကို ရှာတွေ့ခဲ့သည်</translation>

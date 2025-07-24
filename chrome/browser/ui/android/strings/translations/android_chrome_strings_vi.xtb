@@ -654,6 +654,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3985215325736559418">Bạn có muốn tải lại <ph name="FILE_NAME" /> xuống không?</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
+<translation id="4000670338830950598">Tuỳ chỉnh và kiểm soát Google Chrome với mục được làm nổi bật</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ trong Tài khoản Google của bạn}other{# mật khẩu bị lộ trong Tài khoản Google của bạn}}</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
 <translation id="4024768890073681126">Trình duyệt này do cha mẹ của bạn quản lý</translation>
@@ -1370,6 +1371,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6976811588313110624">Thêm phím tắt mới.</translation>
 <translation id="6978717888677691380">Các trang web bạn đã chặn</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
+<translation id="6980258170429555165">Trình đơn <ph name="MENU_NAME" /> được làm nổi bật.</translation>
 <translation id="6983306615164277634">Bạn cũng có thể chạm và giữ thanh địa chỉ để thay đổi vị trí.</translation>
 <translation id="6987047470128880212">Không dùng được chế độ Ẩn danh trên thiết bị này</translation>
 <translation id="6991701761229081516">Mật khẩu của bạn sẽ được tải xuống dưới dạng tệp CSV. Mật khẩu sẽ hiển thị với bất cứ ai có quyền truy cập vào tệp, kể cả các ứng dụng. Mật khẩu đã xuất sẽ bị xoá khỏi Chrome.</translation>

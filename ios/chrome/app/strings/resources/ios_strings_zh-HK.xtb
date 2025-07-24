@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">聯絡發送者索取新連結</translation>
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">已更新項目</translation>
+<translation id="1019990162050689579">Gemini 應用程式活動</translation>
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1030376737535466765">開啟「密碼管理工具」</translation>
 <translation id="1035980983510608210">如果關閉所有分頁，系統亦會關閉固定分頁。</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">無法開啟「<ph name="FILENAME" />」</translation>
 <translation id="1096992026380844478">系統會根據上次的備份還原同步處理設定。<ph name="BEGIN_LINK" />查看你可同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">與 Gemini 分享頁面內容以取得更相關的答案。當你與 Gemini 分享頁面，頁面的所有內容和網址都會傳送到 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">同步處理記錄</translation>
 <translation id="1110772719190051587">使用 Face ID 解鎖</translation>
 <translation id="1112015203684611006">無法列印。</translation>
@@ -282,6 +284,7 @@
 <translation id="2067852168641682340">每次都儲存到此帳戶</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 個分頁}other{{count} 個分頁}}</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
+<translation id="2074599390896964828">精確位置</translation>
 <translation id="2078437078822043850">向右碌就可以用無痕模式瀏覽。</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2085876078937250610">儲存…</translation>
@@ -310,6 +313,7 @@
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2196428379625389579">在網絡上搜尋</translation>
+<translation id="2198001751007276170">取代密碼</translation>
 <translation id="2199562093267256223">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="2202084845446535117">無電郵帳戶</translation>
 <translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
@@ -510,6 +514,7 @@
 <translation id="3010025794097054078">避免發生資料外洩或瀏覽不安全網站等問題。</translation>
 <translation id="301080557829842765">私隱權指南</translation>
 <translation id="3012310354105716927">部分資料尚未儲存</translation>
+<translation id="3013922155552460252">查看和管理 Gemini 活動，例如即時通訊、意見和提示</translation>
 <translation id="3016518775797983090">無法分享頁面</translation>
 <translation id="3020183492814296499">快速鍵</translation>
 <translation id="3021342271734507256">在畫面上繪圖、突顯或輕按內容即可搜尋</translation>
@@ -534,6 +539,7 @@
 <translation id="3087734570205094154">下方</translation>
 <translation id="309710370695886264">你有 1 個重用密碼。請立即修正以確保安全。</translation>
 <translation id="3102790820790869053">搜尋最近開啟的分頁</translation>
+<translation id="3106258548858559536">關閉「閱讀模式」</translation>
 <translation id="3106690631878101882">隱藏「翻譯」</translation>
 <translation id="310900540163454140">要刪除「<ph name="WEBSITE" />」的密碼嗎？</translation>
 <translation id="3112556859945124369">標示…</translation>
@@ -632,6 +638,7 @@
 <translation id="3533860663366814939">開啟「自動填寫與密碼」設定</translation>
 <translation id="3546122170015471515">Google.com「地圖預覽」</translation>
 <translation id="3547356470684043247">閱讀客戶的產品、服務評價或體驗，再根據評論作出決定</translation>
+<translation id="3547933853190131743">使用「AI 模式」搜尋</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
 <translation id="355765753469272474">復原</translation>
 <translation id="3565930036634619844">分頁。<ph name="NUMBER_OF_TABS" /> 個分頁入面嘅第 <ph name="TAB_INDEX" /> 個。</translation>
@@ -1600,6 +1607,7 @@
 <translation id="7300448350764260141">為對抗網上威脅增添多一重安全保障。</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
+<translation id="7334364820047587268">你的「Google 密碼管理工具」中已有這些帳戶的密碼。如果選擇匯入以下其中一個密碼，將會取代現有密碼。</translation>
 <translation id="7336264872878993241">下載咗百分之 <ph name="PERCENT" /></translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7352651011704765696">發生問題</translation>
@@ -1816,6 +1824,7 @@
 <translation id="8101409298456377967">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
 <translation id="8105368624971345109">關閉</translation>
+<translation id="8106442513853561174">分享精確位置</translation>
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>
 <translation id="8123502380991596210">隱藏「最新資訊」</translation>
 <translation id="8123953306357309250">要取消同步功能嗎？你可隨時在設定中開啟同步功能。</translation>
@@ -2098,6 +2107,7 @@
 <translation id="913036870884277353">輕鬆開啟其他應用程式中的連結。</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">開啟「閱讀模式」</translation>
 <translation id="9144230693397287797">接收你在其他裝置上設定的提醒和分頁最新動態</translation>
 <translation id="914781932147356857">標示全部…</translation>
 <translation id="9148126808321036104">重新登入</translation>
@@ -2126,6 +2136,7 @@
 <translation id="94870150074703282">要刪除群組嗎？</translation>
 <translation id="952704832371081537">取消</translation>
 <translation id="954667170699278022">閱讀清單</translation>
+<translation id="956218893102219091">使用精確位置 (而非根據 IP 位址估計的位置) 可讓 Gemini 提供最準確的結果。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">您正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963102227019621224">網絡和應用程式活動記錄</translation>

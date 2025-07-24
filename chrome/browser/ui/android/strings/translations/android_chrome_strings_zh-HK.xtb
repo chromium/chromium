@@ -654,6 +654,7 @@
 <translation id="3985215325736559418">您要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="4000212216660919741">離線首頁</translation>
+<translation id="4000670338830950598">自訂同管理 Google Chrome 嘅畫面有一個突顯項目</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Google 帳戶中有 1 個被盜用的密碼}other{Google 帳戶中有 # 個被盜用的密碼}}</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
@@ -1370,6 +1371,7 @@
 <translation id="6976811588313110624">加入新嘅捷徑。</translation>
 <translation id="6978717888677691380">您已封鎖的網站</translation>
 <translation id="6979737339423435258">所有時間</translation>
+<translation id="6980258170429555165">突顯咗「<ph name="MENU_NAME" />」選單。</translation>
 <translation id="6983306615164277634">你亦可按住網址列以變更位置。</translation>
 <translation id="6987047470128880212">這部裝置不支援無式痕分頁</translation>
 <translation id="6991701761229081516">你的密碼會以 CSV 檔案形式下載，任何可存取檔案 (包括應用程式) 的人都能看到。已匯出的密碼會從 Chrome 刪除。</translation>

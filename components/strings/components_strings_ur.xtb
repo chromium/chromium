@@ -34,6 +34,7 @@
 <translation id="1058344460600311577">‏<ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome میں Dino Run گیم چلانے کیلئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="1060136083665017312">گیم سسٹمز اور کونسولز</translation>
 <translation id="1060320201901229167">‏Kaku 5 لفافہ</translation>
+<translation id="1060985736456216896">‏‫Google Pay, Zip کا لوگو</translation>
 <translation id="1062407476771304334">بدلیں</translation>
 <translation id="1063822554756965137">فائلز کامیابی کے ساتھ حذف ہو گئیں</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">ابھی کیلئے چھپائیں</translation>
 <translation id="121201262018556460">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی لیکن سرور نے ایک کمزور کلید پر مشتمل سرٹیفکیٹ پیش کیا۔ ہو سکتا ہے کہ کسی حملہ آور نے نجی کلید توڑ دی ہو اور ممکن ہے سرور آپ کا متوقع سرور نہ ہو (ممکن ہے آپ کسی حملہ آور کے ساتھ مواصلت کر رہے ہوں)۔</translation>
 <translation id="1212527389003717329">ڈاؤن لوڈ شروع ہو گیا۔ اسے دیکھنے کیلئے چھوئیں اور دبائے رکھیں |<ph name="ACCELERATOR" />|۔</translation>
+<translation id="1215738931000958575">‏پاس ورڈز، پاس کیز، پتے، ادائیگی کے طریقے اور دیگر معلومات کو آٹو فل کرنے کے لیے اپنے Google اکاؤنٹ میں محفوظ کردہ معلومات کا استعمال کریں</translation>
 <translation id="1219129156119358924">سسٹم سیکیورٹی</translation>
 <translation id="1222060260947439312">دایاں ٹرے</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1540,6 +1542,7 @@
 <translation id="3576616784287504635"><ph name="SITE" /> پر انضمام کردہ ایک صفحے کے مطابق</translation>
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3577902790357386792">جمناسٹکس</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">‏جب یہ صفحہ تیار ہو جائے گا تو Chrome آپ کو مطلع کر دے گا۔ &lt;a&gt;منسوخ کریں&lt;/a&gt;</translation>
 <translation id="3582930987043644930">نام شامل کریں</translation>
 <translation id="3583757800736429874">منتقلی &amp;واپس لائیں</translation>
@@ -1788,6 +1791,7 @@
 <translation id="398470910934384994">پرندے</translation>
 <translation id="3985750352229496475">پتے کا نظم کریں...</translation>
 <translation id="3986506998755860149">‏ترتیبات میں AI کے ساتھ آٹوفل کے بارے میں مزید جانیں</translation>
+<translation id="3986557181852957825">‏‫Google Pay, Klarna کا لوگو</translation>
 <translation id="3986705137476756801">ابھی کیلئے لائیو کیپشن آف کریں</translation>
 <translation id="3987460020348247775">‎<ph name="EXPRESSION" /> = <ph name="ANSWER" />‎</translation>
 <translation id="3987940399970879459">‏‎1 MB‎ سے کم</translation>
@@ -1861,6 +1865,7 @@
 <translation id="4104702906064390950">‏‫IBAN کی معلومات کو محفوظ کیا جا رہا ہے</translation>
 <translation id="4106887816571530227">سرایت کردہ مواد کی اجازت نہیں ہے</translation>
 <translation id="4107047499377819067">‏‫VPN کی پس منظر سروسز کی انسٹالیشن شروع ہو گئی ہے، اس میں چند منٹ لگ سکتے ہیں۔</translation>
+<translation id="4110642094637545339">‏‫Google Pay, AfterPay کا لوگو</translation>
 <translation id="4110652170750985508">اپنی ادائیگی کا جائزہ لیں</translation>
 <translation id="4111546256784973544">پینٹ بال</translation>
 <translation id="4112140312785995938">پیچھے کریں</translation>
@@ -2279,6 +2284,7 @@
 <translation id="4807098396393229769">کارڈ پر نام</translation>
 <translation id="4809079943450490359">آپ کے آلہ کے منتظم کی طرف سے ہدایات:</translation>
 <translation id="4811450222531576619">اس کے ماخذ اور موضوع کے بارے میں جانیں</translation>
+<translation id="4811918461974803225">‏‫Google Pay, Affirm کا لوگو</translation>
 <translation id="4813512666221746211">نیٹ ورک کی خرابی</translation>
 <translation id="4814114628197290459">‏IBAN کو حذف کریں</translation>
 <translation id="4816341377198595747">بُک مارکس تلاش کریں بٹن، بُک مارکس تلاش کرنے کے لیے فعال کریں</translation>
@@ -2528,6 +2534,7 @@
 <translation id="5222812217790122047">ای میل مطلوب ہے</translation>
 <translation id="5225215474235602477">پاسپورٹ کی معلومات محفوظ کریں؟</translation>
 <translation id="5228269245420405804">فاصلاتی تعلیم</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />۔ <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">ترسیل کا پتہ</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3296,6 +3303,7 @@
 <translation id="6493924760403974580">یہ ایپ صرف اس سائز کو سپورٹ کرتی ہے۔</translation>
 <translation id="6494750904506170417">پوپ اپس اور ری ڈائریکٹس</translation>
 <translation id="6495664197699704593">یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، <ph name="GOOGLE_PASSWORD_MANAGER" />۔</translation>
+<translation id="649611364763911650">‏‫Chrome میں ایک اور آٹو فِل سروس استعمال کرنے کے لیے، Android کی ترتیبات میں اپنا آٹو فل فراہم کنندہ منتخب کریں</translation>
 <translation id="6499038740797743453">پاس ورڈ کو ری سیٹ کریں؟</translation>
 <translation id="6502510275417601303">ادائیگی کی نئی ترتیب کے بارے میں الرٹ بند ہے</translation>
 <translation id="6502991525169604759">آپ کی تبدیلیوں کے بغیر</translation>

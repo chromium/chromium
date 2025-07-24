@@ -2927,6 +2927,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> anda akan membuat sambungan Wi-Fi peribadi.</translation>
 <translation id="3004385386820284928">Sesuaikan kekunci papan kekunci</translation>
 <translation id="3006881078666935414">Tiada data penggunaan</translation>
+<translation id="3007555010975143508">Apl ini akan digunakan untuk merakam skrin anda:</translation>
 <translation id="3007771295016901659">Tab Pendua</translation>
 <translation id="3008142279736625920">Kek keju</translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
@@ -3809,6 +3810,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3643962751030964445">Peranti ini diurus oleh <ph name="DEVICE_MANAGER" />. Profil baharu diperlukan untuk akaun <ph name="USER_EMAIL_ADDRESS" /> oleh <ph name="DEVICE_MANAGER" /></translation>
 <translation id="364418405912311456">Klik dan seret imej atau serlahkan teks untuk membuat carian</translation>
 <translation id="3645372836428131288">Bergerak sedikit untuk menangkap bahagian lain cap jari.</translation>
+<translation id="3646789916214779970">Tetapkan semula ke tema lalai</translation>
 <translation id="3647654707956482440">Tidak dapat menggunakan pautan ini. Semak sama ada terdapat kesalahan ejaan atau tidak atau gunakan pautan lain untuk mencuba lagi.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> diterima daripada <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> diterima daripada <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> dikesan</translation>
@@ -4392,6 +4394,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4016762287427926315">Kebenaran yang anda benarkan untuk <ph name="APP_NAME" /> juga akan dibenarkan untuk apl ini. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Buat Kod QR untuk pautan ini</translation>
 <translation id="4019983356493507433">Edit Senarai Penanda Halaman</translation>
+<translation id="4020701737692625681">Pentadbir anda boleh merakam skrin anda</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">Anda boleh menghalang kursor anda daripada bergerak terlalu pantas dengan setiap pergerakan kecil kepala anda tetapi tetapan ini akan menghasilkan sedikit lengah.</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -6072,6 +6075,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5235050375939235066">Nyahpasang apl?</translation>
 <translation id="523505283826916779">Tetapan kebolehcapaian</translation>
 <translation id="5235750401727657667">Gantikan halaman yang anda lihat semasa membuka tab baharu</translation>
+<translation id="5236054983756407518">Alih keluar alamat rumah anda daripada Chrome?</translation>
 <translation id="5237124927415201087">Sediakan <ph name="DEVICE_TYPE" /> anda dengan mudah dengan telefon anda. Anda boleh menambahkan Wi-Fi dan Google Account anda tanpa memasukkan kata laluan anda secara manual.
     <ph name="BR" />
     <ph name="BR" />
@@ -6858,6 +6862,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="581659025233126501">Hidupkan Penyegerakan</translation>
 <translation id="5817918615728894473">Gandingkan</translation>
 <translation id="5817963443108180228">Selamat kembali, <ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">Edit dalam Google Account</translation>
 <translation id="581911254119283028">semua aplikasi</translation>
 <translation id="5821565227679781414">Cipta Pintasan</translation>
 <translation id="5824976764713185207">Baca halaman secara automatik selepas selesai dimuatkan</translation>
@@ -7057,6 +7062,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5955721306465922729">Satu laman web ingin membuka aplikasi ini.</translation>
 <translation id="5955809630138889698">Peranti ini mungkin layak untuk mod tunjuk cara dalam talian sahaja. Sila hubungi wakil sokongan anda untuk mendapatkan butiran lanjut.</translation>
+<translation id="59561895884837262">Anda akan dimaklumi apabila rakaman bermula.</translation>
 <translation id="5957987129450536192">Ketik ikon Pilih untuk Cakap berdekatan imej profil anda, kemudian pilih apa yang hendak anda dengar.</translation>
 <translation id="5958836583172610505">Penyegerakan Dihidupkan</translation>
 <translation id="5959471481388474538">Rangkaian tak tersedia</translation>
@@ -7201,6 +7207,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="606449270532897041">Urus data laman</translation>
 <translation id="6064764629679333574">Tingkatkan kualiti bunyi mikrofon Bluetooth dengan meningkatkan audio resolusi rendah kepada audio resolusi tinggi.</translation>
 <translation id="6065289257230303064">Atribut Direktori Subjek Sijil</translation>
+<translation id="6065690209261668796">Alih keluar alamat tempat kerja anda daripada Chrome?</translation>
 <translation id="6066794465984119824">Cincangan imej tidak ditetapkan</translation>
 <translation id="6069464830445383022">Google Account anda merupakan log masuk Chromebook anda</translation>
 <translation id="6071181508177083058">sahkan kata laluan</translation>
@@ -8286,6 +8293,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Alih Keluar Tab dan Padamkan Kumpulan?}=1{Alih Keluar Tab dan Padamkan Kumpulan?}other{Alih Keluar Tab dan Padamkan Kumpulan?}}</translation>
 <translation id="6833479554815567477">Tab dialih keluar daripada kumpulan <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Seimbang (disyorkan)</translation>
+<translation id="6835624277262316125">Alamat tempat kerja anda boleh membantu anda menyelesaikan tugasan merentas perkhidmatan Google, seperti hasil carian Search yang lebih berkaitan dan arah dalam Google Maps. Anda boleh mengedit atau memadamkan alamat anda dalam <ph name="BEGIN_LINK" />Google Account <ph name="USERNAME" /><ph name="END_LINK" /> anda.</translation>
 <translation id="6835762382653651563">Sila sambung ke Internet untuk mengemaskinikan <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="6838992358006915573">Kanta Pembesar mengikut fokus ChromeVox</translation>
 <translation id="6839916869147598086">Log masuk telah berubah</translation>
@@ -8419,6 +8427,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6929126689972602640">Kawalan ibu bapa tidak disokong untuk akaun institusi pengajian. Untuk menambah akaun institusi pengajian bagi mengakses Google Classroom dan laman web lain untuk membuat kerja sekolah di rumah, log masuk menggunakan akaun peribadi kanak-kanak itu dahulu. Anda boleh menambah akaun institusi pengajian dalam persediaan kemudian.</translation>
 <translation id="6929760895658557216">Okey Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah ditolak}other{# sambungan telah ditolak}}</translation>
+<translation id="6930337524857202955">Muat turun baharu tersedia</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Klik kekuatan</translation>
 <translation id="6933321725007230600">Hidupkan &amp;penyegerakan...</translation>
@@ -9632,6 +9641,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">Alamat rumah anda boleh membantu anda menyelesaikan tugasan merentas perkhidmatan Google, seperti hasil carian Search yang lebih berkaitan dan arah dalam Google Maps. Anda boleh mengedit atau memadamkan alamat anda dalam <ph name="BEGIN_LINK" />Google Account <ph name="USERNAME" /><ph name="END_LINK" /> anda.</translation>
 <translation id="7791269138074599214">Kaedah input</translation>
 <translation id="7791429245559955092">Aplikasi ini akan dipasang pada profil Chrome yang sedang anda gunakan</translation>
 <translation id="7791436592012979144">Tatal balikan didayakan</translation>

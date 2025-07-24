@@ -163,6 +163,7 @@
 <translation id="3032787606318309379">កំពុងបន្ថែមទៅ Chromium...</translation>
 <translation id="3038232873781883849">កំពុងរង់ចាំដំឡើង...</translation>
 <translation id="3045032126857188731">ភាសាដែលបានបកប្រែ៖ <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">បិទ​ប្រអប់​មតិកែលម្អ</translation>
 <translation id="3068187312562070417">កម្រង​ព័ត៌មាន Chromium ផ្សេងទៀត</translation>
 <translation id="3068515742935458733">ជួយធ្វើឲ្យ Chromium ប្រសើរជាងមុនដោយការផ្ញើរបាយការណ៍គាំង និង <ph name="UMA_LINK" /> ទៅ Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{ឧបករណ៍ USB ចំនួន 1 គ្រឿងត្រូវបាន​ចូលប្រើ​ដោយកម្មវិធីបន្ថែមលើ Chromium មួយ​ឬច្រើន}=1{ឧបករណ៍ USB ចំនួន 1 គ្រឿងកំពុង​ត្រូវបាន​ចូលប្រើ​ដោយកម្មវិធីបន្ថែមលើ Chromium មួយ​ឬច្រើន}other{ឧបករណ៍ USB ចំនួន # គ្រឿងកំពុង​ត្រូវបាន​ចូលប្រើ​ដោយកម្មវិធីបន្ថែមលើ Chromium មួយ​ឬច្រើន}}</translation>

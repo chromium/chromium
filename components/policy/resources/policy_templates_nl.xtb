@@ -840,6 +840,33 @@ Als je het beleid toepast, verschijnt de schakelaar voor elk scherm om het uit t
 Als je het beleid niet toepast of niet instelt, wordt de schakelaar verborgen.
 
 Opmerking: Dit beleid heeft alleen invloed op de UI. ChromeOS behoudt de bestaande instellingen als de UI wordt verborgen.</translation>
+<translation id="1579027593897822029">Lijst met acties die moeten worden uitgevoerd als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt.
+
+Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
+
+Als je het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> niet instelt, heeft dit beleid geen effect.
+
+Als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt, voert de browser de acties uit die in dit beleid zijn ingesteld.
+
+Als je dit beleid leeg laat of niet instelt, heeft het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> geen effect.
+
+Deze acties worden ondersteund:
+
+<ph name="CLOSE_BROWSERS_ACTION" />: Alle browservensters en PWA's voor dit profiel worden gesloten. Niet ondersteund op Android en iOS.
+
+<ph name="CLOSE_TABS_ACTION" />: Alle geopende tabbladen in geopende vensters worden gesloten. Alleen ondersteund op iOS.
+
+<ph name="SHOW_PROFILE_PICKER_ACTION" />: Het profielkiezervenster tonen. Niet ondersteund op Android en iOS.
+
+<ph name="SIGN_OUT_ACTION" />: De huidige ingelogde gebruiker wordt uitgelogd. Alleen ondersteund op iOS.
+
+<ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: De bijbehorende browsegegevens worden gewist. Zie het beleid <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> voor meer informatie. De ondersteunde typen op iOS zijn <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> en <ph name="CLEAR_AUTOFILL_ACTION" />.
+
+<ph name="RELOAD_PAGES_ACTION" />: Alle webpagina's worden opnieuw geladen. Voor sommige pagina's kan de gebruiker eerst om bevestiging worden gevraagd. Niet ondersteund op iOS.
+
+De gebruiker blijft ingelogd op hun Google-account wanneer cookies worden verwijderd met <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />.
+
+Als je <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> en <ph name="CLEAR_SITE_SETTINGS_ACTION" /> instelt, wordt synchronisatie voor de betreffende gegevenstypen uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="1583248206450240930"><ph name="PRODUCT_FRAME_NAME" /> standaard gebruiken</translation>
 <translation id="1587585749332985896">Gebruik van de stand zonder interface niet toestaan</translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
@@ -5135,6 +5162,19 @@ Na de eerste configuratie kunnen gebruikers Google-locatieservices aan- of uitze
 <translation id="468822697351680932">Het SiteList-beleid van Internet Explorer gebruiken als bron van regels</translation>
 <translation id="4693190628432874457">Rapportage voor locatie van apparaat aanzetten</translation>
 <translation id="4693779768620889402">Op extensies gebaseerde bestemmingen</translation>
+<translation id="4693956469331697434">Hiermee configureer je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />. Met dit beleid kunnen beheerders instellen (per gegevenstype) wanneer gegevens door de browser moeten worden verwijderd. Dit is handig voor klanten die met gevoelige klantgegevens werken.
+
+Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
+
+De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" /> worden niet ondersteund op Android.
+
+De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. De minimumwaarde die kan worden ingesteld is 1 uur.
+
+De verwijdering van verlopen gegevens vindt plaats 15 seconden nadat de browser is gestart en daarna elke 30 minuten terwijl de browser actief is.
+
+De gebruiker blijft ingelogd op hun Google-account wanneer cookies worden verwijderd.
+
+Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="4694138212536142867">Rapportage voor hardwarestatus van apparaat aanzetten</translation>
 <translation id="4697581738794063407">De filterfunctie voor URL-parameters beheren</translation>
 <translation id="4698895924806859508">Netwerkgebeurtenissen niet rapporteren</translation>
@@ -5403,6 +5443,19 @@ Als je dit beleid instelt op <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCU
 <translation id="4918261735182294270">Gebruikers toestaan om te kiezen of <ph name="CHROME_SYNC_NAME" /> moet worden aangezet</translation>
 <translation id="491889618361437456"><ph name="GOOGLE_CALENDAR_NAME" />-integratie aanzetten</translation>
 <translation id="4919122295221518724">Strengere behandeling van gecombineerde content aanzetten</translation>
+<translation id="4919341087029582581">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
+
+Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
+
+De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+De gebruiker blijft ingelogd op hun Google-account wanneer cookies worden verwijderd.
+
+Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.
+
+Als de gegevensverwijdering om een of andere reden is gestart maar niet is afgerond, worden de browsegegevens gewist als het profiel weer wordt geladen.
+
+Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het OS crasht), worden de browsegegevens niet gewist, omdat het sluiten van de browser niet het gevolg was van het sluiten van alle browservensters door de gebruiker.</translation>
 <translation id="4921553515199936667">Als je dit beleid niet instelt of instelt op True, wordt videodecodering waar beschikbaar met hardware versneld.
 
 Als je dit beleid instelt op False, wordt videodecodering nooit door hardware versneld.

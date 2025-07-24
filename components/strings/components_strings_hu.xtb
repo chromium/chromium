@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a Dino Run játék elindításához a Chrome-ban.</translation>
 <translation id="1060136083665017312">Játékrendszerek és konzolok</translation>
 <translation id="1060320201901229167">Kaku 5 boríték</translation>
+<translation id="1060985736456216896">Google Pay, Zip-logó</translation>
 <translation id="1062407476771304334">Csere</translation>
 <translation id="1063822554756965137">A fájlok sikeresen törölve</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1209206284964581585">Elrejtés ideiglenesen</translation>
 <translation id="121201262018556460">Megpróbálta elérni a(z) <ph name="DOMAIN" /> webhelyet, de a szerver egy gyenge kulccsal rendelkező tanúsítványt adott. Egy támadó feltörhette a privát kulcsot, és lehet, hogy a szerver nem a várt kiszolgáló (lehet, hogy Ön egy támadóval kommunikál).</translation>
 <translation id="1212527389003717329">A letöltés megkezdődött. A megtekintéséhez tartsa lenyomva a következő billentyűt: |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">A Google-fiókjába mentett adatok használata a jelszavak, azonosítókulcsok, címek, fizetési módok és egyéb információk automatikus kitöltéséhez</translation>
 <translation id="1219129156119358924">Rendszerbiztonság</translation>
 <translation id="1222060260947439312">Jobb oldali tálca</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1537,6 +1539,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3576616784287504635">A(z) <ph name="SITE" /> egyik beágyazott oldalának közlendője</translation>
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="3577902790357386792">Torna</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">A Chrome értesíteni fogja, ha készen áll az oldal. &lt;a&gt;Megszakítás&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Név hozzáadása</translation>
 <translation id="3583757800736429874">&amp;Áthelyezés újra</translation>
@@ -1785,6 +1788,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="398470910934384994">Madarak</translation>
 <translation id="3985750352229496475">Címek kezelése…</translation>
 <translation id="3986506998755860149">További információ az AI-jal támogatott automatikus kitöltésről a beállításokban</translation>
+<translation id="3986557181852957825">Google Pay, Klarna-logó</translation>
 <translation id="3986705137476756801">Élő feliratozás átmeneti kikapcsolása</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Kevesebb mint 1 MB</translation>
@@ -1857,6 +1861,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4104702906064390950">IBAN-adatok mentése folyamatban</translation>
 <translation id="4106887816571530227">A beágyazott tartalmak nem engedélyezettek</translation>
 <translation id="4107047499377819067">Elkezdődött a VPN-háttérszolgáltatások telepítése. Ez eltarthat néhány percig.</translation>
+<translation id="4110642094637545339">Google Pay, AfterPay-logó</translation>
 <translation id="4110652170750985508">Befizetés áttekintése</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Ugrás visszafelé</translation>
@@ -2275,6 +2280,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4807098396393229769">A kártyán feltüntetett név</translation>
 <translation id="4809079943450490359">Utasítások az eszköz rendszergazdájától:</translation>
 <translation id="4811450222531576619">További információ a forrásról és a témáról</translation>
+<translation id="4811918461974803225">Google Pay, Affirm-logó</translation>
 <translation id="4813512666221746211">Hálózati hiba</translation>
 <translation id="4814114628197290459">IBAN törlése</translation>
 <translation id="4816341377198595747">Keresés a könyvjelzők között gomb, nyomja meg a könyvjelzők közötti kereséshez</translation>
@@ -2524,6 +2530,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5222812217790122047">Az e-mail-cím megadása kötelező</translation>
 <translation id="5225215474235602477">Menti az útlevelet?</translation>
 <translation id="5228269245420405804">Távoktatás</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Szállítási cím</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3291,6 +3298,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6493924760403974580">Ez az alkalmazás csak ezt a méretet támogatja.</translation>
 <translation id="6494750904506170417">előugró ablakok és átirányítások</translation>
 <translation id="6495664197699704593">Ezt a jelszót csak erre az eszközre menti a rendszer. Ha más eszközökön is szeretné használni: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Ha másik automatikus kitöltési szolgáltatást szeretne használni a Chrome-ban, válassza ki a kívánt automatikuskitöltés-szolgáltatót az Android-beállításokban.</translation>
 <translation id="6499038740797743453">Jelszó visszaállítása?</translation>
 <translation id="6502510275417601303">Az új fizetési beállítással kapcsolatos értesítés bezárva</translation>
 <translation id="6502991525169604759">Az Ön módosításai nélkül</translation>

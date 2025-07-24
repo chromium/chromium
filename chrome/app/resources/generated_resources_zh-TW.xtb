@@ -3791,6 +3791,7 @@
 <translation id="3643962751030964445">這是由 <ph name="DEVICE_MANAGER" /> 管理的裝置。<ph name="DEVICE_MANAGER" /> 要求必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶設定新的設定檔</translation>
 <translation id="364418405912311456">在圖片上按住並拖曳，或是醒目顯示文字即可搜尋</translation>
 <translation id="3645372836428131288">請稍微移動手指，讓系統擷取完整指紋</translation>
+<translation id="3646789916214779970">重設為預設主題</translation>
 <translation id="3647654707956482440">無法使用這個連結，請檢查是否輸入錯誤或使用其他連結，然後再試一次。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}other{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">偵測到 <ph name="USB_DEVICE_NAME" /></translation>

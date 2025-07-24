@@ -998,6 +998,7 @@
 <translation id="1670399744444387456">بنیادی</translation>
 <translation id="1673137583248014546"><ph name="URL" /> آپ کی سیکیورٹی کلید کا برانڈ اور ماڈل دیکھنا چاہتا ہے</translation>
 <translation id="1674073353928166410">سبھی (<ph name="URL_COUNT" />) کو پوشیدگی ونڈو میں کھولیں</translation>
+<translation id="1674142805528405174">‏‫Google پاس ورڈ مینیجر آپ کے اکاؤنٹ کو ایک مضبوط پاس ورڈ کے ساتھ اپ ڈیٹ کر سکتا ہے جو آپ کے اکاؤنٹ <ph name="EMAIL" /> میں آپ کے لیے محفوظ ہے۔</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> شامل نہیں کی جا سکتی</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
 <translation id="1678849866171627536">اسکین ناکام ہوا۔ یہ فائل ایک وائرس یا میلوئیر ہو سکتی ہے۔</translation>
@@ -2393,6 +2394,7 @@
 <translation id="2642111877055905627">ساکر بال</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" /> ہمیشہ آن</translation>
 <translation id="2643064289437760082">آپ اپنے براؤزنگ ڈیٹا کو حذف کر کے کبھی بھی اشتہار کی اثرپذیری کی پیمائش کے ڈیٹا کو حذف کر سکتے ہیں</translation>
+<translation id="2643379881528582459">‏اگر Chromium کو عوامی ڈیٹا کی خلاف ورزی میں آپ کے پاس ورڈز میں سے کوئی ایک مل جاتا ہے تو آپ کے سائن ان ہونے پر یہ آپ کے لیے آپ کا پاس ورڈ تبدیل کرنے کی پیشکش کر سکتا ہے</translation>
 <translation id="2643698698624765890">ونڈو مینیو میں ایکسٹینشنز پر کلک کر کے اپنے ایکسٹینشنز کا نظم کریں۔</translation>
 <translation id="2645047101481282803">آپ کا آلہ <ph name="PROFILE_NAME" /> کے زیر انتظام ہے</translation>
 <translation id="2645388244376970260">اس ٹیب کو <ph name="DEVICE_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
@@ -3794,6 +3796,7 @@
 <translation id="3643962751030964445">یہ آلہ <ph name="DEVICE_MANAGER" /> کے زیر انتظام ہے۔ <ph name="DEVICE_MANAGER" /> کو اکاؤنٹ <ph name="USER_EMAIL_ADDRESS" /> کے لیے ایک نئی پروفائل درکار ہے</translation>
 <translation id="364418405912311456">تلاش کرنے کے لیے تصاویر پر کلک کریں اور گھسیٹیں یا ٹیکسٹ کو نمایاں کریں</translation>
 <translation id="3645372836428131288">فنگر پرنٹ کے مختلف حصے کو کیپچر کرنے کیلئے تھوڑی سی حرکت دیں</translation>
+<translation id="3646789916214779970">ڈیفالٹ تھیم پر دوبارہ ترتیب دیں</translation>
 <translation id="3647654707956482440">اس لنک کا استعمال نہیں کر سکتے۔ ٹائپنگ کی غلطیاں چیک کریں یا دوبارہ کوشش کرنے کیلئے دوسرا لنک استعمال کریں۔</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> سے <ph name="ATTACHMENTS" /> موصول ہوئیں}other{<ph name="DEVICE_NAME" /> سے <ph name="ATTACHMENTS" /> موصول ہوئیں}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> کا پتا چلا</translation>
@@ -4207,6 +4210,7 @@
 <translation id="3903696968689283281">‏WiFi ڈائریکٹ کے مالکان کی معلومات:</translation>
 <translation id="3904326018476041253">مقام کی سروسز</translation>
 <translation id="3905761538810670789">ایپ کو درست کریں</translation>
+<translation id="3906096710440765802">‏اپنے سبھی آلات پر اپنے پاس ورڈز، بُک مارکس وغیرہ حاصل کرنے کیلئے Chrome میں سائن ان کریں</translation>
 <translation id="3908288065506437185">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="3908501907586732282">ایکسٹینشن فعال کریں</translation>
 <translation id="3909456989251621103">‏اگر آپ سرور سرٹیفکیٹ کو حذف کرتے ہیں تو Chrome اسے سرورز کی شناخت کے لیے مزید استعمال نہیں کرے گا۔</translation>
@@ -4689,6 +4693,7 @@
 <translation id="425573743389990240">واٹس میں بیٹری ڈسچارج ہونے کی شرح (منفی قدر کا مطلب ہے کہ بیٹری چارج ہو رہی ہے)</translation>
 <translation id="4255841059940367080">‏‫Google کو بھیجے جا رہے آپ کے براؤزنگ ڈیٹا کی بنیاد پر خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف ریئل ٹائم میں AI تقویت یافتہ حفاظت ملتی ہے</translation>
 <translation id="4256316378292851214">ویڈیو &amp;محفوظ کریں بطور…</translation>
+<translation id="4257175174234042421">پاس ورڈ کی خودکار تبدیلی</translation>
 <translation id="4258348331913189841">فائل سسٹمز</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{گروپ کو رکھیں}other{گروپس کو رکھیں}}</translation>
 <translation id="4259388776256904261">اس میں کچھ وقت لگ سکتا ہے</translation>
@@ -7853,6 +7858,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> صارفین</translation>
 <translation id="6555432686520421228">بالکل نئے کی طرح ہونے کیلئے صارف کے سبھی اکاؤنٹس ہٹائیں اور اپنا <ph name="IDS_SHORT_PRODUCT_NAME" /> دوبارہ ترتیب دیں۔</translation>
 <translation id="6555604601707417276">‏Linux بیک اپ بحال ہو گیا</translation>
+<translation id="6555744145993174510">منجانب: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">واپس لائیں</translation>
 <translation id="6556903358015358733">تھیم اور وال پیپر</translation>
 <translation id="6557199166823345360">مزید تفصیلات شامل کریں یا اپنی تلاش کو بہتر بنانے کے لیے اپنے انتخاب کے بارے میں سوال پوچھیں</translation>
@@ -7888,6 +7894,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ڈیسک ٹاپ کے مواد کا اشتراک کیا گیا</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% مکمل</translation>
 <translation id="6580203076670148210">اسکین کرنے کی رفتار</translation>
+<translation id="6581356304040102696">‏پاس ورڈز درآمد نہیں کر سکتے۔ فائل کا سائز 1 MB سے کم ہونا چاہیے۔</translation>
 <translation id="6582080224869403177">اپنی سیکورٹی کو اپ گریڈ کرنے کے لئے اپنا <ph name="DEVICE_TYPE" /> ری سیٹ کریں۔</translation>
 <translation id="6582274660680936615">آپ ایک مہمان کے طور پر براؤز کر رہے ہیں</translation>
 <translation id="6583328141350416497">ڈاؤن لوڈ جاری رکھیں</translation>
@@ -9194,6 +9201,7 @@
 <translation id="7506242536428928412">‏اپنی نئی سیکیورٹی کلید استعمال کرنے کیلئے، ایک نیا PIN سیٹ کریں</translation>
 <translation id="7506541170099744506">آپ کے <ph name="DEVICE_TYPE" /> کا انٹرپرائز کے نظم و نسق کیلئے کامیابی سے اندراج کر لیا گیا ہے۔</translation>
 <translation id="7507207699631365376">اس فراہم کنندہ کی <ph name="BEGIN_LINK" />راز داری کی پالیسی<ph name="END_LINK" /> دیکھیں</translation>
+<translation id="7508127419095425107">‏اس خصوصیت اور متعلقہ ڈیٹا کے بارے میں مزید Google کو بھیجا گیا ہے</translation>
 <translation id="7508707215237589321">‫"<ph name="CERT_NAME" />" کو حذف کریں؟</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ٹیب بند کریں اور گروپ کو حذف کریں؟}=1{ٹیبز کو بند اور گروپ کو حذف کریں؟}other{ٹیبز کو بند کریں اور گروپس کو حذف کریں؟}}</translation>
 <translation id="7509097596023256288">مینیجمنٹ سیٹ اپ کیا جا رہا ہے</translation>
@@ -10924,6 +10932,7 @@
 <translation id="869884720829132584">ایپلیکیشنز مینیو</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699188901396699995">‏<ph name="PRINTER_NAME" /> کیلئے PPD</translation>
+<translation id="8699296325072357994">‏پاس ورڈ کے صفحات اور متعلقہ معلومات سے مواد Google کو بھیجا جاتا ہے اور انسانوں کے ذریعے اس کا جائزہ لیا جاتا ہے۔ آپ کا پاس ورڈ مرموز کردہ ہے اور کسی نے کبھی نہیں دیکھا۔ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">ہمیں بتائیں کہ آپ نے اس سائٹ پر فریق ثالث کوکیز کی اجازت کیوں دی</translation>
 <translation id="8700087567921985940">‏مقام کا استعمال کریں۔ مقام کی اجازت والی ایپس اور سروسز کو اپنے آلے کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK1" />مقام کے بارے میں مزید جانیں<ph name="BEGIN_LINK1_END" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">launcher + backspace</translation>
@@ -11366,6 +11375,7 @@
 <translation id="8993059306046735527">‏اگر آپ اپنے <ph name="DEVICE_TYPE" /> کا پاس ورڈ بھول جاتے ہیں تب بھی آپ اپنا مقامی ڈیٹا بحال کر سکتے ہیں۔ آپ کو اپنے Google اکاؤنٹ میں سائن ان کرنے یا اکاؤنٹ کی بازیابی کا استعمال کرنے کی ضرورت ہوگی۔</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" /> کیلئے سرٹیفیکیٹ کا ہیش کاپی کریں</translation>
 <translation id="8993737615451556423">رفتار بڑھانے، کم کرنے اور پڑھنے کی آواز کو روکنے کیلئے کنٹرول فراہم کرتا ہے</translation>
+<translation id="8993787625629280252">‏اگر Chrome کو عوامی ڈیٹا کی خلاف ورزی میں آپ کے پاس ورڈز میں سے کوئی ایک مل جاتا ہے تو آپ کے سائن ان ہونے پر یہ آپ کے لیے آپ کا پاس ورڈ تبدیل کرنے کی پیشکش کر سکتا ہے</translation>
 <translation id="899384117894244799">محدود صارف کو ہٹائیں</translation>
 <translation id="8993853206419610596">تمام درخواستوں کو پھیلائیں</translation>
 <translation id="8993945059918628059">اپنی انگلی سے فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>

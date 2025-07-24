@@ -654,6 +654,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3985215325736559418">Je, ungependa kupakua <ph name="FILE_NAME" /> tena?</translation>
 <translation id="3987993985790029246">Nakili kiungo</translation>
 <translation id="4000212216660919741">Skrini ya Kwanza, Nje ya Mtandao</translation>
+<translation id="4000670338830950598">Wekea mapendeleo na udhibiti Google Chrome ukitumia kipengee kilichoangaziwa</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Nenosiri 1 lililoathiriwa katika Akaunti yako ya Google}other{Manenosiri # yaliyoathiriwa katika Akaunti yako ya Google}}</translation>
 <translation id="4016425174436051808">Imeshindwa kufuatilia. Hitilafu fulani imetokea.</translation>
 <translation id="4024768890073681126">Kivinjari chako kinadhibitiwa na mzazi wako</translation>
@@ -1370,6 +1371,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6976811588313110624">Weka njia mpya ya mkato.</translation>
 <translation id="6978717888677691380">Tovuti ulizozuia</translation>
 <translation id="6979737339423435258">Wakati wote</translation>
+<translation id="6980258170429555165">Menyu ya <ph name="MENU_NAME" /> imeangaziwa.</translation>
 <translation id="6983306615164277634">Unaweza pia kugusa na kushikilia sehemu ya anwani ili ubadilishe nafasi.</translation>
 <translation id="6987047470128880212">Hali fiche haipatikani kwenye kifa hiki</translation>
 <translation id="6991701761229081516">Manenosiri yako yatapakuliwa kama faili ya CSV. Yataonekana kwa kila mtu anayeweza kufikia faili, zikiwemo programu. Manenosiri yaliyohamishwa yatafutwa kwenye Chrome.</translation>

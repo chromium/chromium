@@ -3807,6 +3807,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3643962751030964445">Бул түзмөк <ph name="DEVICE_MANAGER" /> тарабынан тескелет. <ph name="USER_EMAIL_ADDRESS" /> аккаунту үчүн <ph name="DEVICE_MANAGER" /> башкаруучусунан жаңы профилди түзүү талап кылынат</translation>
 <translation id="364418405912311456">Курсорду сүйрөп сүрөт тандаңыз же текстти бөлүп алыңыз</translation>
 <translation id="3645372836428131288">Манжа изиңизди ар тараптан тартып алуу үчүн манжаңызды жай жылдырыңыз.</translation>
+<translation id="3646789916214779970">Демейки темага кайтаруу</translation>
 <translation id="3647654707956482440">Бул шилтемени колдонууга болбойт. Катасыз жазыңыз же башкасын колдонуп, кайталап көрүңүз.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнөн алынды}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнөн алынды}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> түзмөгү табылды</translation>

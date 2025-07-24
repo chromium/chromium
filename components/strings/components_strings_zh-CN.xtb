@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="1060136083665017312">游戏系统和游戏机</translation>
 <translation id="1060320201901229167">Kaku 5 信封</translation>
+<translation id="1060985736456216896">Google Pay、Zip 徽标</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1063822554756965137">已成功删除文件</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">暂时隐藏</translation>
 <translation id="121201262018556460">您尝试访问的是 <ph name="DOMAIN" />，但是服务器出示的证书包含弱密钥。攻击者可能已经破解了私钥，因此这可能并不是您想要访问的服务器（您可能正在与攻击者进行通信）。</translation>
 <translation id="1212527389003717329">已开始下载。若要查看，请按住 |<ph name="ACCELERATOR" />|。</translation>
+<translation id="1215738931000958575">使用 Google 账号中保存的信息自动填充密码、通行密钥、地址、支付方式和其他信息</translation>
 <translation id="1219129156119358924">系统安全</translation>
 <translation id="1222060260947439312">右侧纸匣</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -649,7 +651,7 @@
 <translation id="2088913896151127116">添加文字</translation>
 <translation id="2090451897496479509">如需了解详情，请联系提供商</translation>
 <translation id="2091887806945687916">声音</translation>
-<translation id="2093184051799735948">在<ph name="ENGINE_NAME" />中搜索或输入网址</translation>
+<translation id="2093184051799735948">在 <ph name="ENGINE_NAME" /> 中搜索或输入网址</translation>
 <translation id="2093982008204312032">Google Chrome 正在尝试关闭 Windows Hello，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="2094505752054353250">网域不匹配</translation>
 <translation id="2094704029599359040">版本信息</translation>
@@ -1536,6 +1538,7 @@
 <translation id="3576616784287504635"><ph name="SITE" /> 上的嵌入式页面显示</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577902790357386792">体操</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /><ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">当此页面准备就绪时，Chrome 会通知您。&lt;a&gt;取消&lt;/a&gt;</translation>
 <translation id="3582930987043644930">添加名称</translation>
 <translation id="3583757800736429874">恢复移动(&amp;R)</translation>
@@ -1783,6 +1786,7 @@
 <translation id="398470910934384994">养鸟/观鸟</translation>
 <translation id="3985750352229496475">管理地址…</translation>
 <translation id="3986506998755860149">在设置中详细了解“利用 AI 自动填充”功能</translation>
+<translation id="3986557181852957825">Google Pay、Klarna 徽标</translation>
 <translation id="3986705137476756801">暂时关闭“实时字幕”功能</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">小于 1 MB</translation>
@@ -1856,6 +1860,7 @@
 <translation id="4104702906064390950">正在保存 IBAN 信息</translation>
 <translation id="4106887816571530227">不允许嵌入内容</translation>
 <translation id="4107047499377819067">已开始安装 VPN 后台服务，这可能需要几分钟时间。</translation>
+<translation id="4110642094637545339">Google Pay、AfterPay 徽标</translation>
 <translation id="4110652170750985508">查看您的付款</translation>
 <translation id="4111546256784973544">彩弹射击</translation>
 <translation id="4112140312785995938">快退</translation>
@@ -2274,6 +2279,7 @@
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="4809079943450490359">您的设备管理员温馨提示：</translation>
 <translation id="4811450222531576619">了解其来源和主题</translation>
+<translation id="4811918461974803225">Google Pay、Affirm 徽标</translation>
 <translation id="4813512666221746211">网络错误</translation>
 <translation id="4814114628197290459">删除 IBAN</translation>
 <translation id="4816341377198595747">“搜索书签”按钮，启用即可搜索书签</translation>
@@ -2523,6 +2529,7 @@
 <translation id="5222812217790122047">需要提供电子邮件地址</translation>
 <translation id="5225215474235602477">要保存护照信息吗？</translation>
 <translation id="5228269245420405804">远程教学</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />。<ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">送货地址</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3289,6 +3296,7 @@
 <translation id="6493924760403974580">此应用仅支持该尺寸。</translation>
 <translation id="6494750904506170417">弹出式窗口和重定向</translation>
 <translation id="6495664197699704593">这个密码仅会保存到此设备上。若要在其他设备上使用它，请<ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
+<translation id="649611364763911650">如要在 Chrome 中使用其他自动填充服务，请在 Android 设置中选择自动填充服务提供商</translation>
 <translation id="6499038740797743453">重置密码？</translation>
 <translation id="6502510275417601303">关于新付款设置的提醒已关闭</translation>
 <translation id="6502991525169604759">不含您所做更改</translation>

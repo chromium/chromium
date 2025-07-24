@@ -3794,6 +3794,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3643962751030964445">Šo ierīci pārvalda <ph name="DEVICE_MANAGER" />. Pārvaldnieks (<ph name="DEVICE_MANAGER" />) pieprasa, lai kontam <ph name="USER_EMAIL_ADDRESS" /> tiktu izveidots jauns profils.</translation>
 <translation id="364418405912311456">Lai meklētu, noklikšķiniet un velciet pāri attēliem vai iezīmējiet tekstu.</translation>
 <translation id="3645372836428131288">Mazliet pakustiniet, lai uzņemtu citu pirksta nospieduma daļu</translation>
+<translation id="3646789916214779970">Atiestatīt uz noklusējuma motīvu</translation>
 <translation id="3647654707956482440">Nevar izmantot šo saiti. Pārbaudiet pareizrakstības kļūdas vai izmantojiet citu saiti, lai mēģinātu vēlreiz.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Saņemts saturs (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}zero{Saņemts saturs (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}one{Saņemts saturs (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}other{Saņemts saturs (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Konstatēta ierīce <ph name="USB_DEVICE_NAME" /></translation>

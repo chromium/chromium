@@ -654,6 +654,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3985215325736559418">Adakah anda ingin memuat turun <ph name="FILE_NAME" /> semula?</translation>
 <translation id="3987993985790029246">Salin pautan</translation>
 <translation id="4000212216660919741">Rumah Luar Talian</translation>
+<translation id="4000670338830950598">Sesuaikan dan kawal Google Chrome dengan item yang diserlahkan</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas dalam Google Account anda}other{# kata laluan yang terjejas dalam Google Account anda}}</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Kesilapan telah berlaku.</translation>
 <translation id="4024768890073681126">Penyemak imbas anda diurus oleh ibu/bapa anda</translation>
@@ -1370,6 +1371,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6976811588313110624">Tambahkan pintasan baharu.</translation>
 <translation id="6978717888677691380">Laman yang anda sekat</translation>
 <translation id="6979737339423435258">Sepanjang masa</translation>
+<translation id="6980258170429555165">Menu <ph name="MENU_NAME" /> diserlahkan.</translation>
 <translation id="6983306615164277634">Anda juga boleh sentuh dan tahan bar alamat untuk menukar kedudukan.</translation>
 <translation id="6987047470128880212">Inkognito tidak tersedia pada peranti ini</translation>
 <translation id="6991701761229081516">Kata laluan anda akan dimuat turun sebagai fail CSV. Kata laluan tersebut akan dapat dilihat oleh sesiapa sahaja yang boleh mengakses fail tersebut, termasuk apl. Kata laluan yang telah dieksport akan dipadamkan daripada Chrome.</translation>

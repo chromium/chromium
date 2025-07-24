@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Contacta amb el remitent per demanar-li un enllaç nou</translation>
 <translation id="1013952917065545813">Pots tornar aquí per obrir de nou les pestanyes que has tancat fa poc</translation>
 <translation id="1016495303386450659">S'ha actualitzat l'element.</translation>
+<translation id="1019990162050689579">Activitat en aplicacions de Gemini</translation>
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030376737535466765">Obre el gestor de contrasenyes</translation>
 <translation id="1035980983510608210">Si tanques totes les pestanyes, també es tancaran les pestanyes fixades.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">No s'ha pogut obrir <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">La configuració de sincronització es restaurarà a partir de la darrera còpia de seguretat. <ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Comparteix el contingut de la pàgina amb Gemini per obtenir respostes més rellevants. Quan comparteixes una pàgina amb Gemini, s'envien a Google l'URL i tot el contingut de la pàgina. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1110772719190051587">Desbloqueja amb Face ID</translation>
 <translation id="1112015203684611006">Error en imprimir</translation>
@@ -510,6 +512,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="3010025794097054078">Protegeix-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="301080557829842765">Guia de privadesa</translation>
 <translation id="3012310354105716927">Encara no s'han desat algunes dades</translation>
+<translation id="3013922155552460252">Consulta i gestiona l'activitat de Gemini, com ara els xats, els comentaris i les indicacions</translation>
 <translation id="3016518775797983090">No es pot compartir la pàgina</translation>
 <translation id="3020183492814296499">Dreceres</translation>
 <translation id="3021342271734507256">Dibuixa, marca o toca qualsevol cosa a la pantalla per cercar</translation>
@@ -534,6 +537,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="309710370695886264">Tens 1 contrasenya reutilitzada. Corregeix el problema per protegir-te.</translation>
 <translation id="3102790820790869053">Cerca pestanyes recents</translation>
+<translation id="3106258548858559536">Desactiva el mode de lectura</translation>
 <translation id="3106690631878101882">Amaga l'opció Tradueix</translation>
 <translation id="310900540163454140">Vols suprimir la contrasenya de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marca com a…</translation>
@@ -632,6 +636,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3533860663366814939">Obre la configuració d'Emplenament automàtic i contrasenyes</translation>
 <translation id="3546122170015471515">Previsualització de Maps a Google.com</translation>
 <translation id="3547356470684043247">Llegeix les avaluacions dels clients sobre productes, serveis o experiències per ajudar-te a prendre decisions</translation>
+<translation id="3547933853190131743">Cerca amb el mode IA</translation>
 <translation id="3557336313807607643">Afegeix als contactes</translation>
 <translation id="355765753469272474">Desfés</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -2098,6 +2103,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="913036870884277353">Obre els enllaços fàcilment en altres aplicacions.</translation>
 <translation id="9137013805542155359">Mostra l'original</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Activa el mode de lectura</translation>
 <translation id="9144230693397287797">Rep notificacions dels recordatoris que estableixis i de les pestanyes d'altres dispositius</translation>
 <translation id="914781932147356857">Marca-ho tot com a…</translation>
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
@@ -2126,6 +2132,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="94870150074703282">Vols suprimir el grup?</translation>
 <translation id="952704832371081537">Cancel·la</translation>
 <translation id="954667170699278022">Llista de lectura</translation>
+<translation id="956218893102219091">Utilitza la teva ubicació precisa per obtenir resultats de Gemini més acurats, en lloc de fer servir una ubicació estimada basada en l'adreça IP. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Suprimeix dades de navegació</translation>
 <translation id="963102227019621224">Activitat al web i en aplicacions</translation>

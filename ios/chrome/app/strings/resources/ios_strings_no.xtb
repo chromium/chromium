@@ -282,6 +282,7 @@
 <translation id="2067852168641682340">Lagre i denne kontoen hver gang</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 fane}other{{count} faner}}</translation>
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
+<translation id="2074599390896964828">Nøyaktig posisjon</translation>
 <translation id="2078437078822043850">Du kan rulle til høyre for å surfe i inkognitomodus.</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2085876078937250610">Lagre …</translation>
@@ -310,6 +311,7 @@
 <translation id="219283042927675668">Faner i gruppen</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2196428379625389579">Søk på nettet</translation>
+<translation id="2198001751007276170">Erstatt passord</translation>
 <translation id="2199562093267256223">Dette medfører at gruppen slettes fra alle enheter som er logget på <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Ingen e-postkontoer</translation>
 <translation id="2214453882118345682">Handle, oversett og identifiser det du ser, med kameraet.</translation>
@@ -1600,6 +1602,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7300448350764260141">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7313347584264171202">Her finner du inkognitofanene dine</translation>
+<translation id="7334364820047587268">Du har allerede passord for disse kontoene i Google Passordlagring. Hvis du velger å importere et av passordene nedenfor, erstattes det eksisterende passordet.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prosent fullført</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
@@ -1816,6 +1819,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8101409298456377967">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Slå av</translation>
+<translation id="8106442513853561174">Del nøyaktig posisjon</translation>
 <translation id="8114753159095730575">Filnedlasting er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="8123502380991596210">Skjul Hva er nytt?</translation>
 <translation id="8123953306357309250">Vil du avbryte synkroniseringen? Du kan når som helst slå på synkronisering i innstillingene.</translation>

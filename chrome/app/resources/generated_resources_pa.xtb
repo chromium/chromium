@@ -3809,6 +3809,7 @@
 <translation id="3643962751030964445">ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DEVICE_MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। <ph name="DEVICE_MANAGER" /> ਨੂੰ <ph name="USER_EMAIL_ADDRESS" /> ਖਾਤੇ ਲਈ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="364418405912311456">ਖੋਜ ਕਰਨ ਲਈ ਚਿੱਤਰਾਂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਘਸੀਟੋ ਜਾਂ ਲਿਖਤ ਨੂੰ ਹਾਈਲਾਈਟ ਕਰੋ</translation>
 <translation id="3645372836428131288">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੇ ਇੱਕ ਵੱਖਰੇ ਹਿੱਸੇ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਉਂਗਲ ਨੂੰ ਥੋੜ੍ਹਾ ਜਿਹਾ ਹਿਲਾਓ।</translation>
+<translation id="3646789916214779970">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਥੀਮ 'ਤੇ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="3647654707956482440">ਇਹ ਲਿੰਕ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ। ਟਾਈਪਿੰਗ ਸੰਬੰਧੀ ਗੜਬੜਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਕਿਸੇ ਹੋਰ ਲਿੰਕ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਹੋਈ}one{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਹੋਈ}other{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਹੋਈਆਂ}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ਖੋਜਿਆ ਗਿਆ</translation>

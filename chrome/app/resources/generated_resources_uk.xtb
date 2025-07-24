@@ -3810,6 +3810,7 @@
 <translation id="3643962751030964445">Цим пристроєм керує <ph name="DEVICE_MANAGER" />. Адміністратор <ph name="DEVICE_MANAGER" /> просить створити новий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="364418405912311456">Щоб шукати, натисніть і перетягніть зображення або виділіть текст</translation>
 <translation id="3645372836428131288">Трохи перемістіть палець, щоб зісканувати іншу частину відбитка.</translation>
+<translation id="3646789916214779970">Установити тему за умовчанням</translation>
 <translation id="3647654707956482440">Не вдалося використати це посилання. Перевірте, чи правильно ви ввели посилання або спробуйте вказати інше.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Виявлено пристрій <ph name="USB_DEVICE_NAME" /></translation>

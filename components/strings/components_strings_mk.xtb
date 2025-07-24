@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ја играте играта „Трчање на диносаурусот“ во Chrome</translation>
 <translation id="1060136083665017312">Системи и конзоли за играње</translation>
 <translation id="1060320201901229167">Плик Kaku 5</translation>
+<translation id="1060985736456216896">Лого на Google Pay и Zip</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1063822554756965137">Датотеките се успешно избришани</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">Скриј засега</translation>
 <translation id="121201262018556460">Се обидовте да стигнете до <ph name="DOMAIN" />, но серверот прикажа сертификат што содржи слаб клуч. Напаѓач може го расипал приватниот клуч, па серверот може не е серверот што го очекувавте (можеби комуницирате со напаѓач).</translation>
 <translation id="1212527389003717329">Започна преземање. За да го видите, притиснете и задржете |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Користете ги податоците зачувани во вашата сметка на Google за да ги пополнувате автоматски лозинките, криптографските клучеви, адресите, начините на плаќање и други податоци.</translation>
 <translation id="1219129156119358924">Безбедност на системот</translation>
 <translation id="1222060260947439312">Десна фиока</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1539,6 +1541,7 @@
 <translation id="3576616784287504635">Вметнатата страница на <ph name="SITE" /> вели</translation>
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome ќе ве извести кога страницава ќе биде готова. &lt;a&gt;Откажи&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Додај име</translation>
 <translation id="3583757800736429874">&amp;Повтори преместување</translation>
@@ -1787,6 +1790,7 @@
 <translation id="398470910934384994">Птици</translation>
 <translation id="3985750352229496475">Управувајте со адресите…</translation>
 <translation id="3986506998755860149">дознајте повеќе за „Автоматско пополнување со AI“ во поставките</translation>
+<translation id="3986557181852957825">Лого на Google Pay и Klarna</translation>
 <translation id="3986705137476756801">Исклучете ја „Автоматски титлови“ засега</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Помалку од 1 MB</translation>
@@ -1860,6 +1864,7 @@
 <translation id="4104702906064390950">Се зачувуваат податоци за IBAN</translation>
 <translation id="4106887816571530227">Не се дозволени вметнати содржини</translation>
 <translation id="4107047499377819067">Инсталирањето на заднинските услуги на VPN започна. Ова може да трае неколку минути.</translation>
+<translation id="4110642094637545339">Лого на Google Pay и AfterPay</translation>
 <translation id="4110652170750985508">Преглед на плаќањето</translation>
 <translation id="4111546256784973544">Пејнтбол</translation>
 <translation id="4112140312785995938">Премотај наназад</translation>
@@ -2278,6 +2283,7 @@
 <translation id="4807098396393229769">Име на картичка</translation>
 <translation id="4809079943450490359">Упатства од администраторот на уредот:</translation>
 <translation id="4811450222531576619">Дознајте повеќе за изворот и темата</translation>
+<translation id="4811918461974803225">Лого на Google Pay и Affirm</translation>
 <translation id="4813512666221746211">Грешка на мрежа</translation>
 <translation id="4814114628197290459">Бришење IBAN</translation>
 <translation id="4816341377198595747">Копче „Пребарајте ги обележувачите“, активирајте за да ги пребарате обележувачите</translation>
@@ -2527,6 +2533,7 @@
 <translation id="5222812217790122047">Потребна е е-пошта</translation>
 <translation id="5225215474235602477">Да се зачува пасошот?</translation>
 <translation id="5228269245420405804">Далечинско учење</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Адреса за испорака</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3294,6 +3301,7 @@
 <translation id="6493924760403974580">Апликацијава ја поддржува само оваа големина.</translation>
 <translation id="6494750904506170417">скокачки програми и пренасочувања</translation>
 <translation id="6495664197699704593">Лозинкава ќе се зачува само на овој уред. За да ја користите на другите ваши уреди, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">За да користите друга услуга за автоматско пополнување во Chrome, изберете го вашиот давател на услуги за автоматско пополнување во поставките за Android</translation>
 <translation id="6499038740797743453">Да се ресетира лозинката?</translation>
 <translation id="6502510275417601303">Известувањето за нова поставка за плаќање е затворено</translation>
 <translation id="6502991525169604759">Без промените</translation>

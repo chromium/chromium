@@ -162,6 +162,7 @@
 <translation id="3032787606318309379">Đang thêm vào Chromium...</translation>
 <translation id="3038232873781883849">Đang chờ cài đặt...</translation>
 <translation id="3045032126857188731">Ngôn ngữ dịch: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Đóng hộp thoại phản hồi</translation>
 <translation id="3068187312562070417">Các hồ sơ khác trên Chromium</translation>
 <translation id="3068515742935458733">Giúp cải thiện Chromium bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích Chromium đã truy cập vào 1 thiết bị USB}=1{Một hoặc nhiều tiện ích Chromium đang truy cập vào 1 thiết bị USB}other{Một hoặc nhiều tiện ích Chromium đang truy cập vào # thiết bị USB}}</translation>
@@ -504,7 +505,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7585391435984513350">Gần đây bạn không truy cập trang web này. Chromium đã xoá <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="7617377681829253106">Chromium được cải tiến hơn</translation>
-<translation id="7622753900276619808">Giờ đây, bạn sẽ có thể sử dụng nhiều tính năng hơn trong Chromium</translation>
+<translation id="7622753900276619808">Giờ đây, bạn có thể sử dụng nhiều tính năng hơn trong Chromium</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7686590090926151193">Chromium không phải là trình duyệt mặc định của bạn</translation>

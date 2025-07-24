@@ -3808,6 +3808,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" /> stjórnar þessu tæki. <ph name="DEVICE_MANAGER" /> krefst nýs prófíls fyrir reikninginn <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Smelltu og dragðu yfir myndir eða strikaðu yfir texta til að leita</translation>
 <translation id="3645372836428131288">Færðu fingurinn örlítið til að skrá mismunandi hluta fingrafarsins.</translation>
+<translation id="3646789916214779970">Endurstilla á sjálfgefið þema</translation>
 <translation id="3647654707956482440">Ekki er hægt að nota þennan tengil. Leitaðu að innsláttarvillum eða reyndu aftur með öðrum tengli.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> barst frá <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> barst frá <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> bárust frá <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> greindist</translation>

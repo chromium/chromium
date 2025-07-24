@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-да Dino Run ойынын ойнау үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="1060136083665017312">Ойын жүйелері және консольдері</translation>
 <translation id="1060320201901229167">Kaku 5 хатқалтасы</translation>
+<translation id="1060985736456216896">Google Pay, Zip логотипі</translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
 <translation id="1063822554756965137">Файлдар жойылды</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">Әзірге жасыру</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер кілті әлсіз сертификатты ұсынды. Қаскүнем жеке кілтті бұзып, басқа серверге кіріп жатқан болуыңыз мүмкін (қаскүнеммен байланысып жатқан болуыңыз мүмкін).</translation>
 <translation id="1212527389003717329">Жүктеп алу басталды. Оны көру үшін |<ph name="ACCELERATOR" />| түймесін басып тұрыңыз.</translation>
+<translation id="1215738931000958575">Құпия сөздерді, кіру кілттерін, мекенжайларды, төлеу әдістерін және басқа ақпаратты автоматты түрде толтыру үшін Google аккаунтыңызға сақталған ақпаратты пайдаланыңыз.</translation>
 <translation id="1219129156119358924">Жүйе қауіпсіздігі</translation>
 <translation id="1222060260947439312">Оң жақ науа</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1538,6 +1540,7 @@
 <translation id="3576616784287504635"><ph name="SITE" /> сайтына ендірілген беттегі сұрау</translation>
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Бұл бет дайын болған кезде, Chrome сізге хабарлайды. &lt;a&gt;Бас тарту&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ат қосу</translation>
 <translation id="3583757800736429874">Тасымалдауды &amp;қайта орындау</translation>
@@ -1786,6 +1789,7 @@
 <translation id="398470910934384994">Құстар</translation>
 <translation id="3985750352229496475">Мекенжайларды басқару...</translation>
 <translation id="3986506998755860149">Жасанды интеллектімен автоматты түрде толтыру функциясы туралы толық ақпаратты параметрлерден қараңыз</translation>
+<translation id="3986557181852957825">Google Pay, Klarna логотипі</translation>
 <translation id="3986705137476756801">Live Caption функциясын қазір өшіру</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 МБ-тан аз</translation>
@@ -1859,6 +1863,7 @@
 <translation id="4104702906064390950">IBAN туралы ақпарат сақталып жатыр</translation>
 <translation id="4106887816571530227">Ендірілген контент рұқсат етілмеген</translation>
 <translation id="4107047499377819067">VPN фондық қызметтерін орнату басталды. Ол бірнеше минутқа созылуы мүмкін.</translation>
+<translation id="4110642094637545339">Google Pay, AfterPay логотипі</translation>
 <translation id="4110652170750985508">Төлеміңізді тексеріңіз</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
 <translation id="4112140312785995938">Артқа</translation>
@@ -2277,6 +2282,7 @@
 <translation id="4807098396393229769">Картадағы ат</translation>
 <translation id="4809079943450490359">Құрылғы әкімшісінің нұсқаулары:</translation>
 <translation id="4811450222531576619">Бет дереккөзі мен тақырыбы туралы ақпарат алыңыз.</translation>
+<translation id="4811918461974803225">Google Pay, Affirm логотипі</translation>
 <translation id="4813512666221746211">Желі қатесі</translation>
 <translation id="4814114628197290459">IBAN нөмірін жою</translation>
 <translation id="4816341377198595747">"Бетбелгілерді іздеу" түймесі. Бетбелгілерді іздеу үшін іске қосыңыз</translation>
@@ -2526,6 +2532,7 @@
 <translation id="5222812217790122047">Электрондық пошта мекенжайы көрсетілуі қажет</translation>
 <translation id="5225215474235602477">Паспортты сақтау керек пе?</translation>
 <translation id="5228269245420405804">Қашықтан білім алу</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Жеткізу мекенжайы</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3293,6 +3300,7 @@
 <translation id="6493924760403974580">Бұл қолданба тек осы өлшемді қолдайды.</translation>
 <translation id="6494750904506170417">қалқымалы терезелер және бағыттаулар</translation>
 <translation id="6495664197699704593">Бұл құпия сөз тек осы құрылғыға сақталады. Оны басқа құрылғыларыңызда пайдалану үшін <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Chrome-да басқа автотолтыру қызметін пайдалану үшін автотолтыру провайдерін Android параметрлерінде таңдаңыз.</translation>
 <translation id="6499038740797743453">Құпия сөз қайта орнатылсын ба?</translation>
 <translation id="6502510275417601303">Жаңа төлем параметрі туралы хабарландыру жабық</translation>
 <translation id="6502991525169604759">Өзгертулеріңізсіз</translation>

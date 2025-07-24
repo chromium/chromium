@@ -3795,6 +3795,7 @@
 <translation id="3643962751030964445">Овим уређајем управља <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> захтева нови профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Кликните и превуците преко слика или истакните текст да бисте претражили</translation>
 <translation id="3645372836428131288">Мало померите да бисте снимили други део отиска прста.</translation>
+<translation id="3646789916214779970">Врати на подразумевану тему</translation>
 <translation id="3647654707956482440">Коришћење овог линка није успело. Проверите да ли има грешака у куцању или пробајте поново са другим линком.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> је примљена са уређаја <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> је примљена са уређаја <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> су примљене са уређаја <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> је примљено са уређаја <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Уређај <ph name="USB_DEVICE_NAME" /> је откривен</translation>

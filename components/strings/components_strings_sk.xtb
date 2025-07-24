@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter si zahrajte hru Dino Run v Chrome</translation>
 <translation id="1060136083665017312">Hracie systémy a konzoly</translation>
 <translation id="1060320201901229167">Obálka Kaku 5</translation>
+<translation id="1060985736456216896">Logá služieb Google Pay a Zip</translation>
 <translation id="1062407476771304334">Nahradiť</translation>
 <translation id="1063822554756965137">Súbory boli odstránené</translation>
 <translation id="1064054731605354900">A3×5</translation>
@@ -125,6 +126,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1209206284964581585">Skryť</translation>
 <translation id="121201262018556460">Pokúsili ste sa o prístup na stránky <ph name="DOMAIN" />, server však predložil certifikát obsahujúci slabý kľúč. Útočník mohol tento súkromný kľúč prelomiť a môže ísť o iný server, než ste očakávali (môžete komunikovať s útočníkom).</translation>
 <translation id="1212527389003717329">Sťahovanie sa začalo. Ak ho chcete zobraziť, pridržte |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Automaticky dopĺňajte heslá, prístupové kľúče, adresy, spôsoby platby a ďalšie údaje pomocou informácií, ktoré máte uložené v účte Google</translation>
 <translation id="1219129156119358924">Zabezpečenie systému</translation>
 <translation id="1222060260947439312">Pravý zásobník</translation>
 <translation id="1224330468394120478">A3×6</translation>
@@ -1536,6 +1538,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3576616784287504635">Vložená stránka na webe <ph name="SITE" /> hovorí</translation>
 <translation id="3577473026931028326">Vyskytol sa problém. Skúste to znova.</translation>
 <translation id="3577902790357386792">Gymnastika</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome vám oznámi, keď bude táto stránka k dispozícii. &lt;a&gt;Zrušiť&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Pridajte meno</translation>
 <translation id="3583757800736429874">&amp;Znova presunúť</translation>
@@ -1783,6 +1786,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="398470910934384994">Vtáky</translation>
 <translation id="3985750352229496475">Spravujte adresy…</translation>
 <translation id="3986506998755860149">prečítať viac o automatickom dopĺňaní pomocou umelej inteligencie v nastaveniach</translation>
+<translation id="3986557181852957825">Logá služieb Google Play a Klarna</translation>
 <translation id="3986705137476756801">Zapnúť zatiaľ živý prepis</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Menej ako 1 MB</translation>
@@ -1856,6 +1860,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4104702906064390950">IBAN sa ukladá</translation>
 <translation id="4106887816571530227">Vložený obsah nie je povolený</translation>
 <translation id="4107047499377819067">Začala sa inštalácia služieb VPN na pozadí, môže to trvať niekoľko minút.</translation>
+<translation id="4110642094637545339">Logá služieb Google Play a AfterPay</translation>
 <translation id="4110652170750985508">Kontrola platby</translation>
 <translation id="4111546256784973544">Paintbal</translation>
 <translation id="4112140312785995938">Pretočiť dozadu</translation>
@@ -2274,6 +2279,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4807098396393229769">Meno na karte</translation>
 <translation id="4809079943450490359">Pokyny od správcu vášho zariadenia:</translation>
 <translation id="4811450222531576619">Ďalšie informácie o príslušnom zdroji a téme</translation>
+<translation id="4811918461974803225">Logá služieb Google Pay a Affirm</translation>
 <translation id="4813512666221746211">Chyba siete</translation>
 <translation id="4814114628197290459">Odstrániť IBAN</translation>
 <translation id="4816341377198595747">Tlačidlo Vyhľadať záložky, aktiváciou vyhľadáte záložky</translation>
@@ -2523,6 +2529,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5222812217790122047">E-mailová adresa je povinný údaj</translation>
 <translation id="5225215474235602477">Chcete uložiť pas?</translation>
 <translation id="5228269245420405804">Dištančná výučba</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Dodacia adresa</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3289,6 +3296,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6493924760403974580">Táto aplikácia podporuje iba túto veľkosť.</translation>
 <translation id="6494750904506170417">vyskakovacie okná a presmerovania</translation>
 <translation id="6495664197699704593">Toto heslo je uložené iba v tomto zariadení. Ak ho chcete používať v iných zariadeniach, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Ak chcete v Chrome používať inú službu automatického dopĺňania, vyberte v nastaveniach Androidu poskytovateľa automatického dopĺňania</translation>
 <translation id="6499038740797743453">Obnoviť heslo?</translation>
 <translation id="6502510275417601303">Upozornenie na nové nastavenie platieb je zavreté</translation>
 <translation id="6502991525169604759">Bez zmien</translation>

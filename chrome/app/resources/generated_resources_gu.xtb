@@ -995,6 +995,7 @@
 <translation id="1670399744444387456">મૂળભૂત</translation>
 <translation id="1673137583248014546"><ph name="URL" /> તમારી સુરક્ષા કીની બનાવટ અને મૉડલ જોવા માગે છે</translation>
 <translation id="1674073353928166410">બધા (<ph name="URL_COUNT" />) URL છૂપી વિન્ડોમાં ખોલો</translation>
+<translation id="1674142805528405174">Google Password Manager તમારા એકાઉન્ટ <ph name="EMAIL" />માં સેવ કરેલા સશક્ત પાસવર્ડનો ઉપયોગ કરીને તમારા એકાઉન્ટને અપડેટ કરી શકે છે.</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ને ઉમેરી શકતા નથી</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
 <translation id="1678849866171627536">સ્કૅન કરવાનું નિષ્ફળ રહ્યું. આ ફાઇલ વાયરસ અથવા માલવેર હોઈ શકે છે.</translation>
@@ -2389,6 +2390,7 @@
 <translation id="2642111877055905627">સૉકર બૉલ</translation>
 <translation id="2642206811783203764">હંમેશાં ચાલુ <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">તમારા બ્રાઉઝિંગ ડેટાને ડિલીટ કરીને, તમે હંમેશાં જાહેરાત-માપણીનો ડેટા ડિલીટ કરી શકો છો</translation>
+<translation id="2643379881528582459">જો Chromiumને સાર્વજનિક ડેટા ઉલ્લંઘનમાં તમારો કોઈ પાસવર્ડ મળે, તો જો તમે સાઇન ઇન કર્યું હોય, તો તે તમારા માટે તમારો પાસવર્ડ બદલવાની ઑફર કરી શકે છે</translation>
 <translation id="2643698698624765890">વિંડો મેનૂમાં એક્સટેંશનને ક્લિક કરીને તમારા એક્સ્ટેંશન્સને મેનેજ કરો.</translation>
 <translation id="2645047101481282803">તમારું ડિવાઇસ <ph name="PROFILE_NAME" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="2645388244376970260"><ph name="DEVICE_NAME" /> પર આ ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
@@ -3792,6 +3794,7 @@
 <translation id="3643962751030964445">આ ડિવાઇસ <ph name="DEVICE_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે. <ph name="DEVICE_MANAGER" />ને <ph name="USER_EMAIL_ADDRESS" /> એકાઉન્ટ માટે કોઈ નવી પ્રોફાઇલની જરૂર છે</translation>
 <translation id="364418405912311456">શોધવા માટે છબીઓ પર ક્લિક કરો અને ખેંચો અથવા ટેક્સ્ટ હાઇલાઇટ કરો</translation>
 <translation id="3645372836428131288">ફિંગરપ્રિન્ટનો કોઈ બીજો ભાગ કૅપ્ચર કરવા માટે તેને સહેજ ખસેડો.</translation>
+<translation id="3646789916214779970">ડિફૉલ્ટ થીમ પર ફરીથી સેટ કરો</translation>
 <translation id="3647654707956482440">આ લિંકનો ઉપયોગ કરી શકાતો નથી. ફરી પ્રયાસ કરવા માટે જોડણીની ભૂલ ચેક કરો અથવા બીજી કોઈ લિંકનો ઉપયોગ કરો.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> પાસેથી <ph name="ATTACHMENTS" /> મેળવ્યું}one{<ph name="DEVICE_NAME" /> પાસેથી <ph name="ATTACHMENTS" /> મેળવ્યું}other{<ph name="DEVICE_NAME" /> પાસેથી <ph name="ATTACHMENTS" /> મેળવ્યાં}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> મળ્યું</translation>
@@ -4205,6 +4208,7 @@
 <translation id="3903696968689283281">WiFi Directના માલિકોની માહિતી:</translation>
 <translation id="3904326018476041253">સ્થાન સેવાઓ</translation>
 <translation id="3905761538810670789">ઍપ્લિકેશન સુધારો</translation>
+<translation id="3906096710440765802">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજુ ઘણું મેળવવા માટે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="3908288065506437185">છૂપા મોડમાં ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="3908501907586732282">એક્સ્ટેંશન ચાલુ કરો</translation>
 <translation id="3909456989251621103">જો તમે સર્વરનું સર્ટિફિકેટ ડિલીટ કરશો, તો સર્વરને ઓળખવા માટે Chrome હવેથી તેનો ઉપયોગ કરશે નહીં.</translation>
@@ -4687,6 +4691,7 @@
 <translation id="425573743389990240">બેટરી ડિસ્ચાર્જ દર વોટ્સમાં (ઋણ મૂલ્યનો અર્થ છે બેટરી ચાર્જ થઈ રહી છે)</translation>
 <translation id="4255841059940367080">જોખમકારક સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રિઅલ-ટાઇમ AI-સંચાલિત સંરક્ષણ, જે Googleને મોકલવામાં આવતા તમારા બ્રાઉઝિંગ ડેટા પર આધારિત છે</translation>
 <translation id="4256316378292851214">વીડિયોને આ રૂપે સા&amp;ચવો...</translation>
+<translation id="4257175174234042421">ઑટોમૅટિક રીતે પાસવર્ડ બદલવાની સુવિધા</translation>
 <translation id="4258348331913189841">ફાઇલ સિસ્ટમ્સ</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{ગ્રૂપ રાખો}one{ગ્રૂપ રાખો}other{ગ્રૂપ રાખો}}</translation>
 <translation id="4259388776256904261">આમાં થોડો સમય લાગી શકે છે</translation>
@@ -7856,6 +7861,7 @@ USB ડિવાઇસ</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> વપરાશકર્તાઓ</translation>
 <translation id="6555432686520421228">બધા વપરાશકર્તા એકાઉન્ટ દૂર કરો અને તમારા <ph name="IDS_SHORT_PRODUCT_NAME" /> ડિવાઇસને નવાની જેમ રીસેટ કરો.</translation>
 <translation id="6555604601707417276">Linuxનું બૅકઅપ રિસ્ટોર કરવામાં આવ્યું</translation>
+<translation id="6555744145993174510">આના તરફથી: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">ફરી કરો</translation>
 <translation id="6556903358015358733">થીમ અને વૉલપેપર</translation>
 <translation id="6557199166823345360">તમારી શોધ સુધારવા માટે વધુ વિગતો ઉમેરો અથવા તમારી પસંદગી વિશે પ્રશ્ન પૂછો</translation>
@@ -7891,6 +7897,7 @@ USB ડિવાઇસ</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ડેસ્કટૉપ કન્ટેન્ટ શેર કર્યું</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% પૂર્ણ</translation>
 <translation id="6580203076670148210">સ્કૅન કરવાની ઝડપ</translation>
+<translation id="6581356304040102696">પાસવર્ડ આયાત કરી શકાતા નથી. ફાઇલનું કદ 1 MB કરતાં ઓછું હોવું જોઈએ.</translation>
 <translation id="6582080224869403177">તમારી સુરક્ષા અપગ્રેડ કરવા માટે <ph name="DEVICE_TYPE" />ને રીસેટ કરો.</translation>
 <translation id="6582274660680936615">તમે અતિથિ તરીકે બ્રાઉઝ કરી રહ્યાં છો</translation>
 <translation id="6583328141350416497">ડાઉનલોડ ચાલુ રાખો</translation>
@@ -9200,6 +9207,7 @@ USB ડિવાઇસ</translation>
 <translation id="7506242536428928412">તમારી નવી સિક્યુરિટી કીનો ઉપયોગ કરવા માટે, નવો પિન સેટ કરો</translation>
 <translation id="7506541170099744506">એન્ટરપ્રાઇઝ સંચાલન માટે તમારા <ph name="DEVICE_TYPE" /> ની સફળતાપૂર્વક નોંધણી કરવામાં આવી.</translation>
 <translation id="7507207699631365376">આ પ્રદાતાની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ</translation>
+<translation id="7508127419095425107">આ સુવિધા અને સંબંધિત ડેટા વિશે વધુ માહિતી Googleને મોકલવામાં આવી છે</translation>
 <translation id="7508707215237589321">"<ph name="CERT_NAME" />"ને ડિલીટ કરીએ?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}=1{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}one{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}other{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}}</translation>
 <translation id="7509097596023256288">મેનેજમેન્ટ સેટઅપ કરી રહ્યાં છીએ</translation>
@@ -10925,6 +10933,7 @@ USB ડિવાઇસ</translation>
 <translation id="869884720829132584">ઍપ્લિકેશનો મેનૂ</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" /> માટે PPD</translation>
+<translation id="8699296325072357994">પાસવર્ડ પેજ અને સંબંધિત માહિતીમાંથી કન્ટેન્ટ Googleને મોકલવામાં આવે છે અને માનવો દ્વારા તેનો રિવ્યૂ કરવામાં આવે છે. તમારો પાસવર્ડ એન્ક્રિપ્ટેડ છે અને કોઈએ ક્યારેય જોયો નથી. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">તમે આ સાઇટ પર ત્રીજા પક્ષની કુકીને કેમ મંજૂરી આપી તે અમને જણાવો</translation>
 <translation id="8700087567921985940">લોકેશનનો ઉપયોગ કરો. લોકેશનની પરવાનગી ધરાવતી ઍપ અને સેવાઓને તમારા ડિવાઇસના લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપો. Google સમયાંતરે લોકેશનનો ડેટા એકત્રિત કરી શકે છે અને લોકેશનની સચોટતા અને લોકેશન-આધારિત સેવાઓને બહેતર બનાવવા માટે, અનામી રીતે આ ડેટાનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK1" />લોકેશન વિશે વધુ જાણો<ph name="BEGIN_LINK1_END" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">લૉન્ચર + backspace</translation>
@@ -11368,6 +11377,7 @@ USB ડિવાઇસ</translation>
 <translation id="8993059306046735527">તમે તમારો <ph name="DEVICE_TYPE" /> પાસવર્ડ ભૂલી ગયા હો, તેમ છતાં તમે તમારો સ્થાનિક ડેટા રિસ્ટોર કરી શકો છો. તમારે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરવું અથવા એકાઉન્ટની રિકવરી કરવી જરૂરી રહેશે.</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" /> માટે સર્ટિફિકેટ હૅશને કૉપિ કરો</translation>
 <translation id="8993737615451556423">વાંચવાના અવાજની ઝડપ વધારવા, ધીમી કરવા અને થોભાવવા મટે નિયંત્રણો પ્રદાન કરે છે</translation>
+<translation id="8993787625629280252">જો Chromeને સાર્વજનિક ડેટા ઉલ્લંઘનમાં તમારો કોઈ પાસવર્ડ મળે, તો જો તમે સાઇન ઇન કર્યું હોય, તો તે તમારા માટે તમારો પાસવર્ડ બદલવાની ઑફર કરી શકે છે</translation>
 <translation id="899384117894244799">પ્રતિબંધિત વપરાશકર્તાને કાઢી નાખો</translation>
 <translation id="8993853206419610596">બધી વિનંતીઓ મોટી કરો</translation>
 <translation id="8993945059918628059">તમારી આંગળી વડે ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો. તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>

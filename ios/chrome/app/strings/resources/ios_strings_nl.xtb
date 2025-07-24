@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Je kunt contact opnemen met de afzender om een nieuwe link te vragen</translation>
 <translation id="1013952917065545813">Je kunt hier terugkomen om tabbladen die je onlangs hebt gesloten opnieuw te openen</translation>
 <translation id="1016495303386450659">Item geüpdatet</translation>
+<translation id="1019990162050689579">Gemini Apps-activiteit</translation>
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1030376737535466765">Wachtwoordmanager openen</translation>
 <translation id="1035980983510608210">Als je alle tabbladen sluit, worden ook vastgezette tabbladen gesloten.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> kan niet worden geopend</translation>
 <translation id="1096992026380844478">Je synchronisatie-instellingen worden hersteld op basis van je laatste back-up. <ph name="BEGIN_LINK" />Bekijken wat je kunt synchroniseren<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
+<translation id="110491332089958282">Deel paginacontent met Gemini om relevantere antwoorden te krijgen. Als je een pagina deelt met Gemini, worden de volledige content en URL van de pagina naar Google gestuurd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Geschiedenissynchronisatie</translation>
 <translation id="1110772719190051587">Ontgrendelen met Face ID</translation>
 <translation id="1112015203684611006">Afdrukken mislukt.</translation>
@@ -282,6 +284,7 @@
 <translation id="2067852168641682340">Altijd opslaan in dit account</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tabblad}other{{count} tabbladen}}</translation>
 <translation id="2074131957428911366">Je kunt altijd in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> bepalen wat je wilt synchroniseren.</translation>
+<translation id="2074599390896964828">Exacte locatie</translation>
 <translation id="2078437078822043850">Je kunt naar rechts scrollen om in de incognitomodus te browsen.</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2085876078937250610">Opslaan…</translation>
@@ -310,6 +313,7 @@
 <translation id="219283042927675668">Tabbladen in groep</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2196428379625389579">Zoeken op internet</translation>
+<translation id="2198001751007276170">Wachtwoorden vervangen</translation>
 <translation id="2199562093267256223">Hiermee wordt de groep verwijderd van alle apparaten die zijn ingelogd bij <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">Geen e-mailaccounts</translation>
 <translation id="2214453882118345682">Winkel, vertaal en identificeer wat je ziet met je camera.</translation>
@@ -510,6 +514,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="3010025794097054078">Laat je beschermen tegen onder andere gegevenslekken en onveilige websites.</translation>
 <translation id="301080557829842765">Privacygids</translation>
 <translation id="3012310354105716927">Sommige gegevens zijn nog niet opgeslagen</translation>
+<translation id="3013922155552460252">Bekijk en beheer Gemini-activiteit, zoals je chats, feedback en prompts</translation>
 <translation id="3016518775797983090">Kan pagina niet delen</translation>
 <translation id="3020183492814296499">Snelkoppelingen</translation>
 <translation id="3021342271734507256">Teken, markeer of tik op iets op je scherm waarnaar je wilt zoeken</translation>
@@ -534,6 +539,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3087734570205094154">Onderaan</translation>
 <translation id="309710370695886264">Je hebt 1 hergebruikt wachtwoord. Los dit nu op om beveiligd te blijven.</translation>
 <translation id="3102790820790869053">Recente tabbladen doorzoeken</translation>
+<translation id="3106258548858559536">Leesmodus uitzetten</translation>
 <translation id="3106690631878101882">Vertalen verbergen</translation>
 <translation id="310900540163454140">Wachtwoord voor <ph name="WEBSITE" /> verwijderen?</translation>
 <translation id="3112556859945124369">Markeren…</translation>
@@ -632,6 +638,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3533860663366814939">Open de instellingen voor automatisch invullen en wachtwoorden</translation>
 <translation id="3546122170015471515">Previews van Maps op Google.com</translation>
 <translation id="3547356470684043247">Lees klantevaluaties van producten, services of gebruikerservaringen voor hulp bij je beslissingen</translation>
+<translation id="3547933853190131743">Zoeken met de AI-modus</translation>
 <translation id="3557336313807607643">Toevoegen aan contacten</translation>
 <translation id="355765753469272474">Ongedaan maken</translation>
 <translation id="3565930036634619844">Tabblad. <ph name="TAB_INDEX" /> van <ph name="NUMBER_OF_TABS" />.</translation>
@@ -1600,6 +1607,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7300448350764260141">Voeg een extra beveiligingslaag toe tegen online dreigingen.</translation>
 <translation id="7311244614769792472">Geen resultaten gevonden</translation>
 <translation id="7313347584264171202">Hier vind je je incognitotabbladen</translation>
+<translation id="7334364820047587268">Je hebt al wachtwoorden voor deze accounts in je Google Wachtwoordmanager. Als je ervoor kiest een van de wachtwoorden hieronder te importeren, vervangt dit het bestaande wachtwoord.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent gedownload</translation>
 <translation id="7346909386216857016">OK, begrepen</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
@@ -1816,6 +1824,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8101409298456377967">Maak, bewaar en beheer je wachtwoorden zodat je makkelijk kunt inloggen bij sites en apps. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Uitzetten</translation>
+<translation id="8106442513853561174">Exacte locatie delen</translation>
 <translation id="8114753159095730575">Bestand downloaden is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
 <translation id="8123502380991596210">Wat is er nieuw verbergen</translation>
 <translation id="8123953306357309250">Synchronisatie annuleren? Je kunt synchronisatie op elk gewenst moment aanzetten via de instellingen.</translation>
@@ -2098,6 +2107,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="913036870884277353">Open links makkelijk in andere apps.</translation>
 <translation id="9137013805542155359">Origineel bekijken</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Leesmodus aanzetten</translation>
 <translation id="9144230693397287797">Krijg updates voor herinneringen die je instelt en tabbladen van andere apparaten</translation>
 <translation id="914781932147356857">Alles markeren…</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
@@ -2126,6 +2136,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="94870150074703282">Groep verwijderen?</translation>
 <translation id="952704832371081537">Annuleren</translation>
 <translation id="954667170699278022">Leeslijst</translation>
+<translation id="956218893102219091">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Je volgt <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>
 <translation id="963102227019621224">Web- en app-activiteit</translation>

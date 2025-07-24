@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Звярніцеся да адпраўшчыка па новую спасылку</translation>
 <translation id="1013952917065545813">Адсюль вы можаце адкрываць нядаўна закрытыя ўкладкі</translation>
 <translation id="1016495303386450659">Элемент абноўлены</translation>
+<translation id="1019990162050689579">Гісторыя дзеянняў у праграмах Gemini</translation>
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030376737535466765">Адкрыць Менеджар пароляў</translation>
 <translation id="1035980983510608210">Пры закрыцці ўсіх укладак закрыюцца і замацаваныя ўкладкі.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530">Не ўдалося адкрыць файл "<ph name="FILENAME" />"</translation>
 <translation id="1096992026380844478">Налады сінхранізацыі будуць адноўлены з апошняй рэзервовай копіі. <ph name="BEGIN_LINK" />Якія даныя можна сінхранізаваць<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Абагульце з Gemini змесціва старонкі, каб атрымаць найбольш рэлевантныя адказы. Калі старонка абагульваецца з Gemini, URL-адрас старонкі і ўсё яе змесціва адпраўляюцца ў Google. <ph name="BEGIN_LINK" />Даведацца больш.<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Сінхранізацыя гісторыі</translation>
 <translation id="1110772719190051587">Выкарыстайце разблакіроўку з дапамогай Face ID</translation>
 <translation id="1112015203684611006">Памылка друкавання.</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">Прадухіленне праблем, звязаных з уцечкай даных, наведваннем небяспечных вэб-сайтаў і г. д.</translation>
 <translation id="301080557829842765">Дапаможнік па прыватнасці</translation>
 <translation id="3012310354105716927">Некаторыя даныя яшчэ не захаваны</translation>
+<translation id="3013922155552460252">Праглядайце гісторыю дзеянняў у Gemini, у прыватнасці паведамленні ў чатах, водгукі і запыты</translation>
 <translation id="3016518775797983090">Не ўдалося абагуліць</translation>
 <translation id="3020183492814296499">Спалучэнні клавіш</translation>
 <translation id="3021342271734507256">Абводзьце, вылучайце ці націскайце на любое змесціва на экране для пошуку.</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">Знізу</translation>
 <translation id="309710370695886264">У вас ёсць 1 ужыты раней пароль. У мэтах бяспекі выправіце гэта.</translation>
 <translation id="3102790820790869053">Пошук у нядаўніх укладках</translation>
+<translation id="3106258548858559536">Выключыць рэжым чытання</translation>
 <translation id="3106690631878101882">Схаваць пункт "Перакласці"</translation>
 <translation id="310900540163454140">Выдаліць пароль для вэб-сайта <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Пазначыць…</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">Адкрыйце налады аўтазапаўнення і пароляў</translation>
 <translation id="3546122170015471515">Перадпрагляд карт на Google.com</translation>
 <translation id="3547356470684043247">Чытайце, як кліенты ацэньваюць прадукты, паслугі і якія ў іх уражанні, каб больш абгрунтавана складаць свае водгукі.</translation>
+<translation id="3547933853190131743">Пошук у рэжыме AI</translation>
 <translation id="3557336313807607643">Дадаць у кантакты</translation>
 <translation id="355765753469272474">Адрабіць</translation>
 <translation id="3565930036634619844">Укладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
@@ -2098,6 +2103,7 @@
 <translation id="913036870884277353">З лёгкасцю адкрывайце спасылкі ў іншых праграмах.</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>
 <translation id="9140888637198815199">А</translation>
+<translation id="9144152097013965297">Уключыць рэжым чытання</translation>
 <translation id="9144230693397287797">Атрымліваць інфармацыю аб напамінах, якія вы задаяце, і ўкладках з іншых прылад</translation>
 <translation id="914781932147356857">Пазначыць усе…</translation>
 <translation id="9148126808321036104">Увайсці зноў</translation>
@@ -2126,6 +2132,7 @@
 <translation id="94870150074703282">Выдаліць групу?</translation>
 <translation id="952704832371081537">Скасаваць</translation>
 <translation id="954667170699278022">Спіс на прагляд</translation>
+<translation id="956218893102219091">Каб атрымліваць найбольш дакладныя вынікі ад Gemini, выкарыстоўвайце дакладнае месцазнаходжанне замест прыблізнага месцазнаходжання на аснове вашага IP-адраса. <ph name="BEGIN_LINK" />Даведацца больш.<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Вы падпісаны на канал "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="963102227019621224">Дзеянні ў інтэрнэце і праграмах</translation>

@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="1060136083665017312">ระบบเกมและเครื่องเล่นเกม</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
+<translation id="1060985736456216896">Google Pay, โลโก้ Zip</translation>
 <translation id="1062407476771304334">แทนที่</translation>
 <translation id="1063822554756965137">ลบไฟล์เรียบร้อยแล้ว</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">ซ่อนไปก่อน</translation>
 <translation id="121201262018556460">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่มีคีย์ที่ไม่รัดกุม ผู้โจมตีอาจทำให้คีย์ส่วนตัวเสียหายไปแล้วและเซิร์ฟเวอร์นี้อาจไม่ใช่เซิร์ฟเวอร์ที่คุณคิด (คุณอาจกำลังติดต่อกับผู้โจมตี)</translation>
 <translation id="1212527389003717329">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
+<translation id="1215738931000958575">ใช้ข้อมูลที่บันทึกไว้ในบัญชี Google ของคุณเพื่อป้อนรหัสผ่าน พาสคีย์ ที่อยู่ วิธีการชำระเงิน และข้อมูลอื่นๆ โดยอัตโนมัติ</translation>
 <translation id="1219129156119358924">การรักษาความปลอดภัยของระบบ</translation>
 <translation id="1222060260947439312">ถาดขวา</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -259,7 +261,7 @@
 <translation id="14222610277930434">คุณเคยไปบ่อย</translation>
 <translation id="1422795627423046860">วันที่ไม่ถูกต้อง</translation>
 <translation id="1422930527989633628">สามารถขอทำการค้นหาอุปกรณ์บลูทูธใกล้เคียงได้</translation>
-<translation id="1426410128494586442">ยอมรับ</translation>
+<translation id="1426410128494586442">ใช่</translation>
 <translation id="1427192966110103169">สระว่ายน้ำ ซาวน่า และสปาในบ้าน</translation>
 <translation id="1428146450423315676">สแต็กเกอร์ 7</translation>
 <translation id="142858679511221695">ผู้ใช้ระบบคลาวด์</translation>
@@ -1538,6 +1540,7 @@
 <translation id="3576616784287504635">หน้าที่ฝังไว้ใน <ph name="SITE" /> บอกว่า</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577902790357386792">ยิมนาสติก</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome จะแจ้งให้คุณทราบเมื่อหน้านี้พร้อมใช้งาน &lt;a&gt;ยกเลิก&lt;/a&gt;</translation>
 <translation id="3582930987043644930">เพิ่มชื่อ</translation>
 <translation id="3583757800736429874">&amp;ทำซ้ำการย้าย</translation>
@@ -1786,6 +1789,7 @@
 <translation id="398470910934384994">นก</translation>
 <translation id="3985750352229496475">จัดการที่อยู่...</translation>
 <translation id="3986506998755860149">ดูข้อมูลเพิ่มเติมเกี่ยวกับการป้อนข้อความอัตโนมัติด้วย AI ในการตั้งค่า</translation>
+<translation id="3986557181852957825">Google Pay, โลโก้ Klarna</translation>
 <translation id="3986705137476756801">ปิดคำบรรยายสดไปก่อน</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">ไม่ถึง 1 MB</translation>
@@ -1859,6 +1863,7 @@
 <translation id="4104702906064390950">กำลังบันทึกข้อมูล IBAN</translation>
 <translation id="4106887816571530227">ไม่อนุญาตให้มีเนื้อหาที่ฝัง</translation>
 <translation id="4107047499377819067">การติดตั้งบริการ VPN ที่ทำงานอยู่เบื้องหลังได้เริ่มขึ้นแล้ว ซึ่งอาจใช้เวลาสักครู่</translation>
+<translation id="4110642094637545339">Google Pay, โลโก้ AfterPay</translation>
 <translation id="4110652170750985508">ตรวจสอบการชำระเงิน</translation>
 <translation id="4111546256784973544">เพนต์บอล</translation>
 <translation id="4112140312785995938">ย้อนกลับ</translation>
@@ -2277,6 +2282,7 @@
 <translation id="4807098396393229769">ชื่อบนบัตร</translation>
 <translation id="4809079943450490359">วิธีการจากผู้ดูแลระบบอุปกรณ์ของคุณ</translation>
 <translation id="4811450222531576619">ดูข้อมูลเกี่ยวกับแหล่งที่มาและหัวข้อ</translation>
+<translation id="4811918461974803225">Google Pay, โลโก้ Affirm</translation>
 <translation id="4813512666221746211">ข้อผิดพลาดของเครือข่าย</translation>
 <translation id="4814114628197290459">ลบ IBAN</translation>
 <translation id="4816341377198595747">เปิดใช้งาน "ปุ่มค้นหาบุ๊กมาร์ก" เพื่อค้นหาบุ๊กมาร์ก</translation>
@@ -2526,6 +2532,7 @@
 <translation id="5222812217790122047">ต้องระบุอีเมล</translation>
 <translation id="5225215474235602477">บันทึกหนังสือเดินทางไหม</translation>
 <translation id="5228269245420405804">การเรียนรู้ทางไกล</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">ที่อยู่ในการจัดส่ง</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3293,6 +3300,7 @@
 <translation id="6493924760403974580">แอปนี้รองรับเฉพาะขนาดนี้เท่านั้น</translation>
 <translation id="6494750904506170417">ป๊อปอัปและการเปลี่ยนเส้นทาง</translation>
 <translation id="6495664197699704593">รหัสผ่านข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="649611364763911650">หากต้องการใช้บริการป้อนข้อความอัตโนมัติอื่นใน Chrome ให้เลือกผู้ให้บริการป้อนข้อความอัตโนมัติในการตั้งค่า Android</translation>
 <translation id="6499038740797743453">รีเซ็ตรหัสผ่านไหม</translation>
 <translation id="6502510275417601303">การแจ้งเตือนเกี่ยวกับการตั้งค่าการชำระเงินใหม่ปิดอยู่</translation>
 <translation id="6502991525169604759">แบบไม่มีการเปลี่ยนแปลงที่ทำ</translation>

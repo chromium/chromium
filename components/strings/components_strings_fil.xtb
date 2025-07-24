@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para laruin ang Dino Run sa Chrome</translation>
 <translation id="1060136083665017312">Mga Game System at Console</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
+<translation id="1060985736456216896">Google Pay, logo ng Zip</translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1063822554756965137">Matagumpay na na-delete ang mga file</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1209206284964581585">Itago sa ngayon</translation>
 <translation id="121201262018556460">Tinangka mong maabot ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng isang certificate na naglalaman ng isang mahinang key. Maaaring sinira ng isang nang-aatake ang pribadong key, at ang server ay maaaring hindi ang server na iyong inaasahan (maaaring nakikipag-ugnay ka sa isang nang-aatake).</translation>
 <translation id="1212527389003717329">Nagsimula na ang pag-download. Para makita ito, pindutin nang matagal ang |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Gamitin ang impormasyong naka-save sa iyong Google Account para mag-autofill ng mga password, passkey, address, paraan ng pagbabayad, at iba pang impormasyon</translation>
 <translation id="1219129156119358924">Seguridad ng System</translation>
 <translation id="1222060260947439312">Kanang Tray</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1539,6 +1541,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3576616784287504635">Isinasaad ng naka-embed na page sa <ph name="SITE" /> na</translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3577902790357386792">Gymnastics</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Aabisuhan ka ng Chrome kapag handa na ang page na ito. &lt;a&gt;Kanselahin&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Magdagdag ng pangalan</translation>
 <translation id="3583757800736429874">&amp;Gawing Muli ang Paglilipat</translation>
@@ -1787,6 +1790,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="398470910934384994">Mga ibon</translation>
 <translation id="3985750352229496475">Pamahalaan ang Mga Address...</translation>
 <translation id="3986506998755860149">matuto pa tungkol sa pag-autofill gamit ang AI sa mga setting</translation>
+<translation id="3986557181852957825">Google Pay, logo ng Klarna</translation>
 <translation id="3986705137476756801">I-off muna sa ngayon ang Instant Caption</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Wala pang 1 MB</translation>
@@ -1860,6 +1864,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4104702906064390950">Sine-save ang impormasyon ng IBAN</translation>
 <translation id="4106887816571530227">Hindi pinayagan ang naka-embed na content</translation>
 <translation id="4107047499377819067">Nagsimula na ang pag-install ng mga serbisyo sa background ng VPN, posible itong abutin nang ilang minuto.</translation>
+<translation id="4110642094637545339">Google Pay, logo ng AfterPay</translation>
 <translation id="4110652170750985508">Suriin ang iyong pagbabayad</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
@@ -2278,6 +2283,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4807098396393229769">Pangalang makikita sa card</translation>
 <translation id="4809079943450490359">Mga tagubilin mula sa administrator ng iyong device:</translation>
 <translation id="4811450222531576619">Alamin ang tungkol sa source at paksa nito</translation>
+<translation id="4811918461974803225">Google Pay, logo ng Affirm</translation>
 <translation id="4813512666221746211">Error sa network</translation>
 <translation id="4814114628197290459">I-delete ang IBAN</translation>
 <translation id="4816341377198595747">Button na Maghanap ng Mga Bookmark, i-activate para maghanap ng mga bookmark</translation>
@@ -2527,6 +2533,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5222812217790122047">Kailangan ng email</translation>
 <translation id="5225215474235602477">I-save ang passport?</translation>
 <translation id="5228269245420405804">Distance Learning</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Address na Padadalhan</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3294,6 +3301,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6493924760403974580">Ganitong laki lang ang sinusuportahan ng app na ito.</translation>
 <translation id="6494750904506170417">mga pop-up at pag-redirect</translation>
 <translation id="6495664197699704593">Mase-save lang ang password na ito sa device na ito. Para magamit ito sa iba mo pang device, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Para gumamit ng ibang serbisyo ng autofill sa Chrome, piliin ang iyong provider ng autofill sa mga setting ng Android</translation>
 <translation id="6499038740797743453">I-reset ang password?</translation>
 <translation id="6502510275417601303">Isinara na ang alerto tungkol sa bagong setting ng pagbabayad</translation>
 <translation id="6502991525169604759">Hindi kasama ang iyong mga pagbabago</translation>

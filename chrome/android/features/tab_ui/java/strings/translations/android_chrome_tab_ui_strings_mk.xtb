@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Отворете ја групата „<ph name="TITLE_OF_GROUP" />“ со <ph name="TAB_COUNT2" /> картичка}one{Отворете ја групата „<ph name="TITLE_OF_GROUP" />“ со <ph name="TAB_COUNT2" /> картичка}other{Отворете ја групата „<ph name="TITLE_OF_GROUP" />“ со <ph name="TAB_COUNT2" /> картички}}</translation>
 <translation id="1273910660700874265">Опции за групата картички <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Изберете кога да се преместуваат автоматски картичките и групите картички во делот со неактивни ставки.</translation>
+<translation id="1321004960118052490">Вашите неактивни ставки нема да се натрупуваат</translation>
 <translation id="1329584516321524826">Се ажурираше пред малку</translation>
 <translation id="1340839264183302272">Напуштете ја групата</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Прошири ја споделената група картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_ONE" /> картичка, боја: <ph name="COLOR_NAME" />, со етикета: <ph name="CARD_LABEL" />.}one{Прошири ја споделената група картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичка, боја: <ph name="COLOR_NAME" />, со етикета: <ph name="CARD_LABEL" />.}other{Прошири ја споделената група картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички, боја: <ph name="COLOR_NAME" />, со етикета: <ph name="CARD_LABEL" />.}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">Скриј ја табелата на цел екран</translation>
 <translation id="5076161749301278626">Сакате да видите рецензии за продавницата?</translation>
 <translation id="5161254044473106830">Потребен е наслов</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ги затвора автоматски неактивните картички и групи картички по <ph name="AUTO_DELETE_DELAY_ONE" /> месец. Ова може да го промените во поставките.}one{Chrome ги затвора автоматски неактивните картички и групи картички по <ph name="AUTO_DELETE_DELAY_MANY" /> месец. Ова може да го промените во поставките.}other{Chrome ги затвора автоматски неактивните картички и групи картички по <ph name="AUTO_DELETE_DELAY_MANY" /> месеци. Ова може да го промените во поставките.}}</translation>
 <translation id="5339733443032484186">Вашата последна картичка</translation>
 <translation id="5380159289133845234">Архивирање на дупликат картичките</translation>
 <translation id="5400836586163650660">Сива</translation>

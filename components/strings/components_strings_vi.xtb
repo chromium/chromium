@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để chơi trò chơi khủng long trên Chrome</translation>
 <translation id="1060136083665017312">Hệ thống và máy chơi trò chơi</translation>
 <translation id="1060320201901229167">Phong bì Kaku 5</translation>
+<translation id="1060985736456216896">Biểu trưng của Google Pay, Zip</translation>
 <translation id="1062407476771304334">Thay thế</translation>
 <translation id="1063822554756965137">Đã xoá tệp thành công</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1209206284964581585">Ẩn ngay bây giờ</translation>
 <translation id="121201262018556460">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng máy chủ xuất trình chứng chỉ chứa khóa yếu. Kẻ tấn công có thể đã phá khóa cá nhân và máy chủ đó có thể không phải là máy chủ bạn mong đợi (bạn có thể đang giao tiếp với một kẻ tấn công).</translation>
 <translation id="1212527389003717329">Quá trình tải xuống đã bắt đầu. Để xem tệp đã tải xuống, hãy nhấn và giữ |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Sử dụng thông tin đã lưu trong Tài khoản Google để tự động điền mật khẩu, khoá truy cập, địa chỉ, phương thức thanh toán và các thông tin khác</translation>
 <translation id="1219129156119358924">Bảo mật hệ thống</translation>
 <translation id="1222060260947439312">Khay bên phải</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1539,6 +1541,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3576616784287504635">Một trang được nhúng tại <ph name="SITE" /> cho biết</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3577902790357386792">Thể dục thẩm mỹ</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome sẽ cho bạn biết thời điểm trang này sẵn sàng. &lt;a&gt;Hủy&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Thêm tên</translation>
 <translation id="3583757800736429874">&amp;Làm lại di chuyển</translation>
@@ -1787,6 +1790,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="398470910934384994">Chim</translation>
 <translation id="3985750352229496475">Quản lý địa chỉ...</translation>
 <translation id="3986506998755860149">tìm hiểu thêm về tính năng tự động điền bằng AI trong phần cài đặt</translation>
+<translation id="3986557181852957825">Biểu trưng của Google Pay, Klarna</translation>
 <translation id="3986705137476756801">Tắt tính năng Phụ đề trực tiếp lúc này</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Dưới 1 MB</translation>
@@ -1860,6 +1864,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4104702906064390950">Đang lưu thông tin IBAN</translation>
 <translation id="4106887816571530227">Không cho phép nội dung đã nhúng</translation>
 <translation id="4107047499377819067">Quá trình cài đặt dịch vụ nền VPN đã bắt đầu. Quá trình này có thể mất vài phút.</translation>
+<translation id="4110642094637545339">Biểu trưng của Google Pay, AfterPay</translation>
 <translation id="4110652170750985508">Xem xét thanh toán của bạn</translation>
 <translation id="4111546256784973544">Bắn súng đạn nước sơn</translation>
 <translation id="4112140312785995938">Tua lùi</translation>
@@ -2278,6 +2283,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4807098396393229769">Tên trên thẻ</translation>
 <translation id="4809079943450490359">Hướng dẫn từ quản trị viên thiết bị:</translation>
 <translation id="4811450222531576619">Tìm hiểu về nguồn và chủ đề của trang</translation>
+<translation id="4811918461974803225">Biểu trưng của Google Pay, Affirm</translation>
 <translation id="4813512666221746211">Lỗi mạng</translation>
 <translation id="4814114628197290459">Xoá số IBAN</translation>
 <translation id="4816341377198595747">Nút Tìm dấu trang, hãy nhấn nút này để tìm dấu trang</translation>
@@ -2527,6 +2533,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5222812217790122047">Cần có email</translation>
 <translation id="5225215474235602477">Lưu thông tin hộ chiếu?</translation>
 <translation id="5228269245420405804">Đào tạo từ xa</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Địa chỉ giao hàng</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3294,6 +3301,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6493924760403974580">Ứng dụng chỉ hỗ trợ kích thước này.</translation>
 <translation id="6494750904506170417">cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="6495664197699704593">Mật khẩu này chỉ được lưu trên thiết bị này. Để sử dụng trên các thiết bị khác, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Để sử dụng dịch vụ tự động điền khác trong Chrome, hãy chọn nhà cung cấp dịch vụ tự động điền trong phần cài đặt Android</translation>
 <translation id="6499038740797743453">Đặt lại mật khẩu?</translation>
 <translation id="6502510275417601303">Thông báo về chế độ cài đặt thông tin thanh toán mới đã đóng</translation>
 <translation id="6502991525169604759">Không bao gồm các thay đổi của bạn</translation>

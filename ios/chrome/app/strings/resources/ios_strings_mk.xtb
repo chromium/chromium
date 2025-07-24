@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Контактирајте со испраќачот за да побарате нов линк</translation>
 <translation id="1013952917065545813">Може да се вратите тука и повторно да ги отворите картичките што сте ги затвориле неодамна</translation>
 <translation id="1016495303386450659">Ставката е ажурирана</translation>
+<translation id="1019990162050689579">Активност во апликациите Gemini</translation>
 <translation id="102916930470544692">Криптографски клуч</translation>
 <translation id="1030376737535466765">Отвори Password Manager</translation>
 <translation id="1035980983510608210">Ако ги затворите сите картички, ќе се затворат и сите прикачени картички.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> не можеше да се отвори</translation>
 <translation id="1096992026380844478">Поставките за синхронизација ќе се вратат согласно со последниот бекап. <ph name="BEGIN_LINK" />Погледнете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Споделете ги содржините на страницата со Gemini за да добивате порелевантни одговори. Кога ќе споделите страница со Gemini, целосните содржини и URL на страницата се испраќаат до Google. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Синхронизација на историја</translation>
 <translation id="1110772719190051587">Отклучете со ID на лик</translation>
 <translation id="1112015203684611006">Печатењето не успеа.</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">Заштитете се од упади во податоци, небезбедни веб-сајтови и друго.</translation>
 <translation id="301080557829842765">Водич за приватност</translation>
 <translation id="3012310354105716927">Некои податоци сѐ уште не се зачувани</translation>
+<translation id="3013922155552460252">Прегледувајте ја и управувајте со активноста на Gemini како вашите разговори, повратни информации и барања</translation>
 <translation id="3016518775797983090">Страницата не може да се сподели</translation>
 <translation id="3020183492814296499">Кратенки</translation>
 <translation id="3021342271734507256">Нацртајте, нагласете или допрете нешто на екранот за да го пребарате</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">Дно</translation>
 <translation id="309710370695886264">Имате 1 повторно употребена лозинка. Решете го проблемот со неа сега за да се заштитите.</translation>
 <translation id="3102790820790869053">Пребарувајте ги неодамнешните картички</translation>
+<translation id="3106258548858559536">Исклучете Reading Mode</translation>
 <translation id="3106690631878101882">Скриј „Преведи“</translation>
 <translation id="310900540163454140">Да се избрише лозинката за <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Означи…</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">Отворете ги поставките за Autofill &amp; Password</translation>
 <translation id="3546122170015471515">„Преглед на „Карти““ на Google.com</translation>
 <translation id="3547356470684043247">Читајте рецензии од клиенти за производите, услугите или доживувањата за полесно да одлучувате</translation>
+<translation id="3547933853190131743">Пребарувајте со „AI-режим“</translation>
 <translation id="3557336313807607643">Додај во контакти</translation>
 <translation id="355765753469272474">Врати</translation>
 <translation id="3565930036634619844">Картичка. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
@@ -2098,6 +2103,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="913036870884277353">Лесно отворајте линкови во други апликации.</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Вклучете Reading Mode</translation>
 <translation id="9144230693397287797">Добивајте известувања за потсетниците што ги поставувате и за картичките од другите уреди</translation>
 <translation id="914781932147356857">Означи ги сите…</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>
@@ -2126,6 +2132,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="94870150074703282">Да се избрише групата?</translation>
 <translation id="952704832371081537">Откажи</translation>
 <translation id="954667170699278022">Список за читање</translation>
+<translation id="956218893102219091">Користете ја вашата прецизна локација за да добивате најпрецизни резултати од Gemini, наместо приближна локација заснована на вашата IP-адреса. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Го следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Избришете го прелистувањето</translation>
 <translation id="963102227019621224">Активност на интернет и апликации</translation>

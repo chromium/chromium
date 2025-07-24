@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeত Dino Run গে’মটো খেলিবলৈ প্ৰথমে টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="1060136083665017312">গে’ম ছিষ্টেম আৰু কনছ’ল</translation>
 <translation id="1060320201901229167">এনভেল’প কাকু ৫</translation>
+<translation id="1060985736456216896">Google Pay, Zipৰ ল'গ‘</translation>
 <translation id="1062407476771304334">সাল সলনি কৰক</translation>
 <translation id="1063822554756965137">ফাইলসমূহ সফলতাৰে মচা হৈছে</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">এতিয়াৰ বাবে লুকুৱাওক</translation>
 <translation id="121201262018556460">আপুনি <ph name="DOMAIN" /> পাবলৈ প্ৰয়াস কৰিছে কিন্তু ছার্ভাৰে কোনো দুর্বল চাবি থকা প্ৰমাণপত্ৰ উপস্থাপন কৰিছে। কোনো আক্ৰমণকাৰীয়ে ব্যক্তিগত চাবিটো ভাঙিব পাৰে আৰু আপুনি বিচৰা ছার্ভাৰটো এইটো নহ'বও পাৰে (আপুনি কোনো আক্ৰমণকাৰীৰ সৈতে যোগাযোগ কৰি থাকিব পাৰে)।</translation>
 <translation id="1212527389003717329">ডাউনল’ড আৰম্ভ হৈছে। এইটো চাবলৈ |<ph name="ACCELERATOR" />| টিপি হেঁচি ৰাখক।</translation>
+<translation id="1215738931000958575">পাছৱৰ্ড, পাছকী, ঠিকনা, পৰিশোধ পদ্ধতি আৰু অন্য তথ্য স্বয়ংক্ৰিয়ভাৱে পূৰণ কৰিবলৈ আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা তথ্য ব্যৱহাৰ কৰক</translation>
 <translation id="1219129156119358924">ছিষ্টেমৰ সুৰক্ষা</translation>
 <translation id="1222060260947439312">সোঁফালৰ ট্ৰে’</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1536,6 +1538,7 @@
 <translation id="3576616784287504635"><ph name="SITE" />ত এম্বেড কৰি ৰখা পৃষ্ঠাত কোৱা হৈছে</translation>
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3577902790357386792">জিমনাষ্টিক</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">এই পৃষ্ঠাটো সাজু হ‘লে Chromeএ আপোনাক জনাব। &lt;a&gt;বাতিল কৰক&lt;/a&gt;</translation>
 <translation id="3582930987043644930">নাম যোগ কৰক</translation>
 <translation id="3583757800736429874">&amp;স্থানান্তৰ কৰাটো ৰিডু কৰক</translation>
@@ -1784,6 +1787,7 @@
 <translation id="398470910934384994">চৰাই</translation>
 <translation id="3985750352229496475">ঠিকনাসমূহ পৰিচালনা কৰক...</translation>
 <translation id="3986506998755860149">ছেটিঙত AIৰ জৰিয়তে স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বিষয়ে অধিক জানক</translation>
+<translation id="3986557181852957825">Google Pay, Klarnaৰ ল'গ‘</translation>
 <translation id="3986705137476756801">এতিয়াৰ বাবে লাইভ কেপশ্বন অফ কৰক</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">১ এম. বি.তকৈ কম</translation>
@@ -1857,6 +1861,7 @@
 <translation id="4104702906064390950">IBANৰ তথ্য ছেভ কৰি থকা হৈছে</translation>
 <translation id="4106887816571530227">এম্বেড কৰা সমলৰ অনুমতি নাই</translation>
 <translation id="4107047499377819067">VPNৰ পৃষ্ঠভূমিৰ সেৱা ইনষ্টল কৰাটো আৰম্ভ হৈছে, ইয়াৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে।</translation>
+<translation id="4110642094637545339">Google Pay, AfterPayৰ ল'গ‘</translation>
 <translation id="4110652170750985508">আপোনাৰ পৰিশোধ চালি জাৰি চাওক</translation>
 <translation id="4111546256784973544">পেইণ্টবল</translation>
 <translation id="4112140312785995938">পিছলৈ যাওক</translation>
@@ -2274,6 +2279,7 @@
 <translation id="4807098396393229769">কার্ডত থকা নাম</translation>
 <translation id="4809079943450490359">আপোনাৰ ডিভাইচ প্ৰশাসকৰ নিৰ্দেশাৱলী:</translation>
 <translation id="4811450222531576619">ইয়াৰ উৎস আৰু বিষয়বস্তুৰ সম্পৰ্কে অধিক জানক</translation>
+<translation id="4811918461974803225">Google Pay, Affirmৰ ল'গ‘</translation>
 <translation id="4813512666221746211">নেটৱৰ্কৰ আসোঁৱাহ</translation>
 <translation id="4814114628197290459">IBAN মচক</translation>
 <translation id="4816341377198595747">বুকমাৰ্ক সন্ধান কৰাৰ বুটাম, বুকমাৰ্ক সন্ধান কৰিবলৈ সক্ৰিয় কৰক</translation>
@@ -2523,6 +2529,7 @@
 <translation id="5222812217790122047">ইমেইল বাধ্যতামূলক</translation>
 <translation id="5225215474235602477">পাছপ’ৰ্ট ছেভ কৰিবনে?</translation>
 <translation id="5228269245420405804">দূৰ-শিক্ষা</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />। <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">শ্বিপিঙৰ ঠিকনা</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 অতিৰিক্ত</translation>
@@ -3289,6 +3296,7 @@
 <translation id="6493924760403974580">এই এপ্‌টোৱে কেৱল এইটো আকাৰ সমৰ্থন কৰে।</translation>
 <translation id="6494750904506170417">পপ-আপ আৰু পুনৰ নির্দেশ</translation>
 <translation id="6495664197699704593">এই পাছৱৰ্ডটো কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। আপোনাৰ আন ডিভাইচসমূহত এইটো ব্যৱহাৰ কৰিবলৈ, <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
+<translation id="649611364763911650">Chromeত অন্য এটা স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱা ব্যৱহাৰ কৰিবলৈ, Androidৰ ছেটিঙত আপোনাৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱা প্ৰদানকাৰী বাছনি কৰক</translation>
 <translation id="6499038740797743453">পাছৱৰ্ড ৰিছেট কৰিবনে?</translation>
 <translation id="6502510275417601303">নতুন পৰিশোধ ছেটিঙৰ বিষয়ে সতর্কবার্তা বন্ধ কৰা হৈছে</translation>
 <translation id="6502991525169604759">আপোনাৰ সালসলনিসমূহ অবিহনে</translation>

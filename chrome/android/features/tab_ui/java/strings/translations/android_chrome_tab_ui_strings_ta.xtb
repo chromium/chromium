@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> பக்கம் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவைத் திறக்கும்}other{<ph name="TAB_COUNT2" /> பக்கங்கள் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவைத் திறக்கும்}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> பக்கக் குழு விருப்பங்கள்</translation>
 <translation id="1300188005269437765">பக்கங்களும் பக்கக் குழுக்களும் 'செயலில் இல்லாதவை' பிரிவுக்கு எப்போது தானாகவே நகர்த்தப்பட வேண்டும் என்பதைத் தேர்வுசெய்யலாம்.</translation>
+<translation id="1321004960118052490">செயலில் இல்லாதவை சேர்ந்துகொண்டே போகாது</translation>
 <translation id="1329584516321524826">சற்றுமுன் புதுப்பிக்கப்பட்டது</translation>
 <translation id="1340839264183302272">குழுவிலிருந்து வெளியேறு</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_ONE" />பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக்குழுவை விரிவாக்கும்.}other{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_MANY" />பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக்குழுவை விரிவாக்கும்.}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
 <translation id="5076161749301278626">ஸ்டோருக்குக் கிடைத்த கருத்துகளைப் பார்க்க வேண்டுமா?</translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{செயலில் இல்லாத பக்கங்களையும் பக்கக் குழுக்களையும் <ph name="AUTO_DELETE_DELAY_ONE" /> மாதத்திற்குப் பிறகு Chrome தானாகவே மூடும். இதை நீங்கள் அமைப்புகளில் மாற்றலாம்.}other{செயலில் இல்லாத பக்கங்களையும் பக்கக் குழுக்களையும் <ph name="AUTO_DELETE_DELAY_MANY" /> மாதங்களுக்குப் பிறகு Chrome தானாகவே மூடும். இதை நீங்கள் அமைப்புகளில் மாற்றலாம்.}}</translation>
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
 <translation id="5380159289133845234">நகல் பக்கங்களைக் காப்பிடு</translation>
 <translation id="5400836586163650660">கிரே</translation>

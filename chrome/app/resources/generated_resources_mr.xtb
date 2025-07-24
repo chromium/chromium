@@ -3806,6 +3806,7 @@
 <translation id="3643962751030964445">हे डिव्हाइस <ph name="DEVICE_MANAGER" /> द्वारे व्यवस्थापित आहे. <ph name="DEVICE_MANAGER" /> द्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
 <translation id="364418405912311456">इमेजवर क्लिक करून ड्रॅग करा किंवा मजकूर हायलाइट करा</translation>
 <translation id="3645372836428131288">फिंगरप्रिंटचा वेगळा भाग कॅप्चर करण्यासाठी बोट किंचित हलवा.</translation>
+<translation id="3646789916214779970">डीफॉल्ट थीमवर रीसेट करा</translation>
 <translation id="3647654707956482440">ही लिंक वापरू शकत नाही. टायपिंगच्या चुका तपासा किंवा पुन्हा प्रयत्न करण्यासाठी दुसरी लिंक वापरा.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />कडून <ph name="ATTACHMENTS" /> मिळाला}other{<ph name="DEVICE_NAME" />कडून <ph name="ATTACHMENTS" /> मिळाले}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> आढळले</translation>

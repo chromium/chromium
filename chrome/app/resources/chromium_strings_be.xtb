@@ -163,6 +163,7 @@
 <translation id="3032787606318309379">Дадаецца ў Chromium...</translation>
 <translation id="3038232873781883849">Чаканне ўсталявання...</translation>
 <translation id="3045032126857188731">Мова перакладу: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Закрыць дыялогавае акно водгуку</translation>
 <translation id="3068187312562070417">Іншыя профілі Chromium</translation>
 <translation id="3068515742935458733">Дапамагаць палепшыць Chromium, адпраўляючы ў Google справаздачы аб збоях і <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Адно або некалькі пашырэнняў Chromium мелі доступ да 1 прылады USB}=1{Адно або некалькі пашырэнняў Chromium маюць доступ да 1 прылады USB}one{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылады USB}few{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылад USB}many{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылад USB}other{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылады USB}}</translation>

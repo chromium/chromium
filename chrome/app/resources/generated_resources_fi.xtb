@@ -3806,6 +3806,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3643962751030964445">Tätä laitetta hallinnoi <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> edellyttää uutta profiilia tilille <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Hae klikkaamalla ja vetämällä kuvien päälle tai korostamalla tekstiä</translation>
 <translation id="3645372836428131288">Liikuta sormeasi hieman, niin sormenjäljen toinen osa tallennetaan.</translation>
+<translation id="3646789916214779970">Palauta oletusteema</translation>
 <translation id="3647654707956482440">Linkkiä ei voi käyttää. Tarkista mahdolliset kirjoitusvirheet tai yritä uudelleen toisella linkillä.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> lähetti <ph name="ATTACHMENTS" />}other{<ph name="DEVICE_NAME" /> lähetti <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> havaittiin</translation>

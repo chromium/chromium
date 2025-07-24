@@ -3795,6 +3795,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3643962751030964445">Ovim uređajem upravlja <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> zahteva novi profil za nalog <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Kliknite i prevucite preko slika ili istaknite tekst da biste pretražili</translation>
 <translation id="3645372836428131288">Malo pomerite da biste snimili drugi deo otiska prsta.</translation>
+<translation id="3646789916214779970">Vrati na podrazumevanu temu</translation>
 <translation id="3647654707956482440">Korišćenje ovog linka nije uspelo. Proverite da li ima grešaka u kucanju ili probajte ponovo sa drugim linkom.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> je primljena sa uređaja <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> je primljena sa uređaja <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> su primljene sa uređaja <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> je primljeno sa uređaja <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Uređaj <ph name="USB_DEVICE_NAME" /> je otkriven</translation>

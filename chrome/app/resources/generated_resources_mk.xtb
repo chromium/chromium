@@ -1000,6 +1000,7 @@
 <translation id="1670399744444387456">Основно</translation>
 <translation id="1673137583248014546"><ph name="URL" /> сака да ја види марката и моделот на вашиот безбедносен клуч</translation>
 <translation id="1674073353928166410">Отвори ги сите (<ph name="URL_COUNT" />) во прозорец „Инкогнито“</translation>
+<translation id="1674142805528405174">Google Password Manager може да ја ажурира сметката со силна лозинка што ќе се зачува за вас во вашата сметка <ph name="EMAIL" />.</translation>
 <translation id="1677306805708094828">Не може да се додаде <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Скенирањето не успеа. Датотекава можеби е вирус или злонамерен софтвер.</translation>
@@ -2405,6 +2406,7 @@
 <translation id="2642111877055905627">Фудбалска топка</translation>
 <translation id="2642206811783203764">Секогаш вклучено: <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Секогаш може да ги избришете податоците за мерење на рекламите со бришење на податоците од прелистувањето</translation>
+<translation id="2643379881528582459">Ако Chromium најде некоја од вашите лозинки во јавен упад во податоци, може да ви понуди да ја промени вашата лозинка за вас ако сте најавени</translation>
 <translation id="2643698698624765890">Уредувајте ги наставките со кликнување на Наставки во менито Прозорец.</translation>
 <translation id="2645047101481282803">Со уредот управува <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Се емитува картичкава на <ph name="DEVICE_NAME" /></translation>
@@ -3808,6 +3810,7 @@
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" /> управува со уредов. <ph name="DEVICE_MANAGER" /> бара нов профил за сметката <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Кликнувајте и повлекувајте врз сликите или нагласувајте текст за да пребарувате</translation>
 <translation id="3645372836428131288">Поместете го прстот малку за да снимите друг дел од отпечатокот.</translation>
+<translation id="3646789916214779970">Ресетирај до стандардна тема</translation>
 <translation id="3647654707956482440">Не може да се користи линков. Проверете за печатни грешки или пробајте пак со друг линк.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}one{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}other{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Откриен е <ph name="USB_DEVICE_NAME" /></translation>
@@ -4221,6 +4224,7 @@
 <translation id="3903696968689283281">Информации за сопствениците на Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Локациски услуги</translation>
 <translation id="3905761538810670789">Поправи ја апликацијата</translation>
+<translation id="3906096710440765802">Најавете се на Chrome за да ги добиете лозинките, обележувачите и друго на сите ваши уреди</translation>
 <translation id="3908288065506437185">Блокирајте колачиња од трети страни во режимот „Инкогнито“</translation>
 <translation id="3908501907586732282">Овозможи наставка</translation>
 <translation id="3909456989251621103">Ако избришете некој сертификат на сервер, Chrome веќе нема да го користи за да идентификува сервери.</translation>
@@ -4703,6 +4707,7 @@
 <translation id="425573743389990240">Стапка на празнење батерија во вати (негативната вредност значи дека батеријата се полни)</translation>
 <translation id="4255841059940367080">Заштита во реално време од опасни сајтови, преземања и екстензии – овозможена од AI и заснована на вашите податоци од прелистувањето што се испраќаат до Google</translation>
 <translation id="4256316378292851214">За&amp;чувај видео како...</translation>
+<translation id="4257175174234042421">Автоматизирана промена на лозинката</translation>
 <translation id="4258348331913189841">Датотечни системи</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Задржи ја групата}one{Задржи ги групите}other{Задржи ги групите}}</translation>
 <translation id="4259388776256904261">Ова може да потрае</translation>
@@ -7870,6 +7875,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> корисници</translation>
 <translation id="6555432686520421228">Отстранете ги сите кориснички сметки и ресетирајте го својот уред на <ph name="IDS_SHORT_PRODUCT_NAME" /> да биде исто како нов.</translation>
 <translation id="6555604601707417276">Вратен е бекапот на Linux</translation>
+<translation id="6555744145993174510">од: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Повтори</translation>
 <translation id="6556903358015358733">Тема и тапет</translation>
 <translation id="6557199166823345360">Додајте повеќе детали или поставете прашање за вашиот избор за да го рафинирате пребарувањето</translation>
@@ -7905,6 +7911,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - содржините од работната површина се споделени</translation>
 <translation id="6580060371127789208">Завршено: <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6580203076670148210">Брзина на скенирање</translation>
+<translation id="6581356304040102696">Не може да се увезат лозинките. Големината на датотеката треба да биде под 1 MB.</translation>
 <translation id="6582080224869403177">Ресетирајте го <ph name="DEVICE_TYPE" /> за да ја надградите безбедноста.</translation>
 <translation id="6582274660680936615">Прелистувате како гостин</translation>
 <translation id="6583328141350416497">Продолжи со преземање</translation>
@@ -9213,6 +9220,7 @@
 <translation id="7506242536428928412">За да го користите новиот безбедносен клуч, поставете нов PIN</translation>
 <translation id="7506541170099744506">Вашиот <ph name="DEVICE_TYPE" /> е успешно запишан за управување на компанијата.</translation>
 <translation id="7507207699631365376">Погледнете ја <ph name="BEGIN_LINK" />Политиката за приватност<ph name="END_LINK" /> на операторов</translation>
+<translation id="7508127419095425107">Повеќе за функцијава и релевантните податоци што се испраќаат до Google</translation>
 <translation id="7508707215237589321">Да се избрише „<ph name="CERT_NAME" />“?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Да се затвори картичката и да се избрише групата?}=1{Да се затворат картичките и да се избрише групата?}one{Да се затворат картичките и да се избришат групите?}other{Да се затворат картичките и да се избришат групите?}}</translation>
 <translation id="7509097596023256288">Се поставува управување</translation>
@@ -10946,6 +10954,7 @@
 <translation id="869884720829132584">Мени со апликации</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699188901396699995">PPD за <ph name="PRINTER_NAME" /></translation>
+<translation id="8699296325072357994">Содржините од страниците со лозинки и поврзаните детали се испраќаат до Google и ги прегледуваат луѓе. Вашата лозинка е шифрирана и не може да ја види никој никогаш. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Помогнете ни зошто дозволивте колачиња од трети страни на сајтов</translation>
 <translation id="8700087567921985940">Користење локација. Дозволете апликациите и услугите со дозвола за локација да ја користат локацијата на уредот. Google може повремено да прибира податоци за локацијата и анонимно да ги користи за подобрување на прецизноста на локацијата и локациските услуги. <ph name="BEGIN_LINK1" />Дознајте повеќе за локацијата<ph name="BEGIN_LINK1_END" />Дознајте повеќе<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">стартер + backspace</translation>
@@ -11389,6 +11398,7 @@
 <translation id="8993059306046735527">Ако ја заборавите лозинката за <ph name="DEVICE_TYPE" />, сепак ќе може да ги вратите локалните податоци. Ќе треба да се најавите на сметката на Google или да користите враќање сметка.</translation>
 <translation id="8993198843374358393">Копирај го хашот на сертификатот за <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Дава контроли за забрзување, забавување и паузирање на гласот за читање</translation>
+<translation id="8993787625629280252">Ако Chrome најде некоја од вашите лозинки во јавен упад во податоци, може да ви понуди да ја промени вашата лозинка за вас ако сте најавени</translation>
 <translation id="899384117894244799">Отстрани ограничен корисник</translation>
 <translation id="8993853206419610596">Проширете ги сите барања</translation>
 <translation id="8993945059918628059">Допрете го сензорот за отпечатоци со прстот. Податоците за отпечатокот безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>

@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'da Dinazor oyununu oynamak için sekmeye, ardından Enter'a basın</translation>
 <translation id="1060136083665017312">Oyun Sistemleri ve Konsolları</translation>
 <translation id="1060320201901229167">Zarf Kaku 5</translation>
+<translation id="1060985736456216896">Google Pay, Zip logosu</translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1063822554756965137">Dosyalar başarıyla silindi</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1209206284964581585">Şimdilik gizle</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> alanına ulaşmayı denediniz, ancak sunucu zayıf anahtar içeren bir sertifika sundu. Bir saldırgan özel anahtarı ele geçirmiş olabilir ve sunucu beklediğiniz sunucu olmayabilir (bir saldırganla irtibat kuruyor olabilirsiniz).</translation>
 <translation id="1212527389003717329">İndirme başladı. Görmek için |<ph name="ACCELERATOR" />| tuşunu basılı tutun.</translation>
+<translation id="1215738931000958575">Şifreleri, geçiş anahtarlarını, adresleri, ödeme yöntemlerini ve diğer bilgileri otomatik doldurmak için Google Hesabınızda kayıtlı bilgileri kullanın</translation>
 <translation id="1219129156119358924">Sistem Güvenliği</translation>
 <translation id="1222060260947439312">Sağ Tepsi</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1362,7 +1364,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3273757719652748628">IBAN'ı kaydet alt sayfası tam ekranda açıldı.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Yönetici politikası bu dosyayı <ph name="DESTINATION_NAME" /> hedefinde açmanızı önermiyor}other{Yönetici politikası bu dosyaları <ph name="DESTINATION_NAME" /> hedefinde açmanızı önermiyor}}</translation>
 <translation id="3282085321714087552">Kuruluşunuz (<ph name="ENROLLMENT_DOMAIN" />), aşağıdaki web sitelerine ayarlar ve politikalar gibi bazı bilgiler gönderdi.</translation>
-<translation id="3282568296779691940">Chrome'da Oturum Aç</translation>
+<translation id="3282568296779691940">Chrome'da oturum açın</translation>
 <translation id="3286372614333682499">dikey</translation>
 <translation id="3287510313208355388">Çevrimiçi olduğunda indir</translation>
 <translation id="3288238092761586174"><ph name="URL" />, ödemenizi onaylamak için ek adımlar uygulayabilir</translation>
@@ -1539,6 +1541,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3576616784287504635"><ph name="SITE" /> web sitesindeki yerleşik bir sayfanın mesajı</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3577902790357386792">Jimnastik</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Bu sayfa hazır olduğunda Chrome tarafından bilgilendirileceksiniz. &lt;a&gt;İptal&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ad ekleyin</translation>
 <translation id="3583757800736429874">Taşımayı &amp;Yeniden Yap</translation>
@@ -1787,6 +1790,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="398470910934384994">Kuşlar</translation>
 <translation id="3985750352229496475">Adresleri Yönet...</translation>
 <translation id="3986506998755860149">ayarlarda yapay zeka ile otomatik doldurma hakkında daha fazla bilgi edinebilirsiniz</translation>
+<translation id="3986557181852957825">Google Pay, Klarna logosu</translation>
 <translation id="3986705137476756801">Canlı Altyazı'yı şimdilik kapat</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MB'tan az</translation>
@@ -1860,6 +1864,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4104702906064390950">IBAN bilgileri kaydediliyor</translation>
 <translation id="4106887816571530227">Yerleştirilmiş içeriğe izin verilmedi</translation>
 <translation id="4107047499377819067">VPN arka plan hizmetleri yüklenmeye başladı. Bu işlem birkaç dakika sürebilir.</translation>
+<translation id="4110642094637545339">Google Pay, AfterPay logosu</translation>
 <translation id="4110652170750985508">Ödemenizi inceleyin</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Geri Sar</translation>
@@ -2278,6 +2283,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4807098396393229769">Kartın üzerindeki ad</translation>
 <translation id="4809079943450490359">Cihaz yöneticinizden talimatlar:</translation>
 <translation id="4811450222531576619">Kaynağı ve konusu hakkında bilgi edinin</translation>
+<translation id="4811918461974803225">Google Pay, Affirm logosu</translation>
 <translation id="4813512666221746211">Ağ hatası</translation>
 <translation id="4814114628197290459">IBAN'ı silin</translation>
 <translation id="4816341377198595747">Yer İşaretleri Ara düğmesi, yer işaretlerinde arama yapmak için etkinleştirin</translation>
@@ -2527,6 +2533,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5222812217790122047">E-posta gerekli</translation>
 <translation id="5225215474235602477">Pasaport kaydedilsin mi?</translation>
 <translation id="5228269245420405804">Uzaktan Öğrenme</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Gönderim Adresi</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -3294,6 +3301,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6493924760403974580">Bu uygulama yalnızca bu boyutu destekler.</translation>
 <translation id="6494750904506170417">pop-up'lar ve yönlendirmeler</translation>
 <translation id="6495664197699704593">Bu şifre yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Chrome'da başka bir otomatik doldurma hizmeti kullanmak için Android ayarlarından otomatik doldurma sağlayıcınızı seçin</translation>
 <translation id="6499038740797743453">Şifre sıfırlansın mı?</translation>
 <translation id="6502510275417601303">Yeni ödeme ayarıyla ilgili uyarı kapatıldı</translation>
 <translation id="6502991525169604759">Yaptığınız değişiklikler hariç</translation>

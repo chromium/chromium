@@ -993,6 +993,7 @@
 <translation id="1670399744444387456">基本</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 想查看您的安全密钥的品牌和型号</translation>
 <translation id="1674073353928166410">在无痕式窗口中打开全部（<ph name="URL_COUNT" /> 个）网址</translation>
+<translation id="1674142805528405174">Google 密码管理工具可以为账号生成安全系数高的密码，并将其保存在账号 <ph name="EMAIL" /> 中。</translation>
 <translation id="1677306805708094828">无法添加<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1678849866171627536">扫描失败。此文件可能是病毒或恶意软件。</translation>
@@ -1298,7 +1299,7 @@
 <translation id="1896043844785689584">若要设置指纹，请让您的孩子轻触键盘右下角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="1897120393475391208">使用安全系数高的密码</translation>
 <translation id="1897860317037652061">扫描失败</translation>
-<translation id="1898804291554630487">询问关于此页面的问题</translation>
+<translation id="1898804291554630487">询问与此页面有关的问题</translation>
 <translation id="1900305421498694955">Google Play 中的应用可能需要获得完整的文件系统访问权限，才能在外部存储设备上读取和写入文件。任何使用外部驱动器的人员都能看到在此设备上创建的文件和文件夹。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">请让您的管理员更新此应用</translation>
 <translation id="1901303067676059328">全选(&amp;A)</translation>
@@ -1769,7 +1770,7 @@
 <translation id="2229161054156947610">剩余时间超过 1 小时</translation>
 <translation id="222931766245975952">文件被截断</translation>
 <translation id="2231160360698766265">网站可以播放受保护内容</translation>
-<translation id="2231351769755997720">没有建议。请尝试就此页面提出自己的问题。</translation>
+<translation id="2231351769755997720">没有可用建议。试试询问与此页面有关的问题吧。</translation>
 <translation id="2232751457155581899">网站可以请求跟踪您的摄像头位置</translation>
 <translation id="2233502537820838181">详细信息(&amp;M)</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
@@ -2383,6 +2384,7 @@
 <translation id="2642111877055905627">足球</translation>
 <translation id="2642206811783203764">始终允许在 <ph name="SITE_NAME" /> 上运行</translation>
 <translation id="2643064289437760082">您可随时通过删除浏览数据来删除广告衡量数据</translation>
+<translation id="2643379881528582459">如果 Chromium 发现您的某个密码遭遇公开数据泄露，当您登录时，Chromium 可能会提议为您更改密码</translation>
 <translation id="2643698698624765890">您可以通过点击“窗口”菜单中的“扩展程序”，管理您的扩展程序。</translation>
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在将此标签页投放到“<ph name="DEVICE_NAME" />”</translation>
@@ -3784,6 +3786,7 @@
 <translation id="3643962751030964445">此设备由 <ph name="DEVICE_MANAGER" /> 管理。<ph name="DEVICE_MANAGER" /> 要求您为账号 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的个人资料</translation>
 <translation id="364418405912311456">在图片上点击并拖动，或突出显示文字，即可进行搜索</translation>
 <translation id="3645372836428131288">请稍微移动一下手指，以便系统记录您指纹的不同部分。</translation>
+<translation id="3646789916214779970">重置为默认主题背景</translation>
 <translation id="3647654707956482440">无法使用此链接。请检查是否有拼写错误，或者换个链接重试。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">检测到<ph name="USB_DEVICE_NAME" /></translation>
@@ -4197,6 +4200,7 @@
 <translation id="3903696968689283281">Wi-Fi 直连所有者信息：</translation>
 <translation id="3904326018476041253">位置信息服务</translation>
 <translation id="3905761538810670789">修复应用</translation>
+<translation id="3906096710440765802">登录 Chrome 即可在所有设备上获取密码、书签等信息</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3908501907586732282">启用扩展程序</translation>
 <translation id="3909456989251621103">如果您删除了某个服务器证书，Chrome 将不再使用该证书来识别服务器。</translation>
@@ -4678,6 +4682,7 @@
 <translation id="425573743389990240">电池放电率（单位为瓦，负值表示电池正在充电）</translation>
 <translation id="4255841059940367080">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，防范危险的网站、下载内容和扩展程序</translation>
 <translation id="4256316378292851214">将视频另存为(&amp;V)...</translation>
+<translation id="4257175174234042421">自动更改密码</translation>
 <translation id="4258348331913189841">文件系统</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{保留分组}other{保留分组}}</translation>
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
@@ -5705,7 +5710,7 @@
 <translation id="4989966318180235467">检查背景页(&amp;B)</translation>
 <translation id="4990673372047946816">无可用摄像头</translation>
 <translation id="4991420928586866460">将顶行键设置为功能键</translation>
-<translation id="4991873517942703737">就此文档提出问题</translation>
+<translation id="4991873517942703737">询问与此文档有关的问题</translation>
 <translation id="4992443049233195791">Microsoft 365 文件设置</translation>
 <translation id="4992458225095111526">确认 Powerwash 操作</translation>
 <translation id="4992473555164495036">您的管理员限制了可用的输入法。</translation>
@@ -7281,7 +7286,7 @@
 <translation id="6147020289383635445">打印预览失败。</translation>
 <translation id="6147253937684562370">要解锁该个人资料，请使用您的主账号电子邮件地址登录：<ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">立即打开</translation>
-<translation id="614890671148262506">始终允许此网站传送通知</translation>
+<translation id="614890671148262506">始终允许此网站发送通知</translation>
 <translation id="6149015141270619212">无法连接到互联网</translation>
 <translation id="6149061208933997199">使用密码</translation>
 <translation id="6149791593592044995">使用新型声调标记位置</translation>
@@ -7840,6 +7845,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位用户</translation>
 <translation id="6555432686520421228">删除所有用户账号并重置您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设备，使其焕然一新。</translation>
 <translation id="6555604601707417276">已恢复 Linux 备份</translation>
+<translation id="6555744145993174510">来自：<ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主题背景和壁纸</translation>
 <translation id="6557199166823345360">添加更多详情或提出与您的选择相关的问题，以优化搜索结果</translation>
@@ -7875,6 +7881,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已分享桌面内容</translation>
 <translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">扫描速度</translation>
+<translation id="6581356304040102696">无法导入密码，文件大小应小于 1 MB。</translation>
 <translation id="6582080224869403177">请重置您的 <ph name="DEVICE_TYPE" />，以进行安全性升级。</translation>
 <translation id="6582274660680936615">您正在以访客身份浏览</translation>
 <translation id="6583328141350416497">继续下载</translation>
@@ -9182,6 +9189,7 @@
 <translation id="7506242536428928412">若要使用您的新安全密钥，请设置新 PIN 码</translation>
 <translation id="7506541170099744506">您的 <ph name="DEVICE_TYPE" /> 已成功注册企业管理服务。</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
+<translation id="7508127419095425107">详细了解此功能和发送给 Google 的相关数据</translation>
 <translation id="7508707215237589321">要删除“<ph name="CERT_NAME" />”吗？</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要关闭该标签页并删除该分组吗？}=1{要关闭这些标签页并删除该分组吗？}other{要关闭这些标签页并删除这些分组吗？}}</translation>
 <translation id="7509097596023256288">正在设置为受管理</translation>
@@ -10913,6 +10921,7 @@
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699188901396699995">“<ph name="PRINTER_NAME" />”的 PPD</translation>
+<translation id="8699296325072357994">密码页面中的内容和相关信息会发送给 Google，并由人工审核员审核。您的密码已加密，不会向任何人显示。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">请告诉我们您允许在此网站上使用第三方 Cookie 的原因</translation>
 <translation id="8700087567921985940">使用位置信息。允许具备位置信息权限的应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />详细了解位置信息<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">启动器键 + 退格键</translation>
@@ -11355,6 +11364,7 @@
 <translation id="8993059306046735527">如果您忘记了 <ph name="DEVICE_TYPE" /> 密码，您仍然可以恢复本地数据。您需要登录自己的 Google 账号或使用账号恢复功能。</translation>
 <translation id="8993198843374358393">复制 <ph name="CERT_NAME" /> 的证书哈希值</translation>
 <translation id="8993737615451556423">提供用于加快语速、减慢语速和暂停朗读的控件</translation>
+<translation id="8993787625629280252">如果 Chrome 发现您的某个密码遭遇公开数据泄露，当您登录时，Chrome 可能会提议为您更改密码</translation>
 <translation id="899384117894244799">移除受限用户</translation>
 <translation id="8993853206419610596">展开所有请求</translation>
 <translation id="8993945059918628059">用手指轻触指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>

@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">نیا لنک طلب کرنے کے لیے ارسال کنندہ سے رابطہ کریں</translation>
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
+<translation id="1019990162050689579">‏‫Gemini ایپس کی سرگرمی</translation>
 <translation id="102916930470544692">پاس کی</translation>
 <translation id="1030376737535466765">پاس ورڈ مینیجر کھولیں</translation>
 <translation id="1035980983510608210">سبھی ٹیبز کو بند کرنے سے پن کردہ ٹیبز بھی بند ہو جائیں گے۔</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> کھولی نہیں جا سکی</translation>
 <translation id="1096992026380844478">آپ کی مطابقت پذیری کی ترتیبات آپ کے آخری بیک اپ کی بنیاد پر بحال کی جائیں گی۔ <ph name="BEGIN_LINK" />دیکھیں کہ آپ کیا مطابقت پذیر کر سکتے ہیں<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
+<translation id="110491332089958282">‏مزید متعلقہ جوابات حاصل کرنے کے لیے صفحہ کے مواد کا Gemini کے ساتھ اشتراک کریں۔ جب آپ Gemini کے ساتھ کسی صفحہ کا اشتراک کرتے ہیں تو Google کو صفحہ کا مکمل مواد اور URL بھیج دیا جاتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">سرگزشت سِنک کریں</translation>
 <translation id="1110772719190051587">‏‫Face ID کے ساتھ غیر مقفل کریں</translation>
 <translation id="1112015203684611006">پرنٹنگ ناکام۔</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹس اور بہت کچھ سے محفوظ رہیں۔</translation>
 <translation id="301080557829842765">رازداری کی گائیڈ</translation>
 <translation id="3012310354105716927">کچھ ڈیٹا ابھی تک محفوظ نہیں ہوا ہے</translation>
+<translation id="3013922155552460252">‏‫Gemini سرگرمی جیسے آپ کی چیٹس، تاثرات اور پرامپٹس دیکھیں اور ان کا نظم کریں</translation>
 <translation id="3016518775797983090">صفحہ کا اشتراک نہیں کر سکتے ہیں</translation>
 <translation id="3020183492814296499">شارٹ کٹس</translation>
 <translation id="3021342271734507256">تلاش کرنے کے لیے اپنی اسکرین پر کچھ بھی ڈرا، ہائی لائٹ کریں یا تھپتھپائیں</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="309710370695886264">آپ کے پاس 1 دوبارہ استعمال کردہ پاس ورڈ ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔</translation>
 <translation id="3102790820790869053">حالیہ ٹیبز تلاش کریں</translation>
+<translation id="3106258548858559536">ریڈنگ موڈ آف کریں</translation>
 <translation id="3106690631878101882">ترجمہ کریں کو چھپائیں</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> کا پاس ورڈ حذف کریں؟</translation>
 <translation id="3112556859945124369">نشان زد کریں…</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">آٹو فل اور پاس ورڈز کی ترتیبات کو کھولیں</translation>
 <translation id="3546122170015471515">‏‫Google.com پر Maps کے پیش مناظر</translation>
 <translation id="3547356470684043247">کسٹمر کے پروڈکٹس، سروسز یا تجربوں کے تجزیے پڑھیں تاکہ تجزیوں کے ساتھ اپنے فیصلوں کو مطلع کرنے میں مدد مل سکے</translation>
+<translation id="3547933853190131743">‏‫AI وضع کے ساتھ تلاش کریں</translation>
 <translation id="3557336313807607643">رابطوں میں شامل کریں</translation>
 <translation id="355765753469272474">کالعدم کریں</translation>
 <translation id="3565930036634619844">ٹیب۔ <ph name="NUMBER_OF_TABS" /> میں سے <ph name="TAB_INDEX" />۔</translation>
@@ -2098,6 +2103,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="913036870884277353">دوسری ایپس میں آسانی سے لنکس کھولیں۔</translation>
 <translation id="9137013805542155359">اصل دکھائیں</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">ریڈنگ موڈ آن کریں</translation>
 <translation id="9144230693397287797">دوسرے آلات سے اپنی سیٹ کی گئی یاد دہانیوں اور ٹیبز کیلئے اپ ڈیٹس موصول کریں</translation>
 <translation id="914781932147356857">سبھی کو نشان زد کریں…</translation>
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
@@ -2126,6 +2132,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="94870150074703282">گروپ حذف کریں؟</translation>
 <translation id="952704832371081537">منسوخ کریں</translation>
 <translation id="954667170699278022">پڑھنے کی فہرست</translation>
+<translation id="956218893102219091">‏اپنے IP پتہ کی بنیاد پر تخمینی مقام کے بجائے، انتہائی درست Gemini نتائج کے لیے اپنے قطعی مقام کا استعمال کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">آپ <ph name="CHANNEL_NAME" /> کی پیروی کر رہے ہیں</translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="963102227019621224">ویب اور ایپ سرگرمی</translation>

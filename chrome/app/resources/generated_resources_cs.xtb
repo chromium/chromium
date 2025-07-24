@@ -3794,6 +3794,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3643962751030964445">Toto zařízení je spravováno organizací <ph name="DEVICE_MANAGER" />. Organizace <ph name="DEVICE_MANAGER" /> vyžaduje nový profil pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Přetažením kurzoru přes obrázky nebo zvýrazněním textu lze vyhledávat</translation>
 <translation id="3645372836428131288">Lehce prst natočte, aby se zaznamenala jiná část otisku.</translation>
+<translation id="3646789916214779970">Obnovit výchozí motiv</translation>
 <translation id="3647654707956482440">Tento odkaz nelze použít. Zkontrolujte případné překlepy nebo použijte jiný odkaz a zkuste to znovu.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}few{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}many{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}other{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}}</translation>
 <translation id="3648348069317717750">Bylo rozpoznáno zařízení <ph name="USB_DEVICE_NAME" /></translation>

@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Obre <ph name="TITLE_OF_GROUP" /> amb <ph name="TAB_COUNT2" /> pestanya}other{Obre <ph name="TITLE_OF_GROUP" /> amb <ph name="TAB_COUNT2" /> pestanyes}}</translation>
 <translation id="1273910660700874265">Opcions del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Tria quan es mouran les pestanyes i els grups de pestanyes a la secció d'inactives.</translation>
+<translation id="1321004960118052490">Els elements inactius no s'apilaran</translation>
 <translation id="1329584516321524826">S'acaba d'actualitzar</translation>
 <translation id="1340839264183302272">Surt del grup</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> amb <ph name="TABS_COUNT_ONE" /> pestanya de color <ph name="COLOR_NAME" /> amb l'etiqueta <ph name="CARD_LABEL" />.}other{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes de color <ph name="COLOR_NAME" /> amb l'etiqueta <ph name="CARD_LABEL" />.}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">Amaga la quadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">Vols veure les ressenyes de la botiga?</translation>
 <translation id="5161254044473106830">Cal indicar un títol</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome tanca automàticament les pestanyes i els grups de pestanyes inactius al cap d’<ph name="AUTO_DELETE_DELAY_ONE" /> mes. Pots canviar-ho a Configuració.}other{Chrome tanca automàticament les pestanyes i els grups de pestanyes inactius al cap de <ph name="AUTO_DELETE_DELAY_MANY" /> mesos. Pots canviar-ho a Configuració.}}</translation>
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
 <translation id="5380159289133845234">Arxiva les pestanyes duplicades</translation>
 <translation id="5400836586163650660">Gris</translation>

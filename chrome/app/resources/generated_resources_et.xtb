@@ -3798,6 +3798,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3643962751030964445">Seda seadet haldab <ph name="DEVICE_MANAGER" />. Haldur <ph name="DEVICE_MANAGER" /> nõuab konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uut profiili</translation>
 <translation id="364418405912311456">Otsimiseks klõpsake ja lohistage üle piltide või tõstke tekst esile</translation>
 <translation id="3645372836428131288">Liigutage veidi sõrme, et sõrmejälje teine osa jäädvustada</translation>
+<translation id="3646789916214779970">Lähtesta vaiketeemale</translation>
 <translation id="3647654707956482440">Seda linki ei saa kasutada. Kontrollige õigekirja või proovige uuesti teise lingiga.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Seadmest <ph name="DEVICE_NAME" /> võeti vastu <ph name="ATTACHMENTS" />}other{Seadmest <ph name="DEVICE_NAME" /> võeti vastu <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">Tuvastati <ph name="USB_DEVICE_NAME" /></translation>

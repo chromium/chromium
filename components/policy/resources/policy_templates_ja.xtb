@@ -820,6 +820,33 @@ URL パターンは、<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> 
 ポリシーを未設定のままにするか無効に設定した場合、切り替えは非表示になります。
 
 注: このポリシーは UI にのみ影響し、UI が非表示の場合、ChromeOS は既存の設定を保持します。</translation>
+<translation id="1579027593897822029"><ph name="IDLE_TIMEOUT_POLICY_NAME" /> ポリシーで定義されるタイムアウトに達したときに行う動作のリストを指定します。
+
+警告: このポリシーを設定すると、ローカルの個人データに影響し、完全に削除される場合があります。個人データが誤って削除されないように、デプロイ前に設定をテストすることをおすすめします。
+
+<ph name="IDLE_TIMEOUT_POLICY_NAME" /> ポリシーが設定されていない場合、このポリシーは無視されます。
+
+<ph name="IDLE_TIMEOUT_POLICY_NAME" /> ポリシーで定義されるタイムアウトに達すると、ブラウザはこのポリシーで指定された動作を行います。
+
+このポリシーを空にするか未設定のままにした場合、<ph name="IDLE_TIMEOUT_POLICY_NAME" /> ポリシーは無視されます。
+
+サポートされている動作は次のとおりです。
+
+「<ph name="CLOSE_BROWSERS_ACTION" />」: このプロフィールのすべてのブラウザ ウィンドウと PWA を閉じます。Android と iOS ではサポートされていません。
+
+「<ph name="CLOSE_TABS_ACTION" />」: 開いているウィンドウで開いているタブをすべて閉じます。iOS でのみサポートされています。
+
+「<ph name="SHOW_PROFILE_PICKER_ACTION" />」: プロフィール選択ウィンドウを表示します。Android と iOS ではサポートされていません。
+
+「<ph name="SIGN_OUT_ACTION" />」: 現在ログインしているユーザーがログアウトされます。iOS でのみサポートされています。
+
+「<ph name="CLEAR_BROWSING_HISTORY_ACTION" />」、「<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />」、「<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />」、「<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />」、「<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />」、「<ph name="CLEAR_AUTOFILL_ACTION" />」、「<ph name="CLEAR_SITE_SETTINGS_ACTION" />」、「<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />」: それぞれ該当する閲覧データを消去します。詳しくは、<ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> ポリシーをご覧ください。iOS でサポートされているタイプは、「<ph name="CLEAR_BROWSING_HISTORY_ACTION" />」、「<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />」、「<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />」、「<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />」、「<ph name="CLEAR_AUTOFILL_ACTION" />」です。
+
+「<ph name="RELOAD_PAGES_ACTION" />」: すべてのウェブページを再読み込みします。ページによっては、最初に確認を求めるメッセージが表示されることがあります。iOS ではサポートされていません。
+
+「<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />」を使用して Cookie を削除しても、ユーザーは Google アカウントにログインした状態のままになります。
+
+「<ph name="CLEAR_BROWSING_HISTORY_ACTION" />」、「<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />」、「<ph name="CLEAR_AUTOFILL_ACTION" />」、「<ph name="CLEAR_SITE_SETTINGS_ACTION" />」を設定すると、<ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーで「<ph name="CHROME_SYNC_NAME" />」を無効にしておらず、かつ <ph name="BROWSER_SIGNIN_POLICY_NAME" /> も無効になっていない場合に、それぞれのデータタイプの同期が無効になります。</translation>
 <translation id="1583248206450240930">デフォルトで <ph name="PRODUCT_FRAME_NAME" /> を使用する</translation>
 <translation id="1587585749332985896">ヘッドレス モードの使用を許可しない</translation>
 <translation id="1588240398285670601">ブラウザの設定</translation>
@@ -5025,6 +5052,19 @@ WebSQL は M112 で削除されました。</translation>
 <translation id="468822697351680932">ルールのソースとして、Internet Explorer の SiteList ポリシーを使用する</translation>
 <translation id="4693190628432874457">デバイスの現在地送信機能を有効にする</translation>
 <translation id="4693779768620889402">拡張機能プリンタの送信先</translation>
+<translation id="4693956469331697434"><ph name="PRODUCT_NAME" /> の閲覧データの有効期間を設定します。このポリシーでは、ブラウザでデータを削除するタイミングをデータの種類ごとに設定できます。このポリシーは、機密性の高い顧客データを取り扱う場合に役立ちます。
+
+警告: このポリシーを設定すると、ローカルの個人データに影響し、完全に削除される場合があります。個人データが誤って削除されないように、デプロイ前に設定をテストすることをおすすめします。
+
+対象となるデータの種類は <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" />、<ph name="DATA_TYPE_HOSTED_APP_DATA" /> です。<ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> と <ph name="DATA_TYPE_HOSTED_APP_DATA" /> は Android でサポートされていません。
+
+ブラウザでは、選択した種類のデータが <ph name="TIME_TO_LIVE_IN_HOURS" /> の保存期間の経過後に自動的に削除されます。設定できる最小値は 1 時間です。
+
+有効期限を過ぎたデータは、ブラウザを起動してから 15 秒後に削除され、ブラウザの起動中は 30 分ごとに削除されます。
+
+Cookie を削除しても、ユーザーは Google アカウントにログインした状態のままになります。
+
+Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーを true に設定する必要がありました。Chrome 115 以降では、このポリシーを設定すると、<ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーで「<ph name="CHROME_SYNC_NAME" />」を無効にしておらずかつ <ph name="BROWSER_SIGNIN_POLICY_NAME" /> も無効になっていない場合に、それぞれのデータタイプの同期が無効になります。</translation>
 <translation id="4694138212536142867">デバイスのハードウェア ステータスの報告を有効にする</translation>
 <translation id="4697581738794063407">URL パラメータ フィルタ機能を制御する</translation>
 <translation id="4698895924806859508">ネットワーク イベントを報告しない</translation>
@@ -5275,6 +5315,19 @@ None（なし）に設定するか未設定のままにした場合、ARC アプ
 <translation id="4918261735182294270">ユーザーが <ph name="CHROME_SYNC_NAME" /> を有効にするかどうかを選択できるようにする</translation>
 <translation id="491889618361437456"><ph name="GOOGLE_CALENDAR_NAME" /> 統合を有効にします</translation>
 <translation id="4919122295221518724">混合コンテンツの厳密な取り扱いを有効にする</translation>
+<translation id="4919341087029582581">ユーザーがすべてのブラウザ ウィンドウを終了したときに削除する閲覧データの種類のリストを設定します。
+
+警告: このポリシーを設定すると、ローカルの個人データに影響し、完全に削除される場合があります。個人データが誤って削除されないように、デプロイ前に設定をテストすることをおすすめします。
+
+指定できるデータの種類は、閲覧履歴（<ph name="DATA_TYPE_BROWSING_HISTORY" />）、ダウンロード履歴（<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />）、Cookie（<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />）、キャッシュ（<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />）、自動入力（<ph name="DATA_TYPE_AUTOFILL" />）、パスワード（<ph name="DATA_TYPE_PASSWORD" />）、サイトの設定（<ph name="DATA_TYPE_SITE_SETTINGS" />）、ホストされているアプリデータ（<ph name="DATA_TYPE_HOSTED_APP_DATA" />）です。ただし、このポリシーよりも <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> が優先されます。
+
+Cookie を削除しても、ユーザーは Google アカウントにログインした状態のままになります。
+
+Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーを true に設定する必要がありました。Chrome 115 以降では、このポリシーを設定すると、<ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーで「<ph name="CHROME_SYNC_NAME" />」を無効にしておらず、かつ <ph name="BROWSER_SIGNIN_POLICY_NAME" /> も無効になっていない場合に、それぞれのデータタイプの同期が無効になります。
+
+データの削除が開始後になんらかの理由で完了しなかった場合は、次回プロファイルが読み込まれたときに閲覧データが削除されます。
+
+<ph name="PRODUCT_NAME" /> が正常に終了しなかった場合（ブラウザや OS がクラッシュした場合など）は、ブラウザのすべてのウィンドウを閉じて終了したことにはならないため、閲覧データは削除されません。</translation>
 <translation id="4921553515199936667">このポリシーを未設定のままにするか True に設定した場合は、動画のデコードでハードウェア アクセラレーションが使用されます（可能な場合）。
 
 このポリシーを False に設定した場合は、動画のデコードでハードウェア アクセラレーションは使用されません。

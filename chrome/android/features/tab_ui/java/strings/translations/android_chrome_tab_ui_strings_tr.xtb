@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> grubunu <ph name="TAB_COUNT2" /> sekmeyle aç}other{<ph name="TITLE_OF_GROUP" /> grubunu <ph name="TAB_COUNT2" /> sekmeyle aç}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> sekme grubu seçenekleri</translation>
 <translation id="1300188005269437765">Sekmelerin ve sekme gruplarının etkin olmayanlar bölümüne otomatik olarak ne zaman taşınacağını seçin.</translation>
+<translation id="1321004960118052490">Etkin olmayan öğeleriniz birikmez</translation>
 <translation id="1329584516321524826">Az önce güncellendi</translation>
 <translation id="1340839264183302272">Gruptan çık</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren, <ph name="COLOR_NAME" /> renkli ve <ph name="CARD_LABEL" /> etiketli <ph name="TITLE_OF_GROUP" /> paylaşılan sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren, <ph name="COLOR_NAME" /> renkli ve <ph name="CARD_LABEL" /> etiketli <ph name="TITLE_OF_GROUP" /> paylaşılan sekme grubunu genişletin.}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">Tam ekran ızgarayı gizler</translation>
 <translation id="5076161749301278626">Mağaza yorumları gösterilsin mi?</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome, etkin olmayan sekmeleri ve sekme gruplarını <ph name="AUTO_DELETE_DELAY_ONE" /> ay sonra otomatik olarak kapatır. Bu özelliği Ayarlar'dan değiştirebilirsiniz.}other{Chrome, etkin olmayan sekmeleri ve sekme gruplarını <ph name="AUTO_DELETE_DELAY_MANY" /> ay sonra otomatik olarak kapatır. Bu özelliği Ayarlar'dan değiştirebilirsiniz.}}</translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
 <translation id="5380159289133845234">Kopya sekmeleri arşivle</translation>
 <translation id="5400836586163650660">Gri</translation>

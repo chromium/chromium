@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">కొత్త లింక్ కోసం అడగడానికి పంపినవారిని సంప్రదించండి</translation>
 <translation id="1013952917065545813">మీరు ఇక్కడికి తిరిగి వచ్చి మీరు ఇటీవల మూసివేసిన ట్యాబ్‌లను మళ్లీ తెరవవచ్చు</translation>
 <translation id="1016495303386450659">అంశం అప్‌డేట్ చేయబడింది</translation>
+<translation id="1019990162050689579">Gemini యాప్ యాక్టివిటీ</translation>
 <translation id="102916930470544692">పాస్-కీ</translation>
 <translation id="1030376737535466765">పాస్‌వర్డ్ మేనేజర్‌ను తెరవండి</translation>
 <translation id="1035980983510608210">అన్ని ట్యాబ్‌లను మూసివేయడం వలన పిన్ చేసిన ట్యాబ్‌లు కూడా మూసివేయబడతాయి.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" />‌ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="1096992026380844478">మీ చివరి బ్యాకప్ ఆధారంగా మీ సింక్ సెట్టింగ్‌లు రీస్టోర్ చేయబడతాయి. <ph name="BEGIN_LINK" />మీరు వేటిని సింక్ చేయగలరో చూడండి<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
+<translation id="110491332089958282">మరింత సందర్భోచితమైన సమాధానాలను పొందడానికి, పేజీలోని కంటెంట్‌ను Geminiకి షేర్ చేయండి. మీరు Geminiకి ఒక పేజీని షేర్ చేసినప్పుడు, పేజీలోని పూర్తి కంటెంట్, URLలు Googleకు పంపబడతాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">హిస్టరీ సింక్</translation>
 <translation id="1110772719190051587">ముఖం IDతో అన్‌లాక్ చేయండి</translation>
 <translation id="1112015203684611006">ముద్రణ విఫలమైంది.</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">డేటా ఉల్లంఘనలు, సురక్షితం కాని వెబ్‌సైట్‌లు, మరిన్నింటి నుండి సురక్షితంగా ఉండండి.</translation>
 <translation id="301080557829842765">గోప్యతా గైడ్</translation>
 <translation id="3012310354105716927">కొంత డేటా ఇంకా సేవ్ కాలేదు</translation>
+<translation id="3013922155552460252">మీ చాట్‌లు, ఫీడ్‌బ్యాక్, అలాగే ప్రాంప్ట్‌లు వంటి Gemini యాక్టివిటీని చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="3016518775797983090">పేజీని షేర్ చేయడం సాధ్యపడదు</translation>
 <translation id="3020183492814296499">షార్ట్‌కట్‌లు</translation>
 <translation id="3021342271734507256">సెర్చ్ చేయడానికి మీ స్క్రీన్‌పై గీయండి, హైలైట్ చేయండి, లేదా ట్యాప్ చేయండి</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">దిగువ</translation>
 <translation id="309710370695886264">మీ వద్ద 1 వేరే చోట వాడిన పాస్‌వర్డ్‌ను ఉంది. సురక్షితంగా ఉండటానికి ఇప్పుడే దాన్ని పరిష్కరించండి.</translation>
 <translation id="3102790820790869053">ఇటీవల ఉపయోగించిన ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
+<translation id="3106258548858559536">రీడింగ్ మోడ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="3106690631878101882">అనువాదాన్ని దాచండి</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" />‌కు సంబంధించిన పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="3112556859945124369">గుర్తు పెట్టు…</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">ఆటోఫిల్ &amp; పాస్‌వర్డ్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="3546122170015471515">Google.com సైట్‌లో Maps ప్రివ్యూలు</translation>
 <translation id="3547356470684043247">రివ్యూలతో మీ నిర్ణయాలను తెలియజేయడంలో సహాయపడేందుకు ప్రోడక్ట్‌లు, సర్వీస్‌లు లేదా ఎక్స్‌పీరియన్స్‌లకు సంబంధించిన కస్టమర్ పరిశీలనలను చదవండి</translation>
+<translation id="3547933853190131743">AI మోడ్‌తో సెర్చ్ చేయండి</translation>
 <translation id="3557336313807607643">కాంటాక్ట్‌లకు జోడించండి</translation>
 <translation id="355765753469272474">చర్య రద్దు చేయి</translation>
 <translation id="3565930036634619844">Tab. <ph name="NUMBER_OF_TABS" />లో <ph name="TAB_INDEX" />.</translation>
@@ -2098,6 +2103,7 @@
 <translation id="913036870884277353">లింక్‌లను సులభంగా ఇతర యాప్‌లలో తెరవవచ్చు.</translation>
 <translation id="9137013805542155359">అసలును చూపించు</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">రీడింగ్ మోడ్‌ను ఆన్ చేయండి</translation>
 <translation id="9144230693397287797">మీరు సెట్ చేసిన రిమైండర్‌లు, ఇతర పరికరాల నుండి ట్యాబ్‌ల కోసం అప్‌డేట్‌లను అందుకోండి</translation>
 <translation id="914781932147356857">అన్నింటినీ మార్క్ చేయండి…</translation>
 <translation id="9148126808321036104">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
@@ -2126,6 +2132,7 @@
 <translation id="94870150074703282">గ్రూప్‌ను తొలగించాలా?</translation>
 <translation id="952704832371081537">రద్దు చేయండి</translation>
 <translation id="954667170699278022">చదవాల్సిన లిస్ట్</translation>
+<translation id="956218893102219091">మీ IP అడ్రస్ ఆధారంగా అందే ఎస్టిమేటెడ్ లొకేషన్‌కు బదులుగా, మీ ఖచ్చితమైన లొకేషన్‌ను ఉపయోగించి, అత్యంత ఖచ్చితమైన Gemini ఫలితాలను పొందండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">మీరు <ph name="CHANNEL_NAME" />ను ఫాలో అవుతున్నారు</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="963102227019621224">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>

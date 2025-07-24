@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> 個のタブがある「<ph name="TITLE_OF_GROUP" />」を開きます}other{<ph name="TAB_COUNT2" /> 個のタブがある「<ph name="TITLE_OF_GROUP" />」を開きます}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 個のタブグループのオプション</translation>
 <translation id="1300188005269437765">アクティブでないセクションにタブとタブグループをいつ自動的に移動するかを選択します。</translation>
+<translation id="1321004960118052490">アクティブでないアイテムは整理されます</translation>
 <translation id="1329584516321524826">たった今更新されました</translation>
 <translation id="1340839264183302272">グループから退出</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{共有タブグループ「<ph name="TITLE_OF_GROUP" />」（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />、ラベル: <ph name="CARD_LABEL" />）を開きます。}other{共有タブグループ「<ph name="TITLE_OF_GROUP" />」（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />、ラベル: <ph name="CARD_LABEL" />）を開きます。}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
 <translation id="5076161749301278626">店舗の審査を確認しますか？</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{使用していないタブとタブグループは <ph name="AUTO_DELETE_DELAY_ONE" /> か月後に自動的に閉じられます。この動作は [設定] で変更できます。}other{使用していないタブとタブグループは <ph name="AUTO_DELETE_DELAY_MANY" /> か月後に自動的に閉じられます。この動作は [設定] で変更できます。}}</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5380159289133845234">重複するタブをアーカイブする</translation>
 <translation id="5400836586163650660">グレー</translation>

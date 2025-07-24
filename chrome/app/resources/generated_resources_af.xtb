@@ -3807,6 +3807,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3643962751030964445">Hierdie toestel word deur <ph name="DEVICE_MANAGER" /> bestuur. <ph name="DEVICE_MANAGER" /> vereis ’n nuwe profiel vir die rekening <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="364418405912311456">Klik en sleep oor prente of merk teks om te soek</translation>
 <translation id="3645372836428131288">Beweeg effens om 'n ander deel van die vingerafdruk vas te vang.</translation>
+<translation id="3646789916214779970">Stel na verstektema terug</translation>
 <translation id="3647654707956482440">Kan nie hierdie skakel gebruik nie. Kyk vir tikfoute of gebruik ’n ander skakel om weer te probeer.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> is van <ph name="DEVICE_NAME" /> af ontvang}other{<ph name="ATTACHMENTS" /> is van <ph name="DEVICE_NAME" /> af ontvang}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> bespeur</translation>

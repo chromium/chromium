@@ -3808,6 +3808,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3643962751030964445">Le divayisi iphethwe ngu-<ph name="DEVICE_MANAGER" />. Iphrofayela entsha iyadingeka ku-akhawunti <ph name="USER_EMAIL_ADDRESS" /> ngo-<ph name="DEVICE_MANAGER" /></translation>
 <translation id="364418405912311456">Chofoza futhi uhudulele ezithombeni noma ugqamise umbhalo ukuze useshe</translation>
 <translation id="3645372836428131288">Hambisa kancane ukuze uthwebule inxenye eyehlukile yesigxivizo somunwe.</translation>
+<translation id="3646789916214779970">Setha kabusha itimu ezenzakalelayo</translation>
 <translation id="3647654707956482440">Ayikwazi ukusebenzisa le linki. Hlola ama-typos noma sebenzisa enye ilinki ukuze uzame futhi.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{I-<ph name="ATTACHMENTS" /> itholakele ku-<ph name="DEVICE_NAME" />}one{I-<ph name="ATTACHMENTS" /> kutholakale ku-<ph name="DEVICE_NAME" />}other{I-<ph name="ATTACHMENTS" /> kutholakale ku-<ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">I-<ph name="USB_DEVICE_NAME" /> itholiwe</translation>

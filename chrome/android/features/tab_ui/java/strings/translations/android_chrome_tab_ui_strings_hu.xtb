@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{A következő, <ph name="TAB_COUNT2" /> lapot tartalmazó lapcsoport megnyitása: <ph name="TITLE_OF_GROUP" />}other{A következő, <ph name="TAB_COUNT2" /> lapot tartalmazó lapcsoport megnyitása: <ph name="TITLE_OF_GROUP" />}}</translation>
 <translation id="1273910660700874265">A következő lapcsoport beállításai: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Válassza ki, hogy a lapok és a lapcsoportok mikor kerüljenek automatikusan az inaktív szakaszba.</translation>
+<translation id="1321004960118052490">Az inaktív elemek nem halmozódnak fel</translation>
 <translation id="1329584516321524826">Most frissítve</translation>
 <translation id="1340839264183302272">Kilépés a csoportból</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}other{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> hónap elteltével a Chrome automatikusan bezárja az inaktív lapokat és lapcsoportokat. Ezt a beállításokban módosíthatja.}other{<ph name="AUTO_DELETE_DELAY_MANY" /> hónap elteltével a Chrome automatikusan bezárja az inaktív lapokat és lapcsoportokat. Ezt a beállításokban módosíthatja.}}</translation>
 <translation id="5339733443032484186">A legutóbbi lap</translation>
 <translation id="5380159289133845234">Ismétlődő lapok archiválása</translation>
 <translation id="5400836586163650660">Szürke</translation>
