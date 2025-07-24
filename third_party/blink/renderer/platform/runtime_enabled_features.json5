@@ -5266,7 +5266,7 @@
     },
     {
       // When enabled, makes links `:visited` even when the visit results in an
-      // HTTP error response code (4XX-5XX).
+      // HTTP error response code of 404.
       name: "VisitedLinksOnErrorNavigation",
     },
     {
