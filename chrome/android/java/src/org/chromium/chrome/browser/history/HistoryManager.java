@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -197,7 +198,8 @@ public class HistoryManager
                         clientPackageName,
                         launchedForApp,
                         showAppFilter,
-                        openHistoryItemCallback);
+                        openHistoryItemCallback,
+                        new ChromeAsyncTabLauncher(mIsIncognito));
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(),
                 mContentManager.getRecyclerView(),
