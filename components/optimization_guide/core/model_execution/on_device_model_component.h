@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -77,12 +77,16 @@ std::ostream& operator<<(std::ostream& out, OnDeviceModelStatus status);
 // Wraps the specification needed to determine compatibility of the
 // on-device base model with any feature specific code.
 struct OnDeviceBaseModelSpec {
+  using PerformanceHints =
+      base::EnumSet<proto::OnDeviceModelPerformanceHint,
+                    proto::OnDeviceModelPerformanceHint_MIN,
+                    proto::OnDeviceModelPerformanceHint_MAX>;
+
   OnDeviceBaseModelSpec();
   OnDeviceBaseModelSpec(
       const std::string& model_name,
       const std::string& model_version,
-      const base::flat_set<proto::OnDeviceModelPerformanceHint>&
-          supported_performance_hints);
+      PerformanceHints supported_performance_hints);
   ~OnDeviceBaseModelSpec();
   OnDeviceBaseModelSpec(const OnDeviceBaseModelSpec&);
 
@@ -93,8 +97,7 @@ struct OnDeviceBaseModelSpec {
   // The version of the base model currently available on-device.
   std::string model_version;
   // The supported performance hints for this device and base model.
-  base::flat_set<proto::OnDeviceModelPerformanceHint>
-      supported_performance_hints;
+  PerformanceHints supported_performance_hints;
 };
 
 // Manages the state of the on-device component.

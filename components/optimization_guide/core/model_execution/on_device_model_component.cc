@@ -108,8 +108,7 @@ OnDeviceBaseModelSpec::OnDeviceBaseModelSpec() = default;
 OnDeviceBaseModelSpec::OnDeviceBaseModelSpec(
     const std::string& model_name,
     const std::string& model_version,
-    const base::flat_set<proto::OnDeviceModelPerformanceHint>&
-        supported_performance_hints)
+    PerformanceHints supported_performance_hints)
     : model_name(model_name),
       model_version(model_version),
       supported_performance_hints(supported_performance_hints) {}
@@ -456,9 +455,9 @@ OnDeviceModelComponentStateManager::ProcessBaseModelSpecFromManifest(
   return OnDeviceBaseModelSpec(
       *name, *version,
       supported_performance_hint_enum
-          ? base::flat_set<proto::OnDeviceModelPerformanceHint>(
+          ? OnDeviceBaseModelSpec::PerformanceHints(
                 {*supported_performance_hint_enum})
-          : base::flat_set<proto::OnDeviceModelPerformanceHint>({}));
+          : OnDeviceBaseModelSpec::PerformanceHints  ({}));
 }
 
 std::optional<proto::OnDeviceModelPerformanceHint>
