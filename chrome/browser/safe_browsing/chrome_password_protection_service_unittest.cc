@@ -18,7 +18,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -1897,13 +1896,10 @@ class PasswordCheckupWithPhishGuardTest
   raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
 };
 
-class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
-    : public base::test::WithFeatureOverride,
-      public PasswordCheckupWithPhishGuardTest {
+class PasswordCheckupWithPhishGuardAndroidTest
+    : public PasswordCheckupWithPhishGuardTest {
  public:
-  PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest()
-      : base::test::WithFeatureOverride(
-            password_manager::features::kLoginDbDeprecationAndroid) {}
+  PasswordCheckupWithPhishGuardAndroidTest() = default;
 
   void SetUp() override {
     // Override the GMS version to be big enough for local UPM support, so these
@@ -1914,7 +1910,7 @@ class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
   }
 };
 
-TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_F(PasswordCheckupWithPhishGuardAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForAccountStoreSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
@@ -1936,7 +1932,7 @@ TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
 
-TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_F(PasswordCheckupWithPhishGuardAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForProfileStoreSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
@@ -1959,7 +1955,7 @@ TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
 
-TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_F(PasswordCheckupWithPhishGuardAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForProfileStoreNotSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
@@ -1982,7 +1978,7 @@ TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/false);
 }
 
-TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_F(PasswordCheckupWithPhishGuardAndroidTest,
        VerifyPhishGuardDialogOpensSafetyCheckMenuForBothStoresSyncing) {
   feature_list_.InitWithFeatures(
       {}, {/*disabled_features=*/features::kSafetyHubLocalPasswordsModule});
@@ -2007,7 +2003,7 @@ TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
 
-TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_F(PasswordCheckupWithPhishGuardAndroidTest,
        VerifyPhishGuardDialogOpensSafetyHubMenuForBothStoresSyncing) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kSafetyHubLocalPasswordsModule}, {});
@@ -2028,70 +2024,6 @@ TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
 
   EXPECT_CALL(*mock_checkup_launcher_,
               LaunchSafetyHub(_, web_contents()->GetTopLevelNativeWindow()));
-
-  SimulateChangePasswordDialogAction(/*is_syncing=*/true);
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest);
-
-class PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest
-    : public PasswordCheckupWithPhishGuardTest {
- public:
-  void SetUp() override {
-    // Force split stores to be off by faking an outdated GmsCore version.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
-    PasswordCheckupWithPhishGuardTest::SetUp();
-    feature_list_.InitAndDisableFeature(
-        password_manager::features::kLoginDbDeprecationAndroid);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(
-    PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest,
-    VerifyPhishGuardDialogOpensPasswordCheckupEmptyAccountForNonSyncingUser) {
-  service_->ConfigService(/*is_incognito=*/false,
-                          /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials;
-  credentials.emplace_back(
-      "http://example.test", GURL("http://example.test/"), u"user",
-      password_manager::PasswordForm::Store::kProfileStore);
-  service_->set_saved_passwords_matching_reused_credentials(credentials);
-
-  SetUpSyncService(/*is_syncing_passwords=*/false);
-
-  EXPECT_CALL(
-      *mock_checkup_launcher_,
-      LaunchCheckupOnDevice(
-          _, profile(), web_contents()->GetTopLevelNativeWindow(),
-          password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
-          /*account=*/""));
-
-  SimulateChangePasswordDialogAction(/*is_syncing=*/false);
-}
-
-TEST_F(PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest,
-       VerifyPhishGuardDialogOpensPasswordCheckupWithAnAccountForSyncingUser) {
-  service_->ConfigService(/*is_incognito=*/false,
-                          /*is_extended_reporting=*/true);
-  std::vector<password_manager::MatchingReusedCredential> credentials;
-  credentials.emplace_back(
-      "http://example.test", GURL("http://example.test/"), u"user",
-      password_manager::PasswordForm::Store::kProfileStore);
-
-  service_->set_saved_passwords_matching_reused_credentials(credentials);
-
-  SetUpSyncService(/*is_syncing_passwords=*/true);
-
-  EXPECT_CALL(
-      *mock_checkup_launcher_,
-      LaunchCheckupOnDevice(
-          _, profile(), web_contents()->GetTopLevelNativeWindow(),
-          password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
-          TestingProfile::kDefaultProfileUserName));
 
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }

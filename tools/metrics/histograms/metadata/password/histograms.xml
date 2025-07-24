@@ -2226,48 +2226,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.LocalUpmActivationError{UserType}"
-    enum="LocalUpmActivationError" expires_after="2025-12-28">
-  <owner>ioanap@chromium.org</owner>
-  <owner>src/components/password_manager/OWNERS</owner>
-  <summary>
-    Recorded for {UserType}. Records the reason why the local UPM activation
-    algorithm failed, if any. For users that require a migration, the
-    &quot;None&quot; bucket doesn't mean the migration actually succeeded, only
-    that it was scheduled. Recorded on every startup, even for users who already
-    got successfully activated. This histogram should be analyzed with
-    &quot;count unique clients&quot;.
-
-    TODO(crbug.com/307678344): Mention what other histogram should be used for
-    migration failures.
-  </summary>
-  <token key="UserType">
-    <variant name="" summary="all users"/>
-    <variant name=".NonSyncingNoMigration"
-        summary="users who are not syncing passwords and have no local
-                 passwords nor custom password manager settings to be
-                 migrated"/>
-    <variant name=".NonSyncingWithMigration"
-        summary="users who are not syncing passwords and need a migration for
-                 local passwords or password manager settings"/>
-    <variant name=".Syncing" summary="users who are syncing passwords"/>
-  </token>
-</histogram>
-
-<histogram name="PasswordManager.LocalUpmActivationStatus"
-    enum="UseUpmLocalAndSeparateStoresState" expires_after="2025-12-28">
-  <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Records on startup the exact state stored in the UPM local state pref,
-    immediately after the pref value is set. The main difference to
-    PasswordManager.LocalUpmActivated is that this histogram records the
-    &quot;migration pending&quot; state separately. This can be used to identify
-    whether thre are any issue that could cause clients to be stuck in migration
-    pending.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.LoginDatabase.DeleteFromKeychain"
     enum="MacSecurityFrameworkOSStatus" expires_after="2025-12-14">
   <owner>vsemeniuk@google.com</owner>

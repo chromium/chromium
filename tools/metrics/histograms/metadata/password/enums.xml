@@ -498,17 +498,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Finished"/>
 </enum>
 
-<enum name="LocalUpmActivationError">
-  <int value="0"
-      label="None (activated / migration scheduled / previously activated)"/>
-  <int value="1" label="(obsolete) Unenrolled from UPM"/>
-  <int value="2" label="(obsolete) Initial UPM migration missing"/>
-  <int value="3" label="(obsolete) Login DB file move failed"/>
-  <int value="4" label="Outdated GmsCore"/>
-  <int value="5" label="(obsolete) Flag disabled"/>
-  <int value="6" label="(obsolete) Migration warning unacknowledged"/>
-</enum>
-
 <enum name="LoginDatabaseEncryptionStatus">
   <int value="0" label="No issues"/>
   <int value="1"
@@ -1920,12 +1909,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="'autocomplete' attribute"/>
   <int value="4" label="Server-side prediction"/>
   <int value="5" label="Client-side model prediction"/>
-</enum>
-
-<enum name="UseUpmLocalAndSeparateStoresState">
-  <int value="0" label="Off"/>
-  <int value="1" label="OffAndMigrationPending"/>
-  <int value="2" label="On"/>
 </enum>
 
 <enum name="WellKnownChangePasswordResult">

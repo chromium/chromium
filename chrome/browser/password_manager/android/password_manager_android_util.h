@@ -96,9 +96,6 @@ void SetUsesSplitStoresAndUPMForLocal(
     const base::FilePath& login_db_directory,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge);
 
-// Returns whether the last attempt to migrate to UPM local failed.
-bool LastMigrationAttemptToUpmLocalFailed();
-
 }  // namespace password_manager_android_util
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
