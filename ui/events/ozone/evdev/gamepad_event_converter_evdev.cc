@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
 
 #include <errno.h>
@@ -15,6 +10,7 @@
 #include <stdint.h>
 #include <sys/ioctl.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/trace_event.h"
@@ -126,7 +122,7 @@ int GamepadEventConverterEvdev::StoreRumbleEffect(const base::ScopedFD& fd,
                                                   uint16_t strong_magnitude,
                                                   uint16_t weak_magnitude) {
   struct ff_effect effect;
-  memset(&effect, 0, sizeof(effect));
+  UNSAFE_TODO(memset(&effect, 0, sizeof(effect)));
   effect.type = FF_RUMBLE;
   effect.id = effect_id;
   effect.replay.length = duration;
@@ -141,7 +137,7 @@ void GamepadEventConverterEvdev::StartOrStopEffect(const base::ScopedFD& fd,
                                                    int effect_id,
                                                    bool do_start) {
   struct input_event start_stop;
-  memset(&start_stop, 0, sizeof(start_stop));
+  UNSAFE_TODO(memset(&start_stop, 0, sizeof(start_stop)));
   start_stop.type = EV_FF;
   start_stop.code = effect_id;
   start_stop.value = do_start ? 1 : 0;

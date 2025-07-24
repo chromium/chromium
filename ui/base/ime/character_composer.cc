@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/character_composer.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -50,7 +46,7 @@ bool UTF32CharacterToUTF16(uint32_t character, std::u16string* output) {
   if (character) {
     output->resize(CBU16_LENGTH(character));
     size_t i = 0;
-    CBU16_APPEND_UNSAFE(&(*output)[0], i, character);
+    UNSAFE_TODO(CBU16_APPEND_UNSAFE(&(*output)[0], i, character));
   }
   return true;
 }
@@ -311,8 +307,10 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
     // character tables.
     int32_t character = -1;
     if (keystroke.IsDeadKey() || keystroke.IsComposeKey()) {
-      tree_index += 2 * data_->tree[tree_index] + 1;  // internal unicode table
-      tree_index += 2 * data_->tree[tree_index] + 1;  // leaf unicode table
+      tree_index += 2 * UNSAFE_TODO(data_->tree[tree_index]) +
+                    1;  // internal unicode table
+      tree_index +=
+          2 * UNSAFE_TODO(data_->tree[tree_index]) + 1;  // leaf unicode table
       // The generate_character_composer_data.py script assigns 0 to the Compose
       // key.
       character = keystroke.IsComposeKey()
@@ -326,7 +324,7 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
 
     // Check the internal subtree table.
     uint16_t result = 0;
-    uint16_t entries = data_->tree[tree_index++];
+    uint16_t entries = UNSAFE_TODO(data_->tree[tree_index++]);
     if (entries &&
         Find(tree_index, entries, static_cast<uint16_t>(character), &result)) {
       tree_index = result;
@@ -335,7 +333,7 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
 
     // Skip over the internal subtree table and check the leaf table.
     tree_index += 2 * entries;
-    entries = data_->tree[tree_index++];
+    entries = UNSAFE_TODO(data_->tree[tree_index++]);
     if (entries &&
         Find(tree_index, entries, static_cast<uint16_t>(character), &result)) {
       *composed_character = result;
@@ -358,8 +356,8 @@ bool TreeComposeChecker::Find(uint16_t index,
     }
   };
   const TableEntry* a =
-      reinterpret_cast<const TableEntry*>(&data_->tree[index]);
-  const TableEntry* z = a + size;
+      reinterpret_cast<const TableEntry*>(&UNSAFE_TODO(data_->tree[index]));
+  const TableEntry* z = UNSAFE_TODO(a + size);
   const TableEntry target = {key, 0};
   const TableEntry* it = std::lower_bound(a, z, target);
   if ((it != z) && (it->key == key)) {

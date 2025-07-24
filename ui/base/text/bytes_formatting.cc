@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/text/bytes_formatting.h"
 
 #include <ostream>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/i18n/number_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -61,7 +57,7 @@ std::u16string FormatBytesInternal(int64_t bytes,
   std::u16string result = base::FormatDouble(unit_amount, fractional_digits);
 
   if (show_units)
-    result = l10n_util::GetStringFUTF16(suffix[units], result);
+    result = l10n_util::GetStringFUTF16(UNSAFE_TODO(suffix[units]), result);
 
   return result;
 }
@@ -85,8 +81,9 @@ DataUnits GetByteDisplayUnits(int64_t bytes) {
 
   int unit_index = std::size(kUnitThresholds);
   while (--unit_index > 0) {
-    if (bytes >= kUnitThresholds[unit_index])
+    if (bytes >= UNSAFE_TODO(kUnitThresholds[unit_index])) {
       break;
+    }
   }
 
   DCHECK(unit_index >= DATA_UNITS_BYTE && unit_index <= DATA_UNITS_PEBIBYTE);

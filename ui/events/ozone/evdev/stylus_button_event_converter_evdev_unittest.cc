@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -120,8 +116,9 @@ void MockStylusButtonEventConverterEvdev::ConfigureReadMock(
     struct input_event* queue,
     long read_this_many,
     long queue_index) {
-  int nwrite = HANDLE_EINTR(write(write_pipe_, queue + queue_index,
-                                  sizeof(struct input_event) * read_this_many));
+  int nwrite = UNSAFE_TODO(
+      HANDLE_EINTR(write(write_pipe_, queue + queue_index,
+                         sizeof(struct input_event) * read_this_many)));
   DPCHECK(nwrite ==
           static_cast<int>(sizeof(struct input_event) * read_this_many))
       << "write() failed";

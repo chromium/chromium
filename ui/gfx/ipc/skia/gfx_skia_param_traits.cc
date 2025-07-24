@@ -2,23 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/pickle.h"
 #include "ipc/ipc_message_utils.h"
+// Generate param traits write methods.
+#include "ipc/param_traits_write_macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/transform.h"
-
-// Generate param traits write methods.
-#include "ipc/param_traits_write_macros.h"
 namespace IPC {
 #undef UI_GFX_IPC_SKIA_GFX_SKIA_PARAM_TRAITS_MACROS_H_
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits_macros.h"
@@ -90,7 +85,7 @@ bool ParamTraits<SkBitmap>::Read(const base::Pickle* m,
 
   if (bitmap_data_size != r->computeByteSize())
     return false;
-  memcpy(r->getPixels(), bitmap_data, bitmap_data_size);
+  UNSAFE_TODO(memcpy(r->getPixels(), bitmap_data, bitmap_data_size));
   return true;
 }
 

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/inspect/ax_call_statement_invoker_auralinux.h"
 
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -207,7 +203,8 @@ AXOptionalObject AXCallStatementInvokerAuraLinux::HasState(
   GArray* state_array = atspi_state_set_get_states(atspi_states);
 
   for (unsigned i = 0; i < state_array->len; i++) {
-    AtspiStateType state_type = g_array_index(state_array, AtspiStateType, i);
+    AtspiStateType state_type =
+        UNSAFE_TODO(g_array_index(state_array, AtspiStateType, i));
     const char* state_str = ATSPIStateToString(state_type);
     if (state.compare(state_str) == 0) {
       return AXOptionalObject(Target(true));
@@ -227,7 +224,7 @@ AXOptionalObject AXCallStatementInvokerAuraLinux::GetRelation(
   if (!error) {
     for (guint idx = 0; idx < relations->len; idx++) {
       AtspiRelation* atspi_relation =
-          g_array_index(relations, AtspiRelation*, idx);
+          UNSAFE_TODO(g_array_index(relations, AtspiRelation*, idx));
       std::string relation_str = ATSPIRelationToString(
           atspi_relation_get_relation_type(atspi_relation));
       if (relation_str.compare(relation) == 0) {
@@ -256,7 +253,7 @@ AXOptionalObject AXCallStatementInvokerAuraLinux::HasInterface(
       atspi_accessible_get_interfaces(const_cast<AtspiAccessible*>(target));
 
   for (unsigned i = 0; i < interfaces->len; i++) {
-    char* iface = g_array_index(interfaces, char*, i);
+    char* iface = UNSAFE_TODO(g_array_index(interfaces, char*, i));
     if (interface.compare(std::string(iface)) == 0) {
       return AXOptionalObject(Target(true));
     }

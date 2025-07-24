@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/ozone/demo/window_manager.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -49,10 +45,10 @@ WindowManager::WindowManager(std::unique_ptr<RendererFactory> renderer_factory,
     LOG(WARNING) << "No display delegate; falling back to test window";
     int width = kTestWindowWidth;
     int height = kTestWindowHeight;
-    sscanf(base::CommandLine::ForCurrentProcess()
-               ->GetSwitchValueASCII(kWindowSize)
-               .c_str(),
-           "%dx%d", &width, &height);
+    UNSAFE_TODO(sscanf(base::CommandLine::ForCurrentProcess()
+                           ->GetSwitchValueASCII(kWindowSize)
+                           .c_str(),
+                       "%dx%d", &width, &height));
 
     DemoWindow* window = new DemoWindow(this, renderer_factory_.get(),
                                         gfx::Rect(gfx::Size(width, height)));

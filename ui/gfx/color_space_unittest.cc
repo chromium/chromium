@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/color_space.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <cmath>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/skia_color_space_util.h"
 
@@ -80,7 +76,7 @@ TEST(ColorSpace, RGBToYUV) {
 
     for (size_t j = 0; j < kNumTestRGBs; ++j) {
       SkV4 yuv = range_adjust_inv * transfer * test_rgbs[j];
-      EXPECT_LT(Diff(yuv, expected_yuvs[i][j]), kEpsilon);
+      UNSAFE_TODO(EXPECT_LT(Diff(yuv, expected_yuvs[i][j]), kEpsilon));
     }
   }
 }
@@ -171,7 +167,7 @@ TEST(ColorSpace, RangeAdjust) {
 
       for (size_t k = 0; k < kNumTestYUVs; ++k) {
         SkV4 yuv = range_adjust_inv * test_yuvs[k];
-        EXPECT_LT(Diff(yuv, expected_yuvs[i][j][k]), kEpsilon);
+        UNSAFE_TODO(EXPECT_LT(Diff(yuv, expected_yuvs[i][j][k]), kEpsilon));
       }
     }
   }
@@ -349,7 +345,7 @@ TEST(ColorSpaceUtil, SkcmsMatrixConvert) {
   skcms_Matrix3x3 in_m33 = SkNamedGamut::kSRGB;
   SkM44 m44 = SkM44FromSkcmsMatrix3x3(in_m33);
   skcms_Matrix3x3 out_m33 = SkcmsMatrix3x3FromSkM44(m44);
-  EXPECT_EQ(memcmp(&in_m33, &out_m33, sizeof(in_m33)), 0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(&in_m33, &out_m33, sizeof(in_m33)), 0));
 }
 
 }  // namespace

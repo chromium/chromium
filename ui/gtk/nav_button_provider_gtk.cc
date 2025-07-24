@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gtk/nav_button_provider_gtk.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -118,14 +114,15 @@ gfx::Size LoadNavButtonIcon(ui::NavButtonProvider::FrameButtonDisplayType type,
     auto* node = gtk_snapshot_free_to_node(snapshot);
     size_t nbytes = width * height * sizeof(SkColor);
     SkColor* pixels = reinterpret_cast<SkColor*>(g_malloc(nbytes));
-    memset(pixels, 0, nbytes);
+    UNSAFE_TODO(memset(pixels, 0, nbytes));
     size_t stride = sizeof(SkColor) * width;
     if (GdkTexture* texture = GetTextureFromRenderNode(node)) {
       gdk_texture_download(texture, reinterpret_cast<guchar*>(pixels), stride);
     }
     SkColor fg = GtkStyleContextGetColor(button_context);
     for (int i = 0; i < width * height; ++i) {
-      pixels[i] = SkColorSetA(fg, SkColorGetA(pixels[i]));
+      UNSAFE_TODO(pixels[i]) =
+          SkColorSetA(fg, UNSAFE_TODO(SkColorGetA(pixels[i])));
     }
     icon->texture = TakeGObject(
         gdk_memory_texture_new(width, height, GDK_MEMORY_B8G8R8A8,

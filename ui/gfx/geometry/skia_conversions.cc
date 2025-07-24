@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -89,9 +85,9 @@ Size SkISizeToSize(const SkISize& size) {
 
 void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]) {
   points[0] = PointFToSkPoint(quad.p1());
-  points[1] = PointFToSkPoint(quad.p2());
-  points[2] = PointFToSkPoint(quad.p3());
-  points[3] = PointFToSkPoint(quad.p4());
+  UNSAFE_TODO(points[1]) = PointFToSkPoint(quad.p2());
+  UNSAFE_TODO(points[2]) = PointFToSkPoint(quad.p3());
+  UNSAFE_TODO(points[3]) = PointFToSkPoint(quad.p4());
 }
 
 SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform) {

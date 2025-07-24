@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/nine_image_painter.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <array>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -60,7 +56,7 @@ void Fill(Canvas* c,
 NineImagePainter::NineImagePainter(const std::vector<ImageSkia>& images) {
   DCHECK_EQ(std::size(images_), images.size());
   for (size_t i = 0; i < std::size(images_); ++i)
-    images_[i] = images[i];
+    UNSAFE_TODO(images_[i]) = images[i];
 }
 
 NineImagePainter::NineImagePainter(const ImageSkia& image,
@@ -70,7 +66,8 @@ NineImagePainter::NineImagePainter(const ImageSkia& image,
   DCHECK_EQ(9u, regions.size());
 
   for (size_t i = 0; i < 9; ++i)
-    images_[i] = ImageSkiaOperations::ExtractSubset(image, regions[i]);
+    UNSAFE_TODO(images_[i]) =
+        ImageSkiaOperations::ExtractSubset(image, regions[i]);
 }
 
 NineImagePainter::~NineImagePainter() {
@@ -120,7 +117,7 @@ void NineImagePainter::Paint(Canvas* canvas,
   std::array<ImageSkiaRep, 9> image_reps;
   static_assert(std::size(image_reps) == std::extent<decltype(images_)>(), "");
   for (size_t i = 0; i < std::size(image_reps); ++i) {
-    image_reps[i] = images_[i].GetRepresentation(scale);
+    image_reps[i] = UNSAFE_TODO(images_[i]).GetRepresentation(scale);
     DCHECK(image_reps[i].is_null() || image_reps[i].scale() == scale);
   }
 

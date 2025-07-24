@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/clipboard/clipboard_ozone.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
@@ -717,9 +713,9 @@ void ClipboardOzone::WriteBookmark(std::string_view title,
   std::u16string bookmark =
       base::StrCat({base::UTF8ToUTF16(url) + u"\n" + base::UTF8ToUTF16(title)});
 
-  std::vector<uint8_t> data(
-      reinterpret_cast<const uint8_t*>(bookmark.data()),
-      reinterpret_cast<const uint8_t*>(bookmark.data() + bookmark.size()));
+  std::vector<uint8_t> data(reinterpret_cast<const uint8_t*>(bookmark.data()),
+                            reinterpret_cast<const uint8_t*>(UNSAFE_TODO(
+                                bookmark.data() + bookmark.size())));
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeMozillaUrl});
 }
 

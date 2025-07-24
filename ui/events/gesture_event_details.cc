@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/events/gesture_event_details.h"
 
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 
@@ -108,7 +104,7 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
 }
 
 GestureEventDetails::Details::Details() {
-  memset(this, 0, sizeof(Details));
+  UNSAFE_TODO(memset(this, 0, sizeof(Details)));
 }
 
 }  // namespace ui

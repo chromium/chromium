@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/transform.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <optional>
 #include <ostream>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1642,7 +1638,7 @@ double ComputeDecompRecompError(const Transform& transform) {
   composed.GetColMajorF(actual);
   double sse = 0;
   for (int i = 0; i < 16; i++) {
-    double diff = expected[i] - actual[i];
+    double diff = UNSAFE_TODO(expected[i]) - UNSAFE_TODO(actual[i]);
     sse += diff * diff;
   }
   return sse;
@@ -2037,7 +2033,7 @@ TEST(XFormTest, ColMajorF) {
   float data1[16];
   transform.GetColMajorF(data1);
   for (int i = 0; i < 16; i++)
-    EXPECT_EQ(data1[i], data[i]);
+    UNSAFE_TODO(EXPECT_EQ(data1[i], data[i]));
   EXPECT_EQ(transform, Transform::ColMajorF(data1));
 }
 
@@ -3926,7 +3922,7 @@ TEST(XFormTest, ClampOutput) {
 
   for (double* entry : entries) {
     const float mv = entry[0];
-    const float factor = entry[1];
+    const float factor = UNSAFE_TODO(entry[1]);
 
     auto is_valid_point = [&](const PointF& p) -> bool {
       return std::isfinite(p.x()) && std::isfinite(p.y());

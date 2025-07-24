@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gfx/codec/png_codec.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -143,7 +139,7 @@ void WriteImageData(png_structp png_ptr, png_bytep data, png_size_t length) {
   std::vector<uint8_t>& v =
       *static_cast<std::vector<uint8_t>*>(png_get_io_ptr(png_ptr));
   v.resize(v.size() + length);
-  memcpy(&v[v.size() - length], data, length);
+  UNSAFE_TODO(memcpy(&v[v.size() - length], data, length));
 }
 
 // User flush function; goes with WriteImageData, above.

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/wm/core/cursor_util.h"
 
 #include <array>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -121,11 +117,12 @@ TEST(CursorUtil, GetCursorData) {
                       test.size[base::checked_cast<int>(size)], scale));
         const float resource_scale = ui::GetScaleForResourceScaleFactor(
             ui::GetSupportedResourceScaleFactorForRescale(scale));
-        EXPECT_EQ(pointer_data->hotspot,
-                  gfx::ScaleToFlooredPoint(
-                      test.hotspot[base::checked_cast<int>(size)]
-                                  [base::checked_cast<int>(resource_scale) - 1],
-                      scale / resource_scale));
+        UNSAFE_TODO(EXPECT_EQ(
+            pointer_data->hotspot,
+            gfx::ScaleToFlooredPoint(
+                test.hotspot[base::checked_cast<int>(size)]
+                            [base::checked_cast<int>(resource_scale) - 1],
+                scale / resource_scale)));
       }
     }
   }

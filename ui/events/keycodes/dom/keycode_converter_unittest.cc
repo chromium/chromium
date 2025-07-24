@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <map>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -128,7 +124,7 @@ TEST(UsbKeycodeMap, Basic) {
 
   size_t numEntries = ui::KeycodeConverter::NumKeycodeMapEntriesForTest();
   for (size_t i = 0; i < numEntries; ++i) {
-    const ui::KeycodeMapEntry* entry = &keycode_map[i];
+    const ui::KeycodeMapEntry* entry = &UNSAFE_TODO(keycode_map[i]);
     // Don't test keys with no native keycode mapping on this platform.
     if (entry->native_keycode == ui::KeycodeConverter::InvalidNativeKeycode())
       continue;
@@ -172,7 +168,7 @@ TEST(KeycodeConverter, DomCode) {
   size_t numEntries = ui::KeycodeConverter::NumKeycodeMapEntriesForTest();
   for (size_t i = 0; i < numEntries; ++i) {
     SCOPED_TRACE(i);
-    const ui::KeycodeMapEntry* entry = &keycode_map[i];
+    const ui::KeycodeMapEntry* entry = &UNSAFE_TODO(keycode_map[i]);
     if (entry->code) {
       ui::DomCode code = ui::KeycodeConverter::CodeStringToDomCode(entry->code);
       EXPECT_STREQ(entry->code,

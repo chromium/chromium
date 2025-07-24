@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -378,9 +374,9 @@ MockTouchEventConverterEvdev::~MockTouchEventConverterEvdev() {
 void MockTouchEventConverterEvdev::ConfigureReadMock(struct input_event* queue,
                                                      long read_this_many,
                                                      long queue_index) {
-  int nwrite = HANDLE_EINTR(write(write_pipe_,
-                                  queue + queue_index,
-                                  sizeof(struct input_event) * read_this_many));
+  int nwrite = UNSAFE_TODO(
+      HANDLE_EINTR(write(write_pipe_, queue + queue_index,
+                         sizeof(struct input_event) * read_this_many)));
   DPCHECK(nwrite ==
           static_cast<int>(sizeof(struct input_event) * read_this_many))
       << "write() failed";
@@ -440,7 +436,7 @@ class TouchEventConverterEvdevTest : public testing::Test {
 
   void UpdateTime(struct input_event* queue, long count, timeval time) const {
     for (int i = 0; i < count; ++i) {
-      queue[i].time = time;
+      UNSAFE_TODO(queue[i]).time = time;
     }
   }
 

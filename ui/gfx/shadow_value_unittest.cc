@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/shadow_value.h"
 
 #include <stddef.h>
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -71,9 +67,9 @@ TEST(ShadowValueTest, GetMargin) {
   });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    Insets margin = ShadowValue::GetMargin(
-        ShadowValues(kTestCases[i].shadows,
-                     kTestCases[i].shadows + kTestCases[i].shadow_count));
+    Insets margin = ShadowValue::GetMargin(ShadowValues(
+        kTestCases[i].shadows,
+        UNSAFE_TODO(kTestCases[i].shadows + kTestCases[i].shadow_count)));
 
     EXPECT_EQ(kTestCases[i].expected_margin, margin) << " i=" << i;
   }

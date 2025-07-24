@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/lottie/animation.h"
 
 #include <map>
@@ -15,6 +10,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -316,7 +312,7 @@ class AnimationTest : public testing::Test {
       const SkColor* pixels = reinterpret_cast<SkColor*>(bitmap.getPixels());
       const int num_pixels = bitmap.width() * bitmap.height();
       for (int i = 0; i < num_pixels; i++)
-        EXPECT_EQ(pixels[i], color);
+        UNSAFE_TODO(EXPECT_EQ(pixels[i], color));
     } else {
       for (int x = 0; x < bitmap.width(); x++)
         for (int y = 0; y < bitmap.height(); y++)

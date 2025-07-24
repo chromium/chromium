@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 #include <memory>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
@@ -205,7 +201,8 @@ void ScopedClipboardWriter::WritePickledData(
   raw_data.format = format;
   raw_data.data = std::vector<uint8_t>(
       reinterpret_cast<const uint8_t*>(pickle.data()),
-      reinterpret_cast<const uint8_t*>(pickle.data()) + pickle.size());
+      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(pickle.data()) +
+                  pickle.size()));
   raw_objects_.insert({format, std::move(raw_data)});
 }
 

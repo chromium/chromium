@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/util/edid_parser.h"
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/hash/md5.h"
 #include "base/numerics/ranges.h"
@@ -884,7 +880,7 @@ class EDIDParserTest : public TestWithParam<TestParams> {
   EDIDParserTest()
       : parser_(std::vector<uint8_t>(
             GetParam().edid_blob,
-            GetParam().edid_blob + GetParam().edid_blob_length)) {}
+            UNSAFE_TODO(GetParam().edid_blob + GetParam().edid_blob_length))) {}
 
   EDIDParserTest(const EDIDParserTest&) = delete;
   EDIDParserTest& operator=(const EDIDParserTest&) = delete;
@@ -894,7 +890,8 @@ class EDIDParserTest : public TestWithParam<TestParams> {
 
 TEST_P(EDIDParserTest, ParseEdids) {
   std::vector<uint8_t> expected_edid(
-      GetParam().edid_blob, GetParam().edid_blob + GetParam().edid_blob_length);
+      GetParam().edid_blob,
+      UNSAFE_TODO(GetParam().edid_blob + GetParam().edid_blob_length));
   EXPECT_EQ(parser_.edid_blob(), expected_edid);
 
   EXPECT_EQ(parser_.manufacturer_id(), GetParam().manufacturer_id);

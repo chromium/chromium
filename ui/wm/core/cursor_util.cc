@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/wm/core/cursor_util.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
@@ -73,7 +69,7 @@ bool ConvertSkBitmapAlphaType(SkBitmap* bitmap, SkAlphaType alpha_type) {
   bitmap->reset();
   bitmap->allocPixels(image_info);
   // this memcpy call assumes bitmap->rowBytes() == info_row_bytes
-  memcpy(bitmap->getPixels(), &buffer[0], buffer.size());
+  UNSAFE_TODO(memcpy(bitmap->getPixels(), &buffer[0], buffer.size()));
 
   return true;
 }

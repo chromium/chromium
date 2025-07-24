@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "ui/display/mojom/display_mojom_traits.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -21,7 +19,6 @@
 #include "ui/display/mojom/display_color_management_mojom_traits.h"
 #include "ui/display/mojom/display_layout_mojom_traits.h"
 #include "ui/display/mojom/display_mode_mojom_traits.h"
-#include "ui/display/mojom/display_mojom_traits.h"
 #include "ui/display/mojom/display_snapshot.mojom.h"
 #include "ui/display/mojom/display_snapshot_mojom_traits.h"
 #include "ui/display/mojom/gamma_ramp_rgb_entry.mojom.h"
@@ -299,8 +296,9 @@ TEST(DisplayStructTraitsTest, ColorCalibrationRoundtrip) {
   SerializeAndDeserialize<mojom::ColorCalibration>(input, &output);
 
   // Validate `srgb_to_device_matrix`.
-  EXPECT_EQ(0, memcmp(&input.srgb_to_device_matrix,
-                      &output.srgb_to_device_matrix, sizeof(skcms_Matrix3x3)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&input.srgb_to_device_matrix, &output.srgb_to_device_matrix,
+                sizeof(skcms_Matrix3x3))));
 
   // Validate `srgb_to_linear`.
   input.srgb_to_linear.Evaluate(0.5f, in_r, in_g, in_b);
@@ -324,8 +322,8 @@ TEST(DisplayStructTraitsTest, ColorTemperatureAdjustmentRoundtrip) {
   ColorTemperatureAdjustment output;
   SerializeAndDeserialize<mojom::ColorTemperatureAdjustment>(input, &output);
 
-  EXPECT_EQ(0, memcmp(&input.srgb_matrix, &output.srgb_matrix,
-                      sizeof(skcms_Matrix3x3)));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&input.srgb_matrix, &output.srgb_matrix,
+                                  sizeof(skcms_Matrix3x3))));
 }
 
 TEST(DisplayStructTraitsTest, GammaAdjustmentRoundtrip) {

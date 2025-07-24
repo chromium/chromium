@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/color/sys_color_mixer.h"
 
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_mixer.h"
@@ -66,11 +62,11 @@ TEST_P(SysColorMixerTest, SysColorContrast) {
   };
 
   for (const ColorId* ids : minimum_visible_contrasting_ids) {
-    check_sufficient_contrast(ids[0], ids[1],
+    check_sufficient_contrast(ids[0], UNSAFE_TODO(ids[1]),
                               color_utils::kMinimumVisibleContrastRatio);
   }
   for (const ColorId* ids : minimum_readable_contrasting_ids) {
-    check_sufficient_contrast(ids[0], ids[1],
+    check_sufficient_contrast(ids[0], UNSAFE_TODO(ids[1]),
                               color_utils::kMinimumReadableContrastRatio);
   }
 }

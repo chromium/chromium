@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gfx/skia_util.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -34,7 +30,7 @@ bool BitmapsAreEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
   size_t size1 = bitmap1.computeByteSize();
   size_t size2 = bitmap2.computeByteSize();
 
-  return (size1 == size2) && (0 == memcmp(addr1, addr2, size1));
+  return (size1 == size2) && (0 == UNSAFE_TODO(memcmp(addr1, addr2, size1)));
 }
 
 // We treat HarfBuzz ints as 16.16 fixed-point.

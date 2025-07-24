@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/axis_transform2d.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
@@ -116,7 +112,7 @@ TEST(AxisTransform2dTest, ClampOutput) {
 
   for (double* entry : entries) {
     const float mv = entry[0];
-    const float factor = entry[1];
+    const float factor = UNSAFE_TODO(entry[1]);
 
     auto is_valid_point = [&](const PointF& p) -> bool {
       return std::isfinite(p.x()) && std::isfinite(p.y());

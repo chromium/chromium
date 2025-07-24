@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/event_dispatcher.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -260,9 +256,9 @@ TEST(EventDispatcherTest, EventDispatchOrder) {
 
   {
     int expected[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    EXPECT_EQ(
+    UNSAFE_TODO(EXPECT_EQ(
         std::vector<int>(expected, expected + sizeof(expected) / sizeof(int)),
-        child.handler_list());
+        child.handler_list()));
   }
 
   child.Reset();
@@ -278,9 +274,9 @@ TEST(EventDispatcherTest, EventDispatchOrder) {
     // |h1| marks the event as handled. So only the pre-target handlers should
     // receive the event.
     int expected[] = { 1, 2, 3, 4 };
-    EXPECT_EQ(
+    UNSAFE_TODO(EXPECT_EQ(
         std::vector<int>(expected, expected + sizeof(expected) / sizeof(int)),
-        child.handler_list());
+        child.handler_list()));
   }
 
   child.Reset();
@@ -294,9 +290,9 @@ TEST(EventDispatcherTest, EventDispatchOrder) {
   EXPECT_EQ(EP_POSTDISPATCH, mouse.phase());
   EXPECT_TRUE(mouse.stopped_propagation());
   EXPECT_TRUE(mouse.handled());
-  EXPECT_EQ(
+  UNSAFE_TODO(EXPECT_EQ(
       std::vector<int>(nexpected, nexpected + sizeof(nexpected) / sizeof(int)),
-      child.handler_list());
+      child.handler_list()));
 
   child.Reset();
   event_mod.set_phase(EP_PREDISPATCH);
@@ -308,9 +304,8 @@ TEST(EventDispatcherTest, EventDispatchOrder) {
   EXPECT_EQ(EP_POSTDISPATCH, mouse.phase());
   EXPECT_TRUE(mouse.stopped_propagation());
   EXPECT_TRUE(mouse.handled());
-  EXPECT_EQ(
-      std::vector<int>(exp, exp + sizeof(exp) / sizeof(int)),
-      child.handler_list());
+  UNSAFE_TODO(EXPECT_EQ(std::vector<int>(exp, exp + sizeof(exp) / sizeof(int)),
+                        child.handler_list()));
 
   parent.RemovePreTargetHandler(&h1);
   parent.RemovePreTargetHandler(&h2);
@@ -338,9 +333,9 @@ TEST(EventDispatcherTest, EventDispatchPhase) {
   EXPECT_EQ(ER_UNHANDLED, mouse.result());
 
   int handlers[] = { 11, 11 };
-  EXPECT_EQ(
+  UNSAFE_TODO(EXPECT_EQ(
       std::vector<int>(handlers, handlers + sizeof(handlers) / sizeof(int)),
-      target.handler_list());
+      target.handler_list()));
 
   target.RemovePreTargetHandler(&handler);
 }

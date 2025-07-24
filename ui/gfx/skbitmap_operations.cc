@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/skbitmap_operations.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "skia/ext/pmcolor_utils.h"
@@ -238,8 +234,8 @@ void LineProcDefault(const color_utils::HSL& hsl_shift,
                      SkPMColor* out,
                      int width) {
   for (int x = 0; x < width; x++) {
-    out[x] = SkPreMultiplyColor(color_utils::HSLShift(
-        SkUnPreMultiply::PMColorToColor(in[x]), hsl_shift));
+    UNSAFE_TODO(out[x]) = SkPreMultiplyColor(color_utils::HSLShift(
+        SkUnPreMultiply::PMColorToColor(UNSAFE_TODO(in[x])), hsl_shift));
   }
 }
 
@@ -251,7 +247,7 @@ void LineProcCopy(const color_utils::HSL& hsl_shift,
   DCHECK(hsl_shift.h < 0);
   DCHECK(hsl_shift.s < 0 || fabs(hsl_shift.s - 0.5) < HSLShift::epsilon);
   DCHECK(hsl_shift.l < 0 || fabs(hsl_shift.l - 0.5) < HSLShift::epsilon);
-  memcpy(out, in, static_cast<size_t>(width) * sizeof(out[0]));
+  UNSAFE_TODO(memcpy(out, in, static_cast<size_t>(width) * sizeof(out[0])));
 }
 
 // Line processor: H no-op, S no-op, L decrease.
@@ -267,14 +263,14 @@ void LineProcHnopSnopLdec(const color_utils::HSL& hsl_shift,
 
   uint32_t ldec_num = static_cast<uint32_t>(hsl_shift.l * 2 * den);
   for (int x = 0; x < width; x++) {
-    uint32_t a = SkPMColorGetA(in[x]);
-    uint32_t r = SkPMColorGetR(in[x]);
-    uint32_t g = SkPMColorGetG(in[x]);
-    uint32_t b = SkPMColorGetB(in[x]);
+    uint32_t a = SkPMColorGetA(UNSAFE_TODO(in[x]));
+    uint32_t r = SkPMColorGetR(UNSAFE_TODO(in[x]));
+    uint32_t g = SkPMColorGetG(UNSAFE_TODO(in[x]));
+    uint32_t b = SkPMColorGetB(UNSAFE_TODO(in[x]));
     r = r * ldec_num / den;
     g = g * ldec_num / den;
     b = b * ldec_num / den;
-    out[x] = SkPMColorSetARGB(a, r, g, b);
+    UNSAFE_TODO(out[x]) = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -291,14 +287,14 @@ void LineProcHnopSnopLinc(const color_utils::HSL& hsl_shift,
 
   uint32_t linc_num = static_cast<uint32_t>((hsl_shift.l - 0.5) * 2 * den);
   for (int x = 0; x < width; x++) {
-    uint32_t a = SkPMColorGetA(in[x]);
-    uint32_t r = SkPMColorGetR(in[x]);
-    uint32_t g = SkPMColorGetG(in[x]);
-    uint32_t b = SkPMColorGetB(in[x]);
+    uint32_t a = SkPMColorGetA(UNSAFE_TODO(in[x]));
+    uint32_t r = SkPMColorGetR(UNSAFE_TODO(in[x]));
+    uint32_t g = SkPMColorGetG(UNSAFE_TODO(in[x]));
+    uint32_t b = SkPMColorGetB(UNSAFE_TODO(in[x]));
     r += (a - r) * linc_num / den;
     g += (a - g) * linc_num / den;
     b += (a - b) * linc_num / den;
-    out[x] = SkPMColorSetARGB(a, r, g, b);
+    UNSAFE_TODO(out[x]) = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -337,10 +333,10 @@ void LineProcHnopSdecLnop(const color_utils::HSL& hsl_shift,
   const int32_t denom = 65536;
   int32_t s_numer = static_cast<int32_t>(hsl_shift.s * 2 * denom);
   for (int x = 0; x < width; x++) {
-    int32_t a = static_cast<int32_t>(SkPMColorGetA(in[x]));
-    int32_t r = static_cast<int32_t>(SkPMColorGetR(in[x]));
-    int32_t g = static_cast<int32_t>(SkPMColorGetG(in[x]));
-    int32_t b = static_cast<int32_t>(SkPMColorGetB(in[x]));
+    int32_t a = static_cast<int32_t>(SkPMColorGetA(UNSAFE_TODO(in[x])));
+    int32_t r = static_cast<int32_t>(SkPMColorGetR(UNSAFE_TODO(in[x])));
+    int32_t g = static_cast<int32_t>(SkPMColorGetG(UNSAFE_TODO(in[x])));
+    int32_t b = static_cast<int32_t>(SkPMColorGetB(UNSAFE_TODO(in[x])));
 
     int32_t vmax, vmin;
     if (r > g) {  // This uses 3 compares rather than 4.
@@ -358,7 +354,7 @@ void LineProcHnopSdecLnop(const color_utils::HSL& hsl_shift,
     r = (denom_l + r * s_numer - s_numer_l) / denom;
     g = (denom_l + g * s_numer - s_numer_l) / denom;
     b = (denom_l + b * s_numer - s_numer_l) / denom;
-    out[x] = SkPMColorSetARGB(a, r, g, b);
+    UNSAFE_TODO(out[x]) = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -376,10 +372,10 @@ void LineProcHnopSdecLdec(const color_utils::HSL& hsl_shift,
   int32_t l_numer = static_cast<int32_t>(hsl_shift.l * 2 * denom);
   int32_t s_numer = static_cast<int32_t>(hsl_shift.s * 2 * denom);
   for (int x = 0; x < width; x++) {
-    int32_t a = static_cast<int32_t>(SkPMColorGetA(in[x]));
-    int32_t r = static_cast<int32_t>(SkPMColorGetR(in[x]));
-    int32_t g = static_cast<int32_t>(SkPMColorGetG(in[x]));
-    int32_t b = static_cast<int32_t>(SkPMColorGetB(in[x]));
+    int32_t a = static_cast<int32_t>(SkPMColorGetA(UNSAFE_TODO(in[x])));
+    int32_t r = static_cast<int32_t>(SkPMColorGetR(UNSAFE_TODO(in[x])));
+    int32_t g = static_cast<int32_t>(SkPMColorGetG(UNSAFE_TODO(in[x])));
+    int32_t b = static_cast<int32_t>(SkPMColorGetB(UNSAFE_TODO(in[x])));
 
     int32_t vmax, vmin;
     if (r > g) {  // This uses 3 compares rather than 4.
@@ -397,7 +393,7 @@ void LineProcHnopSdecLdec(const color_utils::HSL& hsl_shift,
     r = (denom_l + r * s_numer - s_numer_l) * l_numer / (denom * denom);
     g = (denom_l + g * s_numer - s_numer_l) * l_numer / (denom * denom);
     b = (denom_l + b * s_numer - s_numer_l) * l_numer / (denom * denom);
-    out[x] = SkPMColorSetARGB(a, r, g, b);
+    UNSAFE_TODO(out[x]) = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -415,10 +411,10 @@ void LineProcHnopSdecLinc(const color_utils::HSL& hsl_shift,
   int32_t l_numer = static_cast<int32_t>((hsl_shift.l - 0.5) * 2 * denom);
   int32_t s_numer = static_cast<int32_t>(hsl_shift.s * 2 * denom);
   for (int x = 0; x < width; x++) {
-    int32_t a = static_cast<int32_t>(SkPMColorGetA(in[x]));
-    int32_t r = static_cast<int32_t>(SkPMColorGetR(in[x]));
-    int32_t g = static_cast<int32_t>(SkPMColorGetG(in[x]));
-    int32_t b = static_cast<int32_t>(SkPMColorGetB(in[x]));
+    int32_t a = static_cast<int32_t>(SkPMColorGetA(UNSAFE_TODO(in[x])));
+    int32_t r = static_cast<int32_t>(SkPMColorGetR(UNSAFE_TODO(in[x])));
+    int32_t g = static_cast<int32_t>(SkPMColorGetG(UNSAFE_TODO(in[x])));
+    int32_t b = static_cast<int32_t>(SkPMColorGetB(UNSAFE_TODO(in[x])));
 
     int32_t vmax, vmin;
     if (r > g) {  // This uses 3 compares rather than 4.
@@ -440,7 +436,7 @@ void LineProcHnopSdecLinc(const color_utils::HSL& hsl_shift,
     r = (r * denom + (a * denom - r) * l_numer) / (denom * denom);
     g = (g * denom + (a * denom - g) * l_numer) / (denom * denom);
     b = (b * denom + (a * denom - b) * l_numer) / (denom * denom);
-    out[x] = SkPMColorSetARGB(a, r, g, b);
+    UNSAFE_TODO(out[x]) = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -513,7 +509,7 @@ SkBitmap SkBitmapOperations::CreateHSLShiftedBitmap(
     L_op = HSLShift::kOpLInc;
 
   HSLShift::LineProcessor line_proc =
-      HSLShift::kLineProcessors[H_op][S_op][L_op];
+      UNSAFE_TODO(HSLShift::kLineProcessors[H_op][S_op][L_op]);
 
   DCHECK(bitmap.empty() == false);
   DCHECK(bitmap.colorType() == kN32_SkColorType);

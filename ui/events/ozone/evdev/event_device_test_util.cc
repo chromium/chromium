@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -33,8 +29,8 @@ std::string SerializeBitfield(unsigned long* bitmap, int max) {
   std::string ret;
 
   for (int i = EVDEV_BITS_TO_GROUPS(max) - 1; i >= 0; i--) {
-    if (bitmap[i] || ret.size()) {
-      base::StringAppendF(&ret, "%lx", bitmap[i]);
+    if (UNSAFE_TODO(bitmap[i]) || ret.size()) {
+      base::StringAppendF(&ret, "%lx", UNSAFE_TODO(bitmap[i]));
 
       if (i > 0)
         ret += " ";
@@ -1620,7 +1616,7 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   devinfo->SetProps(&prop_bits[0], prop_bits.size());
 
   for (size_t i = 0; i < capabilities.abs_axis_count; ++i) {
-    const DeviceAbsoluteAxis& axis = capabilities.abs_axis[i];
+    const DeviceAbsoluteAxis& axis = UNSAFE_TODO(capabilities.abs_axis[i]);
     devinfo->SetAbsInfo(axis.code, axis.absinfo);
   }
 
@@ -1637,10 +1633,10 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   }
 
   input_id id = {};
-  sscanf(capabilities.vendor, "%" SCNx16, &id.vendor);
-  sscanf(capabilities.product, "%" SCNx16, &id.product);
-  sscanf(capabilities.bustype, "%" SCNx16, &id.bustype);
-  sscanf(capabilities.version, "%" SCNx16, &id.version);
+  UNSAFE_TODO(sscanf(capabilities.vendor, "%" SCNx16, &id.vendor));
+  UNSAFE_TODO(sscanf(capabilities.product, "%" SCNx16, &id.product));
+  UNSAFE_TODO(sscanf(capabilities.bustype, "%" SCNx16, &id.bustype));
+  UNSAFE_TODO(sscanf(capabilities.version, "%" SCNx16, &id.version));
   devinfo->SetId(id);
   devinfo->SetDeviceType(EventDeviceInfo::GetInputDeviceTypeFromId(id));
   devinfo->SetName(capabilities.name);

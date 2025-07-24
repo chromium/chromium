@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -99,10 +95,11 @@ bool ParamTraits<gfx::Size>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&char_values, sizeof(int) * 2))
     return false;
   const int* values = reinterpret_cast<const int*>(char_values);
-  if (values[0] < 0 || values[1] < 0)
+  if (values[0] < 0 || UNSAFE_TODO(values[1]) < 0) {
     return false;
+  }
   r->set_width(values[0]);
-  r->set_height(values[1]);
+  r->set_height(UNSAFE_TODO(values[1]));
   return true;
 }
 
@@ -123,7 +120,7 @@ bool ParamTraits<gfx::SizeF>::Read(const base::Pickle* m,
     return false;
   const float* values = reinterpret_cast<const float*>(char_values);
   r->set_width(values[0]);
-  r->set_height(values[1]);
+  r->set_height(UNSAFE_TODO(values[1]));
   return true;
 }
 
@@ -145,7 +142,7 @@ bool ParamTraits<gfx::Vector2d>::Read(const base::Pickle* m,
     return false;
   const int* values = reinterpret_cast<const int*>(char_values);
   r->set_x(values[0]);
-  r->set_y(values[1]);
+  r->set_y(UNSAFE_TODO(values[1]));
   return true;
 }
 
@@ -167,7 +164,7 @@ bool ParamTraits<gfx::Vector2dF>::Read(const base::Pickle* m,
     return false;
   const float* values = reinterpret_cast<const float*>(char_values);
   r->set_x(values[0]);
-  r->set_y(values[1]);
+  r->set_y(UNSAFE_TODO(values[1]));
   return true;
 }
 
@@ -187,9 +184,11 @@ bool ParamTraits<gfx::Rect>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&char_values, sizeof(int) * 4))
     return false;
   const int* values = reinterpret_cast<const int*>(char_values);
-  if (values[2] < 0 || values[3] < 0)
+  if (UNSAFE_TODO(values[2]) < 0 || UNSAFE_TODO(values[3]) < 0) {
     return false;
-  r->SetRect(values[0], values[1], values[2], values[3]);
+  }
+  r->SetRect(values[0], UNSAFE_TODO(values[1]), UNSAFE_TODO(values[2]),
+             UNSAFE_TODO(values[3]));
   return true;
 }
 
@@ -210,7 +209,8 @@ bool ParamTraits<gfx::RectF>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&char_values, sizeof(float) * 4))
     return false;
   const float* values = reinterpret_cast<const float*>(char_values);
-  r->SetRect(values[0], values[1], values[2], values[3]);
+  r->SetRect(values[0], UNSAFE_TODO(values[1]), UNSAFE_TODO(values[2]),
+             UNSAFE_TODO(values[3]));
   return true;
 }
 

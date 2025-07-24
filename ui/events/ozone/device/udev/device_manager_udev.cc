@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/events/ozone/device/udev/device_manager_udev.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
@@ -139,9 +135,11 @@ std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(
 
   std::string_view path(path_cstr);
   DeviceEvent::DeviceType device_type;
-  if (!strcmp(subsystem, "input") && path.starts_with("/dev/input/event")) {
+  if (!UNSAFE_TODO(strcmp(subsystem, "input")) &&
+      path.starts_with("/dev/input/event")) {
     device_type = DeviceEvent::INPUT;
-  } else if (!strcmp(subsystem, "drm") && path.starts_with("/dev/dri/card")) {
+  } else if (!UNSAFE_TODO(strcmp(subsystem, "drm")) &&
+             path.starts_with("/dev/dri/card")) {
     device_type = DeviceEvent::DISPLAY;
   } else {
     return nullptr;
@@ -149,14 +147,15 @@ std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(
 
   const char* action = device::udev_device_get_action(device);
   DeviceEvent::ActionType action_type;
-  if (!action || !strcmp(action, "add"))
+  if (!action || !UNSAFE_TODO(strcmp(action, "add"))) {
     action_type = DeviceEvent::ADD;
-  else if (!strcmp(action, "remove"))
+  } else if (!UNSAFE_TODO(strcmp(action, "remove"))) {
     action_type = DeviceEvent::REMOVE;
-  else if (!strcmp(action, "change"))
+  } else if (!UNSAFE_TODO(strcmp(action, "change"))) {
     action_type = DeviceEvent::CHANGE;
-  else
+  } else {
     return nullptr;
+  }
 
   PropertyMap property_map;
   udev_list_entry* property_list =

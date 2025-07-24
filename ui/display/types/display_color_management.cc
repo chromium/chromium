@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/types/display_color_management.h"
 
+#include <cmath>
+
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-
-#include <cmath>
 
 namespace display {
 
@@ -149,7 +145,7 @@ void GammaCurve::Evaluate(float x,
 
 void GammaCurve::Evaluate(float rgb[3]) const {
   for (size_t c = 0; c < 3; ++c) {
-    rgb[c] = Evaluate(rgb[c], c);
+    UNSAFE_TODO(rgb[c]) = Evaluate(UNSAFE_TODO(rgb[c]), c);
   }
 }
 

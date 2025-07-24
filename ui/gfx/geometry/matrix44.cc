@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/matrix44.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 
@@ -109,12 +105,12 @@ ALWAYS_INLINE bool InverseWithDouble4Cols(Double4& c0,
 
 void Matrix44::GetColMajor(double dst[16]) const {
   const double* src = &matrix_[0][0];
-  std::copy(src, src + 16, dst);
+  std::copy(src, UNSAFE_TODO(src + 16), dst);
 }
 
 void Matrix44::GetColMajorF(float dst[16]) const {
   const double* src = &matrix_[0][0];
-  std::copy(src, src + 16, dst);
+  std::copy(src, UNSAFE_TODO(src + 16), dst);
 }
 
 void Matrix44::PreTranslate(double dx, double dy) {
@@ -157,7 +153,7 @@ void Matrix44::PostTranslate3d(double dx, double dy, double dz) {
     SetCol(3, Col(3) + t);
   } else {
     for (int i = 0; i < 4; ++i)
-      SetCol(i, Col(i) + t * matrix_[i][3]);
+      SetCol(i, Col(i) + t * UNSAFE_TODO(matrix_[i])[3]);
   }
 }
 

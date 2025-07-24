@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/velocity_tracker/motion_event_generic.h"
 
 #include <numbers>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/angle_conversions.h"
 #include "ui/events/base_event_utils.h"
@@ -286,7 +282,7 @@ size_t MotionEventGeneric::PushPointer(const PointerProperties& pointer) {
 
 void MotionEventGeneric::RemovePointerAt(size_t index) {
   DCHECK_LT(index, pointers_.size());
-  pointers_.erase(pointers_.begin() + index);
+  pointers_.erase(UNSAFE_TODO(pointers_.begin() + index));
 }
 
 void MotionEventGeneric::PushHistoricalEvent(

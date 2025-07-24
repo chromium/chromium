@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/matrix3_f.h"
 
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <cmath>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 
 namespace {
@@ -38,16 +34,21 @@ double Determinant3x3(T data[M_END]) {
   // This routine is separated from the Matrix3F::Determinant because in
   // computing inverse we do want higher precision afforded by the explicit
   // use of 'double'.
-  return
-      static_cast<double>(data[M00]) * (
-          static_cast<double>(data[M11]) * data[M22] -
-          static_cast<double>(data[M12]) * data[M21]) +
-      static_cast<double>(data[M01]) * (
-          static_cast<double>(data[M12]) * data[M20] -
-          static_cast<double>(data[M10]) * data[M22]) +
-      static_cast<double>(data[M02]) * (
-          static_cast<double>(data[M10]) * data[M21] -
-          static_cast<double>(data[M11]) * data[M20]);
+  return static_cast<double>(UNSAFE_TODO(data[M00])) *
+             (static_cast<double>(UNSAFE_TODO(data[M11])) *
+                  UNSAFE_TODO(data[M22]) -
+              static_cast<double>(UNSAFE_TODO(data[M12])) *
+                  UNSAFE_TODO(data[M21])) +
+         static_cast<double>(UNSAFE_TODO(data[M01])) *
+             (static_cast<double>(UNSAFE_TODO(data[M12])) *
+                  UNSAFE_TODO(data[M20]) -
+              static_cast<double>(UNSAFE_TODO(data[M10])) *
+                  UNSAFE_TODO(data[M22])) +
+         static_cast<double>(UNSAFE_TODO(data[M02])) *
+             (static_cast<double>(UNSAFE_TODO(data[M10])) *
+                  UNSAFE_TODO(data[M21]) -
+              static_cast<double>(UNSAFE_TODO(data[M11])) *
+                  UNSAFE_TODO(data[M20]));
 }
 
 }  // namespace
@@ -91,8 +92,9 @@ Matrix3F Matrix3F::FromOuterProduct(const Vector3dF& a, const Vector3dF& bt) {
 }
 
 bool Matrix3F::IsEqual(const Matrix3F& rhs) const {
-  return 0 == memcmp(data_.data(), rhs.data_.data(),
-                     (data_.size() * sizeof(decltype(data_)::value_type)));
+  return 0 == UNSAFE_TODO(
+                  memcmp(data_.data(), rhs.data_.data(),
+                         (data_.size() * sizeof(decltype(data_)::value_type))));
 }
 
 bool Matrix3F::IsNear(const Matrix3F& rhs, float precision) const {

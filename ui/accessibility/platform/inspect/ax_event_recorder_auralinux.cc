@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/inspect/ax_event_recorder_auralinux.h"
 
 #include <atk/atk.h>
@@ -15,6 +10,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -152,8 +148,8 @@ void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
   std::string log;
   if (event_name.find("property-change") != std::string::npos) {
     DCHECK_GE(n_params, 2u);
-    AtkPropertyValues* property_values =
-        static_cast<AtkPropertyValues*>(g_value_get_pointer(&params[1]));
+    AtkPropertyValues* property_values = static_cast<AtkPropertyValues*>(
+        g_value_get_pointer(&UNSAFE_TODO(params[1])));
 
     if (g_strcmp0(property_values->property_name, "accessible-value") == 0) {
       log += "VALUE-CHANGED:";
@@ -183,34 +179,36 @@ void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
     log_name = false;
     log += base::ToUpperASCII(event);
     // Despite this actually being a signed integer, it's defined as a uint.
-    int index = static_cast<int>(g_value_get_uint(&params[1]));
+    int index = static_cast<int>(g_value_get_uint(&UNSAFE_TODO(params[1])));
     log += base::StringPrintf(" index:%d", index);
-    AtkObject* child = static_cast<AtkObject*>(g_value_get_pointer(&params[2]));
+    AtkObject* child =
+        static_cast<AtkObject*>(g_value_get_pointer(&UNSAFE_TODO(params[2])));
     if (child)
       log += " CHILD:(" + AtkObjectToString(child, log_name) + ")";
     else
       log += " CHILD:(NULL)";
   } else if (event_name.find("focus-event") != std::string::npos) {
     log += base::ToUpperASCII(event);
-    gchar* parameter = g_strdup_value_contents(&params[1]);
+    gchar* parameter = g_strdup_value_contents(&UNSAFE_TODO(params[1]));
     log += base::StringPrintf(":%s", parameter);
     g_free(parameter);
   } else {
     log += base::ToUpperASCII(event);
     if (event_name.find("state-change") != std::string::npos) {
-      std::string state_type = g_value_get_string(&params[1]);
+      std::string state_type = g_value_get_string(&UNSAFE_TODO(params[1]));
       log += ":" + base::ToUpperASCII(state_type);
 
-      gchar* parameter = g_strdup_value_contents(&params[2]);
+      gchar* parameter = g_strdup_value_contents(&UNSAFE_TODO(params[2]));
       log += base::StringPrintf(":%s", parameter);
       g_free(parameter);
 
     } else if (event_name.find("text-insert") != std::string::npos ||
                event_name.find("text-remove") != std::string::npos) {
       DCHECK_GE(n_params, 4u);
-      log += base::StringPrintf(
-          " (start=%i length=%i '%s')", g_value_get_int(&params[1]),
-          g_value_get_int(&params[2]), g_value_get_string(&params[3]));
+      log += base::StringPrintf(" (start=%i length=%i '%s')",
+                                g_value_get_int(&UNSAFE_TODO(params[1])),
+                                g_value_get_int(&UNSAFE_TODO(params[2])),
+                                g_value_get_string(&UNSAFE_TODO(params[3])));
     }
   }
 
@@ -388,7 +386,8 @@ void AXEventRecorderAuraLinux::ProcessATSPIEvent(const AtspiEvent* event) {
   GArray* state_array = atspi_state_set_get_states(atspi_states);
   std::vector<std::string> states;
   for (unsigned i = 0; i < state_array->len; i++) {
-    AtspiStateType state_type = g_array_index(state_array, AtspiStateType, i);
+    AtspiStateType state_type =
+        UNSAFE_TODO(g_array_index(state_array, AtspiStateType, i));
     states.push_back(ATSPIStateToString(state_type));
   }
   g_array_free(state_array, TRUE);
