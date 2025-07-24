@@ -152,6 +152,16 @@ inline constexpr const char kDeleteDoomedEntry_DeleteFromResources[] =
         "doomed=?";          // 3
 // clang-format on
 
+inline constexpr const char kDeleteDoomedEntries_SelectResources[] =
+    // clang-format off
+    "SELECT "
+        "res_id,"       // 0
+        "token_high,"   // 1
+        "token_low "    // 2
+    "FROM resources "
+    "WHERE doomed=?";   // 0
+// clang-format on
+
 inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
     // clang-format off
     "DELETE FROM resources "
@@ -186,7 +196,7 @@ inline constexpr const char
             "doomed=?";          // 2
 // clang-format on
 
-inline constexpr const char kDeleteLiveEntriesBetween_DeleteFromResources[] =
+inline constexpr const char kDeleteResourcesByResIds_DeleteFromResources[] =
     "DELETE FROM resources WHERE res_id=?";
 
 inline constexpr const char kUpdateEntryLastUsed_UpdateResourceLastUsed[] =
@@ -400,11 +410,12 @@ enum class Query {
   kCreateEntry_InsertIntoResources,
   kDoomEntry_MarkDoomedResources,
   kDeleteDoomedEntry_DeleteFromResources,
+  kDeleteDoomedEntries_SelectResources,
   kDeleteLiveEntry_DeleteFromResources,
   kDeleteAllEntries_DeleteFromResources,
   kDeleteAllEntries_DeleteFromBlobs,
   kDeleteLiveEntriesBetween_SelectResourcesForEviction,
-  kDeleteLiveEntriesBetween_DeleteFromResources,
+  kDeleteResourcesByResIds_DeleteFromResources,
   kUpdateEntryLastUsed_UpdateResourceLastUsed,
   kUpdateEntryHeaderAndLastUsed_UpdateResource,
   kWriteEntryData_UpdateResource,
@@ -450,6 +461,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kDoomEntry_MarkDoomedResources;
     case Query::kDeleteDoomedEntry_DeleteFromResources:
       return internal::kDeleteDoomedEntry_DeleteFromResources;
+    case Query::kDeleteDoomedEntries_SelectResources:
+      return internal::kDeleteDoomedEntries_SelectResources;
     case Query::kDeleteLiveEntry_DeleteFromResources:
       return internal::kDeleteLiveEntry_DeleteFromResources;
     case Query::kDeleteAllEntries_DeleteFromResources:
@@ -458,8 +471,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kDeleteAllEntries_DeleteFromBlobs;
     case Query::kDeleteLiveEntriesBetween_SelectResourcesForEviction:
       return internal::kDeleteLiveEntriesBetween_SelectResourcesForEviction;
-    case Query::kDeleteLiveEntriesBetween_DeleteFromResources:
-      return internal::kDeleteLiveEntriesBetween_DeleteFromResources;
+    case Query::kDeleteResourcesByResIds_DeleteFromResources:
+      return internal::kDeleteResourcesByResIds_DeleteFromResources;
     case Query::kUpdateEntryLastUsed_UpdateResourceLastUsed:
       return internal::kUpdateEntryLastUsed_UpdateResourceLastUsed;
     case Query::kUpdateEntryHeaderAndLastUsed_UpdateResource:

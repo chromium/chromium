@@ -225,6 +225,15 @@ class SqlPersistentStoreTest : public testing::Test {
     return future.Get();
   }
 
+  // Synchronous wrapper for DeleteDoomedEntries.
+  SqlPersistentStore::Error DeleteDoomedEntries(
+      base::flat_set<base::UnguessableToken> excluded_tokens) {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->DeleteDoomedEntries(std::move(excluded_tokens),
+                                future.GetCallback());
+    return future.Get();
+  }
+
   // Synchronous wrapper for DeleteLiveEntry.
   SqlPersistentStore::Error DeleteLiveEntry(const CacheEntryKey& key) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
@@ -1336,6 +1345,166 @@ TEST_F(SqlPersistentStoreTest, DeleteAllEntriesEmpty) {
   // Verify the cache is still empty.
   EXPECT_EQ(GetEntryCount(), 0);
   EXPECT_EQ(GetSizeOfAllEntries(), 0);
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteDoomedEntries) {
+  CreateAndInitStore();
+  const CacheEntryKey kKeyToDoom1("key-to-doom1");
+  const CacheEntryKey kKeyToDoom2("key-to-doom2");
+  const CacheEntryKey kKeyToDoomActive("key-to-doom-active");
+  const CacheEntryKey kKeyToKeep("key-to-keep");
+
+  // Create entries that will be doomed.
+  auto create_result1 = CreateEntry(kKeyToDoom1);
+  ASSERT_TRUE(create_result1.has_value());
+  const auto token_to_doom1 = create_result1->token;
+
+  // Create entries that will be doomed.
+  auto create_result2 = CreateEntry(kKeyToDoom2);
+  ASSERT_TRUE(create_result2.has_value());
+  const auto token_to_doom2 = create_result2->token;
+
+  // Create an entry that will be doomed but also excluded from deletion.
+  auto create_result3 = CreateEntry(kKeyToDoomActive);
+  ASSERT_TRUE(create_result3.has_value());
+  const auto token_to_doom_active = create_result3->token;
+
+  // Create an entry that will be kept.
+  auto create_result4 = CreateEntry(kKeyToKeep);
+  // There should be 4 created entries.
+  ASSERT_TRUE(create_result4.has_value());
+  const auto token_to_keep = create_result4->token;
+
+  // There should be 4 created entries.
+  ASSERT_EQ(GetEntryCount(), 4);
+
+  // Write data to the entries that will be doomed.
+  const std::string kData1 = "doomed_data1";
+  WriteDataAndAssertSuccess(kKeyToDoom1, token_to_doom1, /*old_body_end=*/0,
+                            /*offset=*/0, kData1, /*truncate=*/false);
+  const std::string kData2 = "doomed_data2";
+  WriteDataAndAssertSuccess(kKeyToDoom2, token_to_doom2, /*old_body_end=*/0,
+                            /*offset=*/0, kData2, /*truncate=*/false);
+  const std::string kData3 = "doomed_active_data";
+  WriteDataAndAssertSuccess(kKeyToDoomActive, token_to_doom_active,
+                            /*old_body_end=*/0,
+                            /*offset=*/0, kData3, /*truncate=*/false);
+  const std::string kData4 = "keep-data";
+  WriteDataAndAssertSuccess(kKeyToKeep, token_to_keep, /*old_body_end=*/0,
+                            /*offset=*/0, kData4, /*truncate=*/false);
+  // Doom all the entries that will be doomed.
+  ASSERT_EQ(DoomEntry(kKeyToDoom1, token_to_doom1),
+            SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(DoomEntry(kKeyToDoom2, token_to_doom2),
+            SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(DoomEntry(kKeyToDoomActive, token_to_doom_active),
+            SqlPersistentStore::Error::kOk);
+  // The entry count after dooming 3 entries should be 1.
+  ASSERT_EQ(GetEntryCount(), 1);
+
+  // All resource blobs should be still available.
+  EXPECT_EQ(CountResourcesTable(), 4);
+  CheckBlobData(token_to_doom1, {{0, kData1}});
+  CheckBlobData(token_to_doom2, {{0, kData2}});
+  CheckBlobData(token_to_doom_active, {{0, kData3}});
+  CheckBlobData(token_to_keep, {{0, kData4}});
+
+  base::HistogramTester histogram_tester;
+
+  // Delete all doomed entries except for kKeyToDoomActive.
+  ASSERT_EQ(DeleteDoomedEntries({token_to_doom_active}),
+            SqlPersistentStore::Error::kOk);
+
+  // Verify that `DeleteDoomedEntriesCount` UMA was recorded in the histogram.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.DeleteDoomedEntriesCount", 2, 1);
+
+  // Verify the entries for kKeyToDoom1 and kKeyToDoom2 are physically gone from
+  // the database.
+  EXPECT_EQ(CountResourcesTable(), 2);
+  CheckBlobData(token_to_doom1, {});
+  CheckBlobData(token_to_doom2, {});
+  CheckBlobData(token_to_doom_active, {{0, kData3}});
+  CheckBlobData(token_to_keep, {{0, kData4}});
+
+  // Verify the live entry is still present.
+  auto open_result1 = OpenEntry(kKeyToKeep);
+  ASSERT_TRUE(open_result1.has_value());
+  ASSERT_TRUE(open_result1->has_value());
+  EXPECT_EQ(open_result1.value()->token, token_to_keep);
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteDoomedEntriesNoDeletion) {
+  CreateAndInitStore();
+
+  // Scenario 1: No doomed entries exist.
+  base::HistogramTester histogram_tester;
+  ASSERT_EQ(DeleteDoomedEntries({}), SqlPersistentStore::Error::kOk);
+  // Verify that the count histogram recorded a value of 0.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.DeleteDoomedEntriesCount", 0, 1);
+  EXPECT_EQ(CountResourcesTable(), 0);
+
+  // Scenario 2: All doomed entries are excluded.
+  const CacheEntryKey kKeyToDoom1("key-to-doom1");
+  const CacheEntryKey kKeyToDoom2("key-to-doom2");
+  auto create_result1 = CreateEntry(kKeyToDoom1);
+  ASSERT_TRUE(create_result1.has_value());
+  const auto token_to_doom1 = create_result1->token;
+  auto create_result2 = CreateEntry(kKeyToDoom2);
+  ASSERT_TRUE(create_result2.has_value());
+  const auto token_to_doom2 = create_result2->token;
+  ASSERT_EQ(DoomEntry(kKeyToDoom1, token_to_doom1),
+            SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(DoomEntry(kKeyToDoom2, token_to_doom2),
+            SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(CountResourcesTable(), 2);
+
+  base::HistogramTester histogram_tester2;
+  // Exclude all doomed entries from deletion.
+  ASSERT_EQ(DeleteDoomedEntries({token_to_doom1, token_to_doom2}),
+            SqlPersistentStore::Error::kOk);
+  // Verify that the count histogram recorded a value of 0.
+  histogram_tester2.ExpectUniqueSample(
+      "Net.SqlDiskCache.DeleteDoomedEntriesCount", 0, 1);
+  // Verify that no entries were deleted.
+  EXPECT_EQ(CountResourcesTable(), 2);
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteDoomedEntriesWithCorruptToken) {
+  CreateAndInitStore();
+  const CacheEntryKey kKeyToDoom("key-to-doom");
+
+  // Create an entry that will be doomed.
+  auto create_result = CreateEntry(kKeyToDoom);
+  ASSERT_TRUE(create_result.has_value());
+  const auto token_to_doom = create_result->token;
+
+  // Doom the entry.
+  ASSERT_EQ(DoomEntry(kKeyToDoom, token_to_doom),
+            SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(GetEntryCount(), 0);
+  ASSERT_EQ(CountResourcesTable(), 1);
+
+  // Manually corrupt the token in the database.
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
+        "UPDATE resources SET token_high = 0, token_low = 0 WHERE cache_key = "
+        "?"));
+    statement.BindString(0, kKeyToDoom.string());
+    ASSERT_TRUE(statement.Run());
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Delete all doomed entries.
+  ASSERT_EQ(DeleteDoomedEntries({}), SqlPersistentStore::Error::kOk);
+
+  // Verify that the corruption was detected.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.Backend.DeleteDoomedEntries.ResultWithCorruption",
+      SqlPersistentStore::Error::kOk, 1);
 }
 
 TEST_F(SqlPersistentStoreTest, ChangeEntryCountOverflowRecovers) {

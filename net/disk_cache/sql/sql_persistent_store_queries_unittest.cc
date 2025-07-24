@@ -152,6 +152,10 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "INDEX index_resources_token "
             "(token_high=? AND token_low=?)"},
+           {Query::kDeleteDoomedEntries_SelectResources,
+            "`--SEARCH resources USING "
+            "INDEX index_resources_doomed_res_id "
+            "(doomed=?)"},
            {Query::kDeleteLiveEntry_DeleteFromResources,
             "`--SEARCH resources USING "
             "COVERING INDEX index_resources_cache_key_doomed "
@@ -162,7 +166,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "INDEX index_resources_doomed_last_used "
             "(doomed=? AND last_used>? AND last_used<?)"},
-           {Query::kDeleteLiveEntriesBetween_DeleteFromResources,
+           {Query::kDeleteResourcesByResIds_DeleteFromResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kUpdateEntryLastUsed_UpdateResourceLastUsed,

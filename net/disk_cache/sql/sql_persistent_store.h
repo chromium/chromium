@@ -168,6 +168,14 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                  const base::UnguessableToken& token,
                                  ErrorCallback callback) = 0;
 
+  // Physically deletes all entries that have been marked as doomed, except for
+  // those whose tokens are in `excluded_tokens`. This is typically used for
+  // background cleanup of doomed entries that are no longer in use. `callback`
+  // is invoked upon completion.
+  virtual void DeleteDoomedEntries(
+      base::flat_set<base::UnguessableToken> excluded_tokens,
+      ErrorCallback callback) = 0;
+
   // Deletes a "live" entry, i.e., an entry whose `doomed` flag is not set.
   // This is for use for entries which are not open; open entries should have
   // `DoomEntry()` called, and then `DeleteDoomedEntry()` once they're no longer
