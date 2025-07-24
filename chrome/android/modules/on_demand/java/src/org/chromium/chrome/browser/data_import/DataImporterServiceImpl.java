@@ -7,15 +7,22 @@ package org.chromium.chrome.browser.data_import;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 import android.util.Base64;
 
+import io.grpc.Context;
+import io.grpc.Contexts;
+import io.grpc.Metadata;
 import io.grpc.Server;
+import io.grpc.ServerInterceptor;
+import io.grpc.ServerInterceptors;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.binder.AndroidComponentAddress;
 import io.grpc.binder.BinderServerBuilder;
 import io.grpc.binder.IBinderReceiver;
 import io.grpc.binder.InboundParcelablePolicy;
+import io.grpc.binder.ParcelableUtils;
 import io.grpc.binder.SecurityPolicies;
 import io.grpc.binder.SecurityPolicy;
 import io.grpc.binder.ServerSecurityPolicy;
@@ -50,7 +57,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
         mServer =
                 BinderServerBuilder.forAddress(
                                 AndroidComponentAddress.forContext(getService()), mBinderReceiver)
-                        .addService(new TargetService())
+                        .addService(
+                                ServerInterceptors.intercept(
+                                        new TargetService(), new ParcelableMetadataInterceptor()))
                         .securityPolicy(getServerSecurityPolicy())
                         .inboundParcelablePolicy(getInboundParcelablePolicy())
                         .build();
@@ -127,6 +136,30 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
         return InboundParcelablePolicy.newBuilder().setAcceptParcelableMetadataValues(true).build();
     }
 
+    // Key under which the ParcelFileDescriptor (aka input file) is stored in the request metadata
+    // and, after the interceptor has copied it, in the grpc context.
+    static final String PFD_KEY = "pfd-keys-bin";
+    static final Context.Key<ParcelFileDescriptor> PFD_CONTEXT_KEY = Context.key(PFD_KEY);
+
+    // Helper class which copies the ParcelFileDescriptor (input file) from request metadata into
+    // the grpc context, where individual RPC implementations can access it.
+    static class ParcelableMetadataInterceptor implements ServerInterceptor {
+        static final Metadata.Key<ParcelFileDescriptor> PFD_METADATA_KEY =
+                ParcelableUtils.metadataKey(PFD_KEY, ParcelFileDescriptor.CREATOR);
+
+        @Override
+        public <ReqT, RespT> io.grpc.ServerCall.Listener<ReqT> interceptCall(
+                io.grpc.ServerCall<ReqT, RespT> call,
+                io.grpc.Metadata headers,
+                io.grpc.ServerCallHandler<ReqT, RespT> next) {
+            Context context = Context.current();
+            if (headers.containsKey(PFD_METADATA_KEY)) {
+                context = context.withValue(PFD_CONTEXT_KEY, headers.get(PFD_METADATA_KEY));
+            }
+            return Contexts.interceptCall(context, call, headers, next);
+        }
+    }
+
     static class TargetService extends TargetServiceGrpc.TargetServiceImplBase {
         @Override
         public void handshake(
@@ -165,7 +198,14 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     return;
             }
 
-            // TODO(crbug.com/431218724): Parse the file descriptor out of the request metadata.
+            ParcelFileDescriptor pfd = PFD_CONTEXT_KEY.get(Context.current());
+            if (pfd == null) {
+                responseObserver.onError(
+                        new StatusRuntimeException(
+                                Status.INVALID_ARGUMENT.withDescription(
+                                        "Missing ParcelFileDescriptor")));
+                return;
+            }
 
             BrowserFileType fileType;
             try {
