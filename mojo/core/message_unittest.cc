@@ -8,11 +8,13 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -81,7 +83,7 @@ class TestMessageBase {
 
  protected:
   virtual void GetSerializedSize(size_t* num_bytes, size_t* num_handles) = 0;
-  virtual void SerializeHandles(MojoHandle* handles) = 0;
+  virtual void SerializeHandles(base::span<MojoHandle> handles) = 0;
   virtual void SerializePayload(void* buffer) = 0;
 
  private:
@@ -93,7 +95,7 @@ class TestMessageBase {
     message->GetSerializedSize(&num_bytes, &num_handles);
     std::vector<MojoHandle> handles(num_handles);
     if (num_handles)
-      message->SerializeHandles(handles.data());
+      message->SerializeHandles(handles);
 
     MojoAppendMessageDataOptions options;
     options.struct_size = sizeof(options);
@@ -134,7 +136,9 @@ class NeverSerializedMessage : public TestMessageBase {
   void GetSerializedSize(size_t* num_bytes, size_t* num_handles) override {
     NOTREACHED();
   }
-  void SerializeHandles(MojoHandle* handles) override { NOTREACHED(); }
+  void SerializeHandles(base::span<MojoHandle> handles) override {
+    NOTREACHED();
+  }
   void SerializePayload(void* buffer) override { NOTREACHED(); }
 
   base::OnceClosure destruction_callback_;
@@ -168,7 +172,7 @@ class SimpleMessage : public TestMessageBase {
     *num_handles = handles_.size();
   }
 
-  void SerializeHandles(MojoHandle* handles) override {
+  void SerializeHandles(base::span<MojoHandle> handles) override {
     ASSERT_TRUE(!handles_.empty());
     for (size_t i = 0; i < handles_.size(); ++i)
       handles[i] = handles_[i].release().value();
@@ -1092,7 +1096,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndIgnoreMessage, MessageTest, h) {
   ExtendPayloadWithHandlesAttachedViaExtension
 #endif  // BUILDFLAG(IS_IOS)
 TEST_F(MessageTest, MAYBE_ExtendPayloadWithHandlesAttachedViaExtension) {
-  MojoHandle handles[5];
+  std::array<MojoHandle, 5> handles;
   CreateMessagePipe(&handles[0], &handles[4]);
   PlatformChannel channel;
   handles[1] =
@@ -1110,21 +1114,25 @@ TEST_F(MessageTest, MAYBE_ExtendPayloadWithHandlesAttachedViaExtension) {
   uint32_t buffer_size = 0;
   EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(nullptr, &message));
   EXPECT_EQ(MOJO_RESULT_OK,
-            MojoAppendMessageData(message, 0, handles, 1, nullptr, &buffer,
-                                  &buffer_size));
+            MojoAppendMessageData(message, 0, handles.data(), 1, nullptr,
+                                  &buffer, &buffer_size));
   uint32_t payload_size = buffer_size * 64;
   EXPECT_EQ(MOJO_RESULT_OK,
             MojoAppendMessageData(message, payload_size, nullptr, 0, nullptr,
                                   &buffer, nullptr));
 
   // Add more handles.
-  EXPECT_EQ(MOJO_RESULT_OK, MojoAppendMessageData(message, 0, handles + 1, 1,
-                                                  nullptr, &buffer, nullptr));
+  EXPECT_EQ(
+      MOJO_RESULT_OK,
+      MojoAppendMessageData(message, 0, base::span(handles).subspan(1u).data(),
+                            1, nullptr, &buffer, nullptr));
   MojoAppendMessageDataOptions options;
   options.struct_size = sizeof(options);
   options.flags = MOJO_APPEND_MESSAGE_DATA_FLAG_COMMIT_SIZE;
-  EXPECT_EQ(MOJO_RESULT_OK, MojoAppendMessageData(message, 0, handles + 2, 3,
-                                                  &options, &buffer, nullptr));
+  EXPECT_EQ(
+      MOJO_RESULT_OK,
+      MojoAppendMessageData(message, 0, base::span(handles).subspan(2u).data(),
+                            3, &options, &buffer, nullptr));
   memset(buffer, 'x', payload_size);
 
   RunTestClient("ReadMessageAndCheckPipe", [&](MojoHandle h) {

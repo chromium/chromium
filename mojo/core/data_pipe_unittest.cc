@@ -2104,8 +2104,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
 
   MojoHandle handles[6];
   EXPECT_EQ("o_O", ReadMessageWithHandles(parent, handles, 6));
-  MojoHandle* producers = &handles[0];
-  MojoHandle* consumers = &handles[3];
+  base::span<MojoHandle> producers = handles;
+  base::span<MojoHandle> consumers =
+      base::span<MojoHandle>(handles).subspan(3u);
 
   // Wait on producer 0
   EXPECT_EQ(MOJO_RESULT_OK,
