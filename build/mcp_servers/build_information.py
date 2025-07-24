@@ -11,7 +11,10 @@ import platform
 import re
 import sys
 
+# vpython-provided modules
+# pylint: disable=import-error
 from mcp.server import fastmcp
+# pylint: enable=import-error
 
 # pylint: disable=wrong-import-position
 sys.path.insert(0,
@@ -65,12 +68,12 @@ def get_host_os() -> str:
     """Retrieves the operating system used by the current host. The return
     value is directly comparable with the target_os GN arg, except in the case
     of 'unknown'."""
-    platform = sys.platform
-    if platform in ('linux', 'cygwin'):
+    current_platform = sys.platform
+    if current_platform in ('linux', 'cygwin'):
         return ValidOs.LINUX
-    if platform == 'win32':
+    if current_platform == 'win32':
         return ValidOs.WIN
-    if platform == 'darwin':
+    if current_platform == 'darwin':
         return ValidOs.MAC
     return ValidOs.UNKNOWN
 
@@ -82,27 +85,19 @@ def get_host_arch() -> str:
     value is directly comparable with the target_cpu GN arg, except in the
     case of 'unknown'."""
     arch = _get_host_architecture()
-    if arch == Architecture.UNKNOWN:
-        return ValidArch.UNKNOWN
     bits = _get_host_bits()
-    if bits == Bitness.UNKNOWN:
-        return ValidArch.UNKNOWN
 
-    if arch == Architecture.INTEL:
-        if bits == Bitness.THIRTY_TWO:
+    match (arch, bits):
+        case (Architecture.INTEL, Bitness.THIRTY_TWO):
             return ValidArch.X86
-        if bits == Bitness.SIXTY_FOUR:
+        case (Architecture.INTEL, Bitness.SIXTY_FOUR):
             return ValidArch.X64
-        return ValidArch.UNKNOWN
-
-    if arch == Architecture.ARM:
-        if bits == Bitness.THIRTY_TWO:
+        case (Architecture.ARM, Bitness.THIRTY_TWO):
             return ValidArch.ARM
-        if bits == Bitness.SIXTY_FOUR:
+        case (Architecture.ARM, Bitness.SIXTY_FOUR):
             return ValidArch.ARM64
-        return ValidArch.UNKNOWN
-
-    return ValidArch.UNKNOWN
+        case _:
+            return ValidArch.UNKNOWN
 
 
 def _get_host_architecture() -> Architecture:

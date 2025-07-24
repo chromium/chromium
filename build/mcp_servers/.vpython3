@@ -61,6 +61,10 @@ wheel: <
   version: "version:8.0.3"
 >
 wheel: <
+  name: "infra/python/wheels/colorama-py2_py3"
+  version: "version:0.4.1"
+>
+wheel: <
   name: "infra/python/wheels/h11-py3"
   version: "version:0.16.0"
 >
@@ -85,7 +89,7 @@ wheel: <
   version: "version:2.11.7"
 >
 wheel: <
-  name: "infra/python/wheels/pydantic_core-py3"
+  name: "infra/python/wheels/pydantic_core/${vpython_platform}"
   version: "version:2.33.2"
 >
 wheel: <

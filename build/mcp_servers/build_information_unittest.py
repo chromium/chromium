@@ -4,12 +4,17 @@
 # found in the LICENSE file.
 """Unittests for build_information.py."""
 
+# pylint: disable=protected-access
+
 import os
 import sys
 import unittest
 from unittest import mock
 
+# vpython-provided modules
+# pylint: disable=import-error
 from pyfakefs import fake_filesystem_unittest
+# pylint: enable=import-error
 
 # pylint: disable=wrong-import-position
 sys.path.insert(0,
@@ -269,8 +274,8 @@ class GetValidBuildDirectoriesForCurrentHostTest(unittest.TestCase):
         mock_get_arch.return_value = build_information.ValidArch.X64
         mock_get_valid_dirs.return_value = ['out/Release']
 
-        result = build_information.get_valid_build_directories_for_current_host(
-        )
+        result = (
+            build_information.get_valid_build_directories_for_current_host())
 
         mock_get_valid_dirs.assert_called_once_with('linux', 'x64')
         self.assertEqual(result, ['out/Release'])
@@ -282,8 +287,8 @@ class GetValidBuildDirectoriesForCurrentHostTest(unittest.TestCase):
         mock_get_os.return_value = build_information.ValidOs.UNKNOWN
         mock_get_arch.return_value = build_information.ValidArch.X64
 
-        result = build_information.get_valid_build_directories_for_current_host(
-        )
+        result = (
+            build_information.get_valid_build_directories_for_current_host())
         self.assertEqual(result, [])
 
     @mock.patch('mcp_servers.build_information.get_host_arch')
@@ -293,8 +298,8 @@ class GetValidBuildDirectoriesForCurrentHostTest(unittest.TestCase):
         mock_get_os.return_value = build_information.ValidOs.LINUX
         mock_get_arch.return_value = build_information.ValidArch.UNKNOWN
 
-        result = build_information.get_valid_build_directories_for_current_host(
-        )
+        result = (
+            build_information.get_valid_build_directories_for_current_host())
         self.assertEqual(result, [])
 
 
