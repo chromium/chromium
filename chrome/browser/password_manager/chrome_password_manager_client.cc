@@ -1949,7 +1949,8 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   HideFillingUI();
 
   undo_password_change_controller_.OnNavigation(
-      page.GetMainDocument().GetLastCommittedOrigin());
+      page.GetMainDocument().GetLastCommittedOrigin(),
+      page.GetMainDocument().GetPageUkmSourceId());
 }
 
 void ChromePasswordManagerClient::WebContentsDestroyed() {

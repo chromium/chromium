@@ -18739,6 +18739,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.ChangeRecovery" singular="True">
+  <owner>otara@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Metrics related to the recovery flow of the password change feature. Records
+    users enter and exit the recovery flow.
+  </summary>
+  <metric name="PasswordChangeRecoveryFlow"
+      enum="PasswordChangeRecoveryFlowState">
+    <summary>
+      Records the start and the end of the password recovery flow. We will
+      consider the start to be an interaction with a &quot;Trouble signing
+      in&quot; button in the password autofill dropdown or a proactive recovery
+      popup that we show if we detect a failed log-in attempt. The end of the
+      flow is considered to be an updated primary password (the backup password
+      becomes the primary password). This happens after the user accepts the
+      &quot;update password&quot; bubble
+
+      This mirrors PasswordChangeRecoveryFlow in UMA.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PasswordManager.ChangeSubmission" singular="True">
   <owner>fiorellab@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
@@ -18746,11 +18776,13 @@ be describing additional metrics about the same event.
     Metrics related to password change submission flow. Recorded when password
     are saved by password change submission trajectory.
   </summary>
-  <metric name="LogInWithPasswordChangeSubmission" enum="Boolean">
+  <metric name="LogInWithPasswordChangeSubmission"
+      enum="LogInWithChangedPasswordOutcome">
     <summary>
-      Records whether or not a login is successful using a password previously
-      saved through password change submission flow. It is recorded at the
-      moment of detecting a succesful or failed log in.
+      Records whether or not a login is successful using either the primary or
+      the backup password previously saved through password change submission
+      flow. It is recorded at the moment of detecting a succesful or failed log
+      in.
 
       This mirrors LogInWithPasswordChangeSubmission in UMA.
     </summary>

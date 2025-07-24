@@ -565,7 +565,9 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {
+  using UkmEntry = ukm::builders::PasswordManager_ChangeRecovery;
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto* mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
       TrustSafetySentimentServiceFactory::GetInstance()
           ->SetTestingFactoryAndUse(
@@ -609,6 +611,12 @@ TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {
       password_manager::PasswordChangeRecoveryFlowState::
           kPrimaryPasswordUpdated,
       1);
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], UkmEntry::kPasswordChangeRecoveryFlowName,
+      static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
+                           kPrimaryPasswordUpdated));
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PhishedPasswordUpdated) {

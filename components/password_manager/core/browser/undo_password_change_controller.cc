@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -59,6 +60,11 @@ void UndoPasswordChangeController::OnTroubleSigningInClicked(
   base::UmaHistogramEnumeration(
       kPasswordChangeRecoveryFlowStateHistogram,
       PasswordChangeRecoveryFlowState::kTroubleSigningInClicked);
+  ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id_)
+      .SetPasswordChangeRecoveryFlow(
+          static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
+                               kTroubleSigningInClicked))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void UndoPasswordChangeController::OnLoginPotentiallyFailed(
@@ -105,15 +111,22 @@ void UndoPasswordChangeController::OnSuggestionsHidden() {
     base::UmaHistogramEnumeration(
         kPasswordChangeRecoveryFlowStateHistogram,
         PasswordChangeRecoveryFlowState::kProactiveRecoveryPopupShown);
+    ukm::builders::PasswordManager_ChangeRecovery(ukm_source_id_)
+        .SetPasswordChangeRecoveryFlow(
+            static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
+                                 kProactiveRecoveryPopupShown))
+        .Record(ukm::UkmRecorder::Get());
   }
   FinishObserving();
 }
 
-void UndoPasswordChangeController::OnNavigation(const url::Origin& origin) {
+void UndoPasswordChangeController::OnNavigation(const url::Origin& origin,
+                                                ukm::SourceId ukm_source_id) {
   if (current_origin_ != origin) {
     ResetFlow();
   }
   current_origin_ = origin;
+  ukm_source_id_ = ukm_source_id;
 }
 
 void UndoPasswordChangeController::ResetFlow() {

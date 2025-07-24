@@ -130,7 +130,7 @@ void RecordMetricsForLoginWithChangedPassword(
   }
 
   ukm::builders::PasswordManager_ChangeSubmission(ukm_id)
-      .SetLogInWithPasswordChangeSubmission(login_successful)
+      .SetLogInWithPasswordChangeSubmission(static_cast<int>(outcome))
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramEnumeration(kLogInWithPasswordChangeSubmissionHistogram,
                                 outcome);

@@ -1763,7 +1763,6 @@ TEST_P(PasswordManagerTest,
   PasswordForm form(MakeSimpleForm());
   form.type = PasswordForm::Type::kChangeSubmission;
   store_->AddLogin(form);
-
   FormData observed_form = form.form_data;
   manager()->OnPasswordFormsParsed(&driver_, {observed_form});
   manager()->OnPasswordFormsRendered(&driver_, {observed_form});
@@ -1783,18 +1782,17 @@ TEST_P(PasswordManagerTest,
           ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
       ukm::builders::PasswordManager_ChangeSubmission::
           kLogInWithPasswordChangeSubmissionName,
-      0);
+      static_cast<int>(
+          LogInWithChangedPasswordOutcome::kPrimaryPasswordFailed));
 }
 
 TEST_P(PasswordManagerTest,
        MetricsReportedLogInWithPrimaryPasswordChangeSubmission) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
   form.type = PasswordForm::Type::kChangeSubmission;
   store_->AddLogin(form);
-
   std::vector<FormData> observed = {form.form_data};
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -1816,7 +1814,8 @@ TEST_P(PasswordManagerTest,
           ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
       ukm::builders::PasswordManager_ChangeSubmission::
           kLogInWithPasswordChangeSubmissionName,
-      1);
+      static_cast<int>(
+          LogInWithChangedPasswordOutcome::kPrimaryPasswordSucceeded));
 }
 
 TEST_P(PasswordManagerTest,
@@ -1850,7 +1849,7 @@ TEST_P(PasswordManagerTest,
           ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
       ukm::builders::PasswordManager_ChangeSubmission::
           kLogInWithPasswordChangeSubmissionName,
-      0);
+      static_cast<int>(LogInWithChangedPasswordOutcome::kBackupPasswordFailed));
 }
 
 TEST_P(PasswordManagerTest,
@@ -1886,7 +1885,8 @@ TEST_P(PasswordManagerTest,
           ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
       ukm::builders::PasswordManager_ChangeSubmission::
           kLogInWithPasswordChangeSubmissionName,
-      1);
+      static_cast<int>(
+          LogInWithChangedPasswordOutcome::kBackupPasswordSucceeded));
 }
 
 #if BUILDFLAG(IS_ANDROID)

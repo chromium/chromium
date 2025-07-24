@@ -971,6 +971,12 @@ void ManagePasswordsUIController::MaybeHandlePasswordRecoveryFinished(
         "PasswordManager.PasswordChangeRecoveryFlow",
         password_manager::PasswordChangeRecoveryFlowState::
             kPrimaryPasswordUpdated);
+    ukm::builders::PasswordManager_ChangeRecovery(
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())
+        .SetPasswordChangeRecoveryFlow(
+            static_cast<int>(password_manager::PasswordChangeRecoveryFlowState::
+                                 kPrimaryPasswordUpdated))
+        .Record(ukm::UkmRecorder::Get());
     MaybeTriggerPasswordChangeDelayedSurvey(web_contents()->GetWeakPtr());
   }
 }

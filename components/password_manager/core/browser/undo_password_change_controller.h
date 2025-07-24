@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace password_manager {
 
@@ -100,7 +101,7 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
 
   // Called when the URL that the user interacts with changes. Resets the flow
   // if the signon realm changes.
-  void OnNavigation(const url::Origin& url);
+  void OnNavigation(const url::Origin& url, ukm::SourceId ukm_source_id);
 
  private:
   // PasswordFormManagerObserver:
@@ -123,6 +124,7 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
   base::WeakPtr<PasswordManagerDriver> driver_;
   // Keep the pointer to the cache to unsubsribe at destruction
   raw_ptr<PasswordFormCache> password_form_cache_;
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 };
 
 }  // namespace password_manager
