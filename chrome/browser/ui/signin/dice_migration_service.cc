@@ -55,8 +55,6 @@ bool IsUserEligibleForDiceMigration(Profile* profile) {
     // The user is not implicitly signed in.
     return false;
   }
-  // TODO(crbug.com/399838468): Add more eligibility checks, for example,
-  // whether there is a persistent auth error.
   return true;
 }
 
@@ -141,29 +139,29 @@ DiceMigrationService::DiceMigrationService(Profile* profile)
     return;
   }
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CHECK(identity_manager);
+  primary_account_info_ =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  identity_manager_observation_.Observe(identity_manager);
+
   dialog_trigger_timer_.Start(
       FROM_HERE, user_education::features::GetSessionStartGracePeriod(),
       base::BindOnce(
           &DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown,
           base::Unretained(this)));
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
   account_managed_status_finder_ =
       std::make_unique<signin::AccountManagedStatusFinder>(
-          identity_manager,
-          identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin),
+          identity_manager, primary_account_info_,
           base::BindOnce(
               &DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown,
               base::Unretained(this)));
 }
 
 DiceMigrationService::~DiceMigrationService() {
-  if (dialog_widget_) {
-    dialog_widget_observation_.Reset();
-    dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-  }
+  StopTimerOrCloseDialog();
 }
 
 // static
@@ -288,6 +286,31 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
   UpdateDialogShownCountAndTime();
 }
 
+void DiceMigrationService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      CHECK_EQ(primary_account_info_, event.GetPreviousState().primary_account);
+      StopTimerOrCloseDialog();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      CHECK_EQ(primary_account_info_, event.GetCurrentState().primary_account);
+      break;
+  }
+}
+
+void DiceMigrationService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (account_info == primary_account_info_ && error.IsPersistentError()) {
+    // The user is in persistent error state. As soon as the user re-auths, they
+    // will enter the explicitly signed in state.
+    StopTimerOrCloseDialog();
+  }
+}
+
 void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
   if (dialog_trigger_timer_.IsRunning() ||
       !IsUserEligibleForDiceMigration(profile_)) {
@@ -308,6 +331,16 @@ void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
     case signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom:
     case signin::AccountManagedStatusFinderOutcome::kEnterprise:
       return;
+  }
+}
+
+void DiceMigrationService::StopTimerOrCloseDialog() {
+  CHECK(!dialog_trigger_timer_.IsRunning() || !dialog_widget_);
+  identity_manager_observation_.Reset();
+  if (dialog_widget_) {
+    dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  } else if (dialog_trigger_timer_.IsRunning()) {
+    dialog_trigger_timer_.Stop();
   }
 }
 

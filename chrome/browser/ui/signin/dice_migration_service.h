@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -39,7 +40,9 @@ extern const char kDiceMigrationDialogShownCount[];
 // dismissed the dialog unknowingly, for example, by closing the browser.
 extern const char kDiceMigrationDialogLastShownTime[];
 
-class DiceMigrationService : public KeyedService, public views::WidgetObserver {
+class DiceMigrationService : public KeyedService,
+                             public views::WidgetObserver,
+                             public signin::IdentityManager::Observer {
  public:
   // The maximum number of times the dialog can be shown.
   static const int kMaxDialogShownCount;
@@ -64,18 +67,36 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   // `views::WidgetObserver`:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // `signin::IdentityManager::Observer`:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
+
   void OnTimerFinishOrAccountManagedStatusKnown();
+
+  void StopTimerOrCloseDialog();
 
   // Shows the Dice migration offer dialog if the user is eligible for it.
   void ShowDiceMigrationOfferDialogIfUserEligible();
 
-  // Getters/setter for the dialog interaction count and last interaction time
-  // prefs.
+  // Getters/setter for the dialog shown count and last shown time prefs.
   int GetDialogShownCount() const;
   base::Time GetDialogLastShownTime() const;
   void UpdateDialogShownCountAndTime();
 
   raw_ptr<Profile> profile_ = nullptr;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+
+  // The account info of the account taken into account here.
+  CoreAccountInfo primary_account_info_;
+
+  // Timer used to trigger the dialog after a grace period.
   base::OneShotTimer dialog_trigger_timer_;
   std::unique_ptr<signin::AccountManagedStatusFinder>
       account_managed_status_finder_;

@@ -34,7 +34,7 @@ constexpr char kIndeterminableTestEmail[] = "test@indeterminable.com";
 // NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
 #define DICE_MIGRATION_TEST_F(test_suite, test_name)    \
   IN_PROC_BROWSER_TEST_F(test_suite, PRE_##test_name) { \
-    ImplicitlySignIn();                                 \
+    ImplicitlySignIn(kTestEmail);                       \
   }                                                     \
   IN_PROC_BROWSER_TEST_F(test_suite, test_name)
 
@@ -52,13 +52,20 @@ bool ContainsViewWithId(const views::View* view, ui::ElementIdentifier id) {
 
 class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
  public:
-  void ImplicitlySignIn() {
+  void ImplicitlySignIn(const std::string& email) {
     AccountInfo account_info = signin::MakeAccountAvailable(
         GetIdentityManager(),
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
             .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-            .Build(kTestEmail));
+            .Build(email));
+  }
+
+  void FireDialogTriggerTimer() {
+    base::OneShotTimer& timer =
+        GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+    ASSERT_TRUE(timer.IsRunning());
+    timer.FireNow();
   }
 
   Profile* GetProfile() { return browser()->profile(); }
@@ -129,13 +136,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
                        PRE_ImplicitlySignedIn) {
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(kTestEmail));
+  ImplicitlySignIn(kTestEmail);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
@@ -150,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   // Trigger the timer.
-  GetDiceMigrationService()->GetDialogTriggerTimerForTesting().FireNow();
+  FireDialogTriggerTimer();
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
@@ -173,21 +174,22 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
       new_selected_types));
 
   // Show migration bubble.
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
+  FireDialogTriggerTimer();
 
   views::Widget* dialog_widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
   ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
   // Simulate clicking on accept button.
   dialog_widget->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
+  waiter.Wait();
 
-  EXPECT_TRUE(PrefValueChecker(GetProfile()->GetPrefs(),
-                               prefs::kExplicitBrowserSignin, base::Value(true))
-                  .Wait());
+  // The explicit sign-in pref is set, this marks the user as explicitly
+  // signed in.
+  EXPECT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // This should set the relevant user selected types.
   EXPECT_TRUE(GetSyncService()->GetUserSettings()->GetSelectedTypes().HasAll(
@@ -204,10 +206,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Show the migration bubble.
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
+  FireDialogTriggerTimer();
 
   views::Widget* dialog_widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
@@ -244,10 +243,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   GetProfile()->GetPrefs()->SetInteger(kDiceMigrationDialogShownCount, 1);
 
   // Show the migration bubble.
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
+  FireDialogTriggerTimer();
 
   views::Widget* widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
@@ -318,10 +314,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       time_now);
 
   // Show the migration bubble.
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
+  FireDialogTriggerTimer();
 
   views::Widget* widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
@@ -346,7 +339,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
                        PRE_DoNotShowDialogIfShownLessThanWeekAgo) {
-  ImplicitlySignIn();
+  ImplicitlySignIn(kTestEmail);
 
   // Set the dialog last shown time to (`kMinTimeBetweenDialogInDays` - 1) days
   // ago.
@@ -370,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
                        PRE_ShowDialogIfShownMoreThanAWeekAgo) {
-  ImplicitlySignIn();
+  ImplicitlySignIn(kTestEmail);
 
   // Set the dialog last shown time to (`kMinTimeBetweenDialogInDays` + 1) days
   // ago.
@@ -403,10 +396,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, ConsumerAccount) {
             signin::AccountManagedStatusFinderOutcome::kConsumerGmail);
 
   // Simulate the timer firing.
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
+  FireDialogTriggerTimer();
 
   // The dialog is shown.
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
@@ -414,12 +404,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, ConsumerAccount) {
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_EnterpriseAccount) {
   // Implicitly sign in with a known enterprise test account.
-  AccountInfo account_info = signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(kEnterpriseTestEmail));
+  ImplicitlySignIn(kEnterpriseTestEmail);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, EnterpriseAccount) {
@@ -433,10 +418,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, EnterpriseAccount) {
             signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom);
 
   // Simulate the timer firing.
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
+  FireDialogTriggerTimer();
 
   // The dialog is not shown.
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
@@ -445,12 +427,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, EnterpriseAccount) {
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
                        PRE_TimerFinishedButAccountManagedStatusNotKnown) {
   // Implicitly sign in with a test account whose managed status is not known.
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(kIndeterminableTestEmail));
+  ImplicitlySignIn(kIndeterminableTestEmail);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -464,10 +441,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
   ASSERT_EQ(account_managed_status_finder.GetOutcome(),
             signin::AccountManagedStatusFinderOutcome::kPending);
 
-  base::OneShotTimer& timer =
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_TRUE(timer.IsRunning());
-  timer.FireNow();
+  FireDialogTriggerTimer();
 
   // The dialog is not shown.
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
@@ -501,10 +475,130 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   // Simulate the timer firing.
-  GetDiceMigrationService()->GetDialogTriggerTimerForTesting().FireNow();
+  FireDialogTriggerTimer();
 
   // The dialog is now shown.
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      StopTimerUponPersistentAuthError) {
+  // The timer has started.
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+
+  // Simulate a persistent auth error.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
+
+  // The timer is stopped.
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      CloseDialogUponPersistentAuthError) {
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Simulate a persistent auth error.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
+  waiter.Wait();
+
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+// This can happen due to race condition between the timer firing and the dialog
+// being closed.
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      AcceptDialogAfterPersistentAuthError) {
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  // Simulate a persistent auth error.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
+
+  // The dialog is not destroyed yet due to the race condition.
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Simulate clicking on accept button.
+  dialog_widget->CloseWithReason(
+      views::Widget::ClosedReason::kAcceptButtonClicked);
+  waiter.Wait();
+
+  // No migration is performed.
+  EXPECT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, StopTimerUponSignout) {
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+
+  // Sign out.
+  signin::ClearPrimaryAccount(GetIdentityManager());
+
+  // The timer is stopped.
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, CloseDialogUponSignout) {
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Sign out.
+  signin::ClearPrimaryAccount(GetIdentityManager());
+  waiter.Wait();
+
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      StopTimerUponPrimaryAccountChange) {
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+
+  // Change the primary account.
+  ImplicitlySignIn("test2@gmail.com");
+
+  // The timer is stopped.
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      CloseDialogUponPrimaryAccountChange) {
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Change the primary account.
+  ImplicitlySignIn("test2@gmail.com");
+  waiter.Wait();
+
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
 class DiceMigrationServiceSyncTest : public SyncTest {
@@ -621,13 +715,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount,
     PRE_LimitDialogShownCount) {
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(kTestEmail));
+  ImplicitlySignIn(kTestEmail);
   GetProfile()->GetPrefs()->SetInteger(kDiceMigrationDialogShownCount,
                                        GetParam());
 }
@@ -656,13 +744,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount,
     PRE_DialogVariants) {
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(kTestEmail));
+  ImplicitlySignIn(kTestEmail);
   GetProfile()->GetPrefs()->SetInteger(kDiceMigrationDialogShownCount,
                                        GetParam());
 }
