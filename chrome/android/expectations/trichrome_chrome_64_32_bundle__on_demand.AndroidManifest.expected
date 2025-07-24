@@ -2,16 +2,16 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
-    featureSplit="weblayer"
+    featureSplit="on_demand"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="34"
-    platformBuildVersionName="14"
-    android:versionCode="OFFSET=20"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16"
+    android:versionCode="OFFSET=33"
     android:versionName="#.#.#.#">
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
-  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <uses-split android:name="chrome"/>
   <application/>
 </manifest>
