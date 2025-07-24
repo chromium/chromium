@@ -8,18 +8,19 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/logging.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios_ns_url_session_bridge.h"
-#import "ios/web/public/browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 GaiaAuthFetcherIOS::GaiaAuthFetcherIOS(
     GaiaAuthConsumer* consumer,
     gaia::GaiaSource source,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    web::BrowserState* browser_state)
+    ProfileIOS* profile)
     : GaiaAuthFetcher(consumer, source, url_loader_factory),
-      browser_state_(browser_state),
-      bridge_(new GaiaAuthFetcherIOSNSURLSessionBridge(this, browser_state_)) {}
+      bridge_(std::make_unique<GaiaAuthFetcherIOSNSURLSessionBridge>(this,
+                                                                     profile)) {
+}
 
 GaiaAuthFetcherIOS::~GaiaAuthFetcherIOS() {}
 
