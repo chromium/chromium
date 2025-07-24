@@ -370,7 +370,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
     web::WebState::CreateParams params(
-        GetProfile()->CreateOffTheRecordBrowserStateWithTestingFactories(
+        GetProfile()->CreateOffTheRecordProfileWithTestingFactories(
             {TestProfileIOS::TestingFactory{
                 TipsManagerIOSFactory::GetInstance(),
                 TipsManagerIOSFactory::GetDefaultFactory()}}));

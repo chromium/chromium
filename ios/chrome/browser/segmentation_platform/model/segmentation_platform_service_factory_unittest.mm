@@ -146,11 +146,10 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
     WaitForServiceInit();
 
     ProfileIOS* otr_profile =
-        profile_data_->profile
-            ->CreateOffTheRecordBrowserStateWithTestingFactories(
-                {TestProfileIOS::TestingFactory{
-                    SegmentationPlatformServiceFactory::GetInstance(),
-                    SegmentationPlatformServiceFactory::GetDefaultFactory()}});
+        profile_data_->profile->CreateOffTheRecordProfileWithTestingFactories(
+            {TestProfileIOS::TestingFactory{
+                SegmentationPlatformServiceFactory::GetInstance(),
+                SegmentationPlatformServiceFactory::GetDefaultFactory()}});
     ASSERT_FALSE(
         SegmentationPlatformServiceFactory::GetForProfile(otr_profile));
   }

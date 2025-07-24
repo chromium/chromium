@@ -128,21 +128,6 @@ class TestProfileIOS final : public ProfileIOS {
   // This method will be called without factories if the
   // method `GetOffTheRecordProfile()` is called on
   // this object.
-  // TODO(crbug.com/358299863): Remove this function once fully migrated.
-  TestProfileIOS* CreateOffTheRecordBrowserStateWithTestingFactories(
-      TestingFactories testing_factories = {});
-
-  // Creates an off-the-record TestProfileIOS for
-  // the current object, installing `testing_factories`
-  // first.
-  //
-  // This is an error to call this method if the current
-  // TestProfileIOS already has a off-the-record
-  // object, or is itself off-the-record.
-  //
-  // This method will be called without factories if the
-  // method `GetOffTheRecordProfile()` is called on
-  // this object.
   TestProfileIOS* CreateOffTheRecordProfileWithTestingFactories(
       TestingFactories testing_factories = {});
 

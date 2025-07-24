@@ -14,7 +14,6 @@ class ListFamilyMembersServiceFactoryTest : public PlatformTest {
  public:
   ListFamilyMembersServiceFactoryTest() {
     profile_ = (TestProfileIOS::Builder().Build());
-    profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
   }
 
   ProfileIOS* GetRegularProfile() { return profile_.get(); }

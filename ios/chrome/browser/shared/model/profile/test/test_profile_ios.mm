@@ -219,13 +219,6 @@ scoped_refptr<base::SequencedTaskRunner> TestProfileIOS::GetIOTaskRunner() {
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-TestProfileIOS*
-TestProfileIOS::CreateOffTheRecordBrowserStateWithTestingFactories(
-    TestingFactories testing_factories) {
-  return CreateOffTheRecordProfileWithTestingFactories(
-      std::move(testing_factories));
-}
-
 ProfileIOS* TestProfileIOS::GetOriginalProfile() {
   if (IsOffTheRecord()) {
     return original_profile_;
@@ -246,7 +239,7 @@ ProfileIOS* TestProfileIOS::GetOffTheRecordProfile() {
     return otr_profile_.get();
   }
 
-  return CreateOffTheRecordBrowserStateWithTestingFactories();
+  return CreateOffTheRecordProfileWithTestingFactories();
 }
 
 void TestProfileIOS::DestroyOffTheRecordProfile() {

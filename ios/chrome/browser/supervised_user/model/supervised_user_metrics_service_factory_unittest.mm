@@ -32,8 +32,7 @@ TEST_F(SupervisedUserMetricsServiceFactoryTest, CreateService) {
 // with an off-the-record ProfileIOS.
 TEST_F(SupervisedUserMetricsServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {
-  ProfileIOS* otr_profile =
-      profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   CHECK(otr_profile);
   supervised_user::SupervisedUserMetricsService* service =
       SupervisedUserMetricsServiceFactory::GetForProfile(otr_profile);

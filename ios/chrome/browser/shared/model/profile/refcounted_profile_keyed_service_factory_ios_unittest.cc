@@ -114,7 +114,6 @@ class RefcountedProfileKeyedServiceFactoryIOSTest
                                std::get<ServiceCreation>(GetParam()),
                                std::get<TestingCreation>(GetParam())) {
     test_profile_ = TestProfileIOS::Builder().Build();
-    test_profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
   }
 
   DummyServiceFactory& factory() { return dummy_service_factory_; }

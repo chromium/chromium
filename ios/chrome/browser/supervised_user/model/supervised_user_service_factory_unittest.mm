@@ -22,7 +22,6 @@ class SupervisedUserServiceFactoryTest : public PlatformTest {
  public:
   SupervisedUserServiceFactoryTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
   }
 
   ProfileIOS* GetRegularProfile() { return profile_.get(); }
