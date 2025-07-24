@@ -173,7 +173,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*instance_normalization_scale=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
-       /*layer_normalization_input=*/{},
+       /*layer_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*leaky_relu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*lstm_input=*/{},

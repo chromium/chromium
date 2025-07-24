@@ -80,6 +80,7 @@ constexpr base::cstring_view kOpTypeHardSigmoid = "HardSigmoid";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
 constexpr base::cstring_view kOpTypeInstanceNormalization =
     "InstanceNormalization";
+constexpr base::cstring_view kOpTypeLayerNormalization = "LayerNormalization";
 constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
 constexpr base::cstring_view kOpTypeMatMul = "MatMul";
 constexpr base::cstring_view kOpTypePad = "Pad";
@@ -339,6 +340,20 @@ std::string GraphBuilderOrt::GenerateNodeName(std::string_view label) {
                           kUnderscore);
 }
 
+std::string GraphBuilderOrt::GenerateEmulatedOpLabel(
+    base::cstring_view op_type,
+    std::string_view original_label,
+    std::string_view additional_tag) {
+  if (additional_tag.empty()) {
+    return base::JoinString({kInserted, op_type, kToEmulate, original_label},
+                            kUnderscore);
+  } else {
+    return base::JoinString(
+        {kInserted, op_type, additional_tag, kToEmulate, original_label},
+        kUnderscore);
+  }
+}
+
 std::string GraphBuilderOrt::GenerateOperandName() {
   next_operand_id_++;
   CHECK(next_operand_id_.IsValid());
@@ -393,51 +408,52 @@ std::string GraphBuilderOrt::CreateInt64InitializerForUint32Array(
 
 std::string GraphBuilderOrt::CreateInitializerForFloat(
     OperandDataType data_type,
-    base::span<const int64_t> shape,
+    base::span<const uint32_t> shape,
     float value) {
   base::CheckedNumeric<size_t> checked_operand_size =
       std::accumulate(shape.begin(), shape.end(),
                       base::CheckedNumeric<size_t>(1), std::multiplies());
   size_t operand_size = checked_operand_size.ValueOrDie();
+  base::FixedArray<int64_t> int64_shape(shape.begin(), shape.end());
   switch (data_type) {
     case OperandDataType::kFloat32: {
       base::FixedArray<float> data(operand_size, value);
-      return CreateInitializer<float>(shape, data);
+      return CreateInitializer<float>(int64_shape, data);
     }
     case OperandDataType::kFloat16: {
       base::FixedArray<uint16_t> data(operand_size,
                                       fp16_ieee_from_fp32_value(value));
-      return CreateInitializer<uint16_t>(shape, data);
+      return CreateInitializer<uint16_t>(int64_shape, data);
     }
     case OperandDataType::kInt32: {
       base::FixedArray<int32_t> data(operand_size,
                                      base::saturated_cast<int32_t>(value));
-      return CreateInitializer<int32_t>(shape, data);
+      return CreateInitializer<int32_t>(int64_shape, data);
     }
     case OperandDataType::kUint32: {
       base::FixedArray<uint32_t> data(operand_size,
                                       base::saturated_cast<uint32_t>(value));
-      return CreateInitializer<uint32_t>(shape, data);
+      return CreateInitializer<uint32_t>(int64_shape, data);
     }
     case OperandDataType::kInt64: {
       base::FixedArray<int64_t> data(operand_size,
                                      base::saturated_cast<int64_t>(value));
-      return CreateInitializer<int64_t>(shape, data);
+      return CreateInitializer<int64_t>(int64_shape, data);
     }
     case OperandDataType::kUint64: {
       base::FixedArray<uint64_t> data(operand_size,
                                       base::saturated_cast<uint64_t>(value));
-      return CreateInitializer<uint64_t>(shape, data);
+      return CreateInitializer<uint64_t>(int64_shape, data);
     }
     case OperandDataType::kInt8: {
       base::FixedArray<int8_t> data(operand_size,
                                     base::saturated_cast<int8_t>(value));
-      return CreateInitializer<int8_t>(shape, data);
+      return CreateInitializer<int8_t>(int64_shape, data);
     }
     case OperandDataType::kUint8: {
       base::FixedArray<uint8_t> data(operand_size,
                                      base::saturated_cast<uint8_t>(value));
-      return CreateInitializer<uint8_t>(shape, data);
+      return CreateInitializer<uint8_t>(int64_shape, data);
     }
     case OperandDataType::kInt4:
     case OperandDataType::kUint4: {
@@ -474,13 +490,13 @@ std::string GraphBuilderOrt::CreateScalarInitializer(OperandDataType data_type,
 
 std::string GraphBuilderOrt::CreateOneInitializer(
     OperandDataType data_type,
-    base::span<const int64_t> shape) {
+    base::span<const uint32_t> shape) {
   return CreateInitializerForFloat(data_type, shape, 1.0f);
 }
 
 std::string GraphBuilderOrt::CreateZeroInitializer(
     OperandDataType data_type,
-    base::span<const int64_t> shape) {
+    base::span<const uint32_t> shape) {
   return CreateInitializerForFloat(data_type, shape, 0.0f);
 }
 
@@ -587,6 +603,31 @@ void GraphBuilderOrt::AddSliceNode(base::cstring_view node_name,
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeSlice, node_name, inputs, outputs);
+}
+
+void GraphBuilderOrt::AddTransposeNode(base::cstring_view node_name,
+                                       base::cstring_view input,
+                                       base::cstring_view output,
+                                       base::span<const uint32_t> perm_value) {
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  base::FixedArray<int64_t> perm(perm_value.begin(), perm_value.end());
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAttrPerm, perm)};
+  model_editor_.AddNode(kOpTypeTranspose, node_name, inputs, outputs,
+                        attributes);
+}
+
+std::string GraphBuilderOrt::CreateTransposeNode(
+    base::cstring_view input,
+    base::span<const uint32_t> perm_value) {
+  const std::string node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeTranspose}, kUnderscore));
+  const std::string output = GenerateOperandName();
+
+  AddTransposeNode(node_name, input, output, perm_value);
+  return output;
 }
 
 std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
@@ -767,8 +808,7 @@ void GraphBuilderOrt::AddBatchNormalizationOperation(
   if (input_shape.size() > 1) {
     input_channels = input_shape[1];
   }
-  std::vector<int64_t> scale_and_bias_shape = {
-      base::checked_cast<int64_t>(input_channels)};
+  std::vector<uint32_t> scale_and_bias_shape = {input_channels};
 
   // ONNX BatchNormalization requires 5 inputs: input, scale, bias, mean and
   // variance. WebNN allows optional scale/bias, so create default ones if not
@@ -1034,8 +1074,8 @@ void GraphBuilderOrt::AddLogicalNotOperation(
 void GraphBuilderOrt::AddLogicalNotEqualOperation(
     const mojom::ElementWiseBinary& not_equal) {
   // Step 1: calculate `equal(a, b)`.
-  const std::string equal_node_name = GenerateNodeName(base::JoinString(
-      {kInserted, kOpTypeEqual, kToEmulate, not_equal.label}, kUnderscore));
+  const std::string equal_node_name =
+      GenerateNodeName(GenerateEmulatedOpLabel(kOpTypeEqual, not_equal.label));
   std::string lhs = GetOperandNameById(not_equal.lhs_operand_id);
   std::string rhs = GetOperandNameById(not_equal.rhs_operand_id);
   const std::string equal_output = GenerateOperandName();
@@ -1048,9 +1088,8 @@ void GraphBuilderOrt::AddLogicalNotEqualOperation(
   // Step 2: calculate `logicalNot(equal_output)`
   const std::string not_output = GenerateOperandName();
   std::array<const char*, 1> not_outputs = {not_output.c_str()};
-  const std::string not_node_name = GenerateNodeName(base::JoinString(
-      {kInserted, kOpTypeLogicalNot, kToEmulate, not_equal.label},
-      kUnderscore));
+  const std::string not_node_name = GenerateNodeName(
+      GenerateEmulatedOpLabel(kOpTypeLogicalNot, not_equal.label));
   model_editor_.AddNode(kOpTypeLogicalNot, not_node_name, equal_outputs,
                         not_outputs);
 
@@ -1424,11 +1463,10 @@ void GraphBuilderOrt::AddInstanceNormalizationOperation(
   // ONNX InstanceNormalization expects NCHW layout, channel is at index 1.
   CHECK_EQ(input_shape.size(), 4u);
   uint32_t input_channels = input_shape[1];
-  std::vector<int64_t> scale_and_bias_shape = {
-      base::checked_cast<int64_t>(input_channels)};
+  std::vector<uint32_t> scale_and_bias_shape = {input_channels};
 
   // ONNX InstanceNormalization requires 3 inputs: input, scale and bias.
-  // WebNN allows optional scale/bias, so create default ones if not provided
+  // WebNN allows optional scale/bias, so create default ones if not provided.
   // Default scale = 1.0 (no scaling), default bias = 0.0 (no offset).
   std::string scale, bias;
   if (instance_normalization.scale_operand_id) {
@@ -1454,6 +1492,244 @@ void GraphBuilderOrt::AddInstanceNormalizationOperation(
       kAttrEpsilon, instance_normalization.epsilon)};
   model_editor_.AddNode(kOpTypeInstanceNormalization, node_name, inputs,
                         outputs, attributes);
+}
+
+void GraphBuilderOrt::AddLayerNormalizationOperation(
+    const mojom::LayerNormalization& layer_normalization) {
+  const std::string node_name = GenerateNodeName(layer_normalization.label);
+  const std::string input =
+      GetOperandNameById(layer_normalization.input_operand_id);
+  const std::string output =
+      GetOperandNameById(layer_normalization.output_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  const OperandDescriptor& input_descriptor =
+      GetOperand(layer_normalization.input_operand_id).descriptor;
+  CHECK(data_type_limits.layer_normalization_input.Supports(input_descriptor));
+
+  std::string scale, bias;
+  if (layer_normalization.scale_operand_id) {
+    CHECK(data_type_limits.layer_normalization_input.Supports(
+        GetOperand(layer_normalization.scale_operand_id.value()).descriptor));
+    scale = GetOperandNameById(layer_normalization.scale_operand_id.value());
+  }
+  if (layer_normalization.bias_operand_id) {
+    CHECK(data_type_limits.layer_normalization_input.Supports(
+        GetOperand(layer_normalization.bias_operand_id.value()).descriptor));
+    bias = GetOperandNameById(layer_normalization.bias_operand_id.value());
+  }
+
+  std::vector<const char*> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+  const OperandDataType input_data_type = input_descriptor.data_type();
+  auto axes = layer_normalization.axes;
+  const std::vector<uint32_t>& input_shape = input_descriptor.shape();
+  // ONNX LayerNormalization doesn't support empty axes because it requires to
+  // set the first normalization dimension.
+  // https://onnx.ai/onnx/operators/onnx__LayerNormalization.html#attributes
+  // For WebNN layerNormalization, if axes is empty, no dimensions are reduced
+  // and the emulation can be simplified to `output = bias + (scale * 0).
+  // https://www.w3.org/TR/webnn/#dom-mllayernormalizationoptions-axes
+  if (axes.empty()) {
+    if (layer_normalization.bias_operand_id) {
+      const std::string zero =
+          CreateZeroInitializer(input_data_type, input_shape);
+      std::array<const char*, 2> add_inputs = {bias.c_str(), zero.c_str()};
+      return model_editor_.AddNode(kOpTypeAdd, node_name, add_inputs, outputs);
+    } else {
+      std::array<const char*, 2> sub_inputs = {input.c_str(), input.c_str()};
+      return model_editor_.AddNode(kOpTypeSub, node_name, sub_inputs, outputs);
+    }
+  }
+
+  const size_t axes_size = axes.size();
+  // Sort the indexes of the elements in the axes array based on their values
+  // and return the sorted index array for adding a transpose operation if
+  // needed. For example input shape is [2, 1, 4, 3], the shape of the scale and
+  // bias is [3, 1, 4] if axes is [3, 1, 2], the sorted axes would be [1, 2, 3],
+  // then the permutation would be (sorted indices array) [1, 2, 0].
+  std::optional<std::vector<uint32_t>> permutation;
+  if (!std::ranges::is_sorted(axes)) {
+    std::vector<uint32_t> sorted_indices(axes_size);
+    std::iota(sorted_indices.begin(), sorted_indices.end(), 0);
+    std::ranges::sort(sorted_indices, std::ranges::less(),
+                      [&axes](uint32_t index) { return axes[index]; });
+    permutation = std::move(sorted_indices);
+    std::ranges::sort(axes);
+  }
+
+  std::vector<uint32_t> scale_shape;
+  scale_shape.reserve(axes_size);
+  std::ranges::transform(
+      axes, std::back_inserter(scale_shape),
+      [&input_shape](uint32_t axis) { return input_shape[axis]; });
+  // Because ONNX LayerNormalization only accepts the first normalization
+  // dimension, it can only support WebNN layerNormalization whose axes are
+  // consecutive til the last dimension. Here we only check beginning and ending
+  // of the ascending sorted axes, because the blink validation code ensures
+  // axes not having duplicated values.
+  if (axes[axes_size - 1] == input_shape.size() - 1 &&
+      axes[0] == input_shape.size() - axes_size) {
+    if (layer_normalization.scale_operand_id) {
+      if (permutation.has_value()) {
+        scale = CreateTransposeNode(scale, permutation.value());
+      }
+    } else {
+      scale = CreateOneInitializer(input_data_type, scale_shape);
+    }
+    inputs.push_back(scale.c_str());
+
+    if (layer_normalization.bias_operand_id) {
+      if (permutation.has_value()) {
+        bias = CreateTransposeNode(bias, permutation.value());
+      }
+      inputs.push_back(bias.c_str());
+    }
+
+    std::array<ScopedOrtOpAttr, 2> attributes = {
+        model_editor_.CreateAttribute(kAttrAxis,
+                                      base::checked_cast<int64_t>(axes[0])),
+        model_editor_.CreateAttribute(kAttrEpsilon,
+                                      layer_normalization.epsilon)};
+
+    model_editor_.AddNode(kOpTypeLayerNormalization, node_name, inputs, outputs,
+                          attributes);
+  } else {
+    // Emulate layerNormalization by scale * ((input - mean) / sqrt(variance +
+    // epsilon)) + bias. Calculate mean as follows:
+    // reduceOptions = {axes, keepDimensions: true};
+    // mean = builder.reduceMean(input, reduceOptions).
+    const std::string reduce_mean_1_label = GenerateEmulatedOpLabel(
+        kOpTypeReduceMean, layer_normalization.label, "1");
+    const std::string reduce_mean_1_node_name =
+        GenerateNodeName(reduce_mean_1_label);
+    const std::string mean_output = GenerateOperandName();
+    std::string axes_name = CreateInt64InitializerForUint32Array(axes);
+    std::array<const char*, 2> reduce_mean_1_inputs = {input.c_str(),
+                                                       axes_name.c_str()};
+    std::array<const char*, 1> reduce_mean_1_outputs = {mean_output.c_str()};
+    std::array<ScopedOrtOpAttr, 2> reduce_mean_1_attributes = {
+        model_editor_.CreateAttribute(kAttrKeepDims, 1),
+        model_editor_.CreateAttribute(kAttrNoopWithEmptyAxes, 1)};
+    model_editor_.AddNode(kOpTypeReduceMean, reduce_mean_1_node_name,
+                          reduce_mean_1_inputs, reduce_mean_1_outputs,
+                          reduce_mean_1_attributes);
+
+    // Calculate variance as follows:
+    // powValue = builder.constant(input.dataType, 2);
+    // variance = builder.reduceMean(builder.pow(builder.sub(input, mean),
+    // powValue), reduceOptions);
+    const std::string sub_label =
+        GenerateEmulatedOpLabel(kOpTypeSub, layer_normalization.label);
+    const std::string sub_node_name = GenerateNodeName(sub_label);
+    const std::string sub_output = GenerateOperandName();
+
+    std::array<const char*, 2> sub_inputs = {input.c_str(),
+                                             mean_output.c_str()};
+    std::array<const char*, 1> sub_outputs = {sub_output.c_str()};
+    model_editor_.AddNode(kOpTypeSub, sub_node_name, sub_inputs, sub_outputs);
+
+    const std::string pow_label =
+        GenerateEmulatedOpLabel(kOpTypePow, layer_normalization.label);
+    std::string pow_node_name = GenerateNodeName(pow_label);
+    const std::string pow_output = GenerateOperandName();
+    std::string pow_value =
+        CreateScalarInitializer(input_data_type, MLNumber::FromFloat64(2.0f));
+    std::array<const char*, 2> pow_inputs = {sub_output.c_str(),
+                                             pow_value.c_str()};
+    std::array<const char*, 1> pow_outputs = {pow_output.c_str()};
+    model_editor_.AddNode(kOpTypePow, pow_node_name, pow_inputs, pow_outputs);
+
+    const std::string reduce_mean_2_label = GenerateEmulatedOpLabel(
+        kOpTypeReduceMean, layer_normalization.label, "2");
+    const std::string reduce_mean_2_node_name =
+        GenerateNodeName(reduce_mean_2_label);
+    const std::string variance_output = GenerateOperandName();
+    std::array<const char*, 2> reduce_mean_2_inputs = {pow_output.c_str(),
+                                                       axes_name.c_str()};
+    std::array<const char*, 1> reduce_mean_2_outputs = {
+        variance_output.c_str()};
+    std::array<ScopedOrtOpAttr, 2> reduce_mean_2_attributes = {
+        model_editor_.CreateAttribute(kAttrKeepDims, 1),
+        model_editor_.CreateAttribute(kAttrNoopWithEmptyAxes, 1)};
+    model_editor_.AddNode(kOpTypeReduceMean, reduce_mean_2_node_name,
+                          reduce_mean_2_inputs, reduce_mean_2_outputs,
+                          reduce_mean_2_attributes);
+
+    const std::string add_label =
+        GenerateEmulatedOpLabel(kOpTypeAdd, layer_normalization.label);
+    const std::string add_node_name = GenerateNodeName(add_label);
+    const std::string add_output = GenerateOperandName();
+    std::string epsilon_value = CreateScalarInitializer(
+        input_data_type, MLNumber::FromFloat64(layer_normalization.epsilon));
+    std::array<const char*, 2> add_inputs = {variance_output.c_str(),
+                                             epsilon_value.c_str()};
+    std::array<const char*, 1> add_outputs = {add_output.c_str()};
+    model_editor_.AddNode(kOpTypeAdd, add_node_name, add_inputs, add_outputs);
+
+    const std::string sqrt_label =
+        GenerateEmulatedOpLabel(kOpTypeSqrt, layer_normalization.label);
+    const std::string sqrt_node_name = GenerateNodeName(sqrt_label);
+    const std::string sqrt_output = GenerateOperandName();
+    std::array<const char*, 1> sqrt_inputs = {add_output.c_str()};
+    std::array<const char*, 1> sqrt_outputs = {sqrt_output.c_str()};
+    model_editor_.AddNode(kOpTypeSqrt, sqrt_node_name, sqrt_inputs,
+                          sqrt_outputs);
+
+    const std::string div_label =
+        GenerateEmulatedOpLabel(kOpTypeDiv, layer_normalization.label);
+    const std::string div_node_name = GenerateNodeName(div_label);
+    const std::string div_output = GenerateOperandName();
+    std::array<const char*, 2> div_inputs = {sub_output.c_str(),
+                                             sqrt_output.c_str()};
+    std::array<const char*, 1> div_outputs = {div_output.c_str()};
+    model_editor_.AddNode(kOpTypeDiv, div_node_name, div_inputs, div_outputs);
+
+    // Create compatible_shape for broadcasting scale and bias with intermediate
+    // results sach as `div_output` and `mul_output`. Initialize all dimensions
+    // to 1, then set normalization axes to match input dimensions for
+    // element-wise operations.
+    // Example: input_shape=[2,3,4,5], axes=[1,3] -> compatible_shape=[1,3,1,5].
+    std::vector<uint32_t> compatible_shape(input_shape.size(), 1);
+    for (auto axis : axes) {
+      compatible_shape[axis] = input_shape[axis];
+    }
+    if (layer_normalization.scale_operand_id) {
+      if (permutation.has_value()) {
+        scale = CreateTransposeNode(scale, permutation.value());
+      }
+      if (scale_shape.size() != input_shape.size()) {
+        scale = CreateReshapeNode(scale, compatible_shape);
+      }
+    } else {
+      scale = CreateOneInitializer(input_data_type, compatible_shape);
+    }
+
+    const std::string mul_label =
+        GenerateEmulatedOpLabel(kOpTypeMul, layer_normalization.label);
+    const std::string mul_node_name = GenerateNodeName(mul_label);
+    std::array<const char*, 2> mul_inputs = {scale.c_str(), div_output.c_str()};
+    if (layer_normalization.bias_operand_id) {
+      const std::string mul_output = GenerateOperandName();
+      std::array<const char*, 1> mul_outputs = {mul_output.c_str()};
+      model_editor_.AddNode(kOpTypeMul, mul_node_name, mul_inputs, mul_outputs);
+      if (permutation.has_value()) {
+        bias = CreateTransposeNode(bias, permutation.value());
+      }
+      if (scale_shape.size() != input_shape.size()) {
+        bias = CreateReshapeNode(bias, compatible_shape);
+      }
+
+      const std::string add_2_label =
+          GenerateEmulatedOpLabel(kOpTypeAdd, layer_normalization.label, "2");
+      const std::string add_2_node_name = GenerateNodeName(add_2_label);
+      std::array<const char*, 2> add_2_inputs = {mul_output.c_str(),
+                                                 bias.c_str()};
+      model_editor_.AddNode(kOpTypeAdd, add_2_node_name, add_2_inputs, outputs);
+    } else {
+      model_editor_.AddNode(kOpTypeMul, mul_node_name, mul_inputs, outputs);
+    }
+  }
 }
 
 void GraphBuilderOrt::AddLeakyReluOperation(
@@ -1489,8 +1765,8 @@ void GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
       input_data_type, MLNumber::FromFloat64(linear.beta));
 
   // Step 1: Create 'Mul' node (alpha * x)
-  const std::string mul_node_label = base::JoinString(
-      {kInserted, kOpTypeMul, kToEmulate, linear.label}, kUnderscore);
+  const std::string mul_node_label =
+      GenerateEmulatedOpLabel(kOpTypeMul, linear.label);
   const std::string mul_node_name = GenerateNodeName(mul_node_label);
   const std::string input = GetOperandNameById(linear.input_operand_id);
   std::array<const char*, 2> mul_inputs = {input.c_str(), alpha.c_str()};
@@ -1499,8 +1775,8 @@ void GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
   model_editor_.AddNode(kOpTypeMul, mul_node_name, mul_inputs, mul_outputs);
 
   // Step 2: Create 'Add' node (mul_output + beta)
-  const std::string add_node_label = base::JoinString(
-      {kInserted, kOpTypeAdd, kToEmulate, linear.label}, kUnderscore);
+  const std::string add_node_label =
+      GenerateEmulatedOpLabel(kOpTypeAdd, linear.label);
   const std::string add_node_name = GenerateNodeName(add_node_label);
   std::array<const char*, 2> add_inputs = {mul_output.c_str(), beta.c_str()};
   const std::string output = GetOperandNameById(linear.output_operand_id);
@@ -1629,14 +1905,14 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   if (reduce.axes.empty()) {
     switch (reduce.kind) {
       case mojom::Reduce::Kind::kLogSum: {
-        const std::string node_name = GenerateNodeName(base::JoinString(
-            {kInserted, kOpTypeLog, kToEmulate, reduce.label}, kUnderscore));
+        const std::string node_name =
+            GenerateNodeName(GenerateEmulatedOpLabel(kOpTypeLog, reduce.label));
         model_editor_.AddNode(kOpTypeLog, node_name, inputs, outputs);
         return;
       }
       case mojom::Reduce::Kind::kSumSquare: {
-        const std::string node_name = GenerateNodeName(base::JoinString(
-            {kInserted, kOpTypePow, kToEmulate, reduce.label}, kUnderscore));
+        const std::string node_name =
+            GenerateNodeName(GenerateEmulatedOpLabel(kOpTypePow, reduce.label));
         const std::string pow = CreateScalarInitializer<int64_t>(2);
         inputs.push_back(pow.c_str());
         model_editor_.AddNode(kOpTypePow, node_name, inputs, outputs);
@@ -1644,8 +1920,8 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
       }
       case mojom::Reduce::Kind::kL1:
       case mojom::Reduce::Kind::kL2: {
-        const std::string node_name = GenerateNodeName(base::JoinString(
-            {kInserted, kOpTypeAbs, kToEmulate, reduce.label}, kUnderscore));
+        const std::string node_name =
+            GenerateNodeName(GenerateEmulatedOpLabel(kOpTypeAbs, reduce.label));
         model_editor_.AddNode(kOpTypeAbs, node_name, inputs, outputs);
         return;
       }
@@ -2038,16 +2314,7 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   CHECK(context_properties_.data_type_limits.transpose_input.Supports(
       GetOperand(transpose.input_operand_id).descriptor));
 
-  std::array<const char*, 1> inputs = {input.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
-
-  std::vector<int64_t> perm_value(transpose.permutation.begin(),
-                                  transpose.permutation.end());
-  std::array<ScopedOrtOpAttr, 1> attributes = {
-      model_editor_.CreateAttribute(kAttrPerm, perm_value)};
-
-  model_editor_.AddNode(kOpTypeTranspose, node_name, inputs, outputs,
-                        attributes);
+  AddTransposeNode(node_name, input, output, transpose.permutation);
 }
 
 void GraphBuilderOrt::AddTriangularOperation(
@@ -2210,6 +2477,10 @@ GraphBuilderOrt::BuildModel() {
             *operation->get_instance_normalization());
         break;
       }
+      case mojom::Operation::Tag::kLayerNormalization: {
+        AddLayerNormalizationOperation(*operation->get_layer_normalization());
+        break;
+      }
       case mojom::Operation::Tag::kLeakyRelu: {
         AddLeakyReluOperation(*operation->get_leaky_relu());
         break;
@@ -2321,7 +2592,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:

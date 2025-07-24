@@ -95,6 +95,12 @@ class GraphBuilderOrt {
   // `next_operation_id_`. ORT model doesn't allow duplicate names.
   std::string GenerateNodeName(std::string_view label);
 
+  // Generate a label for emulated operations by combining kInserted, op_type,
+  // optional additional_tag, kToEmulate, and the original operation label.
+  std::string GenerateEmulatedOpLabel(base::cstring_view op_type,
+                                      std::string_view original_label,
+                                      std::string_view additional_tag = "");
+
   // Create a new initializer for the graph with the given shape and data,
   // returning the name of the initializer.
   template <typename DataType>
@@ -126,7 +132,7 @@ class GraphBuilderOrt {
   // an initializer of `shape` with all elements set to `value`. The data type
   // of the initializer is determined by the `data_type` parameter.
   std::string CreateInitializerForFloat(OperandDataType data_type,
-                                        base::span<const int64_t> shape,
+                                        base::span<const uint32_t> shape,
                                         float value);
 
   // A helper method wrapping the `CreateScalarInitializer` method above. It
@@ -138,11 +144,11 @@ class GraphBuilderOrt {
 
   // A helper method creating an initializer with all elements set to 1.
   std::string CreateOneInitializer(OperandDataType data_type,
-                                   base::span<const int64_t> shape);
+                                   base::span<const uint32_t> shape);
 
   // A helper method creating an initializer with all elements set to 0.
   std::string CreateZeroInitializer(OperandDataType data_type,
-                                    base::span<const int64_t> shape);
+                                    base::span<const uint32_t> shape);
 
   void AddCastNode(base::cstring_view node_name,
                    base::cstring_view input,
@@ -178,6 +184,13 @@ class GraphBuilderOrt {
                     base::span<const int64_t> starts_value,
                     base::span<const int64_t> ends_value,
                     base::span<const int64_t> steps_value);
+
+  void AddTransposeNode(base::cstring_view node_name,
+                        base::cstring_view input,
+                        base::cstring_view output,
+                        base::span<const uint32_t> perm_value);
+  std::string CreateTransposeNode(base::cstring_view input,
+                                  base::span<const uint32_t> perm_value);
 
   // Clamp the indices to the range [-dim_size, dim_size), the given data type
   // should be indices's data type.
@@ -222,6 +235,8 @@ class GraphBuilderOrt {
   void AddHardSigmoidOperation(const mojom::HardSigmoid& hard_sigmoid);
   void AddInstanceNormalizationOperation(
       const mojom::InstanceNormalization& instance_normalization);
+  void AddLayerNormalizationOperation(
+      const mojom::LayerNormalization& layer_normalization);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddLinearOperation(const mojom::Linear& linear);
   void AddMatMulOperation(const mojom::Matmul& matmul);
