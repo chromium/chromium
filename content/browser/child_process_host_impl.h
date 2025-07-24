@@ -67,7 +67,6 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   static uint64_t ChildProcessUniqueIdToTracingProcessId(int child_process_id);
 
   // ChildProcessHost implementation
-  bool Send(IPC::Message* message) override;
   void ForceShutdown() override;
   std::optional<mojo::OutgoingInvitation>& GetMojoInvitation() override;
   void CreateChannelMojo() override;

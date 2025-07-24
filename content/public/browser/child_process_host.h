@@ -43,9 +43,9 @@ class ChildProcessHostDelegate;
 // the launched child process, with the other end held by the ChildProcessHost
 // (the primordial pipe is a content.mojom.ChildProcess pipe).
 //
-class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
+class CONTENT_EXPORT ChildProcessHost {
  public:
-  ~ChildProcessHost() override;
+  virtual ~ChildProcessHost();
 
   // This is a value never returned as the unique id of any child processes of
   // any kind, including the values returned by

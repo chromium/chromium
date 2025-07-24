@@ -198,8 +198,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
   const base::Process& GetProcess() override { return null_process_; }
 
  protected:
-  IPC::Sender* sender() { return process_host_.get(); }
-
   void SetBackgroundState(base::Process::Priority process_priority) {
     mojom::Renderer* renderer_interface = thread_;
     const mojom::RenderProcessVisibleState visible_state =

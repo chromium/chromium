@@ -213,14 +213,6 @@ bool ChildProcessHostImpl::IsChannelOpening() {
   return opening_channel_;
 }
 
-bool ChildProcessHostImpl::Send(IPC::Message* message) {
-  if (!channel_) {
-    delete message;
-    return false;
-  }
-  return channel_->Send(message);
-}
-
 // static
 ChildProcessId ChildProcessHost::GenerateChildProcessUniqueId() {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
