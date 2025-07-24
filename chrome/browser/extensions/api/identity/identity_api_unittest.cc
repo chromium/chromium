@@ -21,6 +21,8 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using testing::_;
 using testing::Mock;
 constexpr char kTestAccount[] = "test@example.com";
