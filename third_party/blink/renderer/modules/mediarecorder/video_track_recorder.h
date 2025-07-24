@@ -384,7 +384,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   Persistent<MediaStreamComponent> track_;
 
   // Holds inner class to encode using whichever codec is configured.
-  WTF::SequenceBound<Encoder> encoder_;
+  SequenceBound<Encoder> encoder_;
 
   const KeyFrameRequestProcessor::Configuration key_frame_config_;
   const CodecProfile codec_profile_;

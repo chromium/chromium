@@ -991,7 +991,7 @@ void VideoTrackRecorderImpl::CreateMediaVideoEncoder(
             MakeUnwrappingCrossThreadHandle(callback_interface())));
   }
 
-  encoder_ = WTF::SequenceBound<MediaRecorderEncoderWrapper>(
+  encoder_ = SequenceBound<MediaRecorderEncoderWrapper>(
       encoding_task_runner, encoding_task_runner, *codec_profile.profile,
       bits_per_second_, is_screencast, create_vea_encoder,
       create_vea_encoder

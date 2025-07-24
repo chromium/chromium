@@ -283,7 +283,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   std::unique_ptr<HTMLPreloadScanner> preload_scanner_;
   // A scanner used only for input provided to the insert() method.
   std::unique_ptr<HTMLPreloadScanner> insertion_preload_scanner_;
-  WTF::SequenceBound<BackgroundHTMLScanner> background_script_scanner_;
+  SequenceBound<BackgroundHTMLScanner> background_script_scanner_;
   HTMLPreloadScanner::BackgroundPtr background_scanner_;
   using BackgroundScanFn =
       WTF::CrossThreadRepeatingFunction<void(const KURL&, const String&)>;

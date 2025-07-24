@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 namespace {
 
 constexpr int kTestValue = 42;
@@ -38,16 +38,15 @@ TEST_F(SequenceBoundTest, CanInstantiate) {
       base::ThreadPool::CreateSingleThreadTaskRunner({}));
 
   sequence_bound.AsyncCall(&Foo::Bar).WithArgs(5);
-  sequence_bound.PostTaskWithThisObject(
-      blink::CrossThreadBindOnce([](Foo* foo) {}));
+  sequence_bound.PostTaskWithThisObject(CrossThreadBindOnce([](Foo* foo) {}));
 
   int test_value = -1;
   base::RunLoop run_loop;
-  sequence_bound.AsyncCall(&Foo::Baz).Then(blink::CrossThreadBindOnce(
+  sequence_bound.AsyncCall(&Foo::Baz).Then(CrossThreadBindOnce(
       &SequenceBoundTest::CheckValue, CrossThreadUnretained(this),
       CrossThreadUnretained(&run_loop), CrossThreadUnretained(&test_value)));
   run_loop.Run();
   EXPECT_EQ(test_value, kTestValue);
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -104,7 +104,7 @@ class MODULES_EXPORT AudioTrackRecorder
  private:
   // Creates an audio encoder from |codec|. Returns nullptr if the codec is
   // invalid.
-  WTF::SequenceBound<AudioTrackEncoder> CreateAudioEncoder(
+  SequenceBound<AudioTrackEncoder> CreateAudioEncoder(
       CodecId codec,
       AudioTrackEncoder::OnEncodedAudioCB on_encoded_audio_cb,
       AudioTrackEncoder::OnEncodedAudioErrorCB on_encoded_audio_error_cb,
@@ -123,7 +123,7 @@ class MODULES_EXPORT AudioTrackRecorder
   const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
 
   // Thin wrapper around the chosen encoder.
-  WTF::SequenceBound<AudioTrackEncoder> encoder_;
+  SequenceBound<AudioTrackEncoder> encoder_;
 
   // Number of frames per chunked buffer passed to the encoder.
   int frames_per_chunk_ = 0;
