@@ -51,9 +51,6 @@ const CGFloat kSmallButtonOpacity = 0.95;
 const CGFloat kMenuCornerRadius = 20;
 const CGFloat kButtonsCornerRadius = 16;
 
-// The height of the menu's header.
-const CGFloat kMenuHeaderHeight = 58;
-
 // The padding between the image and text of the large button.
 const CGFloat kLargeButtonImagePadding = 8;
 
@@ -68,9 +65,6 @@ const CGFloat kLargeButtonImagePadding = 8;
 @end
 
 @implementation PageActionMenuViewController {
-  // Stack view containing the entire UI for the presented sheet.
-  UIStackView* _wrapperStackView;
-
   // Stack view containing the menu's main content.
   UIStackView* _contentStackView;
 }
@@ -97,18 +91,12 @@ const CGFloat kLargeButtonImagePadding = 8;
   [self.view addSubview:blurEffectView];
   AddSameConstraints(blurEffectView, self.view);
 
-  _wrapperStackView = [[UIStackView alloc] init];
-  _wrapperStackView.axis = UILayoutConstraintAxisVertical;
-  _wrapperStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_wrapperStackView];
-
-  UIView* menuHeader = [self createMenuHeader];
-  [_wrapperStackView addArrangedSubview:menuHeader];
+  [self setupNavigationBar];
 
   _contentStackView = [[UIStackView alloc] init];
   _contentStackView.axis = UILayoutConstraintAxisVertical;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_wrapperStackView addArrangedSubview:_contentStackView];
+  [self.view addSubview:_contentStackView];
 
   // Horizontal stack view for the 2 side-by-side buttons.
   UIStackView* buttonsStackView = [self createSmallButtonsStackView];
@@ -131,24 +119,17 @@ const CGFloat kLargeButtonImagePadding = 8;
 
   [NSLayoutConstraint activateConstraints:@[
     // Anchors the menu to the sheet.
-    [_wrapperStackView.topAnchor
+    [_contentStackView.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
                        constant:kMenuTopPadding],
-    [_wrapperStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
-    [_wrapperStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
-
-    // Sets side padding to the content.
     [_contentStackView.leadingAnchor
-        constraintEqualToAnchor:_wrapperStackView.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
                        constant:kMenuSidePadding],
     [_contentStackView.trailingAnchor
-        constraintEqualToAnchor:_wrapperStackView.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kMenuSidePadding],
 
     // Anchors the height of menu elements.
-    [menuHeader.heightAnchor constraintEqualToConstant:kMenuHeaderHeight],
     [buttonsStackView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
@@ -186,7 +167,8 @@ const CGFloat kLargeButtonImagePadding = 8;
 - (CGFloat)preferredMenuHeight {
   CGFloat bottomPaddingAboveSafeArea =
       kMenuBottomPadding - self.view.safeAreaInsets.bottom;
-  return [_wrapperStackView
+  return self.navigationController.navigationBar.frame.size.height +
+         [_contentStackView
              systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
              .height +
          kMenuTopPadding + bottomPaddingAboveSafeArea;
@@ -198,26 +180,21 @@ const CGFloat kLargeButtonImagePadding = 8;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 
-// Creates a top bar header with a logo and dismiss button.
-- (UIView*)createMenuHeader {
-  // Configure the bar.
-  UINavigationBar* topBar = [[UINavigationBar alloc] init];
-  topBar.translatesAutoresizingMaskIntoConstraints = NO;
+// Setups the navigation bar with a logo and dismiss button.
+- (void)setupNavigationBar {
+  // Configure the bar appearance.
+  UINavigationBar* navigationBar = self.navigationController.navigationBar;
   UINavigationBarAppearance* appearance =
       [[UINavigationBarAppearance alloc] init];
   [appearance configureWithTransparentBackground];
-  topBar.standardAppearance = appearance;
+  navigationBar.standardAppearance = appearance;
 
   // Add the dismiss button.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(dismissPageActionMenu)];
-  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
-  navigationItem.rightBarButtonItem = dismissButton;
-  [topBar setItems:@[ navigationItem ] animated:NO];
-
-  return topBar;
+  self.navigationItem.rightBarButtonItem = dismissButton;
 }
 
 // Creates a horizontal stack view for the side-by-side small buttons.

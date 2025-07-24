@@ -50,7 +50,6 @@
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
-  [navigationController setNavigationBarHidden:YES animated:NO];
   navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
 
   [self.baseViewController presentViewController:navigationController
