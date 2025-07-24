@@ -97,8 +97,7 @@ std::unique_ptr<views::View> CreateAppList(
     auto* app_icon =
         app_row->AddChildView(std::make_unique<views::ImageView>());
     app_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        // TODO(crbug.com/424102053): Replace with finalized icon.
-        vector_icons::kScreenShareIcon, ui::kColorIconSecondary, 16));
+        vector_icons::kScreenRecordIcon, ui::kColorIconSecondary, 16));
 
     app_row->AddChildView(std::make_unique<views::Label>(
         base::UTF8ToUTF16(app_name), views::style::CONTEXT_LABEL));
@@ -148,8 +147,7 @@ MultiCaptureNotificationDetailsView::MultiCaptureNotificationDetailsView(
 
   auto* admin_icon = AddChildView(std::make_unique<views::ImageView>());
   admin_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      // TODO(crbug.com/424102053): Replace with finalized icon.
-      vector_icons::kScreenShareIcon, ui::kColorIcon, 24));
+      vector_icons::kScreenRecordIcon, ui::kColorIcon, 24));
   admin_icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   admin_icon->SetProperty(
       views::kMarginsKey,

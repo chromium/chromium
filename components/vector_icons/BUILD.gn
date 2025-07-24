@@ -205,6 +205,7 @@ if (current_toolchain == default_toolchain) {
       "router_off.icon",
       "save_cloud.icon",
       "science.icon",
+      "screen_record.icon",
       "screen_share.icon",
       "screen_share_old.icon",
       "search.icon",
