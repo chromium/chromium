@@ -10,8 +10,10 @@
 #include "device/fido/cable/v2_handshake.h"
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -408,18 +410,17 @@ std::array<uint8_t, kP256X962Length> PublicKeyOf(const EC_KEY* private_key) {
 }
 
 TEST(CableV2Encoding, Digits) {
-  uint8_t test_data[24];
+  std::array<uint8_t, 24> test_data;
   base::RandBytes(test_data);
 
   // |BytesToDigits| and |DigitsToBytes| should round-trip.
-  for (size_t i = 0; i < sizeof(test_data); i++) {
+  for (size_t i = 0; i < base::SpanificationSizeofForStdArray(test_data); i++) {
     std::string digits =
-        qr::BytesToDigits(base::span<const uint8_t>(test_data, i));
+        qr::BytesToDigits(base::span<const uint8_t>(test_data.data(), i));
     std::optional<std::vector<uint8_t>> test_data_again =
         qr::DigitsToBytes(digits);
     ASSERT_TRUE(test_data_again.has_value());
-    ASSERT_EQ(test_data_again.value(),
-              std::vector<uint8_t>(test_data, test_data + i));
+    ASSERT_EQ(test_data_again, base::span(test_data).first(i));
   }
 
   // |DigitsToBytes| should reject non-digit inputs.

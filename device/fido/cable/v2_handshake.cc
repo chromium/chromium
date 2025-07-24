@@ -14,10 +14,12 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -134,7 +136,8 @@ std::string DecodeDomain(KnownDomainID domain_id) {
   static_assert(sizeof(result) <= sizeof(digest), "");
   memcpy(&result, digest, sizeof(result));
 
-  static const char kBase32Chars[33] = "abcdefghijklmnopqrstuvwxyz234567";
+  static const std::string_view kBase32Chars =
+      "abcdefghijklmnopqrstuvwxyz234567";
   const int tld_value = result & 3;
   result >>= 2;
 
@@ -501,8 +504,9 @@ std::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
         v >> (kChunkSize * 8) != 0) {
       return std::nullopt;
     }
-    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
-    ret.insert(ret.end(), v_bytes, v_bytes + kChunkSize);
+    const base::span<const uint8_t> v_bytes =
+        base::as_writable_byte_span(base::span_from_ref(v)).first(kChunkSize);
+    ret.insert(ret.end(), v_bytes.begin(), v_bytes.end());
 
     in = in.substr(kChunkDigits);
   }
@@ -537,8 +541,10 @@ std::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
       return std::nullopt;
     }
 
-    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
-    ret.insert(ret.end(), v_bytes, v_bytes + remaining_bytes);
+    const base::span<const uint8_t> v_bytes =
+        base::as_writable_byte_span(base::span_from_ref(v))
+            .first(remaining_bytes);
+    ret.insert(ret.end(), v_bytes.begin(), v_bytes.end());
   }
 
   return ret;

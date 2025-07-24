@@ -13,6 +13,7 @@
 #include <array>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
@@ -300,8 +301,8 @@ void UnpackShorts(uint8_t byte0,
 }
 
 // Unpack a 6-byte MAC address.
-uint64_t UnpackSwitchMacAddress(const uint8_t* data) {
-  DCHECK(data);
+uint64_t UnpackSwitchMacAddress(base::span<const uint8_t, 6> data) {
+  DCHECK(!data.empty());
   uint64_t acc = data[5];
   acc = (acc << 8) | data[4];
   acc = (acc << 8) | data[3];
@@ -313,9 +314,9 @@ uint64_t UnpackSwitchMacAddress(const uint8_t* data) {
 
 // Unpack the analog stick parameters into |cal|.
 void UnpackSwitchAnalogStickParameters(
-    const uint8_t* data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
+  DCHECK(!data.empty());
   // Only fetch the dead zone and range ratio. The other parameters are unknown.
   UnpackShorts(data[3], data[4], data[5], &cal.dead_zone, &cal.range_ratio);
   if (cal.dead_zone == kCalBogusValue) {
@@ -327,9 +328,9 @@ void UnpackSwitchAnalogStickParameters(
 
 // Unpack the IMU calibration data into |cal|
 void UnpackSwitchImuCalibration(
-    const uint8_t* data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
+  DCHECK(!data.empty());
   // 24 bytes, as 4 groups of 3 16-bit little-endian values.
   cal.accelerometer_origin_x = (data[1] << 8) | data[0];
   cal.accelerometer_origin_y = (data[3] << 8) | data[2];
@@ -347,9 +348,9 @@ void UnpackSwitchImuCalibration(
 
 // Unpack the IMU horizontal offsets into |cal|.
 void UnpackSwitchImuHorizontalOffsets(
-    const uint8_t* data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
+  DCHECK(!data.empty());
   // 6 bytes, as 3 16-bit little-endian values.
   cal.horizontal_offset_x = (data[1] << 8) | data[0];
   cal.horizontal_offset_y = (data[3] << 8) | data[2];
@@ -358,9 +359,9 @@ void UnpackSwitchImuHorizontalOffsets(
 
 // Unpack the analog stick calibration data into |cal|.
 void UnpackSwitchAnalogStickCalibration(
-    const uint8_t* data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(data);
+  DCHECK(!data.empty());
   // 18 bytes, as 2 groups of 6 packed 12-bit values.
   UnpackShorts(data[0], data[1], data[2], &cal.lx_max, &cal.ly_max);
   UnpackShorts(data[3], data[4], data[5], &cal.lx_center, &cal.ly_center);
