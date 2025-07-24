@@ -64,9 +64,6 @@ if (use_bundled_fontconfig) {
       "//third_party/rust/read_fonts/v0_30:lib",
       "//third_party/rust/skrifa/v0_32:lib",
     ]
-
-    # TODO(https://crbug.com/429255379): Stop suppressing this warning.
-    rustflags = [ "-Amismatched_lifetime_syntaxes" ]
   }
 
   config("fontconfig_config") {
