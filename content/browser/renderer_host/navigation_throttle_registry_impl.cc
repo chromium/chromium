@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
+#include "content/browser/renderer_host/navigation_throttle_runner2.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h"
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
@@ -36,12 +37,28 @@
 
 namespace content {
 
+namespace {
+
+std::unique_ptr<NavigationThrottleRunnerBase> CreateNavigationThrottleRunner(
+    NavigationThrottleRegistryBase* registry,
+    int64_t navigation_id,
+    bool is_primary_main_frame) {
+  if (base::FeatureList::IsEnabled(features::kNavigationThrottleRunner2)) {
+    return std::make_unique<NavigationThrottleRunner2>(registry, navigation_id,
+                                                       is_primary_main_frame);
+  }
+  return std::make_unique<NavigationThrottleRunner>(registry, navigation_id,
+                                                    is_primary_main_frame);
+}
+
+}  // namespace
+
 NavigationThrottleRegistryBase::~NavigationThrottleRegistryBase() = default;
 
 NavigationThrottleRegistryImpl::NavigationThrottleRegistryImpl(
     NavigationRequest* navigation_request)
     : navigation_request_(CHECK_DEREF(navigation_request)),
-      navigation_throttle_runner_(std::make_unique<NavigationThrottleRunner>(
+      navigation_throttle_runner_(CreateNavigationThrottleRunner(
           this,
           navigation_request->GetNavigationId(),
           navigation_request->IsInPrimaryMainFrame())) {}

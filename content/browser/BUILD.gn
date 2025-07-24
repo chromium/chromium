@@ -1929,6 +1929,8 @@ source_set("browser") {
     "renderer_host/navigation_throttle_registry_impl.h",
     "renderer_host/navigation_throttle_runner.cc",
     "renderer_host/navigation_throttle_runner.h",
+    "renderer_host/navigation_throttle_runner2.cc",
+    "renderer_host/navigation_throttle_runner2.h",
     "renderer_host/navigation_transitions/navigation_entry_screenshot.cc",
     "renderer_host/navigation_transitions/navigation_entry_screenshot.h",
     "renderer_host/navigation_transitions/navigation_entry_screenshot_cache.cc",

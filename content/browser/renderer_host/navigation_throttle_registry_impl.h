@@ -40,6 +40,29 @@ enum class NavigationThrottleEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationThrottleEvent)
 
+// This is an abstract class that collaborates with
+// NavigationThrottleRegistryBase that owns the set of NavigationThrottles added
+// to an underlying navigation, and is responsible for calling the various sets
+// of events on its NavigationThrottles, and notifying its delegate about the
+// results of said events.
+class NavigationThrottleRunnerBase {
+ public:
+  virtual ~NavigationThrottleRunnerBase() = default;
+
+  // Will call the appropriate NavigationThrottle function based on `event` on
+  // all NavigationThrottles owned by this NavigationThrottleRunner.
+  virtual void ProcessNavigationEvent(NavigationThrottleEvent event) = 0;
+
+  // Resumes calling the appropriate NavigationThrottle functions for the
+  // current processing event on all NavigationThrottles that have not yet been
+  // notified.
+  // `resuming_throttle` is the NavigationThrottle that asks for navigation
+  // event processing to be resumed; it should be the one currently deferring
+  // the navigation.
+  virtual void ResumeProcessingNavigationEvent(
+      NavigationThrottle* resuming_throttle) = 0;
+};
+
 class CONTENT_EXPORT NavigationThrottleRegistryBase
     : public NavigationThrottleRegistry {
  public:
@@ -133,7 +156,7 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
 
   // Owns the NavigationThrottles associated with this navigation, and is
   // responsible for notifying them about the various navigation events.
-  std::unique_ptr<NavigationThrottleRunner> navigation_throttle_runner_;
+  std::unique_ptr<NavigationThrottleRunnerBase> navigation_throttle_runner_;
 
   // A list of Throttles registered for this navigation.
   std::vector<std::unique_ptr<NavigationThrottle>> throttles_;

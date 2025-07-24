@@ -362,6 +362,12 @@ BASE_FEATURE(kNavigationThrottleRegistryAttributeCache,
              "NavigationThrottleRegistryAttributeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, NavigationThrottleRunner2 is used instead of the original
+// NavigationThrottleRunner. See https://crbug.com/422003056.
+BASE_FEATURE(kNavigationThrottleRunner2,
+             "NavigationThrottleRunner2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This feature enables Permissions Policy verification in the Browser process
 // in content/. Additionally only for //chrome Permissions Policy verification
 // is enabled in components/permissions/permission_context_base.cc
