@@ -4,8 +4,6 @@
 
 source_set("shared") {
   sources = [
-    "animated_promo_view_controller.h",
-    "animated_promo_view_controller.mm",
     "instructions_bottom_sheet_view_controller.h",
     "instructions_bottom_sheet_view_controller.mm",
     "tips_promo_view_controller.h",
@@ -14,9 +12,7 @@ source_set("shared") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/instruction_view",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/promo_style:utils",
@@ -65,8 +61,11 @@ source_set("search_what_you_see_promo") {
     "search_what_you_see_promo_view_controller.h",
     "search_what_you_see_promo_view_controller.mm",
   ]
-  deps = [
+  public_deps = [
     ":shared",
+    "//ios/chrome/browser/shared/ui/animated_promo",
+  ]
+  deps = [
     "//ios/chrome/app/strings",
     "//ui/base",
   ]

@@ -12,6 +12,7 @@
 @protocol ConfirmationAlertActionHandler;
 
 // View for displaying a BestFeaturesItem.
+// TODO(crbug.com/433791509): Subclass from AnimatedPromoViewController.
 @interface FeatureHighlightScreenshotViewController
     : UIViewController <UINavigationControllerDelegate>
 

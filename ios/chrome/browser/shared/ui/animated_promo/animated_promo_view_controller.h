@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_ANIMATED_PROMO_ANIMATED_PROMO_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_ANIMATED_PROMO_ANIMATED_PROMO_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
-// Container view controller for a full-screen, animated promo.
+// Container view controller for a full-screen promo with a Lottie animation. If
+// the height of the current size class is "regular", the top part of the view
+// plays the animation, and the bottom part displays a
+// `ConfirmationAlertViewController`.
 @interface AnimatedPromoViewController : UIViewController
 
 // The action handler for interactions in this view controller.
@@ -53,4 +56,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_ANIMATED_PROMO_ANIMATED_PROMO_VIEW_CONTROLLER_H_

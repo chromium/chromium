@@ -13,7 +13,10 @@ source_set("ui") {
     "use_autofill_instructional_view_controller.h",
     "use_autofill_instructional_view_controller.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/tips_notifications/ui:shared" ]
+  public_deps = [
+    "//ios/chrome/browser/shared/ui/animated_promo",
+    "//ios/chrome/browser/tips_notifications/ui:shared",
+  ]
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/resources",

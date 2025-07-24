@@ -15,6 +15,7 @@
 
 // View controller for the screenshot view for What's New feature and chrome
 // tip.
+// TODO(crbug.com/433790827): Subclass from AnimatedPromoViewController.
 @interface WhatsNewScreenshotViewController : UIViewController
 
 - (instancetype)initWithWhatsNewItem:(WhatsNewItem*)item

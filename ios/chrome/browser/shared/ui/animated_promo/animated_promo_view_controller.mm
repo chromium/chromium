@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tips_notifications/ui/animated_promo_view_controller.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -96,26 +96,11 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   [self configureAlertScreen];
   [self layoutAlertScreen];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateUIOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
-// the animations accordingly.
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange];
-}
-#endif
 
 #pragma mark - Private
 
