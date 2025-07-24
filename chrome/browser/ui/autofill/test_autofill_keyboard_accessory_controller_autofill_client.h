@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
-#include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
@@ -50,9 +49,6 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
               ->GetWeakPtr();
       test_api(cast_popup_controller())
           .SetView(std::make_unique<MockAutofillKeyboardAccessoryView>());
-      test_api(cast_popup_controller())
-          .SetAccessLossWarningBridge(
-              std::make_unique<MockPasswordAccessLossWarningBridge>());
       manager_of_last_controller_ = manager.GetWeakPtr();
       ON_CALL(cast_popup_controller(), Hide)
           .WillByDefault(
@@ -65,14 +61,6 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
     return popup_controller_ ? static_cast<MockAutofillKeyboardAccessoryView*>(
                                    test_api(cast_popup_controller()).view())
                              : nullptr;
-  }
-
-  MockPasswordAccessLossWarningBridge* access_loss_warning_bridge() {
-    return popup_controller_
-               ? static_cast<MockPasswordAccessLossWarningBridge*>(
-                     test_api(cast_popup_controller())
-                         .access_loss_warning_bridge())
-               : nullptr;
   }
 
  private:

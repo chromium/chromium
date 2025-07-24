@@ -53,7 +53,6 @@ source_set("unit_test") {
     "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/password_manager/android:unit_tests",
-    "//chrome/browser/password_manager/android/access_loss:test_support",
     "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/ui/plus_addresses",

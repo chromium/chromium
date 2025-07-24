@@ -52,7 +52,6 @@
 #include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
-#include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
@@ -492,9 +491,6 @@ class ChromePasswordManagerClient
   // needed.
   void TryToShowPostPasswordMigrationSheet();
 
-  // Called on startup. It will show the access loss warning sheet if needed.
-  void TryToShowAccessLossWarningSheet();
-
   password_manager::CredManController* GetOrCreateCredManController();
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
@@ -590,11 +586,6 @@ class ChromePasswordManagerClient
   // metrics. TODO(crbug.com/40215916): Remove after the launch.
   std::optional<std::pair<std::u16string, base::Time>>
       username_filled_by_touch_to_fill_ = std::nullopt;
-
-  // Launcher used to trigger the password access loss warning once passwords
-  // have been fetched. Only invoked once on startup.
-  std::unique_ptr<PasswordAccessLossWarningStartupLauncher>
-      password_access_loss_warning_startup_launcher_;
 
   // Recorder of metrics that is associated with the first page loaded by a
   // CCT. Created only if the WebContents corresponds to a CCT. Records

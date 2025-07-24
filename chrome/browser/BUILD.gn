@@ -3207,8 +3207,6 @@ static_library("browser") {
       "password_manager/android/generated_password_saved_message_delegate.h",
       "password_manager/android/local_passwords_migration_warning_util.cc",
       "password_manager/android/local_passwords_migration_warning_util.h",
-      "password_manager/android/password_access_loss_warning_startup_launcher.cc",
-      "password_manager/android/password_access_loss_warning_startup_launcher.h",
       "password_manager/android/password_accessory_metrics_util.h",
       "password_manager/android/password_checkup_launcher_helper.cc",
       "password_manager/android/password_checkup_launcher_helper.h",

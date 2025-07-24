@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
@@ -51,7 +50,6 @@ class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
   using ShowHybridOption = base::StrongAlias<struct ShowHybridOptionTag, bool>;
-  using ShowDataLossWarningCallback = base::RepeatingCallback<void(void)>;
 
   // The action a user took when interacting with the Touch To Fill sheet.
   //
@@ -95,9 +93,7 @@ class TouchToFillControllerAutofillDelegate
       std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
       const password_manager::PasswordForm* form_to_fill,
       autofill::FieldRendererId focused_field_renderer_id,
-      ShowHybridOption should_show_hybrid_option,
-      std::unique_ptr<PasswordAccessLossWarningBridge>
-          data_loss_warning_bridge);
+      ShowHybridOption should_show_hybrid_option);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
@@ -182,10 +178,6 @@ class TouchToFillControllerAutofillDelegate
 
   // Whether the controller should show an option for passkey hybrid sign-in.
   ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);
-
-  // Bridge used to show the data loss warning (expected to be shown after
-  // filling user's credentials).
-  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };

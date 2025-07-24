@@ -20,7 +20,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
@@ -396,27 +395,6 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
 
   delegate_->DidAcceptSuggestion(
       suggestion, AutofillSuggestionDelegate::SuggestionMetadata{.row = index});
-
-  if (suggestion.type != SuggestionType::kPasswordEntry) {
-    // Returning early because the code below triggers the UI which is shown
-    // after accepting passwords.
-    return;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  if (!access_loss_warning_bridge_) {
-    access_loss_warning_bridge_ =
-        std::make_unique<PasswordAccessLossWarningBridgeImpl>();
-  }
-  if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                     profile->GetPrefs(), /*called_at_startup=*/false)) {
-    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
-        profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile,
-        /*called_at_startup=*/false,
-        password_manager_android_util::PasswordAccessLossWarningTriggers::
-            kKeyboardAcessoryBar);
-  }
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(

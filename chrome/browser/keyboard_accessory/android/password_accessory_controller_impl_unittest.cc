@@ -27,7 +27,6 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
-#include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller_test_helper.h"
 #include "chrome/browser/password_manager/android/mock_password_manager_error_message_helper_bridge.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
@@ -421,10 +420,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   void CreateSheetController(
       security_state::SecurityLevel security_level = security_state::SECURE) {
-    auto access_loss_bridge =
-        std::make_unique<MockPasswordAccessLossWarningBridge>();
-    mock_access_loss_warning_bridge_ = access_loss_bridge.get();
-
     auto error_message_helper_bridge =
         std::make_unique<MockPasswordManagerErrorMessageHelperBridge>();
     mock_error_message_helper_bridge_ = error_message_helper_bridge.get();
@@ -435,7 +430,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&PasswordAccessoryControllerTest::GetBaseDriver,
                             base::Unretained(this)),
         grouped_credential_sheet_test_helper.CreateController(),
-        std::move(access_loss_bridge), std::move(error_message_helper_bridge));
+        std::move(error_message_helper_bridge));
 
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     controller()->SetSecurityLevelForTesting(security_level);
@@ -494,7 +489,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
       filling_source_observer_;
   AcknowledgeGroupedCredentialSheetControllerTestHelper
       grouped_credential_sheet_test_helper;
-  raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   raw_ptr<MockPasswordManagerErrorMessageHelperBridge>
       mock_error_message_helper_bridge_;
   scoped_refptr<MockPasswordStoreInterface> mock_account_password_store_;
@@ -2020,53 +2014,6 @@ TEST_F(PasswordAccessoryControllerTest,
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
-}
-
-TEST_F(PasswordAccessoryControllerTest,
-       ShowAccessLossWarningSheetOnFillingCredential) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
-    ON_CALL(*mock_authenticator, AuthenticateWithMessage)
-        .WillByDefault(
-            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
-    EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-        .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
-        .RetiresOnSaturation();
-  }
-
-  features_.Reset();
-  features_.InitWithFeatures({plus_addresses::features::kPlusAddressesEnabled},
-                             {});
-  CreateSheetController();
-
-  // Set up credentials for filling.
-  std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
-  cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
-      url::Origin::Create(GURL(kExampleSite)));
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-  AccessorySheetField selected_field =
-      AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
-          .SetDisplayText(u"S3cur3")
-          .SetIsObfuscated(true)
-          .SetSelectable(true)
-          .Build();
-  EXPECT_CALL(*mock_access_loss_warning_bridge_,
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge_,
-      MaybeShowAccessLossNoticeSheet(
-          profile()->GetPrefs(), _, profile(),
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kKeyboardAcessorySheet));
-  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 
 TEST_F(PasswordAccessoryControllerTest, TriggersManagePlusAddress) {

@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Passkey deleted confirmation bubble"/>
   <int value="25" label="Passkey updated confirmation bubble"/>
   <int value="26" label="Passkey not accepted confirmation bubble"/>
-  <int value="27" label="Password access loss warning"/>
+  <int value="27" label="(obsolete) Password access loss warning"/>
   <int value="28" label="Passkey upgrade bubble"/>
   <int value="29" label="Password change state information bubble"/>
 </enum>
@@ -663,14 +663,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Passkey created"/>
   <int value="1" label="Passkey updated"/>
   <int value="2" label="Invalid passkey"/>
-</enum>
-
-<enum name="PasswordAccessLossWarningType">
-  <int value="0" label="No warning"/>
-  <int value="1" label="No GMS Core"/>
-  <int value="2" label="No UPM"/>
-  <int value="3" label="Only Account UPM"/>
-  <int value="4" label="New GMS Core, migration failed"/>
 </enum>
 
 <enum name="PasswordAddLoginSyncError">

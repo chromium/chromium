@@ -352,7 +352,6 @@ class MockPasswordAccessoryControllerImpl
             password_client,
             driver_supplier,
             /*grouped_credential_sheet_controller=*/nullptr,
-            /*access_loss_warning_bridge=*/nullptr,
             /*password_manager_error_message_helper_bridge=*/nullptr) {}
 
   MOCK_METHOD(void,

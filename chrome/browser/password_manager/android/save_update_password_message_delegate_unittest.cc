@@ -19,7 +19,6 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge_delegate.h"
-#include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/grit/branded_strings.h"
@@ -164,7 +163,6 @@ class SaveUpdatePasswordMessageDelegateTest
   void DestroyDelegate();
 
   TestDeviceLockBridge* test_bridge();
-  MockPasswordAccessLossWarningBridge* mock_access_loss_warning_bridge();
   bool is_password_saved();
 
   messages::MessageWrapper* GetMessageWrapper();
@@ -224,7 +222,6 @@ class SaveUpdatePasswordMessageDelegateTest
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockPasswordEditDialog> mock_password_edit_dialog_;
   raw_ptr<TestDeviceLockBridge> test_bridge_;
-  raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
   bool is_password_saved_ = false;
   MockPasswordManagerClient password_manager_client_;
@@ -244,15 +241,12 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
 
   auto bridge = std::make_unique<TestDeviceLockBridge>();
   test_bridge_ = bridge.get();
-  auto access_loss_bridge =
-      std::make_unique<MockPasswordAccessLossWarningBridge>();
-  mock_access_loss_warning_bridge_ = access_loss_bridge.get();
   delegate_ = std::make_unique<SaveUpdatePasswordMessageDelegate>(
       base::PassKey<class SaveUpdatePasswordMessageDelegateTest>(),
       base::BindRepeating(
           &SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog,
           base::Unretained(this)),
-      std::move(bridge), std::move(access_loss_bridge));
+      std::move(bridge));
 
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
@@ -398,11 +392,6 @@ void SaveUpdatePasswordMessageDelegateTest::DestroyDelegate() {
 
 TestDeviceLockBridge* SaveUpdatePasswordMessageDelegateTest::test_bridge() {
   return test_bridge_;
-}
-
-MockPasswordAccessLossWarningBridge*
-SaveUpdatePasswordMessageDelegateTest::mock_access_loss_warning_bridge() {
-  return mock_access_loss_warning_bridge_;
 }
 
 bool SaveUpdatePasswordMessageDelegateTest::is_password_saved() {
@@ -582,31 +571,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
-// Tests that the access loss warning will show when the user
-// clicks the "Save" button.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       TriggerAccessLossWarning_OnSaveClicked) {
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EXPECT_CALL(*form_manager, Save());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(
-          profile()->GetPrefs(), _, profile(),
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kPasswordSaveUpdateMessage));
-  TriggerActionClick();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
 // Tests that the message to update GMSCore will show when the user
 // clicks the "Save" button if the GMSCore version is too low to save account
 // passwords.
@@ -654,87 +618,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   // Fast forward, since Update message is shown with a delay.
   FastForward();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-// Tests that the password access loss warning will show when the user
-// accepts the password edit dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       TriggerAccessLossWarning_OnSavePasswordDialogAccepted) {
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  MockPasswordFormManagerForUI* form_manager_pointer = form_manager.get();
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_dialog, ShowPasswordEditDialog);
-  TriggerPasswordEditDialog(/*update_password=*/false);
-
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*form_manager_pointer, Save());
-  TriggerDialogAcceptedCallback(/*username=*/kUsername,
-                                /*password=*/kPassword);
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(
-          profile()->GetPrefs(), _, profile(),
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kPasswordSaveUpdateMessage));
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
-}
-
-// Tests that the access loss warning will not show when the user
-// dismisses the save password message.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DontTriggerAccessLossWarning_OnSaveMessageDismissed) {
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/false);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  DismissMessage(messages::DismissReason::GESTURE);
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-// Tests that the access loss warning will show when the user accepts the update
-// password message in case when there is no confirmation dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       TriggerAccessLossWarning_OnUpdatePasswordWithSingleForm) {
-  SetPendingCredentials(kUsername, kPassword);
-  std::vector<PasswordForm> single_form_best_matches = {
-      CreatePasswordForm(kUsername, kPassword)};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-  EXPECT_CALL(*form_manager, Save());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(
-          profile()->GetPrefs(), _, profile(),
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kPasswordSaveUpdateMessage));
-  TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
@@ -794,97 +677,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
-// Tests that the access loss warning will not show when the user
-// dismisses the update password message.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DontTriggerAccessLossWarning_OnUpdatePasswordMessageDismissed) {
-  SetPendingCredentials(kUsername, kPassword);
-  std::vector<PasswordForm> single_form_best_matches = {
-      CreatePasswordForm(kUsername, kPassword)};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  DismissMessage(messages::DismissReason::GESTURE);
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-// Tests that the access loss warning will show when the user accepts the update
-// password message and the confirmation dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       TriggerAccessLossWarning_OnUpdatePasswordDialogAccepted) {
-  SetPendingCredentials(kUsername, kPassword);
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  EXPECT_CALL(
-      *mock_dialog,
-      ShowPasswordEditDialog(
-          ElementsAre(std::u16string(kUsername), std::u16string(kUsername2)),
-          Eq(kUsername), Eq(kPassword), Eq(kAccountEmail)));
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  TriggerActionClick();
-  TriggerDialogAcceptedCallback(/*username=*/kUsername,
-                                /*password=*/kPassword);
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(
-          profile()->GetPrefs(), _, profile(),
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kPasswordSaveUpdateMessage));
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
-}
-
-// Tests that the access loss warning will show when the user accepts the
-// update password message and cancels the confirmation dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       TriggerAccessLossWarning_OnUpdatePasswordDialogCanceled) {
-  SetPendingCredentials(kUsername, kPassword);
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  EXPECT_CALL(
-      *mock_dialog,
-      ShowPasswordEditDialog(
-          ElementsAre(std::u16string(kUsername), std::u16string(kUsername2)),
-          Eq(kUsername), Eq(kPassword), Eq(kAccountEmail)));
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  TriggerActionClick();
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(
-          profile()->GetPrefs(), _, profile(),
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kPasswordSaveUpdateMessage));
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
-}
-
 // Tests that password form is not saved and metrics recorded correctly when the
 // user dismisses the message.
 TEST_F(SaveUpdatePasswordMessageDelegateTest, DontSaveOnDismiss) {
@@ -931,49 +723,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::NO_DIRECT_INTERACTION, 1);
-}
-
-// Tests that the access loss warning will not show when the user lets the save
-// message time out.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DontTriggerAccessLossWarning_OnSaveMessageAutodismissTimer) {
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  DismissMessage(messages::DismissReason::TIMER);
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-}
-
-// Tests that the access loss warning will not show when the user lets the
-// update message time out.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DontTriggerAccessLossWarning_OnUpdateMessageAutodismissTimer) {
-  SetPendingCredentials(kUsername, kPassword);
-  std::vector<PasswordForm> single_form_best_matches = {
-      CreatePasswordForm(kUsername, kPassword)};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  DismissMessage(messages::DismissReason::TIMER);
-  EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
 // Tests that update password message with a single PasswordForm immediately
@@ -1098,28 +847,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_NEVER, 1);
-}
-
-// Verifies that the access loss warning is not shown after selecting
-// "Never for this site" menu option in the Save message.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DontTriggerAccessLossWarning_OnNeverSave) {
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  MockPasswordFormManagerForUI* form_manager_pointer = form_manager.get();
-
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  EXPECT_CALL(*form_manager_pointer, Blocklist());
-  TriggerNeverSaveMenuItem();
 }
 
 // Verifies that:

@@ -22,17 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="AccessLossWarningType">
-  <variant name="NewGmsCoreMigrationFailed"
-      summary="with new GMS Core version, but migration to UPM still failed"/>
-  <variant name="NoGmsCore" summary="without GMS Core installed"/>
-  <variant name="NoUPM"
-      summary="with GMS Core version that doesn't support UPM"/>
-  <variant name="OnlyAccountUpm"
-      summary="with GMS Core version that supports only UPM for account
-               passwords"/>
-</variants>
-
 <variants name="AccessorySheetType">
   <variant name="Addresses"/>
   <variant name="Passwords"/>
@@ -2621,67 +2610,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     autofill surface has already attempted to display the passkeys, and they
     arrived too late. It records false otherwise.
   </summary>
-</histogram>
-
-<histogram name="PasswordManager.PasswordAccessLossWarningDialog.Shown"
-    enum="PasswordAccessLossWarningType" expires_after="2026-01-11">
-  <owner>izuzic@google.com</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    This histogram is recorded when the access loss warning dialog was shown to
-    the user. It logs the type of dialog shown. Android only.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordAccessLossWarningDialog{AccessLossWarningType}.UserAction"
-    enum="PasswordAccessLossWarningUserActions" expires_after="2026-01-18">
-  <owner>izuzic@google.com</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    This histogram logs the action that the user {AccessLossWarningType}
-    performed in the password access loss warning dialog. Recorded exactly when
-    the action takes place. Android only.
-  </summary>
-  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordAccessLossWarningExportFlow.{AccessLossWarningType}.FinalStep"
-    enum="PasswordAccessLossWarningExportStep" expires_after="2025-11-16">
-  <owner>izuzic@google.com</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    This histogram logs the last export flow step that the user performed.
-    Recorded exactly when the export flow ends. Android only.
-  </summary>
-  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordAccessLossWarningSheet.{AccessLossWarningType}.UserAction"
-    enum="PasswordAccessLossWarningUserActions" expires_after="2026-01-18">
-  <owner>izuzic@google.com</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    This histograms logs the action that the user performed in the password
-    access loss warning sheet. Recorded exactly when the action takes place.
-    Android only.
-  </summary>
-  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordAccessLossWarningSheet{AccessLossWarningType}Trigger"
-    enum="PasswordAccessLossWarningTriggers" expires_after="2026-01-18">
-  <owner>izuzic@google.com</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    This histogram logs the UI surface that led to showing the password access
-    loss warning sheet for users {AccessLossWarningType}. Recorded when the
-    warning sheet is shown. Android only.
-  </summary>
-  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
 </histogram>
 
 <histogram name="PasswordManager.PasswordChange.ChangingFailedBubble"

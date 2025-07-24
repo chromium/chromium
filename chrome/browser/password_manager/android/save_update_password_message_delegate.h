@@ -12,7 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
@@ -50,8 +49,7 @@ class SaveUpdatePasswordMessageDelegate
   SaveUpdatePasswordMessageDelegate(
       base::PassKey<class SaveUpdatePasswordMessageDelegateTest>,
       PasswordEditDialogFactory password_edit_dialog_factory,
-      std::unique_ptr<DeviceLockBridge> device_lock_bridge,
-      std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge);
+      std::unique_ptr<DeviceLockBridge> device_lock_bridge);
 
   // Displays a "Save password" message for current |web_contents| and
   // |form_to_save|.
@@ -152,7 +150,6 @@ class SaveUpdatePasswordMessageDelegate
   std::unique_ptr<PasswordEditDialog> password_edit_dialog_;
 
   std::unique_ptr<DeviceLockBridge> device_lock_bridge_;
-  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge_;
 
   void SavePassword();
   void SavePasswordAfterDeviceLockUi(bool is_device_lock_set);

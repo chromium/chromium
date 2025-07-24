@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,21 +50,6 @@ const int kMessageDismissDurationMs = 20000;
 constexpr base::TimeDelta kUpdateGMSCoreMessageDisplayDelay =
     base::Milliseconds(500);
 
-void TryToShowAccessLossWarning(content::WebContents* web_contents,
-                                PasswordAccessLossWarningBridge* bridge) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  PrefService* prefs = profile->GetPrefs();
-  if (profile && bridge->ShouldShowAccessLossNoticeSheet(
-                     prefs, /*called_at_startup=*/false)) {
-    bridge->MaybeShowAccessLossNoticeSheet(
-        prefs, web_contents->GetTopLevelNativeWindow(), profile,
-        /*called_at_startup=*/false,
-        password_manager_android_util::PasswordAccessLossWarningTriggers::
-            kPasswordSaveUpdateMessage);
-  }
-}
-
 }  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
@@ -75,18 +59,14 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     PasswordEditDialogFactory password_edit_dialog_factory)
     : password_edit_dialog_factory_(std::move(password_edit_dialog_factory)),
-      device_lock_bridge_(std::make_unique<DeviceLockBridge>()),
-      access_loss_bridge_(
-          std::make_unique<PasswordAccessLossWarningBridgeImpl>()) {}
+      device_lock_bridge_(std::make_unique<DeviceLockBridge>()) {}
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     base::PassKey<class SaveUpdatePasswordMessageDelegateTest>,
     PasswordEditDialogFactory password_edit_dialog_factory,
-    std::unique_ptr<DeviceLockBridge> device_lock_bridge,
-    std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge)
+    std::unique_ptr<DeviceLockBridge> device_lock_bridge)
     : SaveUpdatePasswordMessageDelegate(password_edit_dialog_factory) {
   device_lock_bridge_ = std::move(device_lock_bridge);
-  access_loss_bridge_ = std::move(access_loss_bridge);
 }
 
 SaveUpdatePasswordMessageDelegate::~SaveUpdatePasswordMessageDelegate() {
@@ -345,7 +325,6 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
             &SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore,
             weak_ptr_factory_.GetWeakPtr()),
         kUpdateGMSCoreMessageDisplayDelay);
-    TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
   }
   ClearState();
 }
@@ -404,9 +383,6 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
   // callback.
   if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
-    if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
-      TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
-    }
     ClearState();
   }
 }
@@ -435,7 +411,6 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
   // callback.
   if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
-    TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
     ClearState();
   }
 }

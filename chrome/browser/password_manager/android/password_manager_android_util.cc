@@ -324,22 +324,6 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                            static_cast<int>(kOff));
 }
 
-std::string_view GetAccessLossWarningTypeName(
-    PasswordAccessLossWarningType warning_type) {
-  switch (warning_type) {
-    case PasswordAccessLossWarningType::kNoUpm:
-      return "NoUPM";
-    case PasswordAccessLossWarningType::kOnlyAccountUpm:
-      return "OnlyAccountUpm";
-    case PasswordAccessLossWarningType::kNoGmsCore:
-      return "NoGmsCore";
-    case PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed:
-      return "NewGmsCoreMigrationFailed";
-    case PasswordAccessLossWarningType::kNone:
-      NOTREACHED();
-  }
-}
-
 void RecordPwmNotActiveReason(PasswordManagerNotAvailableReason reason) {
   base::UmaHistogramEnumeration("PasswordManager.Android.NotAvailableReason",
                                 reason);
@@ -555,65 +539,8 @@ void SetUsesSplitStoresAndUPMForLocal(
       GetSplitStoresAndLocalUpmPrefValue(pref_service));
 }
 
-GmsVersionCohort GetGmsVersionCohort() {
-  std::string gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
-  int gms_version = 0;
-  // GMSCore version could not be parsed, probably no GMSCore installed.
-  if (!base::StringToInt(gms_version_str, &gms_version)) {
-    return GmsVersionCohort::kNoGms;
-  }
-
-  // GMSCore version is pre-UPM.
-  if (gms_version < password_manager::kAccountUpmMinGmsVersion) {
-    return GmsVersionCohort::kNoUpmSupport;
-  }
-
-  // GMSCore version supports the account passwords, but doesn't support local
-  // passwords.
-  if (gms_version < password_manager::GetLocalUpmMinGmsVersion()) {
-    return GmsVersionCohort::kOnlyAccountUpmSupport;
-  }
-
-  return GmsVersionCohort::kFullUpmSupport;
-}
-
 bool LastMigrationAttemptToUpmLocalFailed() {
   return g_last_migration_attempt_failed;
-}
-
-PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
-    PrefService* pref_service) {
-  switch (GetGmsVersionCohort()) {
-    case GmsVersionCohort::kNoGms:
-      return PasswordAccessLossWarningType::kNoGmsCore;
-    case GmsVersionCohort::kNoUpmSupport:
-      return PasswordAccessLossWarningType::kNoUpm;
-    case GmsVersionCohort::kOnlyAccountUpmSupport:
-      return PasswordAccessLossWarningType::kOnlyAccountUpm;
-    case GmsVersionCohort::kFullUpmSupport: {
-      // GMSCore is up to date, but the local passwords migration has failed, so
-      // manual export/import flow should be done. Checking the
-      // `SplitStoresAndLocalUpmState` again here because the migration might
-      // have succeeded in this run.
-      if (g_last_migration_attempt_failed &&
-          GetSplitStoresAndLocalUpmPrefValue(pref_service) ==
-              kOffAndMigrationPending) {
-        return PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed;
-      }
-      // Full support and the user is migrated, so no warning needs to be shown.
-      return PasswordAccessLossWarningType::kNone;
-    }
-  }
-}
-
-void RecordPasswordAccessLossWarningTriggerSource(
-    PasswordAccessLossWarningTriggers trigger_source,
-    PasswordAccessLossWarningType warning_type) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"PasswordManager.PasswordAccessLossWarningSheet",
-                    GetAccessLossWarningTypeName(warning_type), "Trigger"}),
-      trigger_source);
 }
 
 }  // namespace password_manager_android_util

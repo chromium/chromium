@@ -549,10 +549,6 @@ void PasswordManager::RegisterProfilePrefs(
   // passwords might be left behind. In practice, the default value should make
   // little difference, the pref is always written on startup.
   registry->RegisterBooleanPref(prefs::kEmptyProfileStoreLoginDatabase, false);
-  registry->RegisterTimePref(
-      prefs::kPasswordAccessLossWarningShownAtStartupTimestamp, base::Time());
-  registry->RegisterTimePref(prefs::kPasswordAccessLossWarningShownTimestamp,
-                             base::Time());
   registry->RegisterBooleanPref(prefs::kUpmAutoExportCsvNeedsDeletion, false);
   registry->RegisterBooleanPref(prefs::kUpmUnmigratedPasswordsExported, false);
 #endif  // BUILDFLAG(IS_ANDROID)

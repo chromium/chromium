@@ -173,7 +173,6 @@ source_set("impl") {
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/fast_checkout",
       "//chrome/browser/keyboard_accessory/android:public",
-      "//chrome/browser/password_manager/android/access_loss:public",
       "//components/android_autofill/browser:android",
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser/features:password_features",
@@ -327,8 +326,6 @@ source_set("test_support") {
 
   if (is_android) {
     sources += [ "autofill_keyboard_accessory_controller_impl_test_api.h" ]
-    public_deps +=
-        [ "//chrome/browser/password_manager/android/access_loss:public" ]
   } else {
     sources += [
       "autofill_ai/mock_save_or_update_ai_data_controller.cc",
@@ -435,10 +432,7 @@ source_set("test_support_unit") {
       "mock_autofill_keyboard_accessory_view.h",
       "test_autofill_keyboard_accessory_controller_autofill_client.h",
     ]
-    public_deps += [
-      "//chrome/browser/keyboard_accessory/test_utils/android",
-      "//chrome/browser/password_manager/android/access_loss:test_support",
-    ]
+    public_deps += [ "//chrome/browser/keyboard_accessory/test_utils/android" ]
   } else {
     sources += [ "test_autofill_popup_controller_autofill_client.h" ]
   }

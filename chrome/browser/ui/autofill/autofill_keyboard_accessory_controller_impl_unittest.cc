@@ -337,63 +337,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
 }
 
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       AcceptPwdSuggestionInvokesAccessLossWarningAndroid) {
-  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  EXPECT_CALL(*client().access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*client().access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet(
-                  profile()->GetPrefs(), _, profile(),
-                  /*called_at_startup=*/false,
-                  password_manager_android_util::
-                      PasswordAccessLossWarningTriggers::kKeyboardAcessoryBar));
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       AcceptUsernameSuggestionInvokesAccessLossWarningAndroid) {
-  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  EXPECT_CALL(*client().access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*client().access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet(
-                  profile()->GetPrefs(), _, profile(),
-                  /*called_at_startup=*/false,
-                  password_manager_android_util::
-                      PasswordAccessLossWarningTriggers::kKeyboardAcessoryBar));
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       AcceptAddressNoPwdAccessLossWarningAndroid) {
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-
-  // Calls are accepted immediately.
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-  EXPECT_CALL(*client().access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*client().access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet)
-      .Times(0);
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  client().popup_controller(manager()).AcceptSuggestion(0);
-}
-
 // When a suggestion is accepted, the popup is hidden inside
 // `delegate->DidAcceptSuggestion()`. On Android, some code is still being
 // executed after hiding. This test makes sure no use-after-free, null pointer

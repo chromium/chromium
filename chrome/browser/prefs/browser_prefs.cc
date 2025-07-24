@@ -1022,6 +1022,14 @@ inline constexpr char kWebAuthnCablePairingsPrefName[] =
 inline constexpr char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 07/2025.
+constexpr char kObsoletePasswordAccessLossWarningShownAtStartupTimestamp[] =
+    "password_access_loss_warning_shown_at_startup_timestamp";
+constexpr char kObsoletePasswordAccessLossWarningShownTimestamp[] =
+    "password_access_loss_warning_shown_timestamp";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Deprecated 07/2025.
 inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
     "sync.first_full_sync_completed";
@@ -1448,6 +1456,14 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(kWebAuthnCablePairingsPrefName);
   registry->RegisterStringPref(kLastUsedPairingFromSyncPublicKey, "");
   registry->RegisterStringPref(kSyncedDefaultSearchProviderGUID, std::string());
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 07/2025.
+  registry->RegisterTimePref(
+      kObsoletePasswordAccessLossWarningShownAtStartupTimestamp, base::Time());
+  registry->RegisterTimePref(kObsoletePasswordAccessLossWarningShownTimestamp,
+                             base::Time());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Deprecated 07/2025.
   registry->RegisterBooleanPref(kFirstSyncCompletedInFullSyncMode, false);
@@ -2717,6 +2733,13 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kWebAuthnCablePairingsPrefName);
   profile_prefs->ClearPref(kLastUsedPairingFromSyncPublicKey);
   profile_prefs->ClearPref(kSyncedDefaultSearchProviderGUID);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 07/2025.
+  profile_prefs->ClearPref(
+      kObsoletePasswordAccessLossWarningShownAtStartupTimestamp);
+  profile_prefs->ClearPref(kObsoletePasswordAccessLossWarningShownTimestamp);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 07/2025.
   profile_prefs->ClearPref(kFirstSyncCompletedInFullSyncMode);
