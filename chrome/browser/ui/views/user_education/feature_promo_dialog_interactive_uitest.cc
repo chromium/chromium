@@ -118,9 +118,10 @@ class FeaturePromoDialogTest : public TestBase {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    auto* const interface = BrowserUserEducationInterface::From(browser());
     auto* const promo_controller =
-        BrowserUserEducationInterface::From(browser())
-            ->GetFeaturePromoControllerForTesting();
+        interface->GetFeaturePromoControllerForTesting();
+    auto const context = interface->GetUserEducationContextForTesting();
     ASSERT_TRUE(promo_controller);
 
     // The browser may have already queued a promo for startup. Since the test
@@ -144,7 +145,7 @@ class FeaturePromoDialogTest : public TestBase {
     params.show_promo_result_callback = show_callback.Get();
     EXPECT_ASYNC_CALL_IN_SCOPE(
         show_callback, Run(user_education::FeaturePromoResult::Success()),
-        promo_controller->MaybeShowPromo(std::move(params)));
+        promo_controller->MaybeShowPromo(std::move(params), context));
   }
 
  private:

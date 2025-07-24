@@ -116,7 +116,7 @@ TEST_F(AutofillFieldPromoControllerImplTest, CloseViewOnFailingMaybeShowPromo) {
   auto promo_view = std::make_unique<MockAutofillFieldPromoView>();
   EXPECT_CALL(*feature_promo_controller(), MaybeShowPromo)
       .WillOnce([this, promo_view_ptr = promo_view->GetWeakPtr()](
-                    user_education::FeaturePromoParams params) {
+                    user_education::FeaturePromoParams params, auto context) {
         autofill_field_promo_controller()->SetPromoViewForTesting(
             promo_view_ptr);
         std::move(params.show_promo_result_callback)

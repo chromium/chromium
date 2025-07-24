@@ -14,6 +14,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -35,10 +36,14 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
 
   // FeaturePromoControllerCommon:
   FeaturePromoResult CanShowPromo(
-      const FeaturePromoParams& params) const override;
-  void MaybeShowStartupPromo(FeaturePromoParams params) override;
-  void MaybeShowPromo(FeaturePromoParams params) override;
-  void MaybeShowPromoForDemoPage(FeaturePromoParams params) override;
+      const FeaturePromoParams& params,
+      const UserEducationContextPtr& context) const override;
+  void MaybeShowStartupPromo(FeaturePromoParams params,
+                             UserEducationContextPtr context) override;
+  void MaybeShowPromo(FeaturePromoParams params,
+                      UserEducationContextPtr context) override;
+  void MaybeShowPromoForDemoPage(FeaturePromoParams params,
+                                 UserEducationContextPtr context) override;
   bool IsPromoQueued(const base::Feature& iph_feature) const override;
 
  protected:
@@ -72,6 +77,7 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   // The `output` parameter, if not null, receives execution data for the IPH on
   // success (its fields will not be modified on failure).
   FeaturePromoResult CanShowPromoCommon(const FeaturePromoParams& params,
+                                        const UserEducationContextPtr& context,
                                         ShowSource source,
                                         CanShowPromoOutputs* outputs) const;
 
@@ -88,7 +94,8 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   // Note: Implementations should make sure to check
   // `active_window_check_blocked()`.
   virtual FeaturePromoResult CanShowPromoForElement(
-      ui::TrackedElement* anchor_element) const;
+      ui::TrackedElement* anchor_element,
+      const UserEducationContextPtr& context) const;
 
  private:
   struct QueuedPromoData;
@@ -100,10 +107,12 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
 
   // Common logic for showing feature promos.
   FeaturePromoResult MaybeShowPromoCommon(FeaturePromoParams params,
+                                          UserEducationContextPtr context,
                                           ShowSource source);
 
   // Internal entry point for showing a promo.
   FeaturePromoResult MaybeShowPromoImpl(FeaturePromoParams params,
+                                        UserEducationContextPtr context,
                                         ShowSource source);
 
   // Registers with the ProductMessagingController if not already registered.

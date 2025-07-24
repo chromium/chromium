@@ -312,7 +312,8 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
 TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {
   EXPECT_CALL(*mock_promo_controller(),
               MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
-                  feature_engagement::kIPHHistorySearchFeature)))
+                                 feature_engagement::kIPHHistorySearchFeature),
+                             testing::_))
       .Times(1);
   handler_->MaybeShowFeaturePromo();
 }

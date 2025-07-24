@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 
+#include "base/check_is_test.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/user_education_storage_service.h"
 
 BrowserUserEducationInterfaceImpl::BrowserUserEducationInterfaceImpl(
     BrowserWindowInterface* browser)
@@ -23,9 +27,17 @@ void BrowserUserEducationInterfaceImpl::Init(BrowserView* browser_view) {
   CHECK_EQ(State::kUninitialized, state_);
   state_ = State::kInitialized;
 
+  // Create the context.
+  if (auto* const interface = GetUserEducationService()) {
+    user_education_context_ = base::MakeRefCounted<BrowserUserEducationContext>(
+        *browser_view, interface->user_education_storage_service());
+  }
+
   // Only override the controller if the controller has not been overridden for
   // testing.
-  if (!controller_) {
+  if (controller_) {
+    CHECK_IS_TEST();
+  } else {
     // This returns a unique pointer to a `FeaturePromoControllerCommon`.
     controller_ = CreateUserEducationResources(browser_view);
   }
@@ -36,13 +48,21 @@ void BrowserUserEducationInterfaceImpl::Init(BrowserView* browser_view) {
     return;
   }
 
+  CHECK(user_education_context_)
+      << "Should not have a controller but no service.";
+
   for (auto& params : queued_params_) {
-    GetFeaturePromoControllerImpl()->MaybeShowStartupPromo(std::move(params));
+    GetFeaturePromoControllerImpl()->MaybeShowStartupPromo(
+        std::move(params), user_education_context_);
   }
   queued_params_.clear();
 }
 
 void BrowserUserEducationInterfaceImpl::TearDown() {
+  if (user_education_context_) {
+    static_cast<BrowserUserEducationContext*>(user_education_context_.get())
+        ->Invalidate(base::PassKey<BrowserUserEducationInterfaceImpl>());
+  }
   state_ = State::kTornDown;
   profile_ = nullptr;
   controller_.reset();
@@ -78,7 +98,7 @@ BrowserUserEducationInterfaceImpl::CanShowFeaturePromo(
   }
 
   if (auto* const controller = GetFeaturePromoControllerImpl()) {
-    return controller->CanShowPromo(iph_feature);
+    return controller->CanShowPromo(iph_feature, user_education_context_);
   }
   return user_education::FeaturePromoResult::kBlockedByContext;
 }
@@ -101,7 +121,7 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
   }
 
   if (auto* const controller = GetFeaturePromoControllerImpl()) {
-    controller->MaybeShowPromo(std::move(params));
+    controller->MaybeShowPromo(std::move(params), user_education_context_);
     return;
   }
 
@@ -127,7 +147,8 @@ void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
   }
 
   if (auto* const controller = GetFeaturePromoControllerImpl()) {
-    controller->MaybeShowStartupPromo(std::move(params));
+    controller->MaybeShowStartupPromo(std::move(params),
+                                      user_education_context_);
     return;
   }
 
@@ -223,4 +244,9 @@ void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
 const user_education::FeaturePromoController*
 BrowserUserEducationInterfaceImpl::GetFeaturePromoControllerImpl() const {
   return controller_.get();
+}
+
+const user_education::UserEducationContextPtr&
+BrowserUserEducationInterfaceImpl::GetUserEducationContextImpl() const {
+  return user_education_context_;
 }

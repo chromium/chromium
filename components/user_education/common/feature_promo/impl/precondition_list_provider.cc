@@ -15,8 +15,9 @@ CallbackPreconditionListProvider::~CallbackPreconditionListProvider() = default;
 
 FeaturePromoPreconditionList CallbackPreconditionListProvider::GetPreconditions(
     const FeaturePromoSpecification& spec,
-    const FeaturePromoParams& params) const {
-  return callback_.Run(spec, params);
+    const FeaturePromoParams& params,
+    const UserEducationContextPtr& context) const {
+  return callback_.Run(spec, params, context);
 }
 
 ComposingPreconditionListProvider::ComposingPreconditionListProvider() =
@@ -39,10 +40,11 @@ void ComposingPreconditionListProvider::AddProvider(
 FeaturePromoPreconditionList
 ComposingPreconditionListProvider::GetPreconditions(
     const FeaturePromoSpecification& spec,
-    const FeaturePromoParams& params) const {
+    const FeaturePromoParams& params,
+    const UserEducationContextPtr& context) const {
   FeaturePromoPreconditionList result;
   for (const auto& provider : providers_) {
-    result.AppendAll(provider->GetPreconditions(spec, params));
+    result.AppendAll(provider->GetPreconditions(spec, params, context));
   }
   return result;
 }

@@ -602,7 +602,9 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
       &UserEducationInternalsPageHandlerImpl::OnFeaturePromoShowResult,
       weak_ptr_factory_.GetWeakPtr());
   if (controller) {
-    controller->MaybeShowPromoForDemoPage(std::move(params));
+    auto context = interface->GetUserEducationContext(
+        base::PassKey<UserEducationInternalsPageHandlerImpl>());
+    controller->MaybeShowPromoForDemoPage(std::move(params), context);
     pending_callback_ = std::move(callback);
   } else {
     std::move(callback).Run(std::string("No controller."));

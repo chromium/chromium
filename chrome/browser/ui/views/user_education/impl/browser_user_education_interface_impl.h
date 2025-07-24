@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/user_education_context.h"
 
 class BrowserView;
 class BrowserWindowInterface;
@@ -54,6 +55,8 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   using BrowserUserEducationInterface::GetFeaturePromoControllerImpl;
   const user_education::FeaturePromoController* GetFeaturePromoControllerImpl()
       const override;
+  const user_education::UserEducationContextPtr& GetUserEducationContextImpl()
+      const override;
 
   // Gets the corresponding user education service.
   UserEducationService* GetUserEducationService();
@@ -68,6 +71,7 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   raw_ptr<Profile> profile_ = nullptr;
   std::vector<user_education::FeaturePromoParams> queued_params_;
   std::unique_ptr<user_education::FeaturePromoController> controller_;
+  user_education::UserEducationContextPtr user_education_context_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_USER_EDUCATION_INTERFACE_IMPL_H_

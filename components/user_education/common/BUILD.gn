@@ -82,6 +82,7 @@ source_set("common") {
     "tutorial/tutorial_service.h",
     "user_education_class_properties.cc",
     "user_education_class_properties.h",
+    "user_education_context.h",
     "user_education_data.cc",
     "user_education_data.h",
     "user_education_features.cc",

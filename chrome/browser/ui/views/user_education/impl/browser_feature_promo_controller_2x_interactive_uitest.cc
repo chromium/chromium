@@ -45,6 +45,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
@@ -124,7 +125,8 @@ class BrowserFeaturePromoController2xUiTestBase
     oss << "QueryIPH(" << iph_feature.name << ", " << expected_result << ")";
     return CheckResult(
         [this, &iph_feature]() {
-          return promo_controller()->CanShowPromo(iph_feature);
+          return promo_controller()->CanShowPromo(iph_feature,
+                                                  user_education_context());
         },
         expected_result, oss.str());
   }
@@ -231,6 +233,12 @@ class BrowserFeaturePromoController2xUiTestBase
   user_education::FeaturePromoController* promo_controller() const {
     return BrowserUserEducationInterface::From(browser())
         ->GetFeaturePromoControllerForTesting();
+  }
+
+  const user_education::UserEducationContextPtr& user_education_context()
+      const {
+    return BrowserUserEducationInterface::From(browser())
+        ->GetUserEducationContextForTesting();
   }
 
  protected:
@@ -570,10 +578,12 @@ class BrowserFeaturePromoController20CanShowPromoForElementUiTest
     return CheckElement(
         spec,
         [this](ui::TrackedElement* anchor) {
+          auto* const interface =
+              BrowserUserEducationInterface::From(browser());
           return static_cast<BrowserFeaturePromoController20*>(
-                     BrowserUserEducationInterface::From(browser())
-                         ->GetFeaturePromoControllerForTesting())
-              ->CanShowPromoForElement(anchor);
+                     interface->GetFeaturePromoControllerForTesting())
+              ->CanShowPromoForElement(
+                  anchor, interface->GetUserEducationContextForTesting());
         },
         expected);
   }

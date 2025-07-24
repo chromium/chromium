@@ -77,23 +77,30 @@ FeaturePromoResult CallbackFeaturePromoPrecondition::CheckPrecondition(
 
 ForwardingFeaturePromoPrecondition::ForwardingFeaturePromoPrecondition(
     const FeaturePromoPrecondition& source)
-    : source_(source) {}
+    : source_(&source),
+      cached_identifier_(source.GetIdentifier()),
+      cached_description_(source.GetDescription()) {}
 
 ForwardingFeaturePromoPrecondition::~ForwardingFeaturePromoPrecondition() =
     default;
 
 ForwardingFeaturePromoPrecondition::Identifier
 ForwardingFeaturePromoPrecondition::GetIdentifier() const {
-  return source_->GetIdentifier();
+  return source_ ? source_->GetIdentifier() : cached_identifier_;
 }
 
 const std::string& ForwardingFeaturePromoPrecondition::GetDescription() const {
-  return source_->GetDescription();
+  return source_ ? source_->GetDescription() : cached_description_;
 }
 
 FeaturePromoResult ForwardingFeaturePromoPrecondition::CheckPrecondition(
     ui::UnownedTypedDataCollection& data) const {
-  return source_->CheckPrecondition(data);
+  return source_ ? source_->CheckPrecondition(data)
+                 : FeaturePromoResult::kError;
+}
+
+void ForwardingFeaturePromoPrecondition::Invalidate() {
+  source_ = nullptr;
 }
 
 FeaturePromoPreconditionList::FeaturePromoPreconditionList(

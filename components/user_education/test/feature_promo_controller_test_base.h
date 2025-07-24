@@ -9,7 +9,9 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
@@ -20,6 +22,7 @@
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/common/user_education_storage_service.h"
+#include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_help_bubble.h"
 #include "components/user_education/test/test_user_education_storage_service.h"
 #include "components/user_education/test/user_education_session_mocks.h"
@@ -60,12 +63,6 @@ class FeaturePromoControllerTestBase : public testing::Test {
     ~TestPromoController() override = default;
 
    protected:
-    ui::ElementContext GetAnchorContext() const override {
-      return kAnchorElementContext;
-    }
-    const ui::AcceleratorProvider* GetAcceleratorProvider() const override {
-      return &test_accelerator_provider_;
-    }
     std::u16string GetBodyIconAltText() const override {
       return u"Body Icon Alt Text";
     }
@@ -75,33 +72,21 @@ class FeaturePromoControllerTestBase : public testing::Test {
     const char* GetScreenReaderPromptPromoEventName() const override {
       return kTestFocusHelpBubbleAcceleratorPromoRead;
     }
-    std::u16string GetTutorialScreenReaderHint() const override {
+    std::u16string GetTutorialScreenReaderHint(
+        const ui::AcceleratorProvider*) const override {
       return u"Tutorial Screen Reader Hint";
     }
     std::u16string GetFocusHelpBubbleScreenReaderHint(
-        FeaturePromoSpecification::PromoType promo_type,
-        ui::TrackedElement* anchor_element) const override {
+        FeaturePromoSpecification::PromoType,
+        ui::TrackedElement*,
+        const ui::AcceleratorProvider*) const override {
       return u"Focus Help Bubble Screen Reader Hint";
     }
-
-   private:
-    // Accelerator provider that always returns F6.
-    class DummyAcceleratorProvider : public ui::AcceleratorProvider {
-     public:
-      DummyAcceleratorProvider() = default;
-      ~DummyAcceleratorProvider() override = default;
-      bool GetAcceleratorForCommandId(int,
-                                      ui::Accelerator* accel) const override {
-        *accel = ui::Accelerator(ui::KeyboardCode::VKEY_F6, ui::MODIFIER_NONE);
-        return true;
-      }
-    };
-
-    DummyAcceleratorProvider test_accelerator_provider_;
   };
 
   // Sets the mock tracker's initialization success.
-  void SetTrackerResult(bool success);
+  virtual std::optional<bool> GetTrackerResult() const;
+  void SendTrackerResult(bool result);
 
   // Finds the current help bubble.
   TestHelpBubble* GetHelpBubble(
@@ -120,6 +105,9 @@ class FeaturePromoControllerTestBase : public testing::Test {
   }
   FeaturePromoControllerCommon& promo_controller() {
     return *promo_controller_;
+  }
+  const scoped_refptr<MockUserEducationContext>& promo_context() {
+    return test_promo_context_;
   }
   ui::test::TestElement& anchor_element() { return anchor_element_; }
 
@@ -163,6 +151,9 @@ class FeaturePromoControllerTestBase : public testing::Test {
 
   MockFeaturePromoSessionPolicy session_policy_;
   std::unique_ptr<FeaturePromoControllerCommon> promo_controller_;
+  scoped_refptr<MockUserEducationContext> test_promo_context_;
+  std::vector<feature_engagement::Tracker::OnInitializedCallback>
+      on_initialized_callbacks_;
 };
 
 }  // namespace user_education::test

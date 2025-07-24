@@ -82,9 +82,11 @@ TEST_F(NewTabPageFeaturePromoHelperTest, RecordFeatureUsage_CustomizeChrome) {
 
 TEST_F(NewTabPageFeaturePromoHelperTest,
        MaybeShowFeaturePromo_CustomizeChrome) {
-  EXPECT_CALL(*mock_promo_controller(),
-              MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
-                  feature_engagement::kIPHDesktopCustomizeChromeFeature)))
+  EXPECT_CALL(
+      *mock_promo_controller(),
+      MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
+                         feature_engagement::kIPHDesktopCustomizeChromeFeature),
+                     testing::_))
       .Times(1);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(true);
   helper()->MaybeShowFeaturePromo(
@@ -93,7 +95,7 @@ TEST_F(NewTabPageFeaturePromoHelperTest,
 
 TEST_F(NewTabPageFeaturePromoHelperTest,
        MaybeShowFeaturePromo_NonGoogle_CustomizeChrome) {
-  EXPECT_CALL(*mock_promo_controller(), MaybeShowPromo(testing::_)).Times(0);
+  EXPECT_CALL(*mock_promo_controller(), MaybeShowPromo).Times(0);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(false);
   helper()->MaybeShowFeaturePromo(
       feature_engagement::kIPHDesktopCustomizeChromeFeature, tab());

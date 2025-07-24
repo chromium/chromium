@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,39 +39,26 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
-BrowserFeaturePromoController20::BrowserFeaturePromoController20(
-    BrowserView* browser_view,
-    feature_engagement::Tracker* feature_engagement_tracker,
-    user_education::FeaturePromoRegistry* registry,
-    user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
-    user_education::UserEducationStorageService* storage_service,
-    user_education::FeaturePromoSessionPolicy* session_policy,
-    user_education::TutorialService* tutorial_service,
-    user_education::ProductMessagingController* messaging_controller)
-    : BrowserFeaturePromoController(browser_view,
-                                    feature_engagement_tracker,
-                                    registry,
-                                    help_bubble_registry,
-                                    storage_service,
-                                    session_policy,
-                                    tutorial_service,
-                                    messaging_controller) {}
-
 BrowserFeaturePromoController20::~BrowserFeaturePromoController20() = default;
 
 user_education::FeaturePromoResult
 BrowserFeaturePromoController20::CanShowPromoForElement(
-    ui::TrackedElement* anchor_element) const {
+    ui::TrackedElement* anchor_element,
+    const user_education::UserEducationContextPtr& context) const {
+  auto* const browser_context = context->AsA<BrowserUserEducationContext>();
+  CHECK(browser_context && browser_context->IsValid());
+  auto* const browser_view = &browser_context->GetBrowserView();
+
   // Trying to show an IPH while the browser is closing can cause problems;
   // see https://crbug.com/346461762 for an example. This can also crash
   // unit_tests that use a BrowserWindow but not a browser, so also check if
   // the browser view's widget is closing.
-  if (browser_view()->browser()->IsBrowserClosing() ||
-      browser_view()->GetWidget()->IsClosed()) {
+  if (browser_view->browser()->IsBrowserClosing() ||
+      browser_view->GetWidget()->IsClosed()) {
     return user_education::FeaturePromoResult::kBlockedByContext;
   }
 
-  auto* const profile = browser_view()->GetProfile();
+  auto* const profile = browser_view->GetProfile();
 
   // Turn off IPH while a required privacy interstitial is visible or pending.
   auto* const privacy_sandbox_service =
@@ -82,7 +70,7 @@ BrowserFeaturePromoController20::CanShowPromoForElement(
     return user_education::FeaturePromoResult::kBlockedByUi;
   }
 
-  Browser& browser = *browser_view()->browser();
+  Browser& browser = *browser_view->browser();
 
   // Turn off IPH while the browser is showing fullscreen content (like a
   // video). See https://crbug.com/411475424.
@@ -105,7 +93,7 @@ BrowserFeaturePromoController20::CanShowPromoForElement(
   // Don't show IPH if the toolbar is collapsed in Responsive Mode/the overflow
   // button is visible.
   if (const auto* const controller =
-          browser_view()->toolbar()->toolbar_controller()) {
+          browser_view->toolbar()->toolbar_controller()) {
     if (controller->InOverflowMode()) {
       return user_education::FeaturePromoResult::kWindowTooSmall;
     }
@@ -114,7 +102,7 @@ BrowserFeaturePromoController20::CanShowPromoForElement(
   // Don't show IPH if the anchor view is in an inactive window.
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
   auto* const anchor_widget = anchor_view ? anchor_view->view()->GetWidget()
-                                          : browser_view()->GetWidget();
+                                          : browser_view->GetWidget();
   if (!anchor_widget) {
     return user_education::FeaturePromoResult::kAnchorNotVisible;
   }
@@ -123,5 +111,6 @@ BrowserFeaturePromoController20::CanShowPromoForElement(
     return user_education::FeaturePromoResult::kAnchorSurfaceNotActive;
   }
 
-  return FeaturePromoController20::CanShowPromoForElement(anchor_element);
+  return FeaturePromoController20::CanShowPromoForElement(anchor_element,
+                                                          context);
 }

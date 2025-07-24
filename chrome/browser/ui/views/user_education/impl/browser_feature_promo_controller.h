@@ -29,33 +29,24 @@ template <typename T>
 class BrowserFeaturePromoController : public T {
  public:
   template <typename... Args>
-  explicit BrowserFeaturePromoController(BrowserView* browser_view,
-                                         Args&&... args)
-      : T(std::forward<Args>(args)...), browser_view_(browser_view) {
-    CHECK(browser_view_);
-  }
+  explicit BrowserFeaturePromoController(Args&&... args)
+      : T(std::forward<Args>(args)...) {}
   ~BrowserFeaturePromoController() override = default;
 
   // FeaturePromoController:
 
-  ui::ElementContext GetAnchorContext() const override {
-    return views::ElementTrackerViews::GetContextForView(browser_view_);
-  }
-
-  const ui::AcceleratorProvider* GetAcceleratorProvider() const override {
-    return browser_view_;
-  }
-
-  std::u16string GetTutorialScreenReaderHint() const override {
+  std::u16string GetTutorialScreenReaderHint(
+      const ui::AcceleratorProvider* accelerator_provider) const override {
     return BrowserHelpBubble::GetFocusTutorialBubbleScreenReaderHint(
-        GetAcceleratorProvider());
+        accelerator_provider);
   }
 
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element) const override {
+      ui::TrackedElement* anchor_element,
+      const ui::AcceleratorProvider* accelerator_provider) const override {
     return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
-        promo_type, GetAcceleratorProvider(), anchor_element);
+        promo_type, accelerator_provider, anchor_element);
   }
 
   std::u16string GetBodyIconAltText() const override {
@@ -69,12 +60,6 @@ class BrowserFeaturePromoController : public T {
   const char* GetScreenReaderPromptPromoEventName() const override {
     return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
   }
-
- protected:
-  BrowserView* browser_view() const { return browser_view_; }
-
- private:
-  const raw_ptr<BrowserView> browser_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_H_

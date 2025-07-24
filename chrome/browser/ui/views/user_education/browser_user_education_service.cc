@@ -1821,7 +1821,6 @@ CreateUserEducationResources(BrowserView* browser_view) {
 
   if (user_education::features::IsUserEducationV25()) {
     auto result = std::make_unique<BrowserFeaturePromoController25>(
-        browser_view,
         feature_engagement::TrackerFactory::GetForBrowserContext(profile),
         &user_education_service->feature_promo_registry(),
         &user_education_service->help_bubble_factory_registry(),
@@ -1833,7 +1832,6 @@ CreateUserEducationResources(BrowserView* browser_view) {
     return result;
   } else {
     return std::make_unique<BrowserFeaturePromoController20>(
-        browser_view,
         feature_engagement::TrackerFactory::GetForBrowserContext(profile),
         &user_education_service->feature_promo_registry(),
         &user_education_service->help_bubble_factory_registry(),

@@ -8,11 +8,13 @@
 #include <concepts>
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "components/user_education/common/user_education_context.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class AppMenuButton;
@@ -71,6 +73,19 @@ class BrowserUserEducationInterface {
   user_education::FeaturePromoController* GetFeaturePromoController(
       base::PassKey<T>) {
     return GetFeaturePromoControllerImpl();
+  }
+
+  // Only a limited number of non-test classes are allowed direct access to the
+  // `UserEducationContext`.
+  const user_education::UserEducationContextPtr& GetUserEducationContext(
+      base::PassKey<UserEducationInternalsPageHandlerImpl>) const {
+    return GetUserEducationContextImpl();
+  }
+
+  // Test-only accessor for user education context.
+  const user_education::UserEducationContextPtr&
+  GetUserEducationContextForTesting() {
+    return GetUserEducationContextImpl();
   }
 
   // Returns whether `iph_feature` is queued to be shown. Promos can be queued
@@ -184,6 +199,8 @@ class BrowserUserEducationInterface {
  protected:
   virtual const user_education::FeaturePromoController*
   GetFeaturePromoControllerImpl() const = 0;
+  virtual const user_education::UserEducationContextPtr&
+  GetUserEducationContextImpl() const = 0;
   user_education::FeaturePromoController* GetFeaturePromoControllerImpl();
 
  private:
