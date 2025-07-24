@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 
 namespace optimization_guide {
@@ -29,11 +29,11 @@ class ChromeModelBrokerState final
   static scoped_refptr<ChromeModelBrokerState> CreateOrGet();
 
   OnDeviceModelComponentStateManager& component_state_manager() {
-    return *component_state_manager_;
+    return model_broker_state_.component_state_manager();
   }
 
   OnDeviceModelServiceController& service_controller() {
-    return *service_controller_;
+    return model_broker_state_.service_controller();
   }
 
   ChromePredictionModelStore& prediction_model_store() {
@@ -42,15 +42,16 @@ class ChromeModelBrokerState final
 
   // Create a new asset manager to provide extra models/configs to the broker.
   std::unique_ptr<OnDeviceAssetManager> CreateAssetManager(
-      OptimizationGuideModelProvider* provider);
+      OptimizationGuideModelProvider* provider) {
+    return model_broker_state_.CreateAssetManager(provider);
+  }
 
  private:
   friend base::RefCounted<ChromeModelBrokerState>;
   ChromeModelBrokerState();
   ~ChromeModelBrokerState();
 
-  std::unique_ptr<OnDeviceModelComponentStateManager> component_state_manager_;
-  std::unique_ptr<OnDeviceModelServiceController> service_controller_;
+  ModelBrokerState model_broker_state_;
 
   ChromePredictionModelStore prediction_model_store_;
 

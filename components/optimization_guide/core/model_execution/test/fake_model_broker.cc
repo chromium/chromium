@@ -33,39 +33,30 @@ FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
   model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
   UpdatePerformanceClassPref(&local_state_,
                              OnDeviceModelPerformanceClass::kHigh);
-  auto access_controller =
-      std::make_unique<OnDeviceModelAccessController>(local_state_);
-  test_controller_ = std::make_unique<OnDeviceModelServiceController>(
-      std::move(access_controller), component_manager_.get()->GetWeakPtr(),
-      fake_launcher_.LaunchFn());
-  test_controller_->Init();
-  component_manager_.SetReady(base_model_);
-  test_controller_->MaybeUpdateModelAdaptation(asset.feature(),
-                                               asset.metadata());
+  model_broker_state_.Init();
+  base_model_.SetReadyIn(model_broker_state_.component_state_manager());
+  controller().MaybeUpdateModelAdaptation(asset.feature(), asset.metadata());
 }
 FakeModelBroker::~FakeModelBroker() = default;
 
 mojo::PendingRemote<mojom::ModelBroker> FakeModelBroker::BindAndPassRemote() {
   mojo::PendingRemote<mojom::ModelBroker> remote;
-  test_controller_->BindBroker(remote.InitWithNewPipeAndPassReceiver());
+  controller().BindBroker(remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
 
 void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {
   // First clear the current adaptation, then add the new asset to force an
   // update.
-  test_controller_->MaybeUpdateModelAdaptation(
+  controller().MaybeUpdateModelAdaptation(
       asset.feature(),
       base::unexpected(AdaptationUnavailability::kUpdatePending));
-  test_controller_->MaybeUpdateModelAdaptation(asset.feature(),
-                                               asset.metadata());
+  controller().MaybeUpdateModelAdaptation(asset.feature(), asset.metadata());
 }
 
 std::unique_ptr<OnDeviceAssetManager> FakeModelBroker::CreateAssetManager(
     OptimizationGuideModelProvider* provider) {
-  return std::make_unique<OnDeviceAssetManager>(
-      &local_state_, test_controller_->GetWeakPtr(),
-      component_manager_.get()->GetWeakPtr(), provider);
+  return model_broker_state_.CreateAssetManager(provider);
 }
 
 }  // namespace optimization_guide

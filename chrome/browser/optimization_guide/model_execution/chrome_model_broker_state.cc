@@ -108,31 +108,24 @@ class ChromeOnDeviceModelServiceController final {
   }
 };
 
-ChromeModelBrokerState::ChromeModelBrokerState() {
-  component_state_manager_ =
-      std::make_unique<OnDeviceModelComponentStateManager>(
+ChromeModelBrokerState::ChromeModelBrokerState()
+    : model_broker_state_(
           g_browser_process->local_state(),
-          std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
-  component_state_manager_->OnStartup();
-
-  service_controller_ = std::make_unique<OnDeviceModelServiceController>(
-      std::make_unique<OnDeviceModelAccessController>(
-          *g_browser_process->local_state()),
-      component_state_manager_->GetWeakPtr(),
-      base::BindRepeating(&LaunchService));
-  service_controller_->Init();
-  service_controller_->ListenForPerformanceClassAvailable(
+          std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
+          base::BindRepeating(&LaunchService)) {
+  model_broker_state_.Init();
+  service_controller().ListenForPerformanceClassAvailable(
       base::BindOnce(&ChromeOnDeviceModelServiceController::
                          RegisterPerformanceClassSyntheticTrial));
   if ((base::FeatureList::IsEnabled(
            optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
        optimization_guide::features::IsOnDeviceExecutionEnabled()) &&
-      component_state_manager_->NeedsPerformanceClassUpdate()) {
+      component_state_manager().NeedsPerformanceClassUpdate()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &OnDeviceModelServiceController::EnsurePerformanceClassAvailable,
-            service_controller_->GetWeakPtr(), base::DoNothing()),
+            service_controller().GetWeakPtr(), base::DoNothing()),
         optimization_guide::features::GetOnDeviceStartupMetricDelay());
   }
 }
@@ -146,14 +139,6 @@ scoped_refptr<ChromeModelBrokerState> ChromeModelBrokerState::CreateOrGet() {
     return new_instance;
   }
   return scoped_refptr<ChromeModelBrokerState>(instance.get());
-}
-
-std::unique_ptr<OnDeviceAssetManager>
-ChromeModelBrokerState::CreateAssetManager(
-    OptimizationGuideModelProvider* provider) {
-  return std::make_unique<OnDeviceAssetManager>(
-      g_browser_process->local_state(), service_controller_->GetWeakPtr(),
-      component_state_manager_->GetWeakPtr(), provider);
 }
 
 }  // namespace optimization_guide
