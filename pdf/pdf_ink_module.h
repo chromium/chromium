@@ -9,7 +9,6 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <utility>
 #include <variant>
 #include <vector>
 
@@ -256,6 +255,16 @@ class PdfInkModule {
     PdfInkBrush::Type type;
   };
 
+  // Data used to draw a text highlight stroke. If `first_point` equals
+  // `second_point`, then `second_point` is not used.
+  // `brush_size` should cover the stroke on the smaller dimension of the
+  // highlight rect.
+  struct TextSelectionHighlightStrokeData {
+    gfx::PointF first_point;
+    gfx::PointF second_point;
+    float brush_size;
+  };
+
   // The transform to and clip page rect needed to render strokes on screen.
   struct TransformAndClipRect {
     ink::AffineTransform transform;
@@ -311,13 +320,10 @@ class PdfInkModule {
   ink::Stroke GetHighlightStrokeFromSelectionRect(
       const gfx::Rect& selection_rect);
 
-  // Returns the start and end point of a stroke that covers `selection_rect`
-  // with a size of `brush_size`. `brush_size` must be large enough to cover
-  // `selection_rect`'s smallest dimension. `selection_rect` must be in screen
-  // coordinates.
-  std::pair<gfx::PointF, gfx::PointF> GetPointsForTextSelectionHighlightStroke(
-      const gfx::RectF& selection_rect,
-      float brush_size);
+  // Returns the data needed to create a text highlight stroke that covers
+  // `selection_rect`. `selection_rect` is in screen coordinates.
+  TextSelectionHighlightStrokeData GetTextSelectionHighlightStrokeData(
+      const gfx::RectF& selection_rect);
 
   // Converts PdfInkModuleClient's text selection to strokes and returns a
   // mapping of 0-based page indices to a list of those strokes. See comments

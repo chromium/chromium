@@ -1033,44 +1033,40 @@ ink::Stroke PdfInkModule::GetHighlightStrokeFromSelectionRect(
     const gfx::Rect& selection_rect) {
   CHECK(is_text_highlighting());
 
-  // The stroke should be drawn along the largest dimension, so have the brush
-  // size equal the smallest dimension.
-  float brush_size = std::min(selection_rect.width(), selection_rect.height()) /
-                     client_->GetZoom();
-
-  // Strokes will be drawn using one or two input points.
-  std::pair<gfx::PointF, gfx::PointF> points =
-      GetPointsForTextSelectionHighlightStroke(gfx::RectF(selection_rect),
-                                               brush_size);
+  TextSelectionHighlightStrokeData stroke_data =
+      GetTextSelectionHighlightStrokeData(gfx::RectF(selection_rect));
 
   ink::StrokeInputBatch batch;
-  ink::StrokeInput input =
-      CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse, points.first,
-                           /*elapsed_time=*/base::TimeDelta());
+  ink::StrokeInput input = CreateInkStrokeInput(
+      ink::StrokeInput::ToolType::kMouse, stroke_data.first_point,
+      /*elapsed_time=*/base::TimeDelta());
   auto result = batch.Append(input);
   CHECK(result.ok()) << result.message();
 
   // Skip the second input point if it matches the first input point.
-  if (points.first != points.second) {
-    input =
-        CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse, points.second,
-                             /*elapsed_time=*/base::TimeDelta());
+  if (stroke_data.first_point != stroke_data.second_point) {
+    input = CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse,
+                                 stroke_data.second_point,
+                                 /*elapsed_time=*/base::TimeDelta());
     result = batch.Append(input);
     CHECK(result.ok()) << result.message();
   }
 
   // Make a copy of the ink brush to avoid modifying the drawing highlighter.
   ink::Brush ink_brush = highlighter_brush_.ink_brush();
-  result = ink_brush.SetSize(brush_size);
+  result = ink_brush.SetSize(stroke_data.brush_size);
   CHECK(result.ok()) << result.message();
   return ink::Stroke(ink_brush, batch);
 }
 
-std::pair<gfx::PointF, gfx::PointF>
-PdfInkModule::GetPointsForTextSelectionHighlightStroke(
-    const gfx::RectF& selection_rect,
-    float brush_size) {
-  bool is_vertical_stroke = selection_rect.height() > selection_rect.width();
+PdfInkModule::TextSelectionHighlightStrokeData
+PdfInkModule::GetTextSelectionHighlightStrokeData(
+    const gfx::RectF& selection_rect) {
+  // The stroke should be drawn along the largest dimension, so have the brush
+  // size equal the smallest dimension.
+  float brush_size = std::min(selection_rect.width(), selection_rect.height());
+  bool is_vertical_stroke = brush_size == selection_rect.width();
+  brush_size /= client_->GetZoom();
   PageOrientation orientation = client_->GetOrientation();
 
   // The first input point will always either be the top center of the text
@@ -1114,7 +1110,8 @@ PdfInkModule::GetPointsForTextSelectionHighlightStroke(
   start.Offset(should_offset_y ? 0 : offset, should_offset_y ? offset : 0);
   end.Offset(should_offset_y ? 0 : -offset, should_offset_y ? -offset : 0);
 
-  return {start, end};
+  return TextSelectionHighlightStrokeData{
+      .first_point = start, .second_point = end, .brush_size = brush_size};
 }
 
 std::map<int, std::vector<ink::Stroke>>
