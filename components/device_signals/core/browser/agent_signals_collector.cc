@@ -14,6 +14,7 @@
 #include "components/device_signals/core/browser/detected_agent_client.h"
 #include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
+#include "components/device_signals/core/common/signals_features.h"
 
 namespace device_signals {
 
@@ -38,27 +39,39 @@ void AgentSignalsCollector::GetAgentSignal(
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  bool is_detected_agent_signal_collection_enabled =
+      enterprise_signals::features::IsDetectedAgentSignalCollectionEnabled();
   auto barrier_cb = base::BarrierCallback<AgentSignalsResponse>(
-      /*num_callbacks=*/1,
+      /*num_callbacks=*/is_detected_agent_signal_collection_enabled ? 2 : 1,
       base::BindOnce(&AgentSignalsCollector::OnSignalsCollected,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                      std::ref(response), std::move(done_closure)));
 
   GetCrowdstrikeIdentifierSignals(permission, request, response, barrier_cb);
+
+  if (is_detected_agent_signal_collection_enabled) {
+    GetDetectedAgentSignal(request, response, barrier_cb);
+  }
 }
 
 void AgentSignalsCollector::GetDetectedAgentSignal(
     const SignalsAggregationRequest request,
     SignalsAggregationResponse response,
     AgentSignalsResponseCallback agent_response_cb) {
-  // TODO(430135330): Implementing in a followup.
+  detected_agent_client_->GetAgents(base::BindOnce(
+      &AgentSignalsCollector::OnDetectedAgentSignalCollected,
+      weak_factory_.GetWeakPtr(), std::ref(response), agent_response_cb));
 }
 
 void AgentSignalsCollector::OnDetectedAgentSignalCollected(
     SignalsAggregationResponse& response,
     AgentSignalsResponseCallback agent_response_cb,
     std::vector<Agents> agent_signals) {
-  // TODO(430135330): Implementing in a followup.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  AgentSignalsResponse signal_response;
+  signal_response.detected_agents = std::move(agent_signals);
+  agent_response_cb.Run(std::move(signal_response));
 }
 
 void AgentSignalsCollector::GetCrowdstrikeIdentifierSignals(
@@ -114,6 +127,11 @@ void AgentSignalsCollector::OnSignalsCollected(
     if (agent_signals_response.crowdstrike_signals) {
       signal_response.crowdstrike_signals =
           std::move(agent_signals_response.crowdstrike_signals);
+    }
+
+    if (!agent_signals_response.detected_agents.empty()) {
+      signal_response.detected_agents =
+          std::move(agent_signals_response.detected_agents);
     }
   }
 
