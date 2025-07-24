@@ -68,6 +68,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/complex_tasks/model",
     "//ios/chrome/browser/contextual_panel/model",
+    "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/download/model",

@@ -775,4 +775,26 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
+// Tests that the contextual panel entrypoint disappears when distillation
+// fails.
+- (void)testContextualPanelEntrypointDisappearsOnDistillationFailure {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Wait for the contextual panel entrypoint to appear.
+  id<GREYMatcher> entrypoint = chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:entrypoint];
+
+  // Make the page not distillable.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"document.body.outerHTML = ''"];
+
+  // Tap the entrypoint to trigger distillation.
+  [[EarlGrey selectElementWithMatcher:entrypoint] performAction:grey_tap()];
+
+  // The entrypoint should disappear.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint];
+}
+
 @end

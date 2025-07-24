@@ -23,7 +23,7 @@ struct ContextualPanelItemConfiguration {
   static const int low_relevance;
 
   explicit ContextualPanelItemConfiguration(ContextualPanelItemType item_type);
-  ~ContextualPanelItemConfiguration();
+  virtual ~ContextualPanelItemConfiguration();
   ContextualPanelItemConfiguration(
       const ContextualPanelItemConfiguration& other) = delete;
   ContextualPanelItemConfiguration& operator=(

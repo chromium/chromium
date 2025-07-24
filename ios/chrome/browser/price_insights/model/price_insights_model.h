@@ -31,7 +31,7 @@ struct GURLHash {
 struct PriceInsightsItemConfiguration
     : public ContextualPanelItemConfiguration {
   PriceInsightsItemConfiguration();
-  ~PriceInsightsItemConfiguration();
+  ~PriceInsightsItemConfiguration() override;
   explicit PriceInsightsItemConfiguration(
       PriceInsightsItemConfiguration* config);
 

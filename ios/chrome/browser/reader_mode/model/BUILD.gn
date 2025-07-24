@@ -23,6 +23,8 @@ source_set("model") {
     "reader_mode_model.mm",
     "reader_mode_model_factory.h",
     "reader_mode_model_factory.mm",
+    "reader_mode_panel_item_configuration.h",
+    "reader_mode_panel_item_configuration.mm",
     "reader_mode_tab_helper.h",
     "reader_mode_tab_helper.mm",
   ]
