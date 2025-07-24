@@ -285,6 +285,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Selector"/>
 </enum>
 
+<!-- LINT.IfChange(TabGroupingTransitionType) -->
+
+<enum name="TabGroupingTransitionType">
+  <int value="-1" label="Invalid type"/>
+  <int value="0" label="Tab started ungrouped and ended ungrouped"/>
+  <int value="1" label="Tab started ungrouped and ended grouped"/>
+  <int value="2" label="Tab started grouped and ended ungrouped"/>
+  <int value="3" label="Tab started grouped and ended in the same group"/>
+  <int value="4"
+      label="Tab started grouped and ended outside of the same group"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_creation_metrics_controller.h:TabGroupingTransitionType) -->
+
 <!-- LINT.IfChange(TabGroupLoadedEmptiness)-->
 
 <enum name="TabGroupLoadedEmptiness">

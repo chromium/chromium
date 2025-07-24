@@ -1290,6 +1290,11 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetTabGroupForTab(
   return ContainsIndex(index) ? GetTabAtIndex(index)->GetGroup() : std::nullopt;
 }
 
+std::optional<tab_groups::TabGroupId> TabStripModel::GetActiveTabGroupId()
+    const {
+  return GetTabGroupForTab(active_index());
+}
+
 std::optional<tab_groups::TabGroupId> TabStripModel::GetSurroundingTabGroup(
     int index) const {
   if (!ContainsIndex(index - 1) || !ContainsIndex(index)) {

@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
+#include "chrome/browser/ui/tabs/tab_creation_metrics_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -342,6 +343,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   memory_saver_chip_helper_ = std::make_unique<MemorySaverChipTabHelper>(tab);
 
   tab_alert_controller_ = std::make_unique<TabAlertController>(tab);
+
+  tab_creation_metrics_controller_ =
+      std::make_unique<TabCreationMetricsController>(&tab);
 
   tab_ui_helper_ = std::make_unique<TabUIHelper>(tab);
 

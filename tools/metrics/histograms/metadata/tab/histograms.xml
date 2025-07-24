@@ -376,6 +376,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tab.GroupingTransition" enum="TabGroupingTransitionType"
+    expires_after="2026-06-11">
+  <owner>temao@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    [Desktop] Records different types of tab grouping transition states 10
+    seconds after a tab is created.
+  </summary>
+</histogram>
+
 <histogram name="Tab.HasCustomUnderPageBackgroundColor" enum="BooleanPresent"
     expires_after="2025-11-29">
   <owner>gambard@chromium.org</owner>

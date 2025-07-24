@@ -111,6 +111,7 @@ class TabInterface;
 class TabDialogManager;
 
 class InactiveWindowMouseEventController;
+class TabCreationMetricsController;
 
 // This class owns the core controllers for features that are scoped to a given
 // tab. It can be subclassed by tests to perform dependency injection.
@@ -262,6 +263,10 @@ class TabFeatures {
     return tab_alert_controller_.get();
   }
 
+  TabCreationMetricsController* tab_creation_metrics_controller() {
+    return tab_creation_metrics_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -401,6 +406,9 @@ class TabFeatures {
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
 
   std::unique_ptr<actor::ui::ActorUiTabController> actor_ui_tab_controller_;
+
+  std::unique_ptr<TabCreationMetricsController>
+      tab_creation_metrics_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

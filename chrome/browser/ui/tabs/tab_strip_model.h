@@ -525,6 +525,10 @@ class TabStripModel {
   // index is invalid or not grouped.
   std::optional<tab_groups::TabGroupId> GetTabGroupForTab(int index) const;
 
+  // Returns the TabGroupId of the active tab if it belongs to a group, or
+  // nullopt if ungrouped.
+  std::optional<tab_groups::TabGroupId> GetActiveTabGroupId() const;
+
   // If a tab inserted at |index| would be within a tab group, return that
   // group's ID. Otherwise, return nullopt. If |index| points to the first tab
   // in a group, it will return nullopt since a new tab would be either between
