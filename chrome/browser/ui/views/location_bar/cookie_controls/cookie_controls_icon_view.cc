@@ -238,7 +238,8 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
 
   // If the controls state has changed in some way, update the icon.
   if (controls_state != controls_state_ ||
-      blocking_status != blocking_status_ || should_highlight_) {
+      blocking_status != blocking_status_ ||
+      should_highlight != should_highlight_) {
     state_changed_ = controls_state != controls_state_;
     controls_state_ = controls_state;
     blocking_status_ = blocking_status;
