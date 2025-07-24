@@ -2218,6 +2218,12 @@ extern const char kTabArchivalDragDropAndroidDescription[];
 extern const char kTabCollectionAndroidName[];
 extern const char kTabCollectionAndroidDescription[];
 
+extern const char kTabGroupEntryPointsAndroidName[];
+extern const char kTabGroupEntryPointsAndroidDescription[];
+
+extern const char kTabGroupParityBottomSheetAndroidName[];
+extern const char kTabGroupParityBottomSheetAndroidDescription[];
+
 extern const char kTabModelInitFixesName[];
 extern const char kTabModelInitFixesDescription[];
 
@@ -2229,12 +2235,6 @@ extern const char kTabSwitcherGroupSuggestionsAndroidDescription[];
 
 extern const char kTabSwitcherGroupSuggestionsTestModeAndroidName[];
 extern const char kTabSwitcherGroupSuggestionsTestModeAndroidDescription[];
-
-extern const char kTabGroupEntryPointsAndroidName[];
-extern const char kTabGroupEntryPointsAndroidDescription[];
-
-extern const char kTabGroupParityBottomSheetAndroidName[];
-extern const char kTabGroupParityBottomSheetAndroidDescription[];
 
 extern const char kTabletTabStripAnimationName[];
 extern const char kTabletTabStripAnimationDescription[];

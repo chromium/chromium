@@ -3930,6 +3930,15 @@ const char kTabCollectionAndroidDescription[] =
     "data loss, etc. Don't enable this flag unless you know what you are doing "
     "and are working on developing this feature.";
 
+const char kTabGroupEntryPointsAndroidName[] = "Tab Group Entry Points";
+const char kTabGroupEntryPointsAndroidDescription[] =
+    "Enables additional entry points for creating tab groups";
+
+const char kTabGroupParityBottomSheetAndroidName[] =
+    "Tab Group Parity Bottom Sheet";
+const char kTabGroupParityBottomSheetAndroidDescription[] =
+    "Enables adding Tabs to Tab Groups via the Tab Group Parity Bottom Sheet";
+
 const char kTabModelInitFixesName[] = "Tab Model Init Fixes";
 const char kTabModelInitFixesDescription[] =
     "A grab bag of simple and miscellaneous improvements for tab model "
@@ -3953,15 +3962,6 @@ const char kTabSwitcherGroupSuggestionsTestModeAndroidName[] =
 const char kTabSwitcherGroupSuggestionsTestModeAndroidDescription[] =
     "Helper flag for testing that shows group suggestions for the last 3 tabs "
     "in the tab switcher (if present).";
-
-const char kTabGroupEntryPointsAndroidName[] = "Tab Group Entry Points";
-const char kTabGroupEntryPointsAndroidDescription[] =
-    "Enables additional entry points for creating tab groups";
-
-const char kTabGroupParityBottomSheetAndroidName[] =
-    "Tab Group Parity Bottom Sheet";
-const char kTabGroupParityBottomSheetAndroidDescription[] =
-    "Enables adding Tabs to Tab Groups via the Tab Group Parity Bottom Sheet";
 
 const char kTabletTabStripAnimationName[] = "Tablet Tab Strip Animation";
 const char kTabletTabStripAnimationDescription[] =

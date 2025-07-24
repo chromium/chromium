@@ -244,7 +244,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBlockIntentsWhileLocked,
     &kBookmarkPaneAndroid,
     &kBottomBrowserControlsRefactor,
-    &kTabClosureMethodRefactor,
     &kBrowserControlsDebugging,
     &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
@@ -391,10 +390,12 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSmallerTabStripTitleLimit,
     &kSuppressToolbarCapturesAtGestureEnd,
     &kSwapNewTabAndNewTabInGroupAndroid,
+    &kTabArchivalDragDropAndroid,
+    &kTabClosureMethodRefactor,
+    &kTabCollectionAndroid,
+    &kTabFreezeOnUndoableClosureKillSwitch,
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
-    &kTabletTabStripAnimation,
-    &kTabFreezeOnUndoableClosureKillSwitch,
     &kTabModelInitFixes,
     &kTabStateFlatBuffer,
     &kTabStorageSqlitePrototype,
@@ -404,13 +405,12 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripLayoutOptimization,
     &kTabStripMouseCloseResizeDelay,
     &kTabStripTransitionInDesktopWindow,
-    &kTabArchivalDragDropAndroid,
-    &kTabCollectionAndroid,
     &kTabSwitcherDragDropAndroid,
     &kTabSwitcherForeignFaviconSupport,
     &kTabSwitcherGroupSuggestionsAndroid,
     &kTabSwitcherGroupSuggestionsTestModeAndroid,
     &kTabWindowManagerReportIndicesMismatch,
+    &kTabletTabStripAnimation,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kThirdPartyDisableChromeAutofillSettingsScreen,
@@ -823,10 +823,6 @@ BASE_FEATURE(kCCTOpenInBrowserButtonIfEnabledByEmbedder,
 
 BASE_FEATURE(kCCTPredictiveBackGesture,
              "CCTPredictiveBackGesture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabClosureMethodRefactor,
-             "TabClosureMethodRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherUpdate,
@@ -1279,6 +1275,22 @@ BASE_FEATURE(kSwapNewTabAndNewTabInGroupAndroid,
              "SwapNewTabAndNewTabInGroupAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabArchivalDragDropAndroid,
+             "TabArchivalDragDropAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabClosureMethodRefactor,
+             "TabClosureMethodRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabCollectionAndroid,
+             "TabCollectionAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
+             "TabFreezeOnUndoableClosureKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabGroupEntryPointsAndroid,
              "TabGroupEntryPointsAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1286,14 +1298,6 @@ BASE_FEATURE(kTabGroupEntryPointsAndroid,
 BASE_FEATURE(kTabGroupParityBottomSheetAndroid,
              "TabGroupParityBottomSheetAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabletTabStripAnimation,
-             "TabletTabStripAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
-             "TabFreezeOnUndoableClosureKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabModelInitFixes,
              "TabModelInitFixes",
@@ -1315,6 +1319,10 @@ BASE_FEATURE(kTabStripGroupDragDropAndroid,
              "TabStripGroupDragDropAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabStripIncognitoMigration,
+             "TabStripIncognitoMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabStripLayoutOptimization,
              "TabStripLayoutOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1326,18 +1334,6 @@ BASE_FEATURE(kTabStripMouseCloseResizeDelay,
 BASE_FEATURE(kTabStripTransitionInDesktopWindow,
              "TabStripTransitionInDesktopWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabStripIncognitoMigration,
-             "TabStripIncognitoMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabArchivalDragDropAndroid,
-             "TabArchivalDragDropAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabCollectionAndroid,
-             "TabCollectionAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabSwitcherDragDropAndroid,
              "TabSwitcherDragDropAndroid",
@@ -1358,6 +1354,10 @@ BASE_FEATURE(kTabSwitcherGroupSuggestionsTestModeAndroid,
 BASE_FEATURE(kTabWindowManagerReportIndicesMismatch,
              "TabWindowManagerReportIndicesMismatch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabletTabStripAnimation,
+             "TabletTabStripAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTestDefaultDisabled,
              "TestDefaultDisabled",

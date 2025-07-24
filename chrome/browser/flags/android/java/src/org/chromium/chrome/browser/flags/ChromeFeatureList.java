@@ -620,6 +620,7 @@ public abstract class ChromeFeatureList {
             "TabGroupParityBottomSheetAndroid";
     public static final String TAB_MODEL_INIT_FIXES = "TabModelInitFixes";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
+    public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
     public static final String TAB_STRIP_DENSITY_CHANGE_ANDROID = "TabStripDensityChangeAndroid";
     public static final String TAB_STRIP_GROUP_DRAG_DROP_ANDROID = "TabStripGroupDragDropAndroid";
     public static final String TAB_STRIP_INCOGNITO_MIGRATION = "TabStripIncognitoMigration";
@@ -627,14 +628,13 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY = "TabStripMouseCloseResizeDelay";
     public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
             "TabStripTransitionInDesktopWindow";
-    public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
     public static final String TAB_SWITCHER_DRAG_DROP_ANDROID = "TabSwitcherDragDropAndroid";
+    public static final String TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT =
+            "TabSwitcherForeignFaviconSupport";
     public static final String TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID =
             "TabSwitcherGroupSuggestionsAndroid";
     public static final String TAB_SWITCHER_GROUP_SUGGESTIONS_TEST_MODE_ANDROID =
             "TabSwitcherGroupSuggestionsTestModeAndroid";
-    public static final String TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT =
-            "TabSwitcherForeignFaviconSupport";
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
             "TabWindowManagerReportIndicesMismatch";
     public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
