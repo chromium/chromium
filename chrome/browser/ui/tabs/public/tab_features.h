@@ -39,7 +39,7 @@ class CommerceUiTabHelper;
 class PriceInsightsPageActionViewController;
 class DiscountsPageActionViewController;
 class ProductSpecificationsPageActionViewController;
-}
+}  // namespace commerce
 
 namespace content {
 class WebContents;
@@ -64,16 +64,16 @@ class ExtensionSidePanelManager;
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class GlicTabIndicatorHelper;
-}
-#endif
+}  // namespace glic
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace memory_saver {
 class MemorySaverChipController;
-}
+}  // namespace memory_saver
 
 namespace zoom {
 class ZoomViewController;
-}
+}  // namespace zoom
 
 namespace permissions {
 class PermissionIndicatorsTabData;
@@ -384,7 +384,7 @@ class TabFeatures {
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
-#endif
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   std::unique_ptr<memory_saver::MemorySaverChipController>
       memory_saver_chip_controller_;
