@@ -16,7 +16,7 @@ import("//tools/grit/grit_rule.gni")
 
 group("resources") {
   public_deps = [
-    ":launchscreen_xib",
+    ":launchscreen",
     ":quick_action_icons",
     ":system_strings",
     "//ios/chrome/app/resources:packed_resources",
@@ -179,8 +179,13 @@ bundle_data_storyboard_file("base_scene_storyboard") {
   ]
 }
 
-bundle_data_xib_file("launchscreen_xib") {
-  source = "LaunchScreen.xib"
+bundle_data_storyboard_file("launchscreen") {
+  source = "LaunchScreen.storyboard"
+  bundle_files = [
+    "Info.plist",
+    "Y6W-OH-hqX-view-5EZ-qb-Rvc.nib",
+    "UIViewController-Y6W-OH-hqX.nib",
+  ]
   deps = [ ios_launchscreen_assets_target ]
 }
 

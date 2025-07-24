@@ -16,6 +16,7 @@ constexpr CGFloat kBottomMargin = 20;
 constexpr CGFloat kLogoMultiplier = 0.381966;
 constexpr CGFloat kBrandWidth = 107;
 constexpr CGFloat kStatusWidth = 195;
+constexpr CGFloat kLogoSize = 192;
 }  // namespace
 
 @interface LaunchScreenViewController ()
@@ -51,12 +52,20 @@ constexpr CGFloat kStatusWidth = 195;
 
   [view addSubview:mainStackView];
 
+  NSLayoutConstraint* widthConstraint =
+      [logo.widthAnchor constraintLessThanOrEqualToConstant:kLogoSize];
+  widthConstraint.priority = UILayoutPriorityRequired - 1;
+
   [NSLayoutConstraint activateConstraints:@[
-    [logo.widthAnchor constraintEqualToAnchor:view.widthAnchor
-                                   multiplier:kLogoMultiplier],
+    [logo.widthAnchor constraintLessThanOrEqualToAnchor:view.widthAnchor
+                                             multiplier:kLogoMultiplier],
+    [logo.heightAnchor constraintLessThanOrEqualToAnchor:view.heightAnchor
+                                              multiplier:kLogoMultiplier],
+    widthConstraint,
+    [logo.widthAnchor constraintEqualToAnchor:logo.heightAnchor],
     [logo.centerYAnchor constraintEqualToAnchor:view.centerYAnchor],
     [brand.bottomAnchor
-        constraintEqualToAnchor:view.layoutMarginsGuide.bottomAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
                        constant:-kBottomMargin],
     [brand.widthAnchor constraintEqualToConstant:kBrandWidth],
     [mainStackView.widthAnchor constraintEqualToAnchor:view.widthAnchor],
