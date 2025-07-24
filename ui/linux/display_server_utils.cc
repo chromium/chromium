@@ -125,7 +125,7 @@ void SetOzonePlatformForLinuxIfNeeded(base::CommandLine& command_line) {
     MaybeOverrideDefaultAsAuto(command_line);
     const auto ozone_platform_hint =
         command_line.GetSwitchValueASCII(switches::kOzonePlatformHint);
-    if (!ozone_platform_hint.empty()) {
+    if (!ozone_platform_hint.empty() && ozone_platform_hint != "auto") {
       command_line.AppendSwitchASCII(switches::kOzonePlatform,
                                      MaybeFixPlatformName(ozone_platform_hint));
     }
