@@ -248,6 +248,11 @@
   E_CPONLY(kColorNewTabPageComposeboxBackground) \
   E_CPONLY(kColorNewTabPageComposeboxFont) \
   E_CPONLY(kColorNewTabPageComposeboxCancelButton) \
+  E_CPONLY(kColorNewTabPageComposeboxErrorScrimBackground) \
+  E_CPONLY(kColorNewTabPageComposeboxErrorScrimButtonBackground) \
+  E_CPONLY(kColorNewTabPageComposeboxErrorScrimButtonBackgroundHover) \
+  E_CPONLY(kColorNewTabPageComposeboxErrorScrimButtonText) \
+  E_CPONLY(kColorNewTabPageComposeboxErrorScrimForeground) \
   E_CPONLY(kColorNewTabPageComposeboxHover) \
   E_CPONLY(kColorNewTabPageComposeboxOutlineHcm) \
   E_CPONLY(kColorNewTabPageComposeboxScrimBackground) \
