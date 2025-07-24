@@ -10,16 +10,17 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
-#include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
-#include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
-#include "components/user_education/common/user_education_data.h"
-#include "components/user_education/common/user_education_storage_service.h"
 
 class BrowserWindowInterface;
 class Profile;
 
 namespace user_education {
+
+class NtpPromoRegistry;
+class NtpPromoOrderPolicy;
+class UserEducationStorageService;
 
 // The contents of a promo as it will be shown in the NTP.
 struct NtpShowablePromo {
@@ -87,8 +88,14 @@ class NtpPromoController {
   // Updates the data on the promo shown in the top spot.
   void OnPromoShownInTopSpot(NtpPromoIdentifier id);
 
+  // Assembles a vector of showable promo objects (ie. the presentation parts
+  // of the promo) to be sent to the NTP.
+  std::vector<NtpShowablePromo> MakeShowablePromos(
+      const std::vector<NtpPromoIdentifier>& ids);
+
   const raw_ref<NtpPromoRegistry> registry_;
   const raw_ref<UserEducationStorageService> storage_service_;
+  std::unique_ptr<NtpPromoOrderPolicy> order_policy_;
 };
 
 }  // namespace user_education
