@@ -295,10 +295,6 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
     }
   }
 
-  if (!password_sync_allowed_) {
-    selected_types.Remove(UserSelectableType::kPasswords);
-  }
-
   return selected_types;
 }
 
@@ -319,10 +315,6 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForSyncingUser() const {
       // individual prefs.
       selected_types.Put(type);
     }
-  }
-
-  if (!password_sync_allowed_) {
-    selected_types.Remove(UserSelectableType::kPasswords);
   }
 
   return selected_types;
@@ -1087,17 +1079,6 @@ void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
       kMigratedPart1ButNot2) {
     pref_service_->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                               kMigratedPart2AndFullyDone);
-  }
-}
-
-void SyncPrefs::SetPasswordSyncAllowed(bool allowed) {
-  if (password_sync_allowed_ == allowed) {
-    return;
-  }
-
-  password_sync_allowed_ = allowed;
-  for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnSelectedTypesPrefChange();
   }
 }
 

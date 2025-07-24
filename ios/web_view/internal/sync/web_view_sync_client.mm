@@ -79,15 +79,6 @@ bool WebViewSyncClient::IsCustomPassphraseAllowed() {
   return true;
 }
 
-bool WebViewSyncClient::IsPasswordSyncAllowed() {
-  return true;
-}
-
-void WebViewSyncClient::SetPasswordSyncAllowedChangeCb(
-    const base::RepeatingClosure& cb) {
-  // IsPasswordSyncAllowed() doesn't change on //ios/web_view/.
-}
-
 void WebViewSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   // This code might be reached but synthetic field trials are not supported on

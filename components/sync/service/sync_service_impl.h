@@ -371,8 +371,6 @@ class SyncServiceImpl : public SyncService,
   // type.
   void MaybeRecordTrustedVaultHistograms();
 
-  void OnPasswordSyncAllowedChanged();
-
   // Updates PrefService (SyncPrefs) to cache the last known value for trusted
   // vault AutoUpgradeDebugInfo. It also notifies SyncClient.
   void CacheTrustedVaultDebugInfoToPrefsFromEngine();

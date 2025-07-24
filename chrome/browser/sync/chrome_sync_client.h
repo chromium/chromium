@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "components/browser_sync/sync_engine_factory_impl.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -59,9 +58,6 @@ class ChromeSyncClient : public syncer::SyncClient {
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
-  bool IsPasswordSyncAllowed() override;
-  void SetPasswordSyncAllowedChangeCb(
-      const base::RepeatingClosure& cb) override;
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
@@ -76,11 +72,6 @@ class ChromeSyncClient : public syncer::SyncClient {
       supervised_user_settings_service_;
   const std::unique_ptr<ExtensionsActivityMonitor> extensions_activity_monitor_;
   SyncEngineFactoryImpl engine_factory_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Watches password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores.
-  PrefChangeRegistrar upm_pref_change_registrar_;
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace browser_sync

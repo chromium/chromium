@@ -51,9 +51,6 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
-  bool IsPasswordSyncAllowed() override;
-  void SetPasswordSyncAllowedChangeCb(
-      const base::RepeatingClosure& cb) override;
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
