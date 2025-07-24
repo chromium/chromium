@@ -71,13 +71,9 @@ bool PinInfoBarDelegate::Accept() {
   RecordUserInteractionHistogram(PinInfoBarUserInteraction::kAccepted);
 
   // Pin Chrome to taskbar.
-  // TODO(crbug.com/420960161): record a metric for the taskbar pin result.
   browser_util::PinAppToTaskbar(
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
       base::DoNothing());
-
-  // TODO(crbug.com/420960161): record a metric for whether the user accepted,
-  // dismissed, or ignored the infobar.
   return ConfirmInfoBarDelegate::Accept();
 }
 
