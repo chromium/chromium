@@ -3083,8 +3083,7 @@ EXPORTS
     ?EqualsImpl@Cord@absl@@AEBA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@_K@Z
     ?EquivTransitions@TimeZoneInfo@cctz@time_internal@absl@@AEBA_NEE@Z
     ?Erase@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEAAPEAUPayload@status_internal@3@PEBU453@0@Z
-    ?EraseMetaOnlyLarge@container_internal@absl@@YAXAEAVCommonFields@12@PEBW4ctrl_t@12@_K@Z
-    ?EraseMetaOnlySmall@container_internal@absl@@YAXAEAVCommonFields@12@_N_K@Z
+    ?EraseMetaOnly@container_internal@absl@@YAXAEAVCommonFields@12@PEBW4ctrl_t@12@_K@Z
     ?ErasePayload@StatusRep@status_internal@absl@@QEAA?AUEraseResult@123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?ErrnoToStatus@absl@@YA?AVStatus@1@HV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?ErrnoToStatusCode@absl@@YA?AW4StatusCode@1@H@Z
@@ -3562,6 +3561,7 @@ EXPORTS
     ?MaskEmptyOrDeleted@GroupSse2Impl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@G$0BA@$0A@@23@XZ
     ?MaskFull@GroupPortableImpl@container_internal@absl@@QEBA@XZ
     ?MaskFull@GroupSse2Impl@container_internal@absl@@QEBA?AV?$BitMask@G$0BA@$0A@$0A@@23@XZ
+    ?MaskFullOrSentinel@GroupSse2Impl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@G$0BA@$0A@@23@XZ
     ?MaskNonFull@GroupSse2Impl@container_internal@absl@@QEBA@XZ
     ?Match@GroupSse2Impl@container_internal@absl@@QEBA?AV?$BitMask@G$0BA@$0A@$0A@@23@E@Z
     ?MatchesConversions@ParsedFormatBase@str_format_internal@absl@@AEBA_N_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
@@ -5291,7 +5291,6 @@ EXPORTS
     ?set_cordz_mean_interval@cord_internal@absl@@YAXH@Z
     ?set_data@InlineRep@Cord@absl@@QEAAPEAD_K@Z
     ?set_data@InlineRep@Cord@absl@@QEAAXPEBD_K@Z
-    ?set_empty_soo@CommonFields@container_internal@absl@@QEAAXXZ
     ?set_end@CordRepBtree@cord_internal@absl@@AEAAX_K@Z
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z
     ?set_full_soo@CommonFields@container_internal@absl@@QEAAXXZ

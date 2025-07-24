@@ -3081,8 +3081,7 @@ EXPORTS
     ?EqualsImpl@Cord@absl@@ABE_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@I@Z
     ?EquivTransitions@TimeZoneInfo@cctz@time_internal@absl@@ABE_NEE@Z
     ?Erase@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QAEPAUPayload@status_internal@3@PBU453@0@Z
-    ?EraseMetaOnlyLarge@container_internal@absl@@YAXAAVCommonFields@12@PBW4ctrl_t@12@I@Z
-    ?EraseMetaOnlySmall@container_internal@absl@@YAXAAVCommonFields@12@_NI@Z
+    ?EraseMetaOnly@container_internal@absl@@YAXAAVCommonFields@12@PBW4ctrl_t@12@I@Z
     ?ErasePayload@StatusRep@status_internal@absl@@QAE?AUEraseResult@123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?ErrnoToStatus@absl@@YA?AVStatus@1@HV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?ErrnoToStatusCode@absl@@YA?AW4StatusCode@1@H@Z
@@ -3560,6 +3559,7 @@ EXPORTS
     ?MaskEmptyOrDeleted@GroupSse2Impl@container_internal@absl@@QBE?AV?$NonIterableBitMask@G$0BA@$0A@@23@XZ
     ?MaskFull@GroupPortableImpl@container_internal@absl@@QBE@XZ
     ?MaskFull@GroupSse2Impl@container_internal@absl@@QBE?AV?$BitMask@G$0BA@$0A@$0A@@23@XZ
+    ?MaskFullOrSentinel@GroupSse2Impl@container_internal@absl@@QBE?AV?$NonIterableBitMask@G$0BA@$0A@@23@XZ
     ?MaskNonFull@GroupSse2Impl@container_internal@absl@@QBE@XZ
     ?Match@GroupSse2Impl@container_internal@absl@@QBE?AV?$BitMask@G$0BA@$0A@$0A@@23@E@Z
     ?MatchesConversions@ParsedFormatBase@str_format_internal@absl@@ABE_N_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
@@ -5289,7 +5289,6 @@ EXPORTS
     ?set_cordz_mean_interval@cord_internal@absl@@YAXH@Z
     ?set_data@InlineRep@Cord@absl@@QAEPADI@Z
     ?set_data@InlineRep@Cord@absl@@QAEXPBDI@Z
-    ?set_empty_soo@CommonFields@container_internal@absl@@QAEXXZ
     ?set_end@CordRepBtree@cord_internal@absl@@AAEXI@Z
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QAEXH@Z
     ?set_full_soo@CommonFields@container_internal@absl@@QAEXXZ
