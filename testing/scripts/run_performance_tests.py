@@ -748,7 +748,6 @@ class CrossbenchTest(object):
     self.options = options
     self._parse_arguments()
     self.isolated_out_dir = isolated_out_dir
-    self.network = self._get_network_arg(options.passthrough_args)
     self.is_chrome = (not self.cb_options.official_browser
                       or self.cb_options.official_browser.startswith('chrome'))
     self.env = self._create_env_arg()
@@ -762,6 +761,7 @@ class CrossbenchTest(object):
       browser_arg = _get_browser_arg(options.passthrough_args)
       self.is_android = _is_android(browser_arg)
       self._find_browser(browser_arg)
+    self.network = self._get_network_arg(options.passthrough_args)
 
   def _parse_arguments(self):
     parser = argparse.ArgumentParser()
@@ -779,7 +779,7 @@ class CrossbenchTest(object):
       return self._create_fileserver_network(_arg)
     if _get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
-    if self.options.benchmarks.startswith('motionmark'):
+    if self.options.benchmarks.startswith('motionmark') and not self.is_android:
       # TODO(crbug.com/413452730): Enable local file server in all platforms.
       return []
     if ((self.options.benchmarks in self.BENCHMARK_FILESERVERS)
