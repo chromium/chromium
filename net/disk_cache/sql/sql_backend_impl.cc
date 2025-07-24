@@ -14,12 +14,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "sql_backend_constants.h"
 
 namespace disk_cache {
 namespace {
@@ -225,6 +227,14 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
                                         GetCacheType(),
                                         background_task_runner_)) {
   DVLOG(1) << "SqlBackendImpl::SqlBackendImpl " << path;
+
+  // Schedule a one-time task to clean up doomed entries from previous sessions.
+  // This runs after a delay to avoid impacting startup performance.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SqlBackendImpl::TriggerDeleteDoomedEntries,
+                     weak_factory_.GetWeakPtr()),
+      kSqlBackendDeleteDoomedEntriesDelay);
 }
 
 SqlBackendImpl::~SqlBackendImpl() = default;
@@ -921,6 +931,28 @@ void SqlBackendImpl::HandleTriggerEvictionOperation(
   store_->StartEviction(
       std::move(excluded_keys),
       base::BindOnce([](SqlPersistentStore::Error result) {}));
+}
+
+void SqlBackendImpl::TriggerDeleteDoomedEntries() {
+  exclusive_operation_coordinator_.PostOrRunExclusiveOperation(base::BindOnce(
+      base::BindOnce(&SqlBackendImpl::HandleDeleteDoomedEntriesOperation,
+                     weak_factory_.GetWeakPtr())));
+}
+
+void SqlBackendImpl::HandleDeleteDoomedEntriesOperation(
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
+  std::vector<base::UnguessableToken> excluded_tokens_vec;
+  excluded_tokens_vec.reserve(doomed_entries_.size());
+  for (const auto& entry : doomed_entries_) {
+    excluded_tokens_vec.push_back(entry->token());
+  }
+  std::sort(excluded_tokens_vec.begin(), excluded_tokens_vec.end());
+  base::flat_set<base::UnguessableToken> excluded_tokens(
+      base::sorted_unique, std::move(excluded_tokens_vec));
+  store_->DeleteDoomedEntries(
+      std::move(excluded_tokens),
+      base::BindOnce([](SqlPersistentStore::Error result) {
+      }).Then(DoNothingWithBoundHandle(std::move(handle))));
 }
 
 void SqlBackendImpl::EnableStrictCorruptionCheckForTesting() {

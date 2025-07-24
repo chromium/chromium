@@ -5,8 +5,12 @@
 #include "net/disk_cache/sql/sql_backend_impl.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/base/io_buffer.h"
@@ -30,6 +34,36 @@ using testing::Pair;
 // Default max cache size for tests, 10 MB.
 inline constexpr int64_t kDefaultMaxBytes = 10 * 1024 * 1024;
 
+// Helper to create a new entry and write a data.
+Entry* CreateEntryAndWriteData(SqlBackendImpl* backend,
+                               const std::string& key,
+                               const std::string& data) {
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(key, net::HIGHEST, cb_create.callback()));
+  CHECK_EQ(create_result.net_error(), net::OK);
+  auto* entry = create_result.ReleaseEntry();
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
+  net::TestCompletionCallback cb_write;
+  EXPECT_EQ(
+      cb_write.GetResult(entry->WriteData(1, 0, buffer.get(), buffer->size(),
+                                          cb_write.callback(), false)),
+      static_cast<int>(buffer->size()));
+  return entry;
+}
+
+// Helper to read data and verify its content.
+void ReadAndVerifyData(Entry* entry, std::string_view expected_data) {
+  auto read_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(expected_data.size() + 1);
+  net::TestCompletionCallback cb_read;
+  int rv_read = entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
+                                cb_read.callback());
+  EXPECT_EQ(cb_read.GetResult(rv_read), static_cast<int>(expected_data.size()));
+  EXPECT_EQ(std::string_view(read_buffer->data(), expected_data.size()),
+            expected_data);
+}
+
 class SqlBackendImplTest : public testing::Test {
  public:
   SqlBackendImplTest() = default;
@@ -52,7 +86,6 @@ class SqlBackendImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
- private:
   base::ScopedTempDir temp_dir_;
 };
 
@@ -964,6 +997,85 @@ TEST_F(SqlBackendImplTest, AbortPendingGetAvailableRange) {
   EXPECT_THAT(aborted_result.net_error, IsError(net::ERR_ABORTED));
 
   entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
+  // 1. Create a backend and add three entries with data.
+  auto backend = CreateBackendAndInit();
+  auto task_runner = backend->GetBackgroundTaskRunnerForTest();
+
+  const std::string kKey1 = "key1";
+  const std::string kKey2 = "key2";
+  const std::string kKey3 = "key3";
+  const std::string kData = "some data";
+
+  auto* entry1 = CreateEntryAndWriteData(backend.get(), kKey1, kData);
+  auto* entry2 = CreateEntryAndWriteData(backend.get(), kKey2, kData);
+  auto* entry3 = CreateEntryAndWriteData(backend.get(), kKey3, kData);
+  auto token = static_cast<SqlEntryImpl*>(entry3)->token();
+  entry1->Close();
+  entry2->Close();
+  entry3->Close();
+
+  backend.reset();
+
+  {
+    base::RunLoop run_loop;
+    task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // 2. Open the database directly via SqlPersistentStore and doom the third
+  // entry.
+  {
+    auto store = disk_cache::SqlPersistentStore::Create(
+        temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
+        task_runner);
+    base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future_init;
+    store->Initialize(future_init.GetCallback());
+    ASSERT_EQ(future_init.Get(), disk_cache::SqlPersistentStore::Error::kOk);
+
+    base::test::TestFuture<SqlPersistentStore::Error> future_doom;
+    store->DoomEntry(CacheEntryKey(kKey3), token, future_doom.GetCallback());
+    EXPECT_EQ(future_doom.Get(), SqlPersistentStore::Error::kOk);
+
+    store.reset();
+  }
+  {
+    base::RunLoop run_loop;
+    task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // 3. Recreate the backend
+  backend = CreateBackendAndInit();
+
+  // 4. Open and doom the first and the second entries and let them as active.
+  TestEntryResultCompletionCallback cb_open1;
+  disk_cache::EntryResult open_result1 = cb_open1.GetResult(
+      backend->OpenEntry(kKey1, net::HIGHEST, cb_open1.callback()));
+  entry1 = open_result1.ReleaseEntry();
+  entry1->Doom();
+
+  TestEntryResultCompletionCallback cb_open2;
+  disk_cache::EntryResult open_result2 = cb_open2.GetResult(
+      backend->OpenEntry(kKey2, net::HIGHEST, cb_open2.callback()));
+  entry2 = open_result2.ReleaseEntry();
+  entry2->Doom();
+
+  base::HistogramTester histogram_tester;
+  task_environment_.FastForwardBy(kSqlBackendDeleteDoomedEntriesDelay +
+                                  base::Seconds(1));
+  // Verify that `DeleteDoomedEntriesCount` UMA was recorded in the histogram.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.DeleteDoomedEntriesCount", 1, 1);
+
+  // 5. Verify that the data can still be read from the doomed entry.
+  ReadAndVerifyData(entry1, kData);
+  ReadAndVerifyData(entry2, kData);
+
+  entry1->Close();
+  entry2->Close();
 }
 
 }  // namespace

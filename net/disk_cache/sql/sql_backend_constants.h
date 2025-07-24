@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 
 namespace disk_cache {
 
@@ -64,6 +65,15 @@ static const int kSqlBackendStreamCount = 2;
 // when the cache size exceeds the high watermark and continues until it is
 // below the low watermark.
 inline constexpr int kSqlBackendEvictionMarginDivisor = 20;
+
+// The delay after backend initialization before running a one-time cleanup task
+// to delete doomed entries. This task removes entries that were doomed in a
+// previous session but not fully deleted (e.g., due to a crash), ensuring
+// that their disk space is reclaimed.
+// Note: This value is set assuming use with HTTP Cache, but if the SQL backend
+// is used with Cache Storage, it should be a shorter value.
+inline constexpr base::TimeDelta kSqlBackendDeleteDoomedEntriesDelay =
+    base::Minutes(10);
 
 }  // namespace disk_cache
 
