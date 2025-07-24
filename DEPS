@@ -1545,7 +1545,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_win_x86_64',
-          'version': 'UVrqAtGzmgUEfnEM-U7qa_mmd1Jer7qIuYaQAT9qy4AC',
+          'version': 'I9bjoaDlSd9f5OfXjM-C345qU6o1dKJE_JZblGZzFVAC',
         },
       ],
   },
