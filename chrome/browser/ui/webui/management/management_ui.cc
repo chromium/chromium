@@ -262,6 +262,11 @@ void ManagementUI::GetLocalizedStrings(
       {"promotionBannerTitle", IDS_MANAGEMENT_BANNER_PROMOTION_TITLE},
       {"promotionBannerDesc", IDS_MANAGEMENT_BANNER_PROMOTION_DESC},
       {"promotionBannerBtn", IDS_MANAGEMENT_BANNER_PROMOTION_BTN},
+      {"promotionBannerAriaLabel", IDS_MANAGEMENT_BANNER_ARIA_LABEL},
+      {"promotionBannerNewTabAriaDescription",
+       IDS_MANAGEMENT_BANNER_NEW_TAB_ARIA_DESCRIPTION},
+      {"promotionBannerDismissAriaLabel",
+       IDS_MANAGEMENT_BANNER_DISMISS_ARIA_LABEL},
   };
   for (auto i : kLocalizedStrings) {
     strings.push_back(i);

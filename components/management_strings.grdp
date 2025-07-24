@@ -497,4 +497,13 @@
   <message name="IDS_MANAGEMENT_BANNER_PROMOTION_BTN" desc="The text of the button to redirect to the guide page from the promotion banner on chrome://management page.">
     Try Chrome Enterprise Core
   </message>
+  <message name="IDS_MANAGEMENT_BANNER_ARIA_LABEL" desc="The aria-label of the promotion banner on chrome://management page.">
+    Promotion banner
+  </message>
+  <message name="IDS_MANAGEMENT_BANNER_NEW_TAB_ARIA_DESCRIPTION" desc="The aria-label of the redirect button on the promotion banner on chrome://management page.">
+    Opens in new tab
+  </message>
+  <message name="IDS_MANAGEMENT_BANNER_DISMISS_ARIA_LABEL" desc="The aria-label of the dismiss/close button on the promotion banner on chrome://management page.">
+    Dismiss banner
+  </message>
 </grit-part>

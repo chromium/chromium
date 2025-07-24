@@ -143,7 +143,8 @@ export function getPromotionBannerHtml(this: ManagementUiElement) {
           padding-block: 0;
         }
       </style>
-      <section id="promotion-banner-section-main" class="banner-section">
+      <section id="promotion-banner-section-main" class="banner-section"
+          aria-label="${this.i18n('promotionBannerAriaLabel')}">
         <div id="promotion-banner-section" class="banner-section-container">
           <div id="banner-actions" class="banner-actions-container">
             <div id="promotion-main-text" class="promotion-main-text-container">
@@ -154,11 +155,13 @@ export function getPromotionBannerHtml(this: ManagementUiElement) {
                   ${this.i18n('promotionBannerDesc')} </div>
               </div>
               <button id="promotion-redirect-button" class="blue-pill-button"
-                  @click="${this.onPromotionRedirect_}">
+                  @click="${this.onPromotionRedirect_}"
+                  aria-description="${this.i18n('promotionBannerNewTabAriaDescription')}">
                 ${this.i18n('promotionBannerBtn')} </button>
             </div>
             <button id="promotion-dismiss-button" class="dismiss-button"
-                tabindex="0" @click="${this.onDismissPromotion_}">
+                tabindex="0" @click="${this.onDismissPromotion_}"
+                aria-label="${this.i18n('promotionBannerDismissAriaLabel')}">
               <div id="close-icon-container"></div>
             </button>
           </div>
