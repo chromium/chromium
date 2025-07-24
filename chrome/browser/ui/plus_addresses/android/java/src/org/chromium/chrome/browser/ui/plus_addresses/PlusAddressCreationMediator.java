@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -220,7 +221,7 @@ import org.chromium.url.GURL;
 
     // TabModelObserver
     @Override
-    public void didSelectTab(Tab tab, int type, int lastId) {
+    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
         // While the bottom sheet scrim covers the omnibox UI, a new tab can be created in other
         // ways such as by opening a link from another app. In this case we want to hide the bottom
         // sheet rather than keeping the bottom sheet open while this tab loads behind the scrim.

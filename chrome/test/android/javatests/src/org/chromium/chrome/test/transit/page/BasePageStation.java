@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
@@ -396,7 +397,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         }
 
         @Override
-        public void didSelectTab(Tab tab, int type, int lastId) {
+        public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
             if (mTabsSelected.contains(tab)) {
                 // We get multiple (2-3 depending on the case) didSelectTab when selecting a Tab, so
                 // filter out redundant callbacks to make sure we wait for different Tabs.

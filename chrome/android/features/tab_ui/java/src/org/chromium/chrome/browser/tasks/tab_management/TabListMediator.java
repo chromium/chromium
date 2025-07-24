@@ -1011,7 +1011,7 @@ class TabListMediator implements TabListNotificationHandler {
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         assert mShowingTabs;
 
                         mNextTabId = Tab.INVALID_TAB_ID;

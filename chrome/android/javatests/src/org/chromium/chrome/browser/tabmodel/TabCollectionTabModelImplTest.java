@@ -204,7 +204,7 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         fail("didSelectTab should not be called. " + tab.getId());
                     }
                 };
@@ -248,7 +248,7 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         // Should not be called as the selected tab is not removed.
                         fail("didSelectTab should not be called.");
                     }
@@ -293,7 +293,7 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         assertEquals("Incorrect tab selected.", tab1, tab);
                         assertEquals(
                                 "Incorrect selection type.", TabSelectionType.FROM_CLOSE, type);
@@ -366,7 +366,7 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         tabInDidSelect.set(tab);
                         assertEquals(TabSelectionType.FROM_CLOSE, type);
                         assertEquals(tab1.getId(), lastId);
@@ -455,7 +455,7 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         tabInDidSelect.set(tab);
                         assertEquals(TabSelectionType.FROM_CLOSE, type);
                         assertEquals(tab2.getId(), lastId);
@@ -547,7 +547,7 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         fail("didSelectTab should not be called when closing all tabs.");
                     }
                 };

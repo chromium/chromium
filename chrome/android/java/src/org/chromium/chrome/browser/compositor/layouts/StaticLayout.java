@@ -235,7 +235,7 @@ public class StaticLayout extends Layout {
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(tabModelSelector) {
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         if (!mIsShowing) return;
 
                         setStaticTab(tab);

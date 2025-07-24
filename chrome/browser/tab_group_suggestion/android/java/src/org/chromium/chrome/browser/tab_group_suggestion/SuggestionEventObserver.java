@@ -38,7 +38,10 @@ public class SuggestionEventObserver {
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
-                public void didSelectTab(Tab tab, int type, int lastId) {
+                public void didSelectTab(
+                        Tab tab,
+                        @org.chromium.chrome.browser.tab.TabSelectionType int type,
+                        int lastId) {
                     @TabSelectionType
                     int selectionType =
                             switch (type) {

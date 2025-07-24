@@ -125,7 +125,7 @@ public class UndoRefocusHelper {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         // Undoing a selected tab closure, after manually switching tabs shouldn't
                         // switch focus to the reopened tab.
                         if (type == TabSelectionType.FROM_USER
