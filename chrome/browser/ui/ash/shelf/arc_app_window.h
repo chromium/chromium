@@ -11,7 +11,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "components/app_icon_loader/app_icon_loader.h"

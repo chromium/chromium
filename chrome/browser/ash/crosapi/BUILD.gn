@@ -109,7 +109,6 @@ static_library("crosapi") {
     "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/extensions",
-    "//chrome/browser/image_decoder:image_decoder",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
