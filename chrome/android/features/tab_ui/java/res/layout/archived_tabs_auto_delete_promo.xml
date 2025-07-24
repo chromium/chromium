@@ -57,14 +57,15 @@ found in the LICENSE file.
             android:id="@+id/promo_title_text"
             android:layout_width="match_parent"
             android:layout_height="28dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:textAppearance="@style/TextAppearance.Headline"
             android:gravity="center_horizontal|top"
             android:text="@string/archived_tabs_auto_delete_promo_title"/>
         <ScrollView
             android:id="@+id/promo_description_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="28dp"
+            android:layout_height="41dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
             android:scrollbars="none"
             android:fadeScrollbars="false"
             android:maxHeight="120dp">
@@ -72,7 +73,7 @@ found in the LICENSE file.
                 android:id="@+id/promo_description_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 android:lineSpacingExtra="4dp"
                 android:gravity="center_horizontal|top"/>
         </ScrollView>
