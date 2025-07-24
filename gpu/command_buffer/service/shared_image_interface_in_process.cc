@@ -124,35 +124,6 @@ SharedImageInterfaceInProcess::~SharedImageInterfaceInProcess() {
   completion.Wait();
 }
 
-const SharedImageCapabilities&
-SharedImageInterfaceInProcess::GetCapabilities() {
-  base::WaitableEvent completion(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-
-  if (!shared_image_capabilities_) {
-    shared_image_capabilities_ = std::make_unique<SharedImageCapabilities>();
-    task_sequence_->ScheduleTask(
-        base::BindOnce(&SharedImageInterfaceInProcess::GetCapabilitiesOnGpu,
-                       this, &completion, shared_image_capabilities_.get()),
-        /*sync_token_fences=*/{}, SyncToken());
-    completion.Wait();
-  }
-  return *shared_image_capabilities_;
-}
-
-void SharedImageInterfaceInProcess::GetCapabilitiesOnGpu(
-    base::WaitableEvent* completion,
-    SharedImageCapabilities* out_capabilities) {
-  if (!GetSharedImageFactory()) {
-    return;
-  }
-
-  DCHECK(shared_image_factory_);
-  *out_capabilities = shared_image_factory_->MakeCapabilities();
-  completion->Signal();
-}
-
 void SharedImageInterfaceInProcess::SetUpOnGpu(
     std::unique_ptr<SetUpOnGpuParams> params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);

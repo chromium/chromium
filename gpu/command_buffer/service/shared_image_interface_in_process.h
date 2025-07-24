@@ -63,9 +63,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   SharedImageInterfaceInProcess& operator=(
       const SharedImageInterfaceInProcess&) = delete;
 
-  // SharedImageInterface:
-  const SharedImageCapabilities& GetCapabilities() override;
-
  protected:
   ~SharedImageInterfaceInProcess() override;
 
@@ -96,9 +93,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void SetUpOnGpu(std::unique_ptr<SetUpOnGpuParams> params);
   void DestroyOnGpu(base::WaitableEvent* completion);
 
-  void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
-                            SharedImageCapabilities* out_capabilities);
-
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the
   // SharedImageInterfaceInProcess.
@@ -118,7 +112,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   scoped_refptr<SharedContextState> context_state_;
   ScopedSyncPointClientState sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
-  std::unique_ptr<SharedImageCapabilities> shared_image_capabilities_;
 };
 
 }  // namespace gpu

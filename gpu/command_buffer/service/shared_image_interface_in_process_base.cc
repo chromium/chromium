@@ -27,6 +27,7 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -46,12 +47,33 @@ namespace gpu {
 SharedImageInterfaceInProcessBase::SharedImageInterfaceInProcessBase(
     CommandBufferNamespace namespace_id,
     CommandBufferId command_buffer_id,
+    bool verify_creation_sync_token,
+    SharedImageCapabilities shared_image_capabilities)
+    : namespace_id_(namespace_id),
+      command_buffer_id_(command_buffer_id),
+      verify_creation_sync_token_(verify_creation_sync_token),
+      shared_image_capabilities_(std::move(shared_image_capabilities)),
+      shared_image_capabilities_ready_(
+          base::WaitableEvent::ResetPolicy::MANUAL,
+          base::WaitableEvent::InitialState::SIGNALED) {
+  DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
+}
+
+SharedImageInterfaceInProcessBase::SharedImageInterfaceInProcessBase(
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id,
     bool verify_creation_sync_token)
     : namespace_id_(namespace_id),
       command_buffer_id_(command_buffer_id),
-      verify_creation_sync_token_(verify_creation_sync_token) {
+      verify_creation_sync_token_(verify_creation_sync_token),
+      shared_image_capabilities_ready_(
+          base::WaitableEvent::ResetPolicy::MANUAL,
+          base::WaitableEvent::InitialState::NOT_SIGNALED) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
 }
+
+SharedImageInterfaceInProcessBase::~SharedImageInterfaceInProcessBase() =
+    default;
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcessBase::CreateSharedImage(
@@ -501,6 +523,38 @@ SharedImageInterfaceInProcessBase::ImportSharedImage(
   // Secondary references are required only by client processes, so it shouldn't
   // be reachable here.
   NOTREACHED();
+}
+
+const SharedImageCapabilities&
+SharedImageInterfaceInProcessBase::GetCapabilities() {
+  // Return fast on already-initialized common case.
+  if (shared_image_capabilities_ready_.IsSignaled()) {
+    return shared_image_capabilities_;
+  }
+
+  ScheduleGpuTask(
+      base::BindOnce(
+          &SharedImageInterfaceInProcessBase::GetCapabilitiesOnGpuThread, this),
+      /*sync_token_fences=*/{}, SyncToken());
+
+  shared_image_capabilities_ready_.Wait();
+  return shared_image_capabilities_;
+}
+
+void SharedImageInterfaceInProcessBase::GetCapabilitiesOnGpuThread() {
+  // `GetCapabilitiesOnGpuThread()` may be scheduled by multiple threads,
+  // so quick return if it's already been run.
+  if (shared_image_capabilities_ready_.IsSignaled()) {
+    return;
+  }
+
+  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  if (shared_image_factory) {
+    shared_image_capabilities_ = shared_image_factory->MakeCapabilities();
+  }
+  // Fallback to default-initialized version if no factory.
+
+  shared_image_capabilities_ready_.Signal();
 }
 
 }  // namespace gpu

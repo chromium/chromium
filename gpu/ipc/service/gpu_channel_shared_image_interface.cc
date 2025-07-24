@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -38,26 +39,20 @@ GpuChannelSharedImageInterface::GpuChannelSharedImageInterface(
           CommandBufferIdFromChannelAndRoute(
               shared_image_stub->channel()->client_id(),
               g_next_id.GetNext() + 1),
-          /*verify_creation_sync_token=*/true),
+          /*verify_creation_sync_token=*/true,
+          shared_image_stub->factory()->MakeCapabilities()),
       shared_image_stub_(shared_image_stub),
       scheduler_(shared_image_stub->channel()->scheduler()),
       sequence_(scheduler_->CreateSequence(
           SchedulingPriority::kLow,
           shared_image_stub->channel()->task_runner(),
           CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE,
-          command_buffer_id())),
-      shared_image_capabilities_(
-          shared_image_stub->factory()->MakeCapabilities()) {
+          command_buffer_id())) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
 }
 
 GpuChannelSharedImageInterface::~GpuChannelSharedImageInterface() {
   scheduler_->DestroySequence(sequence_);
-}
-
-const SharedImageCapabilities&
-GpuChannelSharedImageInterface::GetCapabilities() {
-  return shared_image_capabilities_;
 }
 
 // Public functions specific to GpuChannelSharedImageInterface:

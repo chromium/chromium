@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
@@ -85,18 +86,24 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
   SyncToken GenVerifiedSyncToken() final;
   void VerifySyncToken(SyncToken& sync_token) final;
   void WaitSyncToken(const SyncToken& sync_token) final;
-  // subclasses responsible for:
-  // `const SharedImageCapabilities& GetCapabilities() override;`
+  const SharedImageCapabilities& GetCapabilities() final;
 
  protected:
-  // `MakeSyncToken()` will create a sync token with `namespace_id` and
-  // `command_buffer_id`; `GenCreationSyncToken()` will verify that sync token
-  // or not based on `verify_creation_sync_token`.
+  // `MakeSyncToken()` creates a sync token with `namespace_id` and
+  // `command_buffer_id`; `GenCreationSyncToken()` verifies that sync token
+  // or not based on `verify_creation_sync_token`. If
+  // `shared_image_capabilities` is not provided to the constructor it will be
+  // lazily-created on the GPU thread.
+  SharedImageInterfaceInProcessBase(
+      CommandBufferNamespace namespace_id,
+      CommandBufferId command_buffer_id,
+      bool verify_creation_sync_token,
+      SharedImageCapabilities shared_image_capabilities);
   SharedImageInterfaceInProcessBase(CommandBufferNamespace namespace_id,
                                     CommandBufferId command_buffer_id,
                                     bool verify_creation_sync_token);
 
-  ~SharedImageInterfaceInProcessBase() override = default;
+  ~SharedImageInterfaceInProcessBase() override;
 
   // Schedule the `task` on the GPU, waiting on `sync_token_fences` and
   // signalling `release` when done.
@@ -163,6 +170,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
 
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
 
+  void GetCapabilitiesOnGpuThread();
+
   SyncToken MakeSyncToken(uint64_t release_id) {
     return {namespace_id_, command_buffer_id_, release_id};
   }
@@ -181,6 +190,12 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
   const CommandBufferNamespace namespace_id_;
   const CommandBufferId command_buffer_id_;
   const bool verify_creation_sync_token_;
+
+  // This should only be non-default initialized at construction or from the GPU
+  // thread. `shared_image_capabilities_ready_.IsSignalled()` indicates that it
+  // is safe to read from.
+  SharedImageCapabilities shared_image_capabilities_;
+  base::WaitableEvent shared_image_capabilities_ready_;
 };
 
 }  // namespace gpu

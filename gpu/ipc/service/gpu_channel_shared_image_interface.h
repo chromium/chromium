@@ -45,9 +45,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   GpuChannelSharedImageInterface& operator=(
       const GpuChannelSharedImageInterface&) = delete;
 
-  // SharedImageInterface:
-  const SharedImageCapabilities& GetCapabilities() override;
-
   // Public functions specific to GpuChannelSharedImageInterface:
 #if BUILDFLAG(IS_ANDROID)
   scoped_refptr<ClientSharedImage> CreateSharedImageForAndroidVideo(
@@ -84,7 +81,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
 
   raw_ptr<Scheduler> scheduler_;
   const SequenceId sequence_;
-  SharedImageCapabilities shared_image_capabilities_;
 };
 
 }  // namespace gpu
