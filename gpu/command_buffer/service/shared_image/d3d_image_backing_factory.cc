@@ -171,7 +171,9 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
     SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER | SHARED_IMAGE_USAGE_CPU_READ |
-    SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+    SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
+    SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE |
+    SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ;
 
 const char* kD3DImageBackingLabel = "D3DImageBacking";
 
@@ -443,8 +445,35 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   DCHECK(!is_thread_safe);
 
   if (usage.Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
-    return CreateSharedBufferD3D12(mailbox, size, color_space, surface_origin,
-                                   alpha_type, usage, debug_label);
+    gfx::Size buffer_size = size;
+    // WebNN tensors have a valid height and format and must be converted to 1D
+    // byte buffer.
+    if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+      if (size.width() <= 0 || size.height() <= 0 ||
+          size.width() > std::numeric_limits<int>::max() / size.height()) {
+        LOG(ERROR) << "Shared image dimensions for tensor are invalid.";
+        return nullptr;
+      }
+
+      int bits_per_element = format.BitsPerPixel();
+      if (bits_per_element % 8 != 0) {
+        LOG(ERROR) << "Shared image format for tensor is invalid.";
+        return nullptr;
+      }
+
+      int element_count = size.width() * size.height();
+      int bytes_per_element = bits_per_element / 8;
+      if (element_count > std::numeric_limits<int>::max() / bytes_per_element) {
+        LOG(ERROR) << "Shared image size for tensor is invalid.";
+        return nullptr;
+      }
+
+      buffer_size = gfx::Size(element_count * bytes_per_element, 1);
+    }
+
+    return CreateSharedBufferD3D12(mailbox, buffer_size, color_space,
+                                   surface_origin, alpha_type, usage,
+                                   debug_label);
   }
 
   // Without D3D11, we cannot do shared images. This will happen if we're
@@ -732,6 +761,7 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
 
   // The passed usages AND-ed with the compliment of the OR-d valid usages
   // should be zero.
+  // TODO(crbug.com/345352987): replace with IsSupported().
   if (usage &
       ~(SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
         SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
@@ -741,6 +771,8 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
                   "creating a buffer-backed shared image.";
   }
 
+  uint64_t buffer_width = size.width();
+
   D3D12_HEAP_PROPERTIES heap_properties;
   heap_properties.Type = D3D12_HEAP_TYPE_DEFAULT,
   heap_properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
@@ -748,10 +780,41 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
   heap_properties.CreationNodeMask = 1;
   heap_properties.VisibleNodeMask = 1;
 
+  if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+    // DML requires buffers to be in multiple of 4 bytes.
+    // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
+    constexpr uint64_t kDMLBufferAlignment = 4ull;
+    if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
+        buffer_width) {
+      LOG(ERROR) << "Width exceeds maximum alignable size.";
+      return nullptr;
+    }
+    buffer_width = base::bits::AlignUp(buffer_width, kDMLBufferAlignment);
+
+    D3D12_FEATURE_DATA_ARCHITECTURE arch = {};
+    if (FAILED(d3d12_device_->CheckFeatureSupport(D3D12_FEATURE_ARCHITECTURE,
+                                                  &arch, sizeof(arch)))) {
+      LOG(ERROR) << "D3D12 device failed to check feature support.";
+      return nullptr;
+    }
+
+    // If adapter supports UMA, create the custom heap with equivalent heap
+    // type.
+    if (arch.UMA == TRUE) {
+      if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE)) {
+        heap_properties =
+            d3d12_device_->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_UPLOAD);
+      } else if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ)) {
+        heap_properties =
+            d3d12_device_->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_READBACK);
+      }
+    }
+  }
+
   D3D12_RESOURCE_DESC desc;
   desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
   desc.Alignment = 0;
-  desc.Width = size.width();
+  desc.Width = buffer_width;
   desc.Height = 1;
   desc.DepthOrArraySize = 1;
   desc.MipLevels = 1;

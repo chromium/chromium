@@ -125,6 +125,11 @@ void WebNNContextImpl::CreateTensor(
     mojo_base::BigBuffer tensor_data,
     mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Must use CreateTensorFromMailbox for WebGPU Interop.
+  if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
 
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
     receiver_.ReportBadMessage(kBadMessageInvalidTensor);
@@ -155,14 +160,10 @@ void WebNNContextImpl::CreateTensor(
 
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  scheduler_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &WebNNContextImpl::CreateTensorImpl, AsWeakPtr(), std::move(receiver),
-          std::move(tensor_info),
-          base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
-                         AsWeakPtr(), std::move(callback), std::move(remote),
-                         std::move(tensor_data))));
+  CreateTensorImpl(std::move(receiver), std::move(tensor_info),
+                   base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
+                                  AsWeakPtr(), std::move(callback),
+                                  std::move(remote), std::move(tensor_data)));
 }
 
 void WebNNContextImpl::WaitSyncToken(const gpu::SyncToken& fence) {
@@ -191,6 +192,45 @@ void WebNNContextImpl::GenVerifiedSyncToken(
   // returning it to the renderer only after ScheduleTask was called.
   verified_release.SetVerifyFlush();
   std::move(callback).Run(verified_release);
+}
+
+void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
+                                               const gpu::Mailbox& mailbox,
+                                               const gpu::SyncToken& fence,
+                                               CreateTensorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  // WebNN graph constants cannot be shared since they may not be readable.
+  if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  // Wait for the SharedImage to be created.
+  WaitSyncToken(fence);
+
+  mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
+  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
+
+  // Must be a scheduled task since this depends on shared image creation task.
+  scheduler_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebNNContextImpl::CreateTensorFromMailboxImpl, AsWeakPtr(),
+          std::move(receiver), std::move(tensor_info), std::move(mailbox),
+          base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
+                         AsWeakPtr(), std::move(callback), std::move(remote),
+                         mojo_base::BigBuffer())));
 }
 
 void WebNNContextImpl::DidCreateWebNNTensorImpl(

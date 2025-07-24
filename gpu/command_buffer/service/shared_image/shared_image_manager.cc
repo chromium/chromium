@@ -461,6 +461,30 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
   return representation;
 }
 
+std::unique_ptr<WebNNTensorRepresentation>
+SharedImageManager::ProduceWebNNTensor(const Mailbox& mailbox,
+                                       MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  SharedImageBacking* backing = GetBacking(mailbox);
+  if (!backing) {
+    LOG(ERROR) << "SharedImageManager::ProduceWebNNTensor: Trying to produce a "
+                  "WebNN tensor representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  std::unique_ptr<WebNNTensorRepresentation> representation =
+      backing->ProduceWebNNTensor(this, tracker);
+  if (!representation) {
+    LOG(ERROR) << "SharedImageManager::ProduceWebNNTensor: Trying to produce a "
+                  "WebNN tensor representation from an incompatible backing: "
+               << backing->GetName();
+    return nullptr;
+  }
+  return representation;
+}
+
 std::unique_ptr<OverlayImageRepresentation> SharedImageManager::ProduceOverlay(
     const gpu::Mailbox& mailbox,
     gpu::MemoryTypeTracker* tracker) {

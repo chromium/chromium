@@ -5,6 +5,7 @@
 #include "services/webnn/webnn_tensor_impl.h"
 
 #include "base/task/bind_post_task.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
@@ -19,6 +20,18 @@ WebNNTensorImpl::WebNNTensorImpl(
     : WebNNReceiverImpl<mojom::WebNNTensor>(std::move(receiver),
                                             context->scheduler_task_runner()),
       context_(std::move(context)),
+      descriptor_(std::move(tensor_info->descriptor)),
+      usage_(std::move(tensor_info->usage)) {}
+
+WebNNTensorImpl::WebNNTensorImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    base::WeakPtr<WebNNContextImpl> context,
+    mojom::TensorInfoPtr tensor_info,
+    std::unique_ptr<gpu::WebNNTensorRepresentation> representation)
+    : WebNNReceiverImpl<mojom::WebNNTensor>(std::move(receiver),
+                                            context->scheduler_task_runner()),
+      context_(std::move(context)),
+      representation_(std::move(representation)),
       descriptor_(std::move(tensor_info->descriptor)),
       usage_(std::move(tensor_info->usage)) {}
 

@@ -63,6 +63,12 @@ class ContextImplOrt final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override;
 
+  void CreateTensorFromMailboxImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+      mojom::TensorInfoPtr tensor_info,
+      gpu::Mailbox mailbox,
+      CreateTensorImplCallback callback) override;
+
   scoped_refptr<Environment> env_;
 
   // The session options are shared among all the sessions created by this

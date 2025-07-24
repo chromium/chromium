@@ -1076,11 +1076,20 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   pending_resolvers_.insert(resolver);
 
   // Use `WebNNContext` to create `WebNNTensor` message pipe.
-  context_remote_->CreateTensor(
-      std::move(tensor_info), mojo_base::BigBuffer(0),
-      WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver),
-                    std::move(validated_descriptor), usage));
+  if (descriptor->exportableToGPU()) {
+    // TODO(crbug.com/345352987): enable MLTensor creation from SharedImage.
+    context_remote_->CreateTensorFromMailbox(
+        std::move(tensor_info), {}, {},
+        WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
+                      std::move(scoped_trace), WrapPersistent(resolver),
+                      std::move(validated_descriptor), usage));
+  } else {
+    context_remote_->CreateTensor(
+        std::move(tensor_info), mojo_base::BigBuffer(0),
+        WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
+                      std::move(scoped_trace), WrapPersistent(resolver),
+                      std::move(validated_descriptor), usage));
+  }
 
   return resolver->Promise();
 }

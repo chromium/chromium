@@ -303,4 +303,14 @@ void ContextImplOrt::CreateTensorImpl(
       std::move(buffer_state)));
 }
 
+void ContextImplOrt::CreateTensorFromMailboxImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    mojom::TensorInfoPtr tensor_info,
+    gpu::Mailbox mailbox,
+    CreateTensorImplCallback callback) {
+  std::move(callback).Run(
+      base::unexpected(mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                                         "WebGPU Interop is not supported.")));
+}
+
 }  // namespace webnn::ort

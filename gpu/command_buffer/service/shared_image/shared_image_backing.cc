@@ -255,6 +255,12 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageBacking::ProduceDawnBuffer(
   return nullptr;
 }
 
+std::unique_ptr<WebNNTensorRepresentation>
+SharedImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
+                                       MemoryTypeTracker* tracker) {
+  return nullptr;
+}
+
 std::unique_ptr<OverlayImageRepresentation> SharedImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
