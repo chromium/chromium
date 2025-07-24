@@ -29,8 +29,10 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
   OPTIMIZATION_GUIDE_LOG(
       optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
       optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      "ZeroStateSuggestionsRequest: Creating new zero state suggestions "
-      "request");
+      base::StringPrintf(
+          "ZeroStateSuggestionsRequest: Creating new zero state suggestions "
+          "request for %llu tabs",
+          requested_tabs.size()));
   auto barrier_callback = base::BarrierCallback<
       std::optional<optimization_guide::proto::ZeroStatePageContext>>(
       requested_tabs.size(),
@@ -59,7 +61,13 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
   }
 }
 
-ZeroStateSuggestionsRequest::~ZeroStateSuggestionsRequest() = default;
+ZeroStateSuggestionsRequest::~ZeroStateSuggestionsRequest() {
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+      "ZeroStateSuggestionsRequest: Destructing zero state suggestions "
+      "request");
+}
 
 void ZeroStateSuggestionsRequest::AddCallback(
     base::OnceCallback<void(std::vector<std::string>)> callback) {
@@ -118,8 +126,10 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
   OPTIMIZATION_GUIDE_LOG(
       optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
       optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      "ZeroStateSuggestionsRequest: Starting fetch for "
-      "suggestions.");
+      base::StringPrintf(
+          "ZeroStateSuggestionsRequest: Starting fetch for "
+          "suggestions. Is-mulitab request: %s",
+          pending_base_request_.has_page_context_list() ? "true" : "false"));
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
       pending_base_request_,
