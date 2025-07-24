@@ -214,6 +214,7 @@ void PositionView(UIView* view, CGPoint point) {
 #endif
 
 - (void)didMoveToWindow {
+  [super didMoveToWindow];
   if (self.theme == GridThemeLight) {
     if (@available(iOS 17, *)) {
       [self updateInterfaceStyleForWindow:self.window];

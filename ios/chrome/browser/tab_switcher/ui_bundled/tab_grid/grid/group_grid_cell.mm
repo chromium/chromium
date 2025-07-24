@@ -191,6 +191,7 @@ const CGFloat kTopBarLargeInset = 20;
 #endif
 
 - (void)didMoveToWindow {
+  [super didMoveToWindow];
   if (self.theme == GridThemeLight) {
     if (@available(iOS 17, *)) {
       [self updateInterfaceStyleForWindow:self.window];
