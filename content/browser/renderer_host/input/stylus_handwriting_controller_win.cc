@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/win/windows_version.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_callback_sink_win.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,8 +18,11 @@ namespace content {
 
 namespace {
 
+inline constexpr uint32_t kHandwritingSupportMinBuild = 26100;
+inline constexpr uint32_t kHandwritingSupportMinPatch = 3624;
 StylusHandwritingControllerWin* g_instance = nullptr;
 ITfThreadMgr* g_thread_manager_instance_for_testing = nullptr;
+bool g_bind_interfaces_called_for_testing = false;
 
 }  // namespace
 
@@ -60,12 +64,32 @@ bool StylusHandwritingControllerWin::IsHandwritingAPIAvailable() {
 }
 
 // static
+bool StylusHandwritingControllerWin::StylusHandwritingSupportedOnBuild() {
+  const uint32_t build =
+      base::win::OSInfo::GetInstance()->version_number().build;
+  const uint32_t patch =
+      base::win::OSInfo::GetInstance()->version_number().patch;
+  return (build == kHandwritingSupportMinBuild &&
+          patch >= kHandwritingSupportMinPatch) ||
+         (build > kHandwritingSupportMinBuild);
+}
+
+// static
 void StylusHandwritingControllerWin::Initialize() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // TODO(arakeri): This is being done as a workaround for an OS bug (see
+  // crbug.com/372506009). The Windows team has fixed it but hasn't fully
+  // backported it to older builds where the issue still exists. This guard will
+  // be removed once the backporting is complete.
+  static bool handwriting_supported_on_winbuild =
+      StylusHandwritingSupportedOnBuild();
+
   // We don't want to create a static instance with no destructor here because
   // the state can leak across test runs. In product builds, the controller is
   // not expected to leave until process shutdown.
   if (!stylus_handwriting::win::IsStylusHandwritingWinEnabled() ||
+      !handwriting_supported_on_winbuild ||
       g_thread_manager_instance_for_testing) {
     return;
   }
@@ -139,9 +163,15 @@ void StylusHandwritingControllerWin::OnFocusFailed(
   handwriting_callback_sink_->OnFocusFailed();
 }
 
+// static
+bool StylusHandwritingControllerWin::BindInterfacesCalledForTesting() {
+  return g_bind_interfaces_called_for_testing;
+}
+
 void StylusHandwritingControllerWin::BindInterfaces() {
   // There can only be one StylusHandwritingControllerWin at any given time.
   CHECK(!g_instance);
+  g_bind_interfaces_called_for_testing = true;
   if (const auto thread_manager = GetThreadManager()) {
     const bool initialized_successfully =
         SUCCEEDED(thread_manager.As(&handwriting_)) &&

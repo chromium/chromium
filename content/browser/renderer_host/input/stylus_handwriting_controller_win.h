@@ -56,6 +56,10 @@ class CONTENT_EXPORT StylusHandwritingControllerWin {
   // have been successfully set up.
   static bool IsHandwritingAPIAvailable();
 
+  // Checks if we're on a build which supports handwriting. Needed to work
+  // around crbug.com/372506009.
+  static bool StylusHandwritingSupportedOnBuild();
+
   // Initializes the controller singleton instance.
   static void Initialize();
 
@@ -74,6 +78,11 @@ class CONTENT_EXPORT StylusHandwritingControllerWin {
   // Returns the Handwriting Callback Sink Com pointer for testing.
   Microsoft::WRL::ComPtr<StylusHandwritingCallbackSinkWin>
   GetCallbackSinkForTesting() const;
+
+  // Used for testing instance initialization on builds that support handwriting
+  // without having to deal with the hassel of mocking handwriting APIs or the
+  // ThreadManager.
+  static bool BindInterfacesCalledForTesting();
 
   // Notify the Shell Handwriting API about the intent to write. At this point,
   // we delegate the input processing to the API which starts inking. After

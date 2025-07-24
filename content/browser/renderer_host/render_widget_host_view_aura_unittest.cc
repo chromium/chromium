@@ -126,7 +126,9 @@
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "components/stylus_handwriting/win/features.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_win_test_helper.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
@@ -1154,6 +1156,28 @@ TEST_F(RenderWidgetHostViewAuraTest, PositionChildPopup) {
   gfx::Point new_origin = window->bounds().origin();
   EXPECT_EQ(original_origin.ToString(), new_origin.ToString());
 }
+
+#if BUILDFLAG(IS_WIN)
+// Tests StylusHandwritingControllerWin controller initialization.
+TEST_F(RenderWidgetHostViewAuraTest, InitController) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      stylus_handwriting::win::kStylusHandwritingWin);
+
+  InitViewForFrame(nullptr);
+  view_->Show();
+
+  EXPECT_FALSE(
+      StylusHandwritingControllerWin::BindInterfacesCalledForTesting());
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0,
+                             ui::PointerDetails(ui::EventPointerType::kPen, 0));
+  view_->OnMouseEvent(&mouse_event);
+  EXPECT_EQ(StylusHandwritingControllerWin::StylusHandwritingSupportedOnBuild(),
+            StylusHandwritingControllerWin::BindInterfacesCalledForTesting());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Checks that moving parent sends new screen bounds.
 TEST_F(RenderWidgetHostViewAuraTest, ParentMovementUpdatesScreenRect) {
