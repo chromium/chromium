@@ -375,8 +375,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   std::u16string expected_description;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_description =
-      u"To pay faster next time, save your card, encrypted security code, and "
-      u"billing address in your Google Account";
+      u"Pay faster when your card is saved. Card details are encrypted in "
+      u"your Google Account.";
 #endif
 
   // Verify that `AutofillSaveCardUiInfo` has the correct attributes that

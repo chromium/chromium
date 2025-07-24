@@ -2258,21 +2258,6 @@
             ]
         }
     ],
-    "AutofillEnableShowSaveCardSecurelyMessage": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableShowSaveCardSecurelyMessage"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
