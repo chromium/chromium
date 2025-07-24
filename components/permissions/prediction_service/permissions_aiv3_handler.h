@@ -47,7 +47,26 @@ class PermissionsAiv3Handler : public optimization_guide::ModelHandler<
                             std::unique_ptr<SkBitmap> snapshot);
 
  private:
+  // Called when the model execution is complete. This is a wrapper around the
+  // callback provided to `ExecuteModel` that verifies that the callback is
+  // still valid.
+  void OnModelExecutionComplete(
+      ExecutionCallback original_callback,
+      const std::optional<PermissionRequestRelevance>& relevance);
+
   std::optional<PermissionsAiv3ModelMetadata> model_metadata_;
+
+  // Because there is no way to cancel a model execution once it has started, we
+  // will return an empty response to the new callback if a new execution is
+  // requested while the previous one is still in progress.
+  bool is_execution_in_progress_ = false;
+
+  // Whether the callback passed to ExecuteModel is still valid. It is no longer
+  // valid if a new execution is requested while the previous one is still in
+  // progress.
+  bool is_callback_valid_ = true;
+
+  base::WeakPtrFactory<PermissionsAiv3Handler> weak_factory_{this};
 };
 
 }  // namespace permissions

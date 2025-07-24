@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/permissions/prediction_service/permissions_ai_encoder_base.h"
@@ -46,6 +47,9 @@ constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 auto& kImageInputWidth = PermissionsAiv3Encoder::kImageInputWidth;
 auto& kImageInputHeight = PermissionsAiv3Encoder::kImageInputHeight;
 
+constexpr char kModelExecutionAlreadyInProgressHistogram[] =
+    "Permissions.AIv3.ModelExecutionAlreadyInProgress";
+
 PermissionsAiv3ModelMetadata BuildMetadataFromValues(
     const std::array<float, 4>& thresholds) {
   PermissionsAiv3ModelMetadata metadata;
@@ -59,6 +63,37 @@ PermissionsAiv3ModelMetadata BuildMetadataFromValues(
       thresholds[3]);
   return metadata;
 }
+
+class PermissionsAiv3HandlerMock : public PermissionsAiv3Handler {
+ public:
+  PermissionsAiv3HandlerMock(
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      RequestType request_type,
+      std::unique_ptr<PermissionsAiv3Encoder> model_executor)
+      : PermissionsAiv3Handler(model_provider,
+                               optimization_target,
+                               request_type,
+                               std::move(model_executor)) {}
+
+  // This is a mock implementation of ExecuteModelWithInput that does not
+  // schedule the real model execution but captures the callback. This gives the
+  // test control over the duration of the model execution and can be used to
+  // simulate the model execution being stuck (or simply too long).
+  void ExecuteModelWithInput(
+      ExecutionCallback callback,
+      const PermissionsAiv3Encoder::ModelInput& input) override {
+    callback_ = std::move(callback);
+  }
+
+  void ReleaseCallback(PermissionRequestRelevance relevance) {
+    EXPECT_TRUE(callback_);
+    std::move(callback_).Run(relevance);
+  }
+
+ private:
+  ExecutionCallback callback_;
+};
 
 class PermissionsAiv3EncoderFake : public PermissionsAiv3Encoder {
  public:
@@ -155,6 +190,10 @@ class Aiv3HandlerTestBase : public testing::Test {
   PermissionsAiv3Handler* model_handler(OptimizationTarget target) {
     return target == kOptTargetGeolocation ? geolocation_model_handler_.get()
                                            : notification_model_handler_.get();
+  }
+
+  optimization_guide::TestOptimizationGuideModelProvider* GetModelProvider() {
+    return model_provider_.get();
   }
 
  protected:
@@ -338,6 +377,96 @@ TEST_P(ResizeAiv3HandlerTest, ResizesBitmapsForModelInput) {
   aiv3_handler->ExecuteModel(future.GetCallback(), std::move(snapshot));
   EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
   EXPECT_TRUE(flag);
+}
+
+// This test verifies an edge case when the permission model handler receives
+// multiple overlapping request for the on-device model execution. Multiple
+// requests means that the UI was updated faster than the model produces content
+// evaluation. In other words the callback that is stored in the model execution
+// class refers to a stailed UI and the result of the execution should be
+// ignored.
+TEST_F(Aiv3HandlerTest, ModelHandlerPreventsConcurrentExecutions) {
+  base::HistogramTester histograms;
+
+  auto geolocation_encoder_mock =
+      std::make_unique<PermissionsAiv3EncoderFake>(RequestType::kGeolocation);
+  std::unique_ptr<PermissionsAiv3HandlerMock> model_handler_mock =
+      std::make_unique<PermissionsAiv3HandlerMock>(
+          GetModelProvider(),
+          /*optimization_target=*/kOptTargetGeolocation,
+          /*request_type=*/RequestType::kGeolocation,
+          std::move(geolocation_encoder_mock));
+
+  // Because of `PermissionsAiv3EncoderFake` the first execution will be hold
+  // until manually released to simulate a long execution so that we can test
+  // the concurrent execution prevention logic.
+  ModelCallbackFuture future1;
+  // The image size is arbitrary and does not affect the test.
+  auto snapshot1 =
+      test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
+  model_handler_mock->ExecuteModel(future1.GetCallback(), std::move(snapshot1));
+
+  // Request the second model execution while the first one is still in
+  // progress. The second execution should be cancelled with `std::nullopt`
+  // result.
+  ModelCallbackFuture future2;
+  // The image size is arbitrary and does not affect the test.
+  auto snapshot2 =
+      test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
+  model_handler_mock->ExecuteModel(future2.GetCallback(), std::move(snapshot2));
+  EXPECT_EQ(future2.Take(), std::nullopt);
+
+  // Any return value is OK as it should be ignored and replaced with
+  // `std::nullopt`.
+  model_handler_mock->ReleaseCallback(PermissionRequestRelevance::kUnspecified);
+  // Because the callback was released after the second execution was requested,
+  // the first execution should return `std::nullopt` result.
+  EXPECT_EQ(future1.Take(), std::nullopt);
+
+  histograms.ExpectBucketCount(
+      "Permissions.AIv3.ModelExecutionAlreadyInProgress", true, 1u);
+
+  histograms.ExpectBucketCount(kModelExecutionAlreadyInProgressHistogram, false,
+                               1u);
+}
+
+// This test verifies the default behavior of the permission model handler
+// without any concurrent executions. This is needed to make sure there is no
+// regression in the default behavior and a correct value is properly delivered
+// from the on-device model to the callback.
+TEST_F(Aiv3HandlerTest, ModelHandlerSingleExecutions) {
+  base::HistogramTester histograms;
+
+  auto geolocation_encoder_mock =
+      std::make_unique<PermissionsAiv3EncoderFake>(RequestType::kGeolocation);
+  std::unique_ptr<PermissionsAiv3HandlerMock> model_handler_mock =
+      std::make_unique<PermissionsAiv3HandlerMock>(
+          GetModelProvider(),
+          /*optimization_target=*/kOptTargetGeolocation,
+          /*request_type=*/RequestType::kGeolocation,
+          std::move(geolocation_encoder_mock));
+
+  // Because of `PermissionsAiv3EncoderFake` the first execution will be hold
+  // until manually released. In this case we release the callback before we
+  // try to execute the model again.
+  ModelCallbackFuture future1;
+  // The image size is arbitrary and does not affect the test.
+  auto snapshot1 =
+      test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
+  model_handler_mock->ExecuteModel(future1.GetCallback(), std::move(snapshot1));
+
+  // The manual release without a concurrent request should return the
+  // correct relevance.
+  model_handler_mock->ReleaseCallback(PermissionRequestRelevance::kVeryLow);
+  // Because the callback was released uninterrupted, the execution should
+  // return the correct result.
+  EXPECT_EQ(future1.Take(), PermissionRequestRelevance::kVeryLow);
+
+  histograms.ExpectBucketCount(kModelExecutionAlreadyInProgressHistogram, true,
+                               0u);
+
+  histograms.ExpectBucketCount(kModelExecutionAlreadyInProgressHistogram, false,
+                               1u);
 }
 
 }  // namespace
