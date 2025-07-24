@@ -161,41 +161,17 @@ const CGFloat kTopBarLargeInset = 20;
     [NSLayoutConstraint activateConstraints:constraints];
   }
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                       withAction:@selector(updateTopBarConstraints)];
-  }
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withAction:@selector(updateTopBarConstraints)];
   return self;
 }
 
 #pragma mark - UIView
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  BOOL isPreviousAccessibilityCategory =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory);
-  BOOL isCurrentAccessibilityCategory =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isPreviousAccessibilityCategory ^ isCurrentAccessibilityCategory) {
-    [self updateTopBarConstraints];
-  }
-}
-#endif
-
 - (void)didMoveToWindow {
   [super didMoveToWindow];
   if (self.theme == GridThemeLight) {
-    if (@available(iOS 17, *)) {
-      [self updateInterfaceStyleForWindow:self.window];
-    }
+    [self updateInterfaceStyleForWindow:self.window];
   }
 }
 
@@ -268,11 +244,7 @@ const CGFloat kTopBarLargeInset = 20;
   // enough here.
   switch (theme) {
     case GridThemeLight:
-      if (@available(iOS 17, *)) {
-        [self updateInterfaceStyleForWindow:self.window];
-      } else {
-        self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-      }
+      [self updateInterfaceStyleForWindow:self.window];
       _border.layer.borderColor =
           [UIColor colorNamed:kStaticBlue400Color].CGColor;
       break;
@@ -552,15 +524,13 @@ const CGFloat kTopBarLargeInset = 20;
   if (!window) {
     return;
   }
-  if (@available(iOS 17, *)) {
-    [self.window.windowScene
-        registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                     withTarget:self
-                         action:@selector(interfaceStyleChangedForWindow:
-                                                         traitCollection:)];
-    self.overrideUserInterfaceStyle =
-        self.window.windowScene.traitCollection.userInterfaceStyle;
-  }
+  [self.window.windowScene
+      registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                   withTarget:self
+                       action:@selector(interfaceStyleChangedForWindow:
+                                                       traitCollection:)];
+  self.overrideUserInterfaceStyle =
+      self.window.windowScene.traitCollection.userInterfaceStyle;
 }
 
 // Callback for the observation of the user interface style trait of the window

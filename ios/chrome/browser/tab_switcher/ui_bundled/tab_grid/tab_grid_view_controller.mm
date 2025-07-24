@@ -258,11 +258,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self hideToolbars];
   }
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateConstraintsOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateConstraintsOnTraitChange)];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -296,17 +294,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleLightContent;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateConstraintsOnTraitChange];
-}
-#endif
 
 #pragma mark - UIScrollViewDelegate
 

@@ -118,16 +118,13 @@ UIImage* TabGroupImage(UITraitCollection* trait_collection) {
   confirmationAlert.view.accessibilityIdentifier =
       kSharedTabGroupUserEducationAccessibilityIdentifier;
 
-  if (@available(iOS 17, *)) {
-    __weak ConfirmationAlertViewController* weakAlert = confirmationAlert;
-    [confirmationAlert
-        registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                  UITraitCollection* previousCollection) {
-                      weakAlert.image =
-                          TabGroupImage(weakAlert.traitCollection);
-                    }];
-  }
+  __weak ConfirmationAlertViewController* weakAlert = confirmationAlert;
+  [confirmationAlert
+      registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                  withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                UITraitCollection* previousCollection) {
+                    weakAlert.image = TabGroupImage(weakAlert.traitCollection);
+                  }];
 
   _viewController = confirmationAlert;
 

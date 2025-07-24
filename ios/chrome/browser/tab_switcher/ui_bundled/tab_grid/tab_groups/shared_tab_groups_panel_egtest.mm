@@ -98,10 +98,6 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that deleting a shared tab group from groups panel works.
 - (void)testSharedTabGroupsPanelDeleteSharedGroup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   AddSharedGroup(/*owner=*/YES);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
@@ -140,10 +136,6 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that leaving a shared tab group from the tab groups panel works.
 - (void)testSharedTabGroupsPanelLeaveSharedGroup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   AddSharedGroup(/*owner=*/NO);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
@@ -183,10 +175,6 @@ void AddSharedGroup(BOOL owner) {
 // Checks that being removed from a shared group makes a notification appear at
 // the top of the Tab Groups panel.
 - (void)testNotificationOnSharedGroupRemoved {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   AddSharedGroup(/*owner=*/NO);
   [ChromeEarlGrey waitForMainTabCount:1];
 

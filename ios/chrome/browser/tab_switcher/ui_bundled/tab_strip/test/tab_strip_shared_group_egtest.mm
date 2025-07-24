@@ -105,10 +105,6 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that deleting a shared tab group from tab strip works.
 - (void)testTabStripSharedGroupDeleteSharedGroup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -143,10 +139,6 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that leaving a shared tab group from tab strip works.
 - (void)testTabStripSharedGroupLeaveSharedGroup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -185,10 +177,6 @@ void AddSharedGroup(BOOL owner) {
 //     - Cross button
 //     - Context menu and then 'Close Tab'
 - (void)testTabStripLastTabCloseInSharedGroupAlerts {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -249,10 +237,6 @@ void AddSharedGroup(BOOL owner) {
   testTabStripLastTabCloseInSharedGroupAlertAsMember
 #endif
 - (void)MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -338,10 +322,6 @@ void AddSharedGroup(BOOL owner) {
   testTabStripLastTabCloseInSharedGroupAlertAsOwner
 #endif
 - (void)MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }

@@ -122,10 +122,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks sharing a group without being signed in.
 - (void)testShareGroupNotSignedIn {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -190,10 +186,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks sharing a group without being synced.
 - (void)testShareGroupNotSynced {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
 
@@ -245,10 +237,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks joining a group without being signed in.
 - (void)testJoinGroupNotSignedIn {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -303,10 +291,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks joining a group without being synced.
 - (void)testJoinGroupNotSynced {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
 

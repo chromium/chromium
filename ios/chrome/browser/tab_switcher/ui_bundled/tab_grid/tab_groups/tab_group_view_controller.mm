@@ -454,12 +454,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
   [self configureBottomToolbar];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
-                       withAction:@selector(sizeClassDidChange)];
-    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
-                       withAction:@selector(sizeClassDidChange)];
-  }
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector(sizeClassDidChange)];
+  [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                     withAction:@selector(sizeClassDidChange)];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -470,22 +468,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   [super viewSafeAreaInsetsDidChange];
   [self updateGridInsets];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (previousTraitCollection.verticalSizeClass !=
-          self.traitCollection.verticalSizeClass ||
-      previousTraitCollection.horizontalSizeClass !=
-          self.traitCollection.horizontalSizeClass) {
-    [self sizeClassDidChange];
-  }
-}
-#endif
 
 #pragma mark - UINavigationBarDelegate
 

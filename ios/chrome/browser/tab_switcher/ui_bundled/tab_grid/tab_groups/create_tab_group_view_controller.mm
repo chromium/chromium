@@ -189,11 +189,9 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [self createConfigurations];
   [self updateViews:self.view previousTraitCollection:nil];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
-                       withAction:@selector(updateViews:
-                                      previousTraitCollection:)];
-  }
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector(updateViews:
+                                    previousTraitCollection:)];
 
   // To force display the keyboard when the view is shown.
   [_tabGroupTextField becomeFirstResponder];
@@ -202,20 +200,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleLightContent;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self updateViews:self.view
-        previousTraitCollection:previousTraitCollection];
-  }
-}
-#endif
 
 #pragma mark - Private helpers
 

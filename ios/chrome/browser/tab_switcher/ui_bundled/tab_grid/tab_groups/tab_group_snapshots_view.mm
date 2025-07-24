@@ -63,10 +63,8 @@ constexpr NSInteger kMaxSummaryFaviconVisible = 3;
       AddSameConstraints(_singleView, self);
     }
 
-    if (@available(iOS 17, *)) {
-      [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
-                         withAction:@selector(updateViews)];
-    }
+    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                       withAction:@selector(updateViews)];
   }
   return self;
 }
@@ -231,20 +229,5 @@ constexpr NSInteger kMaxSummaryFaviconVisible = 3;
              UIUserInterfaceSizeClassCompact &&
          _isCell;
 }
-
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self updateViews];
-  }
-}
-#endif
 
 @end

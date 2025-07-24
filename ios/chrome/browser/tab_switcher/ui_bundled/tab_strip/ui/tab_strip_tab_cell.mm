@@ -149,10 +149,8 @@ constexpr CGFloat kBlueDotInset = 1;
     [self addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
     if (ios::provider::IsRaccoonEnabled()) {
-      if (@available(iOS 17.0, *)) {
-        self.hoverStyle = [UIHoverStyle
-            styleWithShape:[UIShape rectShapeWithCornerRadius:kCornerSize]];
-      }
+      self.hoverStyle = [UIHoverStyle
+          styleWithShape:[UIShape rectShapeWithCornerRadius:kCornerSize]];
     }
 
     UIView* contentView = self.contentView;
@@ -217,10 +215,8 @@ constexpr CGFloat kBlueDotInset = 1;
 
     self.selected = NO;
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-      [self registerForTraitChanges:traits withAction:@selector(updateColors)];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+    [self registerForTraitChanges:traits withAction:@selector(updateColors)];
 
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -498,18 +494,6 @@ constexpr CGFloat kBlueDotInset = 1;
   [super dragStateDidChange:dragState];
   [self updateColors];
 }
-
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  [self updateColors];
-}
-#endif
 
 #pragma mark - UIAccessibilityAction
 

@@ -760,11 +760,9 @@ TabGridPage ThirdTabGridPage() {
   slider.layer.masksToBounds = YES;
   slider.backgroundColor = UIColor.whiteColor;
   if (ios::provider::IsRaccoonEnabled()) {
-    if (@available(iOS 17.0, *)) {
-      slider.hoverStyle = [UIHoverStyle
-          styleWithShape:
-              [UIShape rectShapeWithCornerRadius:kBackgroundCornerRadius]];
-    }
+    slider.hoverStyle = [UIHoverStyle
+        styleWithShape:[UIShape
+                           rectShapeWithCornerRadius:kBackgroundCornerRadius]];
   }
   [self.contentView addSubview:slider];
   self.sliderView = slider;
@@ -900,11 +898,9 @@ TabGridPage ThirdTabGridPage() {
   CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
   UIView* hoverView = [[UIView alloc] initWithFrame:segmentRect];
   if (ios::provider::IsRaccoonEnabled()) {
-    if (@available(iOS 17.0, *)) {
-      hoverView.hoverStyle = [UIHoverStyle
-          styleWithShape:
-              [UIShape rectShapeWithCornerRadius:kBackgroundCornerRadius]];
-    }
+    hoverView.hoverStyle = [UIHoverStyle
+        styleWithShape:[UIShape
+                           rectShapeWithCornerRadius:kBackgroundCornerRadius]];
   }
   [self.contentView insertSubview:hoverView belowSubview:self.sliderView];
   [hoverView
