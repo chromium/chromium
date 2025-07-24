@@ -2,6 +2,8 @@
 
 1. The main branch is [/mtp](https://github.com/Bivas-Biswas/malabr/tree/mtp)
 
+    clone the repo by `git clone --depth=1 --single-branch https://github.com/Bivas-Biswas/malabr.git`
+
 2. Create a separate features branch
 
     a. Sync the latest update `git pull --rebase origin mtp`
