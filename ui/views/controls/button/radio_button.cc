@@ -20,6 +20,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/vector_icons.h"
@@ -145,7 +146,11 @@ SkPath RadioButton::GetFocusRingPath() const {
 
 void RadioButton::GetViewsInGroupFromParent(int group, Views* views) {
   if (parent()) {
-    parent()->GetViewsInGroup(group, views);
+    if (View* parent_group_view = GetCascadingRadioGroupView(parent())) {
+      parent_group_view->GetViewsInGroup(group, views);
+    } else {
+      parent()->GetViewsInGroup(group, views);
+    }
   }
 }
 

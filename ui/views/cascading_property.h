@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 #include "ui/color/color_id.h"
@@ -68,16 +69,27 @@ VIEWS_EXPORT void SetCascadingColorProviderColor(
     const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
     ui::ColorId color_id);
 
+VIEWS_EXPORT void SetCascadingRadioGroupView(
+    View* view,
+    const ui::ClassProperty<CascadingProperty<View*>*>* property_key);
+
 VIEWS_EXPORT extern const ui::ClassProperty<CascadingProperty<SkColor>*>* const
     kCascadingBackgroundColor;
+
+VIEWS_EXPORT extern const ui::ClassProperty<CascadingProperty<View*>*>* const
+    kCascadingRadioGroupView;
 
 VIEWS_EXPORT SkColor GetCascadingBackgroundColor(View* view);
 
 VIEWS_EXPORT SkColor GetCascadingAccentColor(View* view);
 
+VIEWS_EXPORT View* GetCascadingRadioGroupView(View* view);
+
 }  // namespace views
 
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
                                         views::CascadingProperty<SkColor>*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
+                                        views::CascadingProperty<views::View*>*)
 
 #endif  // UI_VIEWS_CASCADING_PROPERTY_H_
