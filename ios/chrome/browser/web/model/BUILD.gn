@@ -126,9 +126,6 @@ source_set("page_placeholder") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/sessions/model:restoration_observer",
-    "//ios/chrome/browser/sessions/model:session_restoration_service",
-    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",

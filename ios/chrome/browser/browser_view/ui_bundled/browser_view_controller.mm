@@ -90,8 +90,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h"
-#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
-#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -239,9 +237,6 @@ const CGFloat kTopDynamicIslandInset = 24;
 
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
-
-  // Used to add or cancel a page placeholder for next navigation.
-  raw_ptr<PagePlaceholderBrowserAgent> _pagePlaceholderBrowserAgent;
 
   // Whether the Lens Overlay is currently active and visible for the browser
   // view.
@@ -391,7 +386,6 @@ const CGFloat kTopDynamicIslandInset = 24;
     _webStateList = dependencies.webStateList;
     _voiceSearchController = dependencies.voiceSearchController;
     self.safeAreaProvider = dependencies.safeAreaProvider;
-    _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
 
     self.inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
@@ -726,7 +720,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   if (active) {
     // Force loading the view in case it was not loaded yet.
     [self loadViewIfNeeded];
-    _pagePlaceholderBrowserAgent->AddPagePlaceholder();
     if (self.viewForCurrentWebState) {
       [self displayTabView];
     }
@@ -2314,9 +2307,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   }
 
   [self displayTabView];
-  if (!self.inNewTabAnimation) {
-    _pagePlaceholderBrowserAgent->CancelPagePlaceholder();
-  }
 }
 
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState {

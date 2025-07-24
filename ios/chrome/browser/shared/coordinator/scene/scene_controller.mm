@@ -199,7 +199,6 @@
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
@@ -3726,26 +3725,11 @@ using UserFeedbackDataCallback =
       }
     }
   } else {
-    if (!self.currentInterface.viewController.presentedViewController) {
-      PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent =
-          PagePlaceholderBrowserAgent::FromBrowser(targetInterface.browser);
-      pagePlaceholderBrowserAgent->ExpectNewForegroundTab();
-    }
     [self setCurrentInterfaceForMode:targetMode];
     [self openOrReuseTabInMode:targetMode
              withUrlLoadParams:urlLoadParams
            tabOpenedCompletion:tabOpenedCompletion];
   }
-}
-
-- (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode {
-  WrangledBrowser* interface = targetMode == ApplicationMode::INCOGNITO
-                                   ? self.incognitoInterface
-                                   : self.mainInterface;
-  DCHECK(interface);
-  PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent =
-      PagePlaceholderBrowserAgent::FromBrowser(interface.browser);
-  pagePlaceholderBrowserAgent->ExpectNewForegroundTab();
 }
 
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint

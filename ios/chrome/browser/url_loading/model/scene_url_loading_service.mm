@@ -80,7 +80,6 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
       // Not for this profile, switch and try again.
       ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
                                                  : ApplicationMode::NORMAL;
-      [delegate_ expectNewForegroundTabForMode:mode];
       [delegate_ setCurrentInterfaceForMode:mode];
       LoadUrlInNewTab(params);
       return;

@@ -313,7 +313,6 @@
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
-#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/model/repost_form_tab_helper.h"
@@ -1308,8 +1307,6 @@ enum class ToolbarKind {
       self.browser->GetWebStateList()->AsWeakPtr();
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
   _viewControllerDependencies.safeAreaProvider = _safeAreaProvider;
-  _viewControllerDependencies.pagePlaceholderBrowserAgent =
-      PagePlaceholderBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {
@@ -1377,7 +1374,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.layoutGuideCenter = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
-  _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
 
   [_voiceSearchController dismissMicPermissionHelp];
   [_voiceSearchController disconnect];

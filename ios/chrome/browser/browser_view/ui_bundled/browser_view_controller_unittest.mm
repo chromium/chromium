@@ -80,7 +80,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -158,7 +157,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
-    PagePlaceholderBrowserAgent::CreateForBrowser(browser_.get());
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -284,8 +282,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     tab_usage_recorder_browser_agent_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
-    page_placeholder_browser_agent_ =
-        PagePlaceholderBrowserAgent::FromBrowser(browser_.get());
     NTPCoordinator_ = [[NewTabPageCoordinator alloc]
          initWithBrowser:browser_.get()
         componentFactory:[[NewTabPageComponentFactory alloc] init]];
@@ -305,7 +301,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
     dependencies.safeAreaProvider = safe_area_provider_;
-    dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
     dependencies.applicationCommandsHandler = mock_application_handler_;
     dependencies.ntpCoordinator = NTPCoordinator_;
 
@@ -445,7 +440,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   NewTabPageCoordinator* NTPCoordinator_;
   raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
-  raw_ptr<PagePlaceholderBrowserAgent> page_placeholder_browser_agent_;
   id mock_application_handler_;
 };
 
