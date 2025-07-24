@@ -4,6 +4,7 @@
 
 #include "net/cert/internal/trust_store_mac.h"
 
+#include <atomic>
 #include <Security/Security.h>
 
 #include <map>
@@ -13,7 +14,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/atomicops.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -537,7 +537,7 @@ class KeychainObserver {
 
   // Returns the current iteration count, which is incremented every time
   // keychain trust settings change. This may be called from any thread.
-  int64_t Iteration() const { return base::subtle::Acquire_Load(&iteration_); }
+  int64_t Iteration() const { return iteration_.load(std::memory_order_acquire); }
 
  private:
   void RegisterCallbackOnNotificationThread() {
@@ -547,12 +547,12 @@ class KeychainObserver {
             &KeychainObserver::Increment, base::Unretained(this)));
   }
 
-  void Increment() { base::subtle::Barrier_AtomicIncrement(&iteration_, 1); }
+  void Increment() { iteration_.fetch_add(1); }
 
   // Only accessed on the notification thread.
   base::CallbackListSubscription subscription_;
 
-  base::subtle::Atomic64 iteration_ = 0;
+  std::atomic<int64_t> iteration_{0};
 };
 
 using KeychainTrustObserver =
