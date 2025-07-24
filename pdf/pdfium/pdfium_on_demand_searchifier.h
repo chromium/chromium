@@ -37,8 +37,8 @@ class PDFiumOnDemandSearchifier {
   bool IsPageScheduled(int page_index) const;
 
   // Puts a page in the queue to be searchified. This function can be called
-  // before `Start` and if so, the page stays in the queue until searchifier
-  // starts.
+  // before `Start` and if so, the page stays in the queue until `Start` is
+  // called.
   void SchedulePage(int page_index);
 
   bool HasFailed() const { return state_ == State::kFailed; }
@@ -53,6 +53,10 @@ class PDFiumOnDemandSearchifier {
   void SearchifyNextImage();
 
   void CommitResultsToPage();
+
+  // Resets `current_page_` and tries to unload the page if it was not loaded
+  // before `SearchifyNextPage` gets the page.
+  void ClearCurrentPage();
 
   struct BitmapResult {
     SkBitmap bitmap;

@@ -89,7 +89,7 @@ void PDFiumOnDemandSearchifier::OnOcrDisconnected() {
       // Assume OCR cannot be used anymore if it gets disconnected while
       // waiting for results. Therefore cancel all pending requests and move
       // to failed state.
-      current_page_ = nullptr;
+      ClearCurrentPage();
       pages_queue_.clear();
       state_ = State::kFailed;
       engine_->OnSearchifyStateChange(/*busy=*/false);
@@ -228,10 +228,7 @@ void PDFiumOnDemandSearchifier::CommitResultsToPage() {
     }
   }
 
-  if (!current_page_was_loaded_) {
-    engine_->MaybeUnloadPage(current_page_->index());
-  }
-  current_page_ = nullptr;
+  ClearCurrentPage();
 
   // Searchify next page.
   // If none of the scheduled pages are visible, post the task with more delay
@@ -274,6 +271,13 @@ void PDFiumOnDemandSearchifier::OnGotOcrResult(
                                            image_size);
   }
   SearchifyNextImage();
+}
+
+void PDFiumOnDemandSearchifier::ClearCurrentPage() {
+  if (current_page_ && !current_page_was_loaded_) {
+    engine_->MaybeUnloadPage(current_page_->index());
+  }
+  current_page_ = nullptr;
 }
 
 }  // namespace chrome_pdf
