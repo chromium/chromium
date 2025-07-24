@@ -55,6 +55,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 
 #if defined(UNIT_TEST)
+  ModelQualityLogsUploader* logs_uploader() { return logs_uploader_.get(); }
   ChangePasswordFormFinder* form_finder() { return form_finder_.get(); }
   content::WebContents* executor() { return executor_.get(); }
   PasswordChangeUIController* ui_controller() { return ui_controller_.get(); }
@@ -104,10 +105,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   std::u16string generated_password_;
 
-  raw_ptr<content::WebContents> originator_;
+  raw_ptr<content::WebContents> originator_ = nullptr;
   std::unique_ptr<content::WebContents> executor_;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_ = nullptr;
 
   // Helper class which uploads model quality logs.
   std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;

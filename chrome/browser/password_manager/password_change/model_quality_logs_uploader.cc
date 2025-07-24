@@ -19,8 +19,6 @@
 #include "url/gurl.h"
 
 using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
-using QualityStatus = optimization_guide::proto::
-    PasswordChangeQuality_StepQuality_SubmissionStatus;
 using PasswordChangeOutcome = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeOutcome;
 using PageType = optimization_guide::proto::OpenFormResponseData_PageType;
@@ -74,11 +72,11 @@ FinalModelStatus GetFinalModelStatus(
   return FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS;
 }
 
-QualityStatus GetVerifySubmissionQualityStatus(
+ModelQualityLogsUploader::QualityStatus GetVerifySubmissionQualityStatus(
     const std::optional<optimization_guide::proto::PasswordChangeResponse>&
         response) {
   if (!response.has_value()) {
-    return QualityStatus::
+    return ModelQualityLogsUploader::QualityStatus::
         PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
   }
 
@@ -90,12 +88,29 @@ QualityStatus GetVerifySubmissionQualityStatus(
       outcome !=
           PasswordChangeOutcome::
               PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
-    return QualityStatus::
+    return ModelQualityLogsUploader::QualityStatus::
         PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS;
   }
-  return QualityStatus::
+  return ModelQualityLogsUploader::QualityStatus::
       PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
 }
+
+optimization_guide::proto::PasswordChangeQuality_StepQuality* GetNextStep(
+    optimization_guide::proto::PasswordChangeQuality& quality) {
+  if (quality.submit_form().status() !=
+      ModelQualityLogsUploader::QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS) {
+    return quality.mutable_verify_submission();
+  }
+
+  if (quality.open_form().status() !=
+      ModelQualityLogsUploader::QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS) {
+    return quality.mutable_submit_form();
+  }
+  return quality.mutable_open_form();
+}
+
 }  // namespace
 
 ModelQualityLogsUploader::ModelQualityLogsUploader(
@@ -179,6 +194,17 @@ void ModelQualityLogsUploader::SetOpenFormUnexpectedFailure() {
       ->set_status(
           QualityStatus::
               PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
+}
+
+void ModelQualityLogsUploader::SetFlowInterrupted() {
+  const QualityStatus flow_interrupted_status = QualityStatus::
+      PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED;
+
+  optimization_guide::proto::PasswordChangeQuality* quality =
+      final_log_data_.mutable_password_change_submission()->mutable_quality();
+
+  // The interruption status is set to the next step in the flow.
+  GetNextStep(*quality)->set_status(flow_interrupted_status);
 }
 
 void ModelQualityLogsUploader::OpenFormTargetElementNotFound() {

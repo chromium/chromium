@@ -10,7 +10,6 @@
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
 class Profile;
-
 namespace content {
 class WebContents;
 }
@@ -21,6 +20,8 @@ class ModelQualityLogsUploader {
  public:
   using LoggingData =
       optimization_guide::proto::PasswordChangeSubmissionLoggingData;
+  using QualityStatus = optimization_guide::proto::
+      PasswordChangeQuality_StepQuality_SubmissionStatus;
 
   explicit ModelQualityLogsUploader(content::WebContents* web_contents);
   ~ModelQualityLogsUploader();
@@ -46,6 +47,10 @@ class ModelQualityLogsUploader {
   // To be called if there is an expected failure
   // in Step=OPEN_FORM_STEP (e.g. Page Content is unavailable).
   void SetOpenFormUnexpectedFailure();
+
+  // To be called if the flow is interrupted
+  // (e.g., if the tab or dialog are closed).
+  void SetFlowInterrupted();
 
   // To be called if element to click was not found
   // in Step=OPEN_FORM_STEP.
@@ -74,6 +79,21 @@ class ModelQualityLogsUploader {
   const optimization_guide::proto::LogAiDataRequest& GetFinalLog() const {
     return final_log_data_;
   }
+
+  void SetOpenFormQualityStatus(QualityStatus quality_status) {
+    final_log_data_.mutable_password_change_submission()
+        ->mutable_quality()
+        ->mutable_open_form()
+        ->set_status(quality_status);
+  }
+
+  void SetSubmitFormQualityStatus(QualityStatus quality_status) {
+    final_log_data_.mutable_password_change_submission()
+        ->mutable_quality()
+        ->mutable_submit_form()
+        ->set_status(quality_status);
+  }
+
 #endif
 
  private:

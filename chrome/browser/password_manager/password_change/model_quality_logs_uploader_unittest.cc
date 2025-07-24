@@ -300,10 +300,10 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormTargetElementNotFound) {
   open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
                                    fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest intial_log =
+  const optimization_guide::proto::LogAiDataRequest initial_log =
       logs_uploader.GetFinalLog();
   CheckOpenFormStatus(
-      intial_log,
+      initial_log,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 
@@ -317,6 +317,74 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormTargetElementNotFound) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
+TEST_F(ModelQualityLogsUploaderTest, OpenFormFlowInterrupted) {
+  const base::Time fake_start_time = base::Time::Now();
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  // Set initial open form data for ACTION_SUCCESS status.
+  optimization_guide::proto::PasswordChangeResponse open_form_response;
+  open_form_response.mutable_open_form_data()->set_page_type(
+      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
+  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
+  logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
+                                   fake_start_time);
+  const optimization_guide::proto::LogAiDataRequest initial_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      initial_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+
+  logs_uploader.SetFlowInterrupted();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  CheckSubmitFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, SubmitFormFlowInterrupted) {
+  const base::Time fake_start_time = base::Time::Now();
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  // Set open form data.
+  optimization_guide::proto::PasswordChangeResponse open_form_response;
+  open_form_response.mutable_open_form_data()->set_page_type(
+      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
+  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
+  logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
+                                   fake_start_time);
+
+  // Set submit form data.
+  optimization_guide::proto::PasswordChangeResponse submit_form_response;
+  submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(
+      123);
+  logs_uploader.SetSubmitFormQuality(submit_form_response, CreateLoggingData(),
+                                     fake_start_time);
+
+  // This should override the most recent log, which is for SUBMIT_FORM.
+  logs_uploader.SetFlowInterrupted();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  CheckSubmitFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  CheckVerifySubmissionStatus(
+      logs_uploader.GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
+      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
+}
+
 TEST_F(ModelQualityLogsUploaderTest, SubmitFormTargetElementNotFound) {
   const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents());
@@ -325,10 +393,10 @@ TEST_F(ModelQualityLogsUploaderTest, SubmitFormTargetElementNotFound) {
   submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(-5);
   logs_uploader.SetSubmitFormQuality(submit_form_response, CreateLoggingData(),
                                      fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest intial_log =
+  const optimization_guide::proto::LogAiDataRequest initial_log =
       logs_uploader.GetFinalLog();
   CheckSubmitFormStatus(
-      intial_log,
+      initial_log,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 
@@ -352,10 +420,10 @@ TEST_F(ModelQualityLogsUploaderTest, FormNotDetectedAfterOpening) {
   open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
                                    fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest intial_log =
+  const optimization_guide::proto::LogAiDataRequest initial_log =
       logs_uploader.GetFinalLog();
   CheckOpenFormStatus(
-      intial_log,
+      initial_log,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 
@@ -379,10 +447,10 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormUnexpectedFailure) {
   open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
                                    fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest intial_log =
+  const optimization_guide::proto::LogAiDataRequest initial_log =
       logs_uploader.GetFinalLog();
   CheckOpenFormStatus(
-      intial_log,
+      initial_log,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 
