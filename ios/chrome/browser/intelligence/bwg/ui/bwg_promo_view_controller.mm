@@ -364,7 +364,8 @@ const CGFloat kSpacingScrollViewAndButtons = 24.0;
   [secondaryButton addTarget:self
                       action:@selector(didTapSecondaryButton:)
             forControlEvents:UIControlEventTouchUpInside];
-  secondaryButton.accessibilityLabel = @"Promo Secondary Action";
+  secondaryButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_SECONDARY_BUTTON);
   return secondaryButton;
 }
 
