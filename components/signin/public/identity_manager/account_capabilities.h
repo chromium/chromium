@@ -51,32 +51,38 @@ class AccountCapabilities {
   AccountCapabilities(base::flat_map<std::string, bool> capabilities);
   const base::flat_map<std::string, bool>& ConvertToAccountCapabilitiesIOS();
 #endif
-  // Keep sorted alphabetically.
 
-  // Chrome can fetch information related to the family group for accounts
-  // with this capability.
+  // clang-format off
+  // keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif,can,has,is,must
+  // clang-format on
+  // Chrome can fetch information related to the family
+  // group for accounts with this capability.
   signin::Tribool can_fetch_family_member_info() const;
 
   // Chrome can display the email address for accounts with this capability.
   signin::Tribool can_have_email_address_displayed() const;
+
+  // Chrome can run privacy sandbox trials for accounts with this capability.
+  signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
 
   // Chrome can show history sync opt in screens without minor mode
   // restrictions with this capability.
   signin::Tribool
   can_show_history_sync_opt_ins_without_minor_mode_restrictions() const;
 
-  // Chrome can run privacy sandbox trials for accounts with this capability.
-  signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
-
-  // The user account has opted in to parental supervision (Geller account).
-  // Chrome applies parental controls to accounts with this capability.
-  signin::Tribool is_opted_in_to_parental_supervision() const;
-
   // Chrome can toggle auto updates with this capability.
   signin::Tribool can_toggle_auto_updates() const;
 
   // The user account is able to use IP Protection.
   signin::Tribool can_use_chrome_ip_protection() const;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The user account is able to use generative AI features. Since many
+  // generative AI features inherit the same capability (minor restrictions),
+  // this one should be used for future generative AI features, instead of using
+  // a separate one for each of them.
+  signin::Tribool can_use_chromeos_generative_ai() const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The user account is able to use copyeditor feature.
   signin::Tribool can_use_copyeditor_feature() const;
@@ -87,15 +93,28 @@ class AccountCapabilities {
   // The user account is able to use edu features.
   signin::Tribool can_use_edu_features() const;
 
+  // The user account is able to use generative AI in recorder app.
+  signin::Tribool can_use_generative_ai_in_recorder_app() const;
+
+  // The user account is able to use generative AI photo editing.
+  signin::Tribool can_use_generative_ai_photo_editing() const;
+
   // The user account is able to use manta service.
   signin::Tribool can_use_manta_service() const;
 
   // The user account is able to use model execution features.
   signin::Tribool can_use_model_execution_features() const;
 
+  // The user account is able to use speaker label in recorder app.
+  signin::Tribool can_use_speaker_label_in_recorder_app() const;
+
   // Chrome can send user data to Google servers for machine learning purposes
   // with this capability.
   signin::Tribool is_allowed_for_machine_learning() const;
+
+  // The user account has opted in to parental supervision (Geller account).
+  // Chrome applies parental controls to accounts with this capability.
+  signin::Tribool is_opted_in_to_parental_supervision() const;
 
   // Chrome must show the notice before using the privacy sandbox restricted
   // measurement API
@@ -108,22 +127,7 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 
-  // The user account is able to use speaker label in recorder app.
-  signin::Tribool can_use_speaker_label_in_recorder_app() const;
-
-  // The user account is able to use generative AI in recorder app.
-  signin::Tribool can_use_generative_ai_in_recorder_app() const;
-
-  // The user account is able to use generative AI photo editing.
-  signin::Tribool can_use_generative_ai_photo_editing() const;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // The user account is able to use generative AI features. Since many
-  // generative AI features inherit the same capability (minor restrictions),
-  // this one should be used for future generative AI features, instead of using
-  // a separate one for each of them.
-  signin::Tribool can_use_chromeos_generative_ai() const;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  // keep-sorted end
 
   // Whether at least one of the capabilities is not
   // `signin::Tribool::kUnknown`.
