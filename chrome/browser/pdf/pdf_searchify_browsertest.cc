@@ -66,11 +66,11 @@ class PDFSearchifyTest
     // As nested feature lists are expected to be reset in the reverse order of
     // their initialization, the feature list of `PDFExtensionTestBase` is reset
     // here.
-    PDFExtensionTestBase::ResetFeatureList();
+    ResetFeatureList();
     InteractiveFeaturePromoTestT::TearDown();
   }
 
-  // PDFExtensionTestBase:
+  // InteractiveFeaturePromoTestT:
   void TearDownOnMainThread() override {
     component_download_observer_.Reset();
     InteractiveFeaturePromoTestT::TearDownOnMainThread();
