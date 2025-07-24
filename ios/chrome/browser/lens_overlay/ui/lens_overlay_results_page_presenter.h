@@ -7,48 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenting.h"
 
-@protocol LensOverlayResultsPagePresenterDelegate;
 @class LensResultPageViewController;
 @class LensOverlayContainerViewController;
-@class SceneState;
 
 // Presenter for the Lens results bottom sheet.
 @interface LensOverlayResultsPagePresenter
-    : NSObject <LensOverlayBottomSheetPresentationDelegate>
-
-// Whether the results page is currently presented.
-@property(nonatomic, assign, readonly) BOOL isResultPageVisible;
-
-// Current sheet dimension.
-@property(nonatomic, readonly) SheetDimensionState sheetDimension;
-
-// Delegate for the presenter events.
-@property(nonatomic, weak) id<LensOverlayResultsPagePresenterDelegate> delegate;
-
-// The current height of the results page.
-@property(nonatomic, readonly) CGFloat presentedResultsPageHeight;
+    : NSObject <LensOverlayResultsPagePresenting>
 
 // Creates a new instance of the presenter.
 - (instancetype)initWithBaseViewController:
                     (LensOverlayContainerViewController*)baseViewController
                   resultPageViewController:
                       (LensResultPageViewController*)resultViewController;
-
-// Presents the result page over the base view controller.
-- (void)presentResultsPageAnimated:(BOOL)animated
-                     maximizeSheet:(BOOL)maximizeSheet
-                  startInTranslate:(BOOL)startInTranslate
-                        completion:(void (^)(void))completion;
-
-// Readjusts the presentation if there was a change in window dimensions.
-- (void)readjustPresentationIfNeeded;
-
-// Dismisses the presented page from the base view controller.
-- (void)dismissResultsPageAnimated:(BOOL)animated
-                        completion:(void (^)(void))completion;
 
 @end
 

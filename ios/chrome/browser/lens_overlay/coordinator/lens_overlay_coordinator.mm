@@ -171,7 +171,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   LensOverlayNetworkIssuePresenter* _networkIssuePresenter;
 
   /// Presenter for the results page.
-  LensOverlayResultsPagePresenter* _resultsPagePresenter;
+  id<LensOverlayResultsPagePresenting> _resultsPagePresenter;
 
   /// Presenter for the lens container.
   LensOverlayContainerPresenter* _containerPresenter;

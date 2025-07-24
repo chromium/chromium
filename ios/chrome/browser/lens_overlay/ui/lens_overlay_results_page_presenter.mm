@@ -91,6 +91,9 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   UINavigationController* _presentationNavigationController;
 }
 
+@synthesize delegate = _delegate;
+@synthesize presentedResultsPageHeight = _presentedResultsPageHeight;
+
 - (instancetype)initWithBaseViewController:
                     (LensOverlayContainerViewController*)baseViewController
                   resultPageViewController:
