@@ -5057,6 +5057,11 @@ const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "
     "ignored as of Android U)";
 
+const char kMigrateAccountPrefsOnMobileName[] =
+    "Migrate account prefs on mobile";
+const char kMigrateAccountPrefsOnMobileDescription[] =
+    "Migrate account prefs on Mobile to the single-json implementation.";
+
 const char kNavBarColorAnimationName[] = "NavBarColorAnimation";
 const char kNavBarColorAnimationDescription[] =
     "Enables animations for color changes to the OS navigation bar.";

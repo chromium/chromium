@@ -1062,6 +1062,11 @@ const char kMetrickitNonCrashReportDescription[] =
     "Enables sending Metrickit reports for non crash type (hang, "
     "cpu-exception, diskwrite-exception)";
 
+const char kMigrateAccountPrefsOnMobileName[] =
+    "Migrate account prefs on mobile";
+const char kMigrateAccountPrefsOnMobileDescription[] =
+    "Migrate account prefs on Mobile to the single-json implementation.";
+
 const char kMostVisitedTilesHorizontalRenderGroupName[] =
     "MVTiles Horizontal Render Group";
 const char kMostVisitedTilesHorizontalRenderGroupDescription[] =

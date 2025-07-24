@@ -2924,6 +2924,9 @@ extern const char kSegmentationPlatformEphemeralCardRankerDescription[];
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];
 
+extern const char kMigrateAccountPrefsOnMobileName[];
+extern const char kMigrateAccountPrefsOnMobileDescription[];
+
 extern const char kNavBarColorAnimationName[];
 extern const char kNavBarColorAnimationDescription[];
 

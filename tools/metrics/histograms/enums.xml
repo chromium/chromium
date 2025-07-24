@@ -12360,6 +12360,7 @@ from previous Chrome versions.
   <int value="-638349846" label="OmniboxWarmRecycledViewPool:disabled"/>
   <int value="-638177392" label="FuseBoxDebug:enabled"/>
   <int value="-638007872" label="OfflineContentOnNetError:enabled"/>
+  <int value="-637647384" label="MigrateAccountPrefs:disabled"/>
   <int value="-637297943" label="WebAuthenticationCableSecondFactor:disabled"/>
   <int value="-637215276" label="QuickAnswersOnEditableText:enabled"/>
   <int value="-636701420"
@@ -12979,6 +12980,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:enabled"/>
   <int value="-401170566"
       label="OmniboxUIExperimentHideSuggestionUrlPath:disabled"/>
+  <int value="-400947433" label="MigrateAccountPrefs:enabled"/>
   <int value="-400706140" label="MahiSummarizeSelected:disabled"/>
   <int value="-400584764" label="ChromeHomeNtpRedesign:enabled"/>
   <int value="-400572959" label="UseDownloadOfflineContentProvider:enabled"/>

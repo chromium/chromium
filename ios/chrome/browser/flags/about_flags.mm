@@ -2811,6 +2811,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"cpe-signal-api", flag_descriptions::kCredentialProviderSignalAPIName,
      flag_descriptions::kCredentialProviderSignalAPIDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderSignalAPI)},
+    {"migrate-account-prefs-on-mobile",
+     flag_descriptions::kMigrateAccountPrefsOnMobileName,
+     flag_descriptions::kMigrateAccountPrefsOnMobileDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kMigrateAccountPrefs)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

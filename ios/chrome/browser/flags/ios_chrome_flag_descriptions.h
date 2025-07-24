@@ -622,6 +622,9 @@ extern const char kManualLogUploadsInFREDescription[];
 extern const char kMetrickitNonCrashReportName[];
 extern const char kMetrickitNonCrashReportDescription[];
 
+extern const char kMigrateAccountPrefsOnMobileName[];
+extern const char kMigrateAccountPrefsOnMobileDescription[];
+
 extern const char kMostVisitedTilesHorizontalRenderGroupName[];
 extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 

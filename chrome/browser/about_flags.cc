@@ -12945,6 +12945,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayStraightToSrp)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"migrate-account-prefs-on-mobile",
+     flag_descriptions::kMigrateAccountPrefsOnMobileName,
+     flag_descriptions::kMigrateAccountPrefsOnMobileDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(syncer::kMigrateAccountPrefs)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
