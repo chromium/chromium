@@ -105,11 +105,7 @@ public class ContentUiEventHandler implements UserData {
                 .sendMouseWheelEvent(
                         mNativeContentUiEventHandler,
                         event,
-                        MotionEventUtils.getEventTimeNanos(event),
-                        event.getX(),
-                        event.getY(),
-                        event.getAxisValue(MotionEvent.AXIS_HSCROLL),
-                        event.getAxisValue(MotionEvent.AXIS_VSCROLL));
+                        MotionEventUtils.getEventTimeNanos(event));
     }
 
     private boolean onMouseEvent(MotionEvent event, boolean shouldConvertToMouseEvent) {
@@ -221,14 +217,7 @@ public class ContentUiEventHandler implements UserData {
     interface Natives {
         long init(ContentUiEventHandler self, WebContents webContents);
 
-        void sendMouseWheelEvent(
-                long nativeContentUiEventHandler,
-                MotionEvent event,
-                long timeNs,
-                float x,
-                float y,
-                float ticksX,
-                float ticksY);
+        void sendMouseWheelEvent(long nativeContentUiEventHandler, MotionEvent event, long timeNs);
 
         void sendMouseEvent(
                 long nativeContentUiEventHandler,

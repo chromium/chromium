@@ -41,11 +41,7 @@ class ContentUiEventHandler {
 
   void SendMouseWheelEvent(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& event,
-                           jlong time_ns,
-                           jfloat x,
-                           jfloat y,
-                           jfloat ticks_x,
-                           jfloat ticks_y);
+                           jlong time_ns);
   void SendMouseEvent(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& event,
                       jlong time_ns,

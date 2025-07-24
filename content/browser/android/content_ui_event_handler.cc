@@ -89,11 +89,7 @@ bool ContentUiEventHandler::ScrollTo(float x, float y) {
 void ContentUiEventHandler::SendMouseWheelEvent(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& motion_event,
-    jlong time_ns,
-    jfloat x,
-    jfloat y,
-    jfloat ticks_x,
-    jfloat ticks_y) {
+    jlong time_ns) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;
@@ -102,8 +98,11 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   base::TimeTicks current_time = ui::EventTimeForNow();
   base::TimeTicks event_time = base::TimeTicks::FromJavaNanoTime(time_ns);
   ComputeEventLatencyOS(ui::EventType::kMousewheel, event_time, current_time);
+
+  auto source = ui::MotionEventAndroidSourceJava::Create(motion_event, false);
   ui::MotionEventAndroid::Pointer pointer(
-      /*id=*/0, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*id=*/0, /*pos_x_pixels=*/source->GetXPix(0),
+      /*pos_y_pixels=*/source->GetYPix(0),
       /*touch_major_pixels=*/0.0f,
       /*touch_minor_pixels=*/0.0f, /*pressure=*/0.0f, /*orientation_rad=*/0.0f,
       /*tilt_rad=*/0.0f, /*tool_type=*/0);
@@ -115,7 +114,9 @@ void ContentUiEventHandler::SendMouseWheelEvent(
              : ui::kDefaultMouseWheelTickMultiplier * view->GetDipScale();
   auto event = ui::MotionEventAndroidFactory::CreateFromJava(
       env, motion_event,
-      /*pix_to_dip=*/1.f / view->GetDipScale(), ticks_x, ticks_y,
+      /*pix_to_dip=*/1.f / view->GetDipScale(),
+      /*ticks_x=*/source->GetAxisHscroll(0),
+      /*ticks_y=*/source->GetAxisVscroll(0),
       /*tick_multiplier=*/pixels_per_tick,
       /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
       /*android_action=*/0,

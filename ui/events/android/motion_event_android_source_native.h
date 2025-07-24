@@ -33,6 +33,8 @@ class MotionEventAndroidSourceNative : public MotionEventAndroidSource {
   float GetTouchMinorPix(size_t pointer_index) const override;
   float GetRawOrientation(size_t pointer_index) const override;
   float GetPressure(size_t pointer_index) const override;
+  float GetAxisHscroll(size_t pointer_index) const override;
+  float GetAxisVscroll(size_t pointer_index) const override;
   float GetRawTilt(size_t pointer_index) const override;
   MotionEvent::ToolType GetToolType(size_t pointer_index) const override;
   int GetActionMasked() const override;
