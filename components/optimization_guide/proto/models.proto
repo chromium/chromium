@@ -256,6 +256,10 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_IOS_DEFAULT_BROWSER_PROMO = 63;
   // Target for education classifier.
   OPTIMIZATION_TARGET_EDU_CLASSIFIER = 64;
+  // Target for the text+image AIv4 geolocation permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_DESKTOP = 65;
+  // Target for the text+image AIv4 notifications permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP = 66;
 }
 
 // The model engine versions that can be used to do model inference.

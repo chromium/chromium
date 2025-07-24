@@ -157,6 +157,10 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationIosDefaultBrowserPromo";
     case proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER:
       return "EduClassifier";
+    case proto::OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_DESKTOP:
+      return "PermissionsAiv4GeolocationDesktop";
+    case proto::OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP:
+      return "PermissionsAiv4NotificationsDesktop";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
