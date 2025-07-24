@@ -208,10 +208,8 @@ void KioskControllerImpl::InitializeKioskSystemSession(
       iwa_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
     case KioskAppType::kArcvmApp:
-      // TODO(crbug.com/418950414): Add background for Kiosk system session not
-      // getting created for ARCVM Kiosk. We might need Kiosk system session
-      // for ARCVM kiosk.
-      NOTREACHED();
+      arcvm_app_manager_.OnKioskSessionStarted(kiosk_app_id);
+      break;
   }
 }
 

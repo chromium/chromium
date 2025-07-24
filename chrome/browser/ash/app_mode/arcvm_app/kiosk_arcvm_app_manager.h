@@ -11,8 +11,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "components/account_id/account_id.h"
+#include "ui/gfx/image/image_skia.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -63,6 +65,9 @@ class KioskArcvmAppManager : public KioskAppManagerBase {
 
   // Returns the list of all apps in their internal representation.
   std::vector<const KioskArcvmAppData*> GetAppsForTesting() const;
+
+  // Notify this manager that a Kiosk session started with the given `app_id`.
+  void OnKioskSessionStarted(const KioskAppId& app_id);
 
  private:
   // KioskAppmanagerBase:

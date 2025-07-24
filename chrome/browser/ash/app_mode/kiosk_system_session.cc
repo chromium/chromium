@@ -10,16 +10,12 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
-#include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -30,7 +26,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -97,7 +93,9 @@ KioskSystemSession::KioskSystemSession(
       InitForIwaKiosk(app_name);
       break;
     case KioskAppType::kArcvmApp:
-      NOTREACHED();
+      // TODO(crbug.com/418950414): Implement kiosk system session for ARCVM
+      // kiosk. Decide if KioskBrowserSession and metrics are needed.
+      NOTIMPLEMENTED() << "No KioskSystemSession init for Arcvm kiosk";
   }
 }
 

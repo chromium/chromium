@@ -4,25 +4,27 @@
 
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
 
-#include <algorithm>
 #include <map>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/barrier_closure.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
-#include "base/memory/raw_ref.h"
-#include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/ash/app_mode/pref_names.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -92,6 +94,11 @@ std::vector<const KioskArcvmAppData*> KioskArcvmAppManager::GetAppsForTesting()
     apps.push_back(app.get());
   }
   return apps;
+}
+
+void KioskArcvmAppManager::OnKioskSessionStarted(const KioskAppId& app_id) {
+  CHECK_EQ(app_id.type, KioskAppType::kArcvmApp);
+  NotifySessionInitialized();
 }
 
 void KioskArcvmAppManager::UpdateNameAndIcon(const AccountId& account_id,
