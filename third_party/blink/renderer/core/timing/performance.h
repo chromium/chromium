@@ -236,7 +236,6 @@ class CORE_EXPORT Performance : public EventTarget {
                                       base::TimeTicks pageshow_start_time,
                                       base::TimeTicks pageshow_end_time);
 
-
   // This enum is used to index different possible strings for for UMA enum
   // histogram. New enum values can be added, but existing enums must never be
   // renumbered or deleted and reused.
@@ -368,6 +367,13 @@ class CORE_EXPORT Performance : public EventTarget {
   void ProcessUserFeatureMark(const PerformanceMarkOptions* mark_options);
 
  protected:
+  enum class ParserYieldState {
+    kInitial = 0,
+    kPaused = 1,
+    kResumed = 2,
+    kMaxValue = kResumed
+  };
+
   Performance(base::TimeTicks time_origin,
               bool cross_origin_isolated_capability,
               scoped_refptr<base::SingleThreadTaskRunner>,
@@ -446,7 +452,7 @@ class CORE_EXPORT Performance : public EventTarget {
   // user timing API is used as a signal to the document. crbug.com/425962649
   // for more details.
   TaskHandle parser_yield_task_handle_;
-  bool is_parser_yielded_ = false;
+  ParserYieldState parser_yield_state_ = ParserYieldState::kInitial;
 };
 
 }  // namespace blink

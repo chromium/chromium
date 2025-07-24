@@ -528,4 +528,28 @@ TEST_F(HTMLDocumentParserYieldByUserTimingTest,
   histogram_tester().ExpectUniqueSample("Blink.HTMLParsing.ResumedByUserTiming",
                                         false, 1);
 }
+
+TEST_F(HTMLDocumentParserYieldByUserTimingTest,
+       ParserIsNotPausedAfterResumingAttemptByUserTiming) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest image_resource("https://example.com/img.png", "image/png");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <div id="before"></div>
+    <script>performance.mark('resume');</script>
+    <script>performance.mark('pause');</script>
+    <div id="after"></div>
+  )HTML");
+
+  // The parser is not paused if the resuming signal is sent before the pausing
+  // signal.
+  platform_->RunUntilIdle();
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("before")));
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("after")));
+
+  histogram_tester().ExpectUniqueSample(
+      "Blink.HTMLParsing.IsParserPausingCalledAfterResuming", true, 1);
+}
 }  // namespace blink
