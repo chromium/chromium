@@ -181,11 +181,6 @@ id<GREYMatcher> SavedPasswordsPasskeysHeaderMatcher() {
                     nullptr);
 }
 
-// Matcher for a UITextField inside a SettingsSearchCell.
-id<GREYMatcher> SearchTextField() {
-  return grey_accessibilityID(kPasswordsSearchBarID);
-}
-
 GREYLayoutConstraint* Below() {
   return [GREYLayoutConstraint
       layoutConstraintWithAttribute:kGREYLayoutAttributeTop
@@ -1938,9 +1933,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_notNil()];
 
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"2")];
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
@@ -1952,9 +1947,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_notNil()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -1968,7 +1961,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   OpenPasswordManager();
 
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"ex")];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -2016,9 +2009,12 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   OpenPasswordManager();
   TapNavigationBarEditButton();
 
-  // Verify search bar is disabled.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
+  // Try to tap the search field and verify it doesn't get focus.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_not(grey_firstResponder())];
+
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -2030,7 +2026,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SaveExamplePasswordForms();
   OpenPasswordManager();
 
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"2")];
 
   TapNavigationBarEditButton();
@@ -2055,9 +2051,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 
   // Remove filter search term.
-  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      performAction:grey_replaceText(@"")];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
 
   // Only password 1 should show.
   [GetInteractionForPasswordEntry(@"example11.com")
@@ -3690,19 +3686,18 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       sceneOpenURL:
           GURL("chromewidgetkit://search-passwords-widget/search-passwords")];
 
-  // The Password Manager should be visible behind the keyboard.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  // The Password Manager should be visible.
   [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.5)];
 
   // The search bar should be enabled.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_firstResponder()];
 
   // Dismiss the search controller and the Password Manager.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
@@ -3718,19 +3713,19 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  // Open the Password Manager in search mode with the  Search Passwords widget.
+  // Open the Password Manager in search mode with the Search Passwords widget.
   [ChromeEarlGrey
       sceneOpenURL:
           GURL("chromewidgetkit://search-passwords-widget/search-passwords")];
 
   // The search bar should be enabled.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_firstResponder()];
 
   // Dismiss the search controller.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
 
   // Open password details.
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
@@ -3740,8 +3735,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // enabled.
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_not(grey_firstResponder())];
 }
 
 // Tests that tapping the close button of the Password Manager widget promo

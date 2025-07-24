@@ -415,7 +415,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  self.navigationController.toolbarHidden = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -1086,9 +1085,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
         [self clearSectionWithIdentifier:SectionIdentifierManageAccountHeader
                         withRowAnimation:UITableViewRowAnimationTop];
-
-        // Hide the toolbar when the search controller is presented.
-        self.navigationController.toolbarHidden = YES;
       }
                         completion:nil];
 }
@@ -1201,13 +1197,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
         [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
                               withRowAnimation:UITableViewRowAnimationTop];
-
-        //  We want to restart the toolbar (display it) when the search bar is
-        //  dismissed only if the current view is the Password Manager.
-        if ([self.navigationController.topViewController
-                isKindOfClass:[PasswordManagerViewController class]]) {
-          self.navigationController.toolbarHidden = NO;
-        }
 
         _tableIsInSearchMode = NO;
       }
