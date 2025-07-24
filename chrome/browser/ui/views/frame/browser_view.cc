@@ -3544,6 +3544,12 @@ void BrowserView::PreHandleDragExit() {
   }
 }
 
+void BrowserView::HandleDragEnded() {
+  if (multi_contents_view_) {
+    multi_contents_view_->drop_target_controller().OnWebContentsDragEnded();
+  }
+}
+
 bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
   if (frame_->HandleKeyboardEvent(event)) {
     return true;
