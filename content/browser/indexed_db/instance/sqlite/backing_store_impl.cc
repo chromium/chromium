@@ -4,14 +4,12 @@
 
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 
-#include <map>
 #include <vector>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
-#include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
@@ -102,7 +100,7 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
     if (version == blink::IndexedDBDatabaseMetadata::NO_VERSION) {
       continue;
     }
-    names_and_versions.push_back(
+    names_and_versions.emplace_back(
         blink::mojom::IDBNameAndVersion::New(name, version));
   }
 
@@ -114,7 +112,7 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
       std::ignore =
           DatabaseConnection::Open(/*name=*/{}, path, *this)
               .transform([&](std::unique_ptr<DatabaseConnection> connection) {
-                names_and_versions.push_back(
+                names_and_versions.emplace_back(
                     blink::mojom::IDBNameAndVersion::New(
                         connection->metadata().name,
                         connection->metadata().version));
@@ -127,15 +125,19 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
 
 StatusOr<std::unique_ptr<BackingStore::Database>>
 BackingStoreImpl::CreateOrOpenDatabase(const std::u16string& name) {
-  auto it = open_connections_.find(name);
-  if (it == open_connections_.end()) {
-    ASSIGN_OR_RETURN(
-        std::unique_ptr<DatabaseConnection> db,
-        DatabaseConnection::Open(
-            name, directory_.Append(DatabaseNameToFileName(name)), *this));
-    it = open_connections_.emplace(name, std::move(db)).first;
+  if (auto it = open_connections_.find(name); it != open_connections_.end()) {
+    return std::make_unique<BackingStoreDatabaseImpl>(it->second->GetWeakPtr());
   }
-  return std::make_unique<BackingStoreDatabaseImpl>(it->second->GetWeakPtr());
+  base::FilePath db_path =
+      in_memory() ? base::FilePath()
+                  : directory_.Append(DatabaseNameToFileName(name));
+  return DatabaseConnection::Open(name, std::move(db_path), *this)
+      .transform([&](std::unique_ptr<DatabaseConnection> connection) {
+        auto database = std::make_unique<BackingStoreDatabaseImpl>(
+            connection->GetWeakPtr());
+        open_connections_[name] = std::move(connection);
+        return database;
+      });
 }
 
 uintptr_t BackingStoreImpl::GetIdentifierForMemoryDump() {
