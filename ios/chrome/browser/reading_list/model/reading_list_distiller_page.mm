@@ -15,6 +15,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/google/core/common/google_util.h"
 #import "ios/chrome/browser/reading_list/model/favicon_web_state_dispatcher_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -65,10 +66,10 @@ ReadingListDistillerPageDelegate::~ReadingListDistillerPageDelegate() {}
 
 ReadingListDistillerPage::ReadingListDistillerPage(
     const GURL& url,
-    web::BrowserState* browser_state,
+    ProfileIOS* profile,
     FaviconWebStateDispatcher* web_state_dispatcher,
     ReadingListDistillerPageDelegate* delegate)
-    : dom_distiller::DistillerPageIOS(browser_state),
+    : dom_distiller::DistillerPageIOS(profile),
       original_url_(url),
       web_state_dispatcher_(web_state_dispatcher),
       delegate_(delegate),

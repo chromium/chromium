@@ -48,7 +48,7 @@ ReadingListDownloadServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory =
           std::make_unique<reading_list::ReadingListDistillerPageFactory>(
-              context);
+              profile);
 
   return std::make_unique<ReadingListDownloadService>(
       ReadingListModelFactory::GetForProfile(profile), profile->GetStatePath(),
