@@ -73,6 +73,7 @@ const size_t kSpiAnalogStickParametersSize = 18;
 const size_t kSubCommandDataOffset = 11;
 // Byte index for the first byte of SPI data in SPI read responses.
 const size_t kSpiDataOffset = 20;
+const size_t kSpiDataLength = kMaxInputReportSizeBytes - kSpiDataOffset;
 
 // Values for the |device_type| field reported in the MAC reply.
 const uint8_t kUsbDeviceTypeChargingGripNoDevice = 0x00;
@@ -282,7 +283,7 @@ struct SpiReadReport {
   uint8_t addrh;
   uint8_t padding[2];  // 0x00 0x00
   uint8_t length;
-  uint8_t spi_data[kMaxInputReportSizeBytes - kSpiDataOffset];
+  uint8_t spi_data[kSpiDataLength];
 };
 #pragma pack(pop)
 static_assert(sizeof(SpiReadReport) == kMaxInputReportSizeBytes - 1,
@@ -314,9 +315,8 @@ uint64_t UnpackSwitchMacAddress(base::span<const uint8_t, 6> data) {
 
 // Unpack the analog stick parameters into |cal|.
 void UnpackSwitchAnalogStickParameters(
-    base::span<const uint8_t> data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(!data.empty());
   // Only fetch the dead zone and range ratio. The other parameters are unknown.
   UnpackShorts(data[3], data[4], data[5], &cal.dead_zone, &cal.range_ratio);
   if (cal.dead_zone == kCalBogusValue) {
@@ -328,9 +328,8 @@ void UnpackSwitchAnalogStickParameters(
 
 // Unpack the IMU calibration data into |cal|
 void UnpackSwitchImuCalibration(
-    base::span<const uint8_t> data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(!data.empty());
   // 24 bytes, as 4 groups of 3 16-bit little-endian values.
   cal.accelerometer_origin_x = (data[1] << 8) | data[0];
   cal.accelerometer_origin_y = (data[3] << 8) | data[2];
@@ -348,9 +347,8 @@ void UnpackSwitchImuCalibration(
 
 // Unpack the IMU horizontal offsets into |cal|.
 void UnpackSwitchImuHorizontalOffsets(
-    base::span<const uint8_t> data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(!data.empty());
   // 6 bytes, as 3 16-bit little-endian values.
   cal.horizontal_offset_x = (data[1] << 8) | data[0];
   cal.horizontal_offset_y = (data[3] << 8) | data[2];
@@ -359,9 +357,8 @@ void UnpackSwitchImuHorizontalOffsets(
 
 // Unpack the analog stick calibration data into |cal|.
 void UnpackSwitchAnalogStickCalibration(
-    base::span<const uint8_t> data,
+    base::span<const uint8_t, kSpiDataLength> data,
     NintendoController::SwitchCalibrationData& cal) {
-  DCHECK(!data.empty());
   // 18 bytes, as 2 groups of 6 packed 12-bit values.
   UnpackShorts(data[0], data[1], data[2], &cal.lx_max, &cal.ly_max);
   UnpackShorts(data[3], data[4], data[5], &cal.lx_center, &cal.ly_center);
@@ -401,9 +398,8 @@ void UnpackSwitchAnalogStickCalibration(
 }
 
 // Unpack one frame of IMU data into |imu_data|.
-void UnpackSwitchImuData(const uint8_t* data,
+void UnpackSwitchImuData(base::span<const uint8_t, 12> data,
                          NintendoController::SwitchImuData* imu_data) {
-  DCHECK(data);
   DCHECK(imu_data);
   // 12 bytes of IMU data containing 6 16-bit little-endian values.
   imu_data->accelerometer_x = (data[1] << 8) | data[0];
@@ -435,10 +431,12 @@ bool ApplyDeadZone(uint16_t& x,
 // Normalize |value| to the range [|min|,|max|]. If |value| is outside this
 // range, clamp it.
 double NormalizeAndClampAxis(int value, int min, int max) {
-  if (value <= min)
+  if (value <= min) {
     return -1.0;
-  if (value >= max)
+  }
+  if (value >= max) {
     return 1.0;
+  }
   return (2.0 * (value - min) / static_cast<double>(max - min)) - 1.0;
 }
 
@@ -771,8 +769,9 @@ void FrequencyToHex(float frequency,
       // it is closer than the current best.
       int vf_error_above = vf->freq_hz - freq;
       int best_vf_error_below = freq - best_vf->freq_hz;
-      if (vf_error_above < best_vf_error_below)
+      if (vf_error_above < best_vf_error_below) {
         best_vf = vf;
+      }
       break;
     }
   }
@@ -786,8 +785,9 @@ void FrequencyToHex(float frequency,
       // it is closer than the current best.
       int va_error_above = va->amp - amp;
       int best_va_error_below = amp - best_va->amp;
-      if (va_error_above < best_va_error_below)
+      if (va_error_above < best_va_error_below) {
         best_va = va;
+      }
       break;
     }
   }
@@ -806,8 +806,9 @@ GamepadBusType BusTypeFromDeviceInfo(const mojom::HidDeviceInfo* device_info) {
   // If the |device_info| indicates the device is connected over Bluetooth, it's
   // probably right. On some platforms the bus type is reported as USB
   // regardless of the actual connection.
-  if (device_info->bus_type == mojom::HidBusType::kHIDBusTypeBluetooth)
+  if (device_info->bus_type == mojom::HidBusType::kHIDBusTypeBluetooth) {
     return GAMEPAD_BUS_BLUETOOTH;
+  }
   auto gamepad_id = GamepadIdList::Get().GetGamepadId(device_info->product_name,
                                                       device_info->vendor_id,
                                                       device_info->product_id);
@@ -881,8 +882,9 @@ NintendoController::NintendoController(
   DCHECK(composite2);
   composite_left_ = std::move(composite1);
   composite_right_ = std::move(composite2);
-  if (composite_left_->GetGamepadHand() != GamepadHand::kLeft)
+  if (composite_left_->GetGamepadHand() != GamepadHand::kLeft) {
     composite_left_.swap(composite_right_);
+  }
   DCHECK_EQ(composite_left_->GetGamepadHand(), GamepadHand::kLeft);
   DCHECK_EQ(composite_right_->GetGamepadHand(), GamepadHand::kRight);
   DCHECK_EQ(composite_left_->GetBusType(), composite_right_->GetBusType());
@@ -939,10 +941,12 @@ NintendoController::Decompose() {
   SetZeroVibration();
 
   std::vector<std::unique_ptr<NintendoController>> decomposed_devices;
-  if (composite_left_)
+  if (composite_left_) {
     decomposed_devices.push_back(std::move(composite_left_));
-  if (composite_right_)
+  }
+  if (composite_right_) {
     decomposed_devices.push_back(std::move(composite_right_));
+  }
   return decomposed_devices;
 }
 
@@ -962,8 +966,9 @@ void NintendoController::Open(base::OnceClosure device_ready_closure) {
 }
 
 GamepadHand NintendoController::GetGamepadHand() const {
-  if (is_composite_)
+  if (is_composite_) {
     return GamepadHand::kNone;
+  }
   switch (gamepad_id_) {
     case GamepadId::kNintendoProduct2009:
     case GamepadId::kPowerALicPro:
@@ -1001,10 +1006,12 @@ GamepadHand NintendoController::GetGamepadHand() const {
 }
 
 bool NintendoController::IsUsable() const {
-  if (state_ != kInitialized)
+  if (state_ != kInitialized) {
     return false;
-  if (is_composite_)
+  }
+  if (is_composite_) {
     return composite_left_ && composite_right_;
+  }
   switch (gamepad_id_) {
     case GamepadId::kNintendoProduct2009:
     case GamepadId::kNintendoProduct2006:
@@ -1146,16 +1153,19 @@ void NintendoController::UpdateLeftGamepadState(Gamepad& pad,
   const size_t kLeftAxisIndicesSize = std::size(kLeftAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
-    for (size_t i = 0; i < kLeftButtonIndicesSize; ++i)
+    for (size_t i = 0; i < kLeftButtonIndicesSize; ++i) {
       UpdateButtonForLeftSide(pad_, pad, kLeftButtonIndices[i], horizontal);
+    }
   }
   if (pad_.axes_length == AXIS_INDEX_COUNT) {
-    for (size_t i = 0; i < kLeftAxisIndicesSize; ++i)
+    for (size_t i = 0; i < kLeftAxisIndicesSize; ++i) {
       UpdateAxisForLeftSide(pad_, pad, kLeftAxisIndices[i], horizontal);
+    }
   }
   pad.timestamp = std::max(pad.timestamp, pad_.timestamp);
-  if (!pad_.connected)
+  if (!pad_.connected) {
     pad.connected = false;
+  }
 }
 
 void NintendoController::UpdateRightGamepadState(Gamepad& pad,
@@ -1184,16 +1194,19 @@ void NintendoController::UpdateRightGamepadState(Gamepad& pad,
   const size_t kRightAxisIndicesSize = std::size(kRightAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
-    for (size_t i = 0; i < kRightButtonIndicesSize; ++i)
+    for (size_t i = 0; i < kRightButtonIndicesSize; ++i) {
       UpdateButtonForRightSide(pad_, pad, kRightButtonIndices[i], horizontal);
+    }
   }
   if (pad_.axes_length == AXIS_INDEX_COUNT) {
-    for (size_t i = 0; i < kRightAxisIndicesSize; ++i)
+    for (size_t i = 0; i < kRightAxisIndicesSize; ++i) {
       UpdateAxisForRightSide(pad_, pad, kRightAxisIndices[i], horizontal);
+    }
   }
   pad.timestamp = std::max(pad.timestamp, pad_.timestamp);
-  if (!pad_.connected)
+  if (!pad_.connected) {
     pad.connected = false;
+  }
 }
 
 void NintendoController::Connect(mojom::HidManager::ConnectCallback callback) {
@@ -1245,8 +1258,9 @@ void NintendoController::StartInitSequence() {
 void NintendoController::FinishInitSequence() {
   state_ = kInitialized;
   UpdatePadConnected();
-  if (device_ready_closure_)
+  if (device_ready_closure_) {
     std::move(device_ready_closure_).Run();
+  }
 }
 
 void NintendoController::FailInitSequence() {
@@ -1262,17 +1276,19 @@ void NintendoController::HandleInputReport(
 
   // Listen for reports related to the initialization sequence or gamepad state.
   // Other reports are ignored.
-  if (bus_type_ == GAMEPAD_BUS_USB && report_id == kUsbReportIdInput81)
+  if (bus_type_ == GAMEPAD_BUS_USB && report_id == kUsbReportIdInput81) {
     HandleUsbInputReport81(report_bytes);
-  else if (report_id == kReportIdInput21)
+  } else if (report_id == kReportIdInput21) {
     HandleInputReport21(report_bytes);
-  else if (report_id == kReportIdInput30)
+  } else if (report_id == kReportIdInput30) {
     HandleInputReport30(report_bytes);
+  }
 
   // Check whether the input report should cause us to transition to the next
   // initialization step.
-  if (state_ != kInitialized && state_ != kUninitialized)
+  if (state_ != kInitialized && state_ != kUninitialized) {
     ContinueInitSequence(report_id, report_bytes);
+  }
 }
 
 void NintendoController::HandleUsbInputReport81(
@@ -1293,16 +1309,18 @@ void NintendoController::HandleUsbInputReport81(
             // the Joy-Cons was disconnected from the charging grip. The HID
             // device does not disconnect; de-initialize the device so the
             // composite device will be hidden.
-            if (state_ == kInitialized)
+            if (state_ == kInitialized) {
               FailInitSequence();
+            }
             break;
           case kUsbDeviceTypeChargingGripJoyConL:
           case kUsbDeviceTypeChargingGripJoyConR:
             UpdatePadConnected();
             // A Joy-Con was connected to a de-initialized device. Restart the
             // initialization sequence.
-            if (state_ == kUninitialized)
+            if (state_ == kUninitialized) {
               StartInitSequence();
+            }
             break;
           default:
             break;
@@ -1352,9 +1370,12 @@ void NintendoController::HandleInputReport30(
   const auto* controller_report =
       reinterpret_cast<const ControllerDataReport*>(report_bytes.data());
   // Each input report contains three frames of IMU data.
-  UnpackSwitchImuData(&controller_report->imu_data[0], &imu_data_[0]);
-  UnpackSwitchImuData(&controller_report->imu_data[12], &imu_data_[1]);
-  UnpackSwitchImuData(&controller_report->imu_data[24], &imu_data_[2]);
+  UnpackSwitchImuData(base::span(controller_report->imu_data).subspan<0, 12>(),
+                      &imu_data_[0]);
+  UnpackSwitchImuData(base::span(controller_report->imu_data).subspan<12, 12>(),
+                      &imu_data_[1]);
+  UnpackSwitchImuData(base::span(controller_report->imu_data).subspan<24, 12>(),
+                      &imu_data_[2]);
   if (UpdateGamepadFromControllerData(controller_report->controller_data,
                                       cal_data_, pad_)) {
     pad_.timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();
@@ -1382,10 +1403,11 @@ void NintendoController::ContinueInitSequence(
     case kPendingMacAddress:
       if (ack_subtype == kSubTypeRequestMac) {
         CancelTimeout();
-        if (mac_address_)
+        if (mac_address_) {
           MakeInitSequenceRequests(kPendingHandshake1);
-        else
+        } else {
           FailInitSequence();
+        }
       }
       break;
     case kPendingHandshake1:
@@ -1706,8 +1728,9 @@ void NintendoController::WriteOutputReport(
   connection_->Write(report_id, report_bytes,
                      base::BindOnce(&NintendoController::OnWriteOutputReport,
                                     weak_factory_.GetWeakPtr()));
-  if (expect_reply)
+  if (expect_reply) {
     ArmTimeout();
+  }
 }
 
 void NintendoController::OnWriteOutputReport(bool success) {
@@ -1718,11 +1741,13 @@ void NintendoController::OnWriteOutputReport(bool success) {
 }
 
 void NintendoController::DoShutdown() {
-  if (composite_left_)
+  if (composite_left_) {
     composite_left_->Shutdown();
+  }
   composite_left_.reset();
-  if (composite_right_)
+  if (composite_right_) {
     composite_right_->Shutdown();
+  }
   composite_right_.reset();
   connection_.reset();
   device_info_.reset();
@@ -1768,9 +1793,9 @@ void NintendoController::CancelTimeout() {
 
 void NintendoController::OnTimeout() {
   ++retry_count_;
-  if (retry_count_ <= kMaxRetryCount)
+  if (retry_count_ <= kMaxRetryCount) {
     MakeInitSequenceRequests(state_);
-  else {
+  } else {
     retry_count_ = 0;
     StartInitSequence();
   }
