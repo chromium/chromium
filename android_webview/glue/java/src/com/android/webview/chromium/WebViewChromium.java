@@ -887,17 +887,17 @@ class WebViewChromium
                     sRecordWholeDocumentEnabledByApi
                             || mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP);
 
-            AwBrowserContext browserContext = null;
+            final AwBrowserContext browserContext;
             // Temporary workaround for setting the profile at WebView startup.
             Integer appProfileNameTagKey =
                     ManifestMetadataUtil.getAppMultiProfileProfileNameTagKey();
             if (appProfileNameTagKey != null
                     && mWebView.getTag(appProfileNameTagKey) instanceof String profileName) {
                 browserContext = AwBrowserContextStore.getNamedContext(profileName, true);
-            }
-
-            if (browserContext == null) {
-                browserContext = mFactory.getDefaultBrowserContextOnUiThread();
+            } else {
+                browserContext =
+                        AwBrowserContextStore.getNamedContext(
+                                AwBrowserContext.getDefaultContextName(), true);
             }
 
             mAwContents =

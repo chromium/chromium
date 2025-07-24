@@ -37,14 +37,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
 import com.android.webview.chromium.SharedStatics.ApiCall;
+import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
 
 import org.chromium.android_webview.ApkType;
-import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserMainParts;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
-import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
@@ -175,9 +174,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @GuardedBy("mAwInit.getLazyInitLock()")
     private Statics mStaticsAdapter;
-
-    @GuardedBy("mAwInit.getLazyInitLock()")
-    private ServiceWorkerController mServiceWorkerController;
 
     private boolean mIsSafeModeEnabled;
 
@@ -827,7 +823,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_GEOLOCATION_PERMISSIONS")) {
             SharedStatics.recordStaticApiCall(ApiCall.GET_GEOLOCATION_PERMISSIONS);
-            return mAwInit.getDefaultGeolocationPermissions();
+            return mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS)
+                    .getGeolocationPermissions();
         }
     }
 
@@ -838,15 +835,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public ServiceWorkerController getServiceWorkerController() {
-        AwServiceWorkerController serviceWorkerController =
-                mAwInit.getDefaultServiceWorkerController();
-        synchronized (mAwInit.getLazyInitLock()) {
-            if (mServiceWorkerController == null) {
-                mServiceWorkerController =
-                        new ServiceWorkerControllerAdapter(serviceWorkerController);
-            }
-            return mServiceWorkerController;
-        }
+        return mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER)
+                .getServiceWorkerController();
     }
 
     @Override
@@ -861,7 +851,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public WebStorage getWebStorage() {
-        return mAwInit.getDefaultWebStorage();
+        return mAwInit.getDefaultProfile(CallSite.GET_DEFAULT_WEB_STORAGE).getWebStorage();
     }
 
     @Override
@@ -894,11 +884,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     boolean isChromiumInitialized() {
         return mAwInit.isChromiumInitialized();
-    }
-
-    // Only on UI thread.
-    AwBrowserContext getDefaultBrowserContextOnUiThread() {
-        return mAwInit.getDefaultBrowserContextOnUiThread();
     }
 
     WebViewChromiumAwInit getAwInit() {
