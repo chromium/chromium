@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/bindings/sync_handle_registry.h"
+
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
-#include "mojo/public/cpp/bindings/sync_handle_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -127,14 +129,14 @@ TEST_F(SyncHandleRegistryTest, UnregisterAndRegisterForNewEventInCallback) {
                 base::BindRepeating([](bool* called) { *called = true; },
                                     &nested_called));
         const bool* stop_flag = &nested_called;
-        registry->Wait(&stop_flag, 1);
+        registry->Wait(base::span_from_ref(stop_flag), 1);
       },
       &e, &subscription, registry(), &called);
 
   subscription = registry()->RegisterEvent(e.get(), callback);
 
   const bool* stop_flag = &called;
-  registry()->Wait(&stop_flag, 1);
+  registry()->Wait(base::span_from_ref(stop_flag), 1);
   EXPECT_TRUE(called);
 }
 
@@ -158,7 +160,7 @@ TEST_F(SyncHandleRegistryTest, UnregisterAndRegisterForSameEventInCallback) {
                 e, base::BindRepeating([](bool* called) { *called = true; },
                                        &nested_called));
         const bool* stop_flag = &nested_called;
-        registry->Wait(&stop_flag, 1);
+        registry->Wait(base::span_from_ref(stop_flag), 1);
 
         EXPECT_TRUE(nested_called);
       },
@@ -167,7 +169,7 @@ TEST_F(SyncHandleRegistryTest, UnregisterAndRegisterForSameEventInCallback) {
   subscription = registry()->RegisterEvent(&e, callback);
 
   const bool* stop_flag = &called;
-  registry()->Wait(&stop_flag, 1);
+  registry()->Wait(base::span_from_ref(stop_flag), 1);
   EXPECT_TRUE(called);
 }
 
@@ -193,7 +195,7 @@ TEST_F(SyncHandleRegistryTest, RegisterDuplicateEventFromWithinCallback) {
                                        &called2));
 
         const bool* stop_flag = &called2;
-        registry->Wait(&stop_flag, 1);
+        registry->Wait(base::span_from_ref(stop_flag), 1);
       },
       &e, registry(), &called, &call_count);
 
@@ -201,7 +203,7 @@ TEST_F(SyncHandleRegistryTest, RegisterDuplicateEventFromWithinCallback) {
       registry()->RegisterEvent(&e, callback);
 
   const bool* stop_flag = &called;
-  registry()->Wait(&stop_flag, 1);
+  registry()->Wait(base::span_from_ref(stop_flag), 1);
 
   EXPECT_TRUE(called);
   EXPECT_EQ(2, call_count);

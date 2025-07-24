@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -139,13 +140,13 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
 
   void Wait(base::WaitableEvent** ready_event,
             size_t* num_ready_handles,
-            Handle* ready_handles,
-            MojoResult* ready_results,
+            base::span<Handle> ready_handles,
+            base::span<MojoResult> ready_results,
             MojoHandleSignalsState* signals_states) {
     DCHECK(trap_handle_.is_valid());
     DCHECK(num_ready_handles);
-    DCHECK(ready_handles);
-    DCHECK(ready_results);
+    DCHECK(!ready_handles.empty());
+    DCHECK(!ready_results.empty());
     {
       base::AutoLock lock(lock_);
       if (ready_handles_.empty()) {
@@ -362,8 +363,8 @@ MojoResult WaitSet::RemoveHandle(Handle handle) {
 
 void WaitSet::Wait(base::WaitableEvent** ready_event,
                    size_t* num_ready_handles,
-                   Handle* ready_handles,
-                   MojoResult* ready_results,
+                   base::span<Handle> ready_handles,
+                   base::span<MojoResult> ready_results,
                    MojoHandleSignalsState* signals_states) {
   state_->Wait(ready_event, num_ready_handles, ready_handles, ready_results,
                signals_states);

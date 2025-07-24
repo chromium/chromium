@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -55,7 +56,7 @@ struct ArrayDataTraits {
   static Ref ToRef(StorageType* storage, size_t offset, uint32_t num_elements) {
     return storage[offset];
   }
-  static ConstRef ToConstRef(const StorageType* storage,
+  static ConstRef ToConstRef(base::span<const StorageType> storage,
                              size_t offset,
                              uint32_t num_elements) {
     return storage[offset];
@@ -103,9 +104,14 @@ struct ArrayDataTraits<bool> {
     return BitRef(&storage[offset / 8],
                   static_cast<uint8_t>(1 << (offset % 8)));
   }
-  static bool ToConstRef(const StorageType* storage,
-                         size_t offset,
-                         uint32_t num_elements) {
+  static bool ToConstRef(
+      base::span<const StorageType> storage,
+      size_t offset,
+      uint32_t spanification_suspected_redundant_num_elements) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(spanification_suspected_redundant_num_elements == storage.size(),
+          base::NotFatalUntil::M143);
     return (storage[offset / 8] & (1 << (offset % 8))) != 0;
   }
 };
