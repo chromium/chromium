@@ -222,9 +222,8 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
 }
 
 bool ImageBitmapRenderingContext::IsAccelerated() const {
-  auto* resource_provider = resource_provider_for_offscreen_canvas_.get();
-  return resource_provider ? resource_provider->IsAccelerated()
-                           : Host()->ShouldTryToUseGpuRaster();
+  // This method is not supported for ImageBitmap and should not be called.
+  NOTREACHED();
 }
 
 bool ImageBitmapRenderingContext::PushFrame() {
