@@ -128,10 +128,6 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
   action_button_->SetEnabledTextColors(ui::kColorToastButton);
   action_button_->SetBgColorIdOverride(ui::kColorToastBackgroundProminent);
   action_button_->SetStrokeColorIdOverride(ui::kColorToastButton);
-  action_button_->SetPreferredSize(
-      gfx::Size(action_button_->GetPreferredSize().width(),
-                layout_provider->GetDistanceMetric(
-                    DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));
   action_button_->SetStyle(ui::ButtonStyle::kProminent);
   action_button_->SetProperty(views::kElementIdentifierKey,
                               kPasswordChangeActionButton);
@@ -182,18 +178,7 @@ void PasswordChangeToast::UpdateLayout(ToastOptions configuration) {
 
   if (configuration.action_button_text.has_value()) {
     action_button_->SetText(configuration.action_button_text.value());
-    auto tmp_button = std::make_unique<views::MdTextButton>(
-        views::Button::PressedCallback(),
-        configuration.action_button_text.value_or(std::u16string()));
-    // Even though the text might change
-    // action_button_->GetPreferredSize().width() is not updated properly, this
-    // is why a temporary button is created to set preferred size manually.
-    action_button_->SetPreferredSize(
-        gfx::Size(tmp_button->GetPreferredSize().width(),
-                  layout_provider->GetDistanceMetric(
-                      DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));
-  }
-  if (configuration.action_button_text.has_value()) {
+
     // Only set kAlert a11y role when text is not empty, otherwise it triggers
     // a DCHECK in views::RunAccessibilityPaintChecks().
     action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
