@@ -352,7 +352,7 @@
         android:clearTaskOnLaunch="true"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:excludeFromRecents="true"
-        android:exported="false"
+        android:exported="true"
         android:hardwareAccelerated="false"
         android:label="Search"
         android:launchMode="singleTask"
