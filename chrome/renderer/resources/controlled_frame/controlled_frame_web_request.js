@@ -10,19 +10,8 @@
 
 const $Headers = require('safeMethods').SafeMethods.$Headers;
 
-let WebUrlPatternNatives = requireNative('WebUrlPatternNatives');
-
-function convertURLPatternsToExtension(urlPatternsStrsOrObjs) {
-  let matchPatterns = [];
-  for (const urlPatternStrOrObj of urlPatternsStrsOrObjs) {
-    matchPatterns = $Array.concat(
-        matchPatterns,
-        WebUrlPatternNatives.URLPatternToMatchPatterns(
-          new URLPattern(urlPatternStrOrObj))
-    );
-  };
-  return matchPatterns;
-}
+const convertURLPatternsToMatchPatterns =
+  require('controlledFrameURLPatternsHelper').convertURLPatternsToMatchPatterns;
 
 function convertExtensionHeadersToWeb(httpHeaders) {
   const headers = new $Headers.self();
@@ -221,7 +210,7 @@ class WebRequestInterceptor extends EventTarget {
 
     this.#filter = {
       __proto__: null,
-      urls: convertURLPatternsToExtension(options.urlPatterns),
+      urls: convertURLPatternsToMatchPatterns(options.urlPatterns),
     };
     if (options.resourceTypes !== undefined) {
       this.#filter.types =

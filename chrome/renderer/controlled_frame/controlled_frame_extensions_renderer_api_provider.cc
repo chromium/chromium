@@ -42,6 +42,8 @@ void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
                              IDR_CONTROLLED_FRAME_WEB_REQUEST_JS);
   source_map->RegisterSource("controlledFrameContextMenus",
                              IDR_CONTROLLED_FRAME_CONTEXT_MENUS_JS);
+  source_map->RegisterSource("controlledFrameURLPatternsHelper",
+                             IDR_CONTROLLED_FRAME_URL_PATTERNS_HELPER_JS);
 }
 
 void ControlledFrameExtensionsRendererAPIProvider::
