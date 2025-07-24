@@ -2303,6 +2303,19 @@ CSSValue* ComputedStyleUtils::ValueForTextDecorationSkipInk(
   return CSSIdentifierValue::Create(CSSValueID::kAuto);
 }
 
+CSSValue* ComputedStyleUtils::ValueForTextOverflow(
+    const TextOverflowData& text_overflow,
+    const ComputedStyle& style) {
+  switch (text_overflow.GetType()) {
+    case TextOverflowData::Type::kClip:
+      return CSSIdentifierValue::Create(CSSValueID::kClip);
+    case TextOverflowData::Type::kEllipsis:
+      return CSSIdentifierValue::Create(CSSValueID::kEllipsis);
+    case TextOverflowData::Type::kString:
+      return MakeGarbageCollected<CSSStringValue>(text_overflow.StringValue());
+  }
+}
+
 CSSValue* ComputedStyleUtils::TouchActionFlagsToCSSValue(
     TouchAction touch_action) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

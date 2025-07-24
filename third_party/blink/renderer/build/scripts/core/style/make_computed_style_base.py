@@ -60,6 +60,7 @@ ALIGNMENT_ORDER = [
     'IntrinsicLength',
     'TextBoxEdge',
     'TextDecorationThickness',
+    'TextOverflowData',
     'StyleAnchorScope',
     'StyleAspectRatio',
     'StyleIntrinsicLength',

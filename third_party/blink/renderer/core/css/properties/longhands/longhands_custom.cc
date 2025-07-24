@@ -9817,15 +9817,19 @@ void TextOrientation::ApplyValue(StyleResolverState& state,
       To<CSSIdentifierValue>(value).ConvertTo<ETextOrientation>());
 }
 
+const CSSValue* TextOverflow::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext&,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeTextOverflow(stream);
+}
+
 const CSSValue* TextOverflow::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.TextOverflow() != ETextOverflow::kClip) {
-    return CSSIdentifierValue::Create(CSSValueID::kEllipsis);
-  }
-  return CSSIdentifierValue::Create(CSSValueID::kClip);
+  return ComputedStyleUtils::ValueForTextOverflow(style.TextOverflow(), style);
 }
 
 const CSSValue* TextRendering::CSSValueFromComputedStyleInternal(

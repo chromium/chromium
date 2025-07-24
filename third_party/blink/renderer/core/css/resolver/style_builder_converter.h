@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/style/style_reflection.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_name.h"
+#include "third_party/blink/renderer/core/style/text_overflow_data.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
@@ -435,6 +436,8 @@ class StyleBuilderConverter {
       StyleResolverState&,
       const CSSValue&);
   static FitText ConvertFitText(StyleResolverState&, const CSSValue&);
+  static TextOverflowData ConvertTextOverflow(StyleResolverState&,
+                                              const CSSValue&);
 
   static ScopedCSSNameList* ConvertTimelineTriggerName(StyleResolverState&,
                                                        const CSSValue&);

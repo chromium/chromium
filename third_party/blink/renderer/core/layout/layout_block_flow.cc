@@ -679,7 +679,7 @@ bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
     object_to_check = parent;
   }
   return object_to_check->HasNonVisibleOverflow() &&
-         object_to_check->StyleRef().TextOverflow() != ETextOverflow::kClip;
+         !object_to_check->StyleRef().TextOverflow().IsClip();
 }
 
 Node* LayoutBlockFlow::NodeForHitTest() const {

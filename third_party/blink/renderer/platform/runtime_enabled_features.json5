@@ -4878,6 +4878,11 @@
       status: "stable",
     },
     {
+      // https://crbug.com/41492459
+      name: "TextOverflowString",
+      status: "test",
+    },
+    {
       // crbug.com/431660829
       name: "TextSpacingTrimFallback",
       status: "stable",

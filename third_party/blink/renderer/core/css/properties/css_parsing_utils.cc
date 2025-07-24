@@ -8930,6 +8930,17 @@ CSSValue* ConsumeFitText(CSSParserTokenStream& stream,
   return list;
 }
 
+CSSValue* ConsumeTextOverflow(CSSParserTokenStream& stream) {
+  if (CSSValue* value =
+          ConsumeIdent<CSSValueID::kClip, CSSValueID::kEllipsis>(stream)) {
+    return value;
+  }
+  if (RuntimeEnabledFeatures::TextOverflowStringEnabled()) {
+    return ConsumeString(stream);
+  }
+  return nullptr;
+}
+
 namespace {
 
 struct PositionAreaKeyword {

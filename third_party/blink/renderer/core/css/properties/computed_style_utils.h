@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/superellipse.h"
+#include "third_party/blink/renderer/core/style/text_overflow_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -170,6 +171,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
   static CSSValue* ValueForTextDecorationStyle(ETextDecorationStyle);
   static CSSValue* ValueForTextDecorationSkipInk(ETextDecorationSkipInk);
+  static CSSValue* ValueForTextOverflow(const TextOverflowData&,
+                                        const ComputedStyle&);
   static CSSValue* TouchActionFlagsToCSSValue(TouchAction);
   static CSSValue* ValueForWillChange(const Vector<CSSPropertyID>&,
                                       bool will_change_contents,

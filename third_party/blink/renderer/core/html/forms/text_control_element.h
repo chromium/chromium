@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
+#include "third_party/blink/renderer/core/style/text_overflow_data.h"
 
 namespace blink {
 
@@ -188,7 +189,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   void Trace(Visitor*) const override;
 
-  ETextOverflow ValueForTextOverflow() const;
+  TextOverflowData ValueForTextOverflow() const;
 
  protected:
   TextControlElement(const QualifiedName&, Document&);

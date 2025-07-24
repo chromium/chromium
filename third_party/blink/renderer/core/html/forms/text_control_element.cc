@@ -1336,9 +1336,10 @@ void TextControlElement::CloneNonAttributePropertiesFrom(
   HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, data);
 }
 
-ETextOverflow TextControlElement::ValueForTextOverflow() const {
-  if (GetDocument().FocusedElement() == this)
-    return ETextOverflow::kClip;
+TextOverflowData TextControlElement::ValueForTextOverflow() const {
+  if (GetDocument().FocusedElement() == this) {
+    return TextOverflowData(TextOverflowData::Type::kClip);
+  }
   return ComputedStyleRef().TextOverflow();
 }
 

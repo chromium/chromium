@@ -1800,7 +1800,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kTextDecorationSkipInk,
     CSSPropertyID::kTextOrientation,
     CSSPropertyID::kWebkitTextOrientation,
-    CSSPropertyID::kTextOverflow,
     CSSPropertyID::kTextRendering,
     CSSPropertyID::kTextSpacingTrim,
     CSSPropertyID::kTextTransform,
