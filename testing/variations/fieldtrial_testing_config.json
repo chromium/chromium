@@ -15232,25 +15232,6 @@
             ]
         }
     ],
-    "NavBarColorAnimationEnabled": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "disable_bottom_chin_color_animation": "false",
-                        "disable_edge_to_edge_layout_color_animation": "false"
-                    },
-                    "enable_features": [
-                        "NavBarColorAnimation"
-                    ]
-                }
-            ]
-        }
-    ],
     "NavigationThrottleRegistryAttributeCache": [
         {
             "platforms": [

@@ -1101,7 +1101,7 @@ BASE_FEATURE(kNativePageTransitionHardwareCapture,
 
 BASE_FEATURE(kNavBarColorAnimation,
              "NavBarColorAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageAndroidTriggerForPrerender2,
              "NewTabPageAndroidTriggerForPrerender2",

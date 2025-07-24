@@ -63,7 +63,6 @@ import java.util.List;
         manifest = Config.NONE,
         shadows = {TabbedNavigationBarColorControllerUnitTest.ShadowSemanticColorUtils.class},
         sdk = 29)
-// TODO(crbug.com/425761643): Re-enable after nav bar color animations finch experiment.
 @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
 public class TabbedNavigationBarColorControllerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
