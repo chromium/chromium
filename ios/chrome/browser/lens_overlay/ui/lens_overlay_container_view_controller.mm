@@ -82,12 +82,14 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  [self addChildViewController:_contentViewController];
-  _contentViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [_borderView addSubview:_contentViewController.view];
-  [_contentViewController didMoveToParentViewController:self];
+  if (_contentViewController) {
+    [self addChildViewController:_contentViewController];
+    _contentViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [_borderView addSubview:_contentViewController.view];
+    [_contentViewController didMoveToParentViewController:self];
 
-  AddSameConstraints(_contentViewController.view, _borderView);
+    AddSameConstraints(_contentViewController.view, _borderView);
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
