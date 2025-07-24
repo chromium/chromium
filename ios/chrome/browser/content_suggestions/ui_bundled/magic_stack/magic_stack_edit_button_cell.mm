@@ -6,7 +6,11 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @implementation MagicStackEditButtonCell {
@@ -25,9 +29,6 @@
     UIImage* image = DefaultSymbolTemplateWithPointSize(
         kSliderHorizontalSymbol, kMagicStackEditButtonIconPointSize);
     [editButton setImage:image forState:UIControlStateNormal];
-    editButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
-    editButton.backgroundColor =
-        [UIColor colorNamed:@"magic_stack_edit_button_background_color"];
     editButton.layer.cornerRadius = kMagicStackEditButtonWidth / 2;
     editButton.accessibilityIdentifier =
         kMagicStackEditButtonAccessibilityIdentifier;
@@ -37,6 +38,18 @@
                     action:@selector(didTapMagicStackEditButton)
           forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_editButton];
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      NSArray<UITrait>* colorTraits =
+          TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
+      [self registerForTraitChanges:colorTraits
+                         withAction:@selector(applyBackgroundColors)];
+      [self applyBackgroundColors];
+    } else {
+      editButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+      editButton.backgroundColor =
+          [UIColor colorNamed:@"magic_stack_edit_button_background_color"];
+    }
 
     [NSLayoutConstraint activateConstraints:@[
       [_editButton.leadingAnchor
@@ -65,6 +78,22 @@
 
 - (void)didTapMagicStackEditButton {
   [self.audience didTapMagicStackEditButton];
+}
+
+// Sets the background using the current color palette, or defaults if none is
+// set.
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+
+  if (colorPalette) {
+    _editButton.tintColor = colorPalette.tintColor;
+    _editButton.backgroundColor = colorPalette.tertiaryColor;
+  } else {
+    _editButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+    _editButton.backgroundColor =
+        [UIColor colorNamed:@"magic_stack_edit_button_background_color"];
+  }
 }
 
 @end
