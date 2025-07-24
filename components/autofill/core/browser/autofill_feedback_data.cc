@@ -37,6 +37,8 @@ std::string FillDataTypeToStr(FillDataType type) {
       return "AutofillAi";
     case FillDataType::kSingleFieldFillerLoyaltyCard:
       return "SingleFieldFillerLoyaltyCard";
+    case FillDataType::kOneTimePasswordValue:
+      return "OneTimePasswordValue";
   }
 }
 

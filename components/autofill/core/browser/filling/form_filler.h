@@ -41,10 +41,13 @@ enum class RefillTriggerReason {
 
 using VerifiedProfile = std::map<FieldType, std::u16string>;
 
+using OtpFillData = std::map<FieldGlobalId, std::u16string>;
+
 using FillingPayload = std::variant<const AutofillProfile*,
                                     const CreditCard*,
                                     const EntityInstance*,
-                                    const VerifiedProfile*>;
+                                    const VerifiedProfile*,
+                                    const OtpFillData*>;
 
 // Helper class responsible for [re]filling forms and fields.
 //

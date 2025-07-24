@@ -37,7 +37,8 @@ void LogNumberOfFieldsModifiedByAutofill(
           [&](const AutofillProfile*) { return "AutofillProfile"; },
           [&](const CreditCard* credit_card) { return "CreditCard"; },
           [&](const EntityInstance* entity) { return "EntityInstance"; },
-          [&](const VerifiedProfile*) { return "VerifiedProfile"; }},
+          [&](const VerifiedProfile*) { return "VerifiedProfile"; },
+          [&](const OtpFillData*) { return "OtpFillData"; }},
       filling_payload);
   base::UmaHistogramCounts1000(prefix, modified_fields_count);
   base::UmaHistogramCounts1000(base::StrCat({prefix, ".", suffix}),

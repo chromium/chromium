@@ -133,6 +133,13 @@ auto PopupOpenArgsAre(
                Field(&PopupOpenArgs::trigger_source, trigger_source));
 }
 
+MATCHER_P(OtpPayloadPointeeEq, expected_otp_payload, "") {
+  if (const auto* payload_ptr = std::get_if<const OtpFillData*>(&arg)) {
+    return *payload_ptr && **payload_ptr == expected_otp_payload;
+  }
+  return false;
+}
+
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   using TestAutofillDriver::TestAutofillDriver;
@@ -1419,6 +1426,33 @@ TEST_F(AutofillExternalDelegateTest, AcceptManageAutofillAi) {
   EXPECT_CALL(client(),
               ShowAutofillSettings(SuggestionType::kManageAutofillAi));
   external_delegate().DidAcceptSuggestion(manage_suggestion, {});
+}
+
+TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
+  IssueOnQuery();
+
+  std::u16string otp_value = u"123456";
+  Suggestion::OneTimePasswordPayload otp_payload(
+      {{queried_field().global_id(), otp_value}});
+
+  // Expect that suggestion trigger source translates to source `kPopup` or
+  // `kKeyboardAccessory`, depending on the platform.
+  auto expected_source =
+#if BUILDFLAG(IS_ANDROID)
+      AutofillTriggerSource::kKeyboardAccessory;
+#else
+      AutofillTriggerSource::kPopup;
+#endif
+  EXPECT_CALL(manager(),
+              FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                HasQueriedFormId(), IsQueriedFieldId(),
+                                OtpPayloadPointeeEq(otp_payload.filling_data),
+                                expected_source));
+  external_delegate().DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(SuggestionType::kOneTimePasswordEntry,
+                                     /*main_text_value=*/otp_value,
+                                     otp_payload),
+      {});
 }
 
 class AutofillExternalDelegatePlusAddressTest

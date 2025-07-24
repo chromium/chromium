@@ -1756,6 +1756,12 @@ void BrowserAutofillManager::FillOrPreviewForm(
                        action_persistence, form, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
                        trigger_source);
+                 },
+                 [&](const OtpFillData*) {
+                   form_filler_->FillOrPreviewForm(
+                       action_persistence, form, filling_payload,
+                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
+                       trigger_source);
                  }},
              filling_payload);
 }
@@ -2621,6 +2627,10 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           [&](const VerifiedProfile*) {
             // TODO(crbug.com/380367784): consider moving the
             // notification to the delegate here.
+          },
+          [&](const OtpFillData*) {
+            // TODO(crbug.com/415272525): Notify the OTP manager to track
+            // OTP filling acceptance.
           }},
       filling_payload);
 }

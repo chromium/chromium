@@ -70,6 +70,9 @@ FillDataType GetFillDataTypeFromFillingPayload(
           [](const CreditCard*) { return FillDataType::kCreditCard; },
           [](const EntityInstance*) { return FillDataType::kAutofillAi; },
           [](const VerifiedProfile*) { return FillDataType::kAutofillProfile; },
+          [](const OtpFillData*) {
+            return FillDataType::kOneTimePasswordValue;
+          },
       },
       filling_payload);
 }
@@ -300,7 +303,8 @@ struct FormFiller::AugmentedFillingPayload {
   using Variant = std::variant<const AutofillProfile*,
                                const CreditCard*,
                                EntityPayload,
-                               const VerifiedProfile*>;
+                               const VerifiedProfile*,
+                               const OtpFillData*>;
 
   AugmentedFillingPayload(const FillingPayload& filling_payload,
                           FormStructure& form_structure,
@@ -321,6 +325,9 @@ struct FormFiller::AugmentedFillingPayload {
                 },
                 [](const VerifiedProfile* verified_profile) -> Variant {
                   return verified_profile;
+                },
+                [](const OtpFillData* otp_filling_payload) -> Variant {
+                  return otp_filling_payload;
                 }},
             filling_payload)) {}
 
@@ -332,6 +339,9 @@ struct FormFiller::AugmentedFillingPayload {
             [](const EntityPayload&) { return FillingProduct::kAutofillAi; },
             [](const VerifiedProfile*) {
               return FillingProduct::kIdentityCredential;
+            },
+            [](const OtpFillData*) {
+              return FillingProduct::kOneTimePassword;
             }},
         variant);
   }
@@ -384,6 +394,9 @@ struct FormFiller::RefillContext {
             },
             // Verified Profiles doesn't support refills.
             [](const VerifiedProfile*)
+                -> std::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
+            // OTP filling doesn't support refills.
+            [](const OtpFillData*)
                 -> std::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
             [](const auto* x) {
               return std::variant<CreditCard, AutofillProfile>(*x);
@@ -1144,6 +1157,13 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
               -> std::pair<std::u16string, std::optional<FieldType>> {
             auto it = profile->find(autofill_field.Type().GetStorableType());
             std::u16string value = it == profile->end() ? u"" : it->second;
+            return {value, autofill_field.Type().GetStorableType()};
+          },
+          [&](const OtpFillData* otp_fill_data)
+              -> std::pair<std::u16string, std::optional<FieldType>> {
+            auto it = otp_fill_data->find(field_data.global_id());
+            const std::u16string& value =
+                it == otp_fill_data->end() ? u"" : it->second;
             return {value, autofill_field.Type().GetStorableType()};
           }},
       filling_payload.variant);

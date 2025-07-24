@@ -902,7 +902,13 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kOneTimePasswordEntry: {
-      // TODO(crbug.com/415273276): Implement.
+      auto otp_payload =
+          suggestion.GetPayload<Suggestion::OneTimePasswordPayload>()
+              .filling_data;
+      manager_->FillOrPreviewForm(
+          mojom::ActionPersistence::kFill, query_form_,
+          query_field_.global_id(), &otp_payload,
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     }
     case SuggestionType::kTitle:

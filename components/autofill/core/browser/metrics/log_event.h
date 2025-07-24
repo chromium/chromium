@@ -44,6 +44,7 @@ enum class FillDataType : uint8_t {
   kSingleFieldFillerPromoCode = 5,
   kAutofillAi = 6,
   kSingleFieldFillerLoyaltyCard = 7,
+  kOneTimePasswordValue = 8,
 };
 
 // AreCollapsible(..., ...) are a set of functions that checks whether two
