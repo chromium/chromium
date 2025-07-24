@@ -4,6 +4,7 @@ Version: git
 License: MIT, BSD-3-Clause, OpenSSL, ISC, SSLeay
 License File: src/LICENSE
 License Android Compatible: yes
+CPEPrefix: cpe:/a:google:boringssl
 Security Critical: yes
 Shipped: yes
 
