@@ -3897,7 +3897,7 @@ void CrostiniManager::OnRemoveTermina(bool success) {
     // container prefs seem to be wiped as some part of lxd container removal
     // callbacks in the regular flow, so we must remove them manually here for
     // baguette.
-    profile_->GetPrefs()->ClearPref(guest_os::prefs::kGuestOsContainers);
+    guest_os::RemoveVmFromPrefs(profile_, kBaguetteDefaultVmType);
   }
   profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
   profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
