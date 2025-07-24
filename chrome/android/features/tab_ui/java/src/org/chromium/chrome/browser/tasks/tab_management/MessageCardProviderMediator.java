@@ -79,10 +79,12 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         }
 
         for (Message message : mShownMessageItems.values()) {
-            message.model.set(
+            PropertyModel model = message.model;
+            if (!model.containsKey(MessageCardViewProperties.IS_INCOGNITO)) continue;
+            model.set(
                     MessageCardViewProperties.IS_INCOGNITO,
                     mProfileSupplier.get().isOffTheRecord());
-            message.model.set(TabListModel.CardProperties.CARD_ALPHA, 1F);
+            model.set(TabListModel.CardProperties.CARD_ALPHA, 1F);
         }
 
         return new ArrayList<>(mShownMessageItems.values());
@@ -101,8 +103,12 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         }
 
         Message message = mShownMessageItems.get(messageType);
-        message.model.set(
-                MessageCardViewProperties.IS_INCOGNITO, mProfileSupplier.get().isOffTheRecord());
+        PropertyModel model = message.model;
+        if (model.containsKey(MessageCardViewProperties.IS_INCOGNITO)) {
+            model.set(
+                    MessageCardViewProperties.IS_INCOGNITO,
+                    mProfileSupplier.get().isOffTheRecord());
+        }
         return message;
     }
 
@@ -138,9 +144,8 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                         this::invalidateShownMessage,
                         (IncognitoReauthPromoMessageService.IncognitoReauthMessageData) data);
             case ARCHIVED_TABS_MESSAGE:
-                assert data instanceof ArchivedTabsMessageService.ArchivedTabsMessageData;
-                return CustomMessageCardViewModel.create(
-                        ((ArchivedTabsMessageService.ArchivedTabsMessageData) data).getProvider());
+                assert data instanceof ArchivedTabsMessageService.ArchivedTabsMessageProvider;
+                return ((ArchivedTabsMessageService.ArchivedTabsMessageProvider) data).model;
             case TAB_GROUP_SUGGESTION_MESSAGE:
                 assert data
                         instanceof TabGroupSuggestionMessageService.TabGroupSuggestionMessageData;

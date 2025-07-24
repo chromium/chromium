@@ -1255,7 +1255,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     private void addArchivedMessageCard() {
         PropertyModel model =
-                new PropertyModel.Builder(CustomMessageCardViewProperties.ALL_KEYS)
+                new PropertyModel.Builder(ArchivedTabsCardViewProperties.ALL_KEYS)
                         .with(MESSAGE_TYPE, MessageType.ARCHIVED_TABS_MESSAGE)
                         .with(CARD_TYPE, ModelType.MESSAGE)
                         .build();

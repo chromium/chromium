@@ -322,8 +322,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
         tabListCoordinator.registerItemType(
                 UiType.ARCHIVED_TABS_MESSAGE,
-                new LayoutViewBuilder<>(R.layout.custom_message_card_item),
-                CustomMessageCardViewBinder::bind);
+                new LayoutViewBuilder<>(R.layout.archived_tabs_message_card_view),
+                ArchivedTabsCardViewBinder::bind);
 
         tabListCoordinator.registerItemType(
                 UiType.TAB_GROUP_SUGGESTION_MESSAGE,
@@ -543,8 +543,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             if (!shouldAppendMessage(messages.get(i))) continue;
             @MessageType int messageType = messages.get(i).type;
             switch (messageType) {
-                case MessageType.PRICE_MESSAGE -> tabListCoordinator.addSpecialListItem(
-                        index, UiType.PRICE_MESSAGE, messages.get(i).model);
                 case MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE -> {
                     if (!mayAddIncognitoReauthPromoCard(messages.get(i).model)) {
                         // Skip incrementing index if the message was not added.
@@ -653,15 +651,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 case MessageType.PRICE_MESSAGE, MessageType.TAB_GROUP_SUGGESTION_MESSAGE -> {}
                 case MessageType.ARCHIVED_TABS_MESSAGE -> tabListCoordinator.addSpecialListItem(
                         0, UiType.ARCHIVED_TABS_MESSAGE, model);
-                case MessageType.COLLABORATION_ACTIVITY -> tabListCoordinator.addSpecialListItem(
-                        tabListCoordinator.getTabListModelSize(),
-                        UiType.COLLABORATION_ACTIVITY_MESSAGE,
-                        model);
-                case MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE -> tabListCoordinator
-                        .addSpecialListItem(
-                                tabListCoordinator.getTabListModelSize(),
-                                UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
-                                model);
                 default -> tabListCoordinator.addSpecialListItem(
                         tabListCoordinator.getTabListModelSize(),
                         messageTypeToUiType(msgType),
@@ -700,17 +689,11 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator == null) return;
 
-        switch (messageType) {
-            case MessageType.PRICE_MESSAGE,
-                    MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE -> tabListCoordinator
-                    .removeSpecialListItem(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE, messageType);
-            case MessageType.ARCHIVED_TABS_MESSAGE -> tabListCoordinator.removeSpecialListItem(
-                    UiType.ARCHIVED_TABS_MESSAGE, messageType);
-            default -> {
-                tabListCoordinator.removeSpecialListItem(
-                        messageTypeToUiType(messageType), messageType);
-                appendNextMessage(messageType);
-            }
+        tabListCoordinator.removeSpecialListItem(messageTypeToUiType(messageType), messageType);
+        if (messageType != MessageType.PRICE_MESSAGE
+                && messageType != MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE
+                && messageType != MessageType.ARCHIVED_TABS_MESSAGE) {
+            appendNextMessage(messageType);
         }
         for (MessageUpdateObserver observer : mObservers) {
             observer.onRemovedMessage();

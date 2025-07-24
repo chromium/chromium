@@ -86,15 +86,6 @@ public class MessageService {
     public interface MessageData {}
 
     /**
-     * Extends {@link MessageData} for CUSTOM_MESSAGE types which require a {@link
-     * CustomMessageCardProvider}.
-     */
-    public interface CustomMessageData extends MessageData {
-        /** Returns a provider of information used for custom messages. */
-        CustomMessageCardProvider getProvider();
-    }
-
-    /**
      * An interface to be notified about changes to a Message. TODO(meiliang): Need to define this
      * interface in more detail.
      */

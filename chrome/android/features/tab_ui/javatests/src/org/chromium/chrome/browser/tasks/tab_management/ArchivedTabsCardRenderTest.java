@@ -4,16 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
-import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 
 import androidx.test.filters.MediumTest;
 
@@ -31,6 +30,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsMessageService.ArchivedTabsMessageData;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -47,6 +48,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE)
 public class ArchivedTabsCardRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =
@@ -56,7 +58,7 @@ public class ArchivedTabsCardRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(5)
+                    .setRevision(6)
                     .build();
 
     @Rule
@@ -66,9 +68,8 @@ public class ArchivedTabsCardRenderTest {
     private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
     private FrameLayout mContentView;
-    private View mArchivedTabsCardView;
+    private ArchivedTabsCardView mArchivedTabsCardView;
     private PropertyModel mModel;
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     public ArchivedTabsCardRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
@@ -85,28 +86,24 @@ public class ArchivedTabsCardRenderTest {
                     mContentView.setBackgroundColor(Color.WHITE);
 
                     mArchivedTabsCardView =
-                            LayoutInflater.from(mActivityTestRule.getActivity())
-                                    .inflate(
-                                            R.layout.archived_tabs_message_card_view, mContentView);
+                            (ArchivedTabsCardView)
+                                    LayoutInflater.from(mActivityTestRule.getActivity())
+                                            .inflate(
+                                                    R.layout.archived_tabs_message_card_view,
+                                                    mContentView,
+                                                    /* attachToRoot= */ false);
+                    mContentView.addView(mArchivedTabsCardView);
 
                     mModel =
-                            new PropertyModel.Builder(ALL_KEYS)
-                                    .with(NUMBER_OF_ARCHIVED_TABS, 12)
-                                    .with(ARCHIVE_TIME_DELTA_DAYS, 14)
-                                    .with(
-                                            CLICK_HANDLER,
-                                            () -> {
-                                                mCallbackHelper.notifyCalled();
-                                            })
-                                    .build();
+                            ArchivedTabsCardViewBinder.createPropertyModel(
+                                    new ArchivedTabsMessageData(mCallbackHelper::notifyCalled));
+                    mModel.set(NUMBER_OF_ARCHIVED_TABS, 12);
+                    mModel.set(ARCHIVE_TIME_DELTA_DAYS, 14);
 
-                    mPropertyModelChangeProcessor =
-                            PropertyModelChangeProcessor.create(
-                                    mModel,
-                                    mArchivedTabsCardView,
-                                    ArchivedTabsCardViewBinder::bind);
-                    FrameLayout.LayoutParams params =
-                            new FrameLayout.LayoutParams(
+                    PropertyModelChangeProcessor.create(
+                            mModel, mArchivedTabsCardView, ArchivedTabsCardViewBinder::bind);
+                    LayoutParams params =
+                            new LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                     mActivityTestRule.getActivity().setContentView(mContentView, params);
@@ -122,14 +119,14 @@ public class ArchivedTabsCardRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testPlural() throws IOException, InterruptedException {
+    public void testPlural() throws IOException {
         mRenderTestRule.render(mArchivedTabsCardView, "plural");
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testPlural_VeryLargeNumbers() throws IOException, InterruptedException {
+    public void testPlural_VeryLargeNumbers() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(NUMBER_OF_ARCHIVED_TABS, 99999999);
@@ -141,7 +138,7 @@ public class ArchivedTabsCardRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testSingular() throws IOException, InterruptedException {
+    public void testSingular() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(NUMBER_OF_ARCHIVED_TABS, 1);
