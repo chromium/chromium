@@ -170,9 +170,10 @@ void BwgTabHelper::PageLoaded(
     web::PageLoadCompletionStatus load_completion_status) {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
   bool bwg_promo_shown =
       profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
-  if (!bwg_promo_shown) {
+  if (!floaty_shown && !bwg_promo_shown) {
     [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
   }
 }
