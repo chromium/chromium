@@ -5,12 +5,12 @@
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 
 #include <optional>
-#include <variant>
 
 #include "base/callback_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/state_transitions.h"
 #include "base/strings/escape.h"
+#include "base/types/expected.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -59,42 +59,42 @@ std::string AttachmentResultToString(blink::mojom::AttachmentResult result) {
   return string;
 }
 
-std::variant<content::RenderFrameHost*, mojom::ScrollToErrorReason>
+base::expected<content::RenderFrameHost*, mojom::ScrollToErrorReason>
 GetVerifiedAnnotationTargetFrameForPDF(const mojom::ScrollToParams& params,
                                        content::WebContents* focused_contents) {
 #if BUILDFLAG(ENABLE_PDF)
   if (!features::kGlicScrollToPDF.Get()) {
-    return mojom::ScrollToErrorReason::kNotSupported;
+    return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
   }
 
   if (params.selector->is_node_selector()) {
-    return mojom::ScrollToErrorReason::kNotSupported;
+    return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
   }
 
   // Verifies that the `url` parameter is set and that it matches the
   // currently focused tab's url.
   const bool fail_without_url = features::kGlicScrollToEnforceURLForPDF.Get();
   if (fail_without_url && !params.url) {
-    return mojom::ScrollToErrorReason::kNotSupported;
+    return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
   }
   if (params.url && params.url != focused_contents->GetLastCommittedURL()) {
-    return mojom::ScrollToErrorReason::kNoMatchingDocument;
+    return base::unexpected(mojom::ScrollToErrorReason::kNoMatchingDocument);
   }
 
   auto* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(focused_contents);
   if (!pdf_helper || !pdf_helper->IsDocumentLoadComplete()) {
-    return mojom::ScrollToErrorReason::kNoMatchingDocument;
+    return base::unexpected(mojom::ScrollToErrorReason::kNoMatchingDocument);
   }
 
   // TODO(crbug.com/422728758): Implement url verification for PDFs.
   return &pdf_helper->render_frame_host();
 #else
-  return mojom::ScrollToErrorReason::kNotSupported;
+  return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
 #endif  // BUILDFLAG(ENABLE_PDF)
 }
 
-std::variant<content::RenderFrameHost*, mojom::ScrollToErrorReason>
+base::expected<content::RenderFrameHost*, mojom::ScrollToErrorReason>
 GetVerifiedAnnotationTargetFrame(content::WebContents* focused_contents,
                                  const mojom::ScrollToParams& params) {
   content::Page& focused_primary_page = focused_contents->GetPrimaryPage();
@@ -113,7 +113,7 @@ GetVerifiedAnnotationTargetFrame(content::WebContents* focused_contents,
   const bool fail_without_document_id =
       features::kGlicScrollToEnforceDocumentId.Get();
   if (fail_without_document_id && !params.document_id) {
-    return mojom::ScrollToErrorReason::kNotSupported;
+    return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
   }
 
   // Verifies that the document_id parameter (if set) refers to the primary
@@ -126,7 +126,7 @@ GetVerifiedAnnotationTargetFrame(content::WebContents* focused_contents,
     if (!document_identifier_user_data ||
         document_identifier_user_data->serialized_token() !=
             params.document_id) {
-      return mojom::ScrollToErrorReason::kNoMatchingDocument;
+      return base::unexpected(mojom::ScrollToErrorReason::kNoMatchingDocument);
     }
   }
 
@@ -245,14 +245,13 @@ void GlicAnnotationManager::ScrollTo(
   content::WebContents* focused_contents =
       focused_tab_data.focus()->GetContents();
   CHECK(focused_contents);
-  std::variant<content::RenderFrameHost*, mojom::ScrollToErrorReason> result =
+  base::expected<content::RenderFrameHost*, mojom::ScrollToErrorReason> result =
       GetVerifiedAnnotationTargetFrame(focused_contents, *params);
-  if (auto* error_reason = std::get_if<mojom::ScrollToErrorReason>(&result)) {
-    std::move(wrapped_callback).Run(*error_reason);
+  if (!result.has_value()) {
+    std::move(wrapped_callback).Run(result.error());
     return;
   }
-  content::RenderFrameHost* focused_rfh =
-      std::get<content::RenderFrameHost*>(result);
+  content::RenderFrameHost* focused_rfh = *result;
 
   if (annotation_agent_container_.has_value() &&
       annotation_agent_container_->document.AsRenderFrameHostIfValid() !=
