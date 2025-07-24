@@ -150,18 +150,23 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
                        press_loop.QuitClosure()));
                    press_loop.Run();
 
+// On Mac, no initial mouse movement is needed in order to test drag events. The
+// test element can be moved directly to the final target location.
+#if !BUILDFLAG(IS_MAC)
                    gfx::Rect bounds = view->GetBoundsInScreen();
                    gfx::Point start_location(bounds.width() / 2,
                                              bounds.height() / 2);
-                   gfx::Point target_location =
+                   gfx::Point initial_target_location =
                        start_location + gfx::Vector2d(10, 10);
 
                    // Send an initial mouse movement to start the drag.
-                   EXPECT_TRUE(ui_controls::SendMouseMove(target_location.x(),
-                                                          target_location.y()));
+                   EXPECT_TRUE(
+                       ui_controls::SendMouseMove(initial_target_location.x(),
+                                                  initial_target_location.y()));
+#endif  //! BUILDFLAG(IS_MAC)
 
                    // Send another mouse movement to the target desitnation.
-                   target_location = std::move(pos).Run(view);
+                   gfx::Point target_location = std::move(pos).Run(view);
                    EXPECT_TRUE(ui_controls::SendMouseMove(target_location.x(),
                                                           target_location.y()));
 
