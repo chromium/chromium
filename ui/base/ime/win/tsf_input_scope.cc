@@ -112,7 +112,7 @@ InputScope ConvertTextInputTypeToInputScope(TextInputType text_input_type) {
   // Following mapping is based in IE10 on Windows 8.
   switch (text_input_type) {
     case TEXT_INPUT_TYPE_PASSWORD:
-      return IS_PASSWORD;
+      return IS_PRIVATE;
     case TEXT_INPUT_TYPE_SEARCH:
       return IS_SEARCH;
     case TEXT_INPUT_TYPE_EMAIL:
