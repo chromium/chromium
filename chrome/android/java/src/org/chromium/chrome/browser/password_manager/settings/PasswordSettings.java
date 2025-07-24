@@ -32,7 +32,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -136,7 +135,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /** For controlling the UX flow of exporting passwords. */
-    private final ExportFlow mExportFlow = new ExportFlow(PasswordAccessLossWarningType.NONE);
+    private final ExportFlow mExportFlow = new ExportFlow();
 
     public ExportFlow getExportFlowForTesting() {
         return mExportFlow;

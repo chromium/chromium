@@ -52,14 +52,6 @@ jboolean JNI_PasswordManagerUtilBridge_AreMinUpmRequirementsMet(JNIEnv* env) {
   return password_manager_android_util::AreMinUpmRequirementsMet();
 }
 
-jint JNI_PasswordManagerUtilBridge_GetPasswordAccessLossWarningType(
-    JNIEnv* env,
-    PrefService* pref_service) {
-  return static_cast<int>(
-      password_manager_android_util::GetPasswordAccessLossWarningType(
-          pref_service));
-}
-
 base::android::ScopedJavaLocalRef<jstring>
 JNI_PasswordManagerUtilBridge_GetAutoExportCsvFilePath(JNIEnv* env,
                                                        Profile* profile) {

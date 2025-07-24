@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_manager.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
 import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPasswordsExportResult;
 
 import android.content.ActivityNotFoundException;
@@ -27,8 +26,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.R;
@@ -85,8 +82,6 @@ public class ExportFlow implements ExportFlowInterface {
 
     /** Describes at which state the password export flow is. */
     @ExportState private int mExportState;
-
-    private final @PasswordAccessLossWarningType int mWarningType;
 
     /** Name of the subdirectory in cache which stores the exported passwords file. */
     private static final String PASSWORDS_CACHE_DIR = "/passwords";
@@ -162,11 +157,7 @@ public class ExportFlow implements ExportFlowInterface {
 
     private boolean mPasswordSerializationStarted;
 
-    private boolean mExportFLowFinalStepLogged;
-
-    public ExportFlow(@PasswordAccessLossWarningType int warningType) {
-        mWarningType = warningType;
-    }
+    public ExportFlow() {}
 
     public String getExportEventHistogramName() {
         return mCallerMetricsId + ".Event";
@@ -235,8 +226,7 @@ public class ExportFlow implements ExportFlowInterface {
                     R.string.password_settings_export_tips,
                     e.getMessage(),
                     getPositiveButtonLabelId(),
-                    HistogramExportResult.WRITE_FAILED,
-                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
+                    HistogramExportResult.WRITE_FAILED);
             return;
         }
 
@@ -257,7 +247,6 @@ public class ExportFlow implements ExportFlowInterface {
     public void startExporting() {
         assert mExportState == ExportState.INACTIVE;
         mPasswordSerializationStarted = false;
-        mExportFLowFinalStepLogged = false;
         // Disable re-triggering exporting until the current exporting finishes.
         mExportState = ExportState.REQUESTED;
 
@@ -282,8 +271,6 @@ public class ExportFlow implements ExportFlowInterface {
                     .show();
             // Re-enable exporting, the current one was cancelled by Chrome.
             mExportState = ExportState.INACTIVE;
-            maybeLogExportFlowLastStepMetric(
-                    PasswordAccessLossWarningExportStep.NO_SCREEN_LOCK_SET_UP);
         } else {
             // Always trigger reauthentication at the start of the exporting flow, even if the last
             // one succeeded recently.
@@ -314,8 +301,7 @@ public class ExportFlow implements ExportFlowInterface {
                             R.string.password_settings_export_tips,
                             errorMessage,
                             getPositiveButtonLabelId(),
-                            HistogramExportResult.WRITE_FAILED,
-                            PasswordAccessLossWarningExportStep.PWD_SERIALIZATION_FAILED);
+                            HistogramExportResult.WRITE_FAILED);
                 });
     }
 
@@ -389,8 +375,7 @@ public class ExportFlow implements ExportFlowInterface {
             int descriptionId,
             @Nullable String detailedDescription,
             int positiveButtonLabelId,
-            @HistogramExportResult int histogramExportResult,
-            @PasswordAccessLossWarningExportStep int finalStep) {
+            @HistogramExportResult int histogramExportResult) {
         assert mErrorDialogParams == null;
         mDelegate.onExportFlowFailed();
         mProgressBarManager.hide(
@@ -401,7 +386,6 @@ public class ExportFlow implements ExportFlowInterface {
                             positiveButtonLabelId,
                             histogramExportResult);
                 });
-        maybeLogExportFlowLastStepMetric(finalStep);
     }
 
     public void showExportErrorAndAbortImmediately(
@@ -506,8 +490,7 @@ public class ExportFlow implements ExportFlowInterface {
                     R.string.password_settings_export_no_app,
                     e.getMessage(),
                     getPositiveButtonLabelId(),
-                    HistogramExportResult.NO_CONSUMER,
-                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
+                    HistogramExportResult.NO_CONSUMER);
         }
     }
 
@@ -518,8 +501,7 @@ public class ExportFlow implements ExportFlowInterface {
                     R.string.password_settings_export_tips,
                     "Could not create file.",
                     getPositiveButtonLabelId(),
-                    HistogramExportResult.WRITE_FAILED,
-                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
+                    HistogramExportResult.WRITE_FAILED);
             return;
         }
         new AsyncTask<@Nullable String>() {
@@ -529,13 +511,6 @@ public class ExportFlow implements ExportFlowInterface {
                 try {
                     writeToInternalStorage(mExportFileUri, passwordsFile);
                 } catch (IOException e) {
-                    // This metric should be logged in onPostExecute in case of an exception.
-                    // Since that happens in a callback, to be absolutely sure it's logged,
-                    // it's already logged here. It won't be logged as a duplicate because the
-                    // logging method checks if the metric was prevoiusly logged for the current
-                    // export flow.
-                    maybeLogExportFlowLastStepMetric(
-                            PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
                     return e.getMessage();
                 }
                 return null;
@@ -550,8 +525,7 @@ public class ExportFlow implements ExportFlowInterface {
                                         R.string.password_settings_export_tips,
                                         exceptionMessage,
                                         getPositiveButtonLabelId(),
-                                        HistogramExportResult.WRITE_FAILED,
-                                        PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
+                                        HistogramExportResult.WRITE_FAILED);
                             } else {
                                 mDelegate.onExportFlowSucceeded();
                                 mExportFileUri = null;
@@ -591,8 +565,6 @@ public class ExportFlow implements ExportFlowInterface {
                     ReauthenticationManager.ReauthScope.BULK)) {
                 exportAfterReauth();
             } else {
-                maybeLogExportFlowLastStepMetric(
-                        PasswordAccessLossWarningExportStep.AUTHENTICATION_EXPIRED);
                 mExportState = ExportState.INACTIVE;
             }
         }
@@ -621,27 +593,13 @@ public class ExportFlow implements ExportFlowInterface {
     }
 
     private int getPositiveButtonLabelId() {
-        // Don't allow to try restarting the export flow from password access loss warning. The
-        // reason: it won't be able to create the file for saving passwords on disk because the
-        // dialog, which owns the export flow would be dismissed. There is a workaround: clicking on
-        // Google Password Manager will propose to restart the export flow.
+        // Don't allow to try restarting the export flow. The reason: it won't be able to create the
+        // file for saving passwords on disk because the dialog, which owns the export flow would be
+        // dismissed. There is a workaround: clicking on Google Password Manager will propose to
+        // restart the export flow.
         // TODO (crbug.com/364530583): returning 0 here means there should be only one "Close"
         // button in the dialog. Make error dialog configurable instead of passing a 0 resource into
         // it.
         return 0;
-    }
-
-    private void maybeLogExportFlowLastStepMetric(
-            @PasswordAccessLossWarningExportStep int finalStep) {
-        // The serialization and reauthentication step might happen at the same time and might cause
-        // two final step metrics to be logged if they both fail. This method checks if the metric
-        // was already logged for this export flow before logging.
-        if (mExportFLowFinalStepLogged) {
-            return;
-        }
-        if (mWarningType != PasswordAccessLossWarningType.NONE) {
-            logExportFlowLastStepMetric(mWarningType, finalStep);
-        }
-        mExportFLowFinalStepLogged = true;
     }
 }

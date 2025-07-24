@@ -13,7 +13,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.PackageUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
@@ -91,15 +90,6 @@ public class PasswordManagerUtilBridge {
         return PasswordManagerUtilBridgeJni.get().areMinUpmRequirementsMet();
     }
 
-    public static @PasswordAccessLossWarningType int getPasswordAccessLossWarningType(
-            PrefService prefService) {
-        // The warning should not be shown on builds without UPM.
-        if (!isInternalBackendPresent()) {
-            return PasswordAccessLossWarningType.NONE;
-        }
-        return PasswordManagerUtilBridgeJni.get().getPasswordAccessLossWarningType(prefService);
-    }
-
     @NativeMethods
     public interface Natives {
         boolean isPasswordManagerAvailable(
@@ -114,8 +104,5 @@ public class PasswordManagerUtilBridge {
                 @JniType("syncer::SyncService*") @Nullable SyncService syncService);
 
         boolean areMinUpmRequirementsMet();
-
-        @PasswordAccessLossWarningType
-        int getPasswordAccessLossWarningType(@JniType("PrefService*") PrefService prefService);
     }
 }

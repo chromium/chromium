@@ -851,41 +851,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORDS_NOT_SECURE_FILLING_DETAILS" desc="The message of the dialog which is shown when the user attempts to enter obfuscated text to a regular text field.">
         To protect your privacy, Chrome will not autofill your password in this field.
       </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_GMS_CORE_TITLE" desc="The title of the password access loss warning sheet when there is no GMS Core." formatter_data="android_java">
-        Google Password Manager will stop working on this device
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_GMS_CORE_TEXT" desc="The text of the password access loss warning sheet when there is no GMS Core." formatter_data="android_java">
-        Passwords will stop working soon because Google Play services isn’t available. You can make a copy of your saved passwords before they stop working. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_GMS_CORE_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when there is no GMS Core." formatter_data="android_java">
-        Export passwords
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_MANUAL_MIGRATION_TITLE" desc="The title of the password access loss warning sheet when the automatic password migration failed." formatter_data="android_java">
-        Fix problem with saved passwords
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_MANUAL_MIGRATION_TEXT" desc="The text of the password access loss warning sheet when the automatic password migration failed." formatter_data="android_java">
-        Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_MANUAL_MIGRATION_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when the automatic password migration failed." formatter_data="android_java">
-        Help me fix this
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_TITLE" desc="The title of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
-        Update Google Play services
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_TEXT" desc="The text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
-        Passwords may stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_UPM_TEXT" desc="The text of the password access loss warning sheet when the device doesn't have Google Play Services.">
-        Passwords will stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
       <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
         Update
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_NOTIFICATION_NO_GMS_CORE_TEXT" desc="The text of the password access loss notification when there is no GMS Core." formatter_data="android_java">
-        Passwords will stop working soon because Google Play services isn’t available. You can make a copy of your saved passwords before they stop working.
-      </message>
-      <message name="IDS_PWD_ACCESS_LOSS_NOTIFICATION_UPDATE_GMS_CORE_TEXT" desc="The text of the password access loss notification when the GMS Core version doesn't support local passwords." formatter_data="android_java">
-        Passwords may stop working soon on this device. To keep using your passwords, update Google Play services.
       </message>
       <message name="IDS_SOME_PASSWORDS_ARE_NOT_ACCESSIBLE_SUBTITLE" desc="Subtitle shown under the Google Password Manager entry point, when the password manager is available for the user, but they have unmigrated passwords left behind in Chrome.">
         Some of your passwords aren’t accessible
@@ -961,45 +928,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_ACCESS_LOSS_UPDATE_GMS_TITLE" desc="The title of the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings having an outdated Goggle Play Services.">
         Update Google Play services
-      </message>
-      <message name="IDS_ACCESS_LOSS_UPDATE_GMS_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings having an outdated Goggle Play Services.">
-        Passwords may stop working soon on this device. To keep using your passwords, update Google Play services.
-      </message>
-      <message name="IDS_ACCESS_LOSS_NO_UPM_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings having an outdated Goggle Play Services.">
-        Passwords will stop working soon on this device. To keep using your passwords, update Google Play services.
-      </message>
-      <message name="IDS_ACCESS_LOSS_FIX_PROBLEM_TITLE" desc="The title of the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings after failed local passwords migration to Google Play Services">
-        Fix problem with saved passwords
-      </message>
-      <message name="IDS_ACCESS_LOSS_FIX_PROBLEM_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings after failed local passwords migration to Google Play Services">
-        Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.
-      </message>
-      <message name="IDS_ACCESS_LOSS_FIX_PROBLEM_POSITIVE_BUTTON_TEXT" desc="If the user has local passwords migration failed to Google Play services, they see the warning proposing them to fix this problem. This string is the agreement button text in the warning.">
-        Fix now
-      </message>
-      <message name="IDS_ACCESS_LOSS_NO_GMS_TITLE" desc="The title of the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings if no Google Play Services is installed on the phone.">
-        Google Password Manager will stop working on this device
-      </message>
-      <message name="IDS_ACCESS_LOSS_NO_GMS_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings if no Google Play Services is installed on the phone.">
-        Passwords will stop working soon because Google Play services isn’t available. You can make a copy of your saved passwords before they stop working.
-      </message>
-      <message name="IDS_ACCESS_LOSS_NO_GMS_POSITIVE_BUTTON_TEXT" desc="If the user has no Google Play services installed on the phone, they see the modal dialog warning them that passwords will stop working soon and proposing them to export their paswords before that. This string is the agreement button text in the warning.">
-        Export passwords
-      </message>
-      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_TITLE" desc="The title of the dialog instructing the user to import passwords into Google Password Manager.">
-        Next, import the passwords
-      </message>
-      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_DESC" desc="The message of the dialog instructing the user to import passwords into Google Password Manager.">
-        Open Google Password Manager and go to settings. Select “Import“ and add the CSV file that contains your exported passwords.
-      </message>
-      <message name="IDS_ACCESS_LOSS_IMPORT_DIALOG_POSITIVE_BUTTON_TEXT" desc="The positive button text in the dialog instructing the user to import passwords into Google Password Manager.">
-        Take me there
-      </message>
-      <message name="IDS_ACCESS_LOSS_NO_GMS_NO_PASSWORDS_TITLE" desc="The title of the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings if no Google Play Services is installed on the phone and there are no passwords saved in the profile store.">
-        Google Password Manager will stop working soon on this device
-      </message>
-      <message name="IDS_ACCESS_LOSS_NO_GMS_NO_PASSWORDS_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings if no Google Play Services is installed on the phone and there are no passwords saved in the profile store.">
-        Passwords will stop working soon because Google Play services isn’t available. To use passwords saved in your Google Account, sign in using another device, or go to passwords.google.com.
       </message>
       <!-- Acknowledge grouped credential bottom sheet -->
       <message name="IDS_ACK_GROUPED_CRED_SHEET_OPENED" desc="The accessibility string to be announced by TalkBack right after the bottom sheet is opened.">

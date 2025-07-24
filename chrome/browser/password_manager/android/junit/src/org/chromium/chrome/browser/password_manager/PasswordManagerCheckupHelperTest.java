@@ -50,6 +50,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
@@ -1195,11 +1196,7 @@ public class PasswordManagerCheckupHelperTest {
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
         assertEquals(
-                testActivity
-                        .getResources()
-                        .getString(
-                                org.chromium.chrome.browser.access_loss.R.string
-                                        .pwm_disabled_no_gms_dialog_title),
+                testActivity.getResources().getString(R.string.pwm_disabled_no_gms_dialog_title),
                 dialogModel.get(ModalDialogProperties.TITLE));
     }
 
@@ -1224,11 +1221,7 @@ public class PasswordManagerCheckupHelperTest {
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
         assertEquals(
-                testActivity
-                        .getResources()
-                        .getString(
-                                org.chromium.chrome.browser.access_loss.R.string
-                                        .access_loss_update_gms_title),
+                testActivity.getResources().getString(R.string.access_loss_update_gms_title),
                 dialogModel.get(ModalDialogProperties.TITLE));
     }
 

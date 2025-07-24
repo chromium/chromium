@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_IMPL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_IMPL_H_
 
-#include <jni.h>
-
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
 
