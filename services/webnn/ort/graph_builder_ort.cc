@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected_macros.h"
 #include "base/types/fixed_array.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -69,6 +70,7 @@ constexpr base::cstring_view kOpTypeConcat = "Concat";
 constexpr base::cstring_view kOpTypeConv2d = "Conv";
 constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
 constexpr base::cstring_view kOpTypeCumulativeSum = "CumSum";
+constexpr base::cstring_view kOpTypeDequantizeLinear = "DequantizeLinear";
 constexpr base::cstring_view kOpTypeElu = "Elu";
 constexpr base::cstring_view kOpTypeExpand = "Expand";
 constexpr base::cstring_view kOpTypeGather = "Gather";
@@ -86,6 +88,7 @@ constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
 constexpr base::cstring_view kOpTypeMatMul = "MatMul";
 constexpr base::cstring_view kOpTypePad = "Pad";
 constexpr base::cstring_view kOpTypePRelu = "PRelu";
+constexpr base::cstring_view kOpTypeQuantizeLinear = "QuantizeLinear";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
 constexpr base::cstring_view kOpTypeResample2d = "Resize";
 constexpr base::cstring_view kOpTypeReshape = "Reshape";
@@ -125,6 +128,7 @@ constexpr base::cstring_view kAttrActivations = "activations";
 constexpr base::cstring_view kAttrAlpha = "alpha";
 constexpr base::cstring_view kAttrAxis = "axis";
 constexpr base::cstring_view kAttrBeta = "beta";
+constexpr base::cstring_view kAttrBlockSize = "block_size";
 constexpr base::cstring_view kAttrCeilMode = "ceil_mode";
 constexpr base::cstring_view kAttrDilations = "dilations";
 constexpr base::cstring_view kAttrDirection = "direction";
@@ -152,6 +156,11 @@ constexpr base::cstring_view kAttrUpper = "upper";
 constexpr base::cstring_view kInserted = "Inserted";
 constexpr base::cstring_view kToEmulate = "ToEmulate";
 constexpr base::cstring_view kUnderscore = "_";
+
+base::unexpected<mojom::ErrorPtr> NewNotSupportedError(std::string message) {
+  return base::unexpected(mojom::Error::New(
+      mojom::Error::Code::kNotSupportedError, std::move(message)));
+}
 
 std::string GetOperandName(std::string_view name, OperandId id) {
   return base::JoinString({name, base::NumberToString(id.value())},
@@ -1058,6 +1067,108 @@ void GraphBuilderOrt::AddCumulativeSumOperation(
   std::array<const char*, 1> outputs = {output.c_str()};
   model_editor_.AddNode(kOpTypeCumulativeSum, node_name, inputs, outputs,
                         attributes);
+}
+
+// TODO(crbug.com/433055137): Remove the returned error once the emulation path
+// is implemented.
+template <typename T>
+  requires(std::is_same_v<T, mojom::DequantizeLinear> ||
+           std::is_same_v<T, mojom::QuantizeLinear>)
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
+    const T& operation,
+    base::cstring_view op_type) {
+  const std::string node_name = GenerateNodeName(operation.label);
+  std::string input = GetOperandNameById(operation.input_operand_id);
+  std::string scale = GetOperandNameById(operation.scale_operand_id);
+  std::string zero_point = GetOperandNameById(operation.zero_point_operand_id);
+  std::string output = GetOperandNameById(operation.output_operand_id);
+
+  const std::vector<uint32_t>& input_shape =
+      GetOperand(operation.input_operand_id).descriptor.shape();
+  // ZeroPoint has the same shape as the scale.
+  const std::vector<uint32_t>& scale_zero_point_shape =
+      GetOperand(operation.scale_operand_id).descriptor.shape();
+  CHECK_EQ(scale_zero_point_shape.size(), input_shape.size());
+
+  std::optional<int64_t> axis;
+  uint32_t scale_not_size_one_dimension_count = 0;
+  for (size_t i = 0; i < scale_zero_point_shape.size(); i++) {
+    if (scale_zero_point_shape[i] != 1) {
+      scale_not_size_one_dimension_count++;
+      if (scale_zero_point_shape[i] == input_shape[i]) {
+        axis = i;
+      }
+    }
+  }
+
+  // TODO(crbug.com/433096244): Emulate multiple axes case, e.g. input shape is
+  // [2, 3, 4, 5] and scale shape is [1, 3, 4, 1]. The multiple axes per-axis
+  // case will be handled by multi-dimensions blockwise emulation below.
+  bool is_per_axis =
+      axis.has_value() && scale_not_size_one_dimension_count == 1;
+
+  std::optional<int64_t> block_size;
+  if (scale_not_size_one_dimension_count == 0) {
+    // For per-tensor(per-layer) quantization and dequantization, scale should
+    // be a scalar.
+    if (!scale_zero_point_shape.empty()) {
+      // The numbers in scale shape are all 1, scale and zeroPoint should be
+      // reshaped to a scalar.
+      scale = CreateReshapeNode(scale, {});
+      zero_point = CreateReshapeNode(zero_point, {});
+    }
+  } else if (is_per_axis) {
+    // For per-axis quantization and dequantization, scale and zeroPoint should
+    // be a 1-D Tensor.
+    if (scale_zero_point_shape.size() != 1) {
+      scale = CreateReshapeNode(scale, {input_shape[axis.value()]});
+      zero_point = CreateReshapeNode(zero_point, {input_shape[axis.value()]});
+    }
+  } else {
+    // For blockwise quantization and dequantization, scale should has the same
+    // shape as the input or except for one dimension in which blocking is
+    // performed.
+    // The default values are used if scale has the same shape as the input.
+    axis = 0;
+    block_size = 1;
+    uint32_t blockwise_axis_count = 0;
+    for (size_t i = 0; i < scale_zero_point_shape.size(); i++) {
+      if (scale_zero_point_shape[i] != input_shape[i]) {
+        CHECK_EQ(input_shape[i] % scale_zero_point_shape[i], 0u);
+        block_size = input_shape[i] / scale_zero_point_shape[i];
+        axis = i;
+        blockwise_axis_count++;
+      }
+
+      // TODO(crbug.com/433096244): Emulate multi-dimensions blockwise
+      // quantization and dequantization.
+      if (blockwise_axis_count > 1) {
+        return NewNotSupportedError(
+            "For blockwise quantization and dequantization, scale should has "
+            "the same shape as the input or except for one dimension in which "
+            "blocking is performed");
+      }
+    }
+  }
+
+  std::array<const char*, 3> inputs = {input.c_str(), scale.c_str(),
+                                       zero_point.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  std::vector<ScopedOrtOpAttr> attributes;
+  if (axis.has_value()) {
+    attributes.push_back(
+        model_editor_.CreateAttribute(kAttrAxis, axis.value()));
+  }
+
+  if (block_size.has_value()) {
+    attributes.push_back(
+        model_editor_.CreateAttribute(kAttrBlockSize, block_size.value()));
+  }
+
+  model_editor_.AddNode(op_type, node_name, inputs, outputs, attributes);
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
@@ -2711,6 +2822,20 @@ GraphBuilderOrt::BuildModel() {
         AddCumulativeSumOperation(*operation->get_cumulative_sum());
         break;
       }
+      case mojom::Operation::Tag::kDequantizeLinear: {
+        CHECK(data_type_limits.dequantize_linear_input.SupportsAll(
+            {GetOperand(operation->get_dequantize_linear()->input_operand_id)
+                 .descriptor,
+             GetOperand(
+                 operation->get_dequantize_linear()->zero_point_operand_id)
+                 .descriptor}));
+        CHECK(data_type_limits.dequantize_linear_scale.Supports(
+            GetOperand(operation->get_dequantize_linear()->scale_operand_id)
+                .descriptor));
+        RETURN_IF_ERROR(AddDequantizeOrQuantizeLinearOperation(
+            *operation->get_dequantize_linear(), kOpTypeDequantizeLinear));
+        break;
+      }
       case mojom::Operation::Tag::kElu: {
         AddEluOperation(*operation->get_elu());
         break;
@@ -2813,6 +2938,19 @@ GraphBuilderOrt::BuildModel() {
         AddPreluOperation(*operation->get_prelu());
         break;
       }
+      case mojom::Operation::Tag::kQuantizeLinear: {
+        CHECK(data_type_limits.quantize_linear_input.SupportsAll(
+            {GetOperand(operation->get_quantize_linear()->input_operand_id)
+                 .descriptor,
+             GetOperand(operation->get_quantize_linear()->scale_operand_id)
+                 .descriptor}));
+        CHECK(data_type_limits.quantize_linear_zero_point.Supports(
+            GetOperand(operation->get_quantize_linear()->zero_point_operand_id)
+                .descriptor));
+        RETURN_IF_ERROR(AddDequantizeOrQuantizeLinearOperation(
+            *operation->get_quantize_linear(), kOpTypeQuantizeLinear));
+        break;
+      }
       case mojom::Operation::Tag::kRelu: {
         CHECK(data_type_limits.relu_input.Supports(
             GetOperand(operation->get_relu()->input_operand_id).descriptor));
@@ -2897,10 +3035,8 @@ GraphBuilderOrt::BuildModel() {
         AddWhereOperation(*operation->get_where());
         break;
       }
-      case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
-      case mojom::Operation::Tag::kQuantizeLinear:
         NOTREACHED() << "[WebNN] Unsupported operation.";
     }
   }

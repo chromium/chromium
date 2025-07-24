@@ -232,6 +232,12 @@ class GraphBuilderOrt {
   void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddCumulativeSumOperation(const mojom::CumulativeSum& cumulative_sum);
+  template <typename T>
+    requires(std::is_same_v<T, mojom::DequantizeLinear> ||
+             std::is_same_v<T, mojom::QuantizeLinear>)
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddDequantizeOrQuantizeLinearOperation(const T& operation,
+                                         base::cstring_view op_type);
   void AddEluOperation(const mojom::Elu& elu);
   void AddLogicalBinaryOperation(const mojom::ElementWiseBinary& logical_binary,
                                  base::cstring_view op_type);

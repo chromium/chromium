@@ -66,6 +66,14 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kInts4To8Int32 = {
+      OperandDataType::kInt4, OperandDataType::kUint4, OperandDataType::kUint8,
+      OperandDataType::kInt8, OperandDataType::kInt32};
+
+  static constexpr SupportedDataTypes kFloat16To32Int32 = {
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt32};
+
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
       BatchNormalizationAxis::kChannelsFirst,
@@ -93,9 +101,9 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*conv_transpose2d_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/{kFloat16To32Int32To64, kMaxNonScalarRank},
-       /*dequantize_linear_input=*/{},
-       /*dequantize_linear_scale=*/{},
-       /*dequantize_linear_zero_point=*/{},
+       /*dequantize_linear_input=*/{kInts4To8Int32, kMaxRank},
+       /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*dequantize_linear_zero_point=*/{kInts4To8Int32, kMaxRank},
        /*add_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sub_input=*/
@@ -192,8 +200,9 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*l2_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
        /*max_pool2d_input=*/{kInts8Float16To32, {3, 8}},
        /*prelu_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
-       /*quantize_linear_input=*/{},
-       /*quantize_linear_zero_point=*/{},
+       /*quantize_linear_input=*/{kFloat16To32Int32, kMaxRank},
+       /*quantize_linear_zero_point=*/
+       {DataTypeConstraint::kInts4ToInts8, kMaxRank},
        /*reduce_l1_input=*/
        {kFloat16To32Int32To64, kMaxRank},
        /*reduce_l2_input=*/
