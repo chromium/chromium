@@ -49,32 +49,44 @@ namespace {
 // type array. Spaces are not allowed in the individual strings, which makes
 // this a convenient choice.
 constexpr char16_t kKeyPathSeparator[] = u" ";
-
-// Encodes `key_path` into a string. The key path can be either a string or an
-// array of strings. If it is an array, the contents are joined with
-// `kKeyPathSeparator`.
-std::u16string EncodeKeyPath(const blink::IndexedDBKeyPath& key_path) {
+void BindKeyPath(sql::Statement& statement,
+                 int param_index,
+                 const blink::IndexedDBKeyPath& key_path) {
   switch (key_path.type()) {
     case blink::mojom::IDBKeyPathType::Null:
-      return std::u16string();
+      statement.BindNull(param_index);
+      break;
     case blink::mojom::IDBKeyPathType::String:
-      return key_path.string();
+      statement.BindBlob(param_index, key_path.string());
+      break;
     case blink::mojom::IDBKeyPathType::Array:
-      return base::JoinString(key_path.array(), kKeyPathSeparator);
+      statement.BindBlob(param_index,
+                         base::JoinString(key_path.array(), kKeyPathSeparator));
+      break;
     default:
       NOTREACHED();
   }
 }
-blink::IndexedDBKeyPath DecodeKeyPath(const std::u16string& encoded) {
-  if (encoded.empty()) {
+blink::IndexedDBKeyPath ColumnKeyPath(sql::Statement& statement,
+                                      int column_index) {
+  if (statement.GetColumnType(column_index) == sql::ColumnType::kNull) {
+    // `Null` key path.
     return blink::IndexedDBKeyPath();
   }
+  std::u16string encoded;
+  TRANSIENT_CHECK(statement.ColumnBlobAsString16(column_index, &encoded));
   std::vector<std::u16string> parts = base::SplitString(
       encoded, kKeyPathSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (parts.size() > 1) {
-    return blink::IndexedDBKeyPath(std::move(parts));
+  if (parts.empty()) {
+    // Empty `String` key path.
+    return blink::IndexedDBKeyPath(std::u16string());
   }
-  return blink::IndexedDBKeyPath(std::move(parts.front()));
+  if (parts.size() == 1) {
+    // Non-empty `String` key path.
+    return blink::IndexedDBKeyPath(std::move(parts.front()));
+  }
+  // `Array` key path.
+  return blink::IndexedDBKeyPath(std::move(parts));
 }
 
 // These are schema versions of our implementation of `sql::Database`; not the
@@ -122,7 +134,7 @@ void InitializeNewDatabase(sql::Database* db,
       db->Execute("CREATE TABLE object_stores "
                   "(id INTEGER PRIMARY KEY,"
                   " name BLOB NOT NULL,"
-                  " key_path BLOB NOT NULL,"
+                  " key_path BLOB,"
                   " auto_increment INTEGER NOT NULL,"
                   " key_generator_current_number INTEGER NOT NULL)"));
   TRANSIENT_CHECK(
@@ -130,7 +142,7 @@ void InitializeNewDatabase(sql::Database* db,
                   "(object_store_id INTEGER NOT NULL,"
                   " id INTEGER NOT NULL,"
                   " name BLOB NOT NULL,"
-                  " key_path BLOB NOT NULL,"
+                  " key_path BLOB,"
                   " is_unique INTEGER NOT NULL,"
                   " multi_entry INTEGER NOT NULL,"
                   " PRIMARY KEY (object_store_id, id)"
@@ -258,9 +270,7 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
       blink::IndexedDBObjectStoreMetadata store_metadata;
       store_metadata.id = statement.ColumnInt64(0);
       TRANSIENT_CHECK(statement.ColumnBlobAsString16(1, &store_metadata.name));
-      std::u16string encoded_key_path;
-      TRANSIENT_CHECK(statement.ColumnBlobAsString16(2, &encoded_key_path));
-      store_metadata.key_path = DecodeKeyPath(encoded_key_path);
+      store_metadata.key_path = ColumnKeyPath(statement, 2);
       store_metadata.auto_increment = statement.ColumnBool(3);
       max_object_store_id = std::max(max_object_store_id, store_metadata.id);
       metadata.object_stores[store_metadata.id] = std::move(store_metadata);
@@ -279,9 +289,7 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
       int64_t object_store_id = statement.ColumnInt64(0);
       index_metadata.id = statement.ColumnInt64(1);
       TRANSIENT_CHECK(statement.ColumnBlobAsString16(2, &index_metadata.name));
-      std::u16string encoded_key_path;
-      TRANSIENT_CHECK(statement.ColumnBlobAsString16(3, &encoded_key_path));
-      index_metadata.key_path = DecodeKeyPath(encoded_key_path);
+      index_metadata.key_path = ColumnKeyPath(statement, 3);
       index_metadata.unique = statement.ColumnBool(4);
       index_metadata.multi_entry = statement.ColumnBool(5);
       blink::IndexedDBObjectStoreMetadata& store_metadata =
@@ -979,7 +987,7 @@ Status DatabaseConnection::CreateObjectStore(
       "VALUES (?, ?, ?, ?, ?)"));
   statement.BindInt64(0, metadata.id);
   statement.BindBlob(1, metadata.name);
-  statement.BindBlob(2, EncodeKeyPath(metadata.key_path));
+  BindKeyPath(statement, 2, metadata.key_path);
   statement.BindBool(3, metadata.auto_increment);
   statement.BindInt64(4, ObjectStoreMetaDataKey::kKeyGeneratorInitialNumber);
   TRANSIENT_CHECK(statement.Run());
@@ -1066,7 +1074,7 @@ Status DatabaseConnection::CreateIndex(
   statement.BindInt64(0, object_store_id);
   statement.BindInt64(1, index_id);
   statement.BindBlob(2, index.name);
-  statement.BindBlob(3, EncodeKeyPath(index.key_path));
+  BindKeyPath(statement, 3, index.key_path);
   statement.BindBool(4, index.unique);
   statement.BindBool(5, index.multi_entry);
   TRANSIENT_CHECK(statement.Run());
