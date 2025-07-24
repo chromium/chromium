@@ -180,6 +180,7 @@ bundle_data("components_browsertests_use_blink_filters_bundle_data") {
   testonly = true
   sources = [
     "//testing/buildbot/filters/ios.use_blink.components_browsertests.filter",
+    "//testing/buildbot/filters/tvos.components_browsertests.filter",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

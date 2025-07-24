@@ -1,0 +1,12 @@
+# TODO(crbug.com/431824306): These tests are failing on tvOS. Remove lines if
+# more tests are supported on the platform.
+-FormAutofillUtilsTest.InferLabelForElementTest
+-FrameMetadataObserverBrowserTest.LateObserver
+-FrameMetadataObserverBrowserTest.NoPaidContent
+-FrameMetadataObserverBrowserTest.PaidContent
+-InnerTextBrowserTest.Basic
+-RenderProcessHostProxyTest.RPHDeletionInvalidatesProxy
+-ResourceAttrMemoryMeasurementProviderBrowserTest.TwoFramesSeparateProcesses
+-InputBrowserTest.RenderInputRouterNotCreatedOnNonAndroid
+-PerformanceManagerBrowserTest.UsesWebRTC
+-FormAutofillUtilsTest.ExtractFormData_FormControlTypes

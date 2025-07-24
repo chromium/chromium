@@ -6844,6 +6844,7 @@ targets.bundle(
     name = "tvos_tests",
     targets = [
         "base_unittests",
+        "components_browsertests",
         "components_unittests",
         "content_unittests",
         "media_unittests",
@@ -6853,6 +6854,12 @@ targets.bundle(
             args = [
                 "--test-launcher-bot-mode",
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+            ],
+        ),
+        "components_browsertests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_browsertests.filter;testing/buildbot/filters/tvos.components_browsertests.filter",
             ],
         ),
         "components_unittests": targets.mixin(
