@@ -407,6 +407,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif
     "HidDeviceManager",
     "HostContentSettingsMap",
+#if BUILDFLAG(IS_CHROMEOS)
+    "IsolatedWebAppURLLoaderShutdownNotifierFactory",
+#endif
     "LiveCaptionController",
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.

@@ -12,6 +12,9 @@
 #include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
+#include "components/webapps/isolated_web_apps/types/url_loading_types.h"
+#include "content/public/browser/frame_tree_node_id.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -60,7 +63,22 @@ class IwaClient {
       const web_package::SignedWebBundleId& web_bundle_id,
       base::OnceClosure callback) = 0;
 
-  // TODO
+  // Attempts to look up the correct source (bundle of proxy) for the given
+  // `web_bundle_id` and `request.url` (it's guaranteed that `request.url`
+  // corresponds to `web_bundle_id`); returns an unexpected if there's no app
+  // installed. The embedder might also choose to provide a generated response
+  // instead of a source.
+  virtual void GetIwaSourceForRequest(
+      content::BrowserContext* browser_context,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const network::ResourceRequest& request,
+      const std::optional<content::FrameTreeNodeId>& frame_tree_node,
+      base::OnceCallback<void(
+          base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>)>
+          callback) = 0;
+
+  // Returns the correct storage partition for the network service; each
+  // Isolated Web App is supposed to have its own unique partition.
   virtual content::StoragePartition* GetStoragePartition(
       content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& web_bundle_id) = 0;

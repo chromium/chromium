@@ -1728,6 +1728,7 @@ source_set("chrome_extensions_browser_client") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/runtime",
       "//chrome/browser/web_applications",
+      "//components/webapps/isolated_web_apps",
     ]
 
     if (is_chromeos) {

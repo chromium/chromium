@@ -37,7 +37,6 @@ namespace {
 class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
  public:
   IsolatedWebAppURLLoaderImpl(
-      content::BrowserContext* browser_context,
       const base::FilePath& web_bundle_path,
       bool dev_mode,
       const web_package::SignedWebBundleId& web_bundle_id,
@@ -47,7 +46,6 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
       : loader_client_(std::move(loader_client)),
         resource_request_(resource_request),
         frame_tree_node_id_(frame_tree_node_id),
-        browser_context_(browser_context),
         web_bundle_path_(web_bundle_path),
         dev_mode_(dev_mode),
         web_bundle_id_(web_bundle_id) {}
@@ -57,8 +55,8 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
       delete;
   ~IsolatedWebAppURLLoaderImpl() override = default;
 
-  void Start() {
-    IsolatedWebAppReaderRegistryFactory::Get(browser_context_.get())
+  void Start(content::BrowserContext* browser_context) {
+    IsolatedWebAppReaderRegistryFactory::Get(browser_context)
         ->ReadResponse(
             web_bundle_path_, dev_mode_, web_bundle_id_, resource_request_,
             base::BindOnce(&IsolatedWebAppURLLoaderImpl::OnResponseRead,
@@ -168,7 +166,6 @@ class IsolatedWebAppURLLoaderImpl : public network::mojom::URLLoader {
   int64_t body_length_;
   const network::ResourceRequest resource_request_;
   std::optional<content::FrameTreeNodeId> frame_tree_node_id_;
-  const raw_ptr<content::BrowserContext> browser_context_;
   const base::FilePath web_bundle_path_;
   const bool dev_mode_;
   const web_package::SignedWebBundleId web_bundle_id_;
@@ -188,12 +185,15 @@ void IsolatedWebAppURLLoader::CreateAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
     const network::ResourceRequest& resource_request,
     const std::optional<content::FrameTreeNodeId>& frame_tree_node_id) {
+  // `browser_context` is not stored in the class to prevent having to deal with
+  // dangling pointers (as this is a self-owned class without a shutdown
+  // notifier).
   auto loader = std::make_unique<IsolatedWebAppURLLoaderImpl>(
-      browser_context, web_bundle_path, dev_mode, web_bundle_id,
-      std::move(loader_client), resource_request, frame_tree_node_id);
+      web_bundle_path, dev_mode, web_bundle_id, std::move(loader_client),
+      resource_request, frame_tree_node_id);
   auto* raw_loader = loader.get();
   mojo::MakeSelfOwnedReceiver(std::move(loader), std::move(loader_receiver));
-  raw_loader->Start();
+  raw_loader->Start(browser_context);
 }
 
 }  // namespace web_app

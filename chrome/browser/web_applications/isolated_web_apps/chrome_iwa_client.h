@@ -32,6 +32,15 @@ class ChromeIwaClient : public IwaClient {
                         const web_package::SignedWebBundleId& web_bundle_id,
                         base::OnceClosure callback) override;
 
+  void GetIwaSourceForRequest(
+      content::BrowserContext* browser_context,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const network::ResourceRequest& request,
+      const std::optional<content::FrameTreeNodeId>& frame_tree_node,
+      base::OnceCallback<void(
+          base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>)>
+          callback) override;
+
   content::StoragePartition* GetStoragePartition(
       content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& web_bundle_id) override;

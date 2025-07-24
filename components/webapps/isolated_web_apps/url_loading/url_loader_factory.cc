@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
+#include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
 
 #include <memory>
 #include <optional>
@@ -15,28 +15,27 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/url_constants.h"
+#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/web_bundle_utils.h"
+#include "components/webapps/isolated_web_apps/client.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_registry_factory.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "components/webapps/isolated_web_apps/types/url_loading_types.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader.h"
 #include "components/webapps/isolated_web_apps/url_loading/utils.h"
 #include "content/public/browser/browser_context.h"
@@ -65,24 +64,14 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace web_app {
 
 namespace {
-
-constexpr char kInstallPagePath[] = "/.well-known/_generated_install_page.html";
-constexpr char kInstallPageContent[] = R"(
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-        <link rel="manifest" href="/.well-known/manifest.webmanifest" />
-      </head>
-    </html>
-)";
 
 constexpr char kIsolatedAppCspTemplate[] =
     "base-uri 'none';"
@@ -232,6 +221,10 @@ class HeaderInjectionURLLoaderClient : public ForwardingURLLoaderClient {
     csp_override_ = csp_override;
   }
 
+  base::WeakPtr<HeaderInjectionURLLoaderClient> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
@@ -272,24 +265,64 @@ class HeaderInjectionURLLoaderClient : public ForwardingURLLoaderClient {
 
   std::optional<std::string> csp_override_ = std::nullopt;
   int header_size_delta_ = 0;
+
+  base::WeakPtrFactory<HeaderInjectionURLLoaderClient> weak_factory_{this};
+};
+
+class ShutdownNotifierFactory
+    : public BrowserContextKeyedServiceShutdownNotifierFactory {
+ public:
+  ShutdownNotifierFactory(const ShutdownNotifierFactory&) = delete;
+  ShutdownNotifierFactory& operator=(const ShutdownNotifierFactory&) = delete;
+
+  static ShutdownNotifierFactory* GetInstance() {
+    static base::NoDestructor<ShutdownNotifierFactory> factory;
+    return factory.get();
+  }
+
+ private:
+  friend class base::NoDestructor<ShutdownNotifierFactory>;
+
+  ShutdownNotifierFactory()
+      : BrowserContextKeyedServiceShutdownNotifierFactory(
+            "IsolatedWebAppURLLoaderShutdownNotifierFactory") {
+    DependsOn(IsolatedWebAppReaderRegistryFactory::GetInstance());
+  }
+  ~ShutdownNotifierFactory() override = default;
+
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override {
+    return content::AreIsolatedWebAppsEnabled(context) ? context : nullptr;
+  }
 };
 
 class IsolatedWebAppURLLoaderFactoryImpl
-    : public network::SelfDeletingURLLoaderFactory,
-      public ProfileObserver {
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   IsolatedWebAppURLLoaderFactoryImpl(
-      Profile* profile,
+      content::BrowserContext* browser_context,
       std::optional<url::Origin> app_origin,
       std::optional<content::FrameTreeNodeId> frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
       : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
-        profile_(profile),
+        browser_context_(content::AreIsolatedWebAppsEnabled(browser_context)
+                             ? browser_context
+                             : nullptr),
         app_origin_(std::move(app_origin)),
         frame_tree_node_id_(frame_tree_node_id) {
     CHECK(!app_origin_.has_value() ||
-          app_origin_->scheme() == chrome::kIsolatedAppScheme);
-    profile_observation_.Observe(profile);
+          blink::CommonSchemeRegistry::IsIsolatedAppScheme(
+              app_origin_->scheme()));
+    // TODO(crbug.com/432676258): Do not create the factory for inelibigle
+    // contexts at all.
+    if (browser_context_) {
+      browser_context_shutdown_subscription_ =
+          ShutdownNotifierFactory::GetInstance()
+              ->Get(browser_context_)
+              ->Subscribe(base::BindOnce(&IsolatedWebAppURLLoaderFactoryImpl::
+                                             DisconnectReceiversAndDestroy,
+                                         base::Unretained(this)));
+    }
   }
 
   IsolatedWebAppURLLoaderFactoryImpl(
@@ -318,7 +351,8 @@ class IsolatedWebAppURLLoaderFactoryImpl
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK(resource_request.url.SchemeIs(chrome::kIsolatedAppScheme));
+    CHECK(blink::CommonSchemeRegistry::IsIsolatedAppScheme(
+        resource_request.url.scheme()));
     DCHECK(resource_request.url.IsStandard());
 
     if (resource_request.headers.GetHeader("Service-Worker") == "script") {
@@ -346,8 +380,8 @@ class IsolatedWebAppURLLoaderFactoryImpl
     auto header_injection_client =
         std::make_unique<HeaderInjectionURLLoaderClient>(
             std::move(original_loader_client));
-    HeaderInjectionURLLoaderClient* header_injection_client_ptr =
-        header_injection_client.get();
+    base::WeakPtr<HeaderInjectionURLLoaderClient> weak_header_injection_client =
+        header_injection_client->GetWeakPtr();
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client;
     mojo::MakeSelfOwnedReceiver(std::move(header_injection_client),
                                 loader_client.InitWithNewPipeAndPassReceiver());
@@ -359,116 +393,45 @@ class IsolatedWebAppURLLoaderFactoryImpl
       return;
     }
 
-    if (!content::AreIsolatedWebAppsEnabled(profile_)) {
+    if (!browser_context_) {
+      // This field is unset if IWAs are not enabled.
       LogErrorAndFail("Isolated Web Apps are not available for this profile.",
                       std::move(loader_client));
       return;
     }
 
-    auto* provider = WebAppProvider::GetForWebApps(profile_);
-    if (!provider->on_registry_ready().is_signaled()) {
-      provider->on_registry_ready().Post(
-          FROM_HERE,
-          base::BindOnce(
-              &IsolatedWebAppURLLoaderFactoryImpl::CreateLoaderAndStart,
-              weak_factory_.GetWeakPtr(), std::move(loader_receiver),
-              request_id, options, resource_request, std::move(loader_client),
-              traffic_annotation));
-      return;
-    }
-
-    ASSIGN_OR_RETURN(IsolatedWebAppUrlInfo url_info,
-                     IsolatedWebAppUrlInfo::Create(resource_request.url),
-                     [&](std::string error) {
+    ASSIGN_OR_RETURN(web_package::SignedWebBundleId web_bundle_id,
+                     IwaClient::GetInstance()->CreateWebBundleIdFromURL(
+                         resource_request.url),
+                     [&](const std::string& error) {
                        LogErrorAndFail(std::move(error),
                                        std::move(loader_client));
                      });
 
-    if (frame_tree_node_id_.has_value()) {
-      auto* web_contents =
-          content::WebContents::FromFrameTreeNodeId(*frame_tree_node_id_);
-      if (web_contents == nullptr) {
-        // `web_contents` can be `nullptr` in certain edge cases, such as when
-        // the browser window closes concurrently with an ongoing request (see
-        // crbug.com/1477761). Return an error if that is the case, instead of
-        // silently not querying `IsolatedWebAppPendingInstallInfo`. Should we
-        // ever find a case where we _do_ want to continue request processing
-        // even though the `WebContents` no longer exists, we can change the
-        // below code to skip checking `IsolatedWebAppPendingInstallInfo`
-        // instead of returning an error.
-        LogErrorAndFail(
-            "Unable to find WebContents based on frame tree node id.",
-            std::move(loader_client));
-        return;
-      }
-      std::optional<IwaSourceWithMode> pending_install_app_source =
-          IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
-              .source();
-
-      if (pending_install_app_source.has_value()) {
-        HandleRequest(url_info, *pending_install_app_source,
-                      /*is_pending_install=*/true, std::move(loader_receiver),
-                      resource_request, std::move(loader_client),
-                      traffic_annotation);
-        return;
-      }
-    }
-
-    ASSIGN_OR_RETURN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider->registrar_unsafe(), url_info.app_id()),
-        [&](std::string error) {
-          LogErrorAndFail(std::move(error), std::move(loader_client));
-        });
-    auto location = IwaSourceWithMode::FromStorageLocation(
-        profile_->GetPath(), iwa.isolation_data()->location());
-
-    if (iwa.isolation_data()->location().dev_mode() &&
-        !IsIwaDevModeEnabled(&*profile_)) {
-      LogErrorAndFail(base::StrCat({"Unable to load Isolated Web App that was "
-                                    "installed in Developer Mode: ",
-                                    kIwaDevModeNotEnabledMessage}),
-                      std::move(loader_client));
-      return;
-    }
-
-    std::optional<std::string> csp_override = ComputeCspOverride(location);
-    if (csp_override.has_value()) {
-      header_injection_client_ptr->set_csp_override(csp_override.value());
-    }
-
-    IsolatedWebAppUpdateManager& update_manager =
-        provider->iwa_update_manager();
-    if (update_manager.IsUpdateBeingApplied(url_info.app_id())) {
-      update_manager.PrioritizeUpdateAndWait(
-          url_info.app_id(),
-          // We ignore whether or not the update was applied successfully - if
-          // it succeeds, we send the request to the updated version. If it
-          // fails, we send the request to the previous version and rely on the
-          // update system to retry the update at a later point.
-          base::IgnoreArgs<IsolatedWebAppUpdateApplyTask::CompletionStatus>(
-              base::BindOnce(&IsolatedWebAppURLLoaderFactoryImpl::HandleRequest,
-                             weak_factory_.GetWeakPtr(), url_info, location,
-                             /*is_pending_install=*/false,
-                             std::move(loader_receiver), resource_request,
-                             std::move(loader_client), traffic_annotation)));
-      return;
-    }
-
-    HandleRequest(url_info, location,
-                  /*is_pending_install=*/false, std::move(loader_receiver),
-                  resource_request, std::move(loader_client),
-                  traffic_annotation);
+    IwaClient::GetInstance()->GetIwaSourceForRequest(
+        browser_context_, web_bundle_id, resource_request, frame_tree_node_id_,
+        base::BindOnce(&IsolatedWebAppURLLoaderFactoryImpl::HandleRequest,
+                       weak_factory_.GetWeakPtr(), resource_request,
+                       web_bundle_id, std::move(loader_receiver),
+                       std::move(loader_client), traffic_annotation,
+                       weak_header_injection_client));
   }
 
   void HandleRequest(
-      const IsolatedWebAppUrlInfo& url_info,
-      const IwaSourceWithMode& source,
-      bool is_pending_install,
-      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       const network::ResourceRequest& resource_request,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      base::WeakPtr<HeaderInjectionURLLoaderClient>
+          weak_header_injection_client,
+      base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>
+          result) {
+    ASSIGN_OR_RETURN(IwaSourceWithModeOrGeneratedResponse source_or_response,
+                     std::move(result), [&](const std::string& error) {
+                       LogErrorAndFail(error, std::move(loader_client));
+                     });
+
     if (!IsSupportedHttpMethod(resource_request.method)) {
       CompleteWithGeneratedResponse(
           mojo::Remote<network::mojom::URLLoaderClient>(
@@ -477,41 +440,52 @@ class IsolatedWebAppURLLoaderFactoryImpl
       return;
     }
 
-    if (is_pending_install && resource_request.url.path() == kInstallPagePath) {
-      CompleteWithGeneratedResponse(
-          mojo::Remote<network::mojom::URLLoaderClient>(
-              std::move(loader_client)),
-          net::HTTP_OK, kInstallPageContent);
-      return;
-    }
-
-    std::visit(absl::Overload{
-                   [&](const IwaSourceBundleWithMode& bundle) {
-                     CHECK(!url_info.web_bundle_id().is_for_proxy_mode());
-                     IsolatedWebAppURLLoader::CreateAndStart(
-                         profile_, bundle.path(), bundle.dev_mode(),
-                         url_info.web_bundle_id(), std::move(loader_receiver),
-                         std::move(loader_client), resource_request,
-                         frame_tree_node_id_);
-                   },
-                   [&](const IwaSourceProxy& proxy) {
-                     CHECK(url_info.web_bundle_id().is_for_proxy_mode());
-                     HandleProxy(profile_, url_info.web_bundle_id(), proxy,
-                                 std::move(loader_receiver),
-                                 std::move(loader_client), resource_request,
-                                 traffic_annotation, frame_tree_node_id_);
-                   }},
-               source.variant());
+    std::visit(
+        absl::Overload{
+            [&](const GeneratedResponse& generated_response) {
+              CompleteWithGeneratedResponse(
+                  mojo::Remote<network::mojom::URLLoaderClient>(
+                      std::move(loader_client)),
+                  net::HTTP_OK, generated_response.response_body);
+            },
+            [&](const IwaSourceWithMode& source) {
+              if (weak_header_injection_client) {
+                if (auto csp_override = ComputeCspOverride(source)) {
+                  weak_header_injection_client->set_csp_override(*csp_override);
+                }
+              }
+              HandleRequestFromSource(resource_request, web_bundle_id, source,
+                                      std::move(loader_receiver),
+                                      std::move(loader_client),
+                                      traffic_annotation);
+            }},
+        source_or_response);
   }
 
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override {
-    if (profile == profile_) {
-      // When `profile_` gets destroyed, `this` factory is not able to serve any
-      // more requests.
-      profile_observation_.Reset();
-      DisconnectReceiversAndDestroy();
-    }
+  void HandleRequestFromSource(
+      const network::ResourceRequest& resource_request,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const IwaSourceWithMode& source,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+    std::visit(
+        absl::Overload{[&](const IwaSourceBundleWithMode& bundle) {
+                         CHECK(!web_bundle_id.is_for_proxy_mode());
+                         IsolatedWebAppURLLoader::CreateAndStart(
+                             browser_context_, bundle.path(), bundle.dev_mode(),
+                             web_bundle_id, std::move(loader_receiver),
+                             std::move(loader_client), resource_request,
+                             frame_tree_node_id_);
+                       },
+                       [&](const IwaSourceProxy& proxy) {
+                         CHECK(web_bundle_id.is_for_proxy_mode());
+                         HandleProxy(browser_context_, web_bundle_id, proxy,
+                                     std::move(loader_receiver),
+                                     std::move(loader_client), resource_request,
+                                     traffic_annotation, frame_tree_node_id_);
+                       }},
+        source.variant());
   }
 
   bool CanRequestUrl(const GURL& url) const {
@@ -523,12 +497,13 @@ class IsolatedWebAppURLLoaderFactoryImpl
     return app_origin_->IsSameOriginWith(url);
   }
 
-  // It is safe to store a pointer to a `Profile` here, since `this` is freed
-  // via `profile_observation_` when the `Profile` is destroyed.
-  const raw_ptr<Profile> profile_;
+  // These two fields will be null if `content::AreIsolatedWebAppsEnabled()` is
+  // false.
+  const raw_ptr<content::BrowserContext> browser_context_;
+  base::CallbackListSubscription browser_context_shutdown_subscription_;
+
   const std::optional<url::Origin> app_origin_;
   const std::optional<content::FrameTreeNodeId> frame_tree_node_id_;
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::WeakPtrFactory<IsolatedWebAppURLLoaderFactoryImpl> weak_factory_{this};
 };
 
@@ -545,8 +520,8 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateInternal(
   // more receivers - see the
   // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
   new IsolatedWebAppURLLoaderFactoryImpl(
-      Profile::FromBrowserContext(browser_context), std::move(app_origin),
-      frame_tree_node_id, pending_remote.InitWithNewPipeAndPassReceiver());
+      browser_context, std::move(app_origin), frame_tree_node_id,
+      pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;
 }
@@ -569,6 +544,11 @@ IsolatedWebAppURLLoaderFactory::Create(content::BrowserContext* browser_context,
                                        std::optional<url::Origin> app_origin) {
   return CreateInternal(browser_context, std::move(app_origin),
                         /*frame_tree_node_id=*/std::nullopt);
+}
+
+// static
+void IsolatedWebAppURLLoaderFactory::EnsureAssociatedFactoryBuilt() {
+  ShutdownNotifierFactory::GetInstance();
 }
 
 }  // namespace web_app
