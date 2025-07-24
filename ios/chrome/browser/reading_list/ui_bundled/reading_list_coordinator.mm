@@ -65,6 +65,7 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -82,6 +83,7 @@
 // we can move the SigninPromoViewConsumer implementation from the coordinator
 // to the view.
 @interface ReadingListCoordinator () <AccountSettingsPresenter,
+                                      AuthenticationServiceObserving,
                                       IdentityManagerObserverBridgeDelegate,
                                       ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
@@ -118,6 +120,9 @@
   id<ApplicationCommands> _applicationCommandsHandler;
   // Authentication Service to retrieve the user's signed-in state.
   raw_ptr<AuthenticationService> _authService;
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
   // Service to retrieve preference values.
   raw_ptr<PrefService> _prefService;
   // Manager for user's Google identities.
@@ -156,6 +161,8 @@
   _applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   _authService = AuthenticationServiceFactory::GetForProfile(profile);
+  _authServiceObserverBridge =
+      std::make_unique<AuthenticationServiceObserverBridge>(_authService, self);
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
   _prefService = profile->GetPrefs();
 
@@ -647,6 +654,12 @@
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self updateSignInPromoVisibility];
 }
 
 #pragma mark - Private
