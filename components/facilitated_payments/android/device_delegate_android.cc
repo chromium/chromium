@@ -29,9 +29,16 @@ DeviceDelegateAndroid::DeviceDelegateAndroid(content::WebContents* web_contents)
 
 DeviceDelegateAndroid::~DeviceDelegateAndroid() = default;
 
-bool DeviceDelegateAndroid::IsPixAccountLinkingSupported() const {
+WalletEligibilityForPixAccountLinking
+DeviceDelegateAndroid::IsPixAccountLinkingSupported() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_DeviceDelegate_isWalletEligibleForPixAccountLinking(env);
+  jint eligibility =
+      Java_DeviceDelegate_getWalletEligibilityForPixAccountLinking(env);
+  CHECK(eligibility >= static_cast<jint>(
+                           WalletEligibilityForPixAccountLinking::kEligible) &&
+        eligibility <= static_cast<jint>(WalletEligibilityForPixAccountLinking::
+                                             kWalletVersionNotSupported));
+  return static_cast<WalletEligibilityForPixAccountLinking>(eligibility);
 }
 
 void DeviceDelegateAndroid::LaunchPixAccountLinkingPage(std::string email) {

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/mock_device_delegate.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
@@ -65,7 +66,8 @@ class PixAccountLinkingManagerTest : public testing::Test {
     ON_CALL(client_, GetLastCommittedOrigin)
         .WillByDefault(testing::ReturnRef(kPixPaymentPageOrigin));
     ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
-        .WillByDefault(testing::Return(true));
+        .WillByDefault(
+            testing::Return(WalletEligibilityForPixAccountLinking::kEligible));
     ON_CALL(client(), IsWebContentsVisibleOrOccluded)
         .WillByDefault(testing::Return(true));
     // Simulate the payments server returns that the user is eligible for Pix
@@ -139,7 +141,8 @@ TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
 TEST_F(PixAccountLinkingManagerTest,
        PixAccountLinkingNotSupported_PromptNotShown) {
   ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
-      .WillByDefault(testing::Return(false));
+      .WillByDefault(testing::Return(
+          WalletEligibilityForPixAccountLinking::kWalletNotInstalled));
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
@@ -342,6 +345,15 @@ TEST_F(PixAccountLinkingManagerTest,
   std::move(on_return_to_chrome_callback).Run();
 }
 
+TEST_F(PixAccountLinkingManagerTest, ScreenlockNotEnabled_PromptNotShown) {
+  ON_CALL(client(), HasScreenlockOrBiometricSetup)
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+}
+
 TEST_F(PixAccountLinkingManagerTest, PromptAcceptedLogged) {
   base::HistogramTester histogram_tester;
 
@@ -381,16 +393,6 @@ TEST_F(PixAccountLinkingManagerTest, ScreenNotShown_PromptShownNotLogged) {
       /*expected_bucket_count=*/0);
 }
 
-TEST_F(PixAccountLinkingManagerTest, ScreenlockNotEnabled_PromptNotShown) {
-  ON_CALL(client(), HasScreenlockOrBiometricSetup)
-      .WillByDefault(testing::Return(false));
-
-  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
-
-  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
-  task_environment_.FastForwardBy(kShowPromptDelay);
-}
-
 class PixAccountLinkingManagerParameterizedTest
     : public PixAccountLinkingManagerTest,
       public testing::WithParamInterface<bool> {};
@@ -420,7 +422,7 @@ INSTANTIATE_TEST_SUITE_P(PixAccountLinkingManagerTestSuite,
                          PixAccountLinkingManagerParameterizedTest,
                          testing::Bool());
 
-TEST_F(PixAccountLinkingManagerTest, FlowExitedReason_UserDeclinedLogged) {
+TEST_F(PixAccountLinkingManagerTest, PromptDeclined_ExitedReasonLogged) {
   base::HistogramTester histogram_tester;
 
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
@@ -439,6 +441,134 @@ TEST_F(PixAccountLinkingManagerTest, FlowExitedReason_UserDeclinedLogged) {
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
       /*sample=*/PixAccountLinkingFlowExitedReason::kScreenClosedByUser,
       /*expected_count=*/0);
+}
+
+TEST_F(PixAccountLinkingManagerTest, WalletNotInstalled_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
+      .WillByDefault(testing::Return(
+          WalletEligibilityForPixAccountLinking::kWalletNotInstalled));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kWalletNotInstalled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       WalletVersionNotSupported_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
+      .WillByDefault(testing::Return(
+          WalletEligibilityForPixAccountLinking::kWalletVersionNotSupported));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kWalletVersionNotSupported,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       PixAccountLinkingPrefDisabled_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  autofill::prefs::SetFacilitatedPaymentsPixAccountLinking(pref_service_.get(),
+                                                           false);
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kUserOptedOut,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest, ScreenlockNotEnabled_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(client(), HasScreenlockOrBiometricSetup)
+      .WillByDefault(testing::Return(false));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/
+      PixAccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       ServerEligibilityCheckNotCompleted_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  // Simulate that the payments server hasn't yet returned eligibility.
+  EXPECT_CALL(
+      *multiple_request_payments_network_interface(),
+      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(
+          base::StrongAlias<autofill::payments::RequestIdTag, std::string>()));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kServerSideIneligible,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       ServerEligibilityCheckReturnsIneligible_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  // Simulate that the payments server hasn't yet returned eligibility.
+  EXPECT_CALL(
+      *multiple_request_payments_network_interface(),
+      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke([](long, auto callback, const std::string&) {
+        std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
+                                    PaymentsRpcResult::kSuccess,
+                                false);
+        return base::StrongAlias<autofill::payments::RequestIdTag,
+                                 std::string>();
+      }));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kServerSideIneligible,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest, TabNotActive_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(client(), IsWebContentsVisibleOrOccluded)
+      .WillByDefault(testing::Return(false));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kTabIsNotActive,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest, DifferentOrigin_ExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+  // Simulate that when the user returns to Chrome, they are on a different
+  // website.
+  url::Origin different_website_origin =
+      url::Origin::Create(GURL("https://www.different.com"));
+  ON_CALL(client(), GetLastCommittedOrigin)
+      .WillByDefault(testing::ReturnRef(different_website_origin));
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kUserSwitchedWebsite,
+      /*expected_bucket_count=*/1);
 }
 
 class PixAccountLinkingManagerTestForExitedReasons

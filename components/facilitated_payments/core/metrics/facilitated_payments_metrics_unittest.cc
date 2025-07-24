@@ -227,10 +227,18 @@ TEST_P(FacilitatedPaymentsMetricsPixAccountLinkingFlowExitedReasonTest,
 INSTANTIATE_TEST_SUITE_P(
     FacilitatedPaymentsMetricsTest,
     FacilitatedPaymentsMetricsPixAccountLinkingFlowExitedReasonTest,
-    testing::Values(PixAccountLinkingFlowExitedReason::kScreenNotShown,
-                    PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser,
-                    PixAccountLinkingFlowExitedReason::kScreenClosedByUser,
-                    PixAccountLinkingFlowExitedReason::kUserDeclined));
+    testing::Values(
+        PixAccountLinkingFlowExitedReason::kScreenNotShown,
+        PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser,
+        PixAccountLinkingFlowExitedReason::kScreenClosedByUser,
+        PixAccountLinkingFlowExitedReason::kUserDeclined,
+        PixAccountLinkingFlowExitedReason::kWalletNotInstalled,
+        PixAccountLinkingFlowExitedReason::kWalletVersionNotSupported,
+        PixAccountLinkingFlowExitedReason::kUserOptedOut,
+        PixAccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup,
+        PixAccountLinkingFlowExitedReason::kServerSideIneligible,
+        PixAccountLinkingFlowExitedReason::kTabIsNotActive,
+        PixAccountLinkingFlowExitedReason::kUserSwitchedWebsite));
 
 TEST(FacilitatedPaymentsMetricsTest,
      LogGetDetailsForCreatePaymentInstrumentResultAndLatency) {

@@ -130,7 +130,14 @@ enum class PixAccountLinkingFlowExitedReason {
   kScreenClosedNotByUser = 1,
   kScreenClosedByUser = 2,
   kUserDeclined = 3,
-  kMaxValue = kUserDeclined
+  kWalletNotInstalled = 4,
+  kWalletVersionNotSupported = 5,
+  kUserOptedOut = 6,
+  kNoScreenlockOrBiometricSetup = 7,
+  kServerSideIneligible = 8,
+  kTabIsNotActive = 9,
+  kUserSwitchedWebsite = 10,
+  kMaxValue = kUserSwitchedWebsite
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.AccountLinking.FlowExitedReason)
 

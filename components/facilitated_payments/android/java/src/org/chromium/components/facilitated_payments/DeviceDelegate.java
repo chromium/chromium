@@ -45,21 +45,23 @@ public class DeviceDelegate {
      * The Pix account linking prompt redirects to the Google Wallet app on acceptance. Checks if
      * Wallet is eligible for Pix account linking.
      *
-     * @return True if Google Wallet is installed, and the Wallet version supports Pix account
-     *     linking.
+     * @return An {@link WalletEligibilityForPixAccountLinking} indicating eligibility.
      */
     @CalledByNative
-    private static boolean isWalletEligibleForPixAccountLinking() {
+    private static @WalletEligibilityForPixAccountLinking int
+            getWalletEligibilityForPixAccountLinking() {
         PackageInfo walletPackageInfo =
                 PackageUtils.getPackageInfo(GOOGLE_WALLET_PACKAGE_NAME, /* flags= */ 0);
 
         // {@link PackageInfo} is null if the package is not installed.
         if (walletPackageInfo == null) {
-            return false;
+            return WalletEligibilityForPixAccountLinking.WALLET_NOT_INSTALLED;
         }
         // Verify Google Wallet version supports Pix account linking.
-        return PackageUtils.packageVersionCode(walletPackageInfo)
-                >= PIX_MIN_SUPPORTED_WALLET_VERSION;
+        if (PackageUtils.packageVersionCode(walletPackageInfo) < PIX_MIN_SUPPORTED_WALLET_VERSION) {
+            return WalletEligibilityForPixAccountLinking.WALLET_VERSION_NOT_SUPPORTED;
+        }
+        return WalletEligibilityForPixAccountLinking.ELIGIBLE;
     }
 
     @CalledByNative

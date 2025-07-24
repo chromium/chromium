@@ -15,6 +15,13 @@
 
 namespace payments::facilitated {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.facilitated_payments
+enum class WalletEligibilityForPixAccountLinking {
+  kEligible = 0,
+  kWalletNotInstalled = 1,
+  kWalletVersionNotSupported = 2
+};
+
 // Abstract base class for device-specific facilitated payments operations.
 // This class defines the interface for operations that require interaction
 // with the underlying device or platform, such as checking and opening other
@@ -26,7 +33,8 @@ class DeviceDelegate {
   virtual ~DeviceDelegate() = default;
 
   // Returns true if Pix account linking is supported by the device.
-  virtual bool IsPixAccountLinkingSupported() const = 0;
+  virtual WalletEligibilityForPixAccountLinking IsPixAccountLinkingSupported()
+      const = 0;
 
   // Takes user to the Pix account linking page. The `email` is used to provide
   // the gaia account that the user is signed into.

@@ -27,9 +27,10 @@ class DeviceDelegateAndroid : public DeviceDelegate {
   DeviceDelegateAndroid& operator=(const DeviceDelegateAndroid&) = delete;
   ~DeviceDelegateAndroid() override;
 
-  // Returns true if Google Wallet is installed, and its version supports Pix
-  // account linking.
-  bool IsPixAccountLinkingSupported() const override;
+  // Returns eligible if Google Wallet is installed, and its version supports
+  // Pix account linking.
+  WalletEligibilityForPixAccountLinking IsPixAccountLinkingSupported()
+      const override;
 
   // Opens the Pix account linking page in Google Wallet. The `email` is set to
   // the gaia account that the user logged into.
