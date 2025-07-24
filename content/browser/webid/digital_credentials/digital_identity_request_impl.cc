@@ -408,9 +408,9 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     // absent, the protocol specified in the original request will be used
     // instead. This fallback mechanism maintains backward compatibility with
     // digital wallets that do not include the protocol in their response.
-    std::move(callback_).Run(status,
-                             response->protocol.value_or(protocol.value()),
-                             std::move(response->data));
+    std::move(callback_).Run(
+        status, response->protocol.has_value() ? response->protocol : protocol,
+        std::move(response->data));
   } else {
     std::move(callback_).Run(status, std::nullopt, std::nullopt);
   }

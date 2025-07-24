@@ -1090,6 +1090,53 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
 }
 
 TEST_F(DigitalIdentityRequestImplTest,
+       ShouldGetWhenMultipleRequestsAndReturnProtocolInResponse) {
+  const Value kResponseData(Value::Dict().Set("token", "token data"));
+  const std::string kProtocolInResponse = "protocol1";
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+
+  DigitalCredentialGetRequestPtr request1 = DigitalCredentialGetRequest::New();
+  request1->protocol = "protocol1";
+  base::Value::Dict request1_data;
+  request1_data.Set("data", "request1 data");
+  request1->data = base::Value(std::move(request1_data));
+
+  DigitalCredentialGetRequestPtr request2 = DigitalCredentialGetRequest::New();
+  request2->protocol = "protocol2";
+  base::Value::Dict request2_data;
+  request2_data.Set("data", "request2 data");
+  request2->data = base::Value(std::move(request2_data));
+
+  requests.push_back(std::move(request1));
+  requests.push_back(std::move(request2));
+
+  base::RunLoop run_loop;
+
+  // Simulate a provider that returns a response without a protocol.
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .WillOnce(WithArg<3>([this, &kProtocolInResponse,
+                            &kResponseData](DigitalIdentityCallback callback) {
+        // Running the `callback` will destroy the provider, reset the
+        // pointer to avoid dangling pointers after invoking the callback.
+        reset_provider_pointer();
+
+        std::move(callback).Run(
+            DigitalCredential(kProtocolInResponse, kResponseData.Clone()));
+      }));
+
+  base::MockCallback<GetCallback> mock_callback;
+  // The protocol in the response should be used when invoking the callback.
+  EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kSuccess,
+                                 Optional(kProtocolInResponse), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       mock_callback.Get());
+
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
        ShouldErrorWhenMultipleRequestsAndNoProtocolInResponse) {
   const Value kResponseData(Value::Dict().Set("token", "token data"));
 
