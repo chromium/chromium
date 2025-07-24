@@ -369,7 +369,7 @@ BASE_FEATURE(kAutofillOptimizeFormExtraction,
 // TODO: crbug.com/392179445 - Clean up when launched.
 BASE_FEATURE(kAutofillFixSplitCreditCardImport,
              "AutofillFixSplitCreditCardImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, autofill will use FormFieldData::DeepEqual instead of deprecated
 // SameFieldAs().
