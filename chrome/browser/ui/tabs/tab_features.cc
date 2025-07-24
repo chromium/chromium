@@ -259,7 +259,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<glic::GlicTabIndicatorHelper>(&tab);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
-    if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
+    // TODO(crbug.com/433973411): Move this logic to a helper function.
+    if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+        profile->IsRegularProfile()) {
       actor_ui_tab_controller_ =
           std::make_unique<actor::ui::ActorUiTabController>(
               tab, actor::ActorKeyedService::Get(profile));
