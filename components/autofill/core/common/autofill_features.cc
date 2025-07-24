@@ -672,6 +672,20 @@ BASE_FEATURE(kAutofillMoreProminentPopup,
 const base::FeatureParam<int> kAutofillMoreProminentPopupMaxOffsetToCenterParam{
     &kAutofillMoreProminentPopup, "max_offset_to_center_px", 92};
 
+// TODO(crbug.com/346507576): Remove once the experiment is over.
+// When enabled, makes autocomplete label sensitive.
+BASE_FEATURE(kAutofillLabelSensitiveAutocomplete,
+             "AutofillLabelSensitiveAutocomplete",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Migration generation for the autocomplete label-sensitive feature.
+// If the migration generation received from the Finch server is greater than
+// the stored browser parameter, re-migrate AutocompleteTableLabelSensitive data
+// from the old AutocompleteTable.
+const base::FeatureParam<int>
+    kAutofillLabelSensitiveAutocompleteMigrationGeneration{
+        &kAutofillLabelSensitiveAutocomplete,
+        "autocomplete_label_sensitive_migration_generation", 0};
+
 // Enable the feature by default, and set the enabled percentage as a feature
 // param. We are logging information of field types, autofill status and
 // forms with a defined sampling rate of 10% on sessions.
