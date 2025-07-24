@@ -949,7 +949,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SnapWindowSuggestions" enum="BooleanToggled"
-    expires_after="2025-08-24">
+    expires_after="2026-05-21">
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -959,7 +959,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SunfishEnabled" enum="BooleanToggled"
-    expires_after="2025-10-25">
+    expires_after="2026-05-21">
   <owner>sophiewen@chromium.org</owner>
   <owner>curtismcmullan@google.com</owner>
   <summary>
