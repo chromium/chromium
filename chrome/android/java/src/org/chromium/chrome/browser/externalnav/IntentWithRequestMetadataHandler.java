@@ -38,15 +38,15 @@ public class IntentWithRequestMetadataHandler {
     /** Class representing the URL request metadata that can be retrieved later. */
     public static class RequestMetadata {
         private final boolean mHasUserGesture;
-        private final boolean mIsRendererIntiated;
+        private final boolean mIsRendererInitiated;
 
-        public RequestMetadata(boolean hasUserGesture, boolean isRendererIntiated) {
+        public RequestMetadata(boolean hasUserGesture, boolean isRendererInitiated) {
             mHasUserGesture = hasUserGesture;
-            mIsRendererIntiated = isRendererIntiated;
+            mIsRendererInitiated = isRendererInitiated;
         }
 
         public boolean isRendererInitiated() {
-            return mIsRendererIntiated;
+            return mIsRendererInitiated;
         }
 
         public boolean hasUserGesture() {
