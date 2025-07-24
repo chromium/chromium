@@ -167,6 +167,7 @@ class MultiContentsView : public views::View,
   int GetInactiveIndex();
 
   void OnWebContentsFocused(views::WebView*);
+  void OnNtpFooterFocused(views::WebView*);
 
   ViewWidths GetViewWidths(gfx::Rect available_space) const;
 
@@ -188,6 +189,10 @@ class MultiContentsView : public views::View,
   // is focused.
   std::vector<base::CallbackListSubscription>
       web_contents_focused_subscriptions_;
+
+  // Holds subscriptions for when the attached web contents to NtpFooterView
+  // is focused.
+  std::vector<base::CallbackListSubscription> ntp_footer_focused_subscriptions_;
 
   // The handle responsible for resizing the two contents views as relative to
   // each other.

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
@@ -77,6 +78,14 @@ MultiContentsView::MultiContentsView(
             ->AddWebContentsFocusedCallback(
                 base::BindRepeating(&MultiContentsView::OnWebContentsFocused,
                                     base::Unretained(this))));
+
+    if (contents_container_view->GetNewTabFooterView()) {
+      ntp_footer_focused_subscriptions_.push_back(
+          contents_container_view->GetNewTabFooterView()
+              ->AddWebContentsFocusedCallback(
+                  base::BindRepeating(&MultiContentsView::OnNtpFooterFocused,
+                                      base::Unretained(this))));
+    }
   }
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
@@ -246,6 +255,19 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
     if (GetInactiveContentsView()->web_contents() == web_view->web_contents() &&
         GetWidget()->IsVisible()) {
       delegate_->WebContentsFocused(web_view->web_contents());
+    }
+  }
+}
+
+void MultiContentsView::OnNtpFooterFocused(views::WebView* web_view) {
+  if (IsInSplitView() && GetWidget()->IsVisible()) {
+    for (auto* contents_container_view : contents_container_views_) {
+      if (contents_container_view->GetNewTabFooterView() == web_view &&
+          GetInactiveContentsView() ==
+              contents_container_view->GetContentsView()) {
+        return delegate_->WebContentsFocused(
+            GetInactiveContentsView()->web_contents());
+      }
     }
   }
 }

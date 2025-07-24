@@ -36,10 +36,7 @@
 namespace {
 constexpr float kContentCornerRadius = 6;
 constexpr gfx::RoundedCornersF kContentRoundedCorners{kContentCornerRadius};
-constexpr gfx::RoundedCornersF kContentUpperRoundedCorners =
-    gfx::RoundedCornersF{kContentCornerRadius, kContentCornerRadius, 0, 0};
-constexpr gfx::RoundedCornersF kContentLowerRoundedCorners =
-    gfx::RoundedCornersF{0, 0, kContentCornerRadius, kContentCornerRadius};
+
 constexpr int kContentOutlineCornerRadius = 8;
 constexpr int kContentOutlineThickness = 1;
 constexpr int kSplitViewContentPadding = 4;
@@ -51,24 +48,13 @@ constexpr int kNewTabFooterHeight = 56;
 ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
+  // The default z-order is the order in which children were added to the
+  // parent view. So first added the content view and new tab page footer.
+  // This should be followed by scrims, borders and lastly mini-toolbar.
+
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
   contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
-
-  contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
-  contents_scrim_view_->layer()->SetName("ContentsScrimView");
-
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
-    glic_border_ =
-        AddChildView(views::Builder<glic::GlicBorderView>(
-                         glic::GlicBorderView::Factory::Create(
-                             browser_view->browser(), contents_view_))
-                         .SetVisible(false)
-                         .SetCanProcessEventsWithinSubtree(false)
-                         .Build());
-  }
-#endif
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     new_tab_footer_view_separator_ =
@@ -82,10 +68,28 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
     new_tab_footer_view_->SetVisible(false);
   }
 
+  contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
+  contents_scrim_view_->layer()->SetName("ContentsScrimView");
+
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     inactive_split_scrim_view_ =
         AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
     inactive_split_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
+  }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
+    glic_border_ =
+        AddChildView(views::Builder<glic::GlicBorderView>(
+                         glic::GlicBorderView::Factory::Create(
+                             browser_view->browser(), contents_view_))
+                         .SetVisible(false)
+                         .SetCanProcessEventsWithinSubtree(false)
+                         .Build());
+  }
+#endif
+
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
         browser_view, contents_view_));
   }
@@ -99,12 +103,7 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   // split.
   if (!is_in_split) {
     SetBorder(nullptr);
-    contents_view_->holder()->SetCornerRadii(gfx::RoundedCornersF{0});
-    contents_view_->SetBackgroundRadii(gfx::RoundedCornersF{0});
-    contents_scrim_view_->SetRoundedCorners(gfx::RoundedCornersF{0});
-    if (new_tab_footer_view_) {
-      new_tab_footer_view_->holder()->SetCornerRadii(gfx::RoundedCornersF{0});
-    }
+    ClearBorderRoundedCorners();
     mini_toolbar_->SetVisible(false);
     inactive_split_scrim_view_->SetVisible(false);
     return;
@@ -122,14 +121,8 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
                                      kContentOutlineCornerRadius, color),
       gfx::Insets(kSplitViewContentPadding)));
 
-  UpdateContentsViewRoundedCorners();
-  if (contents_scrim_view_->layer()->rounded_corner_radii() !=
-      kContentRoundedCorners) {
-    contents_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
-  }
-  if (new_tab_footer_view_) {
-    new_tab_footer_view_->holder()->SetCornerRadii(kContentLowerRoundedCorners);
-  }
+  UpdateBorderRoundedCorners();
+
   // Mini toolbar should only be visible for the inactive contents
   // container view or both depending on configuration.
   mini_toolbar_->UpdateState(is_active);
@@ -138,19 +131,43 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   inactive_split_scrim_view_->SetVisible(!is_active && show_scrim);
 }
 
-void ContentsContainerView::UpdateContentsViewRoundedCorners() {
+void ContentsContainerView::UpdateBorderRoundedCorners() {
+  constexpr gfx::RoundedCornersF kContentUpperRoundedCorners =
+      gfx::RoundedCornersF{kContentCornerRadius, kContentCornerRadius, 0, 0};
+  constexpr gfx::RoundedCornersF kContentLowerRoundedCorners =
+      gfx::RoundedCornersF{0, 0, kContentCornerRadius, kContentCornerRadius};
+
   auto radii = new_tab_footer_view_ && new_tab_footer_view_->GetVisible()
                    ? kContentUpperRoundedCorners
                    : kContentRoundedCorners;
-  if (contents_view_->GetBackgroundRadii() != radii) {
-    contents_view_->holder()->SetCornerRadii(radii);
-    contents_view_->SetBackgroundRadii(radii);
+
+  contents_view_->holder()->SetCornerRadii(radii);
+
+  if (new_tab_footer_view_) {
+    new_tab_footer_view_->holder()->SetCornerRadii(kContentLowerRoundedCorners);
   }
+
+  if (contents_scrim_view_->layer()->rounded_corner_radii() !=
+      kContentRoundedCorners) {
+    contents_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
+  }
+}
+
+void ContentsContainerView::ClearBorderRoundedCorners() {
+  constexpr gfx::RoundedCornersF kNoRoundedCorners = gfx::RoundedCornersF{0};
+
+  contents_view_->holder()->SetCornerRadii(kNoRoundedCorners);
+
+  if (new_tab_footer_view_) {
+    new_tab_footer_view_->holder()->SetCornerRadii(kNoRoundedCorners);
+  }
+
+  contents_scrim_view_->SetRoundedCorners(kNoRoundedCorners);
 }
 
 void ContentsContainerView::ChildVisibilityChanged(View* child) {
   if (child == new_tab_footer_view_ && is_in_split_) {
-    UpdateContentsViewRoundedCorners();
+    UpdateBorderRoundedCorners();
   }
 }
 
@@ -194,7 +211,7 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic_border_ && glic_border_->GetVisible()) {
+  if (glic_border_) {
     layouts.child_layouts.emplace_back(
         glic_border_.get(), glic_border_->GetVisible(), contents_bounds);
   }

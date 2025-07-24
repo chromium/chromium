@@ -46,7 +46,8 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
                               bool show_scrim);
 
  private:
-  void UpdateContentsViewRoundedCorners();
+  void UpdateBorderRoundedCorners();
+  void ClearBorderRoundedCorners();
 
   // View:
   void ChildVisibilityChanged(View* child) override;
@@ -58,12 +59,6 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   bool is_in_split_ = false;
 
   raw_ptr<ContentsWebView> contents_view_;
-  // The scrim view that covers the content area when a tab-modal dialog is
-  // open.
-  raw_ptr<ScrimView> contents_scrim_view_;
-
-  // The glic browser view that renders around the web contents area.
-  raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
 
   // The view that shows a footer at the bottom of the contents
   // container on new tab pages.
@@ -71,9 +66,16 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   // Separator between the web contents and the Footer.
   raw_ptr<views::View> new_tab_footer_view_separator_ = nullptr;
 
+  // The scrim view that covers the content area when a tab-modal dialog is
+  // open.
+  raw_ptr<ScrimView> contents_scrim_view_;
+
   // Scrim view shown on the inactive side of a split view when the omnibox is
   // focused or site permissions dialogs are showing.
   raw_ptr<ScrimView> inactive_split_scrim_view_ = nullptr;
+
+  // The glic browser view that renders around the web contents area.
+  raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
 
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_ = nullptr;
 };
