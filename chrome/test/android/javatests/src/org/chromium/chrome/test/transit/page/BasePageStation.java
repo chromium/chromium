@@ -19,6 +19,8 @@ import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
@@ -353,7 +355,11 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         }
 
         @Override
-        public void didAddTab(Tab tab, int type, int creationState, boolean markedForSelection) {
+        public void didAddTab(
+                Tab tab,
+                @TabLaunchType int type,
+                @TabCreationState int creationState,
+                boolean markedForSelection) {
             notifyCalled();
         }
 

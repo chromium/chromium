@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -155,8 +156,8 @@ public class IncognitoTabModelTest {
                                 @Override
                                 public void didAddTab(
                                         Tab tab,
-                                        int type,
-                                        int creationState,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
                                         boolean markedForSelection) {
                                     didAddTabCallbackHelper.notifyCalled();
                                 }

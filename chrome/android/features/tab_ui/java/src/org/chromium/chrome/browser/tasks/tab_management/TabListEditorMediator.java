@@ -125,7 +125,7 @@ class TabListEditorMediator
                     @Override
                     public void didAddTab(
                             Tab tab,
-                            int type,
+                            @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
                         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
