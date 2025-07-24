@@ -311,11 +311,14 @@ EventRewriterDelegateImpl::GetExtendedFkeySetting(int device_id,
     return std::nullopt;
   }
 
-  CHECK(settings->f11.has_value() && settings->f12.has_value());
-  if (key_code == ui::KeyboardCode::VKEY_F11) {
+  if (settings->f11.has_value() && key_code == ui::KeyboardCode::VKEY_F11) {
     return settings->f11;
+  } else if (settings->f12.has_value() &&
+             key_code == ui::KeyboardCode::VKEY_F12) {
+    return settings->f12;
   }
-  return settings->f12;
+
+  return std::nullopt;
 }
 
 void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedByFnKey(
