@@ -840,8 +840,6 @@ def setup_env():
   # of args.
   # TODO(crbug.com/40567963): Make the GN-dependent deps controllable via cmd
   # line args.
-  if not env.get('GN_ARGS'):
-    env['GN_ARGS'] = 'enable_nacl = true'
   if not env.get('USE'):
     env['USE'] = 'highdpi'
   return env
