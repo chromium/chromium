@@ -36,7 +36,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
@@ -5534,11 +5533,8 @@ TEST_P(SSLClientSocketReadTest, IdleAfterRead) {
   bssl::UniquePtr<EVP_PKEY> pkey =
       key_util::LoadEVP_PKEYFromPEM(certs_dir.AppendASCII("ok_cert.pem"));
   ASSERT_TRUE(pkey);
-  std::unique_ptr<crypto::RSAPrivateKey> key =
-      crypto::RSAPrivateKey::CreateFromKey(pkey.get());
-  ASSERT_TRUE(key);
   std::unique_ptr<SSLServerContext> server_context =
-      CreateSSLServerContext(cert.get(), *key.get(), GetServerConfig());
+      CreateSSLServerContext(cert.get(), pkey.get(), GetServerConfig());
 
   // Complete the SSL handshake on both sides.
   std::unique_ptr<SSLClientSocket> client(CreateSSLClientSocket(
@@ -5621,17 +5617,11 @@ TEST_F(SSLClientSocketTest, SSLOverSSLBadCertificate) {
   ASSERT_THAT(client_callback.GetResult(client_rv), IsOk());
 
   // Set up a pair of SSL servers.
-  std::unique_ptr<crypto::RSAPrivateKey> ok_key =
-      crypto::RSAPrivateKey::CreateFromKey(ok_pkey.get());
-  ASSERT_TRUE(ok_key);
   std::unique_ptr<SSLServerContext> ok_server_context =
-      CreateSSLServerContext(ok_cert.get(), *ok_key.get(), SSLServerConfig());
+      CreateSSLServerContext(ok_cert.get(), ok_pkey.get(), SSLServerConfig());
 
-  std::unique_ptr<crypto::RSAPrivateKey> expired_key =
-      crypto::RSAPrivateKey::CreateFromKey(expired_pkey.get());
-  ASSERT_TRUE(expired_key);
   std::unique_ptr<SSLServerContext> expired_server_context =
-      CreateSSLServerContext(expired_cert.get(), *expired_key.get(),
+      CreateSSLServerContext(expired_cert.get(), expired_pkey.get(),
                              SSLServerConfig());
 
   // Complete the proxy SSL handshake with ok_cert.pem. This should succeed.

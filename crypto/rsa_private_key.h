@@ -37,11 +37,6 @@ class CRYPTO_EXPORT RSAPrivateKey {
   static std::unique_ptr<RSAPrivateKey> CreateFromPrivateKeyInfo(
       base::span<const uint8_t> input);
 
-  // Create a new instance from an existing EVP_PKEY, taking a
-  // reference to it. |key| must be an RSA key. Returns NULL on
-  // failure.
-  static std::unique_ptr<RSAPrivateKey> CreateFromKey(EVP_PKEY* key);
-
   EVP_PKEY* key() const { return key_.get(); }
 
   // Creates a copy of the object.
