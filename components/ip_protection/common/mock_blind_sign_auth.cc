@@ -46,16 +46,8 @@ void MockBlindSignAuth::GetTokens(
 void MockBlindSignAuth::GetAttestationTokens(
     int num_tokens,
     quiche::ProxyLayer layer,
-    quiche::AttestationDataCallback callback) {
-  NOTREACHED() << "Not implemented";
-}
-
-void MockBlindSignAuth::AttestAndSign(
-    int num_tokens,
-    quiche::ProxyLayer layer,
-    std::string attestation_data,
-    std::optional<std::string> token_challenge,
-    quiche::SignedTokenCallback callback) {
+    quiche::AttestationDataCallback attestation_data_callback,
+    quiche::SignedTokenCallback token_callback) {
   NOTREACHED() << "Not implemented";
 }
 

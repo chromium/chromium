@@ -92,6 +92,7 @@ void IpProtectionConfigHttp::DoRequest(
     case quiche::BlindSignMessageRequestType::kAuthAndSign:
       replacements.SetPathStr(ip_protection_server_get_tokens_path_);
       break;
+    case quiche::BlindSignMessageRequestType::kAttestAndSign:
     case quiche::BlindSignMessageRequestType::kUnknown:
       NOTREACHED();
   }

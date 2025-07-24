@@ -145,6 +145,7 @@ void BlindSignMessageAndroidImpl::SendRequest(
               /*start_time=*/base::TimeTicks::Now())));
       break;
     }
+    case quiche::BlindSignMessageRequestType::kAttestAndSign:
     case quiche::BlindSignMessageRequestType::kUnknown:
       NOTREACHED();
   }
