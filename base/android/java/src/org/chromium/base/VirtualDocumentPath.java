@@ -26,6 +26,27 @@ import java.io.OutputStream;
  */
 @NullMarked
 class VirtualDocumentPath {
+    static class CreateOrOpenResult {
+        public final Uri contentUri;
+        public final boolean created;
+
+        private CreateOrOpenResult(Uri contentUri, boolean created) {
+            this.contentUri = contentUri;
+            this.created = created;
+        }
+
+        @CalledByNative("CreateOrOpenResult")
+        @JniType("std::string")
+        String getContentUriString() {
+            return this.contentUri.toString();
+        }
+
+        @CalledByNative("CreateOrOpenResult")
+        boolean getCreated() {
+            return this.created;
+        }
+    }
+
     private static final String TAG = "VirtualDocumentPath";
 
     private static final String VIRTUAL_PATH_MARKER = "SAF";
@@ -238,33 +259,43 @@ class VirtualDocumentPath {
      */
     @CalledByNative
     boolean writeFile(byte[] data) {
-        Uri file = createIfNotExist();
-        if (file == null) return false;
+        CreateOrOpenResult result = createOrOpen();
+        if (result == null) return false;
 
-        try (OutputStream out = mResolver.openOutputStream(file)) {
+        try (OutputStream out = mResolver.openOutputStream(result.contentUri)) {
             if (out == null) return false;
             out.write(data);
             return true;
         } catch (Exception e) {
-            Log.w(TAG, "Failed to write to " + file);
+            Log.w(TAG, "Failed to write to " + result.contentUri);
             return false;
         }
     }
 
-    private @Nullable Uri createIfNotExist() {
+    /**
+     * Creates an empty file if it does not exist and its parent directory exists. It returns the
+     * content uri if the file exists or created.
+     */
+    @CalledByNative
+    @Nullable
+    CreateOrOpenResult createOrOpen() {
         Pair<VirtualDocumentPath, String> pair = splitPath();
         if (pair == null) return null;
         VirtualDocumentPath parent = pair.first;
         String basename = pair.second;
 
         Uri contentUri = resolveToContentUri();
-        if (contentUri != null) return contentUri;
+        if (contentUri != null) {
+            return new CreateOrOpenResult(contentUri, false);
+        }
 
         Uri parentUri = parent.resolveToContentUri();
         if (parentUri == null) return null;
 
         try {
-            return DocumentsContract.createDocument(mResolver, parentUri, "", basename);
+            Uri uri = DocumentsContract.createDocument(mResolver, parentUri, "", basename);
+            if (uri == null) return null;
+            return new CreateOrOpenResult(uri, true);
         } catch (Exception e) {
             Log.w(TAG, "Failed to create file");
             return null;

@@ -65,4 +65,17 @@ bool VirtualDocumentPath::WriteFile(span<const uint8_t> data) const {
   return Java_VirtualDocumentPath_writeFile(env, obj_, bs);
 }
 
+std::optional<std::pair<std::string, bool>> VirtualDocumentPath::CreateOrOpen()
+    const {
+  JNIEnv* env = android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> result =
+      Java_VirtualDocumentPath_createOrOpen(env, obj_);
+  if (result.is_null()) {
+    return std::nullopt;
+  }
+  std::string uri = Java_CreateOrOpenResult_getContentUriString(env, result);
+  bool created = Java_CreateOrOpenResult_getCreated(env, result);
+  return std::make_pair(uri, created);
+}
+
 }  // namespace base::files_internal

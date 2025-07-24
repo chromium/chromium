@@ -43,6 +43,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #include "base/android/virtual_document_path.h"
+#include "base/files/file_android.h"
 #include "base/os_compat_android.h"
 #endif
 
@@ -638,26 +639,19 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
 
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
-    std::optional<FilePath> content_uri = base::ResolveToContentUri(path);
-    if (!content_uri) {
-      error_details_ = FILE_ERROR_FAILED;
-      return;
-    }
-    java_parcel_file_descriptor_ =
-        internal::OpenContentUri(*content_uri, flags);
-
-    int fd = internal::ContentUriGetFd(java_parcel_file_descriptor_);
-    if (fd < 0) {
-      error_details_ = FILE_ERROR_FAILED;
+    auto result = files_internal::OpenAndroidFile(path, flags);
+    if (!result.has_value()) {
+      error_details_ = result.error();
       return;
     }
 
     // Save path for any call to GetInfo().
-    path_ = *std::move(content_uri);
-    created_ = (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE));
+    path_ = result->content_uri;
+    file_.reset(result->fd);
+    java_parcel_file_descriptor_ = result->java_parcel_file_descriptor;
+    created_ = result->created;
     async_ = (flags & FLAG_ASYNC);
     error_details_ = FILE_OK;
-    file_.reset(fd);
     return;
   }
 #endif

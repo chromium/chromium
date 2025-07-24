@@ -108,6 +108,12 @@ class VirtualDocumentPath {
   // has been successfully written, and false otherwise.
   bool WriteFile(span<const uint8_t> data) const;
 
+  // Creates an empty file if it does not exist and its parent directory exists.
+  // If the file exists or created, it returns a pair of two values where the
+  // first value is the content URI, and the second is a bool which is true if
+  // the file has been created and false if the file already existed.
+  std::optional<std::pair<std::string, bool>> CreateOrOpen() const;
+
  private:
   explicit VirtualDocumentPath(const base::android::JavaRef<jobject>& obj);
 
