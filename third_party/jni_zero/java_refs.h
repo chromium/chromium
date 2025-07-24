@@ -228,12 +228,6 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 
   ScopedJavaLocalRef(JNIEnv* env, const JavaRef<T>& other) { Reset(other); }
 
-  // Assumes that |obj| is a local reference to a Java object and takes
-  // ownership of this local reference.
-  // TODO(torne): make legitimate uses call Adopt() instead, and make this
-  // private.
-  ScopedJavaLocalRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj), env_(env) {}
-
   ~ScopedJavaLocalRef() { Reset(); }
 
   // Null assignment, for disambiguation.
@@ -297,7 +291,14 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // Alias for Release(). For use in templates when global refs are invalid.
   T ReleaseLocal() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
 
+#if !JNI_ZERO_ENABLE_COMPAT_API
  private:
+#endif
+  ScopedJavaLocalRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj), env_(env) {}
+#if JNI_ZERO_ENABLE_COMPAT_API
+ private:
+#endif
+
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
   JNIEnv* env_ = nullptr;

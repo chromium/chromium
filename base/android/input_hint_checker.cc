@@ -95,7 +95,8 @@ void InputHintChecker::SetView(
     // j.l.reflect.Method via double-reflection.
     TransitionToState(InitState::kInProgress);
     view_class_ = ScopedJavaGlobalRef<jobject>(
-        env, ScopedJavaLocalRef(env, env->GetObjectClass(root_view.obj())));
+        env, ScopedJavaLocalRef<jobject>::Adopt(
+                 env, env->GetObjectClass(root_view.obj())));
     pthread_t new_thread;
     if (pthread_create(&new_thread, nullptr, OffThreadInitInvoker::Run,
                        nullptr) != 0) {

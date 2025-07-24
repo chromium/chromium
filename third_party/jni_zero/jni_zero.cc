@@ -45,7 +45,7 @@ jclass LazyGetClassInternal(JNIEnv* env,
                             const char* split_name,
                             std::atomic<jclass>* atomic_class_id) {
   jclass ret = nullptr;
-  ScopedJavaLocalRef<jclass> local_ref(
+  auto local_ref = ScopedJavaLocalRef<jclass>::Adopt(
       env, GetClassInternal(env, class_name, split_name));
   jclass global_ref = static_cast<jclass>(env->NewGlobalRef(local_ref.obj()));
   if (atomic_class_id->compare_exchange_strong(ret, global_ref,
