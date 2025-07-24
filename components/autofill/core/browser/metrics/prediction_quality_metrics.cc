@@ -705,7 +705,8 @@ void LogPredictionQualityMetrics(
 
   const FieldTypeSet& possible_types =
       metric_type == TYPE_AUTOCOMPLETE_BASED
-          ? FieldTypeSet{AutofillType(field.html_type()).GetStorableType()}
+          ? FieldTypeSet{HtmlFieldTypeToBestCorrespondingFieldType(
+                field.html_type())}
           : field.possible_types();
 
   // Get the best type classification we can for the field.
