@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/register_bound_session_payload.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -81,6 +82,27 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
     std::string token_binding_challenge;
   };
 
+  // It contains the information about the device-bound session necessary for
+  // the client to manage it. Present only if the request was for a
+  // device-bound session.
+  struct COMPONENT_EXPORT(GOOGLE_APIS) DeviceBoundSession {
+    // The supported top-level domains.
+    enum class Domain { kUnknown, kGoogle, kYoutube };
+
+    DeviceBoundSession();
+    ~DeviceBoundSession();
+
+    DeviceBoundSession(const DeviceBoundSession& other) = delete;
+    DeviceBoundSession& operator=(const DeviceBoundSession& other) = delete;
+
+    DeviceBoundSession(DeviceBoundSession&& other);
+    DeviceBoundSession& operator=(DeviceBoundSession&& other);
+
+    bool is_device_bound = false;
+    Domain domain = Domain::kUnknown;
+    std::optional<RegisterBoundSessionPayload> register_session_payload;
+  };
+
   // Parses cookies and status from JSON response. Maps status to
   // GoogleServiceAuthError::State values or sets error to
   // UNEXPECTED_SERVER_RESPONSE if JSON string cannot be parsed.
@@ -92,15 +114,18 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
       const CookieDecryptor& cookie_decryptor = base::NullCallback());
 
   explicit OAuthMultiloginResult(OAuthMultiloginResponseStatus status);
-  OAuthMultiloginResult(const OAuthMultiloginResult& other);
-  OAuthMultiloginResult& operator=(const OAuthMultiloginResult& other);
+  OAuthMultiloginResult(const OAuthMultiloginResult& other) = delete;
+  OAuthMultiloginResult& operator=(const OAuthMultiloginResult& other) = delete;
   ~OAuthMultiloginResult();
 
-  std::vector<net::CanonicalCookie> cookies() const { return cookies_; }
-  std::vector<FailedAccount> failed_accounts() const {
+  const std::vector<net::CanonicalCookie>& cookies() const { return cookies_; }
+  const std::vector<FailedAccount>& failed_accounts() const {
     return failed_accounts_;
   }
   OAuthMultiloginResponseStatus status() const { return status_; }
+  const std::vector<DeviceBoundSession>& device_bound_sessions() const {
+    return device_bound_sessions_;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest, TryParseCookiesFromValue);
@@ -116,9 +141,15 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
   // either not valid or required to sign over a token binding challenge.
   void TryParseFailedAccountsFromValue(const base::Value::Dict& json_value);
 
+  // It parses the device-bound sessions info from the response. It is expected
+  // to be called only if the response status is `kOk`.
+  void TryParseDeviceBoundSessionsFromValue(
+      const base::Value::Dict& json_value);
+
   std::vector<net::CanonicalCookie> cookies_;
   std::vector<FailedAccount> failed_accounts_;
   OAuthMultiloginResponseStatus status_;
+  std::vector<DeviceBoundSession> device_bound_sessions_;
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH_MULTILOGIN_RESULT_H_
