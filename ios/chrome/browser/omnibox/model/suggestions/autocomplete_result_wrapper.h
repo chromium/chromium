@@ -45,6 +45,9 @@ class TemplateURLService;
 /// profile pref Service.
 @property(nonatomic, assign) PrefService* profilePrefService;
 
+/// Whether it's the lens overlay omnibox.
+@property(nonatomic, assign) BOOL isLensOverlay;
+
 /// Disconnects the wrapper.
 - (void)disconnect;
 

@@ -116,6 +116,7 @@
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
   if (self.profilePrefService) {
     _aimShortcutAvailable =
+        !self.isLensOverlay &&
         base::FeatureList::IsEnabled(kIOSOmniboxAimShortcut) &&
         IsAIMAvailable(self.profilePrefService, templateURLService);
   }
