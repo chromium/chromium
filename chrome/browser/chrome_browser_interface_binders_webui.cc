@@ -650,6 +650,9 @@ void PopulateChromeWebUIFrameBinders(
                                          SuggestInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
+      password_manager::mojom::PageHandlerFactory, PasswordManagerUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
       customize_color_scheme_mode::mojom::
           CustomizeColorSchemeModeHandlerFactory,
       CustomizeChromeUI, settings::SettingsUI>(map);

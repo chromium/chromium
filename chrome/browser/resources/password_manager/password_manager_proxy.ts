@@ -4,8 +4,13 @@
 
 /**
  * @fileoverview PasswordManagerProxy is an abstraction over
- * chrome.passwordsPrivate which facilitates testing.
+ * chrome.passwordsPrivate and a Mojo remote. It is intended to facilitate
+ * testing. The chrome.passwordsPrivate API is being migrated to use Mojo.
  */
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './password_manager.mojom-webui.js';
 
 export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
@@ -422,6 +427,16 @@ export interface PasswordManagerProxy {
  * Implementation that accesses the private API.
  */
 export class PasswordManagerImpl implements PasswordManagerProxy {
+  callbackRouter: PageCallbackRouter = new PageCallbackRouter();
+  handler: PageHandlerRemote = new PageHandlerRemote();
+
+  constructor() {
+    const factory = PageHandlerFactory.getRemote();
+    factory.createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
   addSavedPasswordListChangedListener(listener: CredentialsChangedListener) {
     chrome.passwordsPrivate.onSavedPasswordsListChanged.addListener(listener);
   }
@@ -674,15 +689,18 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   deleteAllPasswordManagerData() {
-    return chrome.passwordsPrivate.deleteAllPasswordManagerData();
+    return loadTimeData.getBoolean('enablePasswordManagerMojoApi') ?
+        this.handler.deleteAllPasswordManagerData().then(
+            result => result.success) :
+        chrome.passwordsPrivate.deleteAllPasswordManagerData();
   }
 
   static getInstance(): PasswordManagerProxy {
     return instance || (instance = new PasswordManagerImpl());
   }
 
-  static setInstance(obj: PasswordManagerProxy) {
-    instance = obj;
+  static setInstance(proxy: PasswordManagerProxy) {
+    instance = proxy;
   }
 }
 

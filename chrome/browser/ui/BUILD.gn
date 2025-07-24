@@ -1636,6 +1636,8 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/webui/new_tab_page/composebox",
       "//chrome/browser/ui/webui/new_tab_page/ntp_promo",
+      "//chrome/browser/ui/webui/password_manager:mojo_bindings",
+      "//chrome/browser/ui/webui/password_manager:password_manager_ui_handler",
       "//chrome/browser/ui/webui/privacy_sandbox",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/settings",

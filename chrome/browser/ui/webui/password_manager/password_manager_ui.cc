@@ -778,3 +778,19 @@ void PasswordManagerUI::CreateHelpBubbleHandler(
           PasswordManagerUI::kAccountStoreToggleElementId,
           PasswordManagerUI::kOverflowMenuElementId});
 }
+
+void PasswordManagerUI::BindInterface(
+    mojo::PendingReceiver<password_manager::mojom::PageHandlerFactory>
+        receiver) {
+  password_manager_page_factory_receiver_.reset();
+  password_manager_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void PasswordManagerUI::CreatePageHandler(
+    mojo::PendingRemote<password_manager::mojom::Page> page,
+    mojo::PendingReceiver<password_manager::mojom::PageHandler> receiver) {
+  DCHECK(page);
+  password_manager_ui_handler_ = std::make_unique<PasswordManagerUIHandler>(
+      std::move(receiver), std::move(page), passwords_private_delegate_,
+      web_ui()->GetWebContents());
+}
