@@ -1106,8 +1106,8 @@ ShapeResult* HarfBuzzShaper::Shape(const Font* font,
                                    TextDirection direction,
                                    unsigned start,
                                    unsigned end) const {
-  DCHECK_GE(end, start);
-  DCHECK_LE(end, text_.length());
+  CHECK_GE(end, start);
+  CHECK_LE(end, text_.length());
 
   const unsigned length = end - start;
   ShapeResult* result =
