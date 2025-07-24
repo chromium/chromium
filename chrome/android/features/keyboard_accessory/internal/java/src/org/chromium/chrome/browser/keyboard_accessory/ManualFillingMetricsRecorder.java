@@ -126,7 +126,6 @@ public class ManualFillingMetricsRecorder {
         assert tabType != AccessoryTabType.OBSOLETE_TOUCH_TO_FILL;
         assert tabType != AccessoryTabType.ALL;
 
-        // TODO(crbug.com/41460210): Double-check we don't record twice with new address filling.
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramForType(
                         UMA_KEYBOARD_ACCESSORY_SUGGESTION_SELECTED, AccessoryTabType.ALL),
