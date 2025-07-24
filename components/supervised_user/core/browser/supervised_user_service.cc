@@ -453,10 +453,13 @@ void SupervisedUserService::EnableSearchContentFilters() {
     return;
   }
 
-  ::supervised_user::EnableSearchContentFilters(user_prefs_.get());
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   platform_delegate_->CloseIncognitoTabs();
 
+  ::supervised_user::EnableSearchContentFilters(user_prefs_.get());
+
+  // OnSearchContentFiltersChanged reattributes the synthetic field trial
+  // groups and then reloads search pages.
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
@@ -475,12 +478,15 @@ void SupervisedUserService::EnableBrowserContentFilters() {
     return;
   }
 
-  EnableLocalParentalControls();
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   platform_delegate_->CloseIncognitoTabs();
 
+  // OnBrowserContentFiltersChanged reattributes the synthetic field trial
+  // groups
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
+  // Updates URL filter settings and reclassifies the observed navigations.
+  EnableLocalParentalControls();
 }
 void SupervisedUserService::DisableBrowserContentFilters() {
   DisableLocalParentalControls();
