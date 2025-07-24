@@ -84,3 +84,11 @@ void ComposeboxHandler::AddFile(
                                          std::move(file_data),
                                          std::move(image_options));
 }
+
+void ComposeboxHandler::DeleteFile(const base::UnguessableToken& file_token) {
+  // If an UnguessabledToken that wasn't in the cache was sent, delete fails.
+  // Report a bad message.
+  if (!query_controller_->DeleteFile(file_token)) {
+    handler_.ReportBadMessage("An invalid file token was sent to DeleteFile");
+  }
+}

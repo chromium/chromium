@@ -654,3 +654,53 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
       &pqsubts_value));
   EXPECT_EQ(pqsubts_value, "1000");
 }
+
+TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(
+      file_token,
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token);
+
+  // Check that file is in cache.
+  EXPECT_TRUE(controller().GetFileInfo(file_token));
+
+  // Delete file.
+  const bool deleted = controller().DeleteFile(file_token);
+
+  // Check that file is no longer in cache.
+  EXPECT_TRUE(deleted);
+  EXPECT_FALSE(controller().GetFileInfo(file_token));
+}
+
+TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestUser, signin::ConsentLevel::kSignin);
+
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop cluster_info_run_loop;
+  controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          cluster_info_run_loop.Quit();
+        }
+      }));
+
+  // Start the session.
+  controller().NotifySessionStarted();
+
+  // Delete file.
+  const bool deleted =
+      controller().DeleteFile(base::UnguessableToken::Create());
+
+  EXPECT_FALSE(deleted);
+}
