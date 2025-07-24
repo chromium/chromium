@@ -101,14 +101,6 @@
         backgroundService:backgroundService];
   }
 
-  __weak __typeof(self) weakSelf = self;
-  PhotoSelectionFinishedCommand completionCommand = ^{
-    // Directly notify delegate when save completes.
-    [weakSelf.delegate photoPickerCoordinatorDidFinish:weakSelf];
-  };
-
-  [_mediator setCompletionCommand:completionCommand];
-
   // Create the logo vendor
   id<LogoVendor> logoVendor = ios::provider::CreateLogoVendor(
       self.browser, self.browser->GetWebStateList()->GetActiveWebState());
@@ -147,6 +139,11 @@
                          }];
 
   _framingViewController = nil;
+}
+
+- (void)imageFramingViewControllerDidSucceed:
+    (HomeCustomizationImageFramingViewController*)controller {
+  [self.delegate photoPickerCoordinatorDidFinish:self];
 }
 
 @end

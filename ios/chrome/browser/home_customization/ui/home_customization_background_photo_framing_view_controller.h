@@ -19,6 +19,9 @@
 // Called when the user cancels the framing operation.
 - (void)imageFramingViewControllerDidCancel:
     (HomeCustomizationImageFramingViewController*)controller;
+// Alerts the delegate that the framing operation succeeded.
+- (void)imageFramingViewControllerDidSucceed:
+    (HomeCustomizationImageFramingViewController*)controller;
 @end
 
 // View controller that provides a full-screen image framing interface.

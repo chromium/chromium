@@ -6,27 +6,66 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/functional/callback_forward.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
+#import "base/sequence_checker.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
+#import "base/uuid.h"
 #import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mutator.h"
+
+namespace {
+// Compresses and saves `image` to the provided `directory_path`. Also generates
+// a UUID-based filename for `image` and returns the full save path (or an empty
+// path if saving failed).
+base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
+                                    UIImage* image) {
+  // Create directory if it doesn't exist.
+  if (!base::CreateDirectory(directory_path)) {
+    LOG(ERROR) << "Failed to create directory: " << directory_path.value();
+    return base::FilePath();
+  }
+
+  // Convert image to JPEG.
+  NSData* image_data = UIImageJPEGRepresentation(image, 0.9);
+  if (!image_data) {
+    return base::FilePath();
+  }
+
+  // Generate UUID-based filename.
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  base::FilePath file_path = directory_path.AppendASCII(
+      base::StrCat({"background_image_", uuid.AsLowercaseString(), ".jpg"}));
+
+  const std::string_view data_string(
+      reinterpret_cast<const char*>([image_data bytes]), [image_data length]);
+  if (!base::WriteFile(file_path, data_string)) {
+    LOG(ERROR) << "Failed to write file: " << file_path.value();
+    return base::FilePath();
+  }
+
+  return file_path;
+}
+}  // namespace
 
 @implementation HomeCustomizationBackgroundPhotoFramingMediator {
   // Task runner for file operations operations.
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
   // File path for profile-specific storage.
   base::FilePath _imageSavePath;
-  PhotoSelectionFinishedCommand _completionCommand;
   raw_ptr<HomeBackgroundCustomizationService> _backgroundService;
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (instancetype)initWithFilePath:(const base::FilePath&)filePath
@@ -45,108 +84,41 @@
 
 #pragma mark - HomeCustomizationBackgroundPhotoFramingMutator
 
-- (void)setCompletionCommand:(PhotoSelectionFinishedCommand)command {
-  _completionCommand = [command copy];
-}
-
-- (void)saveImageWithFramingCoordinates:(UIImage*)image
-                            coordinates:(HomeCustomizationFramingCoordinates*)
-                                            coordinates {
+- (void)saveImage:(UIImage*)image
+    withFramingCoordinates:(HomeCustomizationFramingCoordinates*)coordinates
+                completion:(base::OnceClosure)completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   DCHECK(image);
   DCHECK(coordinates);
-  DCHECK(_completionCommand);
 
-  UIImage* imageCopy = [image copy];
-  HomeCustomizationFramingCoordinates* coordinatesCopy = [coordinates copy];
-
-  [self performBackgroundImageSaveWithCommand:imageCopy
-                                  coordinates:coordinatesCopy
-                            completionCommand:_completionCommand];
-}
-
-#pragma mark - Private
-
-// Performs background save and calls command when complete.
-- (void)performBackgroundImageSaveWithCommand:(UIImage*)image
-                                  coordinates:
-                                      (HomeCustomizationFramingCoordinates*)
-                                          coordinates
-                            completionCommand:
-                                (PhotoSelectionFinishedCommand)command {
-  __weak __typeof(self) weakSelf = self;
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          __strong __typeof(weakSelf) strongSelf = weakSelf;
-                          if (!strongSelf) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                              command();
-                            });
-                            return;
-                          }
-
-                          [strongSelf saveImageOnBackgroundThread:image
-                                                      coordinates:coordinates
-                                                completionCommand:command];
-                        }));
-}
-
-// Performs the image save on background thread.
-- (void)saveImageOnBackgroundThread:(UIImage*)image
-                        coordinates:
-                            (HomeCustomizationFramingCoordinates*)coordinates
-                  completionCommand:(PhotoSelectionFinishedCommand)command {
-  // Save image to profile directory.
-  NSString* imagePath = [self saveImageToProfileDirectory:image];
-
-  // Convert coordinates to C++ struct.
-  FramingCoordinates cppCoordinates = [coordinates toFramingCoordinates];
-
-  // Return to main thread with results.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (imagePath && self->_backgroundService) {
-      self->_backgroundService->SetCurrentUserUploadedBackground(
-          base::SysNSStringToUTF8(imagePath), cppCoordinates);
-    }
-
-    command();
-  });
-}
-
-#pragma mark - Private
-
-// Compress and saves the image to the profile directory.
-- (NSString*)saveImageToProfileDirectory:(UIImage*)image {
   // Get profile-specific path.
   base::FilePath backgroundImagesPath =
       _imageSavePath.AppendASCII("BackgroundImages");
 
-  // Create directory if it doesn't exist.
-  if (!base::CreateDirectory(backgroundImagesPath)) {
-    LOG(ERROR) << "Failed to create directory: "
-               << backgroundImagesPath.value();
-    return nil;
+  __weak __typeof(self) weakSelf = self;
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&SaveImageToDirectory, backgroundImagesPath, image),
+      base::BindOnce(
+          ^(base::OnceClosure finalCompletion, base::FilePath path) {
+            [weakSelf imageSavedAtPath:path
+                    framingCoordinates:coordinates
+                            completion:std::move(finalCompletion)];
+          },
+          std::move(completion)));
+}
+
+#pragma mark - Private
+
+- (void)imageSavedAtPath:(base::FilePath)imagePath
+      framingCoordinates:(HomeCustomizationFramingCoordinates*)coordinates
+              completion:(base::OnceClosure)completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!imagePath.empty() && _backgroundService) {
+    _backgroundService->SetCurrentUserUploadedBackground(
+        imagePath.value(), [coordinates toFramingCoordinates]);
   }
-
-  // Generate UUID-based filename.
-  NSString* uuid = [[NSUUID UUID] UUIDString];
-  NSString* filename =
-      [NSString stringWithFormat:@"background_image_%@.jpg", uuid];
-  base::FilePath filePath =
-      backgroundImagesPath.AppendASCII(base::SysNSStringToUTF8(filename));
-
-  // Convert image to JPEG and save.
-  NSData* imageData = UIImageJPEGRepresentation(image, 0.9);
-  if (!imageData) {
-    return nil;
-  }
-
-  std::string dataString(reinterpret_cast<const char*>([imageData bytes]),
-                         [imageData length]);
-  if (!base::WriteFile(filePath, dataString)) {
-    LOG(ERROR) << "Failed to write file: " << filePath.value();
-    return nil;
-  }
-
-  return base::SysUTF8ToNSString(filePath.value());
+  std::move(completion).Run();
 }
 
 @end

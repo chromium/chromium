@@ -343,8 +343,13 @@ const CGFloat kCenterStackSpacing = 4.0;
   HomeCustomizationFramingCoordinates* framingCoordinates =
       [self calculateFramingCoordinates];
 
-  [_mutator saveImageWithFramingCoordinates:_originalImage
-                                coordinates:framingCoordinates];
+  __weak __typeof(self) weakSelf = self;
+  [_mutator saveImage:_originalImage
+      withFramingCoordinates:framingCoordinates
+                  completion:base::BindOnce(^{
+                    [weakSelf.delegate
+                        imageFramingViewControllerDidSucceed:weakSelf];
+                  })];
 }
 
 // Calculates the center point of the visible area in content coordinates.
