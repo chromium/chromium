@@ -37,3 +37,7 @@ ContextualPanelItemConfiguration::GetLargeEntrypointDisplayedDuration() {
   }
   return base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds());
 }
+
+void ContextualPanelItemConfiguration::DidTransitionToSmallEntrypoint() {
+  // No-op by default.
+}

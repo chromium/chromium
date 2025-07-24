@@ -7,8 +7,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -56,6 +59,27 @@ ReaderModePanelItemConfiguration::ReaderModePanelItemConfiguration(
 }
 
 ReaderModePanelItemConfiguration::~ReaderModePanelItemConfiguration() = default;
+
+#pragma mark - ContextualPanelItemConfiguration
+
+void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
+  web::WebState* web_state = web_state_observation_.GetSource();
+  if (!web_state || web_state->IsBeingDestroyed()) {
+    return;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  BwgService* bwg_service = BwgServiceFactory::GetForProfile(profile);
+  if (!bwg_service || !bwg_service->IsBwgAvailableForWebState(web_state)) {
+    return;
+  }
+  ContextualPanelTabHelper* contextual_panel_tab_helper =
+      ContextualPanelTabHelper::FromWebState(web_state);
+  if (contextual_panel_tab_helper) {
+    contextual_panel_tab_helper->InvalidateContextualPanelItemConfiguration(
+        this);
+  }
+}
 
 #pragma mark - ReaderModeTabHelper::Observer
 

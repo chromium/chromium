@@ -21,6 +21,9 @@ class ReaderModePanelItemConfiguration
   explicit ReaderModePanelItemConfiguration(web::WebState* web_state);
   ~ReaderModePanelItemConfiguration() override;
 
+  // ContextualPanelItemConfiguration
+  void DidTransitionToSmallEntrypoint() override;
+
   // ReaderModeTabHelper::Observer
   void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper) override;
   void ReaderModeWebStateDidLoadContent(

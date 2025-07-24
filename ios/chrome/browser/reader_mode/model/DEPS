@@ -9,6 +9,7 @@ include_rules = [
   "+third_party/dom_distiller_js",
   "+ios/web/navigation/wk_navigation_util.h",
   "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h",
+  "+ios/chrome/browser/intelligence/bwg/model",
 ]
 specific_include_rules = {
   "^reader_mode_test.mm" : [

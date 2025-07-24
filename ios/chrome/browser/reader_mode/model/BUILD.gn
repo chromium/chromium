@@ -44,6 +44,8 @@ source_set("model") {
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

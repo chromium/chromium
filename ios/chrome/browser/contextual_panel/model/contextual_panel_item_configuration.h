@@ -37,6 +37,10 @@ struct ContextualPanelItemConfiguration {
   // Returns the duration of the large entrypoint for this item.
   base::TimeDelta GetLargeEntrypointDisplayedDuration();
 
+  // Notify the configuration that it transitioned to a small entrypoint so it
+  // can react accordingly depending on the type of configuration.
+  virtual void DidTransitionToSmallEntrypoint();
+
   // The different supported image types.
   enum class EntrypointImageType {
     // The image name is a UIImage to be loaded in.

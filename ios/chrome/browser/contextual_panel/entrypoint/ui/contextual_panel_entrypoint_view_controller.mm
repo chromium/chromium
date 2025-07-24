@@ -384,6 +384,13 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
       UIContentSizeCategoryAccessibilityLarge);
 }
 
+// Refreshes the VoiceOver bounding box and notifies the mutator that the
+// animation to transition to a small entrypoint has completed.
+- (void)didCompleteTransitionToSmallEntrypoint {
+  [self refreshVoiceOverBoundingBoxIfFocused];
+  [self.mutator didCompleteTransitionToSmallEntrypoint];
+}
+
 // Sets the proper entrypoint visual features depending on current infobar
 // badges status and whether the Contextual Panel is open.
 - (void)refreshEntrypointVisualElements {
@@ -598,7 +605,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToSmallEntrypoint
                    completion:^(BOOL completed) {
-                     [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+                     [weakSelf didCompleteTransitionToSmallEntrypoint];
                    }];
 
   [_entrypointContainer removeGestureRecognizer:_swipeRecognizer];
