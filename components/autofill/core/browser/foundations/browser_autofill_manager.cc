@@ -492,15 +492,7 @@ bool ShouldOfferSingleFieldFill(const AutofillField* autofill_field,
   // due to an unrecognized autocomplete attribute. Note that in the context
   // of Autofill, the popup for credit card related fields is not getting
   // suppressed due to an unrecognized autocomplete attribute.
-  // TODO(crbug.com/40853053): Revisit here to see whether we should offer
-  // IBAN filling for fields with unrecognized autocomplete attribute
   if (suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
-    return false;
-  }
-
-  // Therefore, we check the attribute explicitly.
-  if (autofill_field &&
-      autofill_field->Type().html_type() == HtmlFieldType::kUnrecognized) {
     return false;
   }
 
