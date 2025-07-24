@@ -163,10 +163,14 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::Exactly(2)},
        /*gemm_c=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::UpTo(2)},
-       /*gru_input=*/{},
-       /*gru_bias=*/{},
-       /*gru_cell_input=*/{},
-       /*gru_cell_bias=*/{},
+       /*gru_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*gru_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*hard_sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*hard_swish_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*instance_normalization_input=*/

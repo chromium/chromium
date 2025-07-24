@@ -76,6 +76,7 @@ constexpr base::cstring_view kOpTypeGatherElements = "GatherElements";
 constexpr base::cstring_view kOpTypeGatherND = "GatherND";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
+constexpr base::cstring_view kOpTypeGru = "GRU";
 constexpr base::cstring_view kOpTypeHardSigmoid = "HardSigmoid";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
 constexpr base::cstring_view kOpTypeInstanceNormalization =
@@ -120,18 +121,23 @@ constexpr base::cstring_view kOpTypeReduceSum = "ReduceSum";
 constexpr base::cstring_view kOpTypeReduceSumSquare = "ReduceSumSquare";
 
 // Attributes
+constexpr base::cstring_view kAttrActivations = "activations";
 constexpr base::cstring_view kAttrAlpha = "alpha";
 constexpr base::cstring_view kAttrAxis = "axis";
 constexpr base::cstring_view kAttrBeta = "beta";
 constexpr base::cstring_view kAttrCeilMode = "ceil_mode";
 constexpr base::cstring_view kAttrDilations = "dilations";
+constexpr base::cstring_view kAttrDirection = "direction";
 constexpr base::cstring_view kAttrEpsilon = "epsilon";
 constexpr base::cstring_view kAttrExclusive = "exclusive";
 constexpr base::cstring_view kAttrGroup = "group";
+constexpr base::cstring_view kAttrHiddenSize = "hidden_size";
 constexpr base::cstring_view kAttrKeepDims = "keepdims";
 constexpr base::cstring_view kAttrKernelShape = "kernel_shape";
+constexpr base::cstring_view kAttrLinearBeforeReset = "linear_before_reset";
 constexpr base::cstring_view kAttrMode = "mode";
 constexpr base::cstring_view kAttrNoopWithEmptyAxes = "noop_with_empty_axes";
+constexpr base::cstring_view kAttrNumOutputs = "num_outputs";
 constexpr base::cstring_view kAttrOutputPadding = "output_padding";
 constexpr base::cstring_view kAttrP = "p";
 constexpr base::cstring_view kAttrPads = "pads";
@@ -292,6 +298,46 @@ base::cstring_view MapReduceKindToOrtOpType(mojom::Reduce::Kind kind) {
       return kOpTypeReduceSum;
     case mojom::Reduce::Kind::kSumSquare:
       return kOpTypeReduceSumSquare;
+  }
+}
+
+const std::vector<base::cstring_view> GetRecurrentNetworkActivations(
+    std::vector<mojom::RecurrentNetworkActivation> activations,
+    bool is_bidirectional) {
+  std::vector<base::cstring_view> activation_list;
+  for (const auto& activation : activations) {
+    switch (activation) {
+      case mojom::RecurrentNetworkActivation::kRelu:
+        activation_list.push_back("relu");
+        break;
+      case mojom::RecurrentNetworkActivation::kSigmoid:
+        activation_list.push_back("sigmoid");
+        break;
+      case mojom::RecurrentNetworkActivation::kTanh:
+        activation_list.push_back("tanh");
+        break;
+      default:
+        NOTREACHED() << "Unsupported recurrent network activation function.";
+    }
+  }
+  if (is_bidirectional) {
+    activation_list.insert(activation_list.end(), activation_list.begin(),
+                           activation_list.end());
+  }
+  return activation_list;
+}
+
+const base::cstring_view GetRecurrentNetworkDirection(
+    mojom::RecurrentNetworkDirection direction) {
+  switch (direction) {
+    case mojom::RecurrentNetworkDirection::kForward:
+      return "forward";
+    case mojom::RecurrentNetworkDirection::kBackward:
+      return "reverse";
+    case mojom::RecurrentNetworkDirection::kBoth:
+      return "bidirectional";
+    default:
+      NOTREACHED() << "Unsupported recurrent network activation direction.";
   }
 }
 
@@ -498,6 +544,51 @@ std::string GraphBuilderOrt::CreateZeroInitializer(
     OperandDataType data_type,
     base::span<const uint32_t> shape) {
   return CreateInitializerForFloat(data_type, shape, 0.0f);
+}
+
+std::string GraphBuilderOrt::TransposeRnnWeightOrBiasLayout(
+    base::cstring_view weight_or_bias,
+    base::span<const uint32_t> permutation) {
+  size_t num_gates = permutation.size();
+
+  // Use Split operator to split the weight/bias into num_gates slices.
+  std::vector<std::string> gate_names;
+  gate_names.reserve(num_gates);
+  for (size_t i = 0; i < num_gates; i++) {
+    gate_names.push_back(GenerateOperandName());
+  }
+  constexpr int64_t axis = 1;
+  std::array<ScopedOrtOpAttr, 2> split_attrs = {
+      model_editor_.CreateAttribute(kAttrAxis, axis),
+      model_editor_.CreateAttribute(kAttrNumOutputs,
+                                    static_cast<int64_t>(num_gates))};
+  std::array<const char*, 1> split_inputs = {weight_or_bias.c_str()};
+  std::vector<const char*> split_outputs;
+  split_outputs.reserve(num_gates);
+  for (const auto& gate_name : gate_names) {
+    split_outputs.push_back(gate_name.c_str());
+  }
+  std::string split_node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeSplit}, kUnderscore));
+  model_editor_.AddNode(kOpTypeSplit, split_node_name, split_inputs,
+                        split_outputs, split_attrs);
+
+  // Use Concat operator to concatenate the slices in the order of permutation.
+  std::vector<const char*> concat_inputs;
+  concat_inputs.reserve(num_gates);
+  for (uint32_t index : permutation) {
+    concat_inputs.push_back(gate_names[index].c_str());
+  }
+  std::string concat_output = GenerateOperandName();
+  std::array<const char*, 1> concat_outputs = {concat_output.c_str()};
+  std::array<ScopedOrtOpAttr, 1> concat_attrs = {
+      model_editor_.CreateAttribute(kAttrAxis, axis)};
+  std::string concat_node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeConcat}, kUnderscore));
+  model_editor_.AddNode(kOpTypeConcat, concat_node_name, concat_inputs,
+                        concat_outputs, concat_attrs);
+
+  return concat_output;
 }
 
 void GraphBuilderOrt::AddCastNode(base::cstring_view node_name,
@@ -1425,6 +1516,215 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
 
   model_editor_.AddNode(kOpTypeGemm, node_name, inputs, outputs, attributes);
 }
+
+// `GruType` must be `mojom::Gru` or `mojom::GruCell`.
+template <typename GruType>
+  requires(std::is_same_v<GruType, mojom::Gru> ||
+           std::is_same_v<GruType, mojom::GruCell>)
+void GraphBuilderOrt::AddGruOperation(const GruType& gru) {
+  const std::string node_name = GenerateNodeName(gru.label);
+  std::string input = GetOperandNameById(gru.input_operand_id);
+  std::string weight = GetOperandNameById(gru.weight_operand_id);
+  std::string recurrent_weight =
+      GetOperandNameById(gru.recurrent_weight_operand_id);
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(gru.input_operand_id).descriptor;
+  const OperandDescriptor& weight_descriptor =
+      GetOperand(gru.weight_operand_id).descriptor;
+  const OperandDescriptor& recurrent_weight_descriptor =
+      GetOperand(gru.recurrent_weight_operand_id).descriptor;
+
+  uint32_t num_directions = 1;
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    CHECK(context_properties_.data_type_limits.gru_input.Supports(
+        input_descriptor));
+    CHECK(context_properties_.data_type_limits.gru_input.Supports(
+        weight_descriptor));
+    CHECK(context_properties_.data_type_limits.gru_input.Supports(
+        recurrent_weight_descriptor));
+    num_directions =
+        gru.direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+  } else {
+    CHECK(context_properties_.data_type_limits.gru_cell_input.Supports(
+        input_descriptor));
+    CHECK(context_properties_.data_type_limits.gru_cell_input.Supports(
+        weight_descriptor));
+    CHECK(context_properties_.data_type_limits.gru_cell_input.Supports(
+        recurrent_weight_descriptor));
+
+    // Reshape the input into a 3-D tensor, since the GRU of ONNX requires
+    // the input shape to be [seq_length, batch_size, input_size]. For
+    // gruCell, `seq_length` is equal to 1.
+    const std::vector<uint32_t>& input_shape = input_descriptor.shape();
+    CHECK_EQ(input_shape.size(), 2u);
+    input = CreateReshapeNode(input, {1, input_shape[0], input_shape[1]});
+
+    // Reshape the weight into a 3-D tensor, since the GRU of ONNX requires
+    // the weight shape to be [num_directions, 3*hidden_size, input_size].
+    // For gruCell, `num_directions` is equal to 1.
+    const std::vector<uint32_t>& weight_shape = weight_descriptor.shape();
+    CHECK_EQ(weight_shape.size(), 2u);
+    weight = CreateReshapeNode(weight, {1, weight_shape[0], weight_shape[1]});
+
+    // Reshape the recurrent weight into a 3-D tensor, since the GRU of ONNX
+    // requires the recurrent weight shape to be [num_directions,
+    // 3*hidden_size, hidden_size]. For gruCell, `num_directions` is equal to 1.
+    const std::vector<uint32_t>& recurrent_weight_shape =
+        recurrent_weight_descriptor.shape();
+    CHECK_EQ(recurrent_weight_shape.size(), 2u);
+    recurrent_weight = CreateReshapeNode(
+        recurrent_weight,
+        {1, recurrent_weight_shape[0], recurrent_weight_shape[1]});
+  }
+
+  constexpr std::array<uint32_t, 3> kRznToZrnPermutation = {1, 0, 2};
+  if (gru.layout == mojom::GruWeightLayout::kRzn) {
+    weight = TransposeRnnWeightOrBiasLayout(weight, kRznToZrnPermutation);
+    recurrent_weight =
+        TransposeRnnWeightOrBiasLayout(recurrent_weight, kRznToZrnPermutation);
+  }
+
+  std::vector<const char*> inputs = {input.c_str(), weight.c_str(),
+                                     recurrent_weight.c_str()};
+
+  const uint32_t hidden_size = gru.hidden_size;
+  // Graph validation already checked that hidden_size * 3 would not overflow.
+  std::array<uint32_t, 2> bias_dims = {num_directions, hidden_size * 3};
+  std::string bias, recurrent_bias, concatenated_bias;
+  if (!gru.bias_operand_id.has_value() &&
+      !gru.recurrent_bias_operand_id.has_value()) {
+    // When both bias and recurrentBias are not present, set ONNX GRU input "B"
+    // as not specified.
+    inputs.push_back("");
+  } else {
+    if (gru.bias_operand_id.has_value()) {
+      bias = GetOperandNameById(*gru.bias_operand_id);
+      if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+        CHECK(context_properties_.data_type_limits.gru_bias.Supports(
+            GetOperand(*gru.bias_operand_id).descriptor));
+      } else {
+        CHECK(context_properties_.data_type_limits.gru_cell_bias.Supports(
+            GetOperand(*gru.bias_operand_id).descriptor));
+        bias = CreateReshapeNode(bias, bias_dims);
+      }
+      if (gru.layout == mojom::GruWeightLayout::kRzn) {
+        bias = TransposeRnnWeightOrBiasLayout(bias, kRznToZrnPermutation);
+      }
+    } else {
+      bias = CreateZeroInitializer(input_descriptor.data_type(), bias_dims);
+    }
+
+    if (gru.recurrent_bias_operand_id.has_value()) {
+      recurrent_bias = GetOperandNameById(*gru.recurrent_bias_operand_id);
+      if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+        CHECK(context_properties_.data_type_limits.gru_bias.Supports(
+            GetOperand(*gru.recurrent_bias_operand_id).descriptor));
+      } else {
+        CHECK(context_properties_.data_type_limits.gru_cell_bias.Supports(
+            GetOperand(*gru.recurrent_bias_operand_id).descriptor));
+        recurrent_bias = CreateReshapeNode(recurrent_bias, bias_dims);
+      }
+      if (gru.layout == mojom::GruWeightLayout::kRzn) {
+        recurrent_bias = TransposeRnnWeightOrBiasLayout(recurrent_bias,
+                                                        kRznToZrnPermutation);
+      }
+    } else {
+      recurrent_bias =
+          CreateZeroInitializer(input_descriptor.data_type(), bias_dims);
+    }
+
+    // Concat bias and recurrent_bias.
+    concatenated_bias = GenerateOperandName();
+    std::array<const char*, 2> bias_inputs = {bias.c_str(),
+                                              recurrent_bias.c_str()};
+    std::array<const char*, 1> bias_outputs = {concatenated_bias.c_str()};
+    std::array<ScopedOrtOpAttr, 1> concat_attributes = {
+        model_editor_.CreateAttribute(kAttrAxis, static_cast<int64_t>(1))};
+    std::string concat_node_name = GenerateNodeName(
+        base::JoinString({kInserted, kOpTypeConcat}, kUnderscore));
+    model_editor_.AddNode(kOpTypeConcat, concat_node_name, bias_inputs,
+                          bias_outputs, concat_attributes);
+    inputs.push_back(concatenated_bias.c_str());
+  }
+
+  // "sequence_lens" is an optional tensor specifying lengths of the sequences
+  // in a batch.
+  inputs.push_back("");
+
+  std::string hidden_state;
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    if (gru.initial_hidden_state_operand_id.has_value()) {
+      hidden_state =
+          GetOperandNameById(gru.initial_hidden_state_operand_id.value());
+      CHECK(context_properties_.data_type_limits.gru_input.Supports(
+          GetOperand(gru.initial_hidden_state_operand_id.value()).descriptor));
+    }
+  } else {
+    hidden_state = GetOperandNameById(gru.hidden_state_operand_id);
+    const std::vector<uint32_t>& hidden_state_shape =
+        GetOperand(gru.hidden_state_operand_id).descriptor.shape();
+    CHECK_EQ(hidden_state_shape.size(), 2u);
+    // Reshape the hiddenState into a 3-D tensor, since the GRU of ONNX requires
+    // the "initial_h" shape to be [num_directions, batch_size, hidden_size].
+    // For gruCell, `num_directions` is equal to 1.
+    hidden_state = CreateReshapeNode(
+        hidden_state, {1, hidden_state_shape[0], hidden_state_shape[1]});
+  }
+  inputs.push_back(hidden_state.c_str());
+
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(4);
+  base::cstring_view direction = "forward";
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    direction = GetRecurrentNetworkDirection(gru.direction);
+  }
+  attributes.push_back(
+      model_editor_.CreateAttribute(kAttrDirection, direction));
+
+  const std::vector<base::cstring_view> activations =
+      GetRecurrentNetworkActivations(gru.activations,
+                                     direction == "bidirectional");
+  std::vector<const char*> activations_c_str;
+  for (const auto& activation : activations) {
+    activations_c_str.push_back(activation.c_str());
+  }
+  attributes.push_back(
+      model_editor_.CreateAttribute(kAttrActivations, activations_c_str));
+
+  attributes.push_back(model_editor_.CreateAttribute(
+      kAttrHiddenSize, base::checked_cast<int64_t>(hidden_size)));
+  attributes.push_back(model_editor_.CreateAttribute(
+      kAttrLinearBeforeReset, static_cast<int64_t>(gru.reset_after)));
+
+  std::string output, output_hidden;
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    output_hidden = GetOperandNameById(gru.output_operand_ids[0]);
+    if (gru.return_sequence) {
+      output = GetOperandNameById(gru.output_operand_ids[1]);
+    }
+  } else {
+    output_hidden = GenerateOperandName();
+  }
+  std::array<const char*, 2> outputs = {output.c_str(), output_hidden.c_str()};
+  model_editor_.AddNode(kOpTypeGru, node_name, inputs, outputs, attributes);
+
+  if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
+    // Reshape the ONNX GRU output "Y_h" of shape [num_directions, batch_size,
+    // hidden_size] back to a 2-D tensor, since the gruCell of WebNN requires
+    // the output shape to be [batchSize, hiddenSize].
+    const std::vector<uint32_t>& output_shape =
+        GetOperand(gru.output_operand_id).descriptor.shape();
+    CHECK_EQ(output_shape.size(), 2u);
+    InsertReshapeNode(output_hidden, GetOperandNameById(gru.output_operand_id),
+                      output_shape);
+  }
+}
+
+template void GraphBuilderOrt::AddGruOperation<mojom::Gru>(const mojom::Gru&);
+
+template void GraphBuilderOrt::AddGruOperation<mojom::GruCell>(
+    const mojom::GruCell&);
 
 void GraphBuilderOrt::AddHardSigmoidOperation(
     const mojom::HardSigmoid& hard_sigmoid) {
@@ -2461,6 +2761,14 @@ GraphBuilderOrt::BuildModel() {
         AddGemmOperation(*operation->get_gemm());
         break;
       }
+      case mojom::Operation::Tag::kGru: {
+        AddGruOperation(*operation->get_gru());
+        break;
+      }
+      case mojom::Operation::Tag::kGruCell: {
+        AddGruOperation(*operation->get_gru_cell());
+        break;
+      }
       case mojom::Operation::Tag::kHardSigmoid: {
         AddHardSigmoidOperation(*operation->get_hard_sigmoid());
         break;
@@ -2590,8 +2898,6 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kDequantizeLinear:
-      case mojom::Operation::Tag::kGru:
-      case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:

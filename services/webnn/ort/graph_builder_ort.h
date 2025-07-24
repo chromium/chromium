@@ -150,6 +150,18 @@ class GraphBuilderOrt {
   std::string CreateZeroInitializer(OperandDataType data_type,
                                     base::span<const uint32_t> shape);
 
+  // A helper function used to transpose the weight or bias layout for the RNN
+  // operations (GRU, LSTM, etc.).
+  //
+  // Example:
+  //   To transpose gru weight or bias from "rzn" layout to "zrn" layout, pass
+  //   permutation as {1, 0, 2}.
+  //   To transpose lstm weight or bias from "ifgo" layout to "iofg" layout,
+  //   pass permutation as {0, 3, 1, 2}
+  std::string TransposeRnnWeightOrBiasLayout(
+      base::cstring_view weight_or_bias,
+      base::span<const uint32_t> permutation);
+
   void AddCastNode(base::cstring_view node_name,
                    base::cstring_view input,
                    base::cstring_view output,
@@ -232,6 +244,10 @@ class GraphBuilderOrt {
   void AddExpandOperation(const mojom::Expand& expand);
   void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
+  template <typename GruType>
+    requires(std::is_same_v<GruType, mojom::Gru> ||
+             std::is_same_v<GruType, mojom::GruCell>)
+  void AddGruOperation(const GruType& gru);
   void AddHardSigmoidOperation(const mojom::HardSigmoid& hard_sigmoid);
   void AddInstanceNormalizationOperation(
       const mojom::InstanceNormalization& instance_normalization);
