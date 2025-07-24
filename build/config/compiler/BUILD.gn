@@ -390,6 +390,20 @@ config("compiler") {
     cflags += [ "-fno-ident" ]
   }
 
+  # We cannot rely on errno being set after math functions,
+  # especially since glibc does not set it. Thus, use -fno-math-errno
+  # so that the compiler knows it can inline math functions.
+  # Note that this is different from -ffast-math (even though -ffast-math
+  # implies -fno-math-errno), which also allows a number of unsafe
+  # optimizations. This flag must be consistently set for both module
+  # precompilation and normal source compilation, which means it's enabled for
+  # some targets even in debug builds.
+  if (is_win && is_clang) {
+    cflags += [ "/clang:-fno-math-errno" ]
+  } else if (!is_win) {
+    cflags += [ "-fno-math-errno" ]
+  }
+
   # In general, Windows is totally different, but all the other builds share
   # some common compiler and linker configuration.
   if (!is_win) {
@@ -2631,11 +2645,6 @@ if (is_win) {
   if (is_official_build) {
     common_optimize_on_ldflags += [ "/OPT:REF" ]  # Remove unreferenced data.
   }
-
-  if (is_clang) {
-    # See below.
-    common_optimize_on_cflags += [ "/clang:-fno-math-errno" ]
-  }
 } else {
   common_optimize_on_cflags = []
   common_optimize_on_ldflags = []
@@ -2686,18 +2695,6 @@ if (is_win) {
     }
 
     common_optimize_on_ldflags += [ "-Wl,--gc-sections" ]
-  }
-
-  # Do not add -fno-math-errno when `is_debug` is true and `use_clang_modules` is true,
-  # as this flag is incompatible with debug builds using modules.
-  if (!is_debug || !use_clang_modules) {
-    # We cannot rely on errno being set after math functions,
-    # especially since glibc does not set it. Thus, use -fno-math-errno
-    # so that the compiler knows it can inline math functions.
-    # Note that this is different from -ffast-math (even though -ffast-math
-    # implies -fno-math-errno), which also allows a number of unsafe
-    # optimizations.
-    common_optimize_on_cflags += [ "-fno-math-errno" ]
   }
 }
 
