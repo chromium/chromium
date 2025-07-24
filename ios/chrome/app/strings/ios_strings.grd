@@ -5370,11 +5370,53 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_REVIEWS_OMNIBOX_ACTION_ACCESSIBILITY_LABEL" desc="The accessibility label for the Reviews suggestion action button  [iOS only]">
         Read customer evaluations of products, services, or experience to help inform your decisions with reviews
       </message>
+      <message name="IDS_IOS_SAFARI" desc="The Safari browser">
+        Safari
+      </message>
       <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_SECONDARY_ACTION" desc="Safari import entry point screen - Button text to create a reminder to import data from Safari. [iOS only]">
         Remind me later
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_TITLE" desc="Safari import entry point screen - Title.">
         Bring your data from Safari
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_1_TITLE" desc="Title of the 1st screen displayed by the Lottie animation educating user on the Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -> Apps'">
+        Apps
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_CLEAR_DATA" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -> Apps -> Safari' and scrolls down to 'History and Website Data'">
+        Clear History and Website Data
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_EXPORT" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -> Apps -> Safari' and scrolls down to 'History and Website Data'">
+        Export
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_2_ITEM_IMPORT" desc="An option in the 2nd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the respective item displayed when the user goes to '(iOS) Settings -> Apps -> Safari' and scrolls down to 'History and Website Data'">
+        Import
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_BUTTON" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the bottom button displayed when the user goes to '(iOS) Settings -> Apps -> Safari -> Export'">
+        Save to Downloads
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_3_TITLE" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -> Apps -> Safari -> Export'">
+        Export Browsing Data
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_ANIMATED_INSTRUCTION_PAGE_4_TITLE" desc="An option in the 3rd screen displayed by the Lottie animation educating user Safari data export process. [iOS only]" meaning="Needs to exactly match the title displayed when the user goes to '(iOS) Settings -> Apps -> Safari -> Export -> Save to Downloads'">
+        Export Successful
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_BUTTON_CONTINUE" desc="Safari import export education screen - Button text to let the user indicate that Safari data has been exported, and can continue the import process. [iOS only]">
+        I've exported my data
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_BUTTON_GO_TO_SETTINGS" desc="Safari import export education screen - Button text to redirect the user to Settings. [iOS only]">
+        Go to Settings…
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_STATIC_INSTRUCTION_STEP_1" desc="Safari import export education screen - Step 1 to export Safari data. Displayed in the static text instructions below the animated tutorial. [iOS only]">
+        Open <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Safari Settings<ph name="END_BOLD">END_BOLD</ph>
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_STATIC_INSTRUCTION_STEP_2" desc="Safari import export education screen - Step 2 to export Safari data. Displayed in the static text instructions below the animated tutorial. [iOS only]">
+        Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Export<ph name="END_BOLD">END_BOLD</ph>
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_STATIC_INSTRUCTION_STEP_3" desc="Safari import export education screen - Step 3 to export Safari data. Displayed in the static text instructions below the animated tutorial. [iOS only]">
+        Choose the data you want to export
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_STATIC_INSTRUCTION_STEP_4" desc="Safari import export education screen - Step 4 to export Safari data. Displayed in the static text instructions below the animated tutorial. [iOS only]">
+        Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Save to Downloads<ph name="END_BOLD">END_BOLD</ph>
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE" desc="Safari import screen that handles the import process - Button text to finish the process to import data from Safari. The screen will be dismissed after the user taps this button. [iOS only]" meaning="End a workflow">
         Done
