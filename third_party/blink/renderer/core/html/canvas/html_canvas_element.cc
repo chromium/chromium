@@ -373,7 +373,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
 
-  if (!RenderingContext()->IsCanvas2DResourceValid()) {
+  if (!RenderingContext()->GetOrCreateCanvas2DResourceProvider()) {
     return false;
   }
 

@@ -283,6 +283,9 @@ class CORE_EXPORT CanvasRenderingContext
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual int LayerCount() const { return 0; }
   virtual bool IsCanvas2DResourceValid() { NOTREACHED(); }
+  virtual CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() {
+    NOTREACHED();
+  }
   // If the ResourceProvider currently exists, replaces it with a newly-created
   // CanvasResourceProvider.
   virtual void DropAndRecreateExistingCanvas2DResourceProvider() {
