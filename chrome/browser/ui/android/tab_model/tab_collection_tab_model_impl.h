@@ -126,9 +126,15 @@ class TabCollectionTabModelImpl {
   TabAndroid* GetLastShownTabForGroup(JNIEnv* env, const base::Token& group_id);
 
  private:
-  // Returns a safe index for adding or moving a single tab without it changing
-  // state.
-  size_t GetSafeIndex(const std::optional<size_t>& current_index,
+  // Returns a safe index for adding or moving a tab or tab group.
+  // `is_tab_group` is used to indicate if we are working with a tab or a tab
+  // group. `current_index` is the current index of the tab; it should be
+  // nullopt when adding a new tab to the collection. `proposed_index` is the
+  // index at which the tab or group is proposed to be moved or added. The
+  // returned value should be used instead. `tab_group_id` and `is_pinned` are
+  // the collection the tab or group will be in after the add or move operation.
+  size_t GetSafeIndex(bool is_tab_group,
+                      const std::optional<size_t>& current_index,
                       size_t proposed_index,
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;

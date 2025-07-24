@@ -62,6 +62,16 @@ TabAndroid* ToTabAndroid(TabInterface* tab_interface) {
   return static_cast<TabAndroid*>(weak_tab_android.get());
 }
 
+// When moving a tab from a lower index to a higher index a value of 1 less
+// should be used to account for the tab being removed from the list before it
+// is re-inserted.
+size_t ClampIfMovingToHigherIndex(const std::optional<size_t>& current_index,
+                                  size_t new_index) {
+  return (new_index != 0 && current_index && *current_index < new_index)
+             ? new_index - 1
+             : new_index;
+}
+
 }  // namespace
 
 TabCollectionTabModelImpl::TabCollectionTabModelImpl(
@@ -117,8 +127,8 @@ int TabCollectionTabModelImpl::MoveTabRecursive(
     bool new_is_pinned) {
   std::optional<TabGroupId> new_tab_group_id =
       tab_groups::TabGroupId::FromOptionalToken(token);
-  new_index =
-      GetSafeIndex(current_index, new_index, new_tab_group_id, new_is_pinned);
+  new_index = GetSafeIndex(/*is_tab_group=*/false, current_index, new_index,
+                           new_tab_group_id, new_is_pinned);
 
   tab_strip_collection_->MoveTabRecursive(current_index, new_index,
                                           new_tab_group_id, new_is_pinned);
@@ -136,7 +146,8 @@ void TabCollectionTabModelImpl::AddTabRecursive(
   std::optional<TabGroupId> tab_group_id =
       tab_groups::TabGroupId::FromOptionalToken(token);
 
-  index = GetSafeIndex(std::nullopt, index, tab_group_id, is_pinned);
+  index = GetSafeIndex(/*is_tab_group=*/false, /*current_index=*/std::nullopt,
+                       index, tab_group_id, is_pinned);
 
   auto tab_interface_android = ToTabInterface(tab_android);
   tab_strip_collection_->AddTabRecursive(std::move(tab_interface_android),
@@ -192,15 +203,18 @@ int TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
   TabGroupId tab_group_id = TabGroupId::FromRawToken(token);
   TabGroup* group = GetTabGroupChecked(tab_group_id);
   gfx::Range range = group->ListTabs();
-  // TODO(crbug.com/429145597): Reusing GetSafeIndex here might not work for
-  // groups with multiple tabs.
-
-  // Don't pass the `tab_group_id` since we don't want to constrain the index
-  // range to that of the group. Instead we are moving the entirety of the
-  // group to any valid position that an ungrouped tab could be moved to.
-  to_index = GetSafeIndex(range.start(), to_index,
-                          /*tab_group_id=*/std::nullopt,
-                          /*is_pinned=*/false);
+  to_index =
+      GetSafeIndex(/*is_tab_group=*/true, range.start(), to_index, tab_group_id,
+                   /*is_pinned=*/false);
+  // When moving to a higher index the implementation will first remove the tab
+  // group before adding the tab group. This means the destination index needs
+  // to account for the size of the group. To do this we subtract the number of
+  // tabs in the group from the `to_index`. Note that GetSafeIndex() already
+  // subtracts one when moving to a higher index so we subtract 1 less.
+  if (to_index >= base::checked_cast<int>(range.end())) {
+    to_index -= range.length() - 1;
+    CHECK_GE(to_index, 0);
+  }
   tab_strip_collection_->MoveTabGroupTo(tab_group_id, to_index);
   return base::checked_cast<int>(to_index);
 }
@@ -250,8 +264,16 @@ bool TabCollectionTabModelImpl::GetTabGroupCollapsed(
 void TabCollectionTabModelImpl::CloseDetachedTabGroup(
     JNIEnv* env,
     const base::Token& tab_group_id) {
-  tab_strip_collection_->CloseDetachedTabGroup(
-      TabGroupId::FromRawToken(tab_group_id));
+  TabGroupId group_id = TabGroupId::FromRawToken(tab_group_id);
+  TabGroupTabCollection* detached_group =
+      tab_strip_collection_->GetDetachedTabGroup(group_id);
+  if (!detached_group) {
+    CHECK(!tab_strip_collection_->GetTabGroupCollection(group_id))
+        << "Tried to close an attached tab group.";
+    LOG(WARNING) << "Detached tab group already closed.";
+    return;
+  }
+  tab_strip_collection_->CloseDetachedTabGroup(group_id);
 }
 
 std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs(JNIEnv* env) {
@@ -338,57 +360,57 @@ TabAndroid* TabCollectionTabModelImpl::GetLastShownTabForGroup(
 // Private methods:
 
 size_t TabCollectionTabModelImpl::GetSafeIndex(
+    bool is_tab_group,
     const std::optional<size_t>& current_index,
     size_t proposed_index,
     const std::optional<TabGroupId>& tab_group_id,
     bool is_pinned) const {
-  bool is_move = current_index.has_value();
-  size_t first_non_pinned_index =
-      tab_strip_collection_->IndexOfFirstNonPinnedTab();
-  if (is_move && *current_index < first_non_pinned_index) {
-    // Moving a tab that is inside the pinned section should decrement the first
-    // non-pinned index by one to either keep the pinned tabs together or move
-    // to the new first non-pinned tab index after unpinning.
-    first_non_pinned_index--;
-  }
-
+  size_t first_non_pinned_index = ClampIfMovingToHigherIndex(
+      current_index, tab_strip_collection_->IndexOfFirstNonPinnedTab());
   if (is_pinned) {
     return std::min(proposed_index, first_non_pinned_index);
   }
 
-  size_t tab_count = tab_strip_collection_->TabCountRecursive();
-  if (is_move) {
-    --tab_count;
-  }
+  size_t total_tabs = ClampIfMovingToHigherIndex(
+      current_index, tab_strip_collection_->TabCountRecursive());
   size_t clamped_index =
-      std::clamp(proposed_index, first_non_pinned_index, tab_count);
-  if (tab_group_id) {
+      std::clamp(proposed_index, first_non_pinned_index, total_tabs);
+  if (!is_tab_group && tab_group_id) {
     TabGroupTabCollection* group_collection =
         tab_strip_collection_->GetTabGroupCollection(*tab_group_id);
     if (group_collection) {
       gfx::Range range = group_collection->GetTabGroup()->ListTabs();
       if (!range.is_empty()) {
-        return std::clamp(proposed_index, range.start(), range.end());
+        return std::clamp(
+            proposed_index,
+            ClampIfMovingToHigherIndex(current_index, range.start()),
+            ClampIfMovingToHigherIndex(current_index, range.end()));
       }
     }
   }
 
   // Always safe since these are the edges.
-  if (clamped_index == first_non_pinned_index || clamped_index == tab_count) {
+  if (clamped_index == first_non_pinned_index || clamped_index == total_tabs) {
     return clamped_index;
   }
 
   std::optional<TabGroupId> group_at_index = GetGroupIdAt(clamped_index);
-  if (group_at_index && group_at_index == GetGroupIdAt(clamped_index - 1)) {
+  if (group_at_index) {
     // Insertion will happen inside a tab group we need to push it out.
     TabGroupTabCollection* group_collection =
         tab_strip_collection_->GetTabGroupCollection(*group_at_index);
     gfx::Range range = group_collection->GetTabGroup()->ListTabs();
+
+    // When moving a tab group to be within its own range this should no-op.
+    if (is_tab_group && group_at_index == tab_group_id) {
+      return range.start();
+    }
+
     // Push to the nearest boundary.
     if (clamped_index - range.start() < range.end() - clamped_index) {
-      return range.start();
+      return ClampIfMovingToHigherIndex(current_index, range.start());
     } else {
-      return range.end();
+      return ClampIfMovingToHigherIndex(current_index, range.end());
     }
   }
 

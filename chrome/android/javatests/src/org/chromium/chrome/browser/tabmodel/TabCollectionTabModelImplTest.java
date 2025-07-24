@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -808,18 +809,18 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @SmallTest
-    public void testMoveRelatedTabs() throws Exception {
+    public void testMoveRelatedTabs_BasicObserver() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
         Tab tab2 = createTab();
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.createSingleTabGroup(tab1));
-        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+        Tab tab3 = createTab();
+        mergeListOfTabsToGroup(List.of(tab1, tab2), tab1);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
         Token groupId = tab1.getTabGroupId();
         assertNotNull(groupId);
 
         CallbackHelper willMoveTabGroupHelper = new CallbackHelper();
         CallbackHelper didMoveTabGroupHelper = new CallbackHelper();
-        CallbackHelper didMoveTabHelper = new CallbackHelper();
 
         TabGroupModelFilterObserver groupObserver =
                 new TabGroupModelFilterObserver() {
@@ -832,6 +833,7 @@ public class TabCollectionTabModelImplTest {
 
                     @Override
                     public void didMoveTabGroup(Tab movedTab, int newIndex, int oldIndex) {
+                        // movedTab is the first tab in the group.
                         assertEquals(tab1, movedTab);
                         assertEquals(2, newIndex);
                         assertEquals(1, oldIndex);
@@ -842,10 +844,14 @@ public class TabCollectionTabModelImplTest {
                 new TabModelObserver() {
                     @Override
                     public void didMoveTab(Tab tab, int newIndex, int oldIndex) {
-                        assertEquals(tab1, tab);
-                        assertEquals(2, newIndex);
-                        assertEquals(1, oldIndex);
-                        didMoveTabHelper.notifyCalled();
+                        assertTrue(tab == tab1 || tab == tab2);
+                        if (tab == tab1) {
+                            assertEquals(2, newIndex);
+                            assertEquals(1, oldIndex);
+                        } else { // tab2
+                            assertEquals(3, newIndex);
+                            assertEquals(2, oldIndex);
+                        }
                     }
                 };
 
@@ -853,16 +859,187 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(groupObserver);
                     mCollectionModel.addObserver(modelObserver);
-                    mCollectionModel.moveRelatedTabs(tab1.getId(), 3);
+                    // Move group to the end.
+                    mCollectionModel.moveRelatedTabs(tab1.getId(), 4);
                     mCollectionModel.removeTabGroupObserver(groupObserver);
                     mCollectionModel.removeObserver(modelObserver);
                 });
 
         willMoveTabGroupHelper.waitForOnly();
         didMoveTabGroupHelper.waitForOnly();
-        didMoveTabHelper.waitForOnly();
 
-        assertTabsInOrderAre(List.of(tab0, tab2, tab1));
+        assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2));
+    }
+
+    @Test
+    @SmallTest
+    public void testMoveRelatedTabs_Advanced() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        Tab tab5 = createTab();
+        Tab tab6 = createTab();
+        Tab tab7 = createTab();
+        mergeListOfTabsToGroup(List.of(tab1, tab2), tab1);
+        mergeListOfTabsToGroup(List.of(tab4, tab5, tab6), tab4);
+
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
+        assertNull(tab0.getTabGroupId());
+        Token groupId1 = tab1.getTabGroupId();
+        assertNotNull(groupId1);
+        assertEquals(groupId1, tab2.getTabGroupId());
+        assertNull(tab3.getTabGroupId());
+        Token groupId2 = tab4.getTabGroupId();
+        assertNotNull(groupId2);
+        assertNotEquals(groupId1, groupId2);
+        assertEquals(groupId2, tab5.getTabGroupId());
+        assertEquals(groupId2, tab6.getTabGroupId());
+        assertNull(tab7.getTabGroupId());
+
+        moveRelatedTabs(tab1, 0);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0, tab3, tab4, tab5, tab6, tab7));
+
+        // Moving to an index inside the group does not result in change.
+        moveRelatedTabs(tab1, 1);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0, tab3, tab4, tab5, tab6, tab7));
+
+        moveRelatedTabs(tab1, 2);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
+
+        // Moving to an index inside the group does not result in change.
+        moveRelatedTabs(tab1, 1);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
+        moveRelatedTabs(tab1, 2);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
+
+        moveRelatedTabs(tab1, 3);
+        assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2, tab4, tab5, tab6, tab7));
+
+        moveRelatedTabs(tab1, 4);
+        assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2, tab4, tab5, tab6, tab7));
+
+        moveRelatedTabs(tab1, 5);
+        assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2, tab4, tab5, tab6, tab7));
+
+        moveRelatedTabs(tab1, 6);
+        assertTabsInOrderAre(List.of(tab0, tab3, tab4, tab5, tab6, tab1, tab2, tab7));
+
+        moveRelatedTabs(tab1, 1);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
+
+        moveRelatedTabs(tab1, 50);
+        assertTabsInOrderAre(List.of(tab0, tab3, tab4, tab5, tab6, tab7, tab1, tab2));
+    }
+
+    @Test
+    @MediumTest
+    public void testMoveTab_InGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+
+        mergeListOfTabsToGroup(List.of(tab1, tab2), tab1);
+        Token groupId = tab1.getTabGroupId();
+        assertNotNull(groupId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+
+        // Move tab1 within the group.
+        moveTab(tab1, 2);
+        assertTabsInOrderAre(List.of(tab0, tab2, tab1, tab3));
+        assertEquals(groupId, tab1.getTabGroupId());
+        assertEquals(groupId, tab2.getTabGroupId());
+
+        // Try to move tab1 outside the group to the beginning. It should be constrained to the
+        // start of the group.
+        moveTab(tab1, 0);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        assertEquals(groupId, tab1.getTabGroupId());
+        assertEquals(groupId, tab2.getTabGroupId());
+
+        // Try to move tab1 outside the group to the end. It should be constrained to the end of
+        // the group.
+        moveTab(tab1, 4);
+        assertTabsInOrderAre(List.of(tab0, tab2, tab1, tab3));
+        assertEquals(groupId, tab1.getTabGroupId());
+        assertEquals(groupId, tab2.getTabGroupId());
+
+        // Try to move tabs into the group. They should get pushed to the nearest edge.
+        moveTab(tab0, 1);
+        assertTabsInOrderAre(List.of(tab0, tab2, tab1, tab3));
+
+        moveTab(tab0, 2);
+        assertTabsInOrderAre(List.of(tab2, tab1, tab0, tab3));
+
+        moveTab(tab3, 0);
+        assertTabsInOrderAre(List.of(tab3, tab2, tab1, tab0));
+
+        // Merge tabs into the group. They should get put at the end.
+        mergeListOfTabsToGroup(List.of(tab3), tab1);
+        assertTabsInOrderAre(List.of(tab2, tab1, tab3, tab0));
+        assertEquals(groupId, tab3.getTabGroupId());
+
+        mergeListOfTabsToGroup(List.of(tab0), tab1);
+        assertTabsInOrderAre(List.of(tab2, tab1, tab3, tab0));
+        assertEquals(groupId, tab0.getTabGroupId());
+    }
+
+    @Test
+    @SmallTest
+    public void testMoveTabOutOfGroup_FromMultiTabGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+        Token groupId = tab0.getTabGroupId();
+        assertNotNull(groupId);
+
+        CallbackHelper willMoveOutOfGroup = new CallbackHelper();
+        CallbackHelper didMoveOutOfGroup = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabGroupModelFilterObserver observer =
+                            new TabGroupModelFilterObserver() {
+                                @Override
+                                public void willMoveTabOutOfGroup(
+                                        Tab movedTab, Token destinationTabGroupId) {
+                                    assertEquals(tab0, movedTab);
+                                    assertNull(destinationTabGroupId);
+                                    willMoveOutOfGroup.notifyCalled();
+                                }
+
+                                @Override
+                                public void didMoveTabOutOfGroup(
+                                        Tab movedTab, int prevFilterIndex) {
+                                    assertEquals(tab0, movedTab);
+                                    assertEquals(1, prevFilterIndex);
+                                    didMoveOutOfGroup.notifyCalled();
+                                }
+
+                                @Override
+                                public void didRemoveTabGroup(
+                                        int tabId, Token tabGroupId, int reason) {
+                                    fail("didRemoveTabGroup should not be called.");
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+                    mCollectionModel.moveTabOutOfGroupInDirection(
+                            tab0.getId(), /* trailing= */ false);
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    assertNull(tab0.getTabGroupId());
+                    assertNotNull(tab1.getTabGroupId());
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertTrue(mCollectionModel.tabGroupExists(groupId));
+                    assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+        willMoveOutOfGroup.waitForOnly();
+        didMoveOutOfGroup.waitForOnly();
     }
 
     @Test
@@ -924,6 +1101,60 @@ public class TabCollectionTabModelImplTest {
         assertTrue(tab1.getIsPinned());
         assertNull(tab1.getTabGroupId());
         assertTabsInOrderAre(List.of(tab1, tab0, tab2));
+    }
+
+    @Test
+    @SmallTest
+    public void testPinTabInMultiTabGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
+        Token groupId = tab0.getTabGroupId();
+        assertNotNull(groupId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        CallbackHelper willMoveOutOfGroup = new CallbackHelper();
+        CallbackHelper didMoveOutOfGroup = new CallbackHelper();
+        TabGroupModelFilterObserver groupObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willMoveTabOutOfGroup(Tab movedTab, Token destinationTabGroupId) {
+                        assertEquals(tab0, movedTab);
+                        assertNull(destinationTabGroupId);
+                        willMoveOutOfGroup.notifyCalled();
+                    }
+
+                    @Override
+                    public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                        assertEquals(tab0, movedTab);
+                        assertEquals(1, prevFilterIndex);
+                        didMoveOutOfGroup.notifyCalled();
+                    }
+
+                    @Override
+                    public void didRemoveTabGroup(int tabId, Token tabGroupId, int reason) {
+                        fail("didRemoveTabGroup should not be called.");
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(groupObserver);
+
+                    mRegularModel.pinTab(tab0.getId());
+
+                    mCollectionModel.removeTabGroupObserver(groupObserver);
+
+                    assertTrue(tab0.getIsPinned());
+                    assertNull(tab0.getTabGroupId());
+                    assertNotNull(tab1.getTabGroupId());
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertTrue(mCollectionModel.tabGroupExists(groupId));
+                    assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+        willMoveOutOfGroup.waitForOnly();
+        didMoveOutOfGroup.waitForOnly();
     }
 
     @Test
@@ -1187,6 +1418,268 @@ public class TabCollectionTabModelImplTest {
                 });
     }
 
+    @Test
+    @SmallTest
+    public void testWillMergingCreateNewGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // No groups exist.
+                    assertTrue(mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab1)));
+
+                    // Create a group with tab0 and tab1.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ false);
+                    Token groupId = tab0.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    // Merging a list that doesn't contain the full group.
+                    assertTrue(mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab2)));
+
+                    // Merging a list that contains the full group.
+                    assertFalse(
+                            mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab1, tab2)));
+
+                    // Merging just the group.
+                    assertFalse(mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab1)));
+
+                    // Merging a list that contains a different full group.
+                    mCollectionModel.createSingleTabGroup(tab2);
+                    assertFalse(mCollectionModel.willMergingCreateNewGroup(List.of(tab2, tab3)));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeListOfTabsToGroup_CreateNewGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        CallbackHelper didCreateNewGroupHelper = new CallbackHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabGroupModelFilterObserver observer =
+                            new TabGroupModelFilterObserver() {
+                                @Override
+                                public void didCreateNewGroup(
+                                        Tab destinationTab, TabGroupModelFilter filter) {
+                                    assertEquals(tab0, destinationTab);
+                                    didCreateNewGroupHelper.notifyCalled();
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ true);
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    assertNotNull(tab0.getTabGroupId());
+                    assertEquals(tab0.getTabGroupId(), tab1.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab1));
+                    assertEquals(2, mCollectionModel.getTabsInGroup(tab0.getTabGroupId()).size());
+                });
+
+        didCreateNewGroupHelper.waitForOnly();
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeListOfTabsToGroup_MergeIntoExistingGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create a group with tab0 and tab1.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ false);
+                    Token groupId = tab0.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    // Merge tab2 into the group.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2), tab0, /* notify= */ false);
+
+                    assertEquals(groupId, tab2.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeListOfTabsToGroup_MergeGroupIntoGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+
+        // TODO(crbug.com/429145597): Remove this once the implementation is further along.
+        // Create a tab that is not in a group to act as the current tab. This is required to
+        // prevent TabListMediator from being created and failing a bunch of lookups for
+        // representative tabs that are not yet implemented.
+        Tab tab4 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4));
+
+        CallbackHelper didRemoveTabGroupHelper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create group 1 with tab0, tab1.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ false);
+                    Token groupId1 = tab0.getTabGroupId();
+                    assertNotNull(groupId1);
+
+                    // Create group 2 with tab2, tab3.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2, tab3), tab2, /* notify= */ false);
+                    Token groupId2 = tab2.getTabGroupId();
+                    assertNotNull(groupId2);
+
+                    TabGroupModelFilterObserver observer =
+                            new TabGroupModelFilterObserver() {
+                                @Override
+                                public void didRemoveTabGroup(
+                                        int tabId, Token tabGroupId, int reason) {
+                                    assertEquals(groupId1, tabGroupId);
+                                    assertEquals(DidRemoveTabGroupReason.MERGE, reason);
+                                    didRemoveTabGroupHelper.notifyCalled();
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+
+                    // Merge group 1 into group 2.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab2, /* notify= */ true);
+
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    assertEquals(groupId2, tab0.getTabGroupId());
+                    assertEquals(groupId2, tab1.getTabGroupId());
+                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId2).size());
+                    assertFalse(mCollectionModel.tabGroupExists(groupId1));
+                    assertTabsInOrderAre(List.of(tab2, tab3, tab0, tab1, tab4));
+                });
+
+        didRemoveTabGroupHelper.waitForOnly();
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeListOfTabsToGroup_AdoptGroupId() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create a group with tab1.
+                    mCollectionModel.createSingleTabGroup(tab1);
+                    Token groupId = tab1.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    // Merge tab0 and tab1, with tab0 as destination. tab0 is not in a group.
+                    // The new group should adopt tab1's group ID.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ false);
+
+                    assertEquals(groupId, tab0.getTabGroupId());
+                    assertEquals(groupId, tab1.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab1, tab0, tab2));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateTabGroupForTabGroupSync() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token newGroupId = Token.createRandom();
+                    mCollectionModel.createTabGroupForTabGroupSync(List.of(tab0, tab1), newGroupId);
+
+                    assertEquals(newGroupId, tab0.getTabGroupId());
+                    assertEquals(newGroupId, tab1.getTabGroupId());
+                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(newGroupId);
+                    assertEquals(2, tabsInGroup.size());
+                    assertTrue(tabsInGroup.containsAll(List.of(tab0, tab1)));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeTabsToGroup_SingleToSingle() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeTabsToGroup(tab0.getId(), tab1.getId(), false);
+
+                    assertNotNull(tab1.getTabGroupId());
+                    assertEquals(tab1.getTabGroupId(), tab0.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(tab1.getTabGroupId()).size());
+                    assertTabsInOrderAre(List.of(tab1, tab0));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeTabsToGroup_SingleToGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroup(List.of(tab1, tab2), tab1, false);
+                    Token groupId = tab1.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    mCollectionModel.mergeTabsToGroup(tab0.getId(), tab1.getId(), false);
+
+                    assertEquals(groupId, tab0.getTabGroupId());
+                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeTabsToGroup_GroupToSingle() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroup(List.of(tab0, tab1), tab0, false);
+                    Token groupId = tab0.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    mCollectionModel.mergeTabsToGroup(tab0.getId(), tab2.getId(), false);
+
+                    assertEquals(groupId, tab2.getTabGroupId());
+                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab2, tab0, tab1));
+                });
+    }
+
     private void assertTabsInOrderAre(List<Tab> tabs) {
         assertEquals(
                 "Mismatched tab count",
@@ -1220,12 +1713,24 @@ public class TabCollectionTabModelImplTest {
         return ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getTabAt(index));
     }
 
+    private void moveRelatedTabs(Tab tab, int index) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.moveRelatedTabs(tab.getId(), index));
+    }
+
     private void moveTab(Tab tab, int index) {
         ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.moveTab(tab.getId(), index));
     }
 
     private Tab createTab() {
         return mActivityTestRule.loadUrlInNewTab(mTestUrl, /* incognito= */ false);
+    }
+
+    private void mergeListOfTabsToGroup(List<Tab> tabs, Tab destinationTab) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mCollectionModel.mergeListOfTabsToGroup(
+                                tabs, destinationTab, /* notify= */ false));
     }
 
     private void verifyPinOrUnpin(Tab changedTab, boolean isPinned, boolean willMove)
