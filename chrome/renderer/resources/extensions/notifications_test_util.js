@@ -12,24 +12,21 @@ var bindingUtil = undefined;
 
 var require = function(library) {
   return {
-    lastError: {
-      run: function() {}
-    },
-    sendRequest: {
-      sendRequest: function () {}
-    },
+    lastError: {run: function() {}},
+    sendRequest: {sendRequest: function() {}},
   }[library];
 };
 
-var requireNative = function(library) {
+var requireNative =
+    function(library) {
   return {
     notifications_private: {
-      GetNotificationImageSizes: function () {
+      GetNotificationImageSizes: function() {
         return {
           scaleFactor: 0,
-          icon: { width: 0, height: 0 },
-          image: { width: 0, height: 0 },
-          buttonIcon: { width: 0, height: 0}
+          icon: {width: 0, height: 0},
+          image: {width: 0, height: 0},
+          buttonIcon: {width: 0, height: 0}
         };
       }
     }
@@ -37,17 +34,19 @@ var requireNative = function(library) {
 }
 
 var exports = {
-  $set: function(k, v) { this.k = v; }
+  $set: function(k, v) {
+    this.k = v;
+  }
 };
 
 var $Array = {
-  push: function (ary, val) {
+  push: function(ary, val) {
     ary.push(val);
   }
 };
 
 var $Function = {
-  bind: function (fn, context) {
+  bind: function(fn, context) {
     return fn.bind(context);
   }
 };

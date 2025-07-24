@@ -24,18 +24,17 @@ var WebViewInternal = getInternalApi('webViewInternal');
 // conventions which are snake case. Convert from the kebab case convention to
 // the snake case convention.
 function convertRunAt(webRunAt) {
-  if (["document_start", "document_end", "document_idle"]
-      .includes(webRunAt)) {
-    throw "ERROR: Encountered incorrect naming, please see specification " +
-          "text for correct naming.";
+  if (['document_start', 'document_end', 'document_idle'].includes(webRunAt)) {
+    throw 'ERROR: Encountered incorrect naming, please see specification ' +
+        'text for correct naming.';
   }
 
-  if (webRunAt === "document-start") {
-    return "document_start";
-  } else if (webRunAt === "document-end") {
-    return "document_end";
-  } else if (webRunAt === "document-idle") {
-    return "document_idle";
+  if (webRunAt === 'document-start') {
+    return 'document_start';
+  } else if (webRunAt === 'document-end') {
+    return 'document_end';
+  } else if (webRunAt === 'document-idle') {
+    return 'document_idle';
   }
 
   return webRunAt;
@@ -48,16 +47,16 @@ function convertRunAt(webRunAt) {
 function convertContentScriptDetailsKeys(webViewRule, keyMappings) {
   for (const mapping of keyMappings) {
     if (!('from' in mapping)) {
-      throw "ERROR: 'from' is required";
+      throw 'ERROR: \'from\' is required';
     }
 
     if (!('to' in mapping)) {
-      throw "ERROR: 'to' is required";
+      throw 'ERROR: \'to\' is required';
     }
 
     if (mapping.to in webViewRule) {
-      throw "ERROR: Encountered incorrect naming, please see specification " +
-            "text for correct naming.";
+      throw 'ERROR: Encountered incorrect naming, please see specification ' +
+          'text for correct naming.';
     }
 
     if (mapping.from in webViewRule) {
@@ -88,13 +87,13 @@ function convertFromWebNaming(webRules) {
 
     // Convert the keys in |webViewRule|.
     webViewRule = convertContentScriptDetailsKeys(webViewRule, [
-      { from: "allFrames", to: "all_frames" },
-      { from: "excludeGlobs", to: "exclude_globs" },
-      { from: "excludeURLPatterns", to: "exclude_matches" },
-      { from: "includeGlobs", to: "include_globs" },
-      { from: "matchAboutBlank", to: "match_about_blank" },
-      { from: "runAt", to: "run_at" },
-      { from: "urlPatterns", to: "matches" },
+      {from: 'allFrames', to: 'all_frames'},
+      {from: 'excludeGlobs', to: 'exclude_globs'},
+      {from: 'excludeURLPatterns', to: 'exclude_matches'},
+      {from: 'includeGlobs', to: 'include_globs'},
+      {from: 'matchAboutBlank', to: 'match_about_blank'},
+      {from: 'runAt', to: 'run_at'},
+      {from: 'urlPatterns', to: 'matches'},
     ]);
 
     webViewRules.push(webViewRule);
@@ -164,13 +163,13 @@ upgradeMethodsToPromises(
 
 // Delete GuestView methods that should not be part of the Controlled Frame API.
 (function() {
-  for (const methodName of CONTROLLED_FRAME_DELETED_API_METHODS) {
-    let clazz = ControlledFrameElement.prototype;
-    while ((methodName in clazz) && clazz.constructor.name !== 'HTMLElement') {
-      delete clazz[methodName];
-      clazz = $Object.getPrototypeOf(clazz);
-    }
+for (const methodName of CONTROLLED_FRAME_DELETED_API_METHODS) {
+  let clazz = ControlledFrameElement.prototype;
+  while ((methodName in clazz) && clazz.constructor.name !== 'HTMLElement') {
+    delete clazz[methodName];
+    clazz = $Object.getPrototypeOf(clazz);
   }
+}
 })();
 
 registerElement('ControlledFrame', ControlledFrameElement);

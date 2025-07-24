@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 const WebViewEvents = require('webViewEvents').WebViewEvents;
-const ControlledFrameWebRequest = require('controlledFrameWebRequest').ControlledFrameWebRequest;
+const ControlledFrameWebRequest =
+    require('controlledFrameWebRequest').ControlledFrameWebRequest;
 
 class ControlledFrameEvents extends WebViewEvents {
   getEvents() {

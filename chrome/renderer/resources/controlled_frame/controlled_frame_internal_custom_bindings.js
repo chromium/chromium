@@ -8,7 +8,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   var handlers = contextMenusHandlers.create(
-      /*webViewNamespace=*/'controlledFrameInternal');
+      /*webViewNamespace=*/ 'controlledFrameInternal');
 
   apiFunctions.setHandleRequest(
       'contextMenusCreate', handlers.requestHandlers.create);

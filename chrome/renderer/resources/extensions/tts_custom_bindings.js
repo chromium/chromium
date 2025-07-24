@@ -16,11 +16,11 @@ apiBridge.registerCustomHook(function(api) {
     var eventHandler = handlers[event.srcId];
     if (eventHandler) {
       eventHandler({
-                     type: event.type,
-                     charIndex: event.charIndex,
-                     length: event.length,
-                     errorMessage: event.errorMessage
-                   });
+        type: event.type,
+        charIndex: event.charIndex,
+        length: event.length,
+        errorMessage: event.errorMessage
+      });
       if (event.isFinalEvent) {
         delete handlers[event.srcId];
         // Balanced in 'speak' handler.
@@ -35,7 +35,8 @@ apiBridge.registerCustomHook(function(api) {
   // See http://crbug.com/122474.
   try {
     tts.onEvent.addListener(ttsEventListener);
-  } catch (e) {}
+  } catch (e) {
+  }
 
   apiFunctions.setHandleRequest(
       'speak', function(utterance, options, callback) {

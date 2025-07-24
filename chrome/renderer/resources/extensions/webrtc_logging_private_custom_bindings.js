@@ -9,6 +9,6 @@ var getBindDirectoryEntryCallback =
 
 apiBridge.registerCustomHook(function(binding, id, contextType) {
   var apiFunctions = binding.apiFunctions;
-  apiFunctions.setCustomCallback('getLogsDirectory',
-                                 getBindDirectoryEntryCallback());
+  apiFunctions.setCustomCallback(
+      'getLogsDirectory', getBindDirectoryEntryCallback());
 });

@@ -12,8 +12,7 @@ var SendResponseAck = pageCaptureNatives.SendResponseAck;
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setCustomCallback('saveAsMHTML',
-      function(callback, response) {
+  apiFunctions.setCustomCallback('saveAsMHTML', function(callback, response) {
     var requestId;
     if (response) {
       requestId = response.requestId;

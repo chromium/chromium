@@ -21,8 +21,8 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
     const getErrorMessage = (error, fallbackMessage) => {
       if (!error || (typeof error.message !== 'string'))
         return fallbackMessage;
-      return error.message.replace('navigator.mediaDevices.getUserMedia',
-                                   'tabCapture.capture');
+      return error.message.replace(
+          'navigator.mediaDevices.getUserMedia', 'tabCapture.capture');
     };
 
     let constraints = {};
@@ -34,13 +34,13 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
       navigator.mediaDevices.getUserMedia(constraints)
           .then(callback)
           .catch(error => {
-              bindingUtil.runCallbackWithLastError(
-                getErrorMessage(error, "Failed to start MediaStream."),
+            bindingUtil.runCallbackWithLastError(
+                getErrorMessage(error, 'Failed to start MediaStream.'),
                 $Function.bind(callback, null, null));
           });
     } catch (error) {
       bindingUtil.runCallbackWithLastError(
-          getErrorMessage(error, "Invalid argument(s)."),
+          getErrorMessage(error, 'Invalid argument(s).'),
           $Function.bind(callback, null, null));
     }
   }

@@ -19,7 +19,7 @@ loadScript('ash.ime.mojom.input_method_host.mojom');
  * @type {Promise}
  * @const
  */
-var IME_CHANNEL_EMPTY_RESULT = Promise.resolve({result: ""});
+var IME_CHANNEL_EMPTY_RESULT = Promise.resolve({result: ''});
 
 /**
  * Empty message to keep Mojo pipe from disconnection.
@@ -240,7 +240,6 @@ class ImeService {
    */
   activateIME(imeSpec, extra, onConnection, onConnectionError) {
     if (this.isConnected()) {
-
       // TODO(crbug.com/837156): Try to reuse the current engine if possible.
       // Disconnect the current active engine and make a new one.
       this.deactivateIME();
@@ -282,8 +281,8 @@ class ImeService {
 }
 
 (function() {
-  let ptr = new ash.ime.mojom.InputEngineManagerPtr;
-  Mojo.bindInterface(
-      ash.ime.mojom.InputEngineManager.name, mojo.makeRequest(ptr).handle);
-  exports.$set('returnValue', new ImeService(ptr));
+let ptr = new ash.ime.mojom.InputEngineManagerPtr;
+Mojo.bindInterface(
+    ash.ime.mojom.InputEngineManager.name, mojo.makeRequest(ptr).handle);
+exports.$set('returnValue', new ImeService(ptr));
 })();

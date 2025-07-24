@@ -7,7 +7,7 @@ var ControlledFrameInternal = getInternalApi('controlledFrameInternal');
 var ControlledFrameEvents =
     require('controlledFrameEvents').ControlledFrameEvents;
 var ControlledFrameContextMenus =
-  require('controlledFrameContextMenus').ControlledFrameContextMenus;
+    require('controlledFrameContextMenus').ControlledFrameContextMenus;
 
 class ControlledFrameImpl extends ChromeWebViewImpl {
   constructor(webviewElement) {

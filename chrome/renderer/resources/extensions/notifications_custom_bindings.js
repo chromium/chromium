@@ -111,8 +111,8 @@ function generateHandler(name) {
     // changes also being made to the object on the caller's side.
     // TODO(dewittj): Remove this hack. This is used as a way to deep
     // copy a complex JSON object.
-    var notification_details_copy = $JSON.parse(
-        $JSON.stringify(notification_details));
+    var notification_details_copy =
+        $JSON.parse($JSON.stringify(notification_details));
     replaceNotificationOptionURLs(notification_details_copy, function(success) {
       if (success) {
         bindingUtil.sendRequest(
@@ -124,7 +124,7 @@ function generateHandler(name) {
   };
 }
 
-apiBridge.registerCustomHook( function(bindingsAPI) {
+apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setHandleRequest(

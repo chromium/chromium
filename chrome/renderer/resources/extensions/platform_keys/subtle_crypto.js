@@ -115,8 +115,8 @@ SubtleCryptoImpl.prototype.sign = function(algorithm, key, dataView) {
     }
     // Create an ArrayBuffer that equals the dataView. Note that dataView.buffer
     // might contain more data than dataView.
-    var data = dataView.buffer.slice(dataView.byteOffset,
-                                     dataView.byteOffset + dataView.byteLength);
+    var data = dataView.buffer.slice(
+        dataView.byteOffset, dataView.byteOffset + dataView.byteLength);
     internalAPI.sign(
         subtleCrypto.tokenId, getKeyIdentifier(key),
         normalizedAlgorithmParameters.name, hashAlgorithmName, data,

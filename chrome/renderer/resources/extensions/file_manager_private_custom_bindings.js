@@ -79,24 +79,23 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
   });
 
-  apiFunctions.setCustomCallback('searchDriveMetadata',
-      function(callback, response) {
-    if (response && !response.error) {
-      for (var i = 0; i < response.length; i++) {
-        response[i].entry =
-            getExternalFileEntry(response[i].entry);
-      }
-    }
+  apiFunctions.setCustomCallback(
+      'searchDriveMetadata', function(callback, response) {
+        if (response && !response.error) {
+          for (var i = 0; i < response.length; i++) {
+            response[i].entry = getExternalFileEntry(response[i].entry);
+          }
+        }
 
-    // So |callback| doesn't break if response is not defined.
-    if (!response) {
-      response = [];
-    }
+        // So |callback| doesn't break if response is not defined.
+        if (!response) {
+          response = [];
+        }
 
-    if (callback) {
-      callback(response);
-    }
-  });
+        if (callback) {
+          callback(response);
+        }
+      });
 
   apiFunctions.setHandleRequest(
       'resolveIsolatedEntries',
@@ -178,49 +177,63 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             callbackAdaptor(successCallback, failureCallback, resultHandler));
       });
 
-  apiFunctions.setHandleRequest('getContentMimeType',
+  apiFunctions.setHandleRequest(
+      'getContentMimeType',
       function(fileEntry, successCallback, failureCallback) {
-    fileEntry.file(blob => {
-      var blobUUID = blobNatives.GetBlobUuid(blob);
+        fileEntry.file(
+            blob => {
+              var blobUUID = blobNatives.GetBlobUuid(blob);
 
-      if (!blob || !blob.size) {
-        successCallback(undefined);
-        return;
-      }
+              if (!blob || !blob.size) {
+                successCallback(undefined);
+                return;
+              }
 
-      var resultHandler = function(blob, mimeType) {
-        return mimeType;
-      }.bind(this, blob);  // Bind a blob reference: crbug.com/415792#c12
+              var resultHandler =
+                  function(blob, mimeType) {
+                return mimeType;
+              }.bind(this,
+                     blob);  // Bind a blob reference: crbug.com/415792#c12
 
-      fileManagerPrivateInternal.getContentMimeType(
-          blobUUID,
-          callbackAdaptor(successCallback, failureCallback, resultHandler));
-    }, (error) => {
-      failureCallback(`fileEntry.file() blob error: ${error.message}`);
-    });
-  });
+              fileManagerPrivateInternal.getContentMimeType(
+                  blobUUID,
+                  callbackAdaptor(
+                      successCallback, failureCallback, resultHandler));
+            },
+            (error) => {
+              failureCallback(`fileEntry.file() blob error: ${error.message}`);
+            });
+      });
 
-  apiFunctions.setHandleRequest('getContentMetadata', function(
-      fileEntry, mimeType, includeImages, successCallback, failureCallback) {
-    fileEntry.file(blob => {
-      var blobUUID = blobNatives.GetBlobUuid(blob);
+  apiFunctions.setHandleRequest(
+      'getContentMetadata',
+      function(
+          fileEntry, mimeType, includeImages, successCallback,
+          failureCallback) {
+        fileEntry.file(
+            blob => {
+              var blobUUID = blobNatives.GetBlobUuid(blob);
 
-      if (!blob || !blob.size) {
-        successCallback(undefined);
-        return;
-      }
+              if (!blob || !blob.size) {
+                successCallback(undefined);
+                return;
+              }
 
-      var resultHandler = function(blob, metadata) {
-        return metadata;
-      }.bind(this, blob);  // Bind a blob reference: crbug.com/415792#c12
+              var resultHandler =
+                  function(blob, metadata) {
+                return metadata;
+              }.bind(this,
+                     blob);  // Bind a blob reference: crbug.com/415792#c12
 
-      fileManagerPrivateInternal.getContentMetadata(
-          blobUUID, mimeType, !!includeImages,
-          callbackAdaptor(successCallback, failureCallback, resultHandler));
-    }, (error) => {
-      failureCallback(`fileEntry.file() blob error: ${error.message}`);
-    });
-  });
+              fileManagerPrivateInternal.getContentMetadata(
+                  blobUUID, mimeType, !!includeImages,
+                  callbackAdaptor(
+                      successCallback, failureCallback, resultHandler));
+            },
+            (error) => {
+              failureCallback(`fileEntry.file() blob error: ${error.message}`);
+            });
+      });
 
   apiFunctions.setHandleRequest(
       'pinDriveFile', function(entry, pin, successCallback, failureCallback) {
@@ -377,8 +390,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             url, callbackAdaptor(successCallback, failureCallback));
       });
 
-  apiFunctions.setCustomCallback('searchFiles',
-      function(callback, response) {
+  apiFunctions.setCustomCallback('searchFiles', function(callback, response) {
     if (response && !response.error && response.entries) {
       response.entries = response.entries.map(getExternalFileEntry);
     }
@@ -445,20 +457,20 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
 bindingUtil.registerEventArgumentMassager(
     'fileManagerPrivate.onDirectoryChanged', function(args, dispatch) {
-  // Convert the entry arguments into a real Entry object.
-  args[0].entry = getExternalFileEntry(args[0].entry);
-  dispatch(args);
-});
+      // Convert the entry arguments into a real Entry object.
+      args[0].entry = getExternalFileEntry(args[0].entry);
+      dispatch(args);
+    });
 
 bindingUtil.registerEventArgumentMassager(
     'fileManagerPrivate.onCrostiniChanged', function(args, dispatch) {
-  // Convert entries arguments into real Entry objects.
-  const entries = args[0].entries;
-  for (let i = 0; i < entries.length; i++) {
-    entries[i] = getExternalFileEntry(entries[i]);
-  }
-  dispatch(args);
-});
+      // Convert entries arguments into real Entry objects.
+      const entries = args[0].entries;
+      for (let i = 0; i < entries.length; i++) {
+        entries[i] = getExternalFileEntry(entries[i]);
+      }
+      dispatch(args);
+    });
 
 bindingUtil.registerEventArgumentMassager(
     'fileManagerPrivate.onIOTaskProgressStatus', function(args, dispatch) {

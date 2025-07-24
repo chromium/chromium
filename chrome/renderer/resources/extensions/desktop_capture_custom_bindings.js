@@ -19,30 +19,31 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
   }
 
-  apiFunctions.setHandleRequest('chooseDesktopMedia',
-                                function(sources, target_tab, options,
-                                         callback) {
-    // |target_tab| is an optional parameter.
-    if (callback === undefined) {
-      callback = target_tab;
-      target_tab = undefined;
-    }
-    var id = idGenerator.GetNextId();
-    pendingRequests[id] = callback;
-    bindingUtil.sendRequest('desktopCapture.chooseDesktopMedia',
-                            [id, sources, target_tab, options,
-                            $Function.bind(onRequestResult, null, id)],
-                            undefined);
-    return id;
-  });
+  apiFunctions.setHandleRequest(
+      'chooseDesktopMedia', function(sources, target_tab, options, callback) {
+        // |target_tab| is an optional parameter.
+        if (callback === undefined) {
+          callback = target_tab;
+          target_tab = undefined;
+        }
+        var id = idGenerator.GetNextId();
+        pendingRequests[id] = callback;
+        bindingUtil.sendRequest(
+            'desktopCapture.chooseDesktopMedia',
+            [
+              id, sources, target_tab, options,
+              $Function.bind(onRequestResult, null, id)
+            ],
+            undefined);
+        return id;
+      });
 
   apiFunctions.setHandleRequest('cancelChooseDesktopMedia', function(id) {
     if (id in pendingRequests) {
       delete pendingRequests[id];
       bindingUtil.sendRequest(
-          'desktopCapture.cancelChooseDesktopMedia',
-          [id], undefined, undefined);
+          'desktopCapture.cancelChooseDesktopMedia', [id], undefined,
+          undefined);
     }
   });
 });
-

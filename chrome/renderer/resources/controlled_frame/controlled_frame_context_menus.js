@@ -27,10 +27,9 @@ function mapUrlPatternsToMatchPatterns(urlPatternsStrs) {
   let matchPatterns = [];
   for (const urlPatternStr of urlPatternsStrs) {
     matchPatterns = $Array.concat(
-      matchPatterns,
-      WebUrlPatternNatives.URLPatternToMatchPatterns(
-        new URLPattern(urlPatternStr))
-    );
+        matchPatterns,
+        WebUrlPatternNatives.URLPatternToMatchPatterns(
+            new URLPattern(urlPatternStr)));
   };
   return matchPatterns;
 }
@@ -334,8 +333,7 @@ class MenuItemDetails {
 class ContextMenusShowEvent extends Event {
   constructor(details) {
     super('show');
-    this['preventDefault'] =
-      $Function.bind(details.preventDefault, this);
+    this['preventDefault'] = $Function.bind(details.preventDefault, this);
     $Object.freeze(this);
   }
 }

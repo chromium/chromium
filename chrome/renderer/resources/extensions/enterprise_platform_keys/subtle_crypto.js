@@ -133,8 +133,8 @@ function EnterpriseSubtleCryptoImpl(tokenId, softwareBacked) {
 EnterpriseSubtleCryptoImpl.prototype =
     $Object.create(SubtleCryptoImpl.prototype);
 
-EnterpriseSubtleCryptoImpl.prototype.generateKey =
-    function(algorithm, extractable, keyUsages) {
+EnterpriseSubtleCryptoImpl.prototype.generateKey = function(
+    algorithm, extractable, keyUsages) {
   var subtleCrypto = this;
   return new Promise(function(resolve, reject) {
     // TODO(pneubeck): Apply the algorithm normalization of the WebCrypto

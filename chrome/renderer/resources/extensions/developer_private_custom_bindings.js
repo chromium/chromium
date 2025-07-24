@@ -15,7 +15,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           var relativePath = $String.slice(directoryEntry.fullPath, 1);
           var url = directoryEntry.toURL();
           return [fileSystemName, relativePath, url, callback];
-    });
+        });
   }
 
   bindFileSystemFunction('loadDirectory');
@@ -33,11 +33,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       if (isNaN(renderProcessId))
         throw new Error('Invalid value for render_process_id');
     }
-    chrome.developerPrivate.openDevTools({
-        extensionId: options.extension_id,
-        renderProcessId: renderProcessId,
-        renderViewId: renderViewId,
-        incognito: options.incognito
-    }, callback);
+    chrome.developerPrivate.openDevTools(
+        {
+          extensionId: options.extension_id,
+          renderProcessId: renderProcessId,
+          renderViewId: renderViewId,
+          incognito: options.incognito
+        },
+        callback);
   });
 });

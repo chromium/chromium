@@ -16,9 +16,9 @@ function convertURLPatternsToExtension(urlPatternsStrsOrObjs) {
   let matchPatterns = [];
   for (const urlPatternStrOrObj of urlPatternsStrsOrObjs) {
     matchPatterns = $Array.concat(
-      matchPatterns,
-      WebUrlPatternNatives.URLPatternToMatchPatterns(
-        new URLPattern(urlPatternStrOrObj))
+        matchPatterns,
+        WebUrlPatternNatives.URLPatternToMatchPatterns(
+          new URLPattern(urlPatternStrOrObj))
     );
   };
   return matchPatterns;
@@ -27,9 +27,9 @@ function convertURLPatternsToExtension(urlPatternsStrsOrObjs) {
 function convertExtensionHeadersToWeb(httpHeaders) {
   const headers = new $Headers.self();
   for (const header of httpHeaders) {
-    const value = (header.value !== undefined)
-        ? header.value
-        : $String.fromCharCode(...header.binaryValue);
+    const value = (header.value !== undefined) ?
+        header.value :
+        $String.fromCharCode(...header.binaryValue);
     $Headers.append(headers, header.name, value);
   }
   return headers;
@@ -60,7 +60,7 @@ function mapString(mapping, value) {
 }
 
 function extractAndMapValues(obj, mapping) {
-  const mapped = { __proto__: null };
+  const mapped = {__proto__: null};
   for (const [key, value] of $Object.entries(obj)) {
     if (key in mapping) {
       $Object.defineProperty(mapped, key, {
@@ -368,8 +368,8 @@ class WebRequestInterceptor extends EventTarget {
       return;
     }
 
-    const resultPromises = $Array.self(
-        $Promise.resolve(result.authCredentials));
+    const resultPromises =
+        $Array.self($Promise.resolve(result.authCredentials));
     if (options.signal) {
       $Array.push(resultPromises, new $Promise.self((resolve) => {
         options.signal.addEventListener('abort', resolve);
