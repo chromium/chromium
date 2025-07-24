@@ -100,7 +100,7 @@ inline constexpr const char kIndex_BlobsTokenStart[] =
     "CREATE UNIQUE INDEX IF NOT EXISTS index_blobs_token_start ON "
     "blobs(token_high, token_low, start)";
 
-inline constexpr const char kOpenEntry_SelectResources[] =
+inline constexpr const char kOpenEntry_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "token_high,"  // 0
@@ -111,7 +111,7 @@ inline constexpr const char kOpenEntry_SelectResources[] =
     "FROM resources "
     "WHERE "
         "cache_key=? AND "  // 0
-        "doomed=? "         // 1
+        "doomed=0 "
     "ORDER BY res_id DESC";
 // clang-format on
 
@@ -123,21 +123,21 @@ inline constexpr const char kCreateEntry_InsertIntoResources[] =
         "last_used,"    // 2
         "body_end,"     // 3
         "bytes_usage,"  // 4
-        "doomed,"       // 5
-        "cache_key) "   // 6
-    "VALUES(?,?,?,?,?,?,?)";
+        "doomed,"
+        "cache_key) "   // 5
+    "VALUES(?,?,?,?,?,0,?)";
 // clang-format on
 
 inline constexpr const char kDoomEntry_MarkDoomedResources[] =
     // clang-format off
     "UPDATE resources "
     "SET "
-        "doomed=? "          // 0
+        "doomed=1 "
     "WHERE "
-        "cache_key=? AND "   // 1
-        "token_high=? AND "  // 2
-        "token_low=? AND "   // 3
-        "doomed=? "          // 4
+        "cache_key=? AND "   // 0
+        "token_high=? AND "  // 1
+        "token_low=? AND "   // 2
+        "doomed=0 "
     "RETURNING "
         "bytes_usage";       // 0
 // clang-format on
@@ -149,17 +149,17 @@ inline constexpr const char kDeleteDoomedEntry_DeleteFromResources[] =
         "cache_key=? AND "   // 0
         "token_high=? AND "  // 1
         "token_low=? AND "   // 2
-        "doomed=?";          // 3
+        "doomed=1";
 // clang-format on
 
-inline constexpr const char kDeleteDoomedEntries_SelectResources[] =
+inline constexpr const char kDeleteDoomedEntries_SelectDoomedResources[] =
     // clang-format off
     "SELECT "
         "res_id,"       // 0
         "token_high,"   // 1
         "token_low "    // 2
     "FROM resources "
-    "WHERE doomed=?";   // 0
+    "WHERE doomed=1";
 // clang-format on
 
 inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
@@ -167,7 +167,7 @@ inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
     "DELETE FROM resources "
     "WHERE "
         "cache_key=? AND "  // 0
-        "doomed=? "         // 1
+        "doomed=0 "
     "RETURNING "
         "token_high,"       // 0
         "token_low,"        // 1
@@ -180,20 +180,19 @@ inline constexpr const char kDeleteAllEntries_DeleteFromResources[] =
 inline constexpr const char kDeleteAllEntries_DeleteFromBlobs[] =
     "DELETE FROM blobs";
 
-inline constexpr const char
-    kDeleteLiveEntriesBetween_SelectResourcesForEviction[] =
-        // clang-format off
-        "SELECT "
-            "res_id,"       // 0
-            "token_high,"   // 1
-            "token_low,"    // 2
-            "bytes_usage,"  // 3
-            "cache_key "    // 4
-        "FROM resources "
-        "WHERE "
-            "last_used>=? AND "  // 0
-            "last_used<? AND "   // 1
-            "doomed=?";          // 2
+inline constexpr const char kDeleteLiveEntriesBetween_SelectLiveResources[] =
+    // clang-format off
+    "SELECT "
+        "res_id,"       // 0
+        "token_high,"   // 1
+        "token_low,"    // 2
+        "bytes_usage,"  // 3
+        "cache_key "    // 4
+    "FROM resources "
+    "WHERE "
+        "last_used>=? AND "  // 0
+        "last_used<? AND "   // 1
+        "doomed=0";
 // clang-format on
 
 inline constexpr const char kDeleteResourcesByResIds_DeleteFromResources[] =
@@ -206,7 +205,7 @@ inline constexpr const char kUpdateEntryLastUsed_UpdateResourceLastUsed[] =
         "last_used=? "      // 0
     "WHERE "
         "cache_key=? AND "  // 1
-        "doomed=?";         // 2
+        "doomed=0";
 // clang-format on
 
 inline constexpr const char kUpdateEntryHeaderAndLastUsed_UpdateResource[] =
@@ -220,7 +219,7 @@ inline constexpr const char kUpdateEntryHeaderAndLastUsed_UpdateResource[] =
         "cache_key=? AND "             // 3
         "token_high=? AND "            // 4
         "token_low=? AND "             // 5
-        "doomed=? "                    // 6
+        "doomed=0 "
     "RETURNING "
         "bytes_usage";                 // 0
 // clang-format on
@@ -339,18 +338,18 @@ inline constexpr const char kGetEntryAvailableRange_SelectOverlapping[] =
 // clang-format on
 
 inline constexpr const char
-    kCalculateSizeOfEntriesBetween_SelectFromResources[] =
+    kCalculateSizeOfEntriesBetween_SelectLiveResources[] =
         // clang-format off
-        "SELECT "
-            "bytes_usage "  // 0
-        "FROM resources "
-        "WHERE "
-            "last_used>=? AND "  // 0
-            "last_used<? AND "   // 1
-            "doomed=?";          // 2
+    "SELECT "
+        "bytes_usage "  // 0
+    "FROM resources "
+    "WHERE "
+        "last_used>=? AND "  // 0
+        "last_used<? AND "   // 1
+        "doomed=0";
 // clang-format on
 
-inline constexpr const char kOpenLatestEntryBeforeResId_SelectResources[] =
+inline constexpr const char kOpenLatestEntryBeforeResId_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "res_id,"      // 0
@@ -363,11 +362,11 @@ inline constexpr const char kOpenLatestEntryBeforeResId_SelectResources[] =
     "FROM resources "
     "WHERE "
         "res_id<? AND "  // 0
-        "doomed=? "      // 1
+        "doomed=0 "
     "ORDER BY res_id DESC";
 // clang-format on
 
-inline constexpr const char kRunEviction_SelectResourcesForEviction[] =
+inline constexpr const char kRunEviction_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "token_high,"   // 0
@@ -376,7 +375,7 @@ inline constexpr const char kRunEviction_SelectResourcesForEviction[] =
         "bytes_usage "  // 3
     "FROM resources "
     "WHERE "
-        "doomed=? "     // 0
+        "doomed=0 "
     "ORDER BY last_used";
 // clang-format on
 
@@ -389,11 +388,12 @@ inline constexpr const char kRunEviction_DeleteFromResources[] =
 // clang-format on
 
 inline constexpr const char
-    kCalculateResourceEntryCount_SelectCountFromResources[] =
-        "SELECT COUNT(*) FROM resources WHERE doomed=?";
+    kCalculateResourceEntryCount_SelectCountFromLiveResources[] =
+        "SELECT COUNT(*) FROM resources WHERE doomed=0";
 
-inline constexpr const char kCalculateTotalSize_SelectTotalSizeFromResources[] =
-    "SELECT SUM(bytes_usage) FROM resources WHERE doomed=?";
+inline constexpr const char
+    kCalculateTotalSize_SelectTotalSizeFromLiveResources[] =
+        "SELECT SUM(bytes_usage) FROM resources WHERE doomed=0";
 
 }  // namespace internal
 
@@ -406,15 +406,15 @@ enum class Query {
   kIndex_ResourcesDoomedLastUsed,
   kIndex_ResourcesDoomedResId,
   kIndex_BlobsTokenStart,
-  kOpenEntry_SelectResources,
+  kOpenEntry_SelectLiveResources,
   kCreateEntry_InsertIntoResources,
   kDoomEntry_MarkDoomedResources,
   kDeleteDoomedEntry_DeleteFromResources,
-  kDeleteDoomedEntries_SelectResources,
+  kDeleteDoomedEntries_SelectDoomedResources,
   kDeleteLiveEntry_DeleteFromResources,
   kDeleteAllEntries_DeleteFromResources,
   kDeleteAllEntries_DeleteFromBlobs,
-  kDeleteLiveEntriesBetween_SelectResourcesForEviction,
+  kDeleteLiveEntriesBetween_SelectLiveResources,
   kDeleteResourcesByResIds_DeleteFromResources,
   kUpdateEntryLastUsed_UpdateResourceLastUsed,
   kUpdateEntryHeaderAndLastUsed_UpdateResource,
@@ -427,14 +427,14 @@ enum class Query {
   kDeleteBlobsByToken_DeleteFromBlobs,
   kReadEntryData_SelectOverlapping,
   kGetEntryAvailableRange_SelectOverlapping,
-  kCalculateSizeOfEntriesBetween_SelectFromResources,
-  kOpenLatestEntryBeforeResId_SelectResources,
-  kRunEviction_SelectResourcesForEviction,
+  kCalculateSizeOfEntriesBetween_SelectLiveResources,
+  kOpenLatestEntryBeforeResId_SelectLiveResources,
+  kRunEviction_SelectLiveResources,
   kRunEviction_DeleteFromResources,
-  kCalculateResourceEntryCount_SelectCountFromResources,
-  kCalculateTotalSize_SelectTotalSizeFromResources,
+  kCalculateResourceEntryCount_SelectCountFromLiveResources,
+  kCalculateTotalSize_SelectTotalSizeFromLiveResources,
 
-  kMaxValue = kCalculateTotalSize_SelectTotalSizeFromResources,
+  kMaxValue = kCalculateTotalSize_SelectTotalSizeFromLiveResources,
 };
 
 inline base::cstring_view GetQuery(Query query) {
@@ -453,24 +453,24 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kIndex_ResourcesDoomedResId;
     case Query::kIndex_BlobsTokenStart:
       return internal::kIndex_BlobsTokenStart;
-    case Query::kOpenEntry_SelectResources:
-      return internal::kOpenEntry_SelectResources;
+    case Query::kOpenEntry_SelectLiveResources:
+      return internal::kOpenEntry_SelectLiveResources;
     case Query::kCreateEntry_InsertIntoResources:
       return internal::kCreateEntry_InsertIntoResources;
     case Query::kDoomEntry_MarkDoomedResources:
       return internal::kDoomEntry_MarkDoomedResources;
     case Query::kDeleteDoomedEntry_DeleteFromResources:
       return internal::kDeleteDoomedEntry_DeleteFromResources;
-    case Query::kDeleteDoomedEntries_SelectResources:
-      return internal::kDeleteDoomedEntries_SelectResources;
+    case Query::kDeleteDoomedEntries_SelectDoomedResources:
+      return internal::kDeleteDoomedEntries_SelectDoomedResources;
     case Query::kDeleteLiveEntry_DeleteFromResources:
       return internal::kDeleteLiveEntry_DeleteFromResources;
     case Query::kDeleteAllEntries_DeleteFromResources:
       return internal::kDeleteAllEntries_DeleteFromResources;
     case Query::kDeleteAllEntries_DeleteFromBlobs:
       return internal::kDeleteAllEntries_DeleteFromBlobs;
-    case Query::kDeleteLiveEntriesBetween_SelectResourcesForEviction:
-      return internal::kDeleteLiveEntriesBetween_SelectResourcesForEviction;
+    case Query::kDeleteLiveEntriesBetween_SelectLiveResources:
+      return internal::kDeleteLiveEntriesBetween_SelectLiveResources;
     case Query::kDeleteResourcesByResIds_DeleteFromResources:
       return internal::kDeleteResourcesByResIds_DeleteFromResources;
     case Query::kUpdateEntryLastUsed_UpdateResourceLastUsed:
@@ -495,18 +495,19 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kReadEntryData_SelectOverlapping;
     case Query::kGetEntryAvailableRange_SelectOverlapping:
       return internal::kGetEntryAvailableRange_SelectOverlapping;
-    case Query::kCalculateSizeOfEntriesBetween_SelectFromResources:
-      return internal::kCalculateSizeOfEntriesBetween_SelectFromResources;
-    case Query::kOpenLatestEntryBeforeResId_SelectResources:
-      return internal::kOpenLatestEntryBeforeResId_SelectResources;
-    case Query::kRunEviction_SelectResourcesForEviction:
-      return internal::kRunEviction_SelectResourcesForEviction;
+    case Query::kCalculateSizeOfEntriesBetween_SelectLiveResources:
+      return internal::kCalculateSizeOfEntriesBetween_SelectLiveResources;
+    case Query::kOpenLatestEntryBeforeResId_SelectLiveResources:
+      return internal::kOpenLatestEntryBeforeResId_SelectLiveResources;
+    case Query::kRunEviction_SelectLiveResources:
+      return internal::kRunEviction_SelectLiveResources;
     case Query::kRunEviction_DeleteFromResources:
       return internal::kRunEviction_DeleteFromResources;
-    case Query::kCalculateResourceEntryCount_SelectCountFromResources:
-      return internal::kCalculateResourceEntryCount_SelectCountFromResources;
-    case Query::kCalculateTotalSize_SelectTotalSizeFromResources:
-      return internal::kCalculateTotalSize_SelectTotalSizeFromResources;
+    case Query::kCalculateResourceEntryCount_SelectCountFromLiveResources:
+      return internal::
+          kCalculateResourceEntryCount_SelectCountFromLiveResources;
+    case Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources:
+      return internal::kCalculateTotalSize_SelectTotalSizeFromLiveResources;
   }
   NOTREACHED();
 }

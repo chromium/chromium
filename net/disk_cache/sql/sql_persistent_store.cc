@@ -664,9 +664,8 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key,
   CheckDatabaseInitStatus();
 
   sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, GetQuery(Query::kOpenEntry_SelectResources)));
+      SQL_FROM_HERE, GetQuery(Query::kOpenEntry_SelectLiveResources)));
   statement.BindString(0, key.string());
-  statement.BindBool(1, false);
   if (!statement.Step()) {
     // `Step()` returned false, which means either the query completed with no
     // results, or an error occurred.
@@ -764,8 +763,7 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
     statement.BindTime(2, entry_info.last_used);
     statement.BindInt64(3, entry_info.body_end);
     statement.BindInt64(4, bytes_usage);
-    statement.BindBool(5, false);  // doomed
-    statement.BindString(6, key.string());
+    statement.BindString(5, key.string());
     if (!statement.Run()) {
       return base::unexpected(Error::kFailedToExecute);
     }
@@ -826,13 +824,9 @@ Error Backend::DoomEntryInternal(const CacheEntryKey& key,
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDoomEntry_MarkDoomedResources)));
-    // Set the new value: doomed = true.
-    statement.BindBool(0, true);
-    statement.BindString(1, key.string());
-    statement.BindInt64(2, TokenHigh(token));
-    statement.BindInt64(3, TokenLow(token));
-    // Set the current value to match: doomed = false.
-    statement.BindBool(4, false);
+    statement.BindString(0, key.string());
+    statement.BindInt64(1, TokenHigh(token));
+    statement.BindInt64(2, TokenLow(token));
     // Iterate through the rows returned by the RETURNING clause.
     while (statement.Step()) {
       // Since we're dooming an entry, its size is subtracted from the total.
@@ -913,8 +907,6 @@ Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
     statement.BindString(0, key.string());
     statement.BindInt64(1, TokenHigh(token));
     statement.BindInt64(2, TokenLow(token));
-    // Target rows where doomed = true.
-    statement.BindBool(3, true);
     if (!statement.Run()) {
       return Error::kFailedToExecute;
     }
@@ -981,8 +973,8 @@ Error Backend::DeleteDoomedEntriesInternal(
   // 1. Select all doomed entries.
   {
     sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE, GetQuery(Query::kDeleteDoomedEntries_SelectResources)));
-    statement.BindBool(0, true);  // doomed = true
+        SQL_FROM_HERE,
+        GetQuery(Query::kDeleteDoomedEntries_SelectDoomedResources)));
     // 2. Collect entries to be deleted, skipping excluded ones.
     while (statement.Step()) {
       auto maybe_token = ToUnguessableToken(statement.ColumnInt64(1),
@@ -1061,8 +1053,6 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDeleteLiveEntry_DeleteFromResources)));
     statement.BindString(0, key.string());
-    // Target rows where doomed = false.
-    statement.BindBool(1, false);
     while (statement.Step()) {
       ++deleted_count;
       auto maybe_token = ToUnguessableToken(statement.ColumnInt64(0),
@@ -1206,10 +1196,9 @@ Error Backend::DeleteLiveEntriesBetweenInternal(
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
-        GetQuery(Query::kDeleteLiveEntriesBetween_SelectResourcesForEviction)));
+        GetQuery(Query::kDeleteLiveEntriesBetween_SelectLiveResources)));
     statement.BindTime(0, initial_time);
     statement.BindTime(1, end_time);
-    statement.BindBool(2, false);
     while (statement.Step()) {
       if (excluded_keys.contains(CacheEntryKey(statement.ColumnString(4)))) {
         continue;
@@ -1288,7 +1277,6 @@ Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
         GetQuery(Query::kUpdateEntryLastUsed_UpdateResourceLastUsed)));
     statement.BindTime(0, last_used);
     statement.BindString(1, key.string());
-    statement.BindBool(2, false);  // doomed
     if (!statement.Run()) {
       return Error::kFailedToExecute;
     }
@@ -1356,7 +1344,6 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
     statement.BindString(3, key.string());
     statement.BindInt64(4, TokenHigh(token));
     statement.BindInt64(5, TokenLow(token));
-    statement.BindBool(6, false);  // doomed
     if (statement.Step()) {
       const int64_t bytes_usage = statement.ColumnInt64(0);
       if (bytes_usage < static_cast<int64_t>(buffer->size()) +
@@ -2015,10 +2002,9 @@ int64_t Backend::CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
   // from the `resources` table and adds a static overhead for each entry.
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
-      GetQuery(Query::kCalculateSizeOfEntriesBetween_SelectFromResources)));
+      GetQuery(Query::kCalculateSizeOfEntriesBetween_SelectLiveResources)));
   statement.BindTime(0, initial_time);
   statement.BindTime(1, end_time);
-  statement.BindBool(2, false);
   base::ClampedNumeric<int64_t> total_size = 0;
   while (statement.Step()) {
     // `bytes_usage` includes the size of the key, header, and body data.
@@ -2059,9 +2045,8 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
-      GetQuery(Query::kOpenLatestEntryBeforeResId_SelectResources)));
+      GetQuery(Query::kOpenLatestEntryBeforeResId_SelectLiveResources)));
   statement.BindInt64(0, res_id_cursor);
-  statement.BindBool(1, false);
   while (statement.Step()) {
     auto maybe_token =
         ToUnguessableToken(statement.ColumnInt64(1), statement.ColumnInt64(2));
@@ -2124,9 +2109,7 @@ Error Backend::RunEvictionInternal(
   base::CheckedNumeric<int64_t> checked_removed_total_size = 0;
   {
     sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        GetQuery(Query::kRunEviction_SelectResourcesForEviction)));
-    statement.BindBool(0, false);
+        SQL_FROM_HERE, GetQuery(Query::kRunEviction_SelectLiveResources)));
     while (size_to_be_removed > checked_removed_total_size.ValueOrDie() &&
            statement.Step()) {
       if (excluded_keys.contains(CacheEntryKey(statement.ColumnString(2)))) {
@@ -2236,8 +2219,8 @@ Error Backend::RecalculateStoreStatusAndCommitTransaction(
 int64_t Backend::CalculateResourceEntryCount() {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
-      GetQuery(Query::kCalculateResourceEntryCount_SelectCountFromResources)));
-  statement.BindBool(0, false);
+      GetQuery(
+          Query::kCalculateResourceEntryCount_SelectCountFromLiveResources)));
   int64_t result = 0;
   if (statement.Step()) {
     result = statement.ColumnInt64(0);
@@ -2249,8 +2232,7 @@ int64_t Backend::CalculateResourceEntryCount() {
 int64_t Backend::CalculateTotalSize() {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
-      GetQuery(Query::kCalculateTotalSize_SelectTotalSizeFromResources)));
-  statement.BindBool(0, false);
+      GetQuery(Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources)));
   int64_t result = 0;
   if (statement.Step()) {
     result = statement.ColumnInt64(0);

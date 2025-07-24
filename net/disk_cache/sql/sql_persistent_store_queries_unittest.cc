@@ -139,7 +139,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kIndex_ResourcesDoomedLastUsed, ""},
            {Query::kIndex_ResourcesDoomedResId, ""},
            {Query::kIndex_BlobsTokenStart, ""},
-           {Query::kOpenEntry_SelectResources,
+           {Query::kOpenEntry_SelectLiveResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_cache_key_doomed "
             "(cache_key=? AND doomed=?)"},
@@ -152,7 +152,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "INDEX index_resources_token "
             "(token_high=? AND token_low=?)"},
-           {Query::kDeleteDoomedEntries_SelectResources,
+           {Query::kDeleteDoomedEntries_SelectDoomedResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_doomed_res_id "
             "(doomed=?)"},
@@ -162,7 +162,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "(cache_key=? AND doomed=?)"},
            {Query::kDeleteAllEntries_DeleteFromResources, ""},
            {Query::kDeleteAllEntries_DeleteFromBlobs, ""},
-           {Query::kDeleteLiveEntriesBetween_SelectResourcesForEviction,
+           {Query::kDeleteLiveEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_doomed_last_used "
             "(doomed=? AND last_used>? AND last_used<?)"},
@@ -209,15 +209,15 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH blobs USING "
             "INDEX index_blobs_token_start "
             "(token_high=? AND token_low=? AND start<?)"},
-           {Query::kCalculateSizeOfEntriesBetween_SelectFromResources,
+           {Query::kCalculateSizeOfEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_doomed_last_used "
             "(doomed=? AND last_used>? AND last_used<?)"},
-           {Query::kOpenLatestEntryBeforeResId_SelectResources,
+           {Query::kOpenLatestEntryBeforeResId_SelectLiveResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_doomed_res_id "
             "(doomed=? AND res_id<?)"},
-           {Query::kRunEviction_SelectResourcesForEviction,
+           {Query::kRunEviction_SelectLiveResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_doomed_last_used "
             "(doomed=?)"},
@@ -225,11 +225,11 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "INDEX index_resources_token "
             "(token_high=? AND token_low=?)"},
-           {Query::kCalculateResourceEntryCount_SelectCountFromResources,
+           {Query::kCalculateResourceEntryCount_SelectCountFromLiveResources,
             "`--SEARCH resources USING "
             "COVERING INDEX index_resources_doomed_res_id "
             "(doomed=?)"},
-           {Query::kCalculateTotalSize_SelectTotalSizeFromResources,
+           {Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_doomed_res_id "
             "(doomed=?)"}});
