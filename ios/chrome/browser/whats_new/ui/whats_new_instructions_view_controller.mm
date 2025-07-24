@@ -17,7 +17,8 @@
 
 namespace {
 constexpr CGFloat kPreferredCornerRadius = 20;
-constexpr CGFloat kDismissSymbolSize = 22;
+constexpr CGFloat kDismissSymbolSizeIOS18 = 22;
+constexpr CGFloat kDismissSymbolSizeIOS26 = 16;
 NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     @"WhatsNewTitleAccessibilityIdentifier";
 }  // namespace
@@ -77,9 +78,20 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
   _alertScreen.titleView = self.titleLabel;
   _alertScreen.actionHandler = self.actionHandler;
   _alertScreen.showDismissBarButton = YES;
-  UIImage* xmarkSymbol = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kDismissSymbolSize),
-      @[ [UIColor colorNamed:kGrey600Color] ]);
+
+  UIImage* xmarkSymbol;
+  if (@available(iOS 26, *)) {
+    UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+        configurationWithPointSize:kDismissSymbolSizeIOS26
+                            weight:UIImageSymbolWeightLight
+                             scale:UIImageSymbolScaleUnspecified];
+    xmarkSymbol = DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
+  } else {
+    xmarkSymbol =
+        SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
+                                                     kDismissSymbolSizeIOS18),
+                          @[ [UIColor colorNamed:kGrey600Color] ]);
+  }
   _alertScreen.customDismissBarButtonImage = xmarkSymbol;
 
   _alertScreen.topAlignedLayout = YES;
