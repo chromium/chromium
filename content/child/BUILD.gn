@@ -60,7 +60,7 @@ target(link_target_type, "child") {
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
-    "//gpu/ipc/client:client",
+    "//gpu/ipc/client",
     "//ipc",
     "//services/service_manager/public/mojom:mojom_blink",
     "//ui/base/mojom:ui_base_types",
@@ -98,7 +98,7 @@ target(link_target_type, "child") {
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
     "//services/tracing/public/cpp:traced_process",
-    "//services/tracing/public/cpp/background_tracing:background_tracing",
+    "//services/tracing/public/cpp/background_tracing",
     "//services/webnn/public/mojom",
     "//skia",
     "//storage/common",

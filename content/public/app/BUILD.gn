@@ -58,7 +58,7 @@ if (is_win) {
 if (is_component_build) {
   source_set("app_sources") {
     # Only the main content shared library can pull this in.
-    visibility = [ "//content:content" ]
+    visibility = [ "//content" ]
 
     sources = public_app_shared_sources
 

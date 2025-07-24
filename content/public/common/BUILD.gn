@@ -46,7 +46,7 @@ component("result_codes") {
     "result_codes.cc",
   ]
 
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 
   configs += [ "//content:content_implementation" ]
 }
@@ -76,7 +76,7 @@ if (is_linux || is_chromeos) {
     ]
 
     deps = [
-      "//base:base",
+      "//base",
       "//content/public/common/zygote:buildflags",
     ]
   }
@@ -399,7 +399,7 @@ mojom("interfaces") {
   }
 
   deps = [
-    "//mojo/public/mojom/base:base",
+    "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",

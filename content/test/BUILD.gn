@@ -555,7 +555,7 @@ static_library("test_support") {
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:test_support",
-    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common",
     "//third_party/blink/public/strings:strings_grit",
     "//ui/accessibility:ax_base",
     "//ui/base/mojom:ui_base_types",
@@ -573,11 +573,11 @@ static_library("test_support") {
     "//components/attribution_reporting:mojom",
     "//components/attribution_reporting:source_type_mojom",
     "//components/breadcrumbs/core",
-    "//components/browsing_topics/common:common",
+    "//components/browsing_topics/common",
     "//components/cbor",
     "//components/input",
     "//components/input:test_support",
-    "//components/network_session_configurator/common:common",
+    "//components/network_session_configurator/common",
     "//components/services/storage",
     "//components/startup_metric_utils",
     "//components/ukm:test_support",
@@ -663,7 +663,7 @@ static_library("test_support") {
     "//ui/gl",
     "//ui/native_theme",
     "//ui/resources",
-    "//ui/shell_dialogs:shell_dialogs",
+    "//ui/shell_dialogs",
     "//ui/strings:auto_image_annotation_strings",
     "//ui/surface",
     "//url",
@@ -673,7 +673,7 @@ static_library("test_support") {
 
   data_deps = [
     "//content/shell:pak",
-    "//tools/v8_context_snapshot:v8_context_snapshot",
+    "//tools/v8_context_snapshot",
   ]
 
   if (is_android) {
@@ -685,7 +685,7 @@ static_library("test_support") {
       "//content/shell:android_shell_descriptors",
       "//mojo/public/java/system:native_support",
       "//testing/android/native_test:native_browser_test_support",
-      "//ui/android:android",
+      "//ui/android",
     ]
   } else {
     sources += [
@@ -698,7 +698,7 @@ static_library("test_support") {
         "../browser/speech/fake_speech_recognition_manager_delegate.cc",
         "../browser/speech/fake_speech_recognition_manager_delegate.h",
       ]
-      deps += [ "//components/soda:soda" ]
+      deps += [ "//components/soda" ]
       public_deps += [ "//components/soda:test_support" ]
     }
 
@@ -793,7 +793,7 @@ static_library("test_support") {
 
     deps += [
       "//components/discardable_memory/service",
-      "//media/capture/video/android:android",
+      "//media/capture/video/android",
       "//ui/android",
       "//ui/android:test_support",
       "//ui/shell_dialogs",
@@ -806,7 +806,7 @@ static_library("test_support") {
   }
 
   if (v8_use_external_startup_data) {
-    deps += [ "//gin:gin" ]
+    deps += [ "//gin" ]
   }
 
   if (is_mac) {
@@ -1066,7 +1066,7 @@ static_library("browsertest_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
   ]
 
   deps = [
@@ -1076,8 +1076,8 @@ static_library("browsertest_support") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/input",
-    "//components/network_session_configurator/common:common",
-    "//components/services/storage:storage",
+    "//components/network_session_configurator/common",
+    "//components/services/storage",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
     "//content/shell:content_shell_app",
@@ -1861,7 +1861,7 @@ test("content_browsertests") {
     "//base/test:test_support",
     "//build:chromecast_buildflags",
     "//cc/slim",
-    "//components//unexportable_keys:unexportable_keys",
+    "//components//unexportable_keys",
     "//components/attribution_reporting:mojom",
     "//components/cbor",
     "//components/discardable_memory/client",
@@ -1870,7 +1870,7 @@ test("content_browsertests") {
     "//components/favicon/content",
     "//components/fingerprinting_protection_filter/interventions/common:features",
     "//components/input",
-    "//components/metrics/dwa:dwa",
+    "//components/metrics/dwa",
     "//components/metrics/dwa:dwa_builders",
     "//components/network_session_configurator/common",
     "//components/os_crypt/async/browser:key_provider_interface",
@@ -1885,7 +1885,7 @@ test("content_browsertests") {
     "//components/services/storage/public/mojom:test_api",
     "//components/ukm:test_support",
     "//components/ukm/content",
-    "//components/url_formatter:url_formatter",
+    "//components/url_formatter",
     "//components/viz/host",
     "//components/viz/test:test_support",
     "//components/web_package",
@@ -1922,7 +1922,7 @@ test("content_browsertests") {
     "//ipc",
     "//media:media_buildflags",
     "//media:test_support",
-    "//media/midi:midi",
+    "//media/midi",
     "//media/webrtc",
     "//mojo/core/embedder",
     "//mojo/core/test:test_support",
@@ -1944,8 +1944,8 @@ test("content_browsertests") {
     "//services/device/public/cpp/generic_sensor",
     "//services/device/public/mojom",
     "//services/device/public/mojom:generic_sensor",
-    "//services/image_annotation/public/cpp:cpp",
-    "//services/image_annotation/public/mojom:mojom",
+    "//services/image_annotation/public/cpp",
+    "//services/image_annotation/public/mojom",
     "//services/metrics",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
@@ -1987,7 +1987,7 @@ test("content_browsertests") {
     "//ui/display",
     "//ui/display:test_support",
     "//ui/events:test_support",
-    "//ui/events/blink:blink",
+    "//ui/events/blink",
     "//ui/gfx",
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
@@ -2123,8 +2123,8 @@ test("content_browsertests") {
     ]
 
     deps += [
-      "//components/stylus_handwriting/win:win",
-      "//components/system_media_controls:system_media_controls",
+      "//components/stylus_handwriting/win",
+      "//components/system_media_controls",
       "//net:net_resources",
       "//sandbox",
       "//third_party/blink/public:resources",
@@ -2193,10 +2193,10 @@ test("content_browsertests") {
       "//services/data_decoder/public/cpp/android:safe_json_java",
       "//testing/android/native_test:native_test_support",
       "//ui/accessibility:ax_base_android",
-      "//ui/android:android",
+      "//ui/android",
       "//ui/android:test_support",
       "//ui/events:motionevent_jni_headers",
-      "//ui/touch_selection:touch_selection",
+      "//ui/touch_selection",
     ]
     android_manifest =
         "${target_gen_dir}/content_browsertests_manifest/AndroidManifest.xml"
@@ -2318,8 +2318,8 @@ test("content_browsertests") {
     # they can't properly launch a child content_shell in that environment.
     sources += [ "../browser/launch_as_mojo_client_browsertest.cc" ]
     deps += [
-      "//components/variations:variations",
-      "//components/variations/field_trial_config:field_trial_config",
+      "//components/variations",
+      "//components/variations/field_trial_config",
       "//content/shell:shell_controller_mojom",
       "//mojo/public/cpp/platform",
       "//mojo/public/mojom/base",
@@ -2361,8 +2361,8 @@ test("content_browsertests") {
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base/dragdrop:types",
+      "//ui/touch_selection",
       "//ui/touch_selection:test_support",
-      "//ui/touch_selection:touch_selection",
     ]
   }
 
@@ -3153,7 +3153,7 @@ test("content_unittests") {
     "//components/cbor",
     "//components/fingerprinting_protection_filter/interventions/common:features",
     "//components/input",
-    "//components/metrics/dwa:dwa",
+    "//components/metrics/dwa",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
     "//components/offline_pages/buildflags",
@@ -3173,9 +3173,9 @@ test("content_unittests") {
     "//components/system_media_controls:test_support",
     "//components/ukm:test_support",
     "//components/user_prefs/test:test_support",
+    "//components/variations",
     "//components/variations:test_support",
-    "//components/variations:variations",
-    "//components/variations/net:net",
+    "//components/variations/net",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",
@@ -3225,7 +3225,7 @@ test("content_unittests") {
     "//gpu/ipc/service",
     "//media:test_support",
     "//media/capture",
-    "//media/midi:midi",
+    "//media/midi",
     "//media/midi:mojo",
     "//media/webrtc",
     "//mojo/core/embedder",
@@ -3305,7 +3305,7 @@ test("content_unittests") {
     "//ui/gl:gl_headers",
     "//ui/gl:test_support",
     "//ui/latency:test_support",
-    "//ui/shell_dialogs:shell_dialogs",
+    "//ui/shell_dialogs",
     "//ui/webui:test_support",
     "//url",
   ]
@@ -3411,7 +3411,7 @@ test("content_unittests") {
     ]
     deps += [
       "//components/services/font_data/public/mojom",
-      "//components/stylus_handwriting/win:win",
+      "//components/stylus_handwriting/win",
       "//sandbox/policy:sandbox_test_utils",
       "//sandbox/win:sandbox",
       "//third_party/blink/public/common",
@@ -3482,7 +3482,7 @@ test("content_unittests") {
       "//services/data_decoder/public/cpp/android:safe_json_java",
       "//third_party/blink/public/common",
       "//third_party/blink/public/common:font_unique_name_table_proto",
-      "//ui/android:android",
+      "//ui/android",
       "//ui/android:test_support",
       "//ui/android:ui_java_test_support",
       "//ui/events:motionevent_jni_headers",
@@ -3504,7 +3504,7 @@ test("content_unittests") {
       "../web_test/renderer/test_runner_utils_unittest.cc",
     ]
     deps += [
-      "//components/speech:speech",
+      "//components/speech",
       "//content/web_test:test_support",
       "//device/fido:cablev2_authenticator",
       "//device/fido:cablev2_test_util",

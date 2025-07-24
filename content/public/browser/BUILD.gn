@@ -553,7 +553,7 @@ source_set("browser_sources") {
   public_deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//components/browsing_topics/common:common",
+    "//components/browsing_topics/common",
     "//components/download/public/common:public",
     "//components/file_access",
     "//components/services/storage/privileged/mojom",
@@ -601,7 +601,7 @@ source_set("browser_sources") {
     "//components/language_detection/content/common",
     "//components/language_detection/core/browser:language_detection_model_service",
     "//components/services/storage/public/cpp",
-    "//components/variations:variations",
+    "//components/variations",
     "//components/viz/host",
     "//content/browser",  # Must not be public_deps!
     "//device/fido",
@@ -747,7 +747,7 @@ source_set("browser_sources") {
   }
 
   if (enable_video_effects) {
-    public_deps += [ "//services/video_effects/public/mojom:mojom" ]
+    public_deps += [ "//services/video_effects/public/mojom" ]
   }
 }
 

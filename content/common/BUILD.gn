@@ -417,7 +417,7 @@ component("main_frame_counter") {
     "main_frame_counter.cc",
     "main_frame_counter.h",
   ]
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.

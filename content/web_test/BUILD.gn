@@ -187,7 +187,7 @@ static_library("web_test_browser") {
     "//base",
     "//cc/base",
     "//cc/paint",
-    "//components/custom_handlers:custom_handlers",
+    "//components/custom_handlers",
     "//components/custom_handlers:test_support",
     "//components/download/content/factory",
     "//components/download/public/background_service:public",
@@ -227,7 +227,7 @@ static_library("web_test_browser") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
-    "//ui/shell_dialogs:shell_dialogs",
+    "//ui/shell_dialogs",
     "//url",
   ]
 
