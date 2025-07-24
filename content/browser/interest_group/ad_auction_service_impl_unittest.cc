@@ -2584,6 +2584,11 @@ TEST_F(AdAuctionServiceImplTestDisabledDealSupport,
                    .selectable_buyer_and_seller_reporting_ids.has_value());
 }
 
+// TODO(crbug.com/433777160): This test consistently times out on Mac, due to a
+// hang on the first call to `task_environment()->FastForwardBy(...)`. This
+// issue was identified in macOS 26. Disabling on Mac until timeout issue is
+// resolved.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
   // These are all set in sequence, on top of each other, so if one update
   // should fail to parse, the previous value should be unmodified.
@@ -2650,6 +2655,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
               test_case.expected_priority_signals_overrides);
   }
 }
+#endif  //! BUILDFLAG(IS_MAC)
 
 // Join 2 interest groups, each with the same owner, but with different update
 // URLs. Both interest groups should be updated correctly.
@@ -7596,6 +7602,11 @@ TEST_F(AdAuctionServiceImplTest, SendReports) {
   EXPECT_EQ(network_responder_->ReportCount(), 2u);
 }
 
+// TODO(crbug.com/433777160): These tests consistently time out on Mac, due to a
+// hang on the first call to `task_environment()->FastForwardBy(...)` in the
+// given test. This issue was identified in macOS 26. Disabling on Mac until
+// timeout issue is resolved.
+#if !BUILDFLAG(IS_MAC)
 // Check that reports aren't sent until the URN to URL callback is invoked.
 TEST_F(AdAuctionServiceImplTest, SendReportsWaitsForCallback) {
   network_responder_->RegisterScriptResponse(kBiddingUrlPath,
@@ -7671,6 +7682,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsWithDelay) {
   InvokeCallbackForURN(*auction_result);
   network_responder_->WaitForNumReports(4u);
 }
+#endif  //! BUILDFLAG(IS_MAC)
 
 // Test that if one auction completes after another's reports have been sent,
 // but before the report interval has elapsed, its requests still respect the
