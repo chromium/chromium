@@ -63,7 +63,8 @@ TEST_F(AddressFormattingTest, GetAddressComponentsWithExtensions) {
       i18n::TypeForField(::i18n::addressinput::AddressField::POSTAL_CODE));
 }
 
-TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
+// TODO(crbug.com/433964259): Test is flaky.
+TEST_F(AddressFormattingTest, FLAKY_GetEnvelopeStyleAddressSanity) {
   AutofillProfile profile = test::GetFullProfile();
   std::u16string address =
       GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
