@@ -38,6 +38,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetActorTaskResume() override;
   void SetHandoffButtonVisibility(bool is_visible) override;
 
+  // Binds the Mojo receiver to the tab's ActorOverlayViewController.
+  // Called by ActorOverlayUI when the chrome://actor-overlay page loads.
   void BindActorOverlay(
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
 
@@ -52,6 +54,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
                    UiResultCallback callback);
   // Gets a new or existing handoff button controller for this tab.
   HandoffButtonController* GetHandoffButtonController();
+  // Get a new or existing Actor Overlay View Controller for this tab.
+  ActorOverlayViewController* GetActorOverlayViewController();
   // Tab subscriptions:
   // Called when the tab is detached.
   void OnTabWillDetach(tabs::TabInterface* tab,

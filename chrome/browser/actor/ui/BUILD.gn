@@ -38,18 +38,18 @@ source_set("ui") {
   deps = [
     ":ui_event_types",
     "//base",
-    "//chrome/app/vector_icons:vector_icons",
-    "//chrome/browser/actor:actor",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/actor",
     "//chrome/browser/actor:variant_visitor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/actor_overlay:resources",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",
-    "//ui/views:views",
-    "//ui/views/controls/webview:webview",
+    "//ui/views",
+    "//ui/views/controls/webview",
     "//ui/webui",
   ]
 
@@ -85,9 +85,9 @@ source_set("event_dispatcher") {
     ":tool_request_variant",
     ":ui_event_types",
     ":ui_event_utils",
-    "//chrome/browser/actor:actor",
+    "//chrome/browser/actor",
     "//chrome/browser/actor:variant_visitor",
-    "//chrome/browser/actor/ui:ui",
+    "//chrome/browser/actor/ui",
   ]
 }
 
@@ -110,7 +110,7 @@ source_set("test_support") {
   deps = [
     ":event_dispatcher",
     ":ui",
-    "//chrome/browser/actor:actor",
+    "//chrome/browser/actor",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -125,7 +125,7 @@ source_set("tool_request_variant") {
   ]
   deps = [
     "//base",
-    "//chrome/browser/actor:actor",
+    "//chrome/browser/actor",
   ]
 }
 
@@ -138,7 +138,7 @@ source_set("ui_event_types") {
     "//base",
 
     # ActorTask::State isn't in actor:types
-    "//chrome/browser/actor:actor",
+    "//chrome/browser/actor",
     "//chrome/browser/actor:types",
   ]
   deps = [ "//components/tabs:public" ]
@@ -173,7 +173,7 @@ source_set("unit_tests") {
     ":ui",
     ":ui_event_types",
     ":ui_event_utils",
-    "//chrome/browser/actor:actor",
+    "//chrome/browser/actor",
     "//chrome/browser/actor:impl",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/ui/tabs:tabs_public",
@@ -200,8 +200,12 @@ source_set("browser_tests") {
 
   deps = [
     ":ui",
-    "//chrome/browser/ui:ui",
-    "//chrome/browser/ui/browser_window:browser_window",
+    ":ui_event_types",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chrome/test:test_support_ui",
