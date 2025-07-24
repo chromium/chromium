@@ -45,7 +45,7 @@ Locations:
 * [`third_party/blink/renderer/platform/privacy_budget`](../../third_party/blink/renderer/platform/privacy_budget)
 
 Functions for constructing [`blink::IdentifiableToken`] values from
-`platform/wtf` types. E.g. `WTF::String`.
+`platform/wtf` types. E.g. `blink::String`.
 
 See the [`DEPS`][platform/pb/deps] in that directory for the paths that this
 component can depend on. In particular:

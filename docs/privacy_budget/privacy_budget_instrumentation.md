@@ -135,13 +135,13 @@ Follow the instructions below for adding instrumentation for an API.
    going to be sensitive). Then only extract a maximum of 16 bits from the
    string.
 
-   For `blink::String` a.k.a. `WTF::String` types, this is implemented as
+   For `blink::String` type, this is implemented as
    `IdentifiabilitySensitiveStringToken()` and
    `IdentifiabilitySensitiveCaseFoldingStringToken()` in
    [`identifiability_digest_helpers.h`].
    ***
 
-   * If you are about to construct a token out of a `WTF::String` type use
+   * If you are about to construct a token out of a `blink::String` type use
      one of the helpers in [`identifiability_digest_helpers.h`]. As mentioned
      above, you'll need to decide:
 

@@ -51,7 +51,7 @@ that satisfy requirements above are added.
 
 For example, `platform/scheduler` implements a task scheduler for all tasks
 posted by Blink, while `platform/wtf` implements Blink-specific containers
-(e.g., `WTF::Vector`, `WTF::HashTable`, `WTF::String`).
+(e.g., `blink::Vector`, `blink::HashMap`, `blink::String`).
 
 ### `core` vs `modules` vs `platform` split
 
@@ -135,7 +135,7 @@ See [this diagram](https://docs.google.com/document/d/1yYei-V76q3Mb-5LeJfNUMitmj
 ### Type dependencies
 
 Member variables of the following types are strongly discouraged in Blink:
-  - STL strings and containers. Use `WTF::String` and WTF containers instead.
+  - STL strings and containers. Use `blink::String` and WTF containers instead.
   - `GURL` and `url::Origin`. Use `KURL` and `SecurityOrigin` respectively.
   - Any `//base` type which has a matching type in `platform/wtf`. The number of
   duplicated types between WTF and base is continuously shrinking,
@@ -147,7 +147,7 @@ Chromium-side or third-party code. It is also allowed to use local variables
 of these types when convenient, as long as the result is not stored
 in a member variable (with exceptions described below).
 For example, calling an utility function on an `std::string` which came
-from `//net` and then converting to `WTF::String` to store in a field
+from `//net` and then converting to `blink::String` to store in a field
 is allowed.
 
 We try to share as much code between Chromium and Blink as possible,
@@ -215,4 +215,3 @@ platform-architecture-dev@chromium.org.
 
 If you have any questions about the directory architecture and dependencies,
 reach out to platform-architecture-dev@chromium.org!
-
