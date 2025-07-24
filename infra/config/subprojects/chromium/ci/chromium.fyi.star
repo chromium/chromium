@@ -1630,6 +1630,7 @@ fyi_ios_builder(
             "content_shell",
             "components_unittests",
             "content_unittests",
+            "media_unittests",
         ],
         mixins = [
             "expand-as-isolated-script",

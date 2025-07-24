@@ -5,3 +5,6 @@
 -PaintCanvasVideoRendererWithGLTest.PaintI420
 -PaintCanvasVideoRendererWithGLTest.PaintI420NotSubset
 -PaintCanvasVideoRendererWithGLTest.PaintNV12
+
+-GpuMemoryBufferVideoFramePoolTest.CreateOne10BppHardwareFrameWithOddSize
+-GpuMemoryBufferVideoFramePoolTest.CreateOneHardwareP010FrameWithOddSize

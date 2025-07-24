@@ -6846,6 +6846,7 @@ targets.bundle(
         "base_unittests",
         "components_unittests",
         "content_unittests",
+        "media_unittests",
     ],
     per_test_modifications = {
         "base_unittests": targets.mixin(
@@ -6864,6 +6865,12 @@ targets.bundle(
             args = [
                 "--test-launcher-bot-mode",
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter",
+            ],
+        ),
+        "media_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
             ],
         ),
     },

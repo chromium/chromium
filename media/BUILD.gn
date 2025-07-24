@@ -269,6 +269,8 @@ test("media_unittests") {
 
   if (is_ios) {
     deps += [ ":unit_tests_bundle_data" ]
+    bundle_deps =
+        [ "//testing/buildbot/filters:media_unittests_filters_bundle_data" ]
   }
 }
 
