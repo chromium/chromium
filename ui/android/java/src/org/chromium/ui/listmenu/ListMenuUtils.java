@@ -15,6 +15,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -88,27 +89,19 @@ public class ListMenuUtils {
     }
 
     /**
-     * Sets up a submenu parent item in the context menu.
+     * Callback to use when a menu item of type MENU_ITEM_WITH_SUBMENU is clicked.
      *
-     * @param modelList The {@link ModelList} to mutate.
-     * @param item The {@link ListItem} to configure.
-     * @param dismissDialog The {@link Runnable} to dismiss the dialog.
-     */
-    public static void setupSubmenuParent(
-            ModelList modelList, ListItem item, Runnable dismissDialog) {
-        item.model.set(CLICK_LISTENER, (unusedView) -> onSubmenuParentClick(modelList, item));
-        setupCallbacksRecursively(modelList, item, dismissDialog);
-    }
-
-    /**
-     * Callback to use when a menu item of type CONTEXT_MENU_ITEM_WITH_SUBMENU is clicked.
-     *
-     * @param modelList The {@link ModelList} to modify.
+     * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
+     * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param item The menu item which was clicked.
      */
-    private static void onSubmenuParentClick(ModelList modelList, ListItem item) {
-        ModelList parentModelList = shallowCopy(modelList);
-        modelList.clear();
+    private static void onItemWithSubmenuClicked(
+            @Nullable ModelList headerModelList, ModelList contentModelList, ListItem item) {
+        @Nullable ModelList parentHeaderModelList =
+                headerModelList == null ? null : shallowCopy(headerModelList);
+        ModelList parentModelList = shallowCopy(contentModelList);
+        contentModelList.clear();
+        if (headerModelList != null) headerModelList.clear();
         // Add the clicked item as a header to the submenu.
         final PropertyModel model =
                 new PropertyModel.Builder(ListMenuSubmenuHeaderItemProperties.ALL_KEYS)
@@ -116,12 +109,18 @@ public class ListMenuUtils {
                         .with(ENABLED, true)
                         .with(
                                 CLICK_LISTENER,
-                                (unusedView) -> setModelListContent(modelList, parentModelList))
+                                (unusedView) -> {
+                                    if (headerModelList != null && parentHeaderModelList != null) {
+                                        setModelListContent(headerModelList, parentHeaderModelList);
+                                    }
+                                    setModelListContent(contentModelList, parentModelList);
+                                })
                         .build();
-        modelList.add(new ListItem(ListItemType.SUBMENU_HEADER, model));
+        (headerModelList == null ? contentModelList : headerModelList)
+                .add(new ListItem(ListItemType.SUBMENU_HEADER, model));
 
         for (ListItem listItem : item.model.get(SUBMENU_ITEMS)) {
-            modelList.add(listItem);
+            contentModelList.add(listItem);
         }
     }
 
@@ -142,14 +141,15 @@ public class ListMenuUtils {
     }
 
     /** Returns whether {@param item} has a click listener. */
-    /* package */ public static boolean hasClickListener(ListItem item) {
+    public static boolean hasClickListener(ListItem item) {
         return item.model != null
                 && item.model.containsKey(CLICK_LISTENER)
                 && item.model.get(CLICK_LISTENER) != null;
     }
 
     /**
-     * Makes {@param dismissDialog} run at the end of the callback of {@param item}.
+     * Makes {@param dismissDialog} run at the end of the callback of {@param item}. If the item
+     * doesn't already have a click callback in its model, no click callback is added.
      *
      * @param item The item to which we would add {@param runnable}.
      * @param dismissDialog The {@link Runnable} to run to dismiss the dialog.
@@ -168,26 +168,60 @@ public class ListMenuUtils {
 
     /**
      * Runs {@param dismissDialog} at the end of each callback, recursively (through submenu items).
+     * If the item doesn't already have a click callback in its model, no click callback is added.
      *
-     * @param modelList The {@link ModelList} to modify.
+     * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
+     * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param item The item to start with.
      * @param dismissDialog The {@link Runnable} to run.
      */
-    public static void setupCallbacksRecursively(
-            ModelList modelList, ListItem item, Runnable dismissDialog) {
+    private static void setupCallbacksRecursivelyForItem(
+            @Nullable ModelList headerModelList,
+            ModelList contentModelList,
+            ListItem item,
+            Runnable dismissDialog) {
+        if (item.model == null) return;
         if (item.model.containsKey(SUBMENU_ITEMS)) {
-            item.model.set(CLICK_LISTENER, (unusedView) -> onSubmenuParentClick(modelList, item));
+            item.model.set(
+                    CLICK_LISTENER,
+                    (unusedView) ->
+                            onItemWithSubmenuClicked(headerModelList, contentModelList, item));
             for (ListItem submenuItem :
                     PropertyModel.getFromModelOrDefault(item.model, SUBMENU_ITEMS, List.of())) {
-                setupCallbacksRecursively(modelList, submenuItem, dismissDialog);
+                setupCallbacksRecursivelyForItem(
+                        headerModelList, contentModelList, submenuItem, dismissDialog);
             }
         } else {
-            // Note: CONTEXT_MENU_SUBMENU_HEADER items should be (and are) excluded by this,
-            // because CONTEXT_MENU_SUBMENU_HEADER items aren't in the model's SUBMENU_ITEMS.
-            // CONTEXT_MENU_ITEM_WITH_SUBMENU items should also not be included.
+            // Note: SUBMENU_HEADER items should be (and are) excluded by this, because
+            // SUBMENU_HEADER items aren't in the model's SUBMENU_ITEMS.
+            // MENU_ITEM_WITH_SUBMENU items should also not be included.
             // The rationale for excluding these is that we don't want to dismiss the dialog when we
             // are navigating through submenus.
             addRunnableToCallback(item, dismissDialog);
+        }
+    }
+
+    /**
+     * Runs {@param dismissDialog} at the end of each callback, recursively (through submenu items).
+     * If an item doesn't already have a click callback in its model, no click callback is added.
+     *
+     * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
+     * @param contentModelList {@link ModelList} for the scrollable content of the menu.
+     * @param dismissDialog The {@link Runnable} to run.
+     */
+    public static void setupCallbacksRecursively(
+            @Nullable ModelList headerModelList,
+            ModelList contentModelList,
+            Runnable dismissDialog) {
+        if (headerModelList != null) {
+            for (ListItem listItem : headerModelList) {
+                setupCallbacksRecursivelyForItem(
+                        headerModelList, contentModelList, listItem, dismissDialog);
+            }
+        }
+        for (ListItem listItem : contentModelList) {
+            setupCallbacksRecursivelyForItem(
+                    headerModelList, contentModelList, listItem, dismissDialog);
         }
     }
 }

@@ -9,9 +9,7 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconBut
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
-import static org.chromium.ui.listmenu.ListMenuUtils.hasClickListener;
 import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
-import static org.chromium.ui.listmenu.ListMenuUtils.setupSubmenuParent;
 
 import android.app.Activity;
 import android.widget.ListView;
@@ -111,21 +109,16 @@ public class ContextMenuMediator {
             if (!group.isEmpty()) mModelList.addAll(group);
         }
 
+        // Setup submenu navigation callbacks.
+        setupCallbacksRecursively(/* headerModelList= */ null, mModelList, mDismissDialog);
+        // Add callbacks to all other first-level items.
         for (ListItem item : mModelList) {
-            // Special case handling (for items whose callbacks don't use clickItem method)
-            if (hasClickListener(item)) {
-                setupCallbacksRecursively(mModelList, item, mDismissDialog);
-                continue;
-            }
-            if (item.type == ListItemType.MENU_ITEM_WITH_SUBMENU) {
-                setupSubmenuParent(mModelList, item, mDismissDialog);
-                continue;
-            }
-            // Usual case handling
-            if (item.type != ListItemType.DIVIDER && item.type != ContextMenuItemType.HEADER) {
+            if (item.type == ListItemType.MENU_ITEM
+                    || item.type == ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
                 // Note: this does NOT handle items inside submenus.
                 item.model.set(
                         CLICK_LISTENER,
+                        // Note: clickItem already includes dismissDialog.
                         (v) -> clickItem(item.model.get(MENU_ITEM_ID), item.model.get(ENABLED)));
             }
             if (item.type == ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
