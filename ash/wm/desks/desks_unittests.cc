@@ -4874,7 +4874,8 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
   void SimulateUser1Login() {
     auto account_id = SimulateUserLogin({kUser1Email}, std::nullopt,
                                         std::move(owned_user_1_prefs_));
-    multi_user_window_manager_ = MultiUserWindowManager::Create(account_id);
+    multi_user_window_manager_ = MultiUserWindowManager::Create();
+    multi_user_window_manager_->SetPrimaryUser(account_id);
     MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
         MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
     GetSessionControllerClient()->SetSessionState(

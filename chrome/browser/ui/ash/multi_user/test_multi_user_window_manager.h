@@ -44,6 +44,7 @@ class TestMultiUserWindowManager : public ash::MultiUserWindowManager {
   const AccountId& CurrentAccountId() const override;
   void AddObserver(ash::MultiUserWindowManagerObserver* observer) override;
   void RemoveObserver(ash::MultiUserWindowManagerObserver* observer) override;
+  void SetPrimaryUser(const AccountId& account_id) override;
 
  private:
   TestMultiUserWindowManager(Browser* visiting_browser,

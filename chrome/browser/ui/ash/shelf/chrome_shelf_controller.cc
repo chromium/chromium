@@ -102,6 +102,8 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"
@@ -317,6 +319,11 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   // On Chrome OS using multi profile we want to switch the content of the shelf
   // with a user change. Note that for unit tests the instance can be nullptr.
   if (SessionControllerClientImpl::IsMultiProfileAvailable()) {
+    auto active_account_id =
+        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
+        active_account_id);
+    MultiUserWindowManagerHelper::GetInstance()->AddUser(active_account_id);
     user_switch_observer_ =
         std::make_unique<ChromeShelfControllerUserSwitchObserver>(this);
   }

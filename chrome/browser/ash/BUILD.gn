@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chromeos/components/onc",
     "//chromeos/dbus/power",
     "//chromeos/dbus/tpm_manager",
+    "//components/account_id:test_support",
     "//components/download/content/public",
     "//components/download/public/common:test_support",
     "//components/onc",

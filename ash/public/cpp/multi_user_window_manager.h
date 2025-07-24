@@ -24,8 +24,7 @@ class MultiUserWindowManagerObserver;
 // of windows based on the active user.
 class ASH_EXPORT MultiUserWindowManager {
  public:
-  static std::unique_ptr<MultiUserWindowManager> Create(
-      const AccountId& account_id);
+  static std::unique_ptr<MultiUserWindowManager> Create();
 
   virtual ~MultiUserWindowManager() = default;
 
@@ -65,8 +64,13 @@ class ASH_EXPORT MultiUserWindowManager {
   // Unregisters `observer` from the instance.
   virtual void RemoveObserver(MultiUserWindowManagerObserver* observer) = 0;
 
+  // Notifies this instance about the primary user.
+  // TODO(crbug.com/425160398): This is short term work around for the
+  // transition period, so to be removed soon.
+  virtual void SetPrimaryUser(const AccountId& account_id) = 0;
+
  protected:
-  MultiUserWindowManager() {}
+  MultiUserWindowManager() = default;
 };
 
 }  // namespace ash

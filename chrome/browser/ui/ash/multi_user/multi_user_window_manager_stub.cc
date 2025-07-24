@@ -54,3 +54,7 @@ void MultiUserWindowManagerStub::RemoveObserver(
     ash::MultiUserWindowManagerObserver* observer) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
+
+void MultiUserWindowManagerStub::SetPrimaryUser(const AccountId& account_id) {
+  // Do nothing.
+}

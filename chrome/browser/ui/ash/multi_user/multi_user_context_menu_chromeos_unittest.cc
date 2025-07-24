@@ -73,7 +73,10 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
     window_.reset(CreateTestWindowInShellWithId(0));
     window_->Show();
 
-    MultiUserWindowManagerHelper::CreateInstanceForTest(kAccountId1);
+    MultiUserWindowManagerHelper::CreateInstanceForTest();
+    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
+        kAccountId1);
+    MultiUserWindowManagerHelper::GetInstance()->AddUser(kAccountId1);
   }
 
   void TearDown() override {

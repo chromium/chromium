@@ -61,7 +61,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
     ANIMATION_SPEED_DISABLED  // Unit tests which do not require animations.
   };
 
-  explicit MultiUserWindowManagerImpl(const AccountId& account_id);
+  MultiUserWindowManagerImpl();
 
   MultiUserWindowManagerImpl(const MultiUserWindowManagerImpl&) = delete;
   MultiUserWindowManagerImpl& operator=(const MultiUserWindowManagerImpl&) =
@@ -84,6 +84,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   const AccountId& CurrentAccountId() const override;
   void AddObserver(MultiUserWindowManagerObserver* observer) override;
   void RemoveObserver(MultiUserWindowManagerObserver* observer) override;
+  void SetPrimaryUser(const AccountId& account_id) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -221,7 +222,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   // The currently selected active user. It is used to find the proper
   // visibility state in various cases. The state is stored here instead of
   // being read from the user manager to be in sync while a switch occurs.
-  AccountId current_account_id_;
+  std::optional<AccountId> current_account_id_;
 
   // Suppress changes to the visibility flag while we are changing it ourselves.
   bool suppress_visibility_changes_ = false;

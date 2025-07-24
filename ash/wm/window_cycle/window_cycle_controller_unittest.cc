@@ -3247,13 +3247,17 @@ class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
   }
 
   void SimulateUserLogin(const AccountId& account_id) {
+    AshTestBase::SimulateUserLogin(account_id);
+    // TODO(crbug.com/425160398): Currently on the production,
+    // MultiUserWindowManager is created after primary user login.
+    // We should move the initialization.
     if (!multi_user_window_manager_) {
-      multi_user_window_manager_ = MultiUserWindowManager::Create(account_id);
+      multi_user_window_manager_ = MultiUserWindowManager::Create();
+      multi_user_window_manager_->SetPrimaryUser(account_id);
       CHECK(MultiUserWindowManagerImpl::Get());
       MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
           MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
     }
-    AshTestBase::SimulateUserLogin(account_id);
   }
 
   const aura::Window::Windows GetWindows(WindowCycleController* controller) {

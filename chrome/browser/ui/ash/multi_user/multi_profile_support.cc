@@ -70,6 +70,8 @@ MultiProfileSupport::MultiProfileSupport(
     : multi_user_window_manager_(multi_user_window_manager) {
   CHECK(multi_user_window_manager);
   multi_user_window_manager_observation_.Observe(multi_user_window_manager);
+
+  BrowserList::AddObserver(this);
 }
 
 MultiProfileSupport::~MultiProfileSupport() {
@@ -77,19 +79,6 @@ MultiProfileSupport::~MultiProfileSupport() {
 
   // Remove all app observers.
   account_id_to_app_observer_.clear();
-}
-
-void MultiProfileSupport::Init() {
-  // Since we are setting the SessionStateObserver and adding the user, this
-  // function should get called only once.
-  auto current_account_id = multi_user_window_manager_->CurrentAccountId();
-  DCHECK(account_id_to_app_observer_.find(current_account_id) ==
-         account_id_to_app_observer_.end());
-
-  BrowserList::AddObserver(this);
-
-  // Add an app window observer & all already running apps.
-  AddUser(current_account_id);
 }
 
 void MultiProfileSupport::AddUser(const AccountId& account_id) {

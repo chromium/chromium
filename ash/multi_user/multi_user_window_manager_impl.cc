@@ -100,9 +100,7 @@ MultiUserWindowManagerImpl::WindowEntry::WindowEntry(
 
 MultiUserWindowManagerImpl::WindowEntry::~WindowEntry() = default;
 
-MultiUserWindowManagerImpl::MultiUserWindowManagerImpl(
-    const AccountId& account_id)
-    : current_account_id_(account_id) {
+MultiUserWindowManagerImpl::MultiUserWindowManagerImpl() {
   g_instance = this;
   Shell::Get()->session_controller()->AddObserver(this);
 }
@@ -162,15 +160,17 @@ void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
   // transfer it to the current user.
   const bool show_for_current_user =
       window->GetProperty(aura::client::kCreatedByUserGesture);
-  if (show_for_current_user)
-    window_entry->set_show_for_user(current_account_id_);
+  if (show_for_current_user) {
+    window_entry->set_show_for_user(*current_account_id_);
+  }
 
   // Add all transient children to our set of windows. Note that the function
   // will add the children but not the owner to the transient children map.
   AddTransientOwnerRecursive(window, window);
 
-  if (!IsWindowOnDesktopOfUser(window, current_account_id_))
+  if (!IsWindowOnDesktopOfUser(window, *current_account_id_)) {
     SetWindowVisibility(window, false);
+  }
 }
 
 void MultiUserWindowManagerImpl::ShowWindowForUser(
@@ -225,7 +225,8 @@ const AccountId& MultiUserWindowManagerImpl::GetUserPresentingWindow(
 }
 
 const AccountId& MultiUserWindowManagerImpl::CurrentAccountId() const {
-  return current_account_id_;
+  CHECK(current_account_id_.has_value());
+  return *current_account_id_;
 }
 
 void MultiUserWindowManagerImpl::AddObserver(
@@ -236,6 +237,11 @@ void MultiUserWindowManagerImpl::AddObserver(
 void MultiUserWindowManagerImpl::RemoveObserver(
     MultiUserWindowManagerObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void MultiUserWindowManagerImpl::SetPrimaryUser(const AccountId& account_id) {
+  // Emulate as if primary user, which was already logged in, is logged in now.
+  OnActiveUserSessionChanged(account_id);
 }
 
 bool MultiUserWindowManagerImpl::IsWindowOnDesktopOfUser(
@@ -258,17 +264,17 @@ const AccountId& MultiUserWindowManagerImpl::GetUserPresentingWindow(
 
 void MultiUserWindowManagerImpl::OnActiveUserSessionChanged(
     const AccountId& account_id) {
-  // MultiUserWindowManagerImpl is created with an account before the change has
-  // potentially made it to SessionController. This means
-  // MultiUserWindowManagerImpl may be notified of a switch to the current user.
-  // Ignore this. Ignoring this is especially important in tests, which may be
-  // impacted by running the animation (when the animation closes, observers are
-  // notified, which may have side effects in downstream code).
-  if (account_id == current_account_id_)
-    return;
+  CHECK(current_account_id_ != account_id);
+  bool for_primary_user = !current_account_id_.has_value();
 
   // This needs to be set before the animation starts.
   current_account_id_ = account_id;
+
+  if (for_primary_user) {
+    // For primary user activation, it is not transition from another user
+    // so we do not run animation.
+    return;
+  }
 
   // Here to avoid a very nasty race condition, we must destruct any previously
   // created animation before creating a new one. Otherwise, the newly
@@ -276,7 +282,7 @@ void MultiUserWindowManagerImpl::OnActiveUserSessionChanged(
   // animation only to be reshown again by the destructor of the old animation.
   animation_.reset();
   animation_ = std::make_unique<UserSwitchAnimator>(
-      this, current_account_id_, GetAdjustedAnimationTime(kUserFadeTime));
+      this, *current_account_id_, GetAdjustedAnimationTime(kUserFadeTime));
 
   // Call RequestCaptureState here instead of having MediaClient observe
   // ActiveUserChanged because it must happen after
@@ -327,15 +333,18 @@ void MultiUserWindowManagerImpl::OnWindowVisibilityChanged(aura::Window* window,
   if (suppress_visibility_changes_)
     return;
 
+  CHECK(current_account_id_.has_value());
+
   // Don't allow to make the window visible if it shouldn't be.
-  if (visible && !IsWindowOnDesktopOfUser(window, current_account_id_)) {
+  if (visible && !IsWindowOnDesktopOfUser(window, *current_account_id_)) {
     SetWindowVisibility(window, false);
     return;
   }
   aura::Window* owned_parent = GetOwningWindowInTransientChain(window);
   if (owned_parent && owned_parent != window && visible &&
-      !IsWindowOnDesktopOfUser(owned_parent, current_account_id_))
+      !IsWindowOnDesktopOfUser(owned_parent, *current_account_id_)) {
     SetWindowVisibility(window, false);
+  }
 }
 
 void MultiUserWindowManagerImpl::OnTransientChildAdded(
@@ -384,7 +393,8 @@ bool MultiUserWindowManagerImpl::IsAnimationRunningForTest() {
 }
 
 const AccountId& MultiUserWindowManagerImpl::GetCurrentUserForTest() const {
-  return current_account_id_;
+  CHECK(current_account_id_.has_value());
+  return *current_account_id_;
 }
 
 bool MultiUserWindowManagerImpl::ShowWindowForUserIntern(
@@ -507,8 +517,9 @@ void MultiUserWindowManagerImpl::AddTransientOwnerRecursive(
   // Hide the window if it should not be shown. Note that this hide operation
   // will hide recursively this and all children - but we have already collected
   // their initial view state.
-  if (!IsWindowOnDesktopOfUser(owned_parent, current_account_id_))
+  if (!IsWindowOnDesktopOfUser(owned_parent, *current_account_id_)) {
     SetWindowVisibility(window, false, kAnimationTime);
+  }
 }
 
 void MultiUserWindowManagerImpl::RemoveTransientOwnerRecursive(
@@ -568,9 +579,8 @@ base::TimeDelta MultiUserWindowManagerImpl::GetAdjustedAnimationTime(
 }
 
 // static
-std::unique_ptr<MultiUserWindowManager> MultiUserWindowManager::Create(
-    const AccountId& account_id) {
-  return std::make_unique<MultiUserWindowManagerImpl>(account_id);
+std::unique_ptr<MultiUserWindowManager> MultiUserWindowManager::Create() {
+  return std::make_unique<MultiUserWindowManagerImpl>();
 }
 
 }  // namespace ash

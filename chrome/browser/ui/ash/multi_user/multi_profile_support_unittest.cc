@@ -204,7 +204,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
                     .AddRegularUser(account_id));
   }
 
-  void LoginUser(const AccountId& account_id) {
+  void LogInUser(const AccountId& account_id) {
     const auto* user = user_manager_->FindUser(account_id);
     CHECK(user);
     user_manager_->UserLoggedIn(
@@ -231,15 +231,36 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 
     if (user_manager_->GetActiveUser() != user) {
       user_manager_->SwitchActiveUser(user->GetAccountId());
+      GetSessionControllerClient()->SwitchActiveUser(user->GetAccountId());
     }
   }
 
   void AddLoggedInUsers(base::span<const AccountId> ids) {
+    // This must run only once, and when this is called,
+    // there should be no logged in users yet.
+    CHECK(user_manager::UserManager::Get()->GetLoggedInUsers().empty());
+    CHECK(!ids.empty());
+
     for (const AccountId& account_id : ids) {
       AddUser(account_id);
     }
-    for (const AccountId& account_id : ids) {
-      LoginUser(account_id);
+
+    // Primary user log-in.
+    LogInUser(ids[0]);
+
+    // After the primary user log-in, (and before any more user log-ins),
+    // create MultiProfileSupport instance held by MultiUserWindowManagerHelper
+    // and initializes for the primary user, mirroring the timing of the
+    // initialization in the production.
+    // TODO(crbug.com/425160398): This should be simplified for the bug fix.
+    ::MultiUserWindowManagerHelper::CreateInstanceForTest();
+    ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
+        ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
+    ::MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(ids[0]);
+
+    for (const AccountId& account_id : ids.subspan(1u)) {
+      LogInUser(account_id);
+      ::MultiUserWindowManagerHelper::GetInstance()->AddUser(account_id);
     }
   }
 
@@ -364,10 +385,6 @@ void MultiProfileSupportTest::SetUpForThisManyWindows(int windows) {
     windows_.push_back(CreateTestWindowInShellWithId(i));
     windows_[i]->Show();
   }
-  ::MultiUserWindowManagerHelper::CreateInstanceForTest(
-      user_manager_->GetActiveUser()->GetAccountId());
-  ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
-      ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
 }
 
 std::vector<std::unique_ptr<views::Widget>>
@@ -745,10 +762,6 @@ TEST_F(MultiProfileSupportTest, PreserveWindowVisibilityTests) {
 // its ancestor views' visibility into account (see `Window::IsVisible()`).
 TEST_F(MultiProfileSupportTest, WindowVisibilityInMultipleDesksTests) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
-
-  ::MultiUserWindowManagerHelper::CreateInstanceForTest(kAccountIdA);
-  ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
-      ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
 
   // In the user A, setup two desks with one window each.
   SwitchActiveUser(kAccountIdA);

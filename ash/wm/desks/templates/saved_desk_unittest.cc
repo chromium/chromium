@@ -418,8 +418,8 @@ class SavedDeskTest : public OverviewTestBase {
     // this would lead to flaky tests.
     saved_desk_test_helper()->WaitForDeskModels();
     account_id_test_ = AccountId::FromUserEmail("test_user");
-    multi_user_window_manager_ =
-        MultiUserWindowManager::Create(account_id_test_);
+    multi_user_window_manager_ = MultiUserWindowManager::Create();
+    multi_user_window_manager_->SetPrimaryUser(account_id_test_);
   }
 
   void TearDown() override {

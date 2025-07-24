@@ -28,6 +28,7 @@ TestMultiUserWindowManager* TestMultiUserWindowManager::Create(
   TestMultiUserWindowManager* raw_window_manager = window_manager.get();
   MultiUserWindowManagerHelper::CreateInstanceForTest(
       std::move(window_manager));
+
   return raw_window_manager;
 }
 
@@ -102,6 +103,10 @@ void TestMultiUserWindowManager::AddObserver(
 
 void TestMultiUserWindowManager::RemoveObserver(
     ash::MultiUserWindowManagerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void TestMultiUserWindowManager::SetPrimaryUser(const AccountId& account_id) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

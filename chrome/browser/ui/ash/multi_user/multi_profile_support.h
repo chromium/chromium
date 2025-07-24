@@ -42,9 +42,6 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerObserver,
 
   ~MultiProfileSupport() override;
 
-  // Initializes the manager after its creation. Should only be called once.
-  void Init();
-
   void AddUser(const AccountId& account_id);
 
   // BrowserListObserver:
