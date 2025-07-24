@@ -31,7 +31,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -194,8 +193,10 @@ constexpr base::TimeDelta kEphemeralWarningLifetimeBeforeCancel =
 bool IsEphemeralWarningCancellationEnabled() {
 #if BUILDFLAG(IS_ANDROID)
   return ShouldShowSafeBrowsingAndroidDownloadWarnings();
+#elif BUILDFLAG(IS_CHROMEOS)
+  return false;
 #else
-  return download::IsDownloadBubbleEnabled();
+  return true;
 #endif
 }
 

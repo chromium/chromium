@@ -3786,22 +3786,6 @@ static_library("browser") {
       "digital_credentials/digital_identity_provider_desktop.h",
       "direct_sockets/chrome_direct_sockets_delegate.cc",
       "direct_sockets/chrome_direct_sockets_delegate.h",
-      "download/bubble/download_bubble_accessible_alerts_map.cc",
-      "download/bubble/download_bubble_accessible_alerts_map.h",
-      "download/bubble/download_bubble_display_info.cc",
-      "download/bubble/download_bubble_display_info.h",
-      "download/bubble/download_bubble_prefs.cc",
-      "download/bubble/download_bubble_prefs.h",
-      "download/bubble/download_bubble_ui_controller.cc",
-      "download/bubble/download_bubble_ui_controller.h",
-      "download/bubble/download_bubble_update_service.cc",
-      "download/bubble/download_bubble_update_service.h",
-      "download/bubble/download_bubble_update_service_factory.cc",
-      "download/bubble/download_bubble_update_service_factory.h",
-      "download/bubble/download_bubble_utils.cc",
-      "download/bubble/download_bubble_utils.h",
-      "download/bubble/download_display_controller.cc",
-      "download/bubble/download_display_controller.h",
       "download/default_download_dir_policy_handler.cc",
       "download/default_download_dir_policy_handler.h",
       "download/download_auto_open_policy_handler.cc",
@@ -3817,8 +3801,6 @@ static_library("browser") {
       "download/download_item_web_app_data.h",
       "download/download_open_prompt.cc",
       "download/download_open_prompt.h",
-      "download/download_ui_context_menu.cc",
-      "download/download_ui_context_menu.h",
       "download/download_ui_enterprise_util.cc",
       "download/download_ui_enterprise_util.h",
       "download/download_warning_desktop_hats_utils.cc",
@@ -4415,8 +4397,6 @@ static_library("browser") {
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/dialogs:impl",
-      "//chrome/browser/ui/download",
-      "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/global_media_controls:impl",
@@ -4615,11 +4595,6 @@ static_library("browser") {
       # ... and more. Remove circular include entry when these directories get modularized.
       "//chrome/browser/ui/apps:impl",
 
-      # TODO(crbug.com/368831367): //c/b/ui/download/download_bubble_security_view_info.cc includes
-      # //c/b/signin/identity_manager_factory.h.
-      # Remove circular include entry when this directory gets modularized.
-      "//chrome/browser/ui/download:impl",
-
       # TODO(crbug.com/369756821): Remove this circular dependency when //c/b/feature_engagement
       # gets modularized.
       "//chrome/browser/ui/global_media_controls:impl",
@@ -4682,6 +4657,24 @@ static_library("browser") {
         "device_identity/device_oauth2_token_store_desktop.h",
         "device_notifications/device_status_icon_renderer.cc",
         "device_notifications/device_status_icon_renderer.h",
+        "download/bubble/download_bubble_accessible_alerts_map.cc",
+        "download/bubble/download_bubble_accessible_alerts_map.h",
+        "download/bubble/download_bubble_display_info.cc",
+        "download/bubble/download_bubble_display_info.h",
+        "download/bubble/download_bubble_prefs.cc",
+        "download/bubble/download_bubble_prefs.h",
+        "download/bubble/download_bubble_ui_controller.cc",
+        "download/bubble/download_bubble_ui_controller.h",
+        "download/bubble/download_bubble_update_service.cc",
+        "download/bubble/download_bubble_update_service.h",
+        "download/bubble/download_bubble_update_service_factory.cc",
+        "download/bubble/download_bubble_update_service_factory.h",
+        "download/bubble/download_bubble_utils.cc",
+        "download/bubble/download_bubble_utils.h",
+        "download/bubble/download_display_controller.cc",
+        "download/bubble/download_display_controller.h",
+        "download/download_ui_context_menu.cc",
+        "download/download_ui_context_menu.h",
         "enterprise/remote_commands/cbcm_remote_commands_factory.cc",
         "enterprise/remote_commands/cbcm_remote_commands_factory.h",
         "external_protocol/auto_launch_protocols_policy_handler.cc",
@@ -4736,6 +4729,8 @@ static_library("browser") {
 
       deps += [
         "//chrome/browser/shortcuts",
+        "//chrome/browser/ui/download",
+        "//chrome/browser/ui/download:impl",
         "//chrome/browser/ui/webui/app_home",
         "//chrome/browser/ui/webui/app_home:impl",
         "//chrome/browser/ui/webui/signin:profile",
@@ -4754,8 +4749,14 @@ static_library("browser") {
       #!is_android && !is_chromeos
       # Any circular includes must depend on the target
       # "browser_public_dependencies".
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/webui/signin:profile_impl" ]
+      allow_circular_includes_from += [
+        "//chrome/browser/ui/webui/signin:profile_impl",
+
+        # TODO(crbug.com/368831367): //c/b/ui/download/download_bubble_security_view_info.cc includes
+        # //c/b/signin/identity_manager_factory.h.
+        # Remove circular include entry when this directory gets modularized.
+        "//chrome/browser/ui/download:impl",
+      ]
     }
 
     if (!is_win) {

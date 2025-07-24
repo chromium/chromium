@@ -39,7 +39,6 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
@@ -112,7 +111,6 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
@@ -320,6 +318,7 @@
 #include "ui/compositor/compositor_metrics_tracker.h"
 #else
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -3397,10 +3396,12 @@ views::View* BrowserView::GetActorOverlayView() {
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
+#if !BUILDFLAG(IS_CHROMEOS)
   if (auto* download_controller =
           browser_->GetFeatures().download_toolbar_ui_controller()) {
     return download_controller->bubble_controller();
   }
+#endif
   return nullptr;
 }
 
@@ -5209,9 +5210,9 @@ void BrowserView::AddedToWidget() {
     SetToolbarButtonProvider(toolbar_);
   }
 
-  if (download::IsDownloadBubbleEnabled()) {
-    browser_->GetFeatures().download_toolbar_ui_controller()->Init();
-  }
+#if !BUILDFLAG(IS_CHROMEOS)
+  browser_->GetFeatures().download_toolbar_ui_controller()->Init();
+#endif
 
   frame_->OnBrowserViewInitViewsComplete();
   frame_->GetFrameView()->UpdateMinimumSize();

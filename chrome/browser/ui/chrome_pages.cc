@@ -349,6 +349,7 @@ void ShowHistory(Browser* browser) {
 
 void ShowDownloads(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowDownloads"));
+#if !BUILDFLAG(IS_CHROMEOS)
   // Hide the download bubble if it is showing, to avoid redundancy with the
   // chrome://downloads page we are about to open.
   if (browser->window() && browser->window()->GetDownloadBubbleUIController() &&
@@ -360,6 +361,7 @@ void ShowDownloads(Browser* browser) {
         ->GetDownloadDisplayController()
         ->HideBubble();
   }
+#endif
   ShowSingletonTabOverwritingNTP(browser, GURL(kChromeUIDownloadsURL));
 }
 

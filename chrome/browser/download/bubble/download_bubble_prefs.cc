@@ -4,25 +4,13 @@
 
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 
 namespace download {
-
-bool IsDownloadBubbleEnabled() {
-// Download bubble won't replace the old download notification in
-// Ash. See https://crbug.com/1323505.
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
-  return true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
 
 bool ShouldShowDownloadBubble(Profile* profile) {
   // There is no need to display download bubble in headless mode. This prevents
@@ -37,18 +25,7 @@ bool ShouldShowDownloadBubble(Profile* profile) {
       ->IsDownloadUiEnabled();
 }
 
-bool IsDownloadBubblePartialViewControlledByPref() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool IsDownloadBubblePartialViewEnabled(Profile* profile) {
-  if (!IsDownloadBubblePartialViewControlledByPref()) {
-    return false;
-  }
   return profile->GetPrefs()->GetBoolean(
       prefs::kDownloadBubblePartialViewEnabled);
 }
@@ -59,9 +36,6 @@ void SetDownloadBubblePartialViewEnabled(Profile* profile, bool enabled) {
 }
 
 bool IsDownloadBubblePartialViewEnabledDefaultPrefValue(Profile* profile) {
-  if (!IsDownloadBubblePartialViewControlledByPref()) {
-    return false;
-  }
   return profile->GetPrefs()
       ->FindPreference(prefs::kDownloadBubblePartialViewEnabled)
       ->IsDefaultValue();

@@ -100,9 +100,6 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
-// DownloadToolbarUIController and downloads toolbar button do not exist for
-// ChromeOS. See https://crbug.com/1323505.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest, ShowHide) {
   EXPECT_EQ(toolbar_button(browser()), nullptr);
   controller(browser())->Show();
@@ -436,5 +433,3 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
             DownloadBubbleContentsView::Page::kPrimary);
   CloseBrowserSynchronously(browser());
 }
-
-#endif

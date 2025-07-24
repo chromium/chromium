@@ -188,7 +188,7 @@ void DownloadItemMetadata::OpenDownload() const {
 }
 
 void DownloadItemMetadata::PromptForPassword() const {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (DownloadBubbleUIController* controller =
           DownloadBubbleUIController::GetForDownload(item_);
       controller) {

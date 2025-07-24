@@ -5,7 +5,6 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -34,23 +33,12 @@ class DownloadBubblePrefsTest : public ::testing::Test {
 
  protected:
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
 };
 
-TEST_F(DownloadBubblePrefsTest, IsDownloadBubbleEnabled) {
-  bool is_enabled = IsDownloadBubbleEnabled();
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(is_enabled);
-#else
-  EXPECT_TRUE(is_enabled);
-#endif
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(DownloadBubblePrefsTest, IsPartialViewEnabled) {
   // Test default value.
   EXPECT_TRUE(IsDownloadBubblePartialViewEnabled(profile_));
@@ -66,16 +54,6 @@ TEST_F(DownloadBubblePrefsTest, IsPartialViewEnabled) {
   // This should still be false because it has been set to an explicit value.
   EXPECT_FALSE(IsDownloadBubblePartialViewEnabledDefaultPrefValue(profile_));
 }
-#else
-TEST_F(DownloadBubblePrefsTest, IsPartialViewEnabled) {
-  // Returns false regardless of the pref.
-  EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
-  SetDownloadBubblePartialViewEnabled(profile_, true);
-  EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
-  SetDownloadBubblePartialViewEnabled(profile_, false);
-  EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DownloadBubblePrefsTest, PartialViewImpressions) {
   // Test default value.

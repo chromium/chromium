@@ -67,10 +67,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/kiosk/kiosk_utils.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #endif
@@ -598,11 +594,6 @@ bool DownloadToolbarUIController::ShouldShowExclusiveAccessBubble() const {
   // is not visible. Therefore, we must show the ExclusiveAccessBubble notice.
   if (fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
     return true;
-  }
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::IsKioskSession()) {
-    return false;
   }
 #endif
   return !browser_view_->IsImmersiveModeEnabled() &&

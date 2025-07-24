@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"

@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_enterprise_util.h"

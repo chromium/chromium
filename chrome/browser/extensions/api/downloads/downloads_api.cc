@@ -34,8 +34,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_danger_prompt.h"
@@ -82,6 +80,10 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#endif
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -1619,15 +1621,16 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
     if (!match_current_service || current_service->IsDownloadUiEnabled()) {
       continue;
     }
+#if !BUILDFLAG(IS_CHROMEOS)
     // Calling this API affects the download bubble as well, so extensions
     // using this API is still compatible with the new download bubble. This
     // API will eventually be deprecated (replaced by the SetUiOptions API
     // below).
     Browser* browser = window->GetBrowser();
-    if (download::IsDownloadBubbleEnabled() &&
-        browser->window()->GetDownloadBubbleUIController()) {
+    if (browser->window()->GetDownloadBubbleUIController()) {
       browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
     }
+#endif
   }
 
   if (params->enabled &&
@@ -1672,11 +1675,12 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
       continue;
     }
 
+#if !BUILDFLAG(IS_CHROMEOS)
     Browser* browser = window->GetBrowser();
-    if (download::IsDownloadBubbleEnabled() &&
-        browser->window()->GetDownloadBubbleUIController()) {
+    if (browser->window()->GetDownloadBubbleUIController()) {
       browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
     }
+#endif
   }
 
   if (options.enabled &&

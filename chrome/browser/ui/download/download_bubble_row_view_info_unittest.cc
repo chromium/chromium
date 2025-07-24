@@ -6,7 +6,6 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
@@ -53,9 +52,6 @@ class DownloadBubbleRowViewInfoTest : public testing::Test,
   DownloadBubbleRowViewInfoTest() = default;
 
   void SetUp() override {
-    if (!download::IsDownloadBubbleEnabled()) {
-      GTEST_SKIP();
-    }
     item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
     ON_CALL(*item_, GetGuid())
         .WillByDefault(ReturnRefOfCopy(std::string("id")));

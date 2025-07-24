@@ -1203,9 +1203,6 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest, InitIncognito) {
   EXPECT_EQ(models[1]->GetContentId().id, "regular_profile_download");
 }
 
-// Ephemeral warnings are only enabled when the download bubble is enabled,
-// which it is not on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 // Tests that the DownloadBubbleDisplayInfo is updated when a download with an
 // ephemeral warning expires.
 TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
@@ -1307,6 +1304,5 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest,
   ASSERT_EQ(models.size(), 1u);
   EXPECT_EQ(models[0]->GetContentId().id, "regular_profile_normal_download");
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

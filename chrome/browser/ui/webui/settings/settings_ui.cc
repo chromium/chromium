@@ -21,7 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -369,10 +368,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       compose_enabled && base::FeatureList::IsEnabled(
                              compose::features::kEnableComposeProactiveNudge));
 
-  html_source->AddBoolean(
-      "downloadBubblePartialViewControlledByPref",
-      download::IsDownloadBubbleEnabled() &&
-          download::IsDownloadBubblePartialViewControlledByPref());
+#if BUILDFLAG(IS_CHROMEOS)
+  const bool download_bubble_controlled_by_pref = false;
+#else
+  const bool download_bubble_controlled_by_pref = true;
+#endif
+  html_source->AddBoolean("downloadBubblePartialViewControlledByPref",
+                          download_bubble_controlled_by_pref);
 
   html_source->AddBoolean(
       "extendedReportingRemovePrefDependency",

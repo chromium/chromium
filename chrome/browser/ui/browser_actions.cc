@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -49,7 +48,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_page_action_view_controller.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -93,6 +91,10 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/view_class_properties.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+#endif
 
 namespace {
 
@@ -746,21 +748,21 @@ void BrowserActions::InitializeBrowserActions() {
           .Build());
   CastToolbarButtonUtil::AddCastChildActions(media_router_action, browser);
 
-  if (download::IsDownloadBubbleEnabled()) {
-    root_action_item_->AddChild(
-        ChromeMenuAction(base::BindRepeating(
-                             [](Browser* browser, actions::ActionItem* item,
-                                actions::ActionInvocationContext context) {
-                               browser->GetFeatures()
-                                   .download_toolbar_ui_controller()
-                                   ->InvokeUI();
-                             },
-                             base::Unretained(browser)),
-                         kActionShowDownloads, IDS_SHOW_DOWNLOADS,
-                         IDS_TOOLTIP_DOWNLOAD_ICON,
-                         kDownloadToolbarButtonChromeRefreshIcon)
-            .Build());
-  }
+#if !BUILDFLAG(IS_CHROMEOS)
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             browser->GetFeatures()
+                                 .download_toolbar_ui_controller()
+                                 ->InvokeUI();
+                           },
+                           base::Unretained(browser)),
+                       kActionShowDownloads, IDS_SHOW_DOWNLOADS,
+                       IDS_TOOLTIP_DOWNLOAD_ICON,
+                       kDownloadToolbarButtonChromeRefreshIcon)
+          .Build());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
     root_action_item_->AddChild(

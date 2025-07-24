@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"

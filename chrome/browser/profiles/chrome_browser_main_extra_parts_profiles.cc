@@ -319,7 +319,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
-#include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -365,6 +364,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -853,7 +853,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   DocumentSuggestionsServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   DownloadBubbleUpdateServiceFactory::GetInstance();
 #endif
   DownloadCoreServiceFactory::GetInstance();

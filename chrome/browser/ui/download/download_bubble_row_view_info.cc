@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"

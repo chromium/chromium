@@ -75,10 +75,6 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/notreached.h"
-#endif
-
 namespace {
 
 ui::ImageModel GetDefaultIcon() {
@@ -223,16 +219,11 @@ bool DownloadBubbleRowView::StartLoadFileIcon() {
     OnFileIconLoaded(*image);
     return true;
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS the LookupIconFromFilepath() call should always succeed.
-  NOTREACHED();
-#else
   im->LoadIcon(file_path, icon_loader_size, current_scale_,
                base::BindOnce(&DownloadBubbleRowView::OnFileIconLoaded,
                               weak_factory_.GetWeakPtr()),
                &cancelable_task_tracker_);
   return false;
-#endif
 }
 
 void DownloadBubbleRowView::OnFileIconLoaded(gfx::Image icon) {

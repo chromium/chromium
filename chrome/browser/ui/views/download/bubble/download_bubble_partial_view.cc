@@ -175,9 +175,6 @@ BEGIN_METADATA(SuppressBubbleSettingRow)
 END_METADATA
 
 bool ShouldShowSuppressSetting(Profile* profile, int impressions) {
-  if (!download::IsDownloadBubblePartialViewControlledByPref()) {
-    return false;
-  }
   // Impressions have been incremented by this point, so the first
   // impression is 1.
   return download::IsDownloadBubblePartialViewEnabledDefaultPrefValue(

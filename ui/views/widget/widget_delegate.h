@@ -26,9 +26,6 @@
 class AutoPipSettingView;
 class DesktopMediaPickerDialogView;
 class DigitalIdentityMultiStepDialogDelegate;
-class DownloadBubbleContentsViewTest;
-class DownloadBubbleSecurityViewTest;
-class DownloadToolbarUIController;
 class ExtensionsMenuCoordinator;
 class ExternalProtocolNoHandlersTelSchemeDialog;
 class ForceInstalledDeprecatedAppsDialogView;
@@ -59,6 +56,12 @@ class WebDialogBrowserTest;
 FORWARD_DECLARE_TEST(AcceleratorCommandsFullscreenBrowserTest,
                      ToggleFullscreen);
 FORWARD_DECLARE_TEST(TabStripScrollContainerTest, AnchoredWidgetHidesOnScroll);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class DownloadBubbleContentsViewTest;
+class DownloadBubbleSecurityViewTest;
+class DownloadToolbarUIController;
+#endif
 
 namespace arc {
 class ArcTaskWindowBuilder;
@@ -373,9 +376,11 @@ class VIEWS_EXPORT WidgetDelegate {
     // See comments atop `SetOwnedByWidget()`.
     friend class ::AutoPipSettingView;
     friend class ::DigitalIdentityMultiStepDialogDelegate;
+#if !BUILDFLAG(IS_CHROMEOS)
     friend class ::DownloadBubbleContentsViewTest;
     friend class ::DownloadBubbleSecurityViewTest;
     friend class ::DownloadToolbarUIController;
+#endif
     friend class ::ExtensionsMenuCoordinator;
     friend class ::ExternalProtocolNoHandlersTelSchemeDialog;
     friend class ::ForceInstalledDeprecatedAppsDialogView;
