@@ -6298,15 +6298,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARE_KIT_BLOCK_MESSAGE" desc="The message shown when the user tries to block another user.">
         <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>" tab group, and will no longer be able to interact with you across Google services
       </message>
-      <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_ACTION_TITLE" desc="The title of the button in the alert displayed when the shared link has expired.">
-        Got it
-      </message>
-      <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_MESSAGE" desc="The message in the alert displayed when the shared link has expired.">
-        Contact the sender to ask for a new link
-      </message>
-      <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_TITLE" desc="The title of the alert displayed when the shared link has expired.">
-        This link doesn’t work
-      </message>
       <message name="IDS_IOS_SHARE_KIT_JOIN_DISCLAIMER_CAPTION" desc="The caption part of the disclaimer for sharing a tab group.">
         <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
       </message>
