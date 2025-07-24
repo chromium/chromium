@@ -66,6 +66,7 @@
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -199,6 +200,14 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         .WillByDefault(Return(true));
   }
 
+  UndoPasswordChangeController* GetUndoPasswordChangeController() override {
+    return undo_password_change_controller_.get();
+  }
+
+  void ResetUndoPasswordChangeController() {
+    undo_password_change_controller_.reset();
+  }
+
   MOCK_METHOD(bool,
               IsSavingAndFillingEnabled,
               (const GURL&),
@@ -304,6 +313,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   mutable FakeNetworkContext network_context_;
   testing::NiceMock<MockStoreResultFilter> filter_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
+  // UndoPasswordChangeController is always available but we need to be able to
+  // destroy it before `PasswordManager`, hence the unique_ptr.
+  std::unique_ptr<UndoPasswordChangeController>
+      undo_password_change_controller_ =
+          std::make_unique<UndoPasswordChangeController>();
 };
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -511,10 +525,10 @@ class PasswordManagerTestBase : public testing::Test {
   }
 
   void ResetManager() {
-    // A member of `PasswordAutofillManager` (`UndoPasswordChangeController`)
-    // may keep a pointer to `PasswordFormCache` to unsubscribe from observing
-    // parsed forms. This call should happen before the cache is destroyed.
-    password_autofill_manager_.reset();
+    // MockPasswordManagerClient owns `UndoPasswordChangeController` which keeps
+    // a pointer to `PasswordManager`'s `PasswordFormCache. The controller must
+    // be destroyed before `PasswordManager`.
+    client_.ResetUndoPasswordChangeController();
     manager_.reset();
   }
 

@@ -2153,10 +2153,8 @@ TEST_F(PasswordAutofillManagerTest,
           payload),
       SuggestionPosition{.row = 0});
 
-  EXPECT_EQ(
-      password_autofill_manager_->undo_password_change_controller().GetState(
-          test_username_),
-      PasswordRecoveryState::kTroubleSigningIn);
+  EXPECT_EQ(client.GetUndoPasswordChangeController()->GetState(test_username_),
+            PasswordRecoveryState::kTroubleSigningIn);
 }
 
 TEST_F(PasswordAutofillManagerTest,
@@ -2173,10 +2171,8 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
-  EXPECT_EQ(
-      password_autofill_manager_->undo_password_change_controller().GetState(
-          test_username_),
-      PasswordRecoveryState::kRegularFlow);
+  EXPECT_EQ(client.GetUndoPasswordChangeController()->GetState(test_username_),
+            PasswordRecoveryState::kRegularFlow);
 }
 
 TEST_F(PasswordAutofillManagerTest,
@@ -2204,10 +2200,8 @@ TEST_F(PasswordAutofillManagerTest,
       SuggestionPosition{.row = 0});
 
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
-  EXPECT_EQ(
-      password_autofill_manager_->undo_password_change_controller().GetState(
-          test_username_),
-      PasswordRecoveryState::kIncludeBackup);
+  EXPECT_EQ(client.GetUndoPasswordChangeController()->GetState(test_username_),
+            PasswordRecoveryState::kIncludeBackup);
 }
 
 TEST_F(PasswordAutofillManagerTest,
@@ -2220,10 +2214,9 @@ TEST_F(PasswordAutofillManagerTest,
 
   password_autofill_manager_->OnAddPasswordFillData(form_fill_data);
 
-  EXPECT_EQ(
-      password_autofill_manager_->undo_password_change_controller().GetState(
-          form_fill_data.preferred_login.username_value),
-      PasswordRecoveryState::kTroubleSigningIn);
+  EXPECT_EQ(client.GetUndoPasswordChangeController()->GetState(
+                form_fill_data.preferred_login.username_value),
+            PasswordRecoveryState::kTroubleSigningIn);
 }
 
 }  // namespace

@@ -181,7 +181,7 @@ void PasswordAutofillManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions) {}
 
 void PasswordAutofillManager::OnSuggestionsHidden() {
-  undo_password_change_controller_.OnSuggestionsHidden();
+  password_client_->GetUndoPasswordChangeController()->OnSuggestionsHidden();
   metrics_util::LogPasswordDropdownHidden();
 }
 
@@ -299,7 +299,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       auto payload =
           suggestion
               .GetPayload<autofill::Suggestion::PasswordSuggestionDetails>();
-      undo_password_change_controller_.OnTroubleSigningInClicked(payload);
+      password_client_->GetUndoPasswordChangeController()
+          ->OnTroubleSigningInClicked(payload);
 
       UpdatePopup(
           suggestion_generator_.GetProactiveRecoverySuggestions(payload));
@@ -401,7 +402,7 @@ void PasswordAutofillManager::OnAddPasswordFillData(
   // The value was likely filled on page load, progress the state of the
   // recovery flow.
   if (!fill_data.wait_for_username) {
-    undo_password_change_controller_.OnSuggestionSelected(
+    password_client_->GetUndoPasswordChangeController()->OnSuggestionSelected(
         fill_data.preferred_login);
   }
 
@@ -579,11 +580,6 @@ base::WeakPtr<PasswordAutofillManager> PasswordAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void PasswordAutofillManager::OnLoginPotentiallyFailed(
-    const PasswordForm& login_form) {
-  undo_password_change_controller_.OnLoginPotentiallyFailed(
-      password_manager_driver_, login_form);
-}
 ////////////////////////////////////////////////////////////////////////////////
 // PasswordAutofillManager, private:
 
@@ -653,7 +649,8 @@ void PasswordAutofillManager::FillSuggestion(
   password_manager_driver_->FillSuggestion(password_and_metadata.username_value,
                                            password_and_metadata.password_value,
                                            base::DoNothing());
-  undo_password_change_controller_.OnSuggestionSelected(password_and_metadata);
+  password_client_->GetUndoPasswordChangeController()->OnSuggestionSelected(
+      password_and_metadata);
 }
 
 void PasswordAutofillManager::FillBackupSuggestion(
@@ -666,7 +663,8 @@ void PasswordAutofillManager::FillBackupSuggestion(
   autofill::PasswordAndMetadata password_and_metadata;
   password_and_metadata.username_value = payload.username;
   password_and_metadata.backup_password_value = payload.backup_password;
-  undo_password_change_controller_.OnSuggestionSelected(password_and_metadata);
+  password_client_->GetUndoPasswordChangeController()->OnSuggestionSelected(
+      password_and_metadata);
 }
 
 bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
@@ -809,8 +807,8 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::GetSuggestions(
     ShowWebAuthnCredentials show_webauthn_credentials,
     ShowIdentityCredentials show_identity_credentials) {
   std::optional<autofill::PasswordAndMetadata> proactive_recovery_login =
-      undo_password_change_controller_.FindLoginWithProactiveRecoveryState(
-          fill_data_.get());
+      password_client_->GetUndoPasswordChangeController()
+          ->FindLoginWithProactiveRecoveryState(fill_data_.get());
   if (proactive_recovery_login) {
     CHECK(proactive_recovery_login->backup_password_value);
 
@@ -822,9 +820,10 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::GetSuggestions(
         suggestion_details);
   }
   return suggestion_generator_.GetSuggestionsForDomain(
-      undo_password_change_controller_, fill_data_.get(), page_favicon_,
-      username_filter, offers_generation, show_password_suggestions,
-      show_webauthn_credentials, show_identity_credentials);
+      *password_client_->GetUndoPasswordChangeController(), fill_data_.get(),
+      page_favicon_, username_filter, offers_generation,
+      show_password_suggestions, show_webauthn_credentials,
+      show_identity_credentials);
 }
 
 }  //  namespace password_manager

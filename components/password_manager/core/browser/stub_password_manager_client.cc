@@ -228,4 +228,9 @@ StubPasswordManagerClient::ShowCrossDomainConfirmationPopup(
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+password_manager::UndoPasswordChangeController*
+StubPasswordManagerClient::GetUndoPasswordChangeController() {
+  return &undo_password_change_controller_;
+}
+
 }  // namespace password_manager

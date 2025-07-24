@@ -203,4 +203,9 @@ void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
 void PasswordManagerClient::TriggerSignIn(
     signin_metrics::AccessPoint access_point) const {}
 
+UndoPasswordChangeController*
+PasswordManagerClient::GetUndoPasswordChangeController() {
+  return nullptr;
+}
+
 }  // namespace password_manager

@@ -126,6 +126,7 @@ class UndoPasswordChangeControllerTest : public testing::Test {
 
     best_match_form_.username_value = failed_login_form_.username_value;
     best_match_form_.match_type = PasswordForm::MatchType::kExact;
+    controller_.OnNavigation(url::Origin::Create(GURL("https://example.com")));
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -241,6 +242,18 @@ TEST_F(UndoPasswordChangeControllerTest, DifferentUsernameResetsFlow) {
             PasswordRecoveryState::kRegularFlow);
   EXPECT_EQ(controller_.GetState(credential_2.username_value),
             PasswordRecoveryState::kTroubleSigningIn);
+}
+
+TEST_F(UndoPasswordChangeControllerTest, DifferentUrlResetsFlow) {
+  const auto credential = GetPasswordAndMetadata();
+  const auto password_details = GetSuggestionDetails(credential);
+
+  controller_.OnSuggestionSelected(credential);
+  controller_.OnTroubleSigningInClicked(password_details);
+  controller_.OnNavigation(url::Origin::Create(GURL("https://example2.com")));
+
+  EXPECT_EQ(controller_.GetState(credential.username_value),
+            PasswordRecoveryState::kRegularFlow);
 }
 
 TEST_F(UndoPasswordChangeControllerTest,

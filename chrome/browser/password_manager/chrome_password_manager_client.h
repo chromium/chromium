@@ -409,6 +409,9 @@ class ChromePasswordManagerClient
   credential_management::ContentCredentialManager*
   GetContentCredentialManager();
 
+  password_manager::UndoPasswordChangeController*
+  GetUndoPasswordChangeController() override;
+
  protected:
   // Callable for tests.
   explicit ChromePasswordManagerClient(content::WebContents* web_contents);
@@ -612,6 +615,9 @@ class ChromePasswordManagerClient
   // some views specific initializations.
   CrossDomainConfirmationPopupFactory
       cross_domain_confirmation_popup_factory_for_testing_;
+
+  password_manager::UndoPasswordChangeController
+      undo_password_change_controller_;
 
   base::WeakPtrFactory<ChromePasswordManagerClient> weak_ptr_factory_{this};
 

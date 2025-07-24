@@ -52,6 +52,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -461,17 +462,17 @@ void RecordProvisionalSaveFailure(
 
 void HandleFailedLoginDetectionForPasswordChange(
     PasswordManagerDriver* driver,
+    UndoPasswordChangeController* undo_controller,
     const PasswordFormManager& submitted_manager,
     ukm::SourceId ukm_id) {
-
   RecordMetricsForLoginWithChangedPassword(submitted_manager, ukm_id,
                                            /*login_successful=*/false);
 
   // Proactive recovery on mobile will be implemented via touch to fill instead.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Create a copy of the submitted form because it will soon be destroyed.
-  driver->GetPasswordAutofillManager()->OnLoginPotentiallyFailed(
-      *submitted_manager.GetSubmittedForm());
+  undo_controller->OnLoginPotentiallyFailed(
+      driver, *submitted_manager.GetSubmittedForm());
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
@@ -1648,8 +1649,9 @@ void PasswordManager::OnLoginFailed(PasswordManagerDriver* driver,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  HandleFailedLoginDetectionForPasswordChange(driver, *submitted_manager,
-                                              client_->GetUkmSourceId());
+  HandleFailedLoginDetectionForPasswordChange(
+      driver, client_->GetUndoPasswordChangeController(), *submitted_manager,
+      client_->GetUkmSourceId());
 
   ResetSubmittedManager();
   base::UmaHistogramBoolean("PasswordManager.FailedLoginDetected", false);
@@ -1662,8 +1664,9 @@ void PasswordManager::OnLoginPotentiallyFailed(
     logger->LogMessage(Logger::STRING_PASSWORD_POTENTIALLY_FAILED_LOGIN);
   }
 
-  HandleFailedLoginDetectionForPasswordChange(driver, *GetSubmittedManager(),
-                                              client_->GetUkmSourceId());
+  HandleFailedLoginDetectionForPasswordChange(
+      driver, client_->GetUndoPasswordChangeController(),
+      *GetSubmittedManager(), client_->GetUkmSourceId());
 
   base::UmaHistogramBoolean("PasswordManager.FailedLoginDetected", true);
 }

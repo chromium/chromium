@@ -57,7 +57,7 @@ enum class PasswordChangeRecoveryFlowState {
 // state.
 class UndoPasswordChangeController : public PasswordFormManagerObserver {
  public:
-  explicit UndoPasswordChangeController();
+  UndoPasswordChangeController();
   ~UndoPasswordChangeController() override;
 
   // Updates the state of the filled `credential`:
@@ -98,6 +98,10 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
 
   void OnSuggestionsHidden();
 
+  // Called when the URL that the user interacts with changes. Resets the flow
+  // if the signon realm changes.
+  void OnNavigation(const url::Origin& url);
+
  private:
   // PasswordFormManagerObserver:
 
@@ -112,10 +116,11 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
 
   void FinishObserving();
 
+  url::Origin current_origin_;
   std::u16string current_username_;
   PasswordRecoveryState current_state_ = PasswordRecoveryState::kRegularFlow;
   std::optional<PasswordForm> failed_login_form_;
-  raw_ptr<PasswordManagerDriver> driver_;
+  base::WeakPtr<PasswordManagerDriver> driver_;
   // Keep the pointer to the cache to unsubsribe at destruction
   raw_ptr<PasswordFormCache> password_form_cache_;
 };

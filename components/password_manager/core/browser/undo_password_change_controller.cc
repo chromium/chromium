@@ -64,7 +64,7 @@ void UndoPasswordChangeController::OnTroubleSigningInClicked(
 void UndoPasswordChangeController::OnLoginPotentiallyFailed(
     PasswordManagerDriver* driver,
     const PasswordForm& login_form) {
-  driver_ = driver;
+  driver_ = driver->AsWeakPtr();
   failed_login_form_ = login_form;
   password_form_cache_ = driver_->GetPasswordManager()->GetPasswordFormCache();
   password_form_cache_->AddObserver(this);
@@ -108,9 +108,18 @@ void UndoPasswordChangeController::OnSuggestionsHidden() {
   }
   FinishObserving();
 }
+
+void UndoPasswordChangeController::OnNavigation(const url::Origin& origin) {
+  if (current_origin_ != origin) {
+    ResetFlow();
+  }
+  current_origin_ = origin;
+}
+
 void UndoPasswordChangeController::ResetFlow() {
   current_state_ = PasswordRecoveryState::kRegularFlow;
   current_username_ = u"";
+  FinishObserving();
 }
 
 void UndoPasswordChangeController::FinishObserving() {
@@ -129,7 +138,7 @@ void UndoPasswordChangeController::OnPasswordFormParsed(
   }
 
   if (form_manager->DoesManageSimilarForm(failed_login_form_.value(),
-                                          driver_)) {
+                                          driver_.get())) {
     const PasswordForm* form_best_match =
         password_manager_util::FindFormByUsername(
             form_manager->GetBestMatches(), failed_login_form_->username_value);

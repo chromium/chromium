@@ -1873,6 +1873,11 @@ ChromePasswordManagerClient::GetContentCredentialManager() {
   return &content_credential_manager_;
 }
 
+password_manager::UndoPasswordChangeController*
+ChromePasswordManagerClient::GetUndoPasswordChangeController() {
+  return &undo_password_change_controller_;
+}
+
 ChromePasswordManagerClient::ChromePasswordManagerClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -1942,6 +1947,9 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
 
   // Hide form filling UI on navigating away.
   HideFillingUI();
+
+  undo_password_change_controller_.OnNavigation(
+      page.GetMainDocument().GetLastCommittedOrigin());
 }
 
 void ChromePasswordManagerClient::WebContentsDestroyed() {

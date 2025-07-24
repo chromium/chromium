@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
-#include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "ui/gfx/image/image.h"
 
 namespace favicon_base {
@@ -137,20 +136,11 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 
   base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
 
-  // Called when password manager thinks the login attempt failed.
-  // This might trigger a proactive recovery flow if credential has a backup
-  // password.
-  void OnLoginPotentiallyFailed(const PasswordForm& login_form);
-
 #if defined(UNIT_TEST)
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username) {
     return PreviewSuggestion(username,
                              autofill::SuggestionType::kPasswordEntry);
-  }
-
-  UndoPasswordChangeController& undo_password_change_controller() {
-    return undo_password_change_controller_;
   }
 #endif  // defined(UNIT_TEST)
 
@@ -299,8 +289,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
       cross_domain_confirmation_controller_;
 #endif
-
-  UndoPasswordChangeController undo_password_change_controller_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };
