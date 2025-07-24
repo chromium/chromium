@@ -80,6 +80,7 @@ test("services_unittests") {
         # the unit tests will encounter a ClassNotFoundException error at
         # runtime.
         "//services/on_device_model/android:java",
+        "//services/on_device_model/android:native_java_unittests_java",
         "//services/on_device_model/android:unit_tests",
       ]
     }

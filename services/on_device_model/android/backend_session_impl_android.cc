@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/on_device_model/android/on_device_model_bridge.h"
+#include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,7 +31,30 @@ void BackendSessionImplAndroid::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
     base::OnceClosure on_complete) {
-  NOTIMPLEMENTED();
+  std::ostringstream oss;
+  for (const auto& piece : options->input->pieces) {
+    if (std::holds_alternative<std::string>(piece)) {
+      oss << std::get<std::string>(piece);
+    } else if (std::holds_alternative<ml::Token>(piece)) {
+      switch (std::get<ml::Token>(piece)) {
+        case ml::Token::kSystem:
+          oss << "<system>";
+          break;
+        case ml::Token::kModel:
+          oss << "<model>";
+          break;
+        case ml::Token::kUser:
+          oss << "<user>";
+          break;
+        case ml::Token::kEnd:
+          oss << "<end>";
+          break;
+      }
+    } else {
+      NOTREACHED();
+    }
+  }
+  context_ += oss.str();
   std::move(on_complete).Run();
 }
 
@@ -38,12 +62,13 @@ void BackendSessionImplAndroid::Generate(
     on_device_model::mojom::GenerateOptionsPtr input,
     mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
     base::OnceClosure on_complete) {
+  CHECK(!responder_.is_bound()) << "Caller should not call Generate() again "
+                                   "before OnComplete() is received.";
   responder_.Bind(std::move(response));
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  // TODO(crbug.com/425408635): Pass the real input.
   base::android::ScopedJavaLocalRef<jstring> j_input =
-      base::android::ConvertUTF8ToJavaString(env, "");
+      base::android::ConvertUTF8ToJavaString(env, context_);
   Java_AiCoreSession_generate(env, java_session_,
                               reinterpret_cast<intptr_t>(this), j_input);
   std::move(on_complete).Run();
@@ -83,6 +108,7 @@ void BackendSessionImplAndroid::OnResponse(const std::string& response) {
 
 void BackendSessionImplAndroid::OnComplete() {
   responder_->OnComplete(on_device_model::mojom::ResponseSummary::New());
+  responder_.reset();
 }
 
 void JNI_AiCoreSession_OnComplete(JNIEnv* env, jlong backend_session) {

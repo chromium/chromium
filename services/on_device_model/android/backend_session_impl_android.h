@@ -51,6 +51,10 @@ class BackendSessionImplAndroid : public BackendSession {
   // responder is fine because `Generate` is only called until the previous one
   // completes.
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
+  // The accumulated context of the current session.
+  // TODO(crbug.com/425408635): We should hold std::vector<ml::InputPiece>
+  // instead and pass it directly to Java.
+  std::string context_;
 };
 
 }  // namespace on_device_model
