@@ -15,7 +15,6 @@
 #import "base/task/thread_pool.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
 #import "ios/chrome/browser/drive/model/drive_availability.h"
@@ -23,7 +22,6 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -351,18 +349,4 @@ void DownloadManagerTabHelper::MoveToUserDocumentsIfFileExists(
 
 void DownloadManagerTabHelper::MoveComplete(bool move_completed) {
   DCHECK(move_completed);
-  MaybeScheduleFileForAutoDeletion();
-}
-
-void DownloadManagerTabHelper::MaybeScheduleFileForAutoDeletion() {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  BOOL isAutoDeletionEnabled =
-      localState->GetBoolean(prefs::kDownloadAutoDeletionEnabled);
-  if (!IsDownloadAutoDeletionFeatureEnabled() || !isAutoDeletionEnabled) {
-    return;
-  }
-
-  auto_deletion::AutoDeletionService* service =
-      GetApplicationContext()->GetAutoDeletionService();
-  service->MarkTaskForDeletion(task_.get(), GetDownloadTaskFinalFilePath());
 }
