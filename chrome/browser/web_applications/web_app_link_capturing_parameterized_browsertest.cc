@@ -16,6 +16,11 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -1766,6 +1771,14 @@ class NavCaptureParameterizedBrowserTest
     if (ShouldRunDisabledTests()) {
       return false;
     }
+
+#if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/432178469): Remove this and associated import after Mac13
+    // flakiness is fixed.
+    if (base::mac::MacOSMajorVersion() == 13) {
+      return true;
+    }
+#endif
 
     testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
     const base::Value::Dict& test_case = GetTestCaseDataFromParam();
