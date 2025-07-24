@@ -122,6 +122,16 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac-arm64-asan-rel",
+    mirrors = ["ci/Mac ARM64 ASAN Release"],
+    gn_args = "ci/Mac ARM64 ASAN Release",
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+)
+
+try_.builder(
     name = "mac-asan-media-rel",
     mirrors = ["ci/Mac ASAN Release Media"],
     gn_args = "ci/Mac ASAN Release Media",

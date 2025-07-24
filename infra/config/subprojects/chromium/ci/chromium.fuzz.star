@@ -78,6 +78,7 @@ def ci_builder(
         chromium_config_name = None,
         build_config = None,
         target_bits = None,
+        target_arch = None,
         target_platform = None,
         chromium_extra_apply_configs = [],
         gclient_apply_configs = None,
@@ -103,7 +104,10 @@ def ci_builder(
     if target_bits == 32:
         gn_configs.append("x86")
     elif target_bits == 64:
-        gn_configs.append("x64")
+        if target_arch == builder_config.target_arch.ARM:
+            gn_configs.append("arm64")
+        else:
+            gn_configs.append("x64")
 
     if target_platform == builder_config.target_platform.CHROMEOS:
         gn_configs.append("chromeos")
@@ -129,6 +133,7 @@ def ci_builder(
                     "mb",
                 ] + chromium_extra_apply_configs),
                 build_config = build_config,
+                target_arch = target_arch,
                 target_bits = target_bits,
                 target_platform = target_platform,
             ),
@@ -644,9 +649,10 @@ browser_msan_builder(
 
 def browser_asan_mac_builder(
         gn_extra_configs = [],
+        max_concurrent_invocations = 2,
         **kwargs):
     return browser_asan_builder(
-        max_concurrent_invocations = 2,
+        max_concurrent_invocations = max_concurrent_invocations,
         build_config = builder_config.build_config.RELEASE,
         target_bits = 64,
         target_platform = builder_config.target_platform.MAC,
@@ -680,6 +686,23 @@ browser_asan_mac_builder(
     gn_extra_configs = [
         "chrome_with_codecs",
     ],
+)
+
+browser_asan_mac_builder(
+    name = "Mac ARM64 ASAN Release",
+    description_html = "ASAN build of chrome for Mac ARM64.",
+    builderless = True,
+    cpu = cpu.ARM64,
+    # TODO(https://crbug.com/431089339): Add to gardening rotation once the build
+    # is proven green.
+    gardener_rotations = args.ignore_default(None),
+    target_arch = builder_config.target_arch.ARM,
+    # Full subdir: `mac-release-arm64`
+    clusterfuzz_archive_subdir = "arm64",
+    console_short_name = "arm64-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    # We requested a single machine in https://crbug.com/432473774.
+    max_concurrent_invocations = 1,
 )
 
 def browser_tsan_builder(**kwargs):
