@@ -226,6 +226,7 @@ ScopedJavaLocalRef<jobject> ToJniType(JNIEnv*, const O&);
 ```
 
 An example conversion function can look like:
+
 ```c++
 #include "third_party/jni_zero/jni_zero.h"
 
