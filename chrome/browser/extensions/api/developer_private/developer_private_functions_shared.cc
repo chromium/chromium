@@ -840,7 +840,18 @@ void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
 }
 
 void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
-    const base::FilePath file_path) {
+    base::FilePath file_path) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/433416481): Make SelectFileDialog return a virtual document path and
+  // remove this code.
+  std::optional<base::FilePath> vp =
+      base::ResolveToVirtualDocumentPath(file_path);
+  if (!vp) {
+    OnLoadComplete(nullptr, file_path, "Failed to resolve (removed?)");
+    return;
+  }
+  file_path = *vp;
+#endif  // BUILDFLAG(IS_ANDROID)
   scoped_refptr<UnpackedInstaller> installer(
       UnpackedInstaller::Create(browser_context()));
   installer->set_be_noisy_on_failure(!fail_quietly_);
