@@ -353,6 +353,7 @@ const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
 const char kGlicActorUiOverlayMagicCursorName[] =
     "glic-actor-ui-overlay-magic-cursor";
 const char kGlicActorUiToastName[] = "glic-actor-ui-toast";
+const char kGlicActorUiHandoffButtonName[] = "glic-actor-ui-handoff-button";
 
 // Controls whether the task icon in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiTaskIcon{
@@ -366,6 +367,9 @@ const base::FeatureParam<bool> kGlicActorUiOverlayMagicCursor{
 // Controls whether the toast in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiToast{&kGlicActorUi,
                                                  kGlicActorUiToastName, false};
+// Controls whether the handoff button in the actor ui is enabled.
+const base::FeatureParam<bool> kGlicActorUiHandoffButton{
+    &kGlicActorUi, kGlicActorUiHandoffButtonName, false};
 
 // Controls renderer tool observation timeout when waiting on local
 // (non-network) work.

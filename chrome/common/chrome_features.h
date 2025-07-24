@@ -208,6 +208,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiOverlayMagicCursorName[];
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiToastName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiHandoffButtonName[];
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiTaskIcon);
@@ -217,6 +219,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiOverlayMagicCursor);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiToast);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiHandoffButton);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
