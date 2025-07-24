@@ -63,7 +63,10 @@ constexpr Visitor PreToolEventsFn{
     NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
-    NoUiEvents<TypeToolRequest>,
+    [](const TypeToolRequest& tr) {
+      return EventSequence<AsyncUiEvent>{
+          MouseMove(tr.GetTabHandle(), tr.GetTarget())};
+    },
     NoUiEvents<WaitToolRequest>,
     NoUiEvents<AttemptLoginToolRequest>};
 

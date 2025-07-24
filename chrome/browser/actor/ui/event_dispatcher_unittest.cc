@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
+#include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/mock_actor_ui_state_manager.h"
@@ -106,6 +107,19 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
   TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code, ::actor::mojom::ActionResultCode::kError);
+}
+
+TEST_F(EventDispatcherTest, TypeCausesMouseMove) {
+  EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseMove>(_), _))
+      .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
+        std::move(callback).Run(MakeOkResult());
+      }));
+  TypeToolRequest tr(tabs::TabHandle(456), PageTarget(gfx::Point(300, 400)),
+                     "some text to type",
+                     /*follow_by_enter=*/true, TypeToolRequest::Mode::kReplace);
+  TestFuture<ActionResultPtr> result;
+  dispatcher_->OnPreTool(tr, result.GetCallback());
+  EXPECT_TRUE(IsOk(*result.Get()));
 }
 
 TEST_F(EventDispatcherTest, SyncActorTaskChange_OneEvent) {
