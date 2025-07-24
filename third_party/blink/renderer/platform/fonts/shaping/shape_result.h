@@ -517,6 +517,10 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   friend class ShapeResultTest;
   friend class StretchyOperatorShaper;
 
+  static void AddRunInfoRanges(const ShapeResultRun& run_info,
+                               float offset,
+                               Vector<CharacterRange>* ranges);
+
   template <bool has_non_zero_glyph_offsets>
   float ForEachGlyphImpl(float initial_advance,
                          GlyphCallback,

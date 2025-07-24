@@ -420,6 +420,24 @@ struct PLATFORM_EXPORT ShapeResultRun final
 #endif
   }
 
+ private:
+  friend class GlyphDataRange;
+  friend class HarfBuzzShaper;
+  friend class ShapeResult;
+  friend class ShapeResultBuffer;
+  friend class ShapeResultTest;
+  friend class ShapeResultTestInfo;
+  friend class ShapeResultView;
+  friend class ShapeResultRunTest;
+  FRIEND_TEST_ALL_PREFIXES(GlyphDataRangeTest, Data);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyConstructor);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyFromRange);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataReverse);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataAddOffsetHeightAt);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataAddOffsetWidthAt);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataSetAt);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataShrink);
+
   GlyphDataCollection glyph_data_;
   Member<SimpleFontData> font_data_;
 

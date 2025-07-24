@@ -2276,11 +2276,9 @@ unsigned ShapeResult::CachedPreviousSafeToBreakOffset(unsigned offset) const {
              : 0;
 }
 
-namespace {
-
-void AddRunInfoRanges(const ShapeResultRun& run_info,
-                      float offset,
-                      Vector<CharacterRange>* ranges) {
+void ShapeResult::AddRunInfoRanges(const ShapeResultRun& run_info,
+                                   float offset,
+                                   Vector<CharacterRange>* ranges) {
   Vector<float> character_widths(run_info.num_characters_);
   for (const auto& glyph : run_info.glyph_data_) {
     // TODO(crbug.com/1147011): This should not happen, but crash logs indicate
@@ -2307,8 +2305,6 @@ void AddRunInfoRanges(const ShapeResultRun& run_info,
       ranges->push_back(CharacterRange(start, end, 0, 0));
   }
 }
-
-}  // anonymous namespace
 
 float ShapeResult::IndividualCharacterRanges(Vector<CharacterRange>* ranges,
                                              float start_x) const {
