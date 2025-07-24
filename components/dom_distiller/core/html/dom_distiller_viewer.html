@@ -7,7 +7,12 @@ found in the LICENSE file.
 <html>
 <head>
   <meta charset="utf-8">
+<if expr="is_ios">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+</if>
+<if expr="not(is_ios)">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+</if>
   <meta name="theme-color" id="theme-color">
   <!-- Placeholder for CSP. -->
   $1
