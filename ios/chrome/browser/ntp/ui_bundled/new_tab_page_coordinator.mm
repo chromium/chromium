@@ -1939,7 +1939,9 @@
 
 - (void)openMIA {
   OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:GetUrlForAim(self.templateURLService)];
+      commandWithURLFromChrome:GetUrlForAim(
+                                   self.templateURLService,
+                                   /*query_start_time=*/base::Time::Now())];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler openURLInNewTab:command];

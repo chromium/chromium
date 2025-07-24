@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
@@ -38,6 +40,8 @@ constexpr int kImageCompressionQuality = 30;
 constexpr int kImageMaxArea = 1000000;
 constexpr int kImageMaxHeight = 1000;
 constexpr int kImageMaxWidth = 1000;
+constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
+constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
 }  // namespace
 
 class MockQueryController : public TestComposeboxQueryController {
@@ -152,6 +156,24 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  GURL StripTimestampsFromAimUrl(const GURL& url) {
+    std::string qsubts_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(
+        url, kQuerySubmissionTimeQueryParameter, &qsubts_param));
+
+    std::string pqsubts_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(
+        url, kUserPerceivedQuerySubmissionTimeQueryParameter, &pqsubts_param));
+
+    GURL result_url = url;
+    result_url = net::AppendOrReplaceQueryParameter(
+        result_url, kQuerySubmissionTimeQueryParameter, std::nullopt);
+    result_url = net::AppendOrReplaceQueryParameter(
+        result_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
+        std::nullopt);
+    return result_url;
+  }
+
  private:
   std::unique_ptr<ComposeboxHandler> handler_;
   std::unique_ptr<FakeVariationsClient> fake_variations_client_;
@@ -200,11 +222,14 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
   navigation->Commit();
   navigation_observer.Wait();
 
-  GURL expected_url = query_controller().CreateAimUrl(query);
+  GURL expected_url = query_controller().CreateAimUrl(
+      query, /*query_start_time=*/base::Time::Now());
+  GURL actual_url =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
 
   // Ensure navigation occurred.
-  EXPECT_EQ(expected_url,
-            web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(StripTimestampsFromAimUrl(expected_url),
+            StripTimestampsFromAimUrl(actual_url));
 }
 
 TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {

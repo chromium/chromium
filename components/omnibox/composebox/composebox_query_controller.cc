@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_request_construction.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
@@ -195,7 +196,8 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
   cluster_info_endpoint_fetcher_.reset();
 }
 
-GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text) {
+GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
+                                             base::Time query_start_time) {
   CHECK(cluster_info_.has_value());
   session_state_ = SessionState::kQuerySubmitted;
   if (!active_files_.empty()) {
@@ -204,14 +206,14 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text) {
     // TODO(crbug.com/428967670): Support multiple file upload.
     const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
     return GetUrlForMultimodalAim(
-        template_url_service_, kEntrypointParameterValue,
+        template_url_service_, kEntrypointParameterValue, query_start_time,
         cluster_info_->search_session_id(),
         request_id_generator_.GetNextRequestId(
             lens::RequestIdUpdateMode::kSearchUrl),
         last_file->mime_type_, base::UTF8ToUTF16(query_text));
   }
   return GetUrlForAim(template_url_service_, kEntrypointParameterValue,
-                      base::UTF8ToUTF16(query_text));
+                      query_start_time, base::UTF8ToUTF16(query_text));
 }
 
 void ComposeboxQueryController::AddObserver(FileUploadStatusObserver* obs) {

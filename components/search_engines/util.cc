@@ -18,7 +18,7 @@
 #include "base/base64url.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -44,6 +44,8 @@ constexpr char kVisualRequestIdQueryParameter[] = "vsrid";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
 constexpr char kVisualInputTypeQueryParameterImageValue[] = "img";
+constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
+constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
 
 // Computes whether updates to the search engines database are needed.
 //
@@ -613,6 +615,7 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
 
 GURL GetUrlForAim(TemplateURLService* turl_service,
                   const std::string& aim_entrypoint,
+                  const base::Time& query_start_time,
                   const std::u16string& query_text) {
   const TemplateURLRef& url_ref =
       turl_service->GetDefaultSearchProvider()->url_ref();
@@ -624,18 +627,24 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
   result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", "50");
   result_url =
       net::AppendOrReplaceQueryParameter(result_url, "aep", aim_entrypoint);
-
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kQuerySubmissionTimeQueryParameter,
+      base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()));
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
+      base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
   return result_url;
 }
 
 GURL GetUrlForMultimodalAim(
     TemplateURLService* turl_service,
     const std::string& aim_entrypoint,
+    const base::Time& query_start_time,
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
     const std::u16string& query_text) {
-  GURL result_url = GetUrlForAim(turl_service, aim_entrypoint, query_text);
+  GURL result_url = GetUrlForAim(turl_service, aim_entrypoint, query_start_time, query_text);
   std::string serialized_request_id;
   CHECK(request_id->SerializeToString(&serialized_request_id));
   std::string encoded_request_id;

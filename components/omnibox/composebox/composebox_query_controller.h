@@ -221,8 +221,9 @@ class ComposeboxQueryController {
   // Session management. Virtual for testing.
   virtual void NotifySessionStarted();
   virtual void NotifySessionAbandoned();
-  // Called when a query has been submitted.
-  GURL CreateAimUrl(const std::string& query_text);
+  // Called when a query has been submitted. `query_start_time` is the time
+  // that the user clicked the submit button.
+  GURL CreateAimUrl(const std::string& query_text, base::Time query_start_time);
 
   // Observer management.
   void AddObserver(FileUploadStatusObserver* obs);

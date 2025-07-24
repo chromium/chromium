@@ -332,7 +332,8 @@ TemplateUrlServiceAndroid::GetComposeplateUrl(
   }
 
   return url::GURLAndroid::FromNativeGURL(
-      env, GetUrlForAim(template_url_service_, kAdditionalAepFakeBoxValue));
+    env, GetUrlForAim(template_url_service_, kAdditionalAepFakeBoxValue,
+                      /*query_start_time=*/base::Time::Now()));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
