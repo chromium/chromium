@@ -16,10 +16,9 @@ found in the LICENSE file.
   <LinearLayout
       android:id="@+id/new_window"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="@dimen/instance_switcher_dialog_list_item_height"
       android:orientation="horizontal"
       android:visibility="gone"
-      android:paddingVertical="5dp"
       android:background="@drawable/list_item_background_bottom">
     <ImageView
         android:id="@+id/favicon"

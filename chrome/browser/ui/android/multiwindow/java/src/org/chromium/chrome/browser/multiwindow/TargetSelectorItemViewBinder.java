@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -58,9 +57,6 @@ class TargetSelectorItemViewBinder {
             TextView lastAccessedView = view.findViewById(R.id.last_accessed);
             String text = model.get(TargetSelectorItemProperties.LAST_ACCESSED);
             lastAccessedView.setText(text);
-            RelativeLayout.LayoutParams params =
-                    (RelativeLayout.LayoutParams) lastAccessedView.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_PARENT_END);
             ImageView closeButton = view.findViewById(R.id.close_button);
             closeButton.setVisibility(View.GONE);
         }
