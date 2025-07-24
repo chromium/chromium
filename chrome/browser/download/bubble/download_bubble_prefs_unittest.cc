@@ -4,51 +4,23 @@
 
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 
-#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace download {
 namespace {
 
-constexpr char kDownloadConnectorEnabledNonBlockingPref[] = R"([
-  {
-    "service_provider": "google",
-    "enable": [
-      {"url_list": ["*"], "tags": ["malware"]}
-    ]
-  }
-])";
-
-constexpr char kDownloadConnectorEnabledBlockingPref[] = R"([
-  {
-    "service_provider": "google",
-    "block_until_verdict":1,
-    "enable": [
-      {"url_list": ["*"], "tags": ["malware"]}
-    ]
-  }
-])";
-
-}  // namespace
-
-namespace download {
-
-class DownloadBubblePrefsTest : public testing::Test {
+class DownloadBubblePrefsTest : public ::testing::Test {
  public:
   DownloadBubblePrefsTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -57,14 +29,7 @@ class DownloadBubblePrefsTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
-
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
-    policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidToken("fake-token"));
-    profile_->GetPrefs()->SetInteger(
-        AnalysisConnectorScopePref(
-            enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED),
-        policy::POLICY_SCOPE_MACHINE);
   }
 
  protected:
@@ -83,20 +48,6 @@ TEST_F(DownloadBubblePrefsTest, IsDownloadBubbleEnabled) {
 #else
   EXPECT_TRUE(is_enabled);
 #endif
-}
-
-TEST_F(DownloadBubblePrefsTest, DoesDownloadConnectorBlock) {
-  EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
-  profile_->GetPrefs()->Set(
-      enterprise_connectors::AnalysisConnectorPref(
-          enterprise_connectors::FILE_DOWNLOADED),
-      *base::JSONReader::Read(kDownloadConnectorEnabledNonBlockingPref));
-  EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
-  profile_->GetPrefs()->Set(
-      enterprise_connectors::AnalysisConnectorPref(
-          enterprise_connectors::FILE_DOWNLOADED),
-      *base::JSONReader::Read(kDownloadConnectorEnabledBlockingPref));
-  EXPECT_TRUE(DoesDownloadConnectorBlock(profile_, GURL()));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -135,4 +86,5 @@ TEST_F(DownloadBubblePrefsTest, PartialViewImpressions) {
   EXPECT_EQ(DownloadBubblePartialViewImpressions(profile_), 1);
 }
 
+}  // namespace
 }  // namespace download

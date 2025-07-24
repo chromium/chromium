@@ -9,13 +9,8 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/pref_names.h"
-#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#endif
 
 namespace download {
 
@@ -40,29 +35,6 @@ bool ShouldShowDownloadBubble(Profile* profile) {
   return DownloadCoreServiceFactory::GetForBrowserContext(
              profile->GetOriginalProfile())
       ->IsDownloadUiEnabled();
-}
-
-bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  auto* connector_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile);
-  if (!connector_service) {
-    return false;
-  }
-
-  std::optional<enterprise_connectors::AnalysisSettings> settings =
-      connector_service->GetAnalysisSettings(
-          url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
-  if (!settings) {
-    return false;
-  }
-
-  return settings->block_until_verdict ==
-         enterprise_connectors::BlockUntilVerdict::kBlock;
-#else
-  return false;
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 bool IsDownloadBubblePartialViewControlledByPref() {

@@ -7965,6 +7965,7 @@ test("unit_tests") {
       "../browser/download/download_commands_unittest.cc",
       "../browser/download/download_dir_policy_handler_unittest.cc",
       "../browser/download/download_ui_context_menu_unittest.cc",
+      "../browser/download/download_ui_enterprise_util_unittest.cc",
       "../browser/download/download_warning_desktop_hats_utils_unittest.cc",
       "../browser/enterprise/reporting/extension_info_unittest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_notification_unittest.cc",

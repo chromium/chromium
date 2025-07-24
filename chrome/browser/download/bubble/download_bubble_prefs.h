@@ -15,10 +15,6 @@ bool IsDownloadBubbleEnabled();
 // Called when deciding whether to show or hide the bubble.
 bool ShouldShowDownloadBubble(Profile* profile);
 
-// The enterprise download connectors can be enabled in blocking or nonblocking
-// mode. This returns false if the connector is disabled.
-bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url);
-
 // Whether the partial view is controlled by prefs. If not controlled by prefs,
 // the partial view defaults to disabled.
 bool IsDownloadBubblePartialViewControlledByPref();
