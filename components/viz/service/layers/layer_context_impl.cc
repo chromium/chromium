@@ -1747,6 +1747,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     host_impl_->SetTargetLocalSurfaceId(*update->target_local_surface_id);
   }
 
+  RETURN_IF_FALSE(update->next_frame_token > 0, "invalid frame token");
+  host_impl_->set_next_frame_token_from_client(update->next_frame_token);
+
   for (const auto& tiling : update->tilings) {
     if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
       if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {

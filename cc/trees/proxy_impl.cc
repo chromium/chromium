@@ -957,7 +957,7 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
     if (draw_frame) {
       if (std::optional<SubmitInfo> submit_info =
               host_impl_->DrawLayers(&frame)) {
-        DCHECK_NE(frame.frame_token, 0u);
+        DCHECK_NE(frame.frame_token, viz::kInvalidFrameToken);
         // Drawing implies we submitted a frame to the LayerTreeFrameSink.
         scheduler_->DidSubmitCompositorFrame(submit_info.value());
       }

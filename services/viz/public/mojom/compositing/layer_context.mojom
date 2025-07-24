@@ -98,6 +98,11 @@ struct LayerTreeUpdate {
   // process.
   bool new_local_surface_id_request;
 
+  // Pass the frame_token generated on the client side to viz. Without this,
+  // viz needs to generate the token on its own, but GPU process could
+  // crash and rest the token generator, leading to client/viz inconsistence.
+  uint32 next_frame_token;
+
   // The viz::LocalSurfaceId to unthrottle drawing for.
   // This is from LayerTreeHostImpl.
   // It is still necessary to send it over to viz because

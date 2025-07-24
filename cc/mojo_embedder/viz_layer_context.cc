@@ -1271,6 +1271,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   if (target_local_surface_id.is_valid()) {
     update->target_local_surface_id = target_local_surface_id;
   }
+  DCHECK_NE(host_impl_->next_frame_token(), viz::kInvalidFrameToken);
+  update->next_frame_token = host_impl_->next_frame_token();
   update->background_color = tree.background_color();
 
   const ViewportPropertyIds& property_ids = tree.viewport_property_ids();

@@ -116,6 +116,7 @@ void LayerContextImplTest::ResetTestState() {
 
 mojom::LayerTreeUpdatePtr LayerContextImplTest::CreateDefaultUpdate() {
   auto update = mojom::LayerTreeUpdate::New();
+  update->next_frame_token = 1;
 
   if (first_update_) {
     AddFirstTimeDefaultProperties(update.get());
