@@ -698,14 +698,7 @@ void TestHandProfiles(WebXrVrBrowserTestBase* t, bool joint_support) {
                          unexpected_string + "')");
 }
 
-class WebXrVrOpenXrHandBrowserTest : public WebXrVrOpenXrBrowserTest {
- public:
-  WebXrVrOpenXrHandBrowserTest() {
-    enable_features_.push_back(device::features::kWebXrHandInput);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrHandBrowserTest, TestProfilesHandJoint) {
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestProfilesHandJoint) {
   TestHandProfiles(this, true);
 }
 

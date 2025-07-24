@@ -131,7 +131,6 @@ WebXrVrRuntimelessBrowserTestSensorless::
 WebXrVrOpenXrBrowserTestBase::WebXrVrOpenXrBrowserTestBase() {
   forced_runtime_ = switches::kWebXrRuntimeOpenXr;
   enable_features_.push_back(device::features::kOpenXR);
-  enable_features_.push_back(device::features::kWebXrHandInput);
 }
 
 WebXrVrOpenXrBrowserTestBase::~WebXrVrOpenXrBrowserTestBase() = default;

@@ -13,11 +13,6 @@
 #endif
 
 namespace device::features {
-// Enables access to articulated hand tracking sensor input.
-BASE_FEATURE(kWebXrHandInput,
-             "WebXRHandInput",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables rendering to WebXR sessions with the WebGPU API.
 BASE_FEATURE(kWebXrWebGpuBinding,
              "WebXRWebGPUBinding",
@@ -139,7 +134,7 @@ bool IsXrDevice() {
 
 bool IsHandTrackingEnabled() {
 #if BUILDFLAG(ENABLE_OPENXR)
-  return IsOpenXrEnabled() && base::FeatureList::IsEnabled(kWebXrHandInput);
+  return IsOpenXrEnabled();
 #else
   return false;
 #endif

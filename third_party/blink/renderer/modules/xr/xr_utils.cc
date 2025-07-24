@@ -269,14 +269,13 @@ bool IsFeatureEnabledForContext(device::mojom::XRSessionFeature feature,
       return RuntimeEnabledFeatures::WebXRPlaneDetectionEnabled(context);
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
       return RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context);
-    case device::mojom::XRSessionFeature::HAND_INPUT:
-      return RuntimeEnabledFeatures::WebXRHandInputEnabled(context);
     case device::mojom::XRSessionFeature::LAYERS:
       return RuntimeEnabledFeatures::WebXRLayersEnabled(context);
     case device::mojom::XRSessionFeature::WEBGPU:
       return RuntimeEnabledFeatures::WebXRGPUBindingEnabled(context);
     case device::mojom::XRSessionFeature::FRONT_FACING:
       return RuntimeEnabledFeatures::WebXRFrontFacingEnabled(context);
+    case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::HIT_TEST:
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::ANCHORS:

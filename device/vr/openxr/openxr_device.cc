@@ -31,6 +31,7 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
                           mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
                           mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
                           mojom::XRSessionFeature::ANCHORS,
+                          mojom::XRSessionFeature::HAND_INPUT,
                           mojom::XRSessionFeature::SECONDARY_VIEWS}};
 
   return *kSupportedFeatures;
@@ -72,11 +73,6 @@ OpenXrDevice::OpenXrDevice(
   device::mojom::XRDeviceData device_data = platform_helper_->GetXRDeviceData();
 
   device_data.supported_features = GetSupportedFeatures();
-
-  // Only support hand input if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrHandInput))
-    device_data.supported_features.emplace_back(
-        mojom::XRSessionFeature::HAND_INPUT);
 
   // Only support layers if the feature flag is enabled.
   if (base::FeatureList::IsEnabled(features::kWebXrLayers)) {

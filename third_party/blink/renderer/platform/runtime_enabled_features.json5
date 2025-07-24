@@ -5701,13 +5701,6 @@
       base_feature: "none",
     },
     {
-      name: "WebXRHandInput",
-      depends_on: ["WebXR"],
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "WebXRHitTestEntityTypes",
       depends_on: ["WebXR"],
       status: "experimental",
