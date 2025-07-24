@@ -3561,7 +3561,7 @@ enum WebFeature {
   kDeviceOrientationUsedWithoutPermissionRequest = 4290,
   kDeviceMotionPermissionRequested = 4291,
   kDeviceMotionUsedWithoutPermissionRequest = 4292,
-  kPrivateNetworkAccessPermissionPrompt = 4293,
+  kOBSOLETE_PrivateNetworkAccessPermissionPrompt = 4293,
   kPseudoBeforeAfterForDateTimeInputElement = 4294,
   kOBSOLETE_kV8PendingBeacon_IsPending_AttributeGetter = 4295,
   kParentOfDisabledFormControlRespondsToMouseEvents = 4296,

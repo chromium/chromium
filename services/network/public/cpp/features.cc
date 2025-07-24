@@ -208,12 +208,6 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
              "PrivateNetworkAccessPreflightShortTimeout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When kPrivateNetworkAccessPermissionPrompt is enabled, public secure websites
-// are allowed to access private insecure subresources with user's permission.
-BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
-             "PrivateNetworkAccessPermissionPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Local Network Access checks.
 // Blocks local network requests without user permission to prevent exploitation
 // of vulnerable local devices.

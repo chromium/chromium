@@ -1,7 +1,7 @@
 monorail: {
   component: "Blink>SecurityFeature>CORS>PrivateNetworkAccess"
 }
-team_email: "chrome-security-owp@chromium.org"
+team_email: "chrome-secure-web-and-net@chromium.org"
 buganizer_public: {
   component_id: 1456363
 }

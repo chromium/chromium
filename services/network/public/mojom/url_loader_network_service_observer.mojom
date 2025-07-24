@@ -131,23 +131,6 @@ interface URLLoaderNetworkServiceObserver {
       HttpResponseHeaders? head_headers,
       pending_remote<AuthChallengeResponder> auth_challenge_responder);
 
-  // Asks the URL loader observer if the caller has permission to access a
-  // device on the private network.
-  //
-  // `url` is the request's URL.
-  // `ip_address` is the remote IP address from which headers were fetched.
-  // `private_network_device_id` and `private_network_device_name` are the
-  // values of the `Private-Network-Access-ID` and `Private-Network-Access-Name`
-  // headers.
-  //
-  // `permission_granted` is a bool specifying whether the user granted private
-  // network access permission.
-  OnPrivateNetworkAccessPermissionRequired(
-      url.mojom.Url url,
-      network.mojom.IPAddress ip_address,
-      string? private_network_device_id,
-      string? private_network_device_name) => (bool permission_granted);
-
   // Asks the URL loader observer if the caller has permission to connect to
   // devices on the local network.
   //

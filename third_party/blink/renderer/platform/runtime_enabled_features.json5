@@ -3728,14 +3728,6 @@
       base_feature: "none",
     },
     {
-      name: "PrivateNetworkAccessPermissionPrompt",
-      origin_trial_feature_name: "PrivateNetworkAccessPermissionPrompt",
-      origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
-      status: "stable",
-      public: true,
-      base_feature: "none",
-    },
-    {
       name: "PrivateStateTokens",
       status: "stable",
       base_feature: "none",

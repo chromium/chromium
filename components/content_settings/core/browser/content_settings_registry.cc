@@ -629,15 +629,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
-  Register(ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-guard",
-           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
-
   const auto auto_dark_web_content_setting =
 #if BUILDFLAG(IS_ANDROID)
       content_settings::kDarkenWebsitesCheckboxOptOut.Get()

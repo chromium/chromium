@@ -991,29 +991,6 @@ void CorsURLLoader::StartRequest() {
 
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> remote_observer;
 
-  if (needs_preflight.has_value() &&
-      *needs_preflight == PreflightRequiredReason::kPrivateNetworkAccess) {
-    // TODO(crbug.com/40229602): Create a base function and clean up all
-    // need_pna_permission check in the code base.
-    const mojom::ClientSecurityState* state = GetClientSecurityState();
-    const bool needs_pna_permission =
-        state && PrivateNetworkAccessChecker::NeedPermission(
-                     request_.url, state->is_web_secure_context,
-                     request_.required_ip_address_space);
-    if (needs_pna_permission &&
-        url_loader_network_service_observer_->is_bound()) {
-      // Fail the request if `targetAddressSpace` on fetch option is not the
-      // same as the real target address space.
-      if (request_.required_ip_address_space !=
-          request_.target_ip_address_space) {
-        HandleComplete(URLLoaderCompletionStatus(
-            CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess)));
-        return;
-      }
-      (*url_loader_network_service_observer_)
-          ->Clone(remote_observer.InitWithNewPipeAndPassReceiver());
-    }
-  }
   context_->cors_preflight_controller()->PerformPreflightCheck(
       base::BindOnce(&CorsURLLoader::OnPreflightRequestComplete,
                      weak_factory_.GetWeakPtr()),
@@ -1400,12 +1377,6 @@ bool CorsURLLoader::ShouldIgnorePrivateNetworkAccessErrors(
     mojom::IPAddressSpace target_address_space) const {
   const mojom::ClientSecurityState* state = GetClientSecurityState();
   if (!state) {
-    return false;
-  }
-  // When the PNA permission prompt shown, we should always respect the
-  // preflight results, otherwise it would be a bypass of mixed content checker.
-  if (PrivateNetworkAccessChecker::NeedPermission(
-          request_.url, state->is_web_secure_context, target_address_space)) {
     return false;
   }
   return state->private_network_request_policy ==

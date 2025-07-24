@@ -2553,8 +2553,8 @@ Called by update_net_error_codes.py.-->
   <int value="86" label="Notification interactions"/>
   <int value="87" label="Reduce accept language"/>
   <int value="88" label="Notification permission review"/>
-  <int value="89" label="Private network guard"/>
-  <int value="90" label="Private network chooser data"/>
+  <int value="89" label="(Obsolete) Private network guard"/>
+  <int value="90" label="(Obsolete) Private network chooser data"/>
   <int value="91"
       label="Federated identity identity-provider-sign-in-status API"/>
   <int value="92" label="Unused site permissions"/>

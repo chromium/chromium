@@ -126,7 +126,6 @@ enum class Channel;
 
 class ChromeDirectSocketsDelegate;
 class ChromeHidDelegate;
-class ChromePrivateNetworkDeviceDelegate;
 class ChromeSerialDelegate;
 class ChromeBluetoothDelegate;
 class ChromeUsbDelegate;
@@ -762,8 +761,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   content::BluetoothDelegate* GetBluetoothDelegate() override;
   content::UsbDelegate* GetUsbDelegate() override;
   content::SerialDelegate* GetSerialDelegate() override;
-  content::PrivateNetworkDeviceDelegate* GetPrivateNetworkDeviceDelegate()
-      override;
   bool IsSecurityLevelAcceptableForWebAuthn(
       content::RenderFrameHost* rfh,
       const url::Origin& caller_origin) override;
@@ -1358,8 +1355,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<ChromeBluetoothDelegate> bluetooth_delegate_;
   std::unique_ptr<ChromeUsbDelegate> usb_delegate_;
   std::unique_ptr<ChromeSerialDelegate> serial_delegate_;
-  std::unique_ptr<ChromePrivateNetworkDeviceDelegate>
-      private_network_device_delegate_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<content::SmartCardDelegate> smart_card_delegate_;

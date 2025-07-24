@@ -839,18 +839,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       return false;
     }
 
-    if (client_security_state_ &&
-        PrivateNetworkAccessChecker::NeedPermission(
-            request.url, client_security_state_->is_web_secure_context,
-            request.required_ip_address_space)) {
-      if (request.required_ip_address_space == mojom::IPAddressSpace::kPublic) {
-        mojo::ReportBadMessage(
-            "CorsURLLoaderFactory: required_ip_address_space "
-            "is set to public.");
-        return false;
-      }
-    } else if (request.target_ip_address_space !=
-               mojom::IPAddressSpace::kUnknown) {
+    if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: target_ip_address_space is "
           "set.");

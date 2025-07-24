@@ -347,7 +347,6 @@ source_set("browser_sources") {
     "privacy_sandbox_invoking_api.h",
     "private_aggregation_data_model.cc",
     "private_aggregation_data_model.h",
-    "private_network_device_delegate.h",
     "process_allocation_context.cc",
     "process_allocation_context.h",
     "process_visibility_util.h",

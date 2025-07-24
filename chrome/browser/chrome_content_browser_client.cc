@@ -130,7 +130,6 @@
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
-#include "chrome/browser/private_network_access/chrome_private_network_device_delegate.h"
 #include "chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -6623,15 +6622,6 @@ content::SerialDelegate* ChromeContentBrowserClient::GetSerialDelegate() {
     serial_delegate_ = std::make_unique<ChromeSerialDelegate>();
   }
   return serial_delegate_.get();
-}
-
-content::PrivateNetworkDeviceDelegate*
-ChromeContentBrowserClient::GetPrivateNetworkDeviceDelegate() {
-  if (!private_network_device_delegate_) {
-    private_network_device_delegate_ =
-        std::make_unique<ChromePrivateNetworkDeviceDelegate>();
-  }
-  return private_network_device_delegate_.get();
 }
 
 bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(

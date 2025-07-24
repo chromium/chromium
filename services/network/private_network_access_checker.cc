@@ -204,9 +204,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
   //
   // TODO(crbug.com/395895368): consider collapsing the address spaces for LNA
   // checks.
-  if ((base::FeatureList::IsEnabled(
-           features::kPrivateNetworkAccessPermissionPrompt) ||
-       base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) &&
+  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks) &&
       required_address_space_ != mojom::IPAddressSpace::kUnknown &&
       resource_address_space != required_address_space_) {
     return Result::kBlockedByTargetIpAddressSpace;
@@ -254,17 +252,6 @@ void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
   is_potentially_trustworthy_same_origin_ =
       IsUrlPotentiallyTrustworthy(url) && request_initiator_.has_value() &&
       request_initiator_.value().IsSameOriginWith(url);
-}
-
-bool PrivateNetworkAccessChecker::NeedPermission(
-    const GURL& url,
-    bool is_web_secure_context,
-    mojom::IPAddressSpace target_address_space) {
-  return base::FeatureList::IsEnabled(
-             network::features::kPrivateNetworkAccessPermissionPrompt) &&
-         is_web_secure_context && !network::IsUrlPotentiallyTrustworthy(url) &&
-         (target_address_space == mojom::IPAddressSpace::kLoopback ||
-          target_address_space == mojom::IPAddressSpace::kLocal);
 }
 
 }  // namespace network

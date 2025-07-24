@@ -2389,36 +2389,6 @@ TEST_F(CorsURLLoaderTest, NonBrowserNavigationRedirect) {
                           "should not call FollowRedirect"));
 }
 
-TEST_F(CorsURLLoaderTest, PrivateNetworkAccessTargetAddressSpaceCheck) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kPrivateNetworkAccessPermissionPrompt);
-
-  auto initiator = url::Origin::Create(GURL("https://foo.example"));
-  ResetFactoryParams factory_params;
-  factory_params.is_trusted = true;
-  factory_params.client_security_state = mojom::ClientSecurityState::New();
-  factory_params.client_security_state->is_web_secure_context = true;
-  ResetFactory(initiator, mojom::kBrowserProcessId, factory_params);
-
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kCors;
-  request.required_ip_address_space = mojom::IPAddressSpace::kLocal;
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
-  request.url = GURL("http://foo.example/");
-  request.request_initiator = initiator;
-  request.trusted_params = ResourceRequest::TrustedParams();
-  request.trusted_params->client_security_state =
-      mojom::ClientSecurityState::New();
-  request.trusted_params->client_security_state->is_web_secure_context = true;
-
-  BadMessageTestHelper bad_message_helper;
-  CreateLoaderAndStart(request);
-  RunUntilCreateLoaderAndStartCalled();
-
-  EXPECT_EQ(client().completion_status().error_code, net::OK);
-}
-
 class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
  public:
   StorageAccessHeadersCorsURLLoaderTest() : CorsURLLoaderTest() {

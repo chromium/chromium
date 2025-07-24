@@ -254,7 +254,6 @@ class NavigationUIData;
 class PrefetchServiceDelegate;
 class PrerenderWebContentsDelegate;
 class PresentationObserver;
-class PrivateNetworkDeviceDelegate;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
@@ -2359,10 +2358,6 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to provide an implementation of the WebUSB API.
   virtual UsbDelegate* GetUsbDelegate();
-
-  // Allows the embedder to provide an implementation of the Private Network
-  // Device API.
-  virtual PrivateNetworkDeviceDelegate* GetPrivateNetworkDeviceDelegate();
 
   // Allows the embedder to provide an implementation of the Local Font Access
   // API.

@@ -556,76 +556,7 @@ class PreflightController::PreflightLoader final {
       detected_error_status = std::move(check_error_status);
     }
 
-    // Check if we need user permission to access the private network. This
-    // only happens if we skipped the mixed content check before sending the
-    // preflight.
-    const bool needs_permission =
-        client_security_state_ &&
-        PrivateNetworkAccessChecker::NeedPermission(
-            original_request_.url,
-            client_security_state_->is_web_secure_context,
-            original_request_.required_ip_address_space);
-
-    if (!needs_permission) {
-      FinishHandleResponseHeader(net_error, std::move(detected_error_status),
-                                 std::move(result));
-      return;
-    }
-
-    // Check if it is valid to show the permission prompt, which means:
-    // * The target IP address space shouldn't be unknown or public.
-    // * The preflight response contains `Private-Network-Access-Id` and
-    // `Private-Network-Access-Name` headers to claim its identity.
-    // * Able to access permission in the browser process from
-    // URLLoaderNetworkService.
-    std::optional<std::string> id =
-        GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceId);
-    std::optional<std::string> name =
-        GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceName);
-
-    // TODO(crbug.com/40272755): `target_ip_address_space` should be
-    // checked in `CorsURLLoaderFactory`. Remove the following bit after that.
-    if (!url_loader_network_service_observer_ ||
-        original_request_.target_ip_address_space ==
-            mojom::IPAddressSpace::kUnknown ||
-        original_request_.target_ip_address_space ==
-            mojom::IPAddressSpace::kPublic) {
-      FinishHandleResponseHeader(
-          net::ERR_FAILED,
-          CorsErrorStatus(
-              mojom::CorsError::kPrivateNetworkAccessPermissionUnavailable),
-          std::move(result));
-      return;
-    }
-
-    // Ask for private network access permission.
-    // base::Unretained() is safe because once HandleResponseHeader is called,
-    // PreflightController will at least keep alive until completion being
-    // called as a result of HandlePrivateNetworkAccessPermissionResult being
-    // called.
-    (*url_loader_network_service_observer_)
-        .OnPrivateNetworkAccessPermissionRequired(
-            std::move(original_request_.url),
-            std::move(head.remote_endpoint.address()), id, name,
-            base::BindOnce(
-                &PreflightLoader::HandlePrivateNetworkAccessPermissionResult,
-                base::Unretained(this), net_error,
-                std::move(detected_error_status), std::move(result)));
-    permission_state_ = PermissionState::kRequested;
-  }
-
-  void HandlePrivateNetworkAccessPermissionResult(
-      net::Error net_error,
-      std::optional<CorsErrorStatus> detected_error_status,
-      std::unique_ptr<PreflightResult> result,
-      bool permission_granted) {
-    if (!permission_granted) {
-      net_error = net::ERR_FAILED;
-      detected_error_status = CorsErrorStatus(
-          mojom::CorsError::kPrivateNetworkAccessPermissionDenied);
-    }
-    FinishHandleResponseHeader(std::move(net_error),
-                               std::move(detected_error_status),
+    FinishHandleResponseHeader(net_error, std::move(detected_error_status),
                                std::move(result));
   }
 

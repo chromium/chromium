@@ -109,8 +109,6 @@ export const contentSettingGroups:
           ContentSettingsType.DIRECT_SOCKETS,
           ContentSettingsType.DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
           ContentSettingsType.LOCAL_NETWORK_ACCESS,
-          ContentSettingsType.PRIVATE_NETWORK_CHOOSER_DATA,
-          ContentSettingsType.PRIVATE_NETWORK_GUARD,
           ContentSettingsType.PROTOCOL_HANDLERS,
         ],
       },

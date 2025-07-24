@@ -183,6 +183,8 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
 TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   static const char kNfcPrefPath[] =
       "profile.default_content_setting_values.nfc";
+  static const char kObsoletePrivateNetworkGuardDefaultPref[] =
+      "profile.default_content_setting_values.private_network_guard";
 #if !BUILDFLAG(IS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.default_content_setting_values.mouselock";
@@ -209,6 +211,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
                     CONTENT_SETTING_ALLOW);
 #endif
   prefs->SetInteger(kGeolocationPrefPath, CONTENT_SETTING_BLOCK);
+  prefs->SetInteger(kObsoletePrivateNetworkGuardDefaultPref,
+                    CONTENT_SETTING_BLOCK);
 
   // Instantiate a new DefaultProvider; can't use |provider_| because we want to
   // test the constructor's behavior after setting the above.
@@ -216,6 +220,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
 
   // Check that obsolete prefs have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoletePrivateNetworkGuardDefaultPref));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));

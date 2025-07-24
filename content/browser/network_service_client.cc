@@ -300,15 +300,6 @@ void NetworkServiceClient::OnAuthRequired(
   auth_challenge_responder_remote->OnAuthCredentials(std::nullopt);
 }
 
-void NetworkServiceClient::OnPrivateNetworkAccessPermissionRequired(
-    const GURL& url,
-    const net::IPAddress& ip_address,
-    const std::optional<std::string>& private_network_device_id,
-    const std::optional<std::string>& private_network_device_name,
-    OnPrivateNetworkAccessPermissionRequiredCallback callback) {
-  std::move(callback).Run(false);
-}
-
 void NetworkServiceClient::OnLocalNetworkAccessPermissionRequired(
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(false);

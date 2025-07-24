@@ -65,6 +65,9 @@ const char kObsoletePpapiBrokerDefaultPref[] =
 constexpr char kObsoleteFederatedIdentityDefaultPref[] =
     "profile.default_content_setting_values.fedcm_active_session";
 
+constexpr char kObsoletePrivateNetworkGuardDefaultPref[] =
+    "profile.default_content_setting_values.private_network_guard";
+
 #if !BUILDFLAG(IS_IOS)
 // This setting was accidentally bound to a UI surface intended for a different
 // setting (https://crbug.com/364820109). It should not have been settable
@@ -132,6 +135,7 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteFederatedIdentityDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoletePrivateNetworkGuardDefaultPref, 0);
 
 #if !BUILDFLAG(IS_IOS)
   // TODO(https://crbug.com/367181093): clean this up.
@@ -389,6 +393,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteFederatedIdentityDefaultPref);
+  prefs_->ClearPref(kObsoletePrivateNetworkGuardDefaultPref);
 
 #if !BUILDFLAG(IS_IOS)
   // TODO(https://crbug.com/367181093): clean this up.

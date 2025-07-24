@@ -156,9 +156,6 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
      "file-system-access-handles-data"},
     {ContentSettingsType::FEDERATED_IDENTITY_API, "federated-identity-api"},
-    {ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-devices"},
-    {ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
-     "private-network-devices-data"},
     {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
     {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
@@ -635,11 +632,6 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     if (base::FeatureList::IsEnabled(
             subresource_filter::kSafeBrowsingSubresourceFilter)) {
       base_types->push_back(ContentSettingsType::ADS);
-    }
-
-    if (base::FeatureList::IsEnabled(
-            network::features::kPrivateNetworkAccessPermissionPrompt)) {
-      base_types->push_back(ContentSettingsType::PRIVATE_NETWORK_GUARD);
     }
 
     if (base::FeatureList::IsEnabled(

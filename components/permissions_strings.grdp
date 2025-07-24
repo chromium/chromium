@@ -306,13 +306,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Finding USB devices...
   </message>
 
-  <message name="IDS_PRIVATE_NETWORK_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="Text on a popup permission prompt asking the user whether they want to allow the site to access a private network device.">
-    <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to access a device on your network:
-  </message>
-  <message name="IDS_PRIVATE_NETWORK_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT" desc="Label on the button that closes the private network chooser popup and connects the selected device.">
-    Connect
-  </message>
-
   <if expr="not is_android">
     <message name="IDS_GEOLOCATION_PERMISSION_CHIP" desc="Button text representing a request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">
       Use your location?
