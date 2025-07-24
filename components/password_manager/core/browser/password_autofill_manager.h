@@ -89,17 +89,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // Removes the credentials previously saved via OnAddPasswordFormMapping.
   void DeleteFillData();
 
-  // Handles a request from the renderer to show a popup with the suggestions
-  // from the password manager.
-  void OnShowPasswordSuggestions(
-      autofill::FieldRendererId element_id,
-      autofill::AutofillSuggestionTriggerSource trigger_source,
-      base::i18n::TextDirection text_direction,
-      const std::u16string& typed_username,
-      ShowWebAuthnCredentials show_webauthn_credentials,
-      ShowIdentityCredentials show_identity_credentials,
-      const gfx::RectF& bounds);
-
   // If there are relevant credentials for the current frame show them and
   // return true. Otherwise, return false.
   // This is currently used for cases in which the automatic generation
@@ -221,14 +210,21 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // Hides the popup.
   void HidePopup();
 
-  // Completion of `OnShowPasswordSuggestions`, which can sometimes be deferred.
-  void ContinueShowingPasswordSuggestions(
-      autofill::FieldRendererId element_id,
-      base::i18n::TextDirection text_direction,
-      const std::u16string& typed_username,
-      ShowWebAuthnCredentials show_webauthn_credentials,
-      ShowIdentityCredentials show_identity_credentials,
-      const gfx::RectF& bounds);
+  // Finishes `ShowSuggestions`, which can be deferred by `WaitForPasskeys`.
+  void ContinueShowingSuggestions(const autofill::TriggeringField& field);
+
+  // Returns true if `WaitForPasskeys` should attempt to fetch passkeys before
+  // continue showing suggestions with `ContinueShowingSuggestions`.
+  bool ShouldWaitForPasskeys(const autofill::TriggeringField& field);
+
+  // Requests Passkeys and starts a timer. If the timer runs out before passkeys
+  // are available, `ContinueShowingSuggestions` displays suggestions. If there
+  // are passkeys available in time, continues with `OnPasskeysReady`.
+  void WaitForPasskeys(const autofill::TriggeringField& field);
+
+  // Called when passkeys become available. If the `wait_for_passkeys_timer_`
+  // has not run out yet, it will invoke `ContinueShowingSuggestions`.
+  void OnPasskeysReady(const autofill::TriggeringField& field);
 
   std::vector<autofill::Suggestion> GetSuggestions(
       const std::u16string& username_filter,
@@ -236,6 +232,10 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       ShowPasswordSuggestions show_password_suggestions,
       ShowWebAuthnCredentials show_webauthn_credentials,
       ShowIdentityCredentials show_identity_credentials);
+
+  // Returns the bounds from the provided field and transforms them if it hasn't
+  // already happened in the driver.
+  gfx::RectF GetBounds(const autofill::TriggeringField& field);
 
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 

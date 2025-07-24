@@ -24,7 +24,7 @@ activityDiagram {
 skinparam ConditionEndStyle hline
 </style>
 
-:Some text field interaction<
+:Some text field interaction; <<input>>
 -> via RenderFrameObserver;
 #CFC:AutofillAgent;
 -> AskForValuesToFill;
@@ -43,18 +43,18 @@ split
       else (yes)
         if (has Passkeys?) then (yes)
           #CCF:CredManController;
-          :Defer to CredMan>
+          :Defer to CredMan; <<output>>
           stop
         else (no)
           #CCF:TouchToFillController;
-          :Show BottomSheet>
+          :Show BottomSheet; <<output>>
           stop
         endif
       endif
     else (no)
     endif
   endif
-  -> OnShowPasswordSuggestions;
+  -> ShowSuggestions;
   #CFC:PasswordAutofillManager;
   fork
     -> needs fallback;
@@ -75,13 +75,13 @@ end split
 if (is Android?) then (yes)
   #CCF:AndroidAutofillClient;
   if (uses 3P?) then (yes)
-    :Defer to AutofillService>
+    :Defer to AutofillService; <<output>>
   else (no)
-    :Show Keyboard Accessory>
+    :Show Keyboard Accessory; <<output>>
   endif
 else (no)
   #CCF:ChromeAutofillClient;
-  :Show Popup UI>
+  :Show Popup UI; <<output>>
 endif
 
 stop

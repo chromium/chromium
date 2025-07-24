@@ -148,22 +148,6 @@ PasswordAutofillManager::~PasswordAutofillManager() {
   manual_fallback_metrics_recorder_.reset();
 }
 
-void PasswordAutofillManager::ShowSuggestions(
-    const autofill::TriggeringField& triggering_field) {
-  gfx::RectF bounds =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAndPasswordsInSameSurface)
-          ? triggering_field
-                .bounds  // Already transformed in ContentAutofillDriver.
-          : password_manager_driver_->TransformToRootCoordinates(
-                triggering_field.bounds);
-  OnShowPasswordSuggestions(
-      triggering_field.element_id, triggering_field.trigger_source,
-      triggering_field.text_direction, triggering_field.typed_username,
-      ShowWebAuthnCredentials(triggering_field.show_webauthn_credentials),
-      ShowIdentityCredentials(true), bounds);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void PasswordAutofillManager::ShowKeyboardReplacingSurface(
     const autofill::PasswordSuggestionRequest& request) {
@@ -423,15 +407,9 @@ void PasswordAutofillManager::DeleteFillData() {
   CancelBiometricReauthIfOngoing();
 }
 
-void PasswordAutofillManager::OnShowPasswordSuggestions(
-    autofill::FieldRendererId element_id,
-    autofill::AutofillSuggestionTriggerSource trigger_source,
-    base::i18n::TextDirection text_direction,
-    const std::u16string& typed_username,
-    ShowWebAuthnCredentials show_webauthn_credentials,
-    ShowIdentityCredentials show_identity_credentials,
-    const gfx::RectF& bounds) {
-  if (autofill::IsAutofillManuallyTriggered(trigger_source)) {
+void PasswordAutofillManager::ShowSuggestions(
+    const autofill::TriggeringField& field) {
+  if (autofill::IsAutofillManuallyTriggered(field.trigger_source)) {
     if (!manual_fallback_flow_) {
       manual_fallback_flow_ = std::make_unique<PasswordManualFallbackFlow>(
           password_manager_driver_, autofill_client_, password_client_,
@@ -442,89 +420,84 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
               password_client_->GetProfilePasswordStore(),
               password_client_->GetAccountPasswordStore()));
     }
-    manual_fallback_flow_->RunFlow(element_id, bounds, text_direction);
+    manual_fallback_flow_->RunFlow(field.element_id, GetBounds(field),
+                                   field.text_direction);
     return;
   }
 
-  if (trigger_source == autofill::AutofillSuggestionTriggerSource::
-                            kPasswordManagerProcessedFocusedField &&
-      base::FeatureList::IsEnabled(
-          features::kDelaySuggestionsOnAutofocusWaitingForPasskeys) &&
-      show_webauthn_credentials.value()) {
-    if (WebAuthnCredentialsDelegate* delegate =
-            password_client_->GetWebAuthnCredentialsDelegateForDriver(
-                password_manager_driver_)) {
-      auto maybe_passkeys = delegate->GetPasskeys();
-      if (!maybe_passkeys.has_value() &&
-          maybe_passkeys.error() ==
-              WebAuthnCredentialsDelegate::PasskeysUnavailableReason::
-                  kNotReceived) {
-        if (!wait_for_passkeys_timer_.IsRunning()) {
-          base::OnceClosure continue_callback = base::BindOnce(
-              &PasswordAutofillManager::ContinueShowingPasswordSuggestions,
-              GetWeakPtr(), element_id, text_direction, typed_username,
-              show_webauthn_credentials, show_identity_credentials, bounds);
-          wait_for_passkeys_timer_.Start(
-              FROM_HERE,
-              base::Milliseconds(
-                  features::kDelaySuggestionsOnAutofocusTimeout.Get()),
-              std::move(continue_callback));
-
-          // If passkeys become available before the timer expires, this closure
-          // runs. It is similar to `continue_callback` but it has to check that
-          // the timer is still running, and cancel it if so.
-          base::OnceClosure passkeys_available_callback = base::BindOnce(
-              [](base::WeakPtr<PasswordAutofillManager> manager,
-                 autofill::FieldRendererId element_id,
-                 base::i18n::TextDirection text_direction,
-                 std::u16string typed_username,
-                 ShowWebAuthnCredentials show_webauthn_credentials,
-                 ShowIdentityCredentials show_identity_credentials,
-                 gfx::RectF bounds) {
-                if (!manager) {
-                  return;
-                }
-                if (manager->wait_for_passkeys_timer_.IsRunning()) {
-                  manager->wait_for_passkeys_timer_.Stop();
-                  manager->ContinueShowingPasswordSuggestions(
-                      element_id, text_direction, typed_username,
-                      show_webauthn_credentials, show_identity_credentials,
-                      bounds);
-                }
-              },
-              GetWeakPtr(), element_id, text_direction, typed_username,
-              show_webauthn_credentials, show_identity_credentials, bounds);
-          delegate->RequestNotificationWhenPasskeysReady(
-              std::move(passkeys_available_callback));
-        }
-        return;
-      }
-    }
+  if (ShouldWaitForPasskeys(field)) {
+    WaitForPasskeys(field);
+  } else {
+    wait_for_passkeys_timer_.Stop();
+    ContinueShowingSuggestions(field);
   }
-
-  wait_for_passkeys_timer_.Stop();
-
-  ContinueShowingPasswordSuggestions(element_id, text_direction, typed_username,
-                                     show_webauthn_credentials,
-                                     show_identity_credentials, bounds);
 }
 
-void PasswordAutofillManager::ContinueShowingPasswordSuggestions(
-    autofill::FieldRendererId element_id,
-    base::i18n::TextDirection text_direction,
-    const std::u16string& typed_username,
-    ShowWebAuthnCredentials show_webauthn_credentials,
-    ShowIdentityCredentials show_identity_credentials,
-    const gfx::RectF& bounds) {
+bool PasswordAutofillManager::ShouldWaitForPasskeys(
+    const autofill::TriggeringField& field) {
+  WebAuthnCredentialsDelegate* delegate =
+      password_client_->GetWebAuthnCredentialsDelegateForDriver(
+          password_manager_driver_);
+  if (field.trigger_source != autofill::AutofillSuggestionTriggerSource::
+                                  kPasswordManagerProcessedFocusedField ||
+      !base::FeatureList::IsEnabled(
+          features::kDelaySuggestionsOnAutofocusWaitingForPasskeys) ||
+      !field.show_webauthn_credentials || !delegate) {
+    return false;  // Delayed passkeys can't be used.
+  }
+
+  // Finally, only fetch if Passkeys fetching didn't succeed or fail before.
+  auto expected_passkeys = delegate->GetPasskeys();
+  return !expected_passkeys.has_value() &&
+         expected_passkeys.error() ==
+             WebAuthnCredentialsDelegate::PasskeysUnavailableReason::
+                 kNotReceived;
+}
+
+void PasswordAutofillManager::WaitForPasskeys(
+    const autofill::TriggeringField& field) {
+  WebAuthnCredentialsDelegate* delegate =
+      password_client_->GetWebAuthnCredentialsDelegateForDriver(
+          password_manager_driver_);
+  CHECK(ShouldWaitForPasskeys(field));
+  // Wait only if the timer isn't already running.
+  if (wait_for_passkeys_timer_.IsRunning()) {
+    return;  // Already waiting.
+  }
+
+  base::OnceClosure continue_callback =
+      base::BindOnce(&PasswordAutofillManager::ContinueShowingSuggestions,
+                     GetWeakPtr(), field);
+  wait_for_passkeys_timer_.Start(
+      FROM_HERE,
+      base::Milliseconds(features::kDelaySuggestionsOnAutofocusTimeout.Get()),
+      std::move(continue_callback));
+
+  delegate->RequestNotificationWhenPasskeysReady(base::BindOnce(
+      &PasswordAutofillManager::OnPasskeysReady, GetWeakPtr(), field));
+}
+
+void PasswordAutofillManager::OnPasskeysReady(
+    const autofill::TriggeringField& field) {
+  if (!wait_for_passkeys_timer_.IsRunning()) {
+    return;  // Request for passkeys not relevant anymore. Ignore the signal.
+  }
+  wait_for_passkeys_timer_.Stop();
+  ContinueShowingSuggestions(field);
+}
+
+void PasswordAutofillManager::ContinueShowingSuggestions(
+    const autofill::TriggeringField& field) {
   bool autofill_available = ShowPopup(
-      bounds, text_direction,
-      GetSuggestions(typed_username, OffersGeneration(false),
-                     ShowPasswordSuggestions(true), show_webauthn_credentials,
-                     show_identity_credentials),
-      show_webauthn_credentials.value());
+      GetBounds(field), field.text_direction,
+      GetSuggestions(field.typed_username, OffersGeneration(false),
+                     ShowPasswordSuggestions(true),
+                     ShowWebAuthnCredentials(field.show_webauthn_credentials),
+                     ShowIdentityCredentials(true)),
+      field.show_webauthn_credentials);
 
   password_manager_driver_->SetSuggestionAvailability(
-      element_id,
+      field.element_id,
       autofill_available
           ? autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable
           : autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);
@@ -824,6 +797,15 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::GetSuggestions(
       page_favicon_, username_filter, offers_generation,
       show_password_suggestions, show_webauthn_credentials,
       show_identity_credentials);
+}
+
+gfx::RectF PasswordAutofillManager::GetBounds(
+    const autofill::TriggeringField& field) {
+  return base::FeatureList::IsEnabled(
+             autofill::features::kAutofillAndPasswordsInSameSurface)
+             ? field.bounds  // Already transformed in ContentAutofillDriver.
+             : password_manager_driver_->TransformToRootCoordinates(
+                   field.bounds);
 }
 
 }  //  namespace password_manager
