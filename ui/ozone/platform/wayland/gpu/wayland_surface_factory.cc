@@ -282,19 +282,6 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
   return nullptr;
 }
 
-void WaylandSurfaceFactory::CreateNativePixmapAsync(
-    gfx::AcceleratedWidget widget,
-    gpu::VulkanDeviceQueue* device_queue,
-    gfx::Size size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    NativePixmapCallback callback) {
-  // CreateNativePixmap is non-blocking operation. Thus, it is safe to call it
-  // and return the result with the provided callback.
-  std::move(callback).Run(
-      CreateNativePixmap(widget, device_queue, size, format, usage));
-}
-
 scoped_refptr<gfx::NativePixmap>
 WaylandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::AcceleratedWidget widget,

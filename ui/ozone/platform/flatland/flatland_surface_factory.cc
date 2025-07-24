@@ -178,17 +178,6 @@ scoped_refptr<gfx::NativePixmap> FlatlandSurfaceFactory::CreateNativePixmap(
                                                             format, usage);
 }
 
-void FlatlandSurfaceFactory::CreateNativePixmapAsync(
-    gfx::AcceleratedWidget widget,
-    gpu::VulkanDeviceQueue* device_queue,
-    gfx::Size size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    NativePixmapCallback callback) {
-  std::move(callback).Run(
-      CreateNativePixmap(widget, device_queue, size, format, usage));
-}
-
 scoped_refptr<gfx::NativePixmap>
 FlatlandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::AcceleratedWidget widget,

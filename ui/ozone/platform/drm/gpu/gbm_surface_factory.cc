@@ -245,18 +245,6 @@ std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
   return supported_buffer_formats;
 }
 
-void OnNativePixmapCreated(GbmSurfaceFactory::NativePixmapCallback callback,
-                           base::WeakPtr<GbmSurfaceFactory> weak_ptr,
-                           std::unique_ptr<GbmBuffer> buffer,
-                           scoped_refptr<DrmFramebuffer> framebuffer) {
-  if (!weak_ptr || !buffer) {
-    std::move(callback).Run(nullptr);
-  } else {
-    std::move(callback).Run(base::MakeRefCounted<GbmPixmap>(
-        weak_ptr.get(), std::move(buffer), std::move(framebuffer)));
-  }
-}
-
 }  // namespace
 
 GbmSurfaceFactory::GbmSurfaceFactory(DrmThreadProxy* drm_thread_proxy)
@@ -412,19 +400,6 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
     return nullptr;
   return base::MakeRefCounted<GbmPixmap>(this, std::move(buffer),
                                          std::move(framebuffer));
-}
-
-void GbmSurfaceFactory::CreateNativePixmapAsync(
-    gfx::AcceleratedWidget widget,
-    gpu::VulkanDeviceQueue* device_queue,
-    gfx::Size size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    NativePixmapCallback callback) {
-  drm_thread_proxy_->CreateBufferAsync(
-      widget, size, format, usage, 0 /* flags */,
-      base::BindOnce(OnNativePixmapCreated, std::move(callback),
-                     weak_factory_.GetWeakPtr()));
 }
 
 scoped_refptr<gfx::NativePixmap>
