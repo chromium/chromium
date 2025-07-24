@@ -11,6 +11,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
@@ -160,6 +161,12 @@ export class ComposeboxElement extends I18nMixinLit
                 } else {
                   file = {...file, status: status};
                   this.files_.set(token, file);
+
+                  if (status === FileUploadStatus.kUploadSuccessful) {
+                    const announcer = getAnnouncerInstance();
+                    announcer.announce(
+                        this.i18n('composeboxFileUploadCompleteText'));
+                  }
                 }
                 this.files_ = new Map([...this.files_]);
               }
@@ -272,6 +279,9 @@ export class ComposeboxElement extends I18nMixinLit
           status: FileUploadStatus.kNotUploaded,
         };
         this.files_ = new Map([...this.files_.entries(), [token, attachment]]);
+
+        const announcer = getAnnouncerInstance();
+        announcer.announce(this.i18n('composeboxFileUploadStartedText'));
       }
     }
     // Clear the file input.
