@@ -1926,7 +1926,7 @@ const clampTests = [
 ];
 
 if (navigator.ml) {
-  clampTests.forEach((test) => {
+  clampTests.filter(isTargetTest).forEach((test) => {
     webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {

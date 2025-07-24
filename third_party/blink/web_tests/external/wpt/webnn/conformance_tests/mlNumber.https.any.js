@@ -268,7 +268,7 @@ const mlNumberTests = [
 ];
 
 if (navigator.ml) {
-  mlNumberTests.forEach((test) => {
+  mlNumberTests.filter(isTargetTest).forEach((test) => {
     webnn_conformance_test(
         buildAndExecuteGraph, getClampPrecisionTolerance, test);
   });
