@@ -17,6 +17,14 @@
 // Called when the sheet is dismissed.
 - (void)requestDismissalOfConsentDialog:(LensOverlayConsentPresenter*)presenter;
 
+// Called before consent view is shown.
+- (void)lensOverlayConsentPresenterWillShowConsent:
+    (LensOverlayConsentPresenter*)presented;
+
+// Called before consent view is dismissed.
+- (void)lensOverlayConsentPresenterWillDismissConsent:
+    (LensOverlayConsentPresenter*)presented;
+
 @end
 
 /// Object incapsulating bottom sheet presentation behavior for Lens Overlay

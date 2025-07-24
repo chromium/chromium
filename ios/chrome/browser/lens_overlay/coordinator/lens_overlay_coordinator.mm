@@ -84,6 +84,7 @@
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
 #import "url/gurl.h"
 
 namespace {
@@ -1076,6 +1077,20 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     (LensOverlayConsentPresenter*)presenter {
   [self destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
+}
+
+- (void)lensOverlayConsentPresenterWillShowConsent:
+    (LensOverlayConsentPresenter*)presented {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [_containerPresenter setContainerHidden:YES animated:NO];
+  }
+}
+
+- (void)lensOverlayConsentPresenterWillDismissConsent:
+    (LensOverlayConsentPresenter*)presented {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [_containerPresenter setContainerHidden:NO animated:YES];
+  }
 }
 
 #pragma mark - LensOverlayOverflowMenuDelegate
