@@ -48,57 +48,7 @@ void AssistantStateBase::RemoveObserver(AssistantStateObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AssistantStateBase::RegisterPrefChanges(PrefService* pref_service) {
-  pref_change_registrar_.reset();
-
-  if (!pref_service)
-    return;
-
-  // Register preference changes.
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service);
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantConsentStatus,
-      base::BindRepeating(&AssistantStateBase::UpdateConsentStatus,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantContextEnabled,
-      base::BindRepeating(&AssistantStateBase::UpdateContextEnabled,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantEnabled,
-      base::BindRepeating(&AssistantStateBase::UpdateSettingsEnabled,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantHotwordAlwaysOn,
-      base::BindRepeating(&AssistantStateBase::UpdateHotwordAlwaysOn,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantHotwordEnabled,
-      base::BindRepeating(&AssistantStateBase::UpdateHotwordEnabled,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantLaunchWithMicOpen,
-      base::BindRepeating(&AssistantStateBase::UpdateLaunchWithMicOpen,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantNotificationEnabled,
-      base::BindRepeating(&AssistantStateBase::UpdateNotificationEnabled,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      assistant::prefs::kAssistantOnboardingMode,
-      base::BindRepeating(&AssistantStateBase::UpdateOnboardingMode,
-                          base::Unretained(this)));
-
-  UpdateConsentStatus();
-  UpdateContextEnabled();
-  UpdateSettingsEnabled();
-  UpdateHotwordAlwaysOn();
-  UpdateHotwordEnabled();
-  UpdateLaunchWithMicOpen();
-  UpdateNotificationEnabled();
-  UpdateOnboardingMode();
-}
+void AssistantStateBase::RegisterPrefChanges(PrefService* pref_service) {}
 
 bool AssistantStateBase::IsScreenContextAllowed() const {
   return allowed_state() == assistant::AssistantAllowedState::ALLOWED &&

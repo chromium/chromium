@@ -9,8 +9,6 @@
 
 #include "base/component_export.h"
 
-class PrefRegistrySimple;
-
 namespace ash::assistant::prefs {
 
 // The status of the user's consent. The enum values cannot be changed because
@@ -67,10 +65,6 @@ COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantVoiceMatchEnabledDuringOobe[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantNumFailuresSinceLastServiceRun[];
-
-// Registers Assistant specific profile preferences for browser prefs.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Converts between onboarding mode enum and string representations.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)

@@ -62,27 +62,11 @@ const char kAssistantVoiceMatchEnabledDuringOobe[] =
 extern const char kAssistantNumFailuresSinceLastServiceRun[] =
     "ash.assistant.num_failures_since_last_service_run";
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kAssistantConsentStatus,
-                                ConsentStatus::kUnknown);
-  registry->RegisterBooleanPref(kAssistantContextEnabled, false);
-  registry->RegisterBooleanPref(kAssistantDisabledByPolicy, false);
-  registry->RegisterBooleanPref(kAssistantEnabled, false);
-  registry->RegisterBooleanPref(kAssistantHotwordAlwaysOn, false);
-  registry->RegisterBooleanPref(kAssistantHotwordEnabled, false);
-  registry->RegisterBooleanPref(kAssistantLaunchWithMicOpen, false);
-  registry->RegisterBooleanPref(kAssistantNotificationEnabled, true);
-  registry->RegisterBooleanPref(kAssistantVoiceMatchEnabledDuringOobe, true);
-  registry->RegisterStringPref(kAssistantOnboardingMode,
-                               kAssistantOnboardingModeDefault);
-  registry->RegisterIntegerPref(prefs::kAssistantNumFailuresSinceLastServiceRun,
-                                0);
-}
-
 AssistantOnboardingMode ToOnboardingMode(const std::string& onboarding_mode) {
   if (onboarding_mode == kAssistantOnboardingModeEducation)
     return AssistantOnboardingMode::kEducation;
-  if (onboarding_mode != kAssistantOnboardingModeDefault) {
+  if (!onboarding_mode.empty() &&
+      onboarding_mode != kAssistantOnboardingModeDefault) {
     NOTREACHED();
   }
   return AssistantOnboardingMode::kDefault;

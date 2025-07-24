@@ -1046,6 +1046,30 @@ inline constexpr char kAssistantNumSessionsWhereOnboardingShown[] =
     "ash.assistant.num_sessions_where_onboarding_shown";
 inline constexpr char kAssistantTimeOfLastInteraction[] =
     "ash.assistant.time_of_last_interaction";
+
+// Deprecated 07/2025.
+inline constexpr char kAssistantConsentStatus[] =
+    "settings.voice_interaction.activity_control.consent_status";
+inline constexpr char kAssistantContextEnabled[] =
+    "settings.voice_interaction.context.enabled";
+inline constexpr char kAssistantDisabledByPolicy[] =
+    "settings.assistant.disabled_by_policy";
+inline constexpr char kAssistantEnabled[] =
+    "settings.voice_interaction.enabled";
+inline constexpr char kAssistantHotwordAlwaysOn[] =
+    "settings.voice_interaction.hotword.always_on";
+inline constexpr char kAssistantHotwordEnabled[] =
+    "settings.voice_interaction.hotword.enabled";
+inline constexpr char kAssistantLaunchWithMicOpen[] =
+    "settings.voice_interaction.launch_with_mic_open";
+inline constexpr char kAssistantNotificationEnabled[] =
+    "settings.voice_interaction.notification.enabled";
+inline constexpr char kAssistantOnboardingMode[] =
+    "settings.assistant.onboarding_mode";
+inline constexpr char kAssistantVoiceMatchEnabledDuringOobe[] =
+    "settings.voice_interaction.oobe_voice_match.enabled";
+inline constexpr char kAssistantNumFailuresSinceLastServiceRun[] =
+    "ash.assistant.num_failures_since_last_service_run";
 #endif
 
 // Deprecated 07/2025
@@ -1480,6 +1504,19 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 07/2025.
   registry->RegisterIntegerPref(kAssistantNumSessionsWhereOnboardingShown, 0);
   registry->RegisterTimePref(kAssistantTimeOfLastInteraction, base::Time());
+
+  // Deprecated 07/2025.
+  registry->RegisterIntegerPref(kAssistantConsentStatus, 0);
+  registry->RegisterBooleanPref(kAssistantContextEnabled, false);
+  registry->RegisterBooleanPref(kAssistantDisabledByPolicy, false);
+  registry->RegisterBooleanPref(kAssistantEnabled, false);
+  registry->RegisterBooleanPref(kAssistantHotwordAlwaysOn, false);
+  registry->RegisterBooleanPref(kAssistantHotwordEnabled, false);
+  registry->RegisterBooleanPref(kAssistantLaunchWithMicOpen, false);
+  registry->RegisterBooleanPref(kAssistantNotificationEnabled, false);
+  registry->RegisterBooleanPref(kAssistantVoiceMatchEnabledDuringOobe, false);
+  registry->RegisterStringPref(kAssistantOnboardingMode, std::string());
+  registry->RegisterIntegerPref(kAssistantNumFailuresSinceLastServiceRun, 0);
 #endif
 
   // Deprecated 07/2025
@@ -2079,7 +2116,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::ApkWebAppService::RegisterProfilePrefs(registry);
   ash::app_time::AppActivityRegistry::RegisterProfilePrefs(registry);
   ash::app_time::AppTimeController::RegisterProfilePrefs(registry);
-  ash::assistant::prefs::RegisterProfilePrefs(registry);
   ash::auth::AuthFactorConfig::RegisterPrefs(registry);
   ash::bluetooth::DebugLogsManager::RegisterPrefs(registry);
   ash::bluetooth_config::BluetoothPowerControllerImpl::RegisterProfilePrefs(
@@ -2757,6 +2793,19 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 07/2025.
   profile_prefs->ClearPref(kAssistantNumSessionsWhereOnboardingShown);
   profile_prefs->ClearPref(kAssistantTimeOfLastInteraction);
+
+  // Added 07/2025.
+  profile_prefs->ClearPref(kAssistantConsentStatus);
+  profile_prefs->ClearPref(kAssistantContextEnabled);
+  profile_prefs->ClearPref(kAssistantDisabledByPolicy);
+  profile_prefs->ClearPref(kAssistantEnabled);
+  profile_prefs->ClearPref(kAssistantHotwordAlwaysOn);
+  profile_prefs->ClearPref(kAssistantHotwordEnabled);
+  profile_prefs->ClearPref(kAssistantLaunchWithMicOpen);
+  profile_prefs->ClearPref(kAssistantNotificationEnabled);
+  profile_prefs->ClearPref(kAssistantVoiceMatchEnabledDuringOobe);
+  profile_prefs->ClearPref(kAssistantOnboardingMode);
+  profile_prefs->ClearPref(kAssistantNumFailuresSinceLastServiceRun);
 #endif
 
   // Added 07/2025
