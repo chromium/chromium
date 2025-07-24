@@ -24,6 +24,7 @@
 namespace em = enterprise_management;
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::WithArgs;
 
 namespace policy {
@@ -66,8 +67,8 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     return invalidation;
   }
 
-  MockCloudPolicyClient* PrepareCoreForRemoteCommands() {
-    auto mock_client = std::make_unique<MockCloudPolicyClient>();
+  NiceMock<MockCloudPolicyClient>* PrepareCoreForRemoteCommands() {
+    auto mock_client = std::make_unique<NiceMock<MockCloudPolicyClient>>();
     mock_client->SetDMToken("fake_token");
     auto* mock_client_ptr = mock_client.get();
 
@@ -87,6 +88,8 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     return mock_client_ptr;
   }
 
+  void DisconnectCore() { core_.Disconnect(); }
+
  protected:
   std::unique_ptr<RemoteCommandsInvalidator> CreateInvalidator() {
     return std::make_unique<RemoteCommandsInvalidator>(
@@ -97,7 +100,7 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 
-  testing::NiceMock<MockCloudPolicyStore> mock_store_;
+  NiceMock<MockCloudPolicyStore> mock_store_;
   CloudPolicyCore core_;
 
   invalidation::FakeInvalidationListener fake_invalidation_listener_;
@@ -110,21 +113,23 @@ TEST_F(RemoteCommandsInvalidatorTest, StartsWhenInvalidationListenerStarts) {
 
   auto invalidator = CreateInvalidator();
 
-  EXPECT_FALSE(invalidator->invalidations_enabled())
+  EXPECT_TRUE(invalidator->IsRegistered());
+  EXPECT_FALSE(invalidator->AreInvalidationsEnabled())
       << "Invalidator is enabled before invalidation listener is started";
 
   fake_invalidation_listener_.Start();
 
-  EXPECT_TRUE(invalidator->invalidations_enabled());
+  EXPECT_TRUE(invalidator->AreInvalidationsEnabled());
 
   fake_invalidation_listener_.Shutdown();
 
-  EXPECT_FALSE(invalidator->invalidations_enabled())
+  EXPECT_TRUE(invalidator->IsRegistered());
+  EXPECT_FALSE(invalidator->AreInvalidationsEnabled())
       << "Invalidator is enabled after invalidation listener is shut down";
 
   fake_invalidation_listener_.Start();
 
-  EXPECT_TRUE(invalidator->invalidations_enabled());
+  EXPECT_TRUE(invalidator->AreInvalidationsEnabled());
 }
 
 // Tests that remote commands invalidator is correctly initialized and shut
@@ -134,12 +139,25 @@ TEST_F(RemoteCommandsInvalidatorTest, StartsWhenRemoteCommandsServiceStarts) {
 
   auto invalidator = CreateInvalidator();
 
-  EXPECT_FALSE(invalidator->invalidations_enabled())
+  EXPECT_FALSE(invalidator->IsRegistered())
+      << "Invalidartor is registered before remote commands service is started";
+  EXPECT_FALSE(invalidator->AreInvalidationsEnabled())
       << "Invalidator is enabled before remote commands service is started";
 
   PrepareCoreForRemoteCommands();
 
-  EXPECT_TRUE(invalidator->invalidations_enabled());
+  EXPECT_TRUE(invalidator->IsRegistered());
+  EXPECT_TRUE(invalidator->AreInvalidationsEnabled());
+
+  DisconnectCore();
+
+  EXPECT_FALSE(invalidator->IsRegistered());
+  EXPECT_FALSE(invalidator->AreInvalidationsEnabled());
+
+  PrepareCoreForRemoteCommands();
+
+  EXPECT_TRUE(invalidator->IsRegistered());
+  EXPECT_TRUE(invalidator->AreInvalidationsEnabled());
 }
 
 // Tests that remote commands invalidtor does initial fetch request when
@@ -150,7 +168,7 @@ TEST_F(RemoteCommandsInvalidatorTest,
   fake_invalidation_listener_.Start();
 
   // Expect two startup fetches on InvalidationListener initial start and on
-  // re-start.
+  // restart.
   EXPECT_CALL(
       *mock_client,
       FetchRemoteCommands(_, _, _, _, RemoteCommandsFetchReason::kStartup, _))
@@ -167,15 +185,10 @@ TEST_F(RemoteCommandsInvalidatorTest,
 TEST_F(RemoteCommandsInvalidatorTest, FetchesRemoteCommandsOnInvalidation) {
   auto* mock_client = PrepareCoreForRemoteCommands();
 
-  // Expect initial fetch requests from invalidator on initialization.
-  EXPECT_CALL(
-      *mock_client,
-      FetchRemoteCommands(_, _, _, _, RemoteCommandsFetchReason::kStartup, _));
-
   auto invalidator = CreateInvalidator();
   fake_invalidation_listener_.Start();
 
-  EXPECT_TRUE(invalidator->invalidations_enabled());
+  EXPECT_TRUE(invalidator->AreInvalidationsEnabled());
   testing::Mock::VerifyAndClearExpectations(mock_client);
 
   // Fire two invalidations and check two fetch requests happened.

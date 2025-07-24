@@ -14,6 +14,8 @@
 #include "base/time/clock.h"
 #include "build/build_config.h"
 #include "components/invalidation/invalidation_listener.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -69,20 +71,6 @@ RemoteCommandsInvalidator::RemoteCommandsInvalidator(
   CHECK(invalidation_listener_);
   CHECK(core_);
   CHECK(clock_);
-  Initialize();
-}
-
-RemoteCommandsInvalidator::~RemoteCommandsInvalidator() {
-  Shutdown();
-  CHECK_EQ(SHUT_DOWN, state_);
-}
-
-void RemoteCommandsInvalidator::Initialize() {
-  CHECK_EQ(SHUT_DOWN, state_);
-  CHECK(invalidation_listener_);
-  CHECK(thread_checker_.CalledOnValidThread());
-
-  state_ = STOPPED;
 
   core_observation_.Observe(core_);
   if (core_->remote_commands_service()) {
@@ -90,37 +78,25 @@ void RemoteCommandsInvalidator::Initialize() {
   }
 }
 
-void RemoteCommandsInvalidator::Shutdown() {
-  CHECK_NE(SHUT_DOWN, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  Stop();
-
-  state_ = SHUT_DOWN;
-  core_observation_.Reset();
+RemoteCommandsInvalidator::~RemoteCommandsInvalidator() {
+  // Explicitly reset observation of `InvalidationListener` as it needs
+  // `GetType()` to remove observer and `GetType()` requires access to our
+  // state.
+  invalidation_listener_observation_.Reset();
 }
 
-void RemoteCommandsInvalidator::Start() {
-  CHECK_EQ(STOPPED, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
+void RemoteCommandsInvalidator::OnCoreConnected(CloudPolicyCore* core) {}
 
-  state_ = STARTED;
+void RemoteCommandsInvalidator::OnRefreshSchedulerStarted(
+    CloudPolicyCore* core) {}
 
+void RemoteCommandsInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
+  invalidation_listener_observation_.Reset();
+}
+
+void RemoteCommandsInvalidator::OnRemoteCommandsServiceStarted(
+    CloudPolicyCore* core) {
   invalidation_listener_observation_.Observe(invalidation_listener_);
-
-  store_observation_.Observe(core_->store());
-  OnStoreLoaded(core_->store());
-}
-
-void RemoteCommandsInvalidator::Stop() {
-  CHECK_NE(SHUT_DOWN, state_);
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  if (state_ == STARTED) {
-    invalidation_listener_observation_.Reset();
-    state_ = STOPPED;
-    store_observation_.Reset();
-  }
 }
 
 void RemoteCommandsInvalidator::OnExpectationChanged(
@@ -159,9 +135,8 @@ std::string RemoteCommandsInvalidator::GetType() const {
 }
 
 bool RemoteCommandsInvalidator::IsRegistered() const {
-  return invalidation_listener_ &&
-         invalidation_listener_observation_.IsObservingSource(
-             invalidation_listener_);
+  return invalidation_listener_observation_.IsObservingSource(
+      invalidation_listener_);
 }
 
 bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
@@ -175,7 +150,7 @@ bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
 
 void RemoteCommandsInvalidator::DoRemoteCommandsFetch(
     const invalidation::DirectInvalidation& invalidation) {
-  DCHECK(core_->remote_commands_service());
+  CHECK(core_->remote_commands_service());
 
   RecordInvalidationMetric(invalidation);
 
@@ -189,24 +164,6 @@ void RemoteCommandsInvalidator::DoInitialRemoteCommandsFetch() {
   core_->remote_commands_service()->FetchRemoteCommands(
       RemoteCommandsFetchReason::kStartup);
 }
-
-void RemoteCommandsInvalidator::OnCoreConnected(CloudPolicyCore* core) {}
-
-void RemoteCommandsInvalidator::OnRefreshSchedulerStarted(
-    CloudPolicyCore* core) {}
-
-void RemoteCommandsInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
-  Stop();
-}
-
-void RemoteCommandsInvalidator::OnRemoteCommandsServiceStarted(
-    CloudPolicyCore* core) {
-  Start();
-}
-
-void RemoteCommandsInvalidator::OnStoreLoaded(CloudPolicyStore* core) {}
-
-void RemoteCommandsInvalidator::OnStoreError(CloudPolicyStore* core) {}
 
 void RemoteCommandsInvalidator::RecordInvalidationMetric(
     const invalidation::DirectInvalidation& invalidation) const {

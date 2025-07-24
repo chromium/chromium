@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_INVALIDATOR_H_
 #define COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_INVALIDATOR_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/threading/thread_checker.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
-#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -21,14 +21,13 @@ class Clock;
 
 namespace policy {
 
-// This class provides basic intefaces for an invalidator for remote commands
-// services. It's not interacting with CloudPolicyClient/CloudPolicyCore
-// directly, instead, it handles the interacting with invalidation service
-// only and leaves interfaces to integrate with subclasses.
+// Handles invalidations for remote commands. When `CloudPolicyCore` is
+// connected and `RemoteCommandsService` is running, listens to
+// `InvalidationListener` for incoming invalidations and triggers remote
+// commands fetch when receives an invalidation.
 class POLICY_EXPORT RemoteCommandsInvalidator
     : public invalidation::InvalidationListener::Observer,
-      public CloudPolicyCore::Observer,
-      public CloudPolicyStore::Observer {
+      public CloudPolicyCore::Observer {
  public:
   RemoteCommandsInvalidator(
       invalidation::InvalidationListener* invalidation_listener,
@@ -39,18 +38,6 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   RemoteCommandsInvalidator& operator=(const RemoteCommandsInvalidator&) =
       delete;
   ~RemoteCommandsInvalidator() override;
-
-  // Starts to process invalidations.
-  void Start();
-
-  // Stops to process invalidation. May only be called after Start() has been
-  // called.
-  void Stop();
-
-  // Whether the invalidator currently has the ability to receive invalidations.
-  bool invalidations_enabled() const {
-    return IsRegistered() && AreInvalidationsEnabled();
-  }
 
   // invalidation::InvalidationListener::Observer:
   void OnExpectationChanged(
@@ -65,16 +52,14 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   void OnCoreDisconnecting(CloudPolicyCore* core) override;
   void OnRemoteCommandsServiceStarted(CloudPolicyCore* core) override;
 
-  // CloudPolicyStore::Observer:
-  void OnStoreLoaded(CloudPolicyStore* store) override;
-  void OnStoreError(CloudPolicyStore* store) override;
+  // Returns true if ready to receive invalidations.
+  bool IsRegistered() const;
+
+  // Returns true if ready to receive invalidations and invalidations are
+  // enabled.
+  bool AreInvalidationsEnabled() const;
 
  private:
-  void Initialize();
-  void Shutdown();
-
-  // Subclasses must override this method to implement the actual remote
-  // commands fetch.
   void DoRemoteCommandsFetch(
       const invalidation::DirectInvalidation& invalidation);
 
@@ -83,23 +68,8 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   // the invalidator has subscribed.
   void DoInitialRemoteCommandsFetch();
 
-  // Returns true if ready to receive invalidations.
-  bool IsRegistered() const;
-
-  // Returns true if ready to receive invalidations and invalidations are
-  // enabled.
-  bool AreInvalidationsEnabled() const;
-
   void RecordInvalidationMetric(
       const invalidation::DirectInvalidation& invalidation) const;
-
-  // The state of the object.
-  enum State {
-    SHUT_DOWN,
-    STOPPED,
-    STARTED,
-  };
-  State state_ = SHUT_DOWN;
 
   const PolicyInvalidationScope scope_;
 
@@ -117,12 +87,6 @@ class POLICY_EXPORT RemoteCommandsInvalidator
       invalidation_listener_observation_{this};
   base::ScopedObservation<CloudPolicyCore, RemoteCommandsInvalidator>
       core_observation_{this};
-  base::ScopedObservation<CloudPolicyStore, RemoteCommandsInvalidator>
-      store_observation_{this};
-
-  // A thread checker to make sure that callbacks are invoked on the correct
-  // thread.
-  base::ThreadChecker thread_checker_;
 };
 
 }  // namespace policy
