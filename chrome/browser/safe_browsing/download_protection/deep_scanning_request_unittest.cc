@@ -788,7 +788,13 @@ class DeepScanningReportingSourceTypeTest
   MetadataSourceType GetMetadataSourceType() { return GetParam(); }
 };
 
-TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
+// TODO(crbug.com/433865922): Disable this test on Windows because of flakiness.
+#if BUILDFLAG(IS_WIN)
+  #define MAYBE_ProcessesResponseCorrectly DISABLED_ProcessesResponseCorrectly
+#else
+  #define MAYBE_ProcessesResponseCorrectly ProcessesResponseCorrectly
+#endif
+TEST_P(DeepScanningReportingSourceTypeTest, MAYBE_ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
