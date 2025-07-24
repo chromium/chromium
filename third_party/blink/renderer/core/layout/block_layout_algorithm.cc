@@ -3964,12 +3964,9 @@ bool BlockLineClampData::UpdateAfterLayout(
       ignore_further_lines = true;
     }
 
-    if (IsPastClampPoint()) {
-      if (!previous_inflow_position_when_clamped.has_value()) {
-        previous_inflow_position_when_clamped = previous_inflow_position;
-      }
-      // Returning here so we don't run the `IsMeasureUntilBfcOffset` branch.
-      return true;
+    if (IsPastClampPoint() &&
+        !previous_inflow_position_when_clamped.has_value()) {
+      previous_inflow_position_when_clamped = previous_inflow_position;
     }
   }
 
