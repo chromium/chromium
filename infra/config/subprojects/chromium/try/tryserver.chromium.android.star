@@ -397,6 +397,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-16-x64-dbg",
+    mirrors = [
+        "ci/Android x64 Builder (dbg)",
+        "ci/android-16-x64-dbg-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Android x64 Builder (dbg)",
+            "debug_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-16-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run Chromium tests on Android 16 emulator.",

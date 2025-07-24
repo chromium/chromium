@@ -553,6 +553,7 @@
     "android-15-webview-wpt-fyi-rel": "try/android-15-webview-wpt-fyi-rel/gn-args.json",
     "android-15-x64-fyi-rel": "try/android-15-x64-fyi-rel/gn-args.json",
     "android-15-x64-rel": "try/android-15-x64-rel/gn-args.json",
+    "android-16-x64-dbg": "try/android-16-x64-dbg/gn-args.json",
     "android-16-x64-fyi-rel": "try/android-16-x64-fyi-rel/gn-args.json",
     "android-16-x64-rel": "try/android-16-x64-rel/gn-args.json",
     "android-arm-compile-dbg": "try/android-arm-compile-dbg/gn-args.json",
