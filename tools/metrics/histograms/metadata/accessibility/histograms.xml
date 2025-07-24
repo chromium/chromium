@@ -3958,6 +3958,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Distillation.Result"
+    enum="DistillationParseResult" expires_after="2026-06-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether distilling the page resulted in sucess, parse failure, or no
+    Data to distill
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.IsDistillable" enum="Boolean"
     expires_after="2026-06-01">
   <owner>wylieb@google.com</owner>

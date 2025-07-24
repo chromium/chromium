@@ -119,6 +119,7 @@ source_set("unit_tests") {
     "distillable_page_detector_unittest.cc",
     "distilled_content_store_unittest.cc",
     "distilled_page_prefs_unittests.cc",
+    "distiller_page_unittest.cc",
     "distiller_unittest.cc",
     "distiller_url_fetcher_unittest.cc",
     "dom_distiller_request_view_base_unittest.cc",

@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -87,6 +88,19 @@ bool ReadabilityDistillerResultToDomDistillerResult(
   return true;
 }
 
+// This enum is used to record histograms for OnDistillationDone results.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+
+// LINT.IfChange(DistillationParseResult)
+enum class DistillationParseResult {
+  kSuccess = 0,
+  kParseFailure = 1,
+  kNoData = 2,
+  kMaxValue = kNoData,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:DistillationParseResult)
+
 }  // namespace
 
 DistillerPageFactory::~DistillerPageFactory() = default;
@@ -120,8 +134,11 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
   std::unique_ptr<dom_distiller::proto::DomDistillerResult> distiller_result(
       new dom_distiller::proto::DomDistillerResult());
   bool found_content;
+  DistillationParseResult result;
+
   if (value->is_none()) {
     found_content = false;
+    result = DistillationParseResult::kNoData;
   } else {
     found_content =
         ShouldUseReadabilityDistiller()
@@ -129,10 +146,16 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
                   *value, distiller_result.get())
             : dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
                   *value, distiller_result.get());
-    if (!found_content) {
+    if (found_content) {
+      result = DistillationParseResult::kSuccess;
+    } else {
       DVLOG(1) << "Unable to parse DomDistillerResult.";
+      result = DistillationParseResult::kParseFailure;
     }
   }
+
+  // Record result for page distillation
+  base::UmaHistogramEnumeration("DomDistiller.Distillation.Result", result);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(distiller_page_callback_),

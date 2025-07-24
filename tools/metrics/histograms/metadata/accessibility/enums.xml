@@ -1600,6 +1600,17 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h:DependencyParserModelState) -->
 
+<!-- LINT.IfChange(DistillationParseResult)-->
+
+<enum name="DistillationParseResult">
+  <summary>Describes the result of a disillation parsing attempt</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Parse Failure"/>
+  <int value="2" label="No Data"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/dom_distiller/core/distiller_page.cc:DistillationParseResult) -->
+
 <!-- LINT.IfChange(DistillationResult)-->
 
 <enum name="DistillationResult">
