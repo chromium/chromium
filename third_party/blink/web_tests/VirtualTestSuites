@@ -2526,6 +2526,7 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/cookies/origin-bound-cookies/port-bound-cookies.html",
       "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js",
       "http/tests/inspector-protocol/network/blocked-cookie-port-mismatch.js"
     ],
@@ -2979,6 +2980,7 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/cookies/origin-bound-cookies/scheme-bound-cookies.https.html",
       "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js",
       "http/tests/inspector-protocol/network/blocked-cookie-scheme-mismatch.js"
     ],
