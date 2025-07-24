@@ -101,6 +101,16 @@ class TestAuditNonBlinkUsageTest(unittest.TestCase):
                 'allowed': True,
                 'path': 'third_party/blink/renderer/core/scheduler/'
             },
+            {
+                'type': 'WTF::BindOnce',
+                'allowed': False,
+                'path': 'third_party/blink/renderer/'
+            },
+            {
+                'type': 'WTF::Vector',
+                'allowed': True,
+                'path': 'third_party/blink/renderer/platform/wtf/'
+            },
         ]
         for item in check_list:
             # Make sure that the identifier we're testing is parsed
