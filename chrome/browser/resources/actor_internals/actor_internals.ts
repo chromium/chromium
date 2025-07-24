@@ -42,7 +42,11 @@ window.onload = function() {
     td[1]!.textContent = entry.event;
     td[2]!.textContent = entry.type;
     td[3]!.textContent = entry.details;
-    td[4]!.textContent = new Date(entry.timestamp).toUTCString();
+    td[4]!.textContent =
+        new Date(entry.timestamp).toLocaleTimeString(undefined, {
+          hour12: false,
+          timeZoneName: 'short',
+        });
 
     const rows = table.rows;
     for (let i = rows.length - 1; i > 0; i--) {
