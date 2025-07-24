@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SINK_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SINK_BASE_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -83,8 +84,8 @@ class UnderlyingSinkWriteAlgorithm final : public StreamAlgorithm {
       : sink_(sink) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState*,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) final;
+                                  int spanification_suspected_redundant_argc,
+                                  base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
  private:
@@ -97,8 +98,8 @@ class UnderlyingSinkCloseAlgorithm final : public StreamAlgorithm {
       : sink_(sink) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState*,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) final;
+                                  int spanification_suspected_redundant_argc,
+                                  base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
  private:
@@ -111,8 +112,8 @@ class UnderlyingSinkAbortAlgorithm final : public StreamAlgorithm {
       : sink_(sink) {}
 
   ScriptPromise<IDLUndefined> Run(ScriptState*,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) final;
+                                  int spanification_suspected_redundant_argc,
+                                  base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
  private:

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -59,10 +60,16 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
   explicit PullAlgorithm(UnderlyingByteSourceBase* underlying_byte_source)
       : underlying_byte_source_(underlying_byte_source) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 0);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      int spanification_suspected_redundant_argc,
+      base::span<v8::Local<v8::Value>> argv) override {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(
+        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
+        base::NotFatalUntil::M143);
+    DCHECK_EQ(spanification_suspected_redundant_argc, 0);
     DCHECK(controller_);
     ScriptPromise<IDLUndefined> promise;
     if (script_state->ContextIsValid()) {
@@ -109,10 +116,16 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
   explicit CancelAlgorithm(UnderlyingByteSourceBase* underlying_byte_source)
       : underlying_byte_source_(underlying_byte_source) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      int spanification_suspected_redundant_argc,
+      base::span<v8::Local<v8::Value>> argv) override {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(
+        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
+        base::NotFatalUntil::M143);
+    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
     ScriptPromise<IDLUndefined> promise;
     if (script_state->ContextIsValid()) {
       v8::TryCatch try_catch(script_state->GetIsolate());

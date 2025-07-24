@@ -8,6 +8,7 @@
 
 #include <limits>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -38,7 +39,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNoMethod) {
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(algo);
-  auto promise = algo->Run(scope.GetScriptState(), 0, nullptr);
+  auto promise = algo->Run(scope.GetScriptState(), 0, {});
   ASSERT_FALSE(promise.IsEmpty());
   ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
   EXPECT_TRUE(promise.V8Promise()->Result()->IsUndefined());
@@ -56,7 +57,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmUndefinedMethod) {
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(algo);
-  auto promise = algo->Run(scope.GetScriptState(), 0, nullptr);
+  auto promise = algo->Run(scope.GetScriptState(), 0, {});
   ASSERT_FALSE(promise.IsEmpty());
   ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
   EXPECT_TRUE(promise.V8Promise()->Result()->IsUndefined());
@@ -98,7 +99,7 @@ v8::Local<v8::Value> CreateFromFunctionAndGetResult(
     const char* function_definition,
     v8::MaybeLocal<v8::Value> extra_arg = v8::MaybeLocal<v8::Value>(),
     int argc = 0,
-    v8::Local<v8::Value> argv[] = nullptr) {
+    base::span<v8::Local<v8::Value>> argv = {}) {
   String js = String("({start: ") + function_definition + "})" + '\0';
   ScriptValue underlying_value =
       EvalWithPrintingError(scope, js.Utf8().c_str());
@@ -133,7 +134,7 @@ bool CreateFromFunctionAndGetSuccess(
     const char* function_definition,
     v8::MaybeLocal<v8::Value> extra_arg = v8::MaybeLocal<v8::Value>(),
     int argc = 0,
-    v8::Local<v8::Value> argv[] = nullptr) {
+    base::span<v8::Local<v8::Value>> argv = {}) {
   auto result = CreateFromFunctionAndGetResult(scope, function_definition,
                                                extra_arg, argc, argv);
   if (!result->IsBoolean()) {

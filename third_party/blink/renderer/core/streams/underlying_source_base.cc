@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
@@ -83,9 +84,13 @@ void UnderlyingStartAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingPullAlgorithm::Run(
     ScriptState* script_state,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
-  DCHECK_EQ(argc, 0);
+    int spanification_suspected_redundant_argc,
+    base::span<v8::Local<v8::Value>> argv) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
+        base::NotFatalUntil::M143);
+  DCHECK_EQ(spanification_suspected_redundant_argc, 0);
   return source_->Pull(script_state,
                        PassThroughException(script_state->GetIsolate()));
 }
@@ -97,11 +102,16 @@ void UnderlyingPullAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingCancelAlgorithm::Run(
     ScriptState* script_state,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
+    int spanification_suspected_redundant_argc,
+    base::span<v8::Local<v8::Value>> argv) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
+        base::NotFatalUntil::M143);
   v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Value> reason =
-      argc > 0 ? argv[0] : v8::Undefined(isolate).As<v8::Value>();
+  v8::Local<v8::Value> reason = spanification_suspected_redundant_argc > 0
+                                    ? argv[0]
+                                    : v8::Undefined(isolate).As<v8::Value>();
   return source_->CancelWrapper(
       script_state, ScriptValue(isolate, reason),
       PassThroughException(script_state->GetIsolate()));

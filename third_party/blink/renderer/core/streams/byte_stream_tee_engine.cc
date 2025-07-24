@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/byte_stream_tee_engine.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -29,9 +30,15 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      int spanification_suspected_redundant_argc,
+      base::span<v8::Local<v8::Value>> argv) override {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(
+        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
+        base::NotFatalUntil::M143);
     // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamtee
     // This implements both pull1Algorithm and pull2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -82,9 +89,15 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      int spanification_suspected_redundant_argc,
+      base::span<v8::Local<v8::Value>> argv) override {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(
+        spanification_suspected_redundant_argc == static_cast<int>(argv.size()),
+        base::NotFatalUntil::M143);
     // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamtee
     // This implements both cancel1Algorithm and cancel2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -95,7 +108,7 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     //   a. Set canceled1 to true.
     engine_->canceled_[branch_] = true;
     //   b. Set reason1 to reason.
-    DCHECK_EQ(argc, 1);
+    DCHECK_EQ(spanification_suspected_redundant_argc, 1);
     engine_->reason_[branch_].Reset(isolate, argv[0]);
     //   c. If canceled2 is true,
     const int other_branch = 1 - branch_;
@@ -272,11 +285,11 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // 8. If readAgainForBranch1 is true, perform pull1Algorithm.
     if (engine_->read_again_for_branch_[0]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 0);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, 0, {});
       // 9. Otherwise, if readAgainForBranch2 is true, perform pull2Algorithm.
     } else if (engine_->read_again_for_branch_[1]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 1);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, 0, {});
     }
   }
 
@@ -463,11 +476,11 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     // 8. If readAgainForBranch1 is true, perform pull1Algorithm.
     if (engine_->read_again_for_branch_[0]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 0);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, 0, {});
       // 9. Otherwise, if readAgainForBranch2 is true, perform pull2Algorithm.
     } else if (engine_->read_again_for_branch_[1]) {
       auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_, 1);
-      pull_algorithm->Run(script_state, 0, nullptr);
+      pull_algorithm->Run(script_state, 0, {});
     }
   }
 

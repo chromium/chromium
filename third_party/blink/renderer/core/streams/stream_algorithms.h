@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -53,9 +54,10 @@ class StreamAlgorithm : public GarbageCollected<StreamAlgorithm> {
  public:
   virtual ~StreamAlgorithm() = default;
 
-  virtual ScriptPromise<IDLUndefined> Run(ScriptState*,
-                                          int argc,
-                                          v8::Local<v8::Value> argv[]) = 0;
+  virtual ScriptPromise<IDLUndefined> Run(
+      ScriptState*,
+      int spanification_suspected_redundant_argc,
+      base::span<v8::Local<v8::Value>> argv) = 0;
 
   virtual void Trace(Visitor*) const {}
 };
