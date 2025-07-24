@@ -306,8 +306,8 @@ public class AutofillCardBenefitsFragmentTest {
         assertEquals(3, getPreferenceScreen(activity).getPreferenceCount());
     }
 
-    // Test to verify terms for different card issuers with benefits are listed if the card issuer's
-    // respective benefit feature flag is enabled.
+    // Test to verify terms for different card with benefits are listed if the card's respective
+    // benefit feature flag is enabled.
     @Test
     @MediumTest
     public void testCardBenefitsPreferenceScreen_withBenefitFlagsOn() throws Exception {
@@ -319,8 +319,8 @@ public class AutofillCardBenefitsFragmentTest {
         assertEquals(2, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
     }
 
-    // Test to verify terms for different card issuers with benefits are listed only if the card
-    // issuer's respective benefit feature flag is enabled.
+    // Test to verify terms for different cards with benefits are listed only if the card's
+    // respective benefit feature flag is enabled.
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO})
@@ -337,8 +337,8 @@ public class AutofillCardBenefitsFragmentTest {
                         SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT.getProductDescription()));
     }
 
-    // Test to verify terms for different card issuers with benefits are not listed if the card
-    // issuer's respective benefit feature flag is disabled.
+    // Test to verify terms for different card with benefits are not listed if the card's respective
+    // benefit feature flag is disabled.
     @Test
     @MediumTest
     @DisableFeatures({
@@ -355,7 +355,7 @@ public class AutofillCardBenefitsFragmentTest {
     }
 
     // Test to verify terms for card with the same product (same product description and same
-    // issuer) is only displayed once.
+    // benefit source) is only displayed once.
     @Test
     @MediumTest
     public void testCardBenefitsPreferenceScreen_withDuplicateCardProduct_termsOnlyDisplayedOnce()
@@ -395,10 +395,10 @@ public class AutofillCardBenefitsFragmentTest {
         assertEquals(1, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
     }
 
-    // Test to verify terms for different card products from the same issuer are listed.
+    // Test to verify terms for different card products from the same benefit source are listed.
     @Test
     @MediumTest
-    public void testCardBenefitsPreferenceScreen_FromSameIssuer() throws Exception {
+    public void testCardBenefitsPreferenceScreen_FromSameBenefitSource() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT);
         mAutofillTestHelper.addServerCreditCard(
                 new CreditCard(
@@ -433,8 +433,8 @@ public class AutofillCardBenefitsFragmentTest {
         assertEquals(2, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
     }
 
-    // Test to verify terms for cards with the same product description from the different issuers
-    // are listed.
+    // Test to verify terms for cards with the same product description from the different benefit
+    // sources are listed.
     @Test
     @MediumTest
     public void testCardBenefitsPreferenceScreen_withDuplicateCardProductDescription()

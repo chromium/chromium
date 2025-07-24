@@ -156,29 +156,30 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     }
 
     private void createPreferencesForCardBenefitTerms() {
-        HashSet<Pair<String, String>> issuersAndProductDescriptions = new HashSet<>();
+        HashSet<Pair<String, String>> benefitSourcesAndProductDescriptions = new HashSet<>();
 
         // List the card for product terms redirect if:
         // 1. The card is eligible for benefits.
         // 2. The card has a valid product term url.
-        // 3. Same issuer and card product combination is not listed before.
+        // 3. Same benefit source and card product combination is not listed before.
         for (CreditCard card : mPersonalDataManager.getCreditCardsForSettings()) {
-            Pair<String, String> issuerAndProductDescriptionPair =
-                    Pair.create(card.getIssuerId(), card.getProductDescription());
+            Pair<String, String> benefitSourceAndProductDescriptionPair =
+                    Pair.create(card.getBenefitSource(), card.getProductDescription());
 
             if (!mPersonalDataManager.isCardEligibleForBenefits(card.getGUID())
-                    || issuersAndProductDescriptions.contains(issuerAndProductDescriptionPair)
+                    || benefitSourcesAndProductDescriptions.contains(
+                            benefitSourceAndProductDescriptionPair)
                     || GURL.isEmptyOrInvalid(card.getProductTermsUrl())) {
                 continue;
             }
 
-            issuersAndProductDescriptions.add(issuerAndProductDescriptionPair);
+            benefitSourcesAndProductDescriptions.add(benefitSourceAndProductDescriptionPair);
 
             // Add a preference for the credit card.
             ChromeBasePreference cardPref = new ChromeBasePreference(getStyledContext());
             cardPref.setDividerAllowedAbove(false);
             cardPref.setDividerAllowedBelow(false);
-            cardPref.setTitle(issuerAndProductDescriptionPair.second);
+            cardPref.setTitle(benefitSourceAndProductDescriptionPair.second);
             cardPref.setSummary(R.string.autofill_settings_page_card_benefits_issuer_term_text);
             cardPref.setKey(PREF_KEY_CARD_BENEFIT_TERM);
 
