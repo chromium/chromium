@@ -419,6 +419,27 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
     ASSERT_EQ(kYValue, y_plane_data[288]);
     ASSERT_EQ(kUValue, u_plane_data[80]);
     ASSERT_EQ(kVValue, v_plane_data[80]);
+
+    // Compare the last pixel of each plane in |software_frame| and |frame|.
+    auto* client_si = sii_->MostRecentMappableSharedImage();
+    EXPECT_TRUE(!!client_si);
+    auto mapping = client_si->Map();
+
+    // Note: The output is in YV12, i.e. the `u` and `v` planes are swapped.
+    const auto* y_memory =
+        reinterpret_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data());
+    const auto* v_memory =
+        reinterpret_cast<uint8_t*>(mapping->GetMemoryForPlane(1).data());
+    const auto* u_memory =
+        reinterpret_cast<uint8_t*>(mapping->GetMemoryForPlane(2).data());
+
+    auto y_stride = mapping->Stride(0);
+    EXPECT_EQ(y_plane_data[288] >> 2, y_memory[y_stride * 16 + 16]);
+    auto v_stride = mapping->Stride(1);
+    EXPECT_EQ(v_plane_data[80] >> 2, v_memory[v_stride * 8 + 8]);
+    auto u_stride = mapping->Stride(2);
+    EXPECT_EQ(u_plane_data[80] >> 2, u_memory[u_stride * 8 + 8]);
+
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
