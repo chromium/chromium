@@ -446,6 +446,10 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   }
 
   auto WaitForActorTaskState(mojom::ActorTaskState expected_state) {
+    // WaitForActorTaskState doesn't reliably check the stopped state, since the
+    // observable may have already been deleted.
+    EXPECT_NE(expected_state, mojom::ActorTaskState::kStopped);
+
     return Steps(InAnyContext(WithElement(
         kGlicContentsElementId,
         [&task_id = task_id_, expected_state](ui::TrackedElement* el) {
@@ -930,8 +934,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseActorTask) {
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
-                       DISABLED_PauseThenStopActorTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenStopActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -953,8 +956,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     WaitForActorTaskState(mojom::ActorTaskState::kPaused),
 
     StopActorTask(),
-    CheckIsActingOnTab(kNewActorTabId, false),
-    WaitForActorTaskState(mojom::ActorTaskState::kStopped)
+    CheckIsActingOnTab(kNewActorTabId, false)
       // clang-format on
   );
 }
