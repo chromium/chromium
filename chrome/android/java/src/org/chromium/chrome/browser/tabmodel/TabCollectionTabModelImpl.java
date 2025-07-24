@@ -418,7 +418,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         || (!hasAnyTabs && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
         index = mOrderController.determineInsertionIndex(type, index, tab);
 
-        // TODO(crbug.com/429145597): Handle auto grouping for certain launch types and on restore.
+        Tab parentTab = getTabById(tab.getParentId());
+        boolean groupWithParent = shouldGroupWithParent(tab, parentTab);
+        if (groupWithParent) {
+            assumeNonNull(parentTab);
+            if (parentTab.getTabGroupId() == null) {
+                createSingleTabGroup(parentTab);
+            }
+            tab.setTabGroupId(parentTab.getTabGroupId());
+        }
+
         Token tabGroupId = tab.getTabGroupId();
         assert !(tabGroupId != null && tab.getIsPinned())
                 : "Pinned and grouped states are mutually exclusive.";
@@ -454,6 +463,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         tabAddedToModel(tab);
         for (TabModelObserver obs : mTabModelObservers) {
             obs.didAddTab(tab, type, creationState, selectTab);
+        }
+        if (groupWithParent) {
+            // TODO(crbug.com/434015906): Wait until after didAddTab before notifying observers. The
+            // sequencing here is incorrect as the tab is already grouped at this point; however,
+            // current clients don't care and we may be able to remove `willMergeTabToGroup` from
+            // the observer interface entirely.
+            for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                observer.willMergeTabToGroup(tab, Tab.INVALID_TAB_ID, tabGroupId);
+                observer.didMergeTabToGroup(tab);
+            }
         }
 
         if (selectTab) setIndex(finalIndex, TabSelectionType.FROM_NEW);
@@ -1140,6 +1159,22 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     // Internal methods.
+
+    private boolean shouldGroupWithParent(Tab tab, @Nullable Tab parentTab) {
+        if (parentTab == null) return false;
+
+        @TabLaunchType int tabLaunchType = tab.getLaunchType();
+        boolean shouldGroupWithParentForTabListInterface =
+                tabLaunchType == TabLaunchType.FROM_TAB_LIST_INTERFACE
+                        && parentTab.getTabGroupId() != null;
+
+        return mModelDelegate.isTabModelRestored()
+                && (tabLaunchType == TabLaunchType.FROM_TAB_GROUP_UI
+                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
+                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                        || tabLaunchType == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
+                        || shouldGroupWithParentForTabListInterface);
+    }
 
     private void finalizeTabClosure(Tab tab, @TabClosingSource int closingSource) {
         mTabContentManager.removeTabThumbnail(tab.getId());

@@ -14,7 +14,6 @@ import static org.junit.Assert.fail;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +30,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -38,6 +38,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -580,7 +581,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testGetIterator() {
         Tab tab = getTabAt(0);
         List<Tab> allTabs = List.of(tab);
@@ -596,7 +597,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testGetIterator_multipleTabs() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -619,7 +620,47 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
+    public void testAddTab_GroupedWithParent() {
+        Tab parentTab = getTabAt(0);
+        assertNull(parentTab.getTabGroupId());
+        Tab childTab = createChildTab(parentTab);
+        assertNotNull(parentTab.getTabGroupId());
+        assertEquals(parentTab.getTabGroupId(), childTab.getTabGroupId());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabsInGroup =
+                            mCollectionModel.getTabsInGroup(parentTab.getTabGroupId());
+                    assertEquals(2, tabsInGroup.size());
+                    assertTrue(tabsInGroup.contains(parentTab));
+                    assertTrue(tabsInGroup.contains(childTab));
+                    assertTabsInOrderAre(List.of(parentTab, childTab));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTab_GroupedWithParent_ParentAlreadyInGroup() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
+        Token groupId = tab0.getTabGroupId();
+        assertNotNull(groupId);
+        Tab childTab = createChildTab(tab0);
+        assertEquals(groupId, childTab.getTabGroupId());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(groupId);
+                    assertEquals(3, tabsInGroup.size());
+                    assertTrue(tabsInGroup.contains(childTab));
+                    assertTabsInOrderAre(List.of(tab0, childTab, tab1));
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testCreateSingleTabGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -672,7 +713,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testGetAllTabGroupIdsAndCount() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -745,7 +786,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMoveTabOutOfGroupLastTab_Trailing() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -802,7 +843,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMoveRelatedTabs_BasicObserver() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -866,7 +907,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMoveRelatedTabs_Advanced() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -928,7 +969,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMoveRelatedTabs_IndividualTab() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1035,7 +1076,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMoveTabOutOfGroup_FromMultiTabGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1090,7 +1131,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testPinTabInGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1145,7 +1186,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testPinTabInMultiTabGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1199,7 +1240,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @UiThreadTest
     public void testTabGroupVisualData() throws Exception {
         Tab tab0 = getTabAt(0);
@@ -1381,7 +1422,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testRepresentativeTabLogic() {
         // Setup: tab0, {tab1, tab3} (in group), tab2
         Tab tab0 = getTabAt(0);
@@ -1439,7 +1480,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testGetGroupLastShownTabId() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1467,7 +1508,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testWillMergingCreateNewGroup() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1502,7 +1543,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMergeListOfTabsToGroup_CreateNewGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1536,7 +1577,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMergeListOfTabsToGroup_MergeIntoExistingGroup() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1562,7 +1603,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMergeListOfTabsToGroup_MergeGroupIntoGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1621,7 +1662,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMergeListOfTabsToGroup_AdoptGroupId() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1648,7 +1689,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testCreateTabGroupForTabGroupSync() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1668,7 +1709,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMergeTabsToGroup_SingleToSingle() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1686,7 +1727,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMergeTabsToGroup_SingleToGroup() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1708,7 +1749,7 @@ public class TabCollectionTabModelImplTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testMergeTabsToGroup_GroupToSingle() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1780,6 +1821,18 @@ public class TabCollectionTabModelImplTest {
                 () ->
                         mCollectionModel.mergeListOfTabsToGroup(
                                 tabs, destinationTab, /* notify= */ false));
+    }
+
+    private Tab createChildTab(Tab parentTab) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return mRegularModel
+                            .getTabCreator()
+                            .createNewTab(
+                                    new LoadUrlParams(mTestUrl),
+                                    TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                                    parentTab);
+                });
     }
 
     private void verifyPinOrUnpin(Tab changedTab, boolean isPinned, boolean willMove)
