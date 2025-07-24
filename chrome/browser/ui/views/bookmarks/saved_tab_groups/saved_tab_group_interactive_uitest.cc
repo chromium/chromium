@@ -86,7 +86,9 @@
 #include "url/url_constants.h"
 
 namespace {
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }  // anonymous namespace
 
 namespace tab_groups {
@@ -1158,6 +1160,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(STGTabsMenuModel::kTab), WaitForTabMenuItemToLoadFavicon());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 class TabGroupShortcutsInteractiveTest
     : public SavedTabGroupInteractiveTestBase {
  public:
@@ -1391,6 +1394,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
       SendAccelerator(kBrowserViewElementId, focus_prev_accelerator),
       WaitForIndexToBecomeActiveTab(3));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupInteractiveTest,
