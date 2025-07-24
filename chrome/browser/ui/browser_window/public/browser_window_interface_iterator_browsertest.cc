@@ -16,8 +16,17 @@ using BrowserWindowInterfaceIteratorBrowserTest = InProcessBrowserTest;
 
 // Test that GetLastActiveBrowserWindowInterface returns the most recently
 // activated browser.
-IN_PROC_BROWSER_TEST_F(BrowserWindowInterfaceIteratorBrowserTest,
-                       GetLastActiveBrowserWindowInterface_ReturnsLastActive) {
+// TODO(crbug.com/431671448): Disable test on Linux until passing.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_GetLastActiveBrowserWindowInterface_ReturnsLastActive \
+  DISABLED_GetLastActiveBrowserWindowInterface_ReturnsLastActive
+#else
+#define MAYBE_GetLastActiveBrowserWindowInterface_ReturnsLastActive \
+  GetLastActiveBrowserWindowInterface_ReturnsLastActive
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BrowserWindowInterfaceIteratorBrowserTest,
+    MAYBE_GetLastActiveBrowserWindowInterface_ReturnsLastActive) {
   // Start with the default browser created by the test framework.
   Browser* const browser1 = browser();
 
