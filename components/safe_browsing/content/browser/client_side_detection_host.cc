@@ -544,16 +544,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
           PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST;
     }
 
-    if (phishing_detection_request_type_ ==
-        ClientSideDetectionType::FULLSCREEN_API) {
-      // The purpose of triggering preclassification for fullscreen API to have
-      // an initial assessment on how often we'll be hitting the allowlist and
-      // triggering the classification. We will not go further than checking for
-      // this metric for now.
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC);
-    }
-
     CheckCache(phishing_reason);
   }
 
@@ -565,6 +555,17 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     if (!ShouldClassifyForPhishing()) {
       return;  // No point in doing anything else.
     }
+
+    if (phishing_detection_request_type_ ==
+        ClientSideDetectionType::FULLSCREEN_API) {
+      // The purpose of triggering preclassification for fullscreen API to have
+      // an initial assessment on how often we'll be hitting the allowlist and
+      // triggering the classification. We will not go further than checking for
+      // this metric for now.
+      DontClassifyForPhishing(
+          PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC);
+    }
+
     // For trigger model requests, if result is cached, we don't want to run
     // classification again. In that case we're just trying to show the warning.
     // If we're dumping features for debugging, ignore the cache.
