@@ -11,10 +11,11 @@ source_set("composebox") {
     "composebox_handler.cc",
     "composebox_handler.h",
   ]
-  public_deps = [ ":mojo_bindings" ]
   deps = [
+    ":mojo_bindings",
     "//base",
     "//components/omnibox/composebox",
+    "//components/search",
     "//content/public/browser",
     "//ui/base:base",
   ]

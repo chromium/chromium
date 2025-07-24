@@ -116,19 +116,20 @@ class ComposeboxQueryControllerTest
         std::make_unique<ComposeboxQueryController::FileInfo>();
     file_info->file_token_ = file_token;
     file_info->mime_type_ = lens::MimeType::kPdf;
-    controller().StartFileUploadFlow(std::move(file_info),
-                                     std::move(file_data));
+    controller().StartFileUploadFlow(std::move(file_info), std::move(file_data),
+                                     /*image_options=*/std::nullopt);
   }
 
-  void StartImageFileUploadFlow(
-      const base::UnguessableToken& file_token,
-      scoped_refptr<base::RefCountedBytes> file_data) {
+  void StartImageFileUploadFlow(const base::UnguessableToken& file_token,
+                                scoped_refptr<base::RefCountedBytes> file_data,
+                                std::optional<composebox::ImageEncodingOptions>
+                                    image_options = std::nullopt) {
     std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
         std::make_unique<ComposeboxQueryController::FileInfo>();
     file_info->file_token_ = file_token;
     file_info->mime_type_ = lens::MimeType::kImage;
-    controller().StartFileUploadFlow(std::move(file_info),
-                                     std::move(file_data));
+    controller().StartFileUploadFlow(std::move(file_info), std::move(file_data),
+                                     image_options);
   }
 
   void WaitForFileUpload(
@@ -319,9 +320,14 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   // Act: Start the file upload flow.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
+                                                 .max_height = 1000,
+                                                 .max_width = 1000,
+                                                 .compression_quality = 30};
   StartImageFileUploadFlow(
       file_token,
-      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>(image_bytes));
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>(image_bytes),
+      image_options);
 
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(file_token);

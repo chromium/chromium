@@ -9,7 +9,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
+#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -25,17 +25,6 @@ constexpr int kImageMaxHeight = 1000;
 constexpr int kImageMaxWidth = 1000;
 
 class ComposeboxImageHelperTest : public testing::Test {
- public:
-  void SetUp() override {
-    // Set all the feature params here to keep the test consistent if future
-    // default values are changed.
-    scoped_config_.Get().enabled = true;
-    scoped_config_.Get().downscale_max_image_size = kImageMaxArea;
-    scoped_config_.Get().image_compression_quality = kImageCompressionQuality;
-    scoped_config_.Get().downscale_max_image_height = kImageMaxHeight;
-    scoped_config_.Get().downscale_max_image_width = kImageMaxWidth;
-  }
-
  protected:
   const SkBitmap CreateOpaqueBitmap(int width, int height) {
     SkBitmap bitmap;
@@ -43,6 +32,19 @@ class ComposeboxImageHelperTest : public testing::Test {
     bitmap.eraseColor(SK_ColorGREEN);
     bitmap.setAlphaType(kOpaque_SkAlphaType);
     return bitmap;
+  }
+
+  lens::ImageData DownscaleAndEncodeBitmap(
+      SkBitmap bitmap,
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs) {
+    ImageEncodingOptions image_options{
+        .max_size = kImageMaxArea,
+        .max_height = kImageMaxHeight,
+        .max_width = kImageMaxWidth,
+        .compression_quality = kImageCompressionQuality,
+    };
+    return composebox::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs,
+                                                image_options);
   }
 
   std::string GetJpegBytesForBitmap(const SkBitmap& bitmap) {
@@ -56,8 +58,6 @@ class ComposeboxImageHelperTest : public testing::Test {
         gfx::WebpCodec::Encode(bitmap, kImageCompressionQuality);
     return std::string(base::as_string_view(data.value()));
   }
-
-  ntp_composebox_fieldtrial::ScopedFeatureConfigForTesting scoped_config_;
 };
 
 TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapMaxSize) {
@@ -65,7 +65,7 @@ TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapMaxSize) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      composebox::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   EXPECT_EQ(kImageMaxWidth, image_data.image_metadata().width());
@@ -78,7 +78,7 @@ TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapSmallSize) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      composebox::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   EXPECT_EQ(bitmap.width(), image_data.image_metadata().width());
@@ -93,7 +93,7 @@ TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapLargeSize) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      composebox::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
 
   const SkBitmap expected_bitmap =
       CreateOpaqueBitmap(kImageMaxWidth, kImageMaxHeight);
@@ -112,7 +112,7 @@ TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapHeightTooLarge) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      composebox::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
 
   const SkBitmap expected_bitmap =
       CreateOpaqueBitmap(kImageMaxWidth / scale, kImageMaxHeight);
@@ -131,7 +131,7 @@ TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapWidthTooLarge) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      composebox::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
 
   const SkBitmap expected_bitmap =
       CreateOpaqueBitmap(kImageMaxWidth, kImageMaxHeight / scale);
@@ -152,7 +152,7 @@ TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapTransparent) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      composebox::DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
+      DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
   std::string expected_output = GetWebpBytesForBitmap(bitmap);
 
   EXPECT_EQ(bitmap.width(), image_data.image_metadata().width());

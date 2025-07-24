@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
+#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -18,7 +19,8 @@ namespace composebox {
 // values.
 lens::ImageData DownscaleAndEncodeBitmap(
     const SkBitmap& image,
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs);
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    const ImageEncodingOptions& image_options);
 
 }  // namespace composebox
 

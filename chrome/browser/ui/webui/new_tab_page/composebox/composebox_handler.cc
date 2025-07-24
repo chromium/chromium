@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
+#include "components/omnibox/composebox/composebox_image_helper.h"
+#include "components/search/ntp_composebox_fieldtrial.h"
 #include "content/public/browser/page_navigator.h"
 
 ComposeboxHandler::ComposeboxHandler(
@@ -57,15 +59,24 @@ void ComposeboxHandler::AddFile(
   file_info_metadata->webui_selection_time = file_info_mojom->selection_time;
   file_info_metadata->file_token_ = base::UnguessableToken::Create();
 
+  std::optional<composebox::ImageEncodingOptions> image_options = std::nullopt;
+
   if ((file_info_mojom->mime_type).find("pdf") != std::string::npos) {
     file_info_metadata->mime_type_ = lens::MimeType::kPdf;
   } else if ((file_info_mojom->mime_type).find("image") != std::string::npos) {
     file_info_metadata->mime_type_ = lens::MimeType::kImage;
+    auto field_config = ntp_composebox_fieldtrial::FeatureConfig::Get();
+    image_options = composebox::ImageEncodingOptions{
+        .max_size = field_config.downscale_max_image_size,
+        .max_height = field_config.downscale_max_image_height,
+        .max_width = field_config.downscale_max_image_width,
+        .compression_quality = field_config.image_compression_quality};
   } else {
     NOTREACHED();
   }
 
   std::move(callback).Run(file_info_metadata->file_token_);
   query_controller_->StartFileUploadFlow(std::move(file_info_metadata),
-                                         std::move(file_data));
+                                         std::move(file_data),
+                                         std::move(image_options));
 }

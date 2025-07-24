@@ -12,7 +12,6 @@
 #include "base/numerics/safe_math.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -21,18 +20,14 @@ namespace {
 
 SkBitmap DownscaleImageIfNeeded(
     const SkBitmap& image,
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs) {
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    const composebox::ImageEncodingOptions& image_options) {
   auto size = gfx::Size(image.width(), image.height());
-  int max_image_size =
-      ntp_composebox_fieldtrial::FeatureConfig::Get().downscale_max_image_size;
-  int max_image_width =
-      ntp_composebox_fieldtrial::FeatureConfig::Get().downscale_max_image_width;
-  int max_image_height = ntp_composebox_fieldtrial::FeatureConfig::Get()
-                             .downscale_max_image_height;
-  if (lens::ShouldDownscaleSize(size, max_image_size, max_image_width,
-                                max_image_height)) {
-    return lens::DownscaleImage(image, max_image_width, max_image_height,
-                                client_logs);
+  if (lens::ShouldDownscaleSize(size, image_options.max_size,
+                                image_options.max_width,
+                                image_options.max_height)) {
+    return lens::DownscaleImage(image, image_options.max_width,
+                                image_options.max_height, client_logs);
   }
 
   // No downscaling needed.
@@ -45,17 +40,17 @@ namespace composebox {
 
 lens::ImageData DownscaleAndEncodeBitmap(
     const SkBitmap& image,
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs) {
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    const ImageEncodingOptions& image_options) {
   lens::ImageData image_data;
   scoped_refptr<base::RefCountedBytes> data =
       base::MakeRefCounted<base::RefCountedBytes>();
 
-  auto resized_bitmap = DownscaleImageIfNeeded(image, client_logs);
-  if (lens::EncodeImageMaybeWithTransparency(
-          resized_bitmap,
-          ntp_composebox_fieldtrial::FeatureConfig::Get()
-              .image_compression_quality,
-          data, client_logs)) {
+  auto resized_bitmap =
+      DownscaleImageIfNeeded(image, client_logs, image_options);
+  if (lens::EncodeImageMaybeWithTransparency(resized_bitmap,
+                                             image_options.compression_quality,
+                                             data, client_logs)) {
     image_data.mutable_image_metadata()->set_height(resized_bitmap.height());
     image_data.mutable_image_metadata()->set_width(resized_bitmap.width());
 
