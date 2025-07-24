@@ -433,7 +433,7 @@ void BtmServiceImpl::HandleRedirects(
     DCHECK(!redirect.chain_index.has_value());
     redirect.chain_index = chain->length - redirects.size() + index;
 
-    // TODO(https://crbug.com/414361732): Can `BtmServiceImpl::HandleRedirect`
+    // TODO(https://crbug.com/434005972): Can `BtmServiceImpl::HandleRedirect`
     // be inlined? For the most part, it's only recording metrics; the
     // interesting work happens in the callback. And it's only being used
     // separately for one test. If inlined, this function could be able to
