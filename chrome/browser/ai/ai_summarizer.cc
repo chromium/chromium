@@ -108,14 +108,12 @@ std::string AISummarizer::CombineContexts(std::string_view shared,
 
 // static
 base::flat_set<std::string_view> AISummarizer::GetSupportedLanguageBaseCodes() {
-  // Comma-separated list of languages that are enabled for the Summarizer API.
+  // Comma-separated language codes to enable; or "*" enables all supported.
   const base::FeatureParam<std::string> kAISummarizationAPILanguagesEnabled{
       &blink::features::kAISummarizationAPI, "langs", /*default_value=*/"en"};
+  // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-
-  // TODO(crbug.com/394841624): Using the model execution config instead
-  // of using the hardcoded list.
   return AIUtils::RestrictSupportedLanguagesForFeature(
       base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
       kAISummarizationAPILanguagesEnabled);

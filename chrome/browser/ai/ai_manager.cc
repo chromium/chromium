@@ -458,12 +458,9 @@ void AIManager::CanCreateLanguageModel(
           base::StringPrintf(kEmptyExpectedOutputLanguageWarning,
                              "LanguageModel"));
     }
-    if (!AreExpectedLanguagesSupported(
-            options->expected_inputs,
-            AILanguageModel::GetSupportedLanguageBaseCodes()) ||
-        !AreExpectedLanguagesSupported(
-            options->expected_outputs,
-            AILanguageModel::GetSupportedLanguageBaseCodes())) {
+    const auto languages = AILanguageModel::GetSupportedLanguageBaseCodes();
+    if (!AreExpectedLanguagesSupported(options->expected_inputs, languages) ||
+        !AreExpectedLanguagesSupported(options->expected_outputs, languages)) {
       AddMessageToConsoleForUnexpectedLanguage(
           blink::mojom::ConsoleMessageLevel::kError,
           base::StringPrintf(kUnsupportedLanguageError, "LanguageModel"));
@@ -482,13 +479,9 @@ void AIManager::CreateLanguageModel(
         client,
     blink::mojom::AILanguageModelCreateOptionsPtr options) {
   CHECK(options);
-
-  if (!AreExpectedLanguagesSupported(
-          options->expected_inputs,
-          AILanguageModel::GetSupportedLanguageBaseCodes()) ||
-      !AreExpectedLanguagesSupported(
-          options->expected_outputs,
-          AILanguageModel::GetSupportedLanguageBaseCodes())) {
+  const auto languages = AILanguageModel::GetSupportedLanguageBaseCodes();
+  if (!AreExpectedLanguagesSupported(options->expected_inputs, languages) ||
+      !AreExpectedLanguagesSupported(options->expected_outputs, languages)) {
     AddMessageToConsoleForUnexpectedLanguage(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(kUnsupportedLanguageError, "LanguageModel"));
@@ -765,11 +758,11 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(kEmptyExpectedOutputLanguageWarning, "Writer"));
   }
-  if (options && !IsLanguagesSupported(options->expected_input_languages,
-                                       options->expected_context_languages,
-                                       options->output_language,
-                                       base::MakeFlatSet<std::string_view>(
-                                           kDefaultSupportedBaseLanguages))) {
+  if (options &&
+      !IsLanguagesSupported(options->expected_input_languages,
+                            options->expected_context_languages,
+                            options->output_language,
+                            AIWriter::GetSupportedLanguageBaseCodes())) {
     AddMessageToConsoleForUnexpectedLanguage(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(kUnsupportedLanguageError, "Writer"));
@@ -790,11 +783,11 @@ void AIManager::CreateWriter(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(kEmptyExpectedOutputLanguageWarning, "Writer"));
   }
-  if (options && !IsLanguagesSupported(options->expected_input_languages,
-                                       options->expected_context_languages,
-                                       options->output_language,
-                                       base::MakeFlatSet<std::string_view>(
-                                           kDefaultSupportedBaseLanguages))) {
+  if (options &&
+      !IsLanguagesSupported(options->expected_input_languages,
+                            options->expected_context_languages,
+                            options->output_language,
+                            AIWriter::GetSupportedLanguageBaseCodes())) {
     AddMessageToConsoleForUnexpectedLanguage(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(kUnsupportedLanguageError, "Writer"));
@@ -839,11 +832,11 @@ void AIManager::CanCreateRewriter(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(kEmptyExpectedOutputLanguageWarning, "Rewriter"));
   }
-  if (options && !IsLanguagesSupported(options->expected_input_languages,
-                                       options->expected_context_languages,
-                                       options->output_language,
-                                       base::MakeFlatSet<std::string_view>(
-                                           kDefaultSupportedBaseLanguages))) {
+  if (options &&
+      !IsLanguagesSupported(options->expected_input_languages,
+                            options->expected_context_languages,
+                            options->output_language,
+                            AIWriter::GetSupportedLanguageBaseCodes())) {
     AddMessageToConsoleForUnexpectedLanguage(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(kUnsupportedLanguageError, "Rewriter"));
@@ -864,11 +857,11 @@ void AIManager::CreateRewriter(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(kEmptyExpectedOutputLanguageWarning, "Rewriter"));
   }
-  if (options && !IsLanguagesSupported(options->expected_input_languages,
-                                       options->expected_context_languages,
-                                       options->output_language,
-                                       base::MakeFlatSet<std::string_view>(
-                                           kDefaultSupportedBaseLanguages))) {
+  if (options &&
+      !IsLanguagesSupported(options->expected_input_languages,
+                            options->expected_context_languages,
+                            options->output_language,
+                            AIWriter::GetSupportedLanguageBaseCodes())) {
     AddMessageToConsoleForUnexpectedLanguage(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(kUnsupportedLanguageError, "Rewriter"));

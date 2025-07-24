@@ -49,7 +49,8 @@ class AISummarizer : public AIContextBoundObject,
   // Joins `shared` and `input` contexts with a space and newline as needed.
   static std::string CombineContexts(std::string_view shared,
                                      std::string_view input);
-  // Returns a set of (base) language codes that are supported and enabled.
+
+  // Returns a set of BCP 47 base language codes that are supported and enabled.
   static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
 
  private:

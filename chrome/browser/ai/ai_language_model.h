@@ -117,7 +117,7 @@ class AILanguageModel : public AIContextBoundObject,
   static PromptApiMetadata ParseMetadata(
       const optimization_guide::proto::Any& any);
 
-  // Returns a set of (base) language codes that are supported and enabled.
+  // Returns a set of BCP 47 base language codes that are supported and enabled.
   static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
 
   // Format the initial prompts, gets the token count, updates the session,

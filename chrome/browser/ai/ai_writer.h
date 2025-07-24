@@ -37,6 +37,9 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
   static std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
   ToProtoOptions(const blink::mojom::AIWriterCreateOptionsPtr& options);
 
+  // Returns a set of BCP 47 base language codes that are supported and enabled.
+  static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
+
   // `blink::mojom::AIWriter` implementation.
   void Write(const std::string& input,
              const std::optional<std::string>& context,

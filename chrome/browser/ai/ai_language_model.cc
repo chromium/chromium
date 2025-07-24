@@ -502,15 +502,12 @@ uint32_t GetMaxTokens(optimization_guide::ModelClient* model_client) {
 // static
 base::flat_set<std::string_view>
 AILanguageModel::GetSupportedLanguageBaseCodes() {
-  // Comma-separated list of languages that are enabled for the Prompt API.
-  // Specify "*" to enable all supported languages.
+  // Comma-separated language codes to enable; or "*" enables all supported.
   const base::FeatureParam<std::string> kAIPromptAPILanguagesEnabled{
       &blink::features::kAIPromptAPI, "langs", /*default_value=*/"en"};
+  // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-
-  // TODO(crbug.com/394841624): Using the model execution config instead
-  // of using the hardcoded list.
   return AIUtils::RestrictSupportedLanguagesForFeature(
       base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
       kAIPromptAPILanguagesEnabled);

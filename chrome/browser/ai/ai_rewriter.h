@@ -39,6 +39,9 @@ class AIRewriter : public AIContextBoundObject,
   static std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
   ToProtoOptions(const blink::mojom::AIRewriterCreateOptionsPtr& options);
 
+  // Returns a set of BCP 47 base language codes that are supported and enabled.
+  static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
+
   // `blink::mojom::AIRewriter` implementation.
   void Rewrite(const std::string& input,
                const std::optional<std::string>& context,
