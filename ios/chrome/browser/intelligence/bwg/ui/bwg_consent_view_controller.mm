@@ -322,17 +322,9 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
       _isAccountManaged ? IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE
                         : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE);
 
-  NSString* symbolName;
-  if (_isAccountManaged) {
-    symbolName = kBuilding2Symbol;
-  } else if (@available(iOS 18, *)) {
-    symbolName = kCounterClockWiseSymbol;
-  } else {
-    symbolName = kHistorySymbol;
-  }
-
-  UIImageView* secondIconImageView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(symbolName, config)];
+  UIImageView* secondIconImageView =
+      [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
+                                             [self secondSymbolName], config)];
 
   secondIconImageView.contentMode = UIViewContentModeScaleAspectFit;
 
@@ -380,6 +372,17 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   [horizontalStackView addArrangedSubview:boxView];
 
   return horizontalStackView;
+}
+
+// Gets the second SF Symbol name.
+- (NSString*)secondSymbolName {
+  if (_isAccountManaged) {
+    return kBuilding2Symbol;
+  }
+  if (@available(iOS 18, *)) {
+    return kCounterClockWiseSymbol;
+  }
+  return kHistorySymbol;
 }
 
 // Creates the first box view containing the text and the title.
