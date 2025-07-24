@@ -104,7 +104,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/web_kiosk_browser_controller_base.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_app_browser_controller.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
@@ -161,7 +161,7 @@ std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
     Browser* browser,
     WebAppProvider* provider,
     const webapps::AppId& app_id) {
-  return std::make_unique<chromeos::WebKioskBrowserControllerBase>(
+  return std::make_unique<chromeos::KioskWebAppBrowserController>(
       *provider, browser, app_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

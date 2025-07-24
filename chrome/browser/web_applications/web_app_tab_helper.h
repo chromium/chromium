@@ -67,7 +67,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // explicitly from elsewhere.
   void SetAppId(std::optional<webapps::AppId> app_id);
 
-  // Called by `WebAppBrowserController` and `WebKioskBrowserControllerBase`'s
+  // Called by `WebAppBrowserController` and `KioskWebAppBrowserController`'s
   // `OnTabInserted` and `OnTabRemoved` methods to indicate if this web contents
   // is currently being displayed inside an app window. `window_app_id` is the
   // id of the app.

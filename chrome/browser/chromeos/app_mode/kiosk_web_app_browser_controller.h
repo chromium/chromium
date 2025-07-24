@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_WEB_KIOSK_BROWSER_CONTROLLER_BASE_H_
-#define CHROME_BROWSER_CHROMEOS_APP_MODE_WEB_KIOSK_BROWSER_CONTROLLER_BASE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_WEB_APP_BROWSER_CONTROLLER_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_WEB_APP_BROWSER_CONTROLLER_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
 
 class Browser;
@@ -25,18 +24,18 @@ class WebAppProvider;
 
 namespace chromeos {
 
-// Class to encapsulate logic to control the browser UI for web Kiosk apps. It
-// displays a fullscreen browser without tab strip and navigation bar. Therefore
-// app name and icon are not needed.
-class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
+// Encapsulates logic to control the browser UI for web Kiosk apps. It displays
+// a fullscreen browser without tab strip and navigation bar. Therefore app name
+// and icon are not needed.
+class KioskWebAppBrowserController : public web_app::AppBrowserController {
  public:
-  WebKioskBrowserControllerBase(web_app::WebAppProvider& provider,
-                                Browser* browser,
-                                webapps::AppId app_id);
-  WebKioskBrowserControllerBase(const WebKioskBrowserControllerBase&) = delete;
-  WebKioskBrowserControllerBase& operator=(
-      const WebKioskBrowserControllerBase&) = delete;
-  ~WebKioskBrowserControllerBase() override;
+  KioskWebAppBrowserController(web_app::WebAppProvider& provider,
+                               Browser* browser,
+                               webapps::AppId app_id);
+  KioskWebAppBrowserController(const KioskWebAppBrowserController&) = delete;
+  KioskWebAppBrowserController& operator=(const KioskWebAppBrowserController&) =
+      delete;
+  ~KioskWebAppBrowserController() override;
 
   // AppBrowserController:
   bool HasMinimalUiButtons() const override;
@@ -66,4 +65,4 @@ class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_WEB_KIOSK_BROWSER_CONTROLLER_BASE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_WEB_APP_BROWSER_CONTROLLER_H_

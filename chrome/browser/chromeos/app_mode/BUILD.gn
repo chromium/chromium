@@ -40,6 +40,8 @@ static_library("app_mode") {
     "kiosk_troubleshooting_controller.h",
     "kiosk_troubleshooting_controller_ash.cc",
     "kiosk_troubleshooting_controller_ash.h",
+    "kiosk_web_app_browser_controller.cc",
+    "kiosk_web_app_browser_controller.h",
     "kiosk_web_app_install_util.cc",
     "kiosk_web_app_install_util.h",
     "kiosk_web_app_update_observer.cc",
@@ -48,8 +50,6 @@ static_library("app_mode") {
     "kiosk_web_contents_logs_collector.h",
     "startup_app_launcher_update_checker.cc",
     "startup_app_launcher_update_checker.h",
-    "web_kiosk_browser_controller_base.cc",
-    "web_kiosk_browser_controller_base.h",
   ]
 
   if (enable_plugins) {
