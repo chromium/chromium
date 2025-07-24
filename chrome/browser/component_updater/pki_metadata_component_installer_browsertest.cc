@@ -1644,9 +1644,10 @@ class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
   uint8_t num_observed_responses_ = 0;
 };
 
+// TODO(crbug.com/431064813): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(
     PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest,
-    TrustAnchorIDs) {
+    DISABLED_TrustAnchorIDs) {
   // Before updating the root store with trust anchor IDs, the server should
   // serve both a leaf and an intermediate.
   {
