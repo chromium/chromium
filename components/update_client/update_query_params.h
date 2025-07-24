@@ -18,7 +18,7 @@ class UpdateQueryParamsDelegate;
 // browser process.
 class UpdateQueryParams {
  public:
-  enum ProdId { CHROME = 0, CRX, WEBVIEW };
+  enum ProdId { CHROME = 0, CRX, WEBVIEW, IOS_WEBVIEW };
 
   UpdateQueryParams() = delete;
   UpdateQueryParams(const UpdateQueryParams&) = delete;

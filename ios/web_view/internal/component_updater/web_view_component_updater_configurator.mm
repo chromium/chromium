@@ -138,7 +138,7 @@ std::vector<GURL> WebViewConfigurator::PingUrl() const {
 
 std::string WebViewConfigurator::GetProdId() const {
   return update_client::UpdateQueryParams::GetProdIdString(
-      update_client::UpdateQueryParams::ProdId::WEBVIEW);
+      update_client::UpdateQueryParams::ProdId::IOS_WEBVIEW);
 }
 
 base::Version WebViewConfigurator::GetBrowserVersion() const {

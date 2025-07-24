@@ -72,10 +72,12 @@ const char kArch[] =
 const char kChrome[] = "chrome";
 const char kCrx[] = "chromecrx";
 const char kWebView[] = "googleandroidwebview";
+const char kIOsWebView[] = "googleioswebview";
 #else
 const char kChrome[] = "chromium";
 const char kCrx[] = "chromiumcrx";
 const char kWebView[] = "androidwebview";
+const char kIOsWebView[] = "ioswebview";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 UpdateQueryParamsDelegate* g_delegate = nullptr;
@@ -100,6 +102,8 @@ const char* UpdateQueryParams::GetProdIdString(UpdateQueryParams::ProdId prod) {
       return kCrx;
     case UpdateQueryParams::WEBVIEW:
       return kWebView;
+    case UpdateQueryParams::IOS_WEBVIEW:
+      return kIOsWebView;
   }
   return kUnknown;
 }
