@@ -73,11 +73,6 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
     current_tab_active_status_ = tab_active_status;
   }
 
-  // TODO(crbug.com/425952887): Change this once ui components are implemented,
-  // for now always return true.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-
   // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (GetHandoffButtonController()) {
     // TODO(crbug.com/433568221): Update the visibility logic when ActorOverlay
@@ -86,6 +81,11 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
     GetHandoffButtonController()->UpdateState(
         current_ui_tab_state_.handoff_button, current_tab_active_status_);
   }
+
+  // TODO(crbug.com/425952887): Change this once ui components are implemented,
+  // for now always return true.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
