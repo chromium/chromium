@@ -26,9 +26,17 @@ class Widget;
 }  // namespace views
 
 // Tracks the number of times the DICe migration dialog has been shown.
+// IMPORTANT(!): The dialog is considered shown only if the user interacts with
+// it, i.e. the user accepts or dismisses the dialog. This is better than just
+// tracking when the dialog was actually shown, since the user might have
+// dismissed the dialog unknowingly, for example, by closing the browser.
 extern const char kDiceMigrationDialogShownCount[];
 
-// Tracks the last time the DICe migration dialog has been shown.
+// Tracks the last time the DICe migration dialog was shown.
+// IMPORTANT(!): The dialog is considered shown only if the user interacts with
+// it, i.e. the user accepts or dismisses the dialog. This is better than just
+// tracking when the dialog was actually shown, since the user might have
+// dismissed the dialog unknowingly, for example, by closing the browser.
 extern const char kDiceMigrationDialogLastShownTime[];
 
 class DiceMigrationService : public KeyedService, public views::WidgetObserver {
@@ -61,6 +69,8 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   // Shows the Dice migration offer dialog if the user is eligible for it.
   void ShowDiceMigrationOfferDialogIfUserEligible();
 
+  // Getters/setter for the dialog interaction count and last interaction time
+  // prefs.
   int GetDialogShownCount() const;
   base::Time GetDialogLastShownTime() const;
   void UpdateDialogShownCountAndTime();

@@ -248,11 +248,60 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
   ASSERT_TRUE(timer.IsRunning());
   timer.FireNow();
-  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
-  // The dialog shown count is incremented.
+  views::Widget* widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(widget);
+
+  // The dialog shown count is not incremented yet.
+  EXPECT_EQ(
+      GetProfile()->GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 1);
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  // Simulate closing the dialog.
+  GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
+      views::Widget::ClosedReason::kCancelButtonClicked);
+  waiter.Wait();
+
+  // The dialog shown count is now incremented.
   EXPECT_EQ(
       GetProfile()->GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 2);
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      DoNotIncrementDialogShownCountIfNotInteractedWith) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Set the current dialog shown count to 1.
+  GetProfile()->GetPrefs()->SetInteger(kDiceMigrationDialogShownCount, 1);
+
+  // Show the migration bubble.
+  base::OneShotTimer& timer =
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+  ASSERT_TRUE(timer.IsRunning());
+  timer.FireNow();
+
+  views::Widget* widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(widget);
+
+  // The dialog shown count is not incremented yet.
+  EXPECT_EQ(
+      GetProfile()->GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 1);
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  // Simulate the dialog being closed without any shown.
+  GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
+      views::Widget::ClosedReason::kUnspecified);
+  waiter.Wait();
+
+  // The dialog shown count is not incremented.
+  EXPECT_EQ(
+      GetProfile()->GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -274,8 +323,22 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   ASSERT_TRUE(timer.IsRunning());
   timer.FireNow();
 
-  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
-  // The dialog last shown time is updated.
+  views::Widget* widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(widget);
+
+  // The dialog last shown time is not updated yet.
+  EXPECT_LT(
+      GetProfile()->GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime),
+      time_now);
+
+  // Simulate closing the dialog.
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
+      views::Widget::ClosedReason::kCancelButtonClicked);
+  waiter.Wait();
+
+  // The dialog last shown time is now updated.
   EXPECT_GE(
       GetProfile()->GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime),
       time_now);

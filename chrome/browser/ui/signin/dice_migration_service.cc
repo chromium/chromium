@@ -240,13 +240,6 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   browser_ = browser->AsWeakPtr();
   dialog_widget_->Show();
 
-  // TODO(crbug.com/399838468): Only increment the count if and when the dialog
-  // is actually visible to the user. For example, showing the dialog on a
-  // minimized browser window should not increment the count.
-  // TODO(crbug.com/399838468): Consider instead tracking the number of times
-  // the user actually interacts with the dialog and using that for limiting.
-  UpdateDialogShownCountAndTime();
-
   // TODO(crbug.com/399838468): Close the dialog when the avatar pill is
   // clicked.
 }
@@ -263,29 +256,36 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
   CHECK_EQ(dialog_widget_, widget);
   dialog_widget_observation_.Reset();
   dialog_widget_ = nullptr;
+  Browser* browser = browser_.get();
+  browser_.reset();
   // TODO(crbug.com/399838468): Add actions for the different close reasons.
   switch (widget->closed_reason()) {
     // Losing focus should not close the dialog.
     case views::Widget::ClosedReason::kLostFocus:
       NOTREACHED();
+    case views::Widget::ClosedReason::kUnspecified:
+      return;
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      if (MaybeMigrateUser(profile_) && browser_) {
-        MaybeShowToast(browser_.get());
+      if (MaybeMigrateUser(profile_) && browser) {
+        MaybeShowToast(browser);
       }
       break;
     case views::Widget::ClosedReason::kCancelButtonClicked:
       // Cancel button is only available in the non-"final" variant.
-      CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
+      CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount - 1);
       break;
     case views::Widget::ClosedReason::kCloseButtonClicked:
       // Close button is only available in the "final" variant.
-      CHECK_EQ(GetDialogShownCount(), kMaxDialogShownCount);
+      CHECK_EQ(GetDialogShownCount(), kMaxDialogShownCount - 1);
       break;
-    case views::Widget::ClosedReason::kUnspecified:
     case views::Widget::ClosedReason::kEscKeyPressed:
       break;
   }
-  browser_.reset();
+  // The dialog is considered shown if the user interacts with it, i.e. the user
+  // accepts or dismisses the dialog. This is better than just tracking when the
+  // dialog was actually shown, since the user might have dismissed the dialog
+  // unknowingly, for example, by closing the browser.
+  UpdateDialogShownCountAndTime();
 }
 
 void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
