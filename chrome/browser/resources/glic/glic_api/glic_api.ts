@@ -716,6 +716,11 @@ export declare interface GlicBrowserHostMetrics {
    * This can get fired multiple times in a single session.
    */
   onClosedCaptionsShown?(): void;
+
+  /**
+   * Called when a turn has been completed.
+   */
+  onTurnCompleted?(model: WebClientModel, duration: number): void;
 }
 
 /** Web client's operation modes */
@@ -724,6 +729,14 @@ export enum WebClientMode {
   TEXT = 0,
   /** Audio operation mode. */
   AUDIO = 1,
+}
+
+export enum WebClientModel {
+  /** Default model. */
+  DEFAULT = 0,
+
+  /** Actor model. */
+  ACTOR = 1,
 }
 
 /** An encoded journal. */

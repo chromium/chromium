@@ -642,6 +642,11 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.onSessionTerminated();
   }
 
+  glicBrowserOnTurnCompleted(request: {model: number, duration: number}): void {
+    this.handler.onTurnCompleted(
+        request.model, timeDeltaFromClient(request.duration));
+  }
+
   glicBrowserLogBeginAsyncEvent(request: {
     asyncEventId: number,
     taskId: number,

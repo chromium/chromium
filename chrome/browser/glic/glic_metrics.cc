@@ -364,6 +364,14 @@ void GlicMetrics::OnResponseRated(bool positive) {
   base::UmaHistogramBoolean("Glic.Response.Rated", positive);
 }
 
+void GlicMetrics::OnTurnCompleted(mojom::WebClientModel model,
+                                  base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(model == mojom::WebClientModel::kActor
+                                    ? "Glic.Response.TurnDuration.Actor"
+                                    : "Glic.Response.TurnDuration.Default",
+                                duration);
+}
+
 void GlicMetrics::OnGlicWindowOpen(bool attached,
                                    mojom::InvocationSource source) {
   base::UmaHistogramEnumeration(

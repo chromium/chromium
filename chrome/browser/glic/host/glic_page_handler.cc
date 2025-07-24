@@ -1061,6 +1061,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnSessionTerminated();
   }
 
+  void OnTurnCompleted(glic::mojom::WebClientModel model,
+                       base::TimeDelta duration) override {
+    glic_service_->metrics()->OnTurnCompleted(model, duration);
+  }
+
   void OnResponseRated(bool positive) override {
     glic_service_->metrics()->OnResponseRated(positive);
   }

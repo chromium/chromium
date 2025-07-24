@@ -823,6 +823,11 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.sender.requestNoResponse(
         'glicBrowserOnClosedCaptionsShown', undefined);
   }
+
+  onTurnCompleted?(model: number, duration: number): void {
+    this.sender.requestNoResponse(
+        'glicBrowserOnTurnCompleted', {model, duration});
+  }
 }
 
 // Converts an RgbaImage into a Blob through the canvas API. Output is a PNG.

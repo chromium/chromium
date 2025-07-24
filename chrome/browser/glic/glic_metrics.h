@@ -219,6 +219,8 @@ class GlicMetrics {
   void OnResponseStopped();
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
+  void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
+
   void OnAttachedToBrowser(AttachChangeReason reason);
   void OnDetachedFromBrowser(AttachChangeReason reason);
 

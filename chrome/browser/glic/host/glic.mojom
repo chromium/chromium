@@ -710,6 +710,9 @@ interface WebClientHandler {
   // Called when the session is terminated.
   OnSessionTerminated();
 
+  // Called when the web client completes a turn.
+  OnTurnCompleted(WebClientModel mode, mojo_base.mojom.TimeDelta duration);
+
   // Called when the user rates a response.
   OnResponseRated(bool positive);
 
@@ -838,6 +841,16 @@ enum WebClientMode {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientMode)
+
+// Web client's operation model.
+// WARNING: These enum values should match WebClientModel in
+// chrome/browser/resources/glic/glic_api/glic_api.ts
+[Stable, Extensible]
+enum WebClientModel {
+  [Default] kDefault = 0,
+  // Actor operation mode.
+  kActor = 1,
+};
 
 // Carries back to the browser information on how to configure the panel being
 // opened.

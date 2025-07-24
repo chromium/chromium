@@ -270,6 +270,12 @@ export declare interface HostRequestTypes {
   glicBrowserOnResponseStarted: {};
   glicBrowserOnResponseStopped: {};
   glicBrowserOnSessionTerminated: {};
+  glicBrowserOnTurnCompleted: {
+    request: {
+      model: number,
+      duration: number,
+    },
+  };
   glicBrowserOnResponseRated: {
     request: {
       positive: boolean,
@@ -489,11 +495,12 @@ type HostRequestEnumNamesType = {
     JournalStop: 0,
     JournalRecordFeedback: 0,
     OnUserInputSubmitted: 0,
+    OnResponseRated: 0,
     OnRequestStarted: 0,
     OnResponseStarted: 0,
     OnResponseStopped: 0,
     OnSessionTerminated: 0,
-    OnResponseRated: 0,
+    OnTurnCompleted: 0,
     ScrollTo: 0,
     SetSyntheticExperimentState: 0,
     OpenOsPermissionSettingsMenu: 0,
