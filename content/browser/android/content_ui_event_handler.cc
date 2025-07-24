@@ -15,6 +15,7 @@
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/android/motion_event_android_source_java.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 
@@ -136,29 +137,24 @@ void ContentUiEventHandler::SendMouseEvent(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& motion_event,
     jlong time_ns,
-    jint android_action,
-    jfloat x,
-    jfloat y,
-    jint pointer_id,
-    jfloat pressure,
-    jfloat orientation,
-    jfloat tilt,
     jint android_action_button,
-    jint android_button_state,
     jint android_tool_type) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;
 
+  auto source = ui::MotionEventAndroidSourceJava::Create(motion_event, false);
+
   // Construct a motion_event object minimally, only to convert the raw
   // parameters to ui::MotionEvent values. Since we used only the cached values
   // at index=0, it is okay to even pass a null event to the constructor.
   ui::MotionEventAndroid::Pointer pointer(
-      /*id=*/pointer_id, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*id=*/source->GetPointerId(0), /*pos_x_pixels=*/source->GetXPix(0),
+      /*pos_y_pixels=*/source->GetYPix(0),
       /*touch_major_pixels=*/0.0f,
-      /*touch_minor_pixels=*/0.0f, /*pressure=*/pressure,
-      /*orientation_rad=*/orientation,
-      /*tilt_rad=*/tilt, /*tool_type=*/android_tool_type);
+      /*touch_minor_pixels=*/0.0f, /*pressure=*/source->GetPressure(0),
+      /*orientation_rad=*/source->GetRawOrientation(0),
+      /*tilt_rad=*/source->GetRawTilt(0), /*tool_type=*/android_tool_type);
   auto event = ui::MotionEventAndroidFactory::CreateFromJava(
       env, /*event=*/motion_event,
       /*pix_to_dip=*/1.f / web_contents_->GetNativeView()->GetDipScale(),
@@ -166,11 +162,12 @@ void ContentUiEventHandler::SendMouseEvent(
       /*ticks_y=*/0.f,
       /*tick_multiplier=*/0.f,
       /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
-      android_action,
+      /*android_action=*/source->GetActionMasked(),
       /*pointer_count=*/1,
       /*history_size=*/0,
       /*action_index=*/0, android_action_button,
-      /*android_gesture_classification=*/0, android_button_state,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/source->GetButtonState(),
       /*raw_offset_x_pixels=*/0,
       /*raw_offset_y_pixels=*/0,
       /*for_touch_handle=*/false,

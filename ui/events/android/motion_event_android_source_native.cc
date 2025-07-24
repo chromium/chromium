@@ -62,6 +62,15 @@ MotionEvent::ToolType MotionEventAndroidSourceNative::GetToolType(
       AMotionEvent_getToolType(event_.a_input_event(), pointer_index));
 }
 
+int MotionEventAndroidSourceNative::GetActionMasked() const {
+  return AMotionEvent_getAction(event_.a_input_event()) &
+         AMOTION_EVENT_ACTION_MASK;
+}
+
+int MotionEventAndroidSourceNative::GetButtonState() const {
+  return AMotionEvent_getButtonState(event_.a_input_event());
+}
+
 base::TimeTicks MotionEventAndroidSourceNative::GetHistoricalEventTime(
     size_t historical_index) const {
   return base::TimeTicks::FromJavaNanoTime(AMotionEvent_getHistoricalEventTime(

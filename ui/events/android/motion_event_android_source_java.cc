@@ -83,6 +83,16 @@ MotionEvent::ToolType MotionEventAndroidSourceJava::GetToolType(
       AttachCurrentThread(), event_, pointer_index));
 }
 
+int MotionEventAndroidSourceJava::GetActionMasked() const {
+  return JNI_MotionEvent::Java_MotionEvent_getActionMasked(
+      AttachCurrentThread(), event_);
+}
+
+int MotionEventAndroidSourceJava::GetButtonState() const {
+  return JNI_MotionEvent::Java_MotionEvent_getButtonState(AttachCurrentThread(),
+                                                          event_);
+}
+
 base::TimeTicks MotionEventAndroidSourceJava::GetHistoricalEventTime(
     size_t historical_index) const {
   jlong time_ms = JNI_MotionEvent::Java_MotionEvent_getHistoricalEventTime(

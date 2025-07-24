@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,31 +87,21 @@ public class ContentUiEventHandlerTest {
     public void testOnGenericMotionEventSendsTrackpadClicksToNative() {
         MotionEvent trackpadLeftClickEvent = getTrackpadLeftClickEvent();
         mContentUiEventHandler.onGenericMotionEvent(getTrackpadLeftClickEvent());
-        verifySendMouseEvent(trackpadLeftClickEvent);
 
         MotionEvent trackpadRightClickEvent = getTrackRightClickEvent();
         mContentUiEventHandler.onGenericMotionEvent(getTrackRightClickEvent());
-        verifySendMouseEvent(trackpadRightClickEvent);
-    }
 
-    private void verifySendMouseEvent(MotionEvent event) {
         ArgumentCaptor<MotionEvent> captor = ArgumentCaptor.forClass(MotionEvent.class);
-        verify(mContentUiEventHandlerJniMock)
+        verify(mContentUiEventHandlerJniMock, times(2))
                 .sendMouseEvent(
                         eq(NATIVE_CONTENT_UI_EVENT_HANDLER),
                         captor.capture(),
-                        eq(MotionEventUtils.getEventTimeNanos(event)),
-                        eq(event.getActionMasked()),
-                        eq(event.getX()),
-                        eq(event.getY()),
-                        eq(event.getPointerId(0)),
-                        eq(event.getPressure(0)),
-                        eq(event.getOrientation(0)),
-                        eq(event.getAxisValue(MotionEvent.AXIS_TILT, 0)),
-                        eq(EventForwarder.getMouseEventActionButton(event)),
-                        eq(event.getButtonState()),
+                        eq(MotionEventUtils.getEventTimeNanos(trackpadLeftClickEvent)),
+                        eq(EventForwarder.getMouseEventActionButton(trackpadLeftClickEvent)),
                         eq(MotionEvent.TOOL_TYPE_MOUSE));
-        MotionEventTestUtils.assertEquals(captor.getValue(), event);
+
+        MotionEventTestUtils.assertEquals(captor.getAllValues().get(0), trackpadLeftClickEvent);
+        MotionEventTestUtils.assertEquals(captor.getAllValues().get(1), trackpadRightClickEvent);
     }
 
     private static MotionEvent getTrackpadLeftClickEvent() {
