@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -25,6 +26,7 @@
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -34,6 +36,7 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -46,10 +49,25 @@ using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserAction = FileSystemAccessPermissionContext::UserAction;
 using LockType = FileSystemAccessLockManager::LockType;
+using blink::mojom::PermissionStatus;
 
-class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
+// A matcher to check if a `RequestPermission()` call is successful and
+// returns the expected permission status.
+MATCHER_P(IsOkAndPermissionStatus, status, "") {
+  if (arg.first->status != blink::mojom::FileSystemAccessStatus::kOk) {
+    *result_listener << "FileSystemAccessStatus is " << arg.first->status;
+    return false;
+  }
+  if (arg.second != status) {
+    *result_listener << "PermissionStatus is " << arg.second;
+    return false;
+  }
+  return true;
+}
+
+class FileSystemAccessDirectoryHandleImplTestBase : public testing::Test {
  public:
-  FileSystemAccessDirectoryHandleImplTest()
+  FileSystemAccessDirectoryHandleImplTestBase()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
@@ -175,6 +193,9 @@ class TestFileSystemAccessDirectoryEntriesListener
   base::OnceClosure done_;
 };
 }  // namespace
+
+class FileSystemAccessDirectoryHandleImplTest
+    : public FileSystemAccessDirectoryHandleImplTestBase {};
 
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
   constexpr const char* kSafeNames[] = {"a", "a.txt", "My Computer", "lnk.txt",
@@ -481,6 +502,285 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetChildURL_CustomBucket) {
             base::File::Error::FILE_OK);
   EXPECT_TRUE(file_url.bucket());
   EXPECT_EQ(file_url.bucket().value(), custom_bucket);
+}
+
+class FileSystemAccessDirectoryHandleImplPermissionTest
+    : public FileSystemAccessDirectoryHandleImplTestBase {
+ public:
+  void SetUp() override {
+    FileSystemAccessDirectoryHandleImplTestBase::SetUp();
+    mock_read_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+    mock_write_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  }
+
+ protected:
+  // Creates a handle to a directory named "test_dir" in the test directory.
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> CreateHandle() {
+    auto test_path = dir_.GetPath().AppendASCII("test_dir");
+    EXPECT_TRUE(base::CreateDirectory(test_path));
+    auto url = manager_->CreateFileSystemURLFromPath(PathInfo(test_path));
+    return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+        manager_.get(), kFrameBindingContext, url,
+        FileSystemAccessManagerImpl::SharedHandleState(mock_read_grant_,
+                                                       mock_write_grant_));
+  }
+
+  // Calls GetPermissionStatus() on the given `handle` and waits for the result.
+  void GetPermissionStatus(FileSystemAccessDirectoryHandleImpl* handle,
+                           blink::mojom::FileSystemAccessPermissionMode mode,
+                           blink::mojom::PermissionStatus* out_status) {
+    base::test::TestFuture<blink::mojom::PermissionStatus> future;
+    handle->GetPermissionStatus(mode, future.GetCallback());
+    *out_status = future.Get();
+  }
+
+  // Calls RequestPermission() on the given `handle` and waits for the result.
+  std::pair<blink::mojom::FileSystemAccessErrorPtr,
+            blink::mojom::PermissionStatus>
+  RequestPermission(FileSystemAccessDirectoryHandleImpl* handle,
+                    blink::mojom::FileSystemAccessPermissionMode mode) {
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           blink::mojom::PermissionStatus>
+        future;
+    handle->RequestPermission(mode, future.GetCallback());
+    return future.Take();
+  }
+
+  // Sets up expectations for a call to `RequestPermission()` on a mock grant.
+  void SetUpGrantExpectations(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>& grant,
+      PermissionStatus new_status,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome) {
+    EXPECT_CALL(grant, GetStatus())
+        .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+    EXPECT_CALL(
+        grant,
+        RequestPermission_(
+            kFrameId,
+            FileSystemAccessPermissionGrant::UserActivationState::kRequired, _))
+        .WillOnce(
+            testing::DoAll(testing::InvokeWithoutArgs([&grant, new_status]() {
+                             EXPECT_CALL(grant, GetStatus())
+                                 .WillRepeatedly(testing::Return(new_status));
+                           }),
+                           base::test::RunOnceCallback<2>(outcome)));
+  }
+
+  const int kProcessId = 1;
+  const int kFrameRoutingId = 2;
+  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
+  const FileSystemAccessManagerImpl::BindingContext kFrameBindingContext = {
+      test_src_storage_key_, test_src_url_, kFrameId};
+
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_read_grant_;
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_write_grant_;
+};
+
+class FileSystemAccessDirectoryHandleImplGetPermissionStatusTest
+    : public FileSystemAccessDirectoryHandleImplPermissionTest {};
+
+// Test with read-only handle.
+TEST_F(FileSystemAccessDirectoryHandleImplGetPermissionStatusTest, ReadHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_dir");
+  ASSERT_TRUE(base::CreateDirectory(test_path));
+
+  auto read_only_handle =
+      GetHandleWithPermissions(test_path, /*read=*/true, /*write=*/false);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(read_only_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(read_only_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+  }
+
+  GetPermissionStatus(read_only_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplGetPermissionStatusTest,
+       WriteHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_dir");
+  ASSERT_TRUE(base::CreateDirectory(test_path));
+
+  auto write_handle =
+      GetHandleWithPermissions(test_path, /*read=*/false, /*write=*/true);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(write_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+  }
+
+  GetPermissionStatus(write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplGetPermissionStatusTest,
+       ReadWriteHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_dir");
+  ASSERT_TRUE(base::CreateDirectory(test_path));
+
+  auto read_write_handle =
+      GetHandleWithPermissions(test_path, /*read=*/true, /*write=*/true);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(read_write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(read_write_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+  }
+
+  GetPermissionStatus(read_write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+}
+
+class FileSystemAccessDirectoryHandleImplRequestPermissionTest
+    : public FileSystemAccessDirectoryHandleImplPermissionTest {};
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestRead_Granted) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kRead),
+      IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestRead_Denied) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kRead),
+      IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestReadWrite_Granted) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestReadWrite_ReadDenied) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestReadWrite_WriteDenied) {
+  auto handle = CreateHandle();
+
+  EXPECT_CALL(*mock_read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestWrite_Granted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite),
+      IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestWrite_Denied) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite),
+      IsOkAndPermissionStatus(PermissionStatus::DENIED));
 }
 
 }  // namespace content

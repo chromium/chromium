@@ -150,15 +150,15 @@ FileSystemAccessFileHandleImpl::FileSystemAccessFileHandleImpl(
 FileSystemAccessFileHandleImpl::~FileSystemAccessFileHandleImpl() = default;
 
 void FileSystemAccessFileHandleImpl::GetPermissionStatus(
-    bool writable,
+    blink::mojom::FileSystemAccessPermissionMode mode,
     GetPermissionStatusCallback callback) {
-  DoGetPermissionStatus(writable, std::move(callback));
+  DoGetPermissionStatus(mode, std::move(callback));
 }
 
 void FileSystemAccessFileHandleImpl::RequestPermission(
-    bool writable,
+    blink::mojom::FileSystemAccessPermissionMode mode,
     RequestPermissionCallback callback) {
-  DoRequestPermission(writable, std::move(callback));
+  DoRequestPermission(mode, std::move(callback));
 }
 
 void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {

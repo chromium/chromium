@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -57,10 +58,10 @@ class FileSystemFileHandle final : public FileSystemHandle {
 
  private:
   void QueryPermissionImpl(
-      bool writable,
+      mojom::blink::FileSystemAccessPermissionMode mode,
       base::OnceCallback<void(mojom::blink::PermissionStatus)>) override;
   void RequestPermissionImpl(
-      bool writable,
+      mojom::blink::FileSystemAccessPermissionMode mode,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) override;
   void MoveImpl(

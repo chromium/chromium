@@ -279,17 +279,17 @@ void FileSystemFileHandle::Trace(Visitor* visitor) const {
 }
 
 void FileSystemFileHandle::QueryPermissionImpl(
-    bool writable,
+    mojom::blink::FileSystemAccessPermissionMode mode,
     base::OnceCallback<void(mojom::blink::PermissionStatus)> callback) {
   if (!mojo_ptr_.is_bound()) {
     std::move(callback).Run(mojom::blink::PermissionStatus::DENIED);
     return;
   }
-  mojo_ptr_->GetPermissionStatus(writable, std::move(callback));
+  mojo_ptr_->GetPermissionStatus(mode, std::move(callback));
 }
 
 void FileSystemFileHandle::RequestPermissionImpl(
-    bool writable,
+    mojom::blink::FileSystemAccessPermissionMode mode,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                             mojom::blink::PermissionStatus)> callback) {
   if (!mojo_ptr_.is_bound()) {
@@ -301,7 +301,7 @@ void FileSystemFileHandle::RequestPermissionImpl(
     return;
   }
 
-  mojo_ptr_->RequestPermission(writable, std::move(callback));
+  mojo_ptr_->RequestPermission(mode, std::move(callback));
 }
 
 void FileSystemFileHandle::MoveImpl(

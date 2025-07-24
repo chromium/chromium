@@ -68,6 +68,22 @@ namespace content {
 
 using blink::mojom::PermissionStatus;
 using storage::FileSystemURL;
+using testing::_;
+using testing::FieldsAre;
+
+// A matcher to check if a `RequestPermission()` call is successful and
+// returns the expected permission status.
+MATCHER_P(IsOkAndPermissionStatus, status, "") {
+  if (arg.first->status != blink::mojom::FileSystemAccessStatus::kOk) {
+    *result_listener << "FileSystemAccessStatus is " << arg.first->status;
+    return false;
+  }
+  if (arg.second != status) {
+    *result_listener << "PermissionStatus is " << arg.second;
+    return false;
+  }
+  return true;
+}
 
 // Test fixture for FileSystemAccessFileHandleImpl.
 //
@@ -76,9 +92,9 @@ using storage::FileSystemURL;
 //
 // Tests with mock permission context are in
 // FileSystemAccessFileHandleImplMovePermissionsTest.
-class FileSystemAccessFileHandleImplTest : public testing::Test {
+class FileSystemAccessFileHandleImplTestBase : public testing::Test {
  public:
-  FileSystemAccessFileHandleImplTest() = default;
+  FileSystemAccessFileHandleImplTestBase() = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -278,7 +294,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
 };
 
 class FileSystemAccessAccessHandleTest
-    : public FileSystemAccessFileHandleImplTest {
+    : public FileSystemAccessFileHandleImplTestBase {
  public:
   void SetUp() override {
     // AccessHandles are only allowed for temporary file systems.
@@ -328,6 +344,9 @@ class FileSystemAccessAccessHandleContentUriTest
   }
 };
 #endif
+
+class FileSystemAccessFileHandleImplTest
+    : public FileSystemAccessFileHandleImplTestBase {};
 
 TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
   int max_files = 5;
@@ -866,7 +885,7 @@ TEST_F(FileSystemAccessFileHandleImplTest, ContentUriRenameMoveNotSupported) {
 // platform support for copy-on-write files) behaves as expected. Swap file
 // cloning requires storage::kFileSystemTypeLocal.
 class FileSystemAccessFileHandleSwapFileCloningTest
-    : public FileSystemAccessFileHandleImplTest {
+    : public FileSystemAccessFileHandleImplTestBase {
  public:
   enum class CloneFileResult {
     kDidNotAttempt,
@@ -1013,7 +1032,7 @@ struct MovePermissionsTestCase {
 // without access to the destination directory. These tests always grant write
 // access to the destination directory.
 class FileSystemAccessFileHandleImplMovePermissionsTest
-    : public FileSystemAccessFileHandleImplTest,
+    : public FileSystemAccessFileHandleImplTestBase,
       public testing::WithParamInterface<MovePermissionsTestCase> {
  public:
   void SetUp() override {
@@ -1391,7 +1410,7 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
 }
 
 TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest, Move_SameFile) {
-  auto [source, _] = CreateSourceAndMaybeTarget();
+  auto [source, unused] = CreateSourceAndMaybeTarget();
 
   ExpectFileMoveSuccess(source, source);
 }
@@ -1416,6 +1435,282 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest, Move_SensitiveName) {
       /*expects_safe_name=*/true,
       // Let the test fail because the sensitive entry access check is aborted.
       FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort);
+}
+
+class FileSystemAccessFileHandleImplPermissionTest
+    : public FileSystemAccessFileHandleImplTestBase {
+ public:
+  void SetUp() override {
+    FileSystemAccessFileHandleImplTestBase::SetUp();
+    mock_read_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+    mock_write_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  }
+
+ protected:
+  // Creates a handle to a file named "test_file" in the test directory.
+  std::unique_ptr<FileSystemAccessFileHandleImpl> CreateHandle() {
+    auto test_path = dir_.GetPath().AppendASCII("test_file");
+    EXPECT_TRUE(base::WriteFile(test_path, ""));
+    auto url = manager_->CreateFileSystemURLFromPath(PathInfo(test_path));
+    return std::make_unique<FileSystemAccessFileHandleImpl>(
+        manager_.get(), kFrameBindingContext, url, "test_file",
+        FileSystemAccessManagerImpl::SharedHandleState(mock_read_grant_,
+                                                       mock_write_grant_));
+  }
+
+  // Calls GetPermissionStatus() on the given `handle` and waits for the result.
+  void GetPermissionStatus(FileSystemAccessFileHandleImpl* handle,
+                           blink::mojom::FileSystemAccessPermissionMode mode,
+                           blink::mojom::PermissionStatus* out_status) {
+    base::test::TestFuture<blink::mojom::PermissionStatus> future;
+    handle->GetPermissionStatus(mode, future.GetCallback());
+    *out_status = future.Get();
+  }
+
+  // Calls RequestPermission() on the given `handle` and waits for the result.
+  std::pair<blink::mojom::FileSystemAccessErrorPtr,
+            blink::mojom::PermissionStatus>
+  RequestPermission(FileSystemAccessFileHandleImpl* handle,
+                    blink::mojom::FileSystemAccessPermissionMode mode) {
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           blink::mojom::PermissionStatus>
+        future;
+    handle->RequestPermission(mode, future.GetCallback());
+    return future.Take();
+  }
+
+  // Sets up expectations for a call to `RequestPermission()` on a mock grant.
+  void SetUpGrantExpectations(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>& grant,
+      PermissionStatus new_status,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome) {
+    EXPECT_CALL(grant, GetStatus())
+        .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+    EXPECT_CALL(
+        grant,
+        RequestPermission_(
+            kFrameId,
+            FileSystemAccessPermissionGrant::UserActivationState::kRequired, _))
+        .WillOnce(
+            testing::DoAll(testing::InvokeWithoutArgs([&grant, new_status]() {
+                             EXPECT_CALL(grant, GetStatus())
+                                 .WillRepeatedly(testing::Return(new_status));
+                           }),
+                           base::test::RunOnceCallback<2>(outcome)));
+  }
+
+  const int kProcessId = 1;
+  const int kFrameRoutingId = 2;
+  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
+  const FileSystemAccessManagerImpl::BindingContext kFrameBindingContext = {
+      test_src_storage_key_, test_src_url_, kFrameId};
+
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_read_grant_;
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_write_grant_;
+};
+
+class FileSystemAccessFileHandleImplGetPermissionStatusTest
+    : public FileSystemAccessFileHandleImplPermissionTest {};
+
+TEST_F(FileSystemAccessFileHandleImplGetPermissionStatusTest, ReadHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_file");
+  ASSERT_TRUE(base::WriteFile(test_path, ""));
+
+  auto read_only_handle =
+      GetHandleWithPermissions(test_path, allow_grant_, deny_grant_);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(read_only_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(read_only_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+  }
+
+  GetPermissionStatus(read_only_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+}
+
+TEST_F(FileSystemAccessFileHandleImplGetPermissionStatusTest, WriteHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_file");
+  ASSERT_TRUE(base::WriteFile(test_path, ""));
+
+  auto write_handle =
+      GetHandleWithPermissions(test_path, deny_grant_, allow_grant_);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(write_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+  }
+
+  GetPermissionStatus(write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+}
+
+TEST_F(FileSystemAccessFileHandleImplGetPermissionStatusTest, ReadWriteHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_file");
+  ASSERT_TRUE(base::WriteFile(test_path, ""));
+
+  auto read_write_handle =
+      GetHandleWithPermissions(test_path, allow_grant_, allow_grant_);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(read_write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(read_write_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+  }
+
+  GetPermissionStatus(read_write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+}
+
+class FileSystemAccessFileHandleImplRequestPermissionTest
+    : public FileSystemAccessFileHandleImplPermissionTest {};
+
+TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
+       RequestRead_Granted) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kRead),
+      IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
+       RequestRead_Denied) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kRead),
+      IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
+       RequestReadWrite_Granted) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
+       RequestReadWrite_ReadDenied) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
+       RequestReadWrite_WriteDenied) {
+  auto handle = CreateHandle();
+
+  EXPECT_CALL(*mock_read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
+       RequestWrite_Granted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite),
+      IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessFileHandleImplRequestPermissionTest,
+       RequestWrite_Denied) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite),
+      IsOkAndPermissionStatus(PermissionStatus::DENIED));
 }
 
 }  // namespace content

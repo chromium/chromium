@@ -20,6 +20,23 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+namespace {
+
+mojom::blink::FileSystemAccessPermissionMode GetPermissionModeForDescriptor(
+    const FileSystemHandlePermissionDescriptor* descriptor) {
+  CHECK(descriptor);
+  switch (descriptor->mode().AsEnum()) {
+    case V8FileSystemPermissionMode::Enum::kRead:
+      return mojom::blink::FileSystemAccessPermissionMode::kRead;
+    case V8FileSystemPermissionMode::Enum::kReadwrite:
+      return mojom::blink::FileSystemAccessPermissionMode::kReadWrite;
+      // TODO(crbug.com/40276567): Support kWrite permission mode;
+  };
+  NOTREACHED();
+}
+
+}  // namespace
+
 using mojom::blink::FileSystemAccessEntryPtr;
 using mojom::blink::FileSystemAccessErrorPtr;
 
@@ -47,17 +64,16 @@ ScriptPromise<V8PermissionState> FileSystemHandle::queryPermission(
           script_state);
   auto result = resolver->Promise();
 
-  QueryPermissionImpl(
-      descriptor->mode() == V8FileSystemPermissionMode::Enum::kReadwrite,
-      WTF::BindOnce(
-          [](FileSystemHandle* handle,
-             ScriptPromiseResolver<V8PermissionState>* resolver,
-             mojom::blink::PermissionStatus result) {
-            // Keep `this` alive so the handle will not be garbage-collected
-            // before the promise is resolved.
-            resolver->Resolve(ToV8PermissionState(result));
-          },
-          WrapPersistent(this), WrapPersistent(resolver)));
+  QueryPermissionImpl(GetPermissionModeForDescriptor(descriptor),
+                      WTF::BindOnce(
+                          [](FileSystemHandle* handle,
+                             ScriptPromiseResolver<V8PermissionState>* resolver,
+                             mojom::blink::PermissionStatus result) {
+                            // Keep `this` alive so the handle will not be
+                            // garbage-collected before the promise is resolved.
+                            resolver->Resolve(ToV8PermissionState(result));
+                          },
+                          WrapPersistent(this), WrapPersistent(resolver)));
 
   return result;
 }
@@ -72,7 +88,7 @@ ScriptPromise<V8PermissionState> FileSystemHandle::requestPermission(
   auto result = resolver->Promise();
 
   RequestPermissionImpl(
-      descriptor->mode() == V8FileSystemPermissionMode::Enum::kReadwrite,
+      GetPermissionModeForDescriptor(descriptor),
       WTF::BindOnce(
           [](FileSystemHandle*,
              ScriptPromiseResolver<V8PermissionState>* resolver,

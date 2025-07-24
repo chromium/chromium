@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_dir
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 
 enum WellKnownDirectory {
@@ -19,13 +20,6 @@ enum WellKnownDirectory {
   kDirMusic,
   kDirPictures,
   kDirVideos,
-};
-
-// Represents the permission mode that can be requested for a file system entry.
-// TODO(crbug.com/40276567): Support Write mode.
-enum FileSystemAccessPermissionMode {
-  kRead,
-  kReadWrite,
 };
 
 // Struct to represent individual options for types of files that are accepted

@@ -1,0 +1,12 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Represents the permission mode that can be requested for a file system entry.
+enum FileSystemAccessPermissionMode {
+  kRead,
+  kReadWrite,
+  kWrite,
+};

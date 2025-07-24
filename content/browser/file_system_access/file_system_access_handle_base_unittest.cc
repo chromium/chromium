@@ -251,24 +251,134 @@ class FileSystemAccessDoRequestPermissionTestBase
   // using `future`.
   void DoRequestPermission(
       TestFileSystemAccessHandle& handle,
-      bool writable,
+      blink::mojom::FileSystemAccessPermissionMode mode,
       base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                              PermissionStatus>& future) {
-    handle.DoRequestPermission(writable, future.GetCallback());
+    handle.DoRequestPermission(mode, future.GetCallback());
   }
 };
 
-class FileSystemAccessDoRequestPermissionTest
+class FileSystemAccessDoRequestReadPermissionTest
     : public FileSystemAccessDoRequestPermissionTestBase,
       public testing::WithParamInterface<TestContextParam> {
  public:
   bool is_worker() const override { return GetParam().is_worker; }
 };
 
-// Tests that `DoRequestPermission` returns `GRANTED` if write permission is
-// requested and both read and write permissions are already `GRANTED`.
-TEST_P(FileSystemAccessDoRequestPermissionTest,
-       RequestReadWritePermission_WritePermissionAlreadyGranted) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessDoRequestReadPermissionTest,
+    testing::ValuesIn(kTestContextParams),
+    [](const testing::TestParamInfo<TestContextParam>& info) {
+      return info.param.test_name;
+    });
+
+// Tests that `DoRequestPermission` returns `GRANTED` if write permission is not
+// requested and read permission is already `GRANTED`.
+TEST_P(FileSystemAccessDoRequestReadPermissionTest, WritePermissionNotNeeded) {
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillOnce(testing::Return(PermissionStatus::GRANTED));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kRead, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
+}
+
+// Tests that `DoRequestPermission` returns `DENIED` if read permission is
+// denied when requesting read permission.
+TEST_P(FileSystemAccessDoRequestReadPermissionTest, Denied) {
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  if (is_worker()) {
+    // Workers can't show a permission prompt, so the permission status is
+    // expected to remain ASK.
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           PermissionStatus>
+        future;
+    DoRequestPermission(
+        handle, blink::mojom::FileSystemAccessPermissionMode::kRead, future);
+    EXPECT_EQ(future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_EQ(future.Get<1>(), PermissionStatus::ASK);
+    return;
+  }
+
+  EXPECT_CALL(
+      *read_grant_,
+      RequestPermission_(kFrameId, UserActivationState::kRequired, testing::_))
+      .WillOnce(testing::DoAll(
+          testing::InvokeWithoutArgs([&]() {
+            EXPECT_CALL(*read_grant_, GetStatus())
+                .WillOnce(testing::Return(PermissionStatus::DENIED));
+          }),
+          RunOnceCallback<2>(FileSystemAccessPermissionGrant::
+                                 PermissionRequestOutcome::kUserDenied)));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kRead, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::DENIED);
+}
+
+// Tests that `DoRequestPermission` returns `DENIED` if read permission is
+// already denied when requesting read permission.
+TEST_P(FileSystemAccessDoRequestReadPermissionTest, AlreadyDenied) {
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::DENIED));
+
+  // No permission requests should be made.
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*write_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kRead, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::DENIED);
+}
+
+class FileSystemAccessDoRequestReadWritePermissionTest
+    : public FileSystemAccessDoRequestPermissionTestBase,
+      public testing::WithParamInterface<TestContextParam> {
+ public:
+  bool is_worker() const override { return GetParam().is_worker; }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessDoRequestReadWritePermissionTest,
+    testing::ValuesIn(kTestContextParams),
+    [](const testing::TestParamInfo<TestContextParam>& info) {
+      return info.param.test_name;
+    });
+
+// Tests that `DoRequestPermission` requests both read and write permissions
+// when both are already `GRANTED`.
+TEST_P(FileSystemAccessDoRequestReadWritePermissionTest,
+       BothAreAlreadyGranted) {
   auto handle = CreateHandle(kTestStorageKey, kTestURL,
                              base::FilePath::FromUTF8Unsafe("/test"));
 
@@ -280,15 +390,15 @@ TEST_P(FileSystemAccessDoRequestPermissionTest,
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                          PermissionStatus>
       future;
-  DoRequestPermission(handle, /*writable=*/true, future);
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite, future);
   EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
   EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
 }
 
 // Tests that `DoRequestPermission` requests both read and write permissions
 // when neither are `GRANTED`.
-TEST_P(FileSystemAccessDoRequestPermissionTest,
-       RequestReadWritePermission_BothAreNotGranted) {
+TEST_P(FileSystemAccessDoRequestReadWritePermissionTest, BothAreNotGranted) {
   auto handle = CreateHandle(kTestStorageKey, kTestURL,
                              base::FilePath::FromUTF8Unsafe("/test"));
 
@@ -303,7 +413,9 @@ TEST_P(FileSystemAccessDoRequestPermissionTest,
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                            PermissionStatus>
         future;
-    DoRequestPermission(handle, /*writable=*/true, future);
+    DoRequestPermission(
+        handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+        future);
     EXPECT_EQ(future.Get<0>()->status,
               blink::mojom::FileSystemAccessStatus::kOk);
     EXPECT_EQ(future.Get<1>(), PermissionStatus::ASK);
@@ -335,15 +447,68 @@ TEST_P(FileSystemAccessDoRequestPermissionTest,
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                          PermissionStatus>
       future;
-  DoRequestPermission(handle, /*writable=*/true, future);
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite, future);
   EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
   EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
 }
 
-// Tests that `DoRequestPermission` requests both read and write permissions
-// when both are already `GRANTED`.
-TEST_P(FileSystemAccessDoRequestPermissionTest,
-       RequestReadWritePermission_BothAlreadyGranted) {
+// Tests that `DoRequestPermission` returns `DENIED` if read permission is
+// denied when requesting read & write permission.
+TEST_P(FileSystemAccessDoRequestReadWritePermissionTest, ReadDenied) {
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  if (is_worker()) {
+    // Workers can't show a permission prompt, so the permission status is
+    // expected to remain ASK.
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           PermissionStatus>
+        future;
+    DoRequestPermission(
+        handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+        future);
+    EXPECT_EQ(future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_EQ(future.Get<1>(), PermissionStatus::ASK);
+    return;
+  }
+
+  EXPECT_CALL(
+      *read_grant_,
+      RequestPermission_(kFrameId, UserActivationState::kRequired, testing::_))
+      .WillOnce(testing::DoAll(
+          testing::InvokeWithoutArgs([&]() {
+            EXPECT_CALL(*read_grant_, GetStatus())
+                .WillOnce(testing::Return(PermissionStatus::DENIED));
+          }),
+          RunOnceCallback<2>(FileSystemAccessPermissionGrant::
+                                 PermissionRequestOutcome::kUserDenied)));
+
+  // The implementation may request both permissions.
+  EXPECT_CALL(
+      *write_grant_,
+      RequestPermission_(kFrameId, UserActivationState::kRequired, testing::_))
+      .WillOnce(RunOnceCallback<2>(FileSystemAccessPermissionGrant::
+                                       PermissionRequestOutcome::kUserGranted));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::DENIED);
+}
+
+// Tests that `DoRequestPermission` returns `DENIED` if write permission is
+// denied when requesting read & write permission.
+TEST_P(FileSystemAccessDoRequestReadWritePermissionTest, WriteDenied) {
   auto handle = CreateHandle(kTestStorageKey, kTestURL,
                              base::FilePath::FromUTF8Unsafe("/test"));
 
@@ -358,7 +523,242 @@ TEST_P(FileSystemAccessDoRequestPermissionTest,
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                            PermissionStatus>
         future;
-    DoRequestPermission(handle, /*writable=*/true, future);
+    DoRequestPermission(
+        handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+        future);
+    EXPECT_EQ(future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_EQ(future.Get<1>(), PermissionStatus::ASK);
+    return;
+  }
+
+  // Read permission is already granted, so it should not be requested again.
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  EXPECT_CALL(
+      *write_grant_,
+      RequestPermission_(kFrameId, UserActivationState::kRequired, testing::_))
+      .WillOnce(testing::DoAll(
+          testing::InvokeWithoutArgs([&]() {
+            EXPECT_CALL(*write_grant_, GetStatus())
+                .WillOnce(testing::Return(PermissionStatus::DENIED));
+          }),
+          RunOnceCallback<2>(FileSystemAccessPermissionGrant::
+                                 PermissionRequestOutcome::kUserDenied)));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::DENIED);
+}
+
+// Tests that `DoRequestPermission` returns `DENIED` if write permission is
+// already denied when requesting both read & write permission.
+TEST_P(FileSystemAccessDoRequestReadWritePermissionTest, WriteAlreadyDenied) {
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::DENIED));
+
+  // No permission requests should be made.
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*write_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::DENIED);
+}
+
+// The params for `DoRequestPermission()`-related tests.
+struct RequestPermissionOutcomeTestParam {
+  // The name of the test.
+  const char* test_name;
+  // The outcome of the permission request.
+  FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome;
+  // The expected status of the request.
+  blink::mojom::FileSystemAccessStatus expected_status;
+  // The expected permission status.
+  PermissionStatus expected_permission_status;
+};
+
+// Testing the behavior of `DoRequestPermission` for read & write permission
+// requests.
+class FileSystemAccessDoRequestReadWritePermissionOutcomeTest
+    : public FileSystemAccessDoRequestPermissionTestBase,
+      public testing::WithParamInterface<
+          std::tuple<TestContextParam, RequestPermissionOutcomeTestParam>> {
+ public:
+  bool is_worker() const override { return std::get<0>(GetParam()).is_worker; }
+};
+
+// Tests that `DoRequestPermission` returns the correct status for a variety of
+// outcomes when read permission is already 'GRANTED'.
+TEST_P(FileSystemAccessDoRequestReadWritePermissionOutcomeTest,
+       ReadPermissionAlreadyGranted_WritePermissionOutcome) {
+  const RequestPermissionOutcomeTestParam& permission_param =
+      std::get<1>(GetParam());
+
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  if (is_worker()) {
+    // Workers can't show a permission prompt, so the permission status is
+    // expected to remain ASK.
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           PermissionStatus>
+        future;
+    DoRequestPermission(
+        handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+        future);
+    EXPECT_EQ(future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
+    EXPECT_EQ(future.Get<1>(), PermissionStatus::ASK);
+    return;
+  }
+
+  EXPECT_CALL(
+      *write_grant_,
+      RequestPermission_(kFrameId, UserActivationState::kRequired, testing::_))
+      .WillOnce(RunOnceCallback<2>(permission_param.outcome));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite, future);
+  EXPECT_EQ(future.Get<0>()->status, permission_param.expected_status);
+  EXPECT_EQ(future.Get<1>(), permission_param.expected_permission_status);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessDoRequestReadWritePermissionOutcomeTest,
+    testing::Combine(
+        testing::ValuesIn(kTestContextParams),
+        testing::Values(
+            RequestPermissionOutcomeTestParam{
+                "InvalidFrame",
+                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
+                    kInvalidFrame,
+                blink::mojom::FileSystemAccessStatus::kSecurityError,
+                PermissionStatus::ASK},
+            RequestPermissionOutcomeTestParam{
+                "NoUserActivation",
+                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
+                    kNoUserActivation,
+                blink::mojom::FileSystemAccessStatus::kSecurityError,
+                PermissionStatus::ASK},
+            RequestPermissionOutcomeTestParam{
+                "BlockedByContentSetting",
+                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
+                    kBlockedByContentSetting,
+                blink::mojom::FileSystemAccessStatus::kOk,
+                PermissionStatus::ASK},
+            RequestPermissionOutcomeTestParam{
+                "UserDenied",
+                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
+                    kUserDenied,
+                blink::mojom::FileSystemAccessStatus::kOk,
+                PermissionStatus::ASK})),
+    [](const testing::TestParamInfo<
+        std::tuple<TestContextParam, RequestPermissionOutcomeTestParam>>&
+           info) {
+      return std::string(std::get<0>(info.param).test_name) + "_" +
+             std::get<1>(info.param).test_name;
+    });
+
+class FileSystemAccessDoRequestWritePermissionTest
+    : public FileSystemAccessDoRequestPermissionTestBase,
+      public testing::WithParamInterface<TestContextParam> {
+ public:
+  bool is_worker() const override { return GetParam().is_worker; }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessDoRequestWritePermissionTest,
+    testing::ValuesIn(kTestContextParams),
+    [](const testing::TestParamInfo<TestContextParam>& info) {
+      return info.param.test_name;
+    });
+
+// Tests that `DoRequestPermission` with `kWrite` dies if the
+// `kFileSystemAccessWriteMode` feature is disabled.
+TEST_P(FileSystemAccessDoRequestWritePermissionTest, FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  EXPECT_DEATH_IF_SUPPORTED(
+      DoRequestPermission(
+          handle, blink::mojom::FileSystemAccessPermissionMode::kWrite, future),
+      "");
+}
+
+// Tests that `DoRequestPermission` returns `GRANTED` if write permission is
+// already `GRANTED`.
+TEST_P(FileSystemAccessDoRequestWritePermissionTest, AlreadyGranted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillOnce(testing::Return(PermissionStatus::GRANTED));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kWrite, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
+}
+
+// Tests that `DoRequestPermission` returns `GRANTED` if write permission is
+// granted when requested.
+TEST_P(FileSystemAccessDoRequestWritePermissionTest, Granted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+
+  if (is_worker()) {
+    // Workers can't show a permission prompt, so the permission status is
+    // expected to remain ASK.
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           PermissionStatus>
+        future;
+    DoRequestPermission(
+        handle, blink::mojom::FileSystemAccessPermissionMode::kWrite, future);
     EXPECT_EQ(future.Get<0>()->status,
               blink::mojom::FileSystemAccessStatus::kOk);
     EXPECT_EQ(future.Get<1>(), PermissionStatus::ASK);
@@ -379,69 +779,20 @@ TEST_P(FileSystemAccessDoRequestPermissionTest,
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                          PermissionStatus>
       future;
-  DoRequestPermission(handle, /*writable=*/true, future);
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kWrite, future);
   EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
   EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
 }
 
-// Tests that `DoRequestPermission` returns `GRANTED` if write permission is not
-// requested and read permission is already `GRANTED`.
-TEST_P(FileSystemAccessDoRequestPermissionTest, WritePermissionNotNeeded) {
+// Tests that `DoRequestPermission` returns `DENIED` if write permission is
+// denied when requesting write permission.
+TEST_P(FileSystemAccessDoRequestWritePermissionTest, Denied) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
   auto handle = CreateHandle(kTestStorageKey, kTestURL,
                              base::FilePath::FromUTF8Unsafe("/test"));
 
-  EXPECT_CALL(*read_grant_, GetStatus())
-      .WillOnce(testing::Return(PermissionStatus::GRANTED));
-
-  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
-                         PermissionStatus>
-      future;
-  DoRequestPermission(handle, /*writable=*/false, future);
-  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
-  EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FileSystemAccessDoRequestPermissionTest,
-    testing::ValuesIn(kTestContextParams),
-    [](const testing::TestParamInfo<TestContextParam>& info) {
-      return info.param.test_name;
-    });
-
-// The params for `FileSystemAccessDoRequestWritePermissionTest` test fixture.
-struct RequestWritePermissionTestParam {
-  // The name of the test.
-  const char* test_name;
-  // The outcome of the permission request.
-  FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome;
-  // The expected status of the request.
-  blink::mojom::FileSystemAccessStatus expected_status;
-  // The expected permission status.
-  PermissionStatus expected_permission_status;
-};
-
-// Testing the behavior of `DoRequestPermission` for write permission requests.
-class FileSystemAccessDoRequestWritePermissionTest
-    : public FileSystemAccessDoRequestPermissionTestBase,
-      public testing::WithParamInterface<
-          std::tuple<TestContextParam, RequestWritePermissionTestParam>> {
- public:
-  bool is_worker() const override { return std::get<0>(GetParam()).is_worker; }
-};
-
-// Tests that `DoRequestPermission` returns the correct status for a variety of
-// outcomes.
-TEST_P(FileSystemAccessDoRequestWritePermissionTest,
-       ReadPermissionAlreadyGranted_WritePermissionOutcome) {
-  const RequestWritePermissionTestParam& permission_param =
-      std::get<1>(GetParam());
-
-  auto handle = CreateHandle(kTestStorageKey, kTestURL,
-                             base::FilePath::FromUTF8Unsafe("/test"));
-
-  EXPECT_CALL(*read_grant_, GetStatus())
-      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
   EXPECT_CALL(*write_grant_, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::ASK));
 
@@ -451,7 +802,8 @@ TEST_P(FileSystemAccessDoRequestWritePermissionTest,
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                            PermissionStatus>
         future;
-    DoRequestPermission(handle, /*writable=*/true, future);
+    DoRequestPermission(
+        handle, blink::mojom::FileSystemAccessPermissionMode::kWrite, future);
     EXPECT_EQ(future.Get<0>()->status,
               blink::mojom::FileSystemAccessStatus::kOk);
     EXPECT_EQ(future.Get<1>(), PermissionStatus::ASK);
@@ -461,51 +813,50 @@ TEST_P(FileSystemAccessDoRequestWritePermissionTest,
   EXPECT_CALL(
       *write_grant_,
       RequestPermission_(kFrameId, UserActivationState::kRequired, testing::_))
-      .WillOnce(RunOnceCallback<2>(permission_param.outcome));
+      .WillOnce(testing::DoAll(
+          testing::InvokeWithoutArgs([&]() {
+            EXPECT_CALL(*write_grant_, GetStatus())
+                .WillOnce(testing::Return(PermissionStatus::DENIED));
+          }),
+          RunOnceCallback<2>(FileSystemAccessPermissionGrant::
+                                 PermissionRequestOutcome::kUserDenied)));
 
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                          PermissionStatus>
       future;
-  DoRequestPermission(handle, /*writable=*/true, future);
-  EXPECT_EQ(future.Get<0>()->status, permission_param.expected_status);
-  EXPECT_EQ(future.Get<1>(), permission_param.expected_permission_status);
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kWrite, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::DENIED);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FileSystemAccessDoRequestWritePermissionTest,
-    testing::Combine(
-        testing::ValuesIn(kTestContextParams),
-        testing::Values(
-            RequestWritePermissionTestParam{
-                "InvalidFrame",
-                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
-                    kInvalidFrame,
-                blink::mojom::FileSystemAccessStatus::kSecurityError,
-                PermissionStatus::ASK},
-            RequestWritePermissionTestParam{
-                "NoUserActivation",
-                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
-                    kNoUserActivation,
-                blink::mojom::FileSystemAccessStatus::kSecurityError,
-                PermissionStatus::ASK},
-            RequestWritePermissionTestParam{
-                "BlockedByContentSetting",
-                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
-                    kBlockedByContentSetting,
-                blink::mojom::FileSystemAccessStatus::kOk,
-                PermissionStatus::ASK},
-            RequestWritePermissionTestParam{
-                "UserDenied",
-                FileSystemAccessPermissionGrant::PermissionRequestOutcome::
-                    kUserDenied,
-                blink::mojom::FileSystemAccessStatus::kOk,
-                PermissionStatus::ASK})),
-    [](const testing::TestParamInfo<
-        std::tuple<TestContextParam, RequestWritePermissionTestParam>>& info) {
-      return std::string(std::get<0>(info.param).test_name) + "_" +
-             std::get<1>(info.param).test_name;
-    });
+// Tests that `DoRequestPermission` returns `DENIED` if write permission is
+// already denied when requesting write permission.
+TEST_P(FileSystemAccessDoRequestWritePermissionTest, AlreadyDenied) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle(kTestStorageKey, kTestURL,
+                             base::FilePath::FromUTF8Unsafe("/test"));
+
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::DENIED));
+
+  // No permission requests should be made.
+  EXPECT_CALL(*read_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*write_grant_,
+              RequestPermission_(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
+  DoRequestPermission(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kWrite, future);
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::DENIED);
+}
 
 class FileSystemAccessDoGetPermissionStatusTest
     : public FileSystemAccessHandleParamTestBase {
@@ -513,14 +864,14 @@ class FileSystemAccessDoGetPermissionStatusTest
   // Calls `DoGetPermissionStatus` on the given `handle` and waits for the
   // result.
   void DoGetPermissionStatus(TestFileSystemAccessHandle& handle,
-                             bool writable,
+                             blink::mojom::FileSystemAccessPermissionMode mode,
                              base::test::TestFuture<PermissionStatus>& future) {
-    handle.DoGetPermissionStatus(writable, future.GetCallback());
+    handle.DoGetPermissionStatus(mode, future.GetCallback());
   }
 };
 
 // Tests `DoGetPermissionStatus` for read-only permission.
-TEST_P(FileSystemAccessDoGetPermissionStatusTest, WritableFalse) {
+TEST_P(FileSystemAccessDoGetPermissionStatusTest, Read) {
   auto handle = CreateHandle(kTestStorageKey, kTestURL,
                              base::FilePath::FromUTF8Unsafe("/test"));
 
@@ -528,12 +879,13 @@ TEST_P(FileSystemAccessDoGetPermissionStatusTest, WritableFalse) {
       .WillOnce(testing::Return(PermissionStatus::ASK));
 
   base::test::TestFuture<PermissionStatus> future;
-  DoGetPermissionStatus(handle, /*writable=*/false, future);
+  DoGetPermissionStatus(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kRead, future);
   EXPECT_EQ(future.Get(), PermissionStatus::ASK);
 }
 
-// Tests `DoGetPermissionStatus` for writable permission.
-TEST_P(FileSystemAccessDoGetPermissionStatusTest, WritableTrue) {
+// Tests `DoGetPermissionStatus` for read & write permission.
+TEST_P(FileSystemAccessDoGetPermissionStatusTest, ReadWrite) {
   auto handle = CreateHandle(kTestStorageKey, kTestURL,
                              base::FilePath::FromUTF8Unsafe("/test"));
 
@@ -543,7 +895,8 @@ TEST_P(FileSystemAccessDoGetPermissionStatusTest, WritableTrue) {
       .WillOnce(testing::Return(PermissionStatus::ASK));
 
   base::test::TestFuture<PermissionStatus> future;
-  DoGetPermissionStatus(handle, /*writable=*/true, future);
+  DoGetPermissionStatus(
+      handle, blink::mojom::FileSystemAccessPermissionMode::kReadWrite, future);
   EXPECT_EQ(future.Get(), PermissionStatus::ASK);
 }
 
