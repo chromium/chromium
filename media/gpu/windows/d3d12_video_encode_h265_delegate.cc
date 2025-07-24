@@ -646,10 +646,11 @@ H265SPS D3D12VideoEncodeH265Delegate::ToSPS(const H265VPS& vps) const {
       (sps.pic_height_in_luma_samples - input_size_.Height) >> 1;
   sps.log2_max_pic_order_cnt_lsb_minus4 =
       gop_structure_.log2_max_pic_order_cnt_lsb_minus4;
-  sps.sps_max_dec_pic_buffering_minus1 = vps.vps_max_dec_pic_buffering_minus1;
-  sps.sps_max_num_reorder_pics = vps.vps_max_num_reorder_pics;
+  std::ranges::copy(vps.vps_max_dec_pic_buffering_minus1,
+                    sps.sps_max_dec_pic_buffering_minus1);
+  std::ranges::copy(vps.vps_max_num_reorder_pics, sps.sps_max_num_reorder_pics);
   std::ranges::copy(vps.vps_max_latency_increase_plus1,
-                    sps.sps_max_latency_increase_plus1.begin());
+                    sps.sps_max_latency_increase_plus1);
   sps.log2_min_luma_coding_block_size_minus3 =
       codec_config_hevc_.MinLumaCodingUnitSize;
   sps.log2_diff_max_min_luma_coding_block_size =
