@@ -653,15 +653,6 @@ bool CanvasRenderingContext2D::IsCanvas2DResourceValid() {
     return true;
   }
 
-  if (isContextLost()) {
-    return false;
-  }
-
-  if (GetResourceProviderForCanvas2D() &&
-      !GetResourceProviderForCanvas2D()->IsValid()) {
-    return false;
-  }
-
   return !!GetOrCreateCanvas2DResourceProvider();
 }
 
