@@ -48,7 +48,6 @@ ShellRunner::ShellRunner(ShellRunnerDelegate* delegate, v8::Isolate* isolate)
 
   context_holder_ = std::make_unique<ContextHolder>(isolate);
   context_holder_->SetContext(context);
-  PerContextData::From(context)->set_runner(this);
 
   v8::Context::Scope scope(context);
   delegate_->DidCreateContext(this);

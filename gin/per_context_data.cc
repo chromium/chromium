@@ -18,7 +18,7 @@ constexpr int kGinPerContextDataIndex =
 
 PerContextData::PerContextData(ContextHolder* context_holder,
                                v8::Local<v8::Context> context)
-    : context_holder_(context_holder), runner_(nullptr) {
+    : context_holder_(context_holder) {
   context->SetAlignedPointerInEmbedderData(kGinPerContextDataIndex, this);
 }
 
