@@ -11,12 +11,13 @@
 // Protocol to communicate user actions from the mediator to its coordinator.
 @protocol GoogleServicesSettingsCommandHandler <NSObject>
 
-// Presents the sign-out dialog to the user.
+// Presents the sign-out dialog to the user if any profile is signed-in in
+// another scene. Otherwise directly call completion with success=YES.
 // `targetRect` rect in table view system coordinate to display the signout
 // popover dialog.
-- (void)showSignOutFromTargetRect:(CGRect)targetRect
-                       completion:
-                           (signin_ui::SignoutCompletionCallback)completion;
+- (void)maybeShowSignOutFromTargetRect:(CGRect)targetRect
+                            completion:(signin_ui::SignoutCompletionCallback)
+                                           completion;
 
 @end
 

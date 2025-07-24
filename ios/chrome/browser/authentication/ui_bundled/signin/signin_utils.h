@@ -152,7 +152,8 @@ bool IsFullscreenSigninPromoManagerMigrationDone();
 void LogFullscreenSigninPromoManagerMigrationDone();
 
 // Fetches asynchronously the unsynced data types for a sign-out or a profile
-// switching. And calls `callback`.
+// switching. And calls `callback` with the set of data type from
+// `TypesRequiringUnsyncedDataCheckOnSignout` containing unsynced data.
 void FetchUnsyncedDataForSignOutOrProfileSwitching(
     syncer::SyncService* sync_service,
     UnsyncedDataForSignoutOrProfileSwitchingCallback callback);
@@ -162,6 +163,10 @@ void FetchUnsyncedDataForSignOutOrProfileSwitching(
 void SwitchToPersonalProfile(SceneState* scene_state,
                              ChangeProfileReason reason,
                              ChangeProfileContinuation continuation);
+
+// Whether there exists a scene with a profile different from the one of this
+// scene where the user is signed-in.
+bool DifferentUserIsSignedInInAnotherScene(SceneState* scene_state);
 
 }  // namespace signin
 

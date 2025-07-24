@@ -113,8 +113,6 @@ bool GetStatusForSigninPolicy() {
 
 @interface GoogleServicesSettingsMediator () <BooleanObserver>
 
-// Returns YES if the user is authenticated.
-@property(nonatomic, assign, readonly) BOOL hasPrimaryIdentity;
 // ** Non personalized section.
 // Preference value for the "Allow Chrome Sign-in" feature.
 @property(nonatomic, strong, readonly)
@@ -297,10 +295,6 @@ bool GetStatusForSigninPolicy() {
 }
 
 #pragma mark - Properties
-
-- (BOOL)hasPrimaryIdentity {
-  return self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
 
 - (ItemArray)nonPersonalizedItems {
   if (!_nonPersonalizedItems) {
@@ -513,27 +507,29 @@ bool GetStatusForSigninPolicy() {
 - (void)handleUpdateIsSigninAllowedValue:(BOOL)value
                               targetRect:(CGRect)targetRect
                                     item:(SyncSwitchItem*)item {
-  __weak __typeof(self) weakSelf = self;
-  if (self.hasPrimaryIdentity) {
-    // If there is a primary identity, sign-in must be already on. So the value
-    // is toggled to off.
-    CHECK(!value, base::NotFatalUntil::M145);
-    void (^completion)(BOOL, SceneState*) =
-        ^(BOOL success, SceneState* scene_state) {
-          BOOL newValue = !success;
-          // The pref change is in this block in order to ensure it is done even
-          // if weakSelf was set to nil.
-          GetApplicationContext()->GetLocalState()->SetBoolean(
-              prefs::kSigninAllowedOnDevice, newValue);
-          [weakSelf signoutCompletionWithToggledToValue:newValue
-                                                success:success
-                                                   item:item];
-        };
-    [self.commandHandler showSignOutFromTargetRect:targetRect
-                                        completion:completion];
-  } else {
-    self.allowChromeSigninPreference.value = value;
+  if (value) {
+    // The user can always allow sign-in.
+    self.allowChromeSigninPreference.value = YES;
+    return;
   }
+  // Before signing-out, we need to check whether the user accepts to sign-out,
+  // here or in another profile. Furthermore, we must warn the user that this
+  // could cause loss of unsynced data if either there are unsynced data here or
+  // if another profile is signed-in.
+  __weak __typeof(self) weakSelf = self;
+  void (^completion)(BOOL, SceneState*) =
+      ^(BOOL success, SceneState* scene_state) {
+        BOOL newValue = !success;
+        // The pref change is in this block in order to ensure it is done even
+        // if weakSelf was set to nil.
+        GetApplicationContext()->GetLocalState()->SetBoolean(
+            prefs::kSigninAllowedOnDevice, newValue);
+        [weakSelf signoutCompletionWithToggledToValue:newValue
+                                              success:success
+                                                 item:item];
+      };
+  [self.commandHandler maybeShowSignOutFromTargetRect:targetRect
+                                           completion:completion];
 }
 
 - (void)signoutCompletionWithToggledToValue:(BOOL)newValue

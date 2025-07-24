@@ -570,4 +570,21 @@ void SwitchToPersonalProfile(SceneState* scene_state,
                   std::move(continuation));
 }
 
+bool DifferentUserIsSignedInInAnotherScene(SceneState* scene_state) {
+  ProfileIOS* profile = scene_state.profileState.profile;
+  AppState* app_state = scene_state.profileState.appState;
+  for (ProfileState* profile_state in app_state.profileStates) {
+    if (profile == profile_state.profile) {
+      continue;
+    }
+
+    auto* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_state.profile);
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace signin
