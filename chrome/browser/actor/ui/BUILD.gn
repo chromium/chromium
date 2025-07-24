@@ -38,6 +38,7 @@ source_set("ui") {
   deps = [
     ":ui_event_types",
     "//base",
+    "//chrome/app/vector_icons:vector_icons",
     "//chrome/browser/actor:actor",
     "//chrome/browser/actor:variant_visitor",
     "//chrome/browser/profiles:profile",

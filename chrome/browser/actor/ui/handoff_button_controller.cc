@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,6 +40,9 @@ std::unique_ptr<views::NonClientFrameView> CreateHandoffButtonFrameView(
 }  // namespace
 namespace actor::ui {
 
+using enum HandoffButtonState::ControlOwnership;
+using ::ui::ImageModel;
+
 HandoffButtonController::HandoffButtonController(
     tabs::TabInterface& tab_interface)
     : tab_interface_(tab_interface) {}
@@ -47,29 +52,45 @@ HandoffButtonController::~HandoffButtonController() = default;
 void HandoffButtonController::UpdateState(const HandoffButtonState& state,
                                           bool is_visible) {
   is_active_ = state.is_active;
-  is_visible_ = is_visible;
   if (!is_active_) {
     CloseButton(views::Widget::ClosedReason::kUnspecified);
     return;
   }
+  is_visible_ = is_visible;
+  ownership_ = state.controller;
 
-  // TODO(crbug.com/422541242): Update placeholder text and icon.
-  if (!widget_) {
-    CreateAndShowButton(
-        u"Take over task",
-        ::ui::ImageModel::FromVectorIcon(
-            vector_icons::kSelectWindowChromeRefreshIcon, SK_ColorDKGRAY));
+  std::u16string text;
+  ImageModel icon;
+  // TODO(crbug.com/422541242): Update icon color to match spec.
+  switch (state.controller) {
+    case kAgent:
+      text = TAKE_OVER_TASK_TEXT;
+      icon = ImageModel::FromVectorIcon(
+          vector_icons::kSelectWindowChromeRefreshIcon, SK_ColorDKGRAY);
+      break;
+    case kClient:
+      text = GIVE_TASK_BACK_TEXT;
+      icon = ImageModel::FromVectorIcon(kScreensaverAutoIcon, SK_ColorDKGRAY);
+      break;
   }
 
+  // If the widget doesn't exist, create it with the correct initial state.
+  if (!widget_) {
+    CreateAndShowButton(text, icon);
+  } else {
+    // If it already exists, update its content.
+    button_view_->SetText(text);
+    button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
+    UpdateBounds();
+  }
   // TODO(crbug.com/422541242): Add Z-order logic.
 
   // TODO(crbug.com/422541242): Update dialog visibility via the
   // TabDialogManager.
 }
 
-void HandoffButtonController::CreateAndShowButton(
-    const std::u16string& text,
-    const ::ui::ImageModel& icon) {
+void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
+                                                  const ImageModel& icon) {
   CHECK(!widget_);
 
   auto* tab_dialog_manager = GetTabDialogManager();
@@ -113,6 +134,9 @@ void HandoffButtonController::CreateAndShowButton(
   tab_dialog_params->animated = true;
   tab_dialog_params->should_show_callback = base::BindRepeating(
       &HandoffButtonController::ShouldShowButton, base::Unretained(this));
+  tab_dialog_params->get_dialog_bounds =
+      base::BindRepeating(&HandoffButtonController::GetHandoffButtonBounds,
+                          base::Unretained(this), widget.get());
 
   tab_dialog_manager->ShowDialog(widget.get(), std::move(tab_dialog_params));
   widget_ = std::move(widget);
@@ -125,6 +149,14 @@ void HandoffButtonController::ShouldShowButton(bool& show) {
   show = is_active_ && is_visible_;
 }
 
+gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
+    views::Widget* widget) {
+  // TODO(crbug.com/422541242): Add custom positioning logic for immersive
+  // fullscreen in a follow-up CL. For now, we return a rect with only the
+  // preferred size.
+  return gfx::Rect(widget->GetContentsView()->GetPreferredSize());
+}
+
 void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
   button_view_ = nullptr;
   if (widget_) {
@@ -135,13 +167,27 @@ void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
 }
 
 void HandoffButtonController::OnButtonPressed() {
-  // TODO(crbug.com/422541242): Implement action callback logic.
+  // If the agent is currently in control, pressing the button
+  // flips the state and pauses the task.
+  if (ownership_ == kAgent) {
+    GetTabController()->SetActorTaskPaused();
+  } else {
+    GetTabController()->SetActorTaskResume();
+  }
+}
+
+void HandoffButtonController::UpdateBounds() {
+  GetTabDialogManager()->UpdateModalDialogBounds();
 }
 
 tabs::TabDialogManager* HandoffButtonController::GetTabDialogManager() {
   auto* features = tab_interface_->GetTabFeatures();
   CHECK(features);
   return features->tab_dialog_manager();
+}
+
+ActorUiTabControllerInterface* HandoffButtonController::GetTabController() {
+  return tab_interface_->GetTabFeatures()->actor_ui_tab_controller();
 }
 
 }  // namespace actor::ui

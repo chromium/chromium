@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_HANDOFF_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_ACTOR_UI_HANDOFF_BUTTON_CONTROLLER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
@@ -26,6 +28,13 @@ class ImageModel;
 }  // namespace ui
 
 namespace actor::ui {
+class ActorUiTabControllerInterface;
+}
+
+namespace actor::ui {
+
+inline const char16_t* const TAKE_OVER_TASK_TEXT = u"Take over task";
+inline const char16_t* const GIVE_TASK_BACK_TEXT = u"Give task back";
 
 class HandoffButtonController {
  public:
@@ -40,6 +49,7 @@ class HandoffButtonController {
  protected:
   void OnButtonPressed();
   void ShouldShowButton(bool& show);
+  gfx::Rect GetHandoffButtonBounds(views::Widget* widget);
 
   std::unique_ptr<views::WidgetDelegate> delegate_ = nullptr;
   std::unique_ptr<views::Widget> widget_ = nullptr;
@@ -49,10 +59,14 @@ class HandoffButtonController {
   void CreateAndShowButton(const std::u16string& text,
                            const ::ui::ImageModel& icon);
   virtual void CloseButton(views::Widget::ClosedReason reason);
+  virtual ActorUiTabControllerInterface* GetTabController();
+  virtual void UpdateBounds();
   tabs::TabDialogManager* GetTabDialogManager();
 
   bool is_active_ = false;
   bool is_visible_ = false;
+  HandoffButtonState::ControlOwnership ownership_ =
+      HandoffButtonState::ControlOwnership::kAgent;
   const raw_ref<tabs::TabInterface> tab_interface_;
 
   base::WeakPtrFactory<HandoffButtonController> weak_ptr_factory_{this};

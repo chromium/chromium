@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 
+#include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -16,11 +17,16 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace actor::ui {
+namespace {
+
+using enum actor::ui::HandoffButtonState::ControlOwnership;
 
 class TestHandoffButtonController : public HandoffButtonController {
  public:
   explicit TestHandoffButtonController(tabs::TabInterface& tab_interface)
-      : HandoffButtonController(tab_interface) {}
+      : HandoffButtonController(tab_interface) {
+    mock_tab_controller_ = std::make_unique<MockActorUiTabController>();
+  }
   ~TestHandoffButtonController() override = default;
 
   void SetWidgetAndButtonForTest(std::unique_ptr<views::Widget> widget,
@@ -37,8 +43,19 @@ class TestHandoffButtonController : public HandoffButtonController {
   }
   int close_button_call_count() const { return close_button_call_count_; }
 
+  void UpdateBounds() override { update_bounds_call_count_++; }
+  int update_bounds_call_count() const { return update_bounds_call_count_; }
+
+  MockActorUiTabController* GetTabController() override {
+    return mock_tab_controller_.get();
+  }
+
+  void PressButton() { OnButtonPressed(); }
+
  private:
   int close_button_call_count_ = 0;
+  int update_bounds_call_count_ = 0;
+  std::unique_ptr<MockActorUiTabController> mock_tab_controller_;
 };
 
 class HandoffButtonControllerTest : public views::ViewsTestBase {
@@ -114,4 +131,43 @@ TEST_F(HandoffButtonControllerTest,
   EXPECT_EQ(2, controller_->close_button_call_count());
 }
 
+TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
+  HandoffButtonState state;
+  state.is_active = true;
+  state.controller = kAgent;
+  controller_->UpdateState(state, /*is_visible=*/true);
+  EXPECT_EQ(button_->GetText(), actor::ui::TAKE_OVER_TASK_TEXT);
+  EXPECT_EQ(1, controller_->update_bounds_call_count());
+
+  state.controller = kClient;
+  controller_->UpdateState(state, /*is_visible=*/true);
+  EXPECT_EQ(button_->GetText(), actor::ui::GIVE_TASK_BACK_TEXT);
+  EXPECT_EQ(2, controller_->update_bounds_call_count());
+}
+
+TEST_F(HandoffButtonControllerTest,
+       CallSetActorTaskPausedWhenAgentHasControlOnButtonPressed) {
+  HandoffButtonState agent_state;
+  agent_state.is_active = true;
+  agent_state.controller = kAgent;
+  controller_->UpdateState(agent_state, /*is_visible=*/true);
+
+  EXPECT_CALL(*controller_->GetTabController(), SetActorTaskPaused());
+
+  controller_->PressButton();
+}
+
+TEST_F(HandoffButtonControllerTest,
+       CallSetActorTaskResumeWhenClientHasControlOnButtonPressed) {
+  HandoffButtonState client_state;
+  client_state.is_active = true;
+  client_state.controller = kClient;
+  controller_->UpdateState(client_state, /*is_visible=*/true);
+
+  EXPECT_CALL(*controller_->GetTabController(), SetActorTaskResume());
+
+  controller_->PressButton();
+}
+
+}  // namespace
 }  // namespace actor::ui
