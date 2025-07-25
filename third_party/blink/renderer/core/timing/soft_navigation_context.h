@@ -21,11 +21,12 @@
 
 namespace blink {
 
-class Node;
-class TextRecord;
 class ImageRecord;
+class Node;
 class LargestContentfulPaintCalculator;
 struct LargestContentfulPaintDetails;
+class PaintTimingRecord;
+class TextRecord;
 
 class CORE_EXPORT SoftNavigationContext
     : public GarbageCollected<SoftNavigationContext> {
@@ -89,8 +90,7 @@ class CORE_EXPORT SoftNavigationContext
   // for this Node*.
   bool IsNeededForTiming(Node* node);
   // Reports a new contentful paint area to this context, and the Node painted.
-  bool AddPaintedArea(TextRecord*);
-  bool AddPaintedArea(ImageRecord*);
+  bool AddPaintedArea(PaintTimingRecord*);
   // Returns true if we update the total attributed area this animation frame.
   // Used to check if it is worthwhile to call `SatisfiesSoftNavPaintCriteria`.
   bool OnPaintFinished();
@@ -111,8 +111,6 @@ class CORE_EXPORT SoftNavigationContext
   void Trace(Visitor* visitor) const;
 
  private:
-  bool AddPaintedAreaInternal(Node* node, const gfx::RectF& rect);
-
   // Pre-Increment `last_context_id_` such that the newest context uses the
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;

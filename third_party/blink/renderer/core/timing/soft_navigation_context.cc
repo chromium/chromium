@@ -70,40 +70,18 @@ bool SoftNavigationContext::IsNeededForTiming(Node* node) {
   return false;
 }
 
-bool SoftNavigationContext::AddPaintedArea(TextRecord* text_record) {
-  Node* node = text_record->GetNode();
-  const gfx::RectF& rect = text_record->RootVisualRect();
-  bool is_attributable = AddPaintedAreaInternal(node, rect);
-  if (is_attributable) {
-    if (!largest_text_ ||
-        largest_text_->RecordedSize() < text_record->RecordedSize()) {
-      largest_text_ = text_record;
-    }
-  }
-  return is_attributable;
-}
-
-bool SoftNavigationContext::AddPaintedArea(ImageRecord* image_record) {
-  Node* node = image_record->GetNode();
-  const gfx::RectF& rect = image_record->RootVisualRect();
-  bool is_attributable = AddPaintedAreaInternal(node, rect);
-  if (is_attributable) {
-    if (!largest_image_ ||
-        largest_image_->RecordedSize() < image_record->RecordedSize()) {
-      largest_image_ = image_record;
-    }
-  }
-  return is_attributable;
-}
-
-bool SoftNavigationContext::AddPaintedAreaInternal(Node* node,
-                                                   const gfx::RectF& rect) {
+bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
   // Stop recording paints once we have next input/scroll.
   if (!first_input_or_scroll_time_.is_null()) {
     return false;
   }
 
+  const gfx::RectF& rect = record->RootVisualRect();
   uint64_t painted_area = rect.size().GetArea();
+
+  Node* node = record->GetNode();
+  // Node should not be null if we've painted it.
+  CHECK(node);
 
   if (paint_attribution_mode_ !=
       features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution) {
@@ -126,6 +104,20 @@ bool SoftNavigationContext::AddPaintedAreaInternal(Node* node,
       rect.x(), "rect_y", rect.y(), "rect_width", rect.width(), "rect_height",
       rect.height(), "paintedAreaThisAnimationFrame",
       painted_area_ - painted_area_last_animation_frame_);
+
+  if (record->IsImageRecord()) {
+    if (!largest_image_ ||
+        largest_image_->RecordedSize() < record->RecordedSize()) {
+      largest_image_ = To<ImageRecord>(record);
+    }
+  } else {
+    CHECK(record->IsTextRecord());
+    if (!largest_text_ ||
+        largest_text_->RecordedSize() < record->RecordedSize()) {
+      largest_text_ = To<TextRecord>(record);
+    }
+  }
+
   return true;
 }
 
