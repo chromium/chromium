@@ -615,7 +615,8 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   PopulateFixedWebPreferences(web_prefs);
 
   web_prefs->text_autosizing_enabled =
-      Java_AwSettings_getTextAutosizingEnabledLocked(env, obj);
+      Java_AwSettings_getTextAutosizingEnabledLocked(env, obj) &&
+      !base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing);
 
   int text_size_percent = Java_AwSettings_getTextSizePercentLocked(env, obj);
   if (web_prefs->text_autosizing_enabled) {
