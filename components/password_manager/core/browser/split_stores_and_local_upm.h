@@ -30,12 +30,10 @@ bool GetLegacySplitStoresPref(const PrefService* pref_service);
 // into the GMSCore.
 // - If the GMSCore version is pre-UPM, update is always required.
 // - If the GMSCore version supports the account store, but doesn't support the
-// local store, the result depends on whether the user is syncing and enrolled
-// into UPM.
+// local store, the result depends on whether the user is syncing.
 // - If the GMSCore version supports both the account and local stores, the
 // update is never required.
-bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
-                             const syncer::SyncService* sync_service);
+bool IsGmsCoreUpdateRequired(const syncer::SyncService* sync_service);
 
 // The min GMS version which supports the account UPM backend.
 inline constexpr int kAccountUpmMinGmsVersion = 223012000;

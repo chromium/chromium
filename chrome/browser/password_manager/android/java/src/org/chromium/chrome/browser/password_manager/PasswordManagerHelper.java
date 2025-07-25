@@ -793,7 +793,7 @@ public class PasswordManagerHelper {
         // This checks against the account store GMSCore version if the user is syncing and against
         // the local version if the user is not syncing.
         if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                UserPrefs.get(mProfile), SyncServiceFactory.getForProfile(mProfile))) {
+                SyncServiceFactory.getForProfile(mProfile))) {
             throw new CredentialManagerBackendException(
                     "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);

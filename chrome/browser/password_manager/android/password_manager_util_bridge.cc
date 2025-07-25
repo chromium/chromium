@@ -33,9 +33,8 @@ jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
 
 jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(
     JNIEnv* env,
-    PrefService* pref_service,
     syncer::SyncService* sync_service) {
-  return IsGmsCoreUpdateRequired(pref_service, sync_service);
+  return IsGmsCoreUpdateRequired(sync_service);
 }
 
 jboolean JNI_PasswordManagerUtilBridge_AreMinUpmRequirementsMet(JNIEnv* env) {

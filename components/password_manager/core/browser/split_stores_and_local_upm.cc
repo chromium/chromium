@@ -60,8 +60,7 @@ bool GetLegacySplitStoresPref(const PrefService* pref_service) {
   NOTREACHED();
 }
 
-bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
-                             const syncer::SyncService* sync_service) {
+bool IsGmsCoreUpdateRequired(const syncer::SyncService* sync_service) {
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   return false;
 #else

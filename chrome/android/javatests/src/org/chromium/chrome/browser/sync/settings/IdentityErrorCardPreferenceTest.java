@@ -232,8 +232,7 @@ public class IdentityErrorCardPreferenceTest {
     @LargeTest
     @Feature("RenderTest")
     public void testIdentityErrorCardForUpmBackendOutdated() throws Exception {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
-                .thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any())).thenReturn(true);
 
         mSigninTestRule.addTestAccountThenSignin();
 

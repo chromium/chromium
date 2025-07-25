@@ -35,14 +35,12 @@ public class PasswordManagerUtilBridge {
     /**
      * Checks if the GMSCore update is required to use the Password Manager functionality.
      *
-     * @param prefService Preference service for checking if the user is enrolled into UPM.
      * @param syncService The sync service.
      * @return Whether the user is required to update GMSCore to use the Password Manager
      *     functionality.
      */
-    public static boolean isGmsCoreUpdateRequired(
-            PrefService prefService, @Nullable SyncService syncService) {
-        return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired(prefService, syncService);
+    public static boolean isGmsCoreUpdateRequired(@Nullable SyncService syncService) {
+        return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired(syncService);
     }
 
     @CalledByNative
@@ -82,7 +80,6 @@ public class PasswordManagerUtilBridge {
                 @JniType("PrefService*") PrefService prefService, boolean isInternalBackendPresent);
 
         boolean isGmsCoreUpdateRequired(
-                @JniType("PrefService*") PrefService prefService,
                 @JniType("syncer::SyncService*") @Nullable SyncService syncService);
 
         boolean areMinUpmRequirementsMet();

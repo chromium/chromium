@@ -43,7 +43,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.widget.Toast;
 
@@ -291,8 +290,7 @@ public class SyncSettingsUtils {
         }
 
         if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
-                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        UserPrefs.get(profile), syncService)) {
+                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(syncService)) {
             return context.getString(R.string.sync_error_outdated_gms);
         }
 
@@ -624,8 +622,7 @@ public class SyncSettingsUtils {
         // TODO(crbug.com/345217772): Look for a better alternative. Maybe return all the sync
         // errors at the moment and not just one.
         if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
-                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        UserPrefs.get(profile), syncService)) {
+                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(syncService)) {
             return SyncError.UPM_BACKEND_OUTDATED;
         }
 
