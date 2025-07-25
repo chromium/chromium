@@ -10,12 +10,44 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value, no policy set",
+        "prefs": {
+          "profile.managed_default_content_settings.javascript": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Setting to disabled sets pref to blocked",
         "policies": {
           "JavascriptEnabled": false
         },
         "prefs": {
           "profile.managed_default_content_settings.javascript": {
             "value": 2
+          }
+        }
+      },
+      {
+        "note": "Setting to enabled leaves pref in default state",
+        "policies": {
+          "JavascriptEnabled": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.javascript": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Deprecated policy is overridden by DefaultJavaScriptSetting",
+        "policies": {
+          "JavascriptEnabled": false,
+          "DefaultJavaScriptSetting": 1
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.javascript": {
+            "value": 1
           }
         }
       }
