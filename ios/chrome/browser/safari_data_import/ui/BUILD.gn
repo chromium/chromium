@@ -6,7 +6,7 @@ source_set("ui") {
   sources = [
     "safari_data_import_entry_point_view_controller.h",
     "safari_data_import_entry_point_view_controller.mm",
-    "safari_data_import_import_stage_consumer.h",
+    "safari_data_import_import_stage_transition_handler.h",
     "safari_data_import_import_view_controller.h",
     "safari_data_import_import_view_controller.mm",
     "safari_data_import_password_conflict_resolution_view_controller.h",

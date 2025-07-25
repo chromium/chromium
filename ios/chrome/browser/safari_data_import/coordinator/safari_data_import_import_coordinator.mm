@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_mediator.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_view_controller.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
@@ -35,22 +36,26 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @interface SafariDataImportImportCoordinator () <
-    PromoStyleViewControllerDelegate>
+    PromoStyleViewControllerDelegate,
+    SafariDataImportImportStageTransitionHandler>
+
+/// The mediator handling the interaction with the model. Lazily loaded with
+/// `-mediator` method.
+@property(nonatomic, readonly) SafariDataImportImportMediator* mediator;
+
 @end
 
 @implementation SafariDataImportImportCoordinator {
   /// The view controller pushed onto the base navigation controller; user
   /// interacts with it to present other views.
   SafariDataImportImportViewController* _containerViewController;
-  /// The mediator handling the interaction with the model. Lazily loaded with
-  /// `-mediator` method.
-  SafariDataImportImportMediator* _mediator;
   /// File picker for the user to select Safari data.
   UIDocumentPickerViewController* _documentProvider;
   /// Table view  that displays the import status of Safari data.
   SafariDataItemTableView* _tableView;
 }
 
+@synthesize mediator = _mediator;
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
@@ -69,7 +74,7 @@
       [[SafariDataImportImportViewController alloc] init];
   _containerViewController.delegate = self;
   _tableView = [[SafariDataItemTableView alloc] init];
-  _tableView.importStageConsumer = _containerViewController;
+  _tableView.importStageTransitionHandler = self;
   _containerViewController.itemTableView = _tableView;
   self.baseNavigationController.navigationBarHidden = NO;
   [self.baseNavigationController pushViewController:_containerViewController
@@ -77,49 +82,19 @@
 }
 
 - (void)stop {
-  [[self mediator] disconnect];
+  [self.mediator disconnect];
   self.delegate = nil;
   _containerViewController = nil;
 }
 
-#pragma mark - PromoStyleViewControllerDelegate
+#pragma mark - Accessors
 
-- (void)didTapPrimaryActionButton {
-  /// TODO(crbug.com/420703283): Use real data from mediator.
-  BOOL hasConflicts = YES;
-  switch (_containerViewController.importStage) {
-    case SafariDataImportStage::kNotStarted:
-      [_containerViewController
-          transitionToImportStage:SafariDataImportStage::kFileLoading];
-      [self showFilePicker];
-      break;
-    case SafariDataImportStage::kFileLoading:
-      NOTREACHED() << "button should be disabled";
-    case SafariDataImportStage::kReadyForImport:
-      if (hasConflicts) {
-        [self showPasswordConflictResolutionModal];
-      } else {
-        /// TODO(crbug.com/420703283): call the mediator's import method.
-      }
-      break;
-    case SafariDataImportStage::kImporting:
-    case SafariDataImportStage::kImported:
-    default:
-      break;
-  }
-}
-
-- (void)didTapDismissButton {
-  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
-}
-
-#pragma mark - Private
-
-/// Lazily-loaded mediator.
 - (SafariDataImportImportMediator*)mediator {
   if (!_mediator) {
-    /// Retrieve mediator dependencies.
+    /// Use original profile as the user has explicitly requested this operation
+    /// to update their personal data.
     ProfileIOS* profile = self.profile->GetOriginalProfile();
+    /// Retrieve mediator dependencies.
     std::unique_ptr<password_manager::SavedPasswordsPresenter>
         savedPasswordsPresenter =
             std::make_unique<password_manager::SavedPasswordsPresenter>(
@@ -146,11 +121,66 @@
                          historyService:historyService
                           bookmarkModel:bookmarkModel
                        readingListModel:readingListModel];
-    _mediator.importStageConsumer = _containerViewController;
+    _mediator.importStageTransitionHandler = self;
     _mediator.itemConsumer = _tableView;
   }
   return _mediator;
 }
+
+#pragma mark - PromoStyleViewControllerDelegate
+
+- (void)didTapPrimaryActionButton {
+  /// TODO(crbug.com/420703283): Use real data from mediator.
+  BOOL hasConflicts = YES;
+  switch (_containerViewController.importStage) {
+    case SafariDataImportStage::kNotStarted:
+      [self transitionToNextImportStage];
+      [self showFilePicker];
+      break;
+    case SafariDataImportStage::kFileLoading:
+      NOTREACHED() << "button should be disabled";
+    case SafariDataImportStage::kReadyForImport:
+      if (hasConflicts) {
+        [self showPasswordConflictResolutionModal];
+      } else {
+        /// TODO(crbug.com/420703283): call the mediator's import method.
+      }
+      break;
+    case SafariDataImportStage::kImporting:
+    case SafariDataImportStage::kImported:
+    default:
+      break;
+  }
+}
+
+- (void)didTapDismissButton {
+  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
+}
+
+#pragma mark - SafariDataImportImportStageTransitionHandler
+
+- (void)transitionToNextImportStage {
+  CHECK_NE(_containerViewController.importStage,
+           SafariDataImportStage::kImported)
+      << "No next import stage.";
+  int nextImportStageInt =
+      static_cast<int>(_containerViewController.importStage) + 1;
+  _containerViewController.importStage =
+      static_cast<SafariDataImportStage>(nextImportStageInt);
+}
+
+- (void)resetToInitialImportStage:(BOOL)userInitiated {
+  SafariDataImportStage currentStage = _containerViewController.importStage;
+  CHECK_EQ(currentStage, SafariDataImportStage::kFileLoading)
+      << "Not supported for stage: " << static_cast<int>(currentStage);
+  if (!userInitiated) {
+    // TODO(crbug.com/420703283): Display an alert.
+  }
+  [self.mediator reset];
+  _containerViewController.importStage = SafariDataImportStage::kNotStarted;
+}
+
+#pragma mark - Private
 
 /// Displays the document picker so the user could select the Safari data file.
 - (void)showFilePicker {
@@ -168,7 +198,7 @@
                                                create:NO
                                                 error:nil];
   _documentProvider.allowsMultipleSelection = NO;
-  _documentProvider.delegate = [self mediator];
+  _documentProvider.delegate = self.mediator;
   _documentProvider.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
   [_containerViewController presentViewController:_documentProvider

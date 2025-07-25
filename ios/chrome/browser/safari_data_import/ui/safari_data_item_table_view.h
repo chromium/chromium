@@ -8,15 +8,15 @@
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 
-@protocol SafariDataImportImportStageConsumer;
+@protocol SafariDataImportImportStageTransitionHandler;
 
 /// View controller for the Safari data import screen.
 @interface SafariDataItemTableView
     : SelfSizingTableView <SafariDataItemConsumer>
 
-/// Consumer object handling import stage transitions.
-@property(nonatomic, weak) id<SafariDataImportImportStageConsumer>
-    importStageConsumer;
+/// Import stage transition handler.
+@property(nonatomic, weak) id<SafariDataImportImportStageTransitionHandler>
+    importStageTransitionHandler;
 
 /// Designated Initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

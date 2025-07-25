@@ -21,17 +21,17 @@ namespace history {
 class HistoryService;
 }
 class ReadingListModel;
-@protocol SafariDataImportImportStageConsumer;
+@protocol SafariDataImportImportStageTransitionHandler;
 @protocol SafariDataItemConsumer;
 
 /// Mediator for the safari data import screen. Handles stages of importing a
 /// .zip file generated from Safari data to Chrome.
 @interface SafariDataImportImportMediator : NSObject <UIDocumentPickerDelegate>
 
-/// Consumer object handling import stage transitions. This needs to be set
-/// before selecting a file.
-@property(nonatomic, weak) id<SafariDataImportImportStageConsumer>
-    importStageConsumer;
+/// Transition handler for import stage. This needs to be set before selecting a
+/// file.
+@property(nonatomic, weak) id<SafariDataImportImportStageTransitionHandler>
+    importStageTransitionHandler;
 
 /// Consumer object displaying Safari item import status. This needs to be set
 /// before selecting a file.

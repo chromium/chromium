@@ -7,7 +7,6 @@
 #import <ostream>
 
 #import "base/check_op.h"
-#import "base/notreached.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
@@ -19,8 +18,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @implementation SafariDataImportImportViewController
-
-@synthesize importStage = _importStage;
 
 - (void)viewDidLoad {
   _importStage = SafariDataImportStage::kNotStarted;
@@ -40,31 +37,23 @@
   [self showInstructionView];
 }
 
-#pragma mark - SafariDataImportImportStageConsumer
+#pragma mark - Accessor
 
-- (void)transitionToImportStage:(SafariDataImportStage)stage {
+- (void)setImportStage:(SafariDataImportStage)stage {
   switch (stage) {
     case SafariDataImportStage::kNotStarted:
-      CHECK_EQ(_importStage, SafariDataImportStage::kFileLoading)
-          << "Can only transition to kNotStarted stage from kFileLoading, "
-             "which happens when file loading has failed. The current stage is "
-          << static_cast<int>(_importStage);
+      /// Currently, this view controller does NOT support transitioning back to
+      /// `kNotStarted` once the table view is displayed.
+      CHECK_LT(static_cast<int>(_importStage),
+               static_cast<int>(SafariDataImportStage::kReadyForImport));
       self.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_SELECT_YOUR_FILE);
       self.primaryButtonSpinnerEnabled = NO;
       break;
     case SafariDataImportStage::kFileLoading:
-      CHECK_EQ(_importStage, SafariDataImportStage::kNotStarted)
-          << "Can only transition to kFileLoading stage from kNotStarted. The "
-             "current stage is "
-          << static_cast<int>(_importStage);
       self.primaryButtonSpinnerEnabled = YES;
       break;
     case SafariDataImportStage::kReadyForImport:
-      CHECK_EQ(_importStage, SafariDataImportStage::kFileLoading)
-          << "Can only transition to kReadyForImport stage from kFileLoading, "
-             "which happens when file loading has failed. The current stage is "
-          << static_cast<int>(_importStage);
       [self showTableView];
       self.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);

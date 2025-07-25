@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_consumer.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 @implementation SafariDataImportImportMediator {
@@ -92,8 +92,7 @@
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller {
-  [self.importStageConsumer
-      transitionToImportStage:SafariDataImportStage::kNotStarted];
+  [self.importStageTransitionHandler resetToInitialImportStage:YES];
 }
 
 #pragma mark - Private
@@ -106,8 +105,7 @@
   __weak __typeof(self) weakSelf = self;
   _importClient->RegisterCallbackOnImportFailure(base::BindOnce(^{
     [weakSelf reset];
-    [weakSelf.importStageConsumer
-        transitionToImportStage:SafariDataImportStage::kNotStarted];
+    [weakSelf.importStageTransitionHandler resetToInitialImportStage:NO];
   }));
   _importClientReady = YES;
 }
