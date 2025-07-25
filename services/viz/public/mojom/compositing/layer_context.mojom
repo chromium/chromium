@@ -94,9 +94,8 @@ struct LayerTreeUpdate {
   // If a new LocalSurfaceId is assigned by the parent, it's included here.
   LocalSurfaceId? local_surface_id_from_parent;
 
-  // If a new LocalSurfaceId needs to be generated for LayerTreeImpl in viz
-  // process.
-  bool new_local_surface_id_request;
+  // The current LocalSurfaceId from client process.
+  LocalSurfaceId current_local_surface_id;
 
   // Pass the frame_token generated on the client side to viz. Without this,
   // viz needs to generate the token on its own, but GPU process could

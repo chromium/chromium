@@ -413,7 +413,6 @@ class CC_EXPORT LayerTreeImpl {
   bool new_local_surface_id_request_for_testing() const {
     return new_local_surface_id_request_;
   }
-  bool TakeNewLocalSurfaceIdRequestForVizProcess();
 
   void SetScreenshotDestinationToken(base::UnguessableToken destination_token);
   base::UnguessableToken TakeScreenshotDestinationToken();
@@ -923,10 +922,6 @@ class CC_EXPORT LayerTreeImpl {
   viz::LocalSurfaceId local_surface_id_from_parent_;
 
   bool new_local_surface_id_request_ : 1 = false;
-
-  // This will be set when new_local_surface_id_request_ is set,
-  // but will only be cleared in VizLayerContext::UpdateDisplayTreeFrom().
-  bool new_local_surface_id_request_for_viz_process_ : 1 = false;
 
   bool needs_update_draw_properties_ : 1 = true;
 

@@ -116,7 +116,6 @@ void LayerContextImplTest::ResetTestState() {
 
 mojom::LayerTreeUpdatePtr LayerContextImplTest::CreateDefaultUpdate() {
   auto update = mojom::LayerTreeUpdate::New();
-  update->next_frame_token = 1;
 
   if (first_update_) {
     AddFirstTimeDefaultProperties(update.get());
@@ -163,6 +162,8 @@ void LayerContextImplTest::AddDefaultPropertyUpdates(
   // Other defaults
   update->display_color_spaces = gfx::DisplayColorSpaces();
   update->local_surface_id_from_parent = kDefaultLocalSurfaceId;
+  update->current_local_surface_id = kDefaultLocalSurfaceId;
+  update->next_frame_token = 1;
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta interval = base::Milliseconds(16);

@@ -2797,8 +2797,10 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   }
 
   if (GetCurrentLocalSurfaceId().is_valid()) {
-    if (allocate_new_local_surface_id)
+    if (allocate_new_local_surface_id &&
+        !settings().trees_in_viz_in_viz_process) {
       AllocateLocalSurfaceId();
+    }
     metadata.local_surface_id = GetCurrentLocalSurfaceId();
   }
 
@@ -4533,8 +4535,9 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   // LayerTreeFrameSink to ensure that we do not reuse the same surface after
   // it might have been garbage collected.
   const viz::LocalSurfaceId& local_surface_id = GetCurrentLocalSurfaceId();
-  if (local_surface_id.is_valid())
+  if (local_surface_id.is_valid() && !settings().trees_in_viz_in_viz_process) {
     AllocateLocalSurfaceId();
+  }
 
   return true;
 }
@@ -6007,6 +6010,7 @@ void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
 }
 
 void LayerTreeHostImpl::AllocateLocalSurfaceId() {
+  DCHECK(!settings().trees_in_viz_in_viz_process);
   child_local_surface_id_allocator_.GenerateId();
 }
 

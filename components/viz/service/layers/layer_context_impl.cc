@@ -1737,12 +1737,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
-    if (update->new_local_surface_id_request) {
-      layers.RequestNewLocalSurfaceId();
-    }
-    host_impl_->UpdateChildLocalSurfaceId();
   }
-
+  host_impl_->set_current_local_surface_id_from_client(
+      update->current_local_surface_id);
   if (update->target_local_surface_id) {
     host_impl_->SetTargetLocalSurfaceId(*update->target_local_surface_id);
   }
@@ -1815,9 +1812,6 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   layers.SetMaxSafeAreaInsetBottom(update->max_safe_area_inset_bottom);
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
   layers.SetDisplayColorSpaces(update->display_color_spaces);
-  if (update->local_surface_id_from_parent) {
-    layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
-  }
 
   if (!(update->top_controls_shown_ratio >= 0 &&
         update->top_controls_shown_ratio <= 1 &&

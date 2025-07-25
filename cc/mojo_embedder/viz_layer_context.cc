@@ -1266,8 +1266,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   if (tree.local_surface_id_from_parent().is_valid()) {
     update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
   }
-  update->new_local_surface_id_request =
-      tree.TakeNewLocalSurfaceIdRequestForVizProcess();
+  update->current_local_surface_id = host_impl_->GetCurrentLocalSurfaceId();
   if (target_local_surface_id.is_valid()) {
     update->target_local_surface_id = target_local_surface_id;
   }

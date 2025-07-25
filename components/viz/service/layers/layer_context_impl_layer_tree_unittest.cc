@@ -289,10 +289,9 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayColorSpaces) {
   EXPECT_EQ(active_tree->display_color_spaces(), color_spaces_hdr);
 }
 
-TEST_F(LayerContextImplLayerTreePropertiesTest,
-       UpdateLocalSurfaceIdFromParent) {
-  cc::LayerTreeImpl* active_tree =
-      layer_context_impl_->host_impl()->active_tree();
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateLocalSurfaceId) {
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+  cc::LayerTreeImpl* active_tree = host_impl->active_tree();
 
   // Initial update.
   auto update1 = CreateDefaultUpdate();
@@ -301,46 +300,61 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
   // Default is kDefaultLocalSurfaceId as per CreateDefaultUpdate.
   EXPECT_EQ(active_tree->local_surface_id_from_parent(),
             kDefaultLocalSurfaceId);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kDefaultLocalSurfaceId);
 
   // Update to a new LocalSurfaceId.
-  const LocalSurfaceId kNewLsi(
+  const LocalSurfaceId kNewLsi0(
       4, base::UnguessableToken::CreateForTesting(5u, 6u));
+  const LocalSurfaceId kNewLsi1(
+      7, base::UnguessableToken::CreateForTesting(8u, 9u));
   auto update2 = CreateDefaultUpdate();
-  update2->local_surface_id_from_parent = kNewLsi;
+  update2->local_surface_id_from_parent = kNewLsi0;
+  update2->current_local_surface_id = kNewLsi1;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
-  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kNewLsi);
+  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kNewLsi0);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kNewLsi1);
 
   // Update back to default.
   auto update_default_lsi = CreateDefaultUpdate();
   update_default_lsi->local_surface_id_from_parent = kDefaultLocalSurfaceId;
+  update_default_lsi->current_local_surface_id = kDefaultLocalSurfaceId;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_default_lsi))
           .has_value());
   EXPECT_EQ(active_tree->local_surface_id_from_parent(),
             kDefaultLocalSurfaceId);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kDefaultLocalSurfaceId);
 
   // Update to an invalid LocalSurfaceId (default constructed).
   // LayerTreeImpl stores it as is.
   const LocalSurfaceId kInvalidLsi;
   auto update_invalid_lsi = CreateDefaultUpdate();
   update_invalid_lsi->local_surface_id_from_parent = kInvalidLsi;
+  update_invalid_lsi->current_local_surface_id = kInvalidLsi;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_invalid_lsi))
           .has_value());
   EXPECT_EQ(active_tree->local_surface_id_from_parent(), kInvalidLsi);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kInvalidLsi);
 
   // Update with a different valid LocalSurfaceId.
-  const LocalSurfaceId kAnotherValidLsi(
+  const LocalSurfaceId kAnotherValidLsi0(
       kDefaultLocalSurfaceId.parent_sequence_number() + 1,
       kDefaultLocalSurfaceId.child_sequence_number() + 1,
       base::UnguessableToken::CreateForTesting(10u, 11u));
+  const LocalSurfaceId kAnotherValidLsi1(
+      kDefaultLocalSurfaceId.parent_sequence_number() + 2,
+      kDefaultLocalSurfaceId.child_sequence_number() + 2,
+      base::UnguessableToken::CreateForTesting(12u, 13u));
   auto update_another_lsi = CreateDefaultUpdate();
-  update_another_lsi->local_surface_id_from_parent = kAnotherValidLsi;
+  update_another_lsi->local_surface_id_from_parent = kAnotherValidLsi0;
+  update_another_lsi->current_local_surface_id = kAnotherValidLsi1;
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_another_lsi))
           .has_value());
-  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kAnotherValidLsi);
+  EXPECT_EQ(active_tree->local_surface_id_from_parent(), kAnotherValidLsi0);
+  EXPECT_EQ(host_impl->GetCurrentLocalSurfaceId(), kAnotherValidLsi1);
 }
 
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateBeginFrameArgs) {
