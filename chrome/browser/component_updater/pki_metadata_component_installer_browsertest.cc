@@ -15,6 +15,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -59,11 +60,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "base/test/bind.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #endif
 
 namespace {
@@ -1537,6 +1540,20 @@ class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
     net::SSLServerConfig server_config;
     server_config.intermediate_trust_anchor_id =
         base::ToVector(kIntermediateTrustAnchorId);
+    // TODO(crbug.com/431064813): this callback just adds some debugging
+    // info to try to investigate a flake. It can be removed once the cause of
+    // the flake is found.
+    server_config.client_hello_callback_for_testing =
+        base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+          const uint8_t* data = nullptr;
+          size_t len = 0;
+          SSL_early_callback_ctx_extension_get(
+              client_hello, TLSEXT_TYPE_trust_anchors, &data, &len);
+          LOG(ERROR) << "Trust anchor IDs from Client Hello: "
+                     << base::HexEncode(data, len);
+          return true;
+        });
+
     net::EmbeddedTestServer::ServerCertificateConfig certificate_config;
     certificate_config.intermediate =
         net::EmbeddedTestServer::IntermediateType::kInHandshake;
@@ -1644,10 +1661,9 @@ class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
   uint8_t num_observed_responses_ = 0;
 };
 
-// TODO(crbug.com/431064813): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(
     PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest,
-    DISABLED_TrustAnchorIDs) {
+    TrustAnchorIDs) {
   // Before updating the root store with trust anchor IDs, the server should
   // serve both a leaf and an intermediate.
   {
@@ -1704,6 +1720,18 @@ IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
 
+    // TODO(https://crbug.com/431064813): this is a speculative attempt to fix a
+    // test flake. It isn't clear why this should be needed because updating the
+    // SSLConfig should close idle sockets and prevent socket reuse. If this
+    // fixes the flake, we should investigate further why this is needed.
+    base::RunLoop close_all_connections_loop;
+    chrome_test_utils::GetActiveWebContents(this)
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->CloseAllConnections(close_all_connections_loop.QuitClosure());
+    close_all_connections_loop.Run();
+
     // The server should now serve a single leaf, without any intermediates,
     // because the client should signal that it trusts the intermediate as a
     // trust anchor.
@@ -1712,6 +1740,9 @@ IN_PROC_BROWSER_TEST_F(
             ->CloneWithDifferentIntermediates({});
     ASSERT_EQ(server_certificate->intermediate_buffers().size(), 0u);
     SetExpectedCertificateOnResponses(server_certificate);
+
+    // TODO(crbug.com/431064813): remove after debugging test flake.
+    LOG(ERROR) << "Beginning navigation with Trust Anchor IDs";
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), trust_anchor_ids_server_.GetURL(kHostname, "/simple.html")));
