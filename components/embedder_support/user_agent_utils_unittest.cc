@@ -754,13 +754,26 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
 }
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
-TEST_F(UserAgentUtilsTest, UserAgentMetadataXR) {
+TEST_F(UserAgentUtilsTest, UserAgentMetadataForXrDevice) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       device::features::kForceIsXrDeviceForTesting);
+
+  // Verify the user-agent.
+  EXPECT_THAT(GetUserAgent(), testing::HasSubstr("X11; Linux x86_64"));
+
+  // Verify user-agent client-hints
   auto metadata = GetUserAgentMetadata();
-  std::vector<std::string> expected_form_factors = {
-      (metadata.mobile ? "Mobile" : "Desktop"), "XR"};
+  EXPECT_FALSE(metadata.mobile);
+  EXPECT_EQ(metadata.platform, "Linux");
+  EXPECT_FALSE(metadata.brand_version_list.empty());
+  EXPECT_EQ(metadata.bitness, "64");
+  EXPECT_EQ(metadata.architecture, "x86");
+  EXPECT_FALSE(metadata.model.empty());
+  EXPECT_TRUE(metadata.platform_version.empty());
+  EXPECT_FALSE(metadata.full_version.empty());
+  EXPECT_FALSE(metadata.brand_full_version_list.empty());
+  std::vector<std::string> expected_form_factors = {"Desktop", "XR"};
   EXPECT_EQ(metadata.form_factors, expected_form_factors);
 }
 #endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
