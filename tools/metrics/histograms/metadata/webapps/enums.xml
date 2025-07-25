@@ -207,6 +207,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Response not found"/>
 </enum>
 
+<enum name="IsolatedWebAppRemoveObsoleteBundleVersionsError">
+  <int value="0" label="System shutdown"/>
+  <int value="1" label="IWA not installed"/>
+  <int value="2" label="Installed version not cached"/>
+  <int value="3" label="Could not delete all versions"/>
+</enum>
+
 <enum name="IsolatedWebAppResponseReaderCacheState">
   <int value="0" label="Not cached"/>
   <int value="1" label="Cached and ready"/>

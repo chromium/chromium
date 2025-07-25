@@ -1537,6 +1537,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.RemoveObsoleteBundleVersionsError"
+    enum="IsolatedWebAppRemoveObsoleteBundleVersionsError"
+    expires_after="2026-07-30">
+  <owner>irfedorova@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records the exact error that occurred during the removing of the Isolated
+    Web App obsolete bundle versions from cache. The error is logged together
+    with WebApp.Isolated.RemoveObsoleteBundleVersionsSuccess in case an error
+    occurs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.RemoveObsoleteBundleVersionsSuccess"
+    enum="BooleanSuccess" expires_after="2026-07-30">
+  <owner>irfedorova@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records whether the removing of the Isolated Web App obsolete bundle
+    versions from cache was successful or resulted in an error.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.ResponseReaderCacheState"
     enum="IsolatedWebAppResponseReaderCacheState" expires_after="2025-12-07">
   <owner>giovax@chromium.org</owner>

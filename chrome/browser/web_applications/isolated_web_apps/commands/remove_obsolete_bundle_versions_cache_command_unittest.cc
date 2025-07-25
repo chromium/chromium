@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -42,6 +43,11 @@ const web_package::test::Ed25519KeyPair kPublicKeyPair =
 const base::Version kVersion1 = base::Version("0.0.1");
 const base::Version kVersion2 = base::Version("0.0.2");
 const base::Version kVersion3 = base::Version("0.0.3");
+
+constexpr char kRemoveObsoleteBundleVersionsSuccessMetric[] =
+    "WebApp.Isolated.RemoveObsoleteBundleVersionsSuccess";
+constexpr char kRemoveObsoleteBundleVersionsErrorMetric[] =
+    "WebApp.Isolated.RemoveObsoleteBundleVersionsError";
 
 }  // namespace
 
@@ -108,6 +114,31 @@ class RemoveObsoleteBundleVersionsCacheCommandTest
                                             base::FILE_PERMISSION_READ_BY_USER);
   }
 
+  void ExpectEmptyRemoveObsoleteBundleVersionsMetrics() {
+    histogram_tester_.ExpectTotalCount(
+        kRemoveObsoleteBundleVersionsSuccessMetric, 0);
+    histogram_tester_.ExpectTotalCount(kRemoveObsoleteBundleVersionsErrorMetric,
+                                       0);
+  }
+
+  void ExpectSuccessRemoveObsoleteBundleVersionsMetric() {
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    kRemoveObsoleteBundleVersionsSuccessMetric),
+                BucketsAre(base::Bucket(true, 1)));
+    histogram_tester_.ExpectTotalCount(kRemoveObsoleteBundleVersionsErrorMetric,
+                                       0);
+  }
+
+  void ExpectErrorRemoveObsoleteBundleVersionsMetric(
+      const RemoveObsoleteBundleVersionsError::Type& error) {
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    kRemoveObsoleteBundleVersionsSuccessMetric),
+                BucketsAre(base::Bucket(false, 1)));
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    kRemoveObsoleteBundleVersionsErrorMetric),
+                BucketsAre(base::Bucket(error, 1)));
+  }
+
  private:
   const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
 
@@ -118,22 +149,27 @@ class RemoveObsoleteBundleVersionsCacheCommandTest
 
   SessionType GetSessionType() { return GetParam(); }
 
+  base::HistogramTester histogram_tester_;
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, AppNotInstalled) {
+  ExpectEmptyRemoveObsoleteBundleVersionsMetrics();
   TestFuture<RemoveObsoleteBundleVersionsResult> get_bundle_future;
   ScheduleCommand(kBundleId, get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ErrorIs(RemoveObsoleteBundleVersionsError(
                   RemoveObsoleteBundleVersionsError::Type::kAppNotInstalled)));
+  ExpectErrorRemoveObsoleteBundleVersionsMetric(
+      RemoveObsoleteBundleVersionsError::Type::kAppNotInstalled);
 }
 
 TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest,
        InstalledVersionNotCached) {
+  ExpectEmptyRemoveObsoleteBundleVersionsMetrics();
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion1.GetString());
   ASSERT_THAT(app->Install(profile()), HasValue());
 
@@ -144,6 +180,8 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest,
               ErrorIs(RemoveObsoleteBundleVersionsError(
                   RemoveObsoleteBundleVersionsError::Type::
                       kInstalledVersionNotCached)));
+  ExpectErrorRemoveObsoleteBundleVersionsMetric(
+      RemoveObsoleteBundleVersionsError::Type::kInstalledVersionNotCached);
 }
 
 TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest,
@@ -161,6 +199,7 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest,
 }
 
 TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, RemoveOldVersion) {
+  ExpectEmptyRemoveObsoleteBundleVersionsMetrics();
   // `kVersion2` is installed, remove `kVersion1`.
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp(kVersion2.GetString());
   ASSERT_THAT(app->Install(profile()), HasValue());
@@ -174,6 +213,7 @@ TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, RemoveOldVersion) {
               ValueIs(RemoveObsoleteBundleVersionsSuccess(1)));
   EXPECT_FALSE(base::PathExists(bundle_path1));
   EXPECT_TRUE(base::PathExists(bundle_path2));
+  ExpectSuccessRemoveObsoleteBundleVersionsMetric();
 }
 
 TEST_P(RemoveObsoleteBundleVersionsCacheCommandTest, RemoveNewVersion) {

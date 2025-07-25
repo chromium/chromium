@@ -40,11 +40,16 @@ class RemoveObsoleteBundleVersionsSuccess {
 
 class RemoveObsoleteBundleVersionsError {
  public:
+  // These are used in histograms, do not remove/renumber entries. If you're
+  // adding to this enum with the intention that it will be logged, update the
+  // `IsolatedWebAppRemoveObsoleteBundleVersionsError` enum listing in
+  // tools/metrics/histograms/metadata/webapps/enums.xml.
   enum class Type {
-    kSystemShutdown,
-    kAppNotInstalled,
-    kInstalledVersionNotCached,
-    kCouldNotDeleteAllVersions,
+    kSystemShutdown = 0,
+    kAppNotInstalled = 1,
+    kInstalledVersionNotCached = 2,
+    kCouldNotDeleteAllVersions = 3,
+    kMaxValue = kCouldNotDeleteAllVersions,
   };
 
   explicit RemoveObsoleteBundleVersionsError(

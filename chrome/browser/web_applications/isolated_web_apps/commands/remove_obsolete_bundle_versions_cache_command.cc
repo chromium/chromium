@@ -13,12 +13,16 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/error/uma_logging.h"
 
 namespace web_app {
 
 namespace {
 
 using SessionType = IwaCacheClient::SessionType;
+
+constexpr char kRemoveObsoleteBundleVersionsMetric[] =
+    "WebApp.Isolated.RemoveObsoleteBundleVersions";
 
 RemoveObsoleteBundleVersionsResult RemoveObsoleteBundleVersionsCacheCommandImpl(
     const web_package::SignedWebBundleId& web_bundle_id,
@@ -79,6 +83,14 @@ base::expected<base::Version, RemoveObsoleteBundleVersionsError> GetIwaVersion(
   return app->isolation_data()->version();
 }
 
+RemoveObsoleteBundleVersionsResult RecordMetric(
+    RemoveObsoleteBundleVersionsResult result) {
+  web_app::UmaLogExpectedStatus(
+      kRemoveObsoleteBundleVersionsMetric,
+      result.transform_error(&RemoveObsoleteBundleVersionsError::type));
+  return result;
+}
+
 }  // namespace
 
 std::string RemoveObsoleteBundleVersionsSuccess::ToString() const {
@@ -117,7 +129,7 @@ RemoveObsoleteBundleVersionsCacheCommand::
     : WebAppCommand<AppLock, RemoveObsoleteBundleVersionsResult>(
           "RemoveObsoleteBundleVersionsCacheCommand",
           AppLockDescription(url_info.app_id()),
-          std::move(callback),
+          base::BindOnce(&RecordMetric).Then(std::move(callback)),
           /*args_for_shutdown=*/
           base::unexpected(RemoveObsoleteBundleVersionsError{
               RemoveObsoleteBundleVersionsError::Type::kSystemShutdown})),
