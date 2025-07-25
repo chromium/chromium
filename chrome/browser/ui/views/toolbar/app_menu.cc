@@ -440,6 +440,13 @@ void AddSignedInChipToProfileMenuItem(
   item->AddChildView(std::move(profile_chip));
   item->AddChildView(std::move(profile_chip_edge_spacing_view));
   item->SetHighlightWhenSelectedWithChildViews(true);
+  // MenuItemView only delegates accessible names when its title is empty with a
+  // single container view. The Profile MenuItemView has a title and multiple
+  // views. As a result, the accessible name must be manually computed to
+  // account for the profile chip.
+  item->GetViewAccessibility().SetName(
+      views::MenuItemView::GetAccessibleNameForMenuItem(
+          item->title(), GetSigninStatusChipString(profile), false));
 }
 
 // AppMenuView is a view that can contain label buttons.
