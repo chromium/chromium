@@ -304,6 +304,16 @@ const CGFloat kDamping = 0.85;
          kExtraSpacingTitleContent;
 }
 
+// Updates VoiceOver focus to the consent view after promo transition.
+- (void)updateAccessibilityFocus {
+  if (!_consentViewController) {
+    return;
+  }
+
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _consentViewController.view);
+}
+
 #pragma mark - BWGPromoViewControllerDelegate
 
 // Handles the primary action from the promo screen. It transitions the view
@@ -319,15 +329,19 @@ const CGFloat kDamping = 0.85;
 
   CGFloat mainStackViewWidth = _mainStackView.frame.size.width;
   [UIView animateWithDuration:kAnimationDuration
-                        delay:0.0
-       usingSpringWithDamping:kDamping
-        initialSpringVelocity:0.0
-                      options:UIViewAnimationOptionCurveEaseInOut
-                   animations:^{
-                     weakSelf.contentScrollView.contentOffset =
-                         CGPointMake(mainStackViewWidth, 0);
-                   }
-                   completion:nil];
+      delay:0.0
+      usingSpringWithDamping:kDamping
+      initialSpringVelocity:0.0
+      options:UIViewAnimationOptionCurveEaseInOut
+      animations:^{
+        weakSelf.contentScrollView.contentOffset =
+            CGPointMake(mainStackViewWidth, 0);
+      }
+      completion:^(BOOL finished) {
+        if (finished && UIAccessibilityIsVoiceOverRunning()) {
+          [weakSelf updateAccessibilityFocus];
+        }
+      }];
 }
 
 - (void)promoViewControllerWasDismissed {
