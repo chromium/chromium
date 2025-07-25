@@ -53,6 +53,8 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   static const char kHasLidKey[];
   static const char kAdaptiveChargingKey[];
   static const char kAdaptiveChargingManagedKey[];
+  static const char kChargeLimitKey[];
+  static const char kOptimizedChargingStrategyKey[];
   static const char kBatterySaverFeatureEnabledKey[];
 
   // Class used by tests to interact with PowerHandler internals.
@@ -71,6 +73,9 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
     void SetIdleBehavior(IdleBehavior behavior, bool when_on_ac);
     void SetLidClosedBehavior(chromeos::PowerPolicyController::Action behavior);
     void SetAdaptiveCharging(bool enabled);
+    void SetOptimizedCharging(
+        chromeos::PowerPolicyController::OptimizedChargingStrategy strategy,
+        bool enabled);
 
    private:
     raw_ptr<PowerHandler> handler_;  // Not owned.
@@ -139,6 +144,9 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   // Handler to toggle adaptive charging behavior.
   void HandleSetAdaptiveCharging(const base::Value::List& args);
 
+  // Handler which enables or disables the provided optimized charging strategy.
+  void HandleSetOptimizedCharging(const base::Value::List& args);
+
   // Updates the UI with the current battery status.
   void SendBatteryStatus();
 
@@ -187,6 +195,9 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   bool last_has_lid_ = true;
   bool last_adaptive_charging_ = false;
   bool last_adaptive_charging_managed_ = false;
+  bool last_charge_limit_ = false;
+  int last_optimized_charging_strategy_ = chromeos::PowerPolicyController::
+      OptimizedChargingStrategy::STRATEGY_ADAPTIVE_CHARGING;
   bool last_battery_saver_feature_enabled_ = false;
 
   base::WeakPtrFactory<PowerHandler> weak_ptr_factory_{this};

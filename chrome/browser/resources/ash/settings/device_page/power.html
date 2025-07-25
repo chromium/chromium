@@ -71,6 +71,7 @@
     </cr-button>
     <div class="separator"></div>
     <settings-toggle-v2 id="optimizedChargingToggle"
+        checked="[[optimizedChargingEnabled_]]"
         on-change="onOptimizedChargingToggleChange_"
         disabled="[[adaptiveChargingManaged_]]"
         deep-link-focus-id$="[[Setting.kOptimizedCharging]]">
