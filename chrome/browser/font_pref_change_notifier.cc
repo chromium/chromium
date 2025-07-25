@@ -4,10 +4,8 @@
 
 #include "chrome/browser/font_pref_change_notifier.h"
 
-#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/pref_names_util.h"
@@ -37,14 +35,14 @@ void FontPrefChangeNotifier::Registrar::Unregister() {
   callback_ = FontPrefChangeNotifier::Callback();
 }
 
-FontPrefChangeNotifier::FontPrefChangeNotifier(PrefService* pref_service) {
-  subscription_ =
-      pref_service->AddAllPrefsChangedCallback(base::IgnoreArgs<PrefService*>(
-          base::BindRepeating(&FontPrefChangeNotifier::OnPreferenceChanged,
-                              base::Unretained(this))));
+FontPrefChangeNotifier::FontPrefChangeNotifier(PrefService* pref_service)
+    : pref_service_(pref_service) {
+  pref_service_->AddPrefObserverAllPrefs(this);
 }
 
 FontPrefChangeNotifier::~FontPrefChangeNotifier() {
+  pref_service_->RemovePrefObserverAllPrefs(this);
+
   // There could be a shutdown race between this class and the objects
   // registered with it. We don't want the registrars to call back into us
   // when we're deleted, so tell them to unregister now.
@@ -60,7 +58,8 @@ void FontPrefChangeNotifier::RemoveRegistrar(Registrar* registrar) {
   registrars_.RemoveObserver(registrar);
 }
 
-void FontPrefChangeNotifier::OnPreferenceChanged(std::string_view pref_name) {
+void FontPrefChangeNotifier::OnPreferenceChanged(PrefService* pref_service,
+                                                 std::string_view pref_name) {
   if (base::StartsWith(pref_name, pref_names_util::kWebKitFontPrefPrefix,
                        base::CompareCase::SENSITIVE)) {
     const std::string pref_name_string(pref_name);

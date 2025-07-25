@@ -4,10 +4,8 @@
 
 #include "components/prefs/pref_notifier_impl.h"
 
-#include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
@@ -24,8 +22,8 @@ PrefNotifierImpl::~PrefNotifierImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Verify that there are no pref observers when we shut down.
-  for (const auto& observer_list : pref_changed_callbacks_) {
-    if (!observer_list.second.empty()) {
+  for (const auto& observer_list : pref_observers_) {
+    if (observer_list.second.begin() != observer_list.second.end()) {
       // Generally, there should not be any subscribers left when the profile
       // is destroyed because a) those may indicate that the subscriber class
       // maintains an active pointer to the profile that might be used for
@@ -61,50 +59,48 @@ PrefNotifierImpl::~PrefNotifierImpl() {
   if (!init_observers_.empty())
     LOG(WARNING) << "Init observer found at shutdown.";
 
-  pref_changed_callbacks_.clear();
+  pref_observers_.clear();
   init_observers_.clear();
 }
 
-base::CallbackListSubscription PrefNotifierImpl::AddPrefChangedCallback(
-    std::string_view path,
-    PrefChangedCallback callback) {
+void PrefNotifierImpl::AddPrefObserver(std::string_view path,
+                                       PrefObserver* obs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto iterator = pref_changed_callbacks_.find(path);
-  if (iterator == pref_changed_callbacks_.end()) {
-    bool inserted = false;
-    std::tie(iterator, inserted) = pref_changed_callbacks_.emplace(
-        std::piecewise_construct, std::forward_as_tuple(path),
-        std::forward_as_tuple());
-    DCHECK(inserted);
 
-    // Set a removal callback in order to remove the mapping when
-    // the last registered observer for `path` is removed. This
-    // avoid unbounded growth of the map (it will be limited to
-    // the maximum size of different preferences observer at the
-    // same time).
-    iterator->second.set_removal_callback(
-        base::BindRepeating(&PrefNotifierImpl::OnCallbacksRemoved,
-                            base::Unretained(this), std::string(path)));
-  }
-
-  DCHECK(iterator != pref_changed_callbacks_.end());
-  return iterator->second.Add(std::move(callback));
+  // Add the pref observer. ObserverList hits a DCHECK if it already is
+  // in the list.
+  pref_observers_[std::string(path)].AddObserver(obs);
 }
 
-base::CallbackListSubscription PrefNotifierImpl::AddAllPrefsChangedCallback(
-    PrefChangedCallback callback) {
+void PrefNotifierImpl::RemovePrefObserver(std::string_view path,
+                                          PrefObserver* obs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return all_prefs_changed_callbacks_.Add(std::move(callback));
+
+  auto observer_iterator = pref_observers_.find(path);
+  if (observer_iterator == pref_observers_.end()) {
+    return;
+  }
+
+  PrefObserverList& observer_list = observer_iterator->second;
+  observer_list.RemoveObserver(obs);
+}
+
+void PrefNotifierImpl::AddPrefObserverAllPrefs(PrefObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  all_prefs_pref_observers_.AddObserver(observer);
+}
+
+void PrefNotifierImpl::RemovePrefObserverAllPrefs(PrefObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  all_prefs_pref_observers_.RemoveObserver(observer);
 }
 
 void PrefNotifierImpl::AddInitObserver(base::OnceCallback<void(bool)> obs) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   init_observers_.push_back(std::move(obs));
 }
 
 void PrefNotifierImpl::OnPreferenceChanged(std::string_view path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyCallbacks(path);
+  FireObservers(path);
 }
 
 void PrefNotifierImpl::OnInitializationCompleted(bool succeeded) {
@@ -120,7 +116,7 @@ void PrefNotifierImpl::OnInitializationCompleted(bool succeeded) {
     std::move(observer).Run(succeeded);
 }
 
-void PrefNotifierImpl::NotifyCallbacks(std::string_view path) {
+void PrefNotifierImpl::FireObservers(std::string_view path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Only send notifications for registered preferences.
@@ -128,24 +124,20 @@ void PrefNotifierImpl::NotifyCallbacks(std::string_view path) {
     return;
 
   // Fire observers for any preference change.
-  all_prefs_changed_callbacks_.Notify(pref_service_, path);
+  for (PrefObserver& observer : all_prefs_pref_observers_) {
+    observer.OnPreferenceChanged(pref_service_, path);
+  }
 
-  auto iterator = pref_changed_callbacks_.find(path);
-  if (iterator != pref_changed_callbacks_.end()) {
-    iterator->second.Notify(pref_service_, path);
+  auto observer_iterator = pref_observers_.find(path);
+  if (observer_iterator == pref_observers_.end())
+    return;
+
+  for (PrefObserver& observer : observer_iterator->second) {
+    observer.OnPreferenceChanged(pref_service_, path);
   }
 }
 
 void PrefNotifierImpl::SetPrefService(PrefService* pref_service) {
   DCHECK(pref_service_ == nullptr);
   pref_service_ = pref_service;
-}
-
-void PrefNotifierImpl::OnCallbacksRemoved(const std::string& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto iterator = pref_changed_callbacks_.find(path);
-  DCHECK(iterator != pref_changed_callbacks_.end());
-  if (iterator->second.empty()) {
-    pref_changed_callbacks_.erase(iterator);
-  }
 }

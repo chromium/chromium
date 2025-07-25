@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_FONT_PREF_CHANGE_NOTIFIER_H_
 #define CHROME_BROWSER_FONT_PREF_CHANGE_NOTIFIER_H_
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_observer.h"
 
 class PrefService;
 
@@ -25,7 +25,7 @@ class PrefService;
 //
 // There is one FontPrefChangeNotifier per Profile. Construct one with the
 // FontPrefChangeNotifierFactory.
-class FontPrefChangeNotifier : public KeyedService {
+class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
  public:
   // The parameter is the full name of the font pref that changed.
   using Callback = base::RepeatingCallback<void(const std::string&)>;
@@ -72,11 +72,11 @@ class FontPrefChangeNotifier : public KeyedService {
   void AddRegistrar(Registrar* registrar);
   void RemoveRegistrar(Registrar* registrar);
 
-  // Invoked when a preference changes.
-  void OnPreferenceChanged(std::string_view pref_name);
+  // PrefObserver implementation.
+  void OnPreferenceChanged(PrefService* service,
+                           std::string_view pref_name) override;
 
-  // Subscription for observing the PrefService.
-  base::CallbackListSubscription subscription_;
+  raw_ptr<PrefService> pref_service_;  // Non-owning.
 
   // Non-owning pointers to the Registrars that have registered themselves
   // with us. We expect few registrars.
