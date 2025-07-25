@@ -16,7 +16,4 @@ per-file METRICS_REVIEWER_OWNERS=chromium-metrics-reviews@google.com
 per-file histogram_suffixes_list.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
 # For bot updates to expiry.
-# TODO(crbug.com/418617935): Remove once the bot is updated to use the new account.
-chrome-metrics-team+robot@google.com
-# For bot updates to expiry.
 chrome-metrics-team+submitter@google.com
