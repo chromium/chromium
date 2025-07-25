@@ -58,6 +58,7 @@ class Address : public FormGroup {
   bool operator==(const Address& other) const;
 
   // FormGroup:
+  using FormGroup::GetInfo;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;

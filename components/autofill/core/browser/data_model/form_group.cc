@@ -51,6 +51,11 @@ bool FormGroup::HasRawInfo(FieldType type) const {
   return !GetRawInfo(type).empty();
 }
 
+std::u16string FormGroup::GetInfo(FieldType type,
+                                  const std::string& app_locale) const {
+  return GetInfo(AutofillType(type), app_locale);
+}
+
 bool FormGroup::SetInfo(FieldType type,
                         const std::u16string& value,
                         const std::string& app_locale) {

@@ -446,7 +446,8 @@ TEST_F(PredictionQualityMetricsTest,
 
   AutofillField field;
   field.set_possible_types({NAME_FIRST});
-  field.SetTypeTo(NAME_FIRST, AutofillPredictionSource::kRationalization);
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kRationalization);
   LogFieldPredictionOverlapMetrics(field);
 
   histogram_tester.ExpectTotalCount(

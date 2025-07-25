@@ -203,7 +203,8 @@ TEST_F(GetFillValueForEntityTest, UnobfuscatedAttributes) {
   auto field = std::make_unique<AutofillField>();
   field->set_server_predictions(
       {CreatePrediction(NAME_FIRST, FieldPrediction::SOURCE_AUTOFILL_DEFAULT)});
-  field->SetTypeTo(NAME_FIRST, AutofillPredictionSource::kServerCrowdsourcing);
+  field->SetTypeTo(AutofillType(NAME_FIRST),
+                   AutofillPredictionSource::kServerCrowdsourcing);
 
   EntityInstance passport =
       test::GetPassportEntityInstance({.name = u"John Doe"});
@@ -239,7 +240,8 @@ TEST_F(GetFillValueForEntityTest, FillingStructuredNames) {
            {NAME_FIRST, u"Pippi"},
            {NAME_LAST, u"Långstrump"}}) {
     auto field = std::make_unique<AutofillField>();
-    field->SetTypeTo(type, AutofillPredictionSource::kServerCrowdsourcing);
+    field->SetTypeTo(AutofillType(type),
+                     AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(
         GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill),
@@ -261,7 +263,7 @@ TEST_F(GetFillValueForEntityTest, FillingLocalizedCountries) {
            {"ar-LB", u"لبنان"}}) {
     auto field = std::make_unique<AutofillField>();
     field->set_server_predictions({CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
-    field->SetTypeTo(ADDRESS_HOME_COUNTRY,
+    field->SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                      AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(GetFillValueForEntity(passport, field,
@@ -283,7 +285,7 @@ TEST_F(GetFillValueForEntityTest, FillingSelectControlWithCountries) {
     auto field =
         std::make_unique<AutofillField>(test::CreateTestSelectField(options));
     field->set_server_predictions({CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
-    field->SetTypeTo(PASSPORT_ISSUING_COUNTRY,
+    field->SetTypeTo(AutofillType(PASSPORT_ISSUING_COUNTRY),
                      AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(
@@ -433,7 +435,7 @@ TEST_F(GetFillValueForEntityStateTest, FillingStateValueIntoInput) {
                                                       {2u, u"CA"}}) {
     auto field = std::make_unique<AutofillField>();
     field->set_server_predictions({CreatePrediction(DRIVERS_LICENSE_REGION)});
-    field->SetTypeTo(ADDRESS_HOME_STATE,
+    field->SetTypeTo(AutofillType(ADDRESS_HOME_STATE),
                      AutofillPredictionSource::kServerCrowdsourcing);
     field->set_max_length(max_length);
 
@@ -457,7 +459,7 @@ TEST_F(GetFillValueForEntityStateTest, FillingSelectControlWithState) {
     auto field =
         std::make_unique<AutofillField>(test::CreateTestSelectField(options));
     field->set_server_predictions({CreatePrediction(DRIVERS_LICENSE_REGION)});
-    field->SetTypeTo(DRIVERS_LICENSE_REGION,
+    field->SetTypeTo(AutofillType(DRIVERS_LICENSE_REGION),
                      AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(GetFillValueForEntity(drivers_license, field,

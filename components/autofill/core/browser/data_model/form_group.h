@@ -58,6 +58,7 @@ class FormGroup {
   // TODO(crbug.com/40264633): Make `type` a `FieldType`.
   virtual std::u16string GetInfo(const AutofillType& type,
                                  const std::string& app_locale) const = 0;
+  std::u16string GetInfo(FieldType type, const std::string& app_locale) const;
 
   // Returns the verification status associated with the type.
   // Returns kNoStatus if the type does not support a verification status.

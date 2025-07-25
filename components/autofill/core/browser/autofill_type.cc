@@ -45,6 +45,8 @@ bool AutofillType::ServerPrediction::is_override() const {
   return server_predictions.empty() ? false : server_predictions[0].override();
 }
 
+AutofillType::AutofillType() : server_type_(NO_SERVER_DATA) {}
+
 AutofillType::AutofillType(FieldType field_type)
     : server_type_(ToSafeFieldType(field_type, UNKNOWN_TYPE)) {}
 

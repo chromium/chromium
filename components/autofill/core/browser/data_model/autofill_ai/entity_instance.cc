@@ -196,8 +196,8 @@ void AttributeInstance::SetInfo(FieldType field_type,
             if (!name.GetSupportedTypes().contains(field_type)) {
               return;
             }
-            name.SetInfoWithVerificationStatus(field_type, value, app_locale,
-                                               status);
+            name.SetInfoWithVerificationStatus(AutofillType(field_type), value,
+                                               app_locale, status);
           },
           [&](const StateInfo&) { SetRawInfo(field_type, value, status); },
           [&](std::u16string&) { SetRawInfo(field_type, value, status); }},
