@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
@@ -126,6 +127,10 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   // Don't change this name. This is used by other code to identify the glic
   // window. See b/404947780.
   params.name = "GlicWidget";
+#if BUILDFLAG(IS_LINUX)
+  params.wm_class_class = shell_integration_linux::GetProgramClassClass();
+  params.wayland_app_id = params.wm_class_class + "-glic";
+#endif
   // Support of rounded corners varies across platforms. See
   // Widget::InitParams::rounded_corners. DO NOT apply this radius using
   // views::Background or in the web client because it will mismatch with
