@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 
@@ -30,6 +29,9 @@ using ProxyLookupCallback = base::OnceCallback<void(bool success)>;
 
 // This class helps perform the proxy lookup using the NetworkContext.
 // An instance of this class must be deleted after the callback is invoked.
+// TODO(crbug.com/432235374): When PreconnectManager is moved to //content/,
+// delete this class in favour of content::ProxyLookupClientImpl, which is
+// almost identical.
 class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
  public:
   // Starts the proxy lookup for |url|. |callback| is called when the proxy
@@ -52,7 +54,6 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
       const std::optional<net::ProxyInfo>& proxy_info) override;
 
  private:
-  base::TimeTicks proxy_lookup_start_time_;
   mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
   ProxyLookupCallback callback_;
 };

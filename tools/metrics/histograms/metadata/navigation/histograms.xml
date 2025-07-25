@@ -1781,32 +1781,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Preconnect.ProxyLookupCallbackQueueingTime"
-    units="ms" expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>blundell@chromium.org</owner>
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Measures the amount of time that the task corresponding to the completion
-    callback for a proxy lookup performed as part of navigation preconnect spent
-    being queued before executing. Recorded for each proxy lookup.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.Preconnect.ProxyLookupLatency" units="ms"
-    expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Measures the duration from initiation to completion for a proxy lookup
-    performed as part of navigation preconnect. Recorded for each proxy lookup.
-    Note: Does not capture any delay spent queuing *before* initiating the proxy
-    lookup (e.g., due to a max # of preconnects being in flight).
-  </summary>
-</histogram>
-
 <histogram name="Navigation.Preconnect.ResolveHostCallbackQueueingTime"
     units="ms" expires_after="2023-06-04">
   <owner>alexilin@chromium.org</owner>
