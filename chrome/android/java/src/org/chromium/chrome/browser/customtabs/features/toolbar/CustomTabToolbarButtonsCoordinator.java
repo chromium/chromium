@@ -54,6 +54,7 @@ public class CustomTabToolbarButtonsCoordinator
             mCustomActionButtonsMcp;
     private final PropertyModel mModel;
     private final CustomTabToolbarButtonsMediator mMediator;
+    private final boolean mIsOptionalButtonSupported;
 
     public CustomTabToolbarButtonsCoordinator(
             Activity activity,
@@ -80,6 +81,7 @@ public class CustomTabToolbarButtonsCoordinator
                         // #setCloseButtonClickHandler.
                         : new CloseButtonData();
 
+        mIsOptionalButtonSupported = intentDataProvider.isOptionalButtonSupported();
         int toolbarWidth = CustomTabDimensionUtils.getInitialWidth(activity, intentDataProvider);
         boolean omniboxEnabled = omniboxParams != null;
         boolean titleVisible =
@@ -137,12 +139,12 @@ public class CustomTabToolbarButtonsCoordinator
 
     @Override
     public void setOptionalButtonData(@Nullable ButtonData buttonData) {
-        mMediator.setOptionalButtonData(buttonData);
+        if (mIsOptionalButtonSupported) mMediator.setOptionalButtonData(buttonData);
     }
 
     @Override
     public boolean isOptionalButtonVisible() {
-        return false;
+        return mIsOptionalButtonSupported ? mMediator.isOptionalButtonVisible() : false;
     }
 
     /**

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OPTIONAL_BUTTON_VISIBLE;
@@ -13,9 +12,14 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Handler;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -26,15 +30,19 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.OnNewWidthMeasuredListener;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
@@ -54,6 +62,7 @@ class CustomTabToolbarButtonsMediator
 
     private boolean mMinimizeButtonEnabled;
     private @Nullable OptionalButtonCoordinator mOptionalButtonCoordinator;
+    private final ObservableSupplierImpl<Tracker> mTrackerSupplier = new ObservableSupplierImpl<>();
 
     CustomTabToolbarButtonsMediator(
             PropertyModel model,
@@ -105,38 +114,75 @@ class CustomTabToolbarButtonsMediator
 
     void setOptionalButtonData(@Nullable ButtonData buttonData) {
         if (buttonData != null && mOptionalButtonCoordinator == null) {
+            View optionalButton = mView.ensureOptionalButtonInflated();
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
-                            mView.ensureOptionalButtonInflated(),
-                            /* userEducationHelper= */ () -> {
-                                Tab currentTab = mTabProvider.get();
-                                assert currentTab != null;
-                                return new UserEducationHelper(
-                                        assumeNonNull(
-                                                currentTab
-                                                        .getWindowAndroidChecked()
-                                                        .getActivity()
-                                                        .get()),
-                                        currentTab::getProfile,
-                                        new Handler());
-                            },
-                            /* transitionRoot= */ mView,
+                            optionalButton,
+                            () ->
+                                    new UserEducationHelper(
+                                            mActivity, getProfileSupplier(), new Handler()),
+                            mView,
                             /* isAnimationAllowedPredicate= */ () -> true,
-                            /* featureEngagementTrackerSupplier= */ () ->
-                                    TrackerFactory.getTrackerForProfile(
-                                            assumeNonNull(mTabProvider.get()).getProfile()));
+                            mTrackerSupplier);
             int width =
                     mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
             mOptionalButtonCoordinator.setCollapsedStateWidth(width);
+            mOptionalButtonCoordinator.setTransitionFinishedCallback(
+                    transitionType -> {
+                        switch (transitionType) {
+                            case TransitionType.EXPANDING_ACTION_CHIP:
+                                // TODO(crbug.com/428261559): Adjust URL/Title bar width accordingly
+                                break;
+                        }
+                        mView.requestLayout();
+                    });
+            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON_TEST_SWITCH, "always-animate", false)) {
+                mOptionalButtonCoordinator.setAlwaysShowActionChip(true);
+            }
+            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON_TEST_SWITCH, "hide-button", false)) {
+                // TODO(crbug.com/428261559): Simulate the shortened screen width to hide MTB.
+            }
         }
 
         if (mOptionalButtonCoordinator != null) {
-            mOptionalButtonCoordinator.updateButton(buttonData, mModel.get(IS_INCOGNITO));
-            updateOptionalButtonColors(
-                    mView.getBackground().getColor(), mView.getBrandedColorScheme());
-
+            if (buttonData != null) {
+                Tab tab = mTabProvider.get();
+                if (tab != null && mTrackerSupplier.get() == null) {
+                    mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(tab.getProfile()));
+                }
+                mOptionalButtonCoordinator.updateButton(buttonData, mModel.get(IS_INCOGNITO));
+                updateOptionalButtonColors(
+                        mView.getBackground().getColor(), mView.getBrandedColorScheme());
+            }
             mModel.set(OPTIONAL_BUTTON_VISIBLE, buttonData != null && buttonData.canShow());
         }
+    }
+
+    @SuppressWarnings("NullAway")
+    private Supplier getProfileSupplier() {
+        Tab tab = mTabProvider.get();
+        if (tab != null) return () -> tab.getProfile();
+
+        // Passing OneshotSupplier effectively delays UserEducationHelper#requestShowIph()
+        // till Profile becomes reachable via the current Tab.
+        var profileSupplier = new OneshotSupplierImpl<Profile>();
+        mTabProvider.addSyncObserver(
+                new Callback<@Nullable Tab>() {
+                    @Override
+                    public void onResult(@Nullable Tab currentTab) {
+                        if (currentTab == null) return;
+
+                        mTabProvider.removeObserver(this);
+                        profileSupplier.set(currentTab.getProfile());
+                    }
+                });
+        return profileSupplier;
+    }
+
+    boolean isOptionalButtonVisible() {
+        return mModel.get(OPTIONAL_BUTTON_VISIBLE);
     }
 
     private MinimizeButtonData getMinimizeButtonData() {

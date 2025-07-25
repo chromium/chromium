@@ -437,12 +437,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /** Returns the optional button, inflating it first if necessary. */
     View ensureOptionalButtonInflated() {
-        if (mOptionalButton != null) {
-            return mOptionalButton;
+        if (mOptionalButton == null) {
+            LayoutInflater.from(getContext())
+                    .inflate(R.layout.optional_button_layout, mCustomButtonsParent, true);
+            mOptionalButton = findViewById(R.id.optional_button);
+            var lp = (FrameLayout.LayoutParams) mOptionalButton.getLayoutParams();
+            lp.width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            mOptionalButton.setLayoutParams(lp);
         }
-
-        LayoutInflater.from(getContext()).inflate(R.layout.optional_button_layout, this, true);
-        mOptionalButton = findViewById(R.id.optional_button);
         return mOptionalButton;
     }
 

@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.DrawableRes;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.Nullable;
@@ -195,6 +197,11 @@ public class CustomTabToolbarButtonsViewBinder
                 model.get(CUSTOM_ACTION_BUTTONS_VISIBLE)
                         ? model.get(CUSTOM_ACTION_BUTTONS).size()
                         : 0;
+        FrameLayout customActionButtons = view.getCustomActionButtonsParent();
+        // TODO(crbug.com/402213312): Think of how we can optimize this so we don't reinflate all
+        // buttons any time if we add/remove one.
+        customActionButtons.removeAllViews();
+
         // Check if we have space for the optional button and we should be showing it. The optional
         // button is handled by its own MVC component, so it will have been inflated elsewhere.
         if (posParams.availableWidth >= defaultButtonWidth
@@ -206,15 +213,10 @@ public class CustomTabToolbarButtonsViewBinder
 
             positionOptionalButton(
                     optionalButton, posParams, defaultButtonWidth, iconSpacing, defaultIconWidth);
+            customActionButtons.addView(optionalButton);
         } else if (view.getOptionalButton() != null) {
             view.getOptionalButton().setVisibility(View.GONE);
         }
-
-        // TODO(crbug.com/402213312): We need to think about how this should work with MTB.
-        FrameLayout customActionButtons = view.getCustomActionButtonsParent();
-        // TODO(crbug.com/402213312): Think of how we can optimize this so we don't reinflate all
-        // buttons any time if we add/remove one.
-        customActionButtons.removeAllViews();
 
         if (model.get(CUSTOM_ACTION_BUTTONS_VISIBLE)) {
             var models = model.get(CUSTOM_ACTION_BUTTONS);
@@ -447,9 +449,15 @@ public class CustomTabToolbarButtonsViewBinder
         View menu = button.findViewById(R.id.optional_toolbar_button);
         setHorizontalPadding(menu, startPadding, endPadding);
 
-        // Set the padding for the background.
+        // Adjust background padding to align it with the menu button.
+        int paddingStart =
+                getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_start);
+        int paddingEnd = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_end);
+        int paddingVert =
+                getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_vert);
         View background = button.findViewById(R.id.swappable_icon_secondary_background);
-        setHorizontalPadding(background, startPadding, endPadding);
+        background.setPaddingRelative(paddingStart, paddingVert, paddingEnd, paddingVert);
+        setOptionalButtonBackgroundInset(button);
 
         // Optional button is end aligned. Offset it by the total width of the buttons we've
         // previously placed.
@@ -464,6 +472,10 @@ public class CustomTabToolbarButtonsViewBinder
                 startPadding, view.getPaddingTop(), endPadding, view.getPaddingBottom());
     }
 
+    private static @Px int getDimensionPx(View v, @DimenRes int resId) {
+        return v.getResources().getDimensionPixelSize(resId);
+    }
+
     private static void setHorizontalLayoutParams(
             View view, @Px int startMargin, @Px int endMargin, boolean isEndAligned) {
         var lp = (FrameLayout.LayoutParams) view.getLayoutParams();
@@ -472,6 +484,18 @@ public class CustomTabToolbarButtonsViewBinder
         int horizontalGravity = isEndAligned ? Gravity.END : Gravity.START;
         lp.gravity = Gravity.CENTER_VERTICAL | horizontalGravity;
         view.setLayoutParams(lp);
+    }
+
+    // Modify the inset of the optional background drawable to match that of the icon secondary
+    // background.
+    private static void setOptionalButtonBackgroundInset(View optionalButton) {
+        View button = optionalButton.findViewById(R.id.optional_toolbar_button);
+        LayerDrawable backgroundDrawable = (LayerDrawable) button.getBackground();
+        int height = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_height);
+        int left = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_start);
+        int right = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_end);
+        backgroundDrawable.setLayerHeight(/* index= */ 0, height);
+        backgroundDrawable.setLayerInset(/* index= */ 0, left, /* t= */ 0, right, /* b= */ 0);
     }
 
     @Px
