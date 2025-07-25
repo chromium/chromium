@@ -27,9 +27,11 @@ build/config
 build/config/android
 build/config/fuchsia
 build/fuchsia/test
+build/rust/std/rules
 build/skia_gold_common
 build/toolchain/win/rc
 cc/input
+chrome/android/java/src/org/chromium/chrome/browser
 chrome/android/java/src/org/chromium/chrome/browser/omaha
 chrome/android/java/src/org/chromium/chrome/browser/tab
 chrome/android/junit/src/org/chromium/chrome/browser/payments
@@ -670,7 +672,8 @@ third_party/rust/chromium_crates_io/vendor/prost-v0_14
 third_party/rust/chromium_crates_io/vendor/qr_code-v2
 third_party/rust/chromium_crates_io/vendor/quote-v1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_30/src/tables
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_31/src/tables
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_31/src/tables/postscript
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/util
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/dfa
@@ -700,15 +703,7 @@ third_party/rust/chromium_crates_io/vendor/strum-v0_27/src
 third_party/rust/chromium_crates_io/vendor/subtle-v2
 third_party/rust/chromium_crates_io/vendor/subtle-v2/src
 third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5
-third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_5
-third_party/rust/chromium_crates_io/vendor/symphonia-codec-adpcm-v0_5
-third_party/rust/chromium_crates_io/vendor/symphonia-codec-pcm-v0_5
-third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5
 third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_5
-third_party/rust/chromium_crates_io/vendor/symphonia-format-mkv-v0_5
-third_party/rust/chromium_crates_io/vendor/symphonia-format-mkv-v0_5/src
-third_party/rust/chromium_crates_io/vendor/symphonia-format-ogg-v0_5
-third_party/rust/chromium_crates_io/vendor/symphonia-format-riff-v0_5
 third_party/rust/chromium_crates_io/vendor/symphonia-metadata-v0_5
 third_party/rust/chromium_crates_io/vendor/symphonia-utils-xiph-v0_5
 third_party/rust/chromium_crates_io/vendor/symphonia-v0_5
@@ -723,6 +718,9 @@ third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/Sys
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering
 third_party/rust/chromium_crates_io/vendor/zip-v4
 third_party/rust/chromium_crates_io/vendor/zip-v4/src
+third_party/rust/miniz_oxide/v0_8
+third_party/rust/regex_automata/v0_4
+third_party/rust/regex_syntax/v0_8
 third_party/screen-ai
 third_party/sentencepiece/src
 third_party/sentencepiece/src/doc

@@ -1,0 +1,11 @@
+Name: read-fonts
+URL: https://crates.io/crates/read-fonts
+Version: 0.31.1
+Revision: a80fc6f11bc38c6781202e042b5f08a1c0669d06
+Update Mechanism: Manual
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/read-fonts-v0_31/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Reading OpenType font files.
