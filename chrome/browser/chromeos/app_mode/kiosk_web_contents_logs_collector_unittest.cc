@@ -4,35 +4,32 @@
 
 #include "chrome/browser/chromeos/app_mode/kiosk_web_contents_logs_collector.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/test/repeating_test_future.h"
-#include "base/test/task_environment.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
-#include "url/gurl.h"
 
 namespace chromeos {
 
 namespace {
 
-const std::u16string kDefaultMessage = u"This is the default message.";
-const std::u16string kDefaultSource =
+const auto* kDefaultMessage = u"This is the default message.";
+const auto* kDefaultSource =
     u"chrome-extension://efdahhfldoeikfglgolhibmdidbnpneo/background.js";
 constexpr int kDefaultLineNumber = 0;
-const std::u16string kWebContent1Message =
-    u"This message is from web contents1";
-const std::u16string kWebContent2Message =
-    u"This message is from web contents2";
+const auto* kWebContent1Message = u"This message is from web contents1";
+const auto* kWebContent2Message = u"This message is from web contents2";
 
 }  // namespace
 

@@ -4,8 +4,12 @@
 
 #include "chrome/browser/chromeos/app_mode/kiosk_service_workers_logs_collector.h"
 
+#include <cstdint>
+#include <optional>
 #include <string>
+#include <utility>
 
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +24,7 @@ namespace chromeos {
 
 namespace {
 
-const std::u16string kFailureMessage =
+const auto* kFailureMessage =
     u"Unable to collect service worker logs as service worker context doesn't "
     u"exist.";
 

@@ -5,13 +5,16 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_service_workers_logs_collector.h"
 
 #include <cstdint>
-#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/test/repeating_test_future.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "content/public/browser/console_message.h"
+#include "content/public/browser/service_worker_context.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -26,12 +29,11 @@ const char kServiceWorkerURL[] = "https://example.com/service_worker.js";
 constexpr int64_t kVersionId = 3;
 constexpr int kLogLineNumber1 = 100;
 constexpr int kLogLineNumber2 = 30;
-const std::u16string kLogMessage1 = u"This is service worker log 1";
-const std::u16string kLogMessage2 = u"This is service worker log 2";
-const std::u16string kExpectedSource1 = u"example.com/service_worker.js [JS]";
-const std::u16string kExpectedSource2 =
-    u"example.com/service_worker.js [ConsoleAPI]";
-const std::u16string kFailureMessage =
+const auto* kLogMessage1 = u"This is service worker log 1";
+const auto* kLogMessage2 = u"This is service worker log 2";
+const auto* kExpectedSource1 = u"example.com/service_worker.js [JS]";
+const auto* kExpectedSource2 = u"example.com/service_worker.js [ConsoleAPI]";
+const auto* kFailureMessage =
     u"Unable to collect service worker logs as service worker context doesn't "
     u"exist.";
 
