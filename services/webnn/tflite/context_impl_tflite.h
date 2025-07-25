@@ -47,12 +47,6 @@ class ContextImplTflite final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override;
 
-  void CreateTensorFromMailboxImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::TensorInfoPtr tensor_info,
-      gpu::Mailbox mailbox,
-      CreateTensorImplCallback callback) override;
-
   base::WeakPtrFactory<ContextImplTflite> weak_factory_{this};
 };
 

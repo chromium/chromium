@@ -806,16 +806,6 @@ std::string SkiaGraphiteImageRepresentation::WrappedTextureDebugLabel(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// WebNNTensorRepresentation
-
-#if BUILDFLAG(IS_WIN)
-Microsoft::WRL::ComPtr<ID3D12Resource>
-WebNNTensorRepresentation::GetD3D12Buffer() const {
-  NOTREACHED();
-}
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 // OverlayImageRepresentation
 
 #if BUILDFLAG(IS_ANDROID)

@@ -142,12 +142,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                                      wgpu::BufferUsage usage);
   void EndAccessDawnBuffer(const wgpu::Device& device, wgpu::Buffer buffer);
 
-  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker) override;
-
-  Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const;
-
   std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 
   bool has_keyed_mutex() const {

@@ -1627,13 +1627,6 @@ bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
   return true;
 }
 
-std::unique_ptr<WebNNTensorRepresentation> D3DImageBacking::ProduceWebNNTensor(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
-  CHECK(usage() & SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR);
-  return std::make_unique<WebNND3DTensorRepresentation>(manager, this, tracker);
-}
-
 void D3DImageBacking::BeginAccessCommon(bool write_access) {
   if (write_access) {
     // For read-write access, we wait for all previous reads and reset fences
@@ -1828,10 +1821,6 @@ D3DImageBacking::GetDCLayerOverlayImage() {
   }
   return std::make_optional<gl::DCLayerOverlayImage>(size(), d3d11_texture_,
                                                      array_slice_);
-}
-
-Microsoft::WRL::ComPtr<ID3D12Resource> D3DImageBacking::GetD3D12Buffer() const {
-  return d3d12_resource_;
 }
 
 bool D3DImageBacking::HasStagingTextureForTesting() const {

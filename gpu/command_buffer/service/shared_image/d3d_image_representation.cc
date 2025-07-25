@@ -170,19 +170,6 @@ void DawnD3DBufferRepresentation::EndAccess() {
   buffer_ = nullptr;
 }
 
-WebNND3DTensorRepresentation::WebNND3DTensorRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker)
-    : WebNNTensorRepresentation(manager, backing, tracker) {}
-
-WebNND3DTensorRepresentation::~WebNND3DTensorRepresentation() = default;
-
-Microsoft::WRL::ComPtr<ID3D12Resource>
-WebNND3DTensorRepresentation::GetD3D12Buffer() const {
-  return static_cast<D3DImageBacking*>(backing())->GetD3D12Buffer();
-}
-
 OverlayD3DImageRepresentation::OverlayD3DImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,

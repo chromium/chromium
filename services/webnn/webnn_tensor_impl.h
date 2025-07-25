@@ -13,10 +13,6 @@
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
 
-namespace gpu {
-class WebNNTensorRepresentation;
-}  // namespace gpu
-
 namespace webnn {
 
 class WebNNContextImpl;
@@ -30,12 +26,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info);
-
-  WebNNTensorImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      base::WeakPtr<WebNNContextImpl> context,
-      mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation);
 
   WebNNTensorImpl(const WebNNTensorImpl&) = delete;
   WebNNTensorImpl& operator=(const WebNNTensorImpl&) = delete;
@@ -59,8 +49,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   virtual void WriteTensorImpl(mojo_base::BigBuffer src_buffer) = 0;
 
  protected:
-  ~WebNNTensorImpl() override;
-
   // This method will be called by `ReadTensor()` after the read info is
   // validated. A backend subclass should implement this method to read data
   // from a platform specific buffer.
@@ -69,9 +57,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
 
   base::WeakPtr<WebNNContextImpl> context_;
 
-  // The shared image representation used to access the contents from shared
-  // image. Only valid when usage has WebGPUInterop.
-  std::unique_ptr<gpu::WebNNTensorRepresentation> representation_;
+ protected:
+  ~WebNNTensorImpl() override;
 
  private:
   // mojom::WebNNTensor

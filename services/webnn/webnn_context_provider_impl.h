@@ -45,7 +45,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
-      gpu::SharedImageManager* shared_image_manager,
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
@@ -111,20 +110,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     return main_thread_task_runner_;
   }
 
-  scoped_refptr<gpu::SharedContextState> shared_context_state() const {
-    return shared_context_state_;
-  }
-
-  gpu::SharedImageManager* shared_image_manager() const {
-    return shared_image_manager_;
-  }
-
  private:
   WebNNContextProviderImpl(
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
-      gpu::SharedImageManager* shared_image_manager,
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
@@ -137,12 +127,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
-
-  // The lifetime of the shared image manager is managed by the GPU service and
-  // is destroyed after this WebNNProviderImpl is destroyed, which makes it
-  // safe to store the shared image manager as a raw_ptr here.
-  const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
-
   // A callback from `GpuServiceImpl` to terminate the GPU process, which will
   // destroy all contexts.
   LoseAllContextsCallback lose_all_contexts_callback_;

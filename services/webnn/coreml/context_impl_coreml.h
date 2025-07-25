@@ -49,12 +49,6 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override;
 
-  void CreateTensorFromMailboxImpl(
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::TensorInfoPtr tensor_info,
-      gpu::Mailbox mailbox,
-      CreateTensorImplCallback callback) override;
-
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };
 

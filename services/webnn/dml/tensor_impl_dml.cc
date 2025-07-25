@@ -38,17 +38,6 @@ TensorImplDml::TensorImplDml(
                       std::move(tensor_info)),
       buffer_(std::move(buffer)) {}
 
-TensorImplDml::TensorImplDml(
-    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
-    base::WeakPtr<WebNNContextImpl> context,
-    mojom::TensorInfoPtr tensor_info)
-    : WebNNTensorImpl(std::move(receiver),
-                      std::move(context),
-                      std::move(tensor_info),
-                      std::move(representation)),
-      buffer_(representation_->GetD3D12Buffer()) {}
-
 TensorImplDml::~TensorImplDml() = default;
 
 void TensorImplDml::ReadTensorImpl(ReadTensorCallback callback) {

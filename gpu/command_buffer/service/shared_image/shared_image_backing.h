@@ -75,7 +75,6 @@ class MemoryTracker;
 class VideoImageRepresentation;
 class MemoryTypeTracker;
 class SharedImageFactory;
-class WebNNTensorRepresentation;
 
 #if BUILDFLAG(ENABLE_VULKAN)
 class VulkanImageRepresentation;
@@ -314,9 +313,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type);
-  virtual std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker);
   virtual std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);

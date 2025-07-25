@@ -58,7 +58,6 @@ extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
-#include <d3d12.h>
 #include <wrl/client.h>
 #endif
 
@@ -911,21 +910,6 @@ class GPU_GLES2_EXPORT DawnBufferRepresentation
  private:
   virtual wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) = 0;
   virtual void EndAccess() = 0;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// WebNNTensorRepresentation
-
-class GPU_GLES2_EXPORT WebNNTensorRepresentation
-    : public SharedImageRepresentation {
- public:
-  WebNNTensorRepresentation(SharedImageManager* manager,
-                            SharedImageBacking* backing,
-                            MemoryTypeTracker* tracker)
-      : SharedImageRepresentation(manager, backing, tracker) {}
-#if BUILDFLAG(IS_WIN)
-  virtual Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 ///////////////////////////////////////////////////////////////////////////////
