@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
@@ -338,8 +339,8 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OneImage) {
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 25ul);
-  EXPECT_FALSE(record->load_time.is_null());
+  EXPECT_EQ(record->RecordedSize(), 25ul);
+  EXPECT_TRUE(record->HasLoadTime());
   // Simulate some input event to force StopRecordEntries().
   SimulateKeyDown();
   auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
@@ -370,7 +371,7 @@ TEST_P(ImagePaintTimingDetectorTest, InsertionOrderIsSecondaryRankingKey) {
 
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
 
-  EXPECT_EQ(LargestImage()->node_id, DOMNodeIds::ExistingIdForNode(image1));
+  EXPECT_EQ(LargestImage()->GetNode(), image1);
   EXPECT_EQ(LargestPaintSize(), 25ul);
 }
 
@@ -597,7 +598,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_Largest) {
   ImageRecord* record;
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 25ul);
+  EXPECT_EQ(record->RecordedSize(), 25ul);
 
   SetImageAndPaint("larger", 9, 9);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
@@ -807,7 +808,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_TRUE(record);
   // UpdateAllLifecyclePhasesAndInvokeCallbackIfAny() moves time forward
   // kQuantumOfTime so we should take that into account.
-  EXPECT_EQ(record->paint_time,
+  EXPECT_EQ(record->PaintTime(),
             base::TimeTicks() + base::Seconds(1) + kQuantumOfTime);
 
   GetDocument().getElementById(AtomicString("parent"))->RemoveChild(image);
@@ -815,7 +816,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->paint_time,
+  EXPECT_EQ(record->PaintTime(),
             base::TimeTicks() + base::Seconds(1) + kQuantumOfTime);
 
   GetDocument().getElementById(AtomicString("parent"))->AppendChild(image);
@@ -824,7 +825,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->paint_time,
+  EXPECT_EQ(record->PaintTime(),
             base::TimeTicks() + base::Seconds(1) + kQuantumOfTime);
 }
 
@@ -849,15 +850,15 @@ TEST_P(ImagePaintTimingDetectorTest,
   InvokeCallback();
   // record1 is the smaller.
   ImageRecord* record1 = LargestPaintedImage();
-  DCHECK_EQ(record1->recorded_size, 25ul);
-  const base::TimeTicks record1Time = record1->paint_time;
+  DCHECK_EQ(record1->RecordedSize(), 25ul);
+  const base::TimeTicks record1Time = record1->PaintTime();
   UpdateAllLifecyclePhases();
   SimulatePassOfTime();
   InvokeCallback();
   // record2 is the larger.
   ImageRecord* record2 = LargestPaintedImage();
-  DCHECK_EQ(record2->recorded_size, 81ul);
-  EXPECT_NE(record1Time, record2->paint_time);
+  DCHECK_EQ(record2->RecordedSize(), 81ul);
+  EXPECT_NE(record1Time, record2->PaintTime());
 }
 
 TEST_P(ImagePaintTimingDetectorTest,
@@ -905,15 +906,15 @@ TEST_P(ImagePaintTimingDetectorTest, OnePresentationPromiseForOneFrame) {
   ImageRecord* record;
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 81ul);
-  EXPECT_TRUE(record->paint_time.is_null());
+  EXPECT_EQ(record->RecordedSize(), 81ul);
+  EXPECT_FALSE(record->HasPaintTime());
 
   // This callback assigns a time to the 9x9 image.
   InvokeCallback();
   record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 81ul);
-  EXPECT_FALSE(record->paint_time.is_null());
+  EXPECT_EQ(record->RecordedSize(), 81ul);
+  EXPECT_TRUE(record->HasPaintTime());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, VideoImage) {
@@ -924,8 +925,8 @@ TEST_P(ImagePaintTimingDetectorTest, VideoImage) {
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_GT(record->recorded_size, 0ul);
-  EXPECT_FALSE(record->paint_time.is_null());
+  EXPECT_GT(record->RecordedSize(), 0ul);
+  EXPECT_TRUE(record->HasPaintTime());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, VideoImage_ImageNotLoaded) {
@@ -948,8 +949,8 @@ TEST_P(ImagePaintTimingDetectorTest, SVGImage) {
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_GT(record->recorded_size, 0ul);
-  EXPECT_FALSE(record->paint_time.is_null());
+  EXPECT_GT(record->RecordedSize(), 0ul);
+  EXPECT_TRUE(record->HasPaintTime());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, BackgroundImage) {
@@ -983,7 +984,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_EQ(CountImageRecords(), 2u);
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 1u);
+  EXPECT_EQ(record->RecordedSize(), 1u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, BackgroundImage_IgnoreBody) {
@@ -1083,7 +1084,7 @@ TEST_P(ImagePaintTimingDetectorTest, Iframe) {
   ImageRecord* image = ChildFrameLargestImage();
   EXPECT_TRUE(image);
   // Ensure the image size is not clipped (5*5).
-  EXPECT_EQ(image->recorded_size, 25ul);
+  EXPECT_EQ(image->RecordedSize(), 25ul);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, Iframe_ClippedByMainFrameViewport) {
@@ -1122,7 +1123,7 @@ TEST_P(ImagePaintTimingDetectorTest, Iframe_HalfClippedByMainFrameViewport) {
   InvokeChildFrameCallback();
   ImageRecord* image = ChildFrameLargestImage();
   EXPECT_TRUE(image);
-  EXPECT_LT(image->recorded_size, 100ul);
+  EXPECT_LT(image->RecordedSize(), 100ul);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, SameSizeShouldNotBeIgnored) {
@@ -1148,7 +1149,7 @@ TEST_P(ImagePaintTimingDetectorTest, UseIntrinsicSizeIfSmaller_Image) {
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 25u);
+  EXPECT_EQ(record->RecordedSize(), 25u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, NotUseIntrinsicSizeIfLarger_Image) {
@@ -1160,7 +1161,7 @@ TEST_P(ImagePaintTimingDetectorTest, NotUseIntrinsicSizeIfLarger_Image) {
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 1u);
+  EXPECT_EQ(record->RecordedSize(), 1u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest,
@@ -1177,7 +1178,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   )HTML");
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 1u);
+  EXPECT_EQ(record->RecordedSize(), 1u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest,
@@ -1195,7 +1196,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   )HTML");
   ImageRecord* record = LargestImage();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->recorded_size, 25u);
+  EXPECT_EQ(record->RecordedSize(), 25u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML) {

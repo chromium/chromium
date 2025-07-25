@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
-#include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -321,7 +321,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // Simulate a paint in a separate task.
   {
     TextRecord* record = MakeGarbageCollected<TextRecord>(
-        *node1, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
+        node1, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
         gfx::RectF(1000, 1000),
         /* frame_index= */ 0,
         /* is_needed_for_timing= */ false, context);
@@ -343,7 +343,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // And another paint
   {
     TextRecord* record = MakeGarbageCollected<TextRecord>(
-        *node2, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
+        node2, 0, gfx::RectF(1000, 1000), gfx::Rect(1000, 1000),
         gfx::RectF(1000, 1000),
         /* frame_index= */ 0,
         /* is_needed_for_timing= */ false, context);

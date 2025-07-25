@@ -17,10 +17,9 @@
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callback_manager.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -46,68 +45,6 @@ struct DOMPaintTimingInfo;
 class SoftNavigationContext;
 
 static constexpr double kMinimumEntropyForLCP = 0.05;
-
-// TODO(crbug/960502): we should limit the access of these properties.
-// TODO(yoav): Rename all mentions of "image" to "media"
-class CORE_EXPORT ImageRecord : public GarbageCollected<ImageRecord> {
- public:
-  ImageRecord(DOMNodeId new_node_id,
-              const MediaTiming* new_media_timing,
-              uint64_t new_recorded_size,
-              const gfx::Rect& frame_visual_rect,
-              const gfx::RectF& root_visual_rect,
-              MediaRecordIdHash hash,
-              SoftNavigationContext* soft_navigation_context)
-      : node_id(new_node_id),
-        media_timing(new_media_timing),
-        hash(hash),
-        root_visual_rect(root_visual_rect),
-        recorded_size(new_recorded_size),
-        soft_navigation_context_(soft_navigation_context) {
-    if (PaintTimingVisualizer::IsTracingEnabled()) {
-      lcp_rect_info_ = std::make_unique<LCPRectInfo>(
-          frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
-    }
-  }
-
-  ImageRecord() = delete;
-
-  // Returns the image's entropy, in encoded-bits-per-layout-pixel, as used to
-  // determine whether the image is a potential LCP candidate. Will return 0.0
-  // if there is no `media_timing`.
-  double EntropyForLCP() const;
-
-  // Returns the image's loading priority. Will return `std::nullopt` if there
-  // is no `media_timing`.
-  std::optional<WebURLRequest::Priority> RequestPriority() const;
-
-  void Trace(Visitor* visitor) const;
-
-  DOMNodeId node_id = kInvalidDOMNodeId;
-  WeakMember<const MediaTiming> media_timing;
-  MediaRecordIdHash hash;
-  // Mind that |recorded_size| has to be assigned before any size comparisons
-  // (to determine largest image) are performed.
-  gfx::RectF root_visual_rect;
-  uint64_t recorded_size = 0;
-  unsigned frame_index = 0;
-  // The time of the first paint after fully loaded. 0 means not painted yet.
-  base::TimeTicks paint_time = base::TimeTicks();
-  base::TimeTicks load_time = base::TimeTicks();
-  base::TimeTicks first_animated_frame_time = base::TimeTicks();
-  DOMPaintTimingInfo paint_timing_info;
-  bool loaded = false;
-  // An animated frame is queued for paint timing.
-  bool queue_animated_paint = false;
-  // LCP rect information, only populated when tracing is enabled.
-  std::unique_ptr<LCPRectInfo> lcp_rect_info_;
-
-  // A non-style image, or a style image that comes from an origin-clean style.
-  // Images that come from origin-dirty styles should have some limitations on
-  // what they report.
-  bool origin_clean = true;
-  WeakMember<SoftNavigationContext> soft_navigation_context_;
-};
 
 // |ImageRecordsManager| is the manager of all of the images that Largest
 // Image Paint cares about. Note that an image does not necessarily correspond
@@ -174,9 +111,9 @@ class CORE_EXPORT ImageRecordsManager {
     return it == pending_images_.end() ? nullptr : it->value.Get();
   }
   bool OnFirstAnimatedFramePainted(MediaRecordIdHash,
-                                   unsigned current_frame_index);
+                                   uint32_t current_frame_index);
   void OnImageLoaded(MediaRecordIdHash,
-                     unsigned current_frame_index,
+                     uint32_t current_frame_index,
                      const StyleImage*);
 
   // Receives a candidate image painted under opacity 0 but without nested
@@ -187,37 +124,26 @@ class CORE_EXPORT ImageRecordsManager {
                                       const gfx::Rect& frame_visual_rect,
                                       const gfx::RectF& root_visual_rect,
                                       bool is_recording_lcp);
-  void ReportLargestIgnoredImage(unsigned current_frame_index,
+  void ReportLargestIgnoredImage(uint32_t current_frame_index,
                                  bool is_recording_lcp);
 
   void AssignPaintTimeToRegisteredQueuedRecords(
       const base::TimeTicks&,
       const DOMPaintTimingInfo&,
-      unsigned last_queued_frame_index,
+      uint32_t last_queued_frame_index,
       bool is_recording_lcp);
 
   void AddPendingImage(ImageRecord* record, bool is_recording_lcp);
   void ClearImagesQueuedForPaintTime();
 
-  ImageRecord* CreateImageRecord(
-      const LayoutObject& object,
-      const MediaTiming* media_timing,
-      const uint64_t& visual_size,
-      const gfx::Rect& frame_visual_rect,
-      const gfx::RectF& root_visual_rect,
-      MediaRecordIdHash hash,
-      SoftNavigationContext* soft_navigation_context);
   inline void QueueToMeasurePaintTime(ImageRecord* record,
-                                      unsigned current_frame_index) {
+                                      uint32_t current_frame_index) {
     CHECK(record);
-    record->frame_index = current_frame_index;
+    record->SetFrameIndex(current_frame_index);
     images_queued_for_paint_time_.push_back(record);
   }
-  inline void SetLoaded(ImageRecord* record) {
-    CHECK(record);
-    record->loaded = true;
-  }
-  void OnImageLoadedInternal(ImageRecord*, unsigned current_frame_index);
+
+  void OnImageLoadedInternal(ImageRecord*, uint32_t current_frame_index);
 
   // The ImageRecord corresponding to the largest image that has been loaded and
   // painted.
@@ -305,7 +231,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
     callback_manager_ = manager;
   }
 
-  void ReportPresentationTime(unsigned last_queued_frame_index,
+  void ReportPresentationTime(uint32_t last_queued_frame_index,
                               base::TimeTicks);
   std::optional<base::OnceCallback<void(const base::TimeTicks&,
                                         const DOMPaintTimingInfo&)>>
@@ -352,8 +278,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   unsigned count_candidates_ = 0;
 
   // Used to decide which frame a record belongs to, monotonically increasing.
-  unsigned frame_index_ = 1;
-  unsigned last_registered_frame_index_ = 0;
+  uint32_t frame_index_ = 1;
+  uint32_t last_registered_frame_index_ = 0;
   bool added_entry_in_latest_frame_ = false;
 
   bool contains_full_viewport_image_ = false;

@@ -8,9 +8,8 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
-#include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 
 namespace blink {
@@ -72,12 +71,12 @@ bool SoftNavigationContext::IsNeededForTiming(Node* node) {
 }
 
 bool SoftNavigationContext::AddPaintedArea(TextRecord* text_record) {
-  Node* node = text_record->node_;
-  const gfx::RectF& rect = text_record->root_visual_rect_;
+  Node* node = text_record->GetNode();
+  const gfx::RectF& rect = text_record->RootVisualRect();
   bool is_attributable = AddPaintedAreaInternal(node, rect);
   if (is_attributable) {
     if (!largest_text_ ||
-        largest_text_->recorded_size < text_record->recorded_size) {
+        largest_text_->RecordedSize() < text_record->RecordedSize()) {
       largest_text_ = text_record;
     }
   }
@@ -85,12 +84,12 @@ bool SoftNavigationContext::AddPaintedArea(TextRecord* text_record) {
 }
 
 bool SoftNavigationContext::AddPaintedArea(ImageRecord* image_record) {
-  Node* node = Node::FromDomNodeId(image_record->node_id);
-  const gfx::RectF& rect = image_record->root_visual_rect;
+  Node* node = image_record->GetNode();
+  const gfx::RectF& rect = image_record->RootVisualRect();
   bool is_attributable = AddPaintedAreaInternal(node, rect);
   if (is_attributable) {
     if (!largest_image_ ||
-        largest_image_->recorded_size < image_record->recorded_size) {
+        largest_image_->RecordedSize() < image_record->RecordedSize()) {
       largest_image_ = image_record;
     }
   }
@@ -230,17 +229,17 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
   // TODO(crbug.com/425989954): Guard on paint_time, because although this
   // TryUpdateLcpCandidate gets called after presentation feedback, it might not
   // be the right presentation time for this specific text/image record.
-  if (largest_text_ && !largest_text_->paint_time.is_null()) {
+  if (largest_text_ && largest_text_->HasPaintTime()) {
     latest_lcp_details_for_ukm_changed =
         latest_lcp_details_for_ukm_changed ||
         lcp_calculator_->NotifyMetricsIfLargestTextPaintChanged(
-            largest_text_->paint_time, largest_text_->recorded_size);
+            largest_text_->PaintTime(), largest_text_->RecordedSize());
   }
-  if (largest_image_ && !largest_image_->paint_time.is_null()) {
+  if (largest_image_ && largest_image_->HasPaintTime()) {
     latest_lcp_details_for_ukm_changed =
         latest_lcp_details_for_ukm_changed ||
         lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged(
-            largest_image_->paint_time, largest_image_->recorded_size,
+            largest_image_->PaintTime(), largest_image_->RecordedSize(),
             largest_image_, largest_image_->EntropyForLCP(),
             largest_image_->RequestPriority());
   }

@@ -10,8 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -27,46 +26,6 @@ class TracedValue;
 struct DOMPaintTimingInfo;
 class SoftNavigationContext;
 
-class CORE_EXPORT TextRecord final : public GarbageCollected<TextRecord> {
- public:
-  TextRecord(Node& node,
-             uint64_t new_recorded_size,
-             const gfx::RectF& element_timing_rect,
-             const gfx::Rect& frame_visual_rect,
-             const gfx::RectF& root_visual_rect,
-             uint32_t frame_index,
-             bool is_needed_for_timing,
-             SoftNavigationContext* soft_navigation_context)
-      : node_(&node),
-        recorded_size(new_recorded_size),
-        frame_index_(frame_index),
-        element_timing_rect_(element_timing_rect),
-        root_visual_rect_(root_visual_rect),
-        is_needed_for_timing_(is_needed_for_timing),
-        soft_navigation_context_(soft_navigation_context) {
-    if (PaintTimingVisualizer::IsTracingEnabled()) {
-      lcp_rect_info_ = std::make_unique<LCPRectInfo>(
-          frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
-    }
-  }
-  TextRecord(const TextRecord&) = delete;
-  TextRecord& operator=(const TextRecord&) = delete;
-
-  void Trace(Visitor*) const;
-
-  WeakMember<Node> node_;
-  uint64_t recorded_size = 0;
-  uint32_t frame_index_ = 0;
-  gfx::RectF element_timing_rect_;
-  gfx::RectF root_visual_rect_;
-  std::unique_ptr<LCPRectInfo> lcp_rect_info_;
-  // The time of the first paint after fully loaded.
-  base::TimeTicks paint_time;
-  DOMPaintTimingInfo paint_timing_info;
-  bool is_needed_for_timing_ = false;
-  WeakMember<SoftNavigationContext> soft_navigation_context_;
-};
-
 class CORE_EXPORT LargestTextPaintManager final
     : public GarbageCollected<LargestTextPaintManager> {
  public:
@@ -75,7 +34,7 @@ class CORE_EXPORT LargestTextPaintManager final
   LargestTextPaintManager& operator=(const LargestTextPaintManager&) = delete;
 
   inline TextRecord* LargestText() {
-    DCHECK(!largest_text_ || !largest_text_->paint_time.is_null());
+    DCHECK(!largest_text_ || largest_text_->HasPaintTime());
     return largest_text_.Get();
   }
   void MaybeUpdateLargestText(TextRecord* record);
