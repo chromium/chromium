@@ -664,7 +664,7 @@
         ]
       },
       "Centipede High End Upload Linux ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -685,7 +685,7 @@
         ]
       },
       "Centipede High End Upload Linux ASan DCheck": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -706,7 +706,7 @@
         ]
       },
       "Centipede Upload Linux ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2622,7 +2622,7 @@
         ]
       },
       "Libfuzzer High End Upload Linux ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2643,7 +2643,7 @@
         ]
       },
       "Libfuzzer High End Upload Linux ASan Debug": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2664,7 +2664,7 @@
         ]
       },
       "Libfuzzer Upload Chrome OS ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2685,7 +2685,7 @@
         ]
       },
       "Libfuzzer Upload Linux ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2706,7 +2706,7 @@
         ]
       },
       "Libfuzzer Upload Linux ASan Debug": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2727,7 +2727,7 @@
         ]
       },
       "Libfuzzer Upload Linux MSan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2748,7 +2748,7 @@
         ]
       },
       "Libfuzzer Upload Linux UBSan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2811,7 +2811,7 @@
         ]
       },
       "Libfuzzer Upload Linux32 ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2874,7 +2874,7 @@
         ]
       },
       "Libfuzzer Upload Mac ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2895,7 +2895,7 @@
         ]
       },
       "Libfuzzer Upload Windows ASan": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -2916,7 +2916,7 @@
         ]
       },
       "Libfuzzer Upload iOS Catalyst Debug": {
-        "contact_team_email": "chrome-deet-core@google.com",
+        "contact_team_email": "chrome-fuzzing-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

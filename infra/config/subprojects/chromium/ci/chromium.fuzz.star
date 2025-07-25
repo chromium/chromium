@@ -207,7 +207,7 @@ def libfuzzer_builder(
         clusterfuzz_archive_subdir = None,
         clusterfuzz_ios_targets_only = None,
         clusterfuzz_v8_targets_only = None,
-        contact_team_email = "chrome-deet-core@google.com",
+        contact_team_email = "chrome-fuzzing-core@google.com",
         **kwargs):
     gn_configs = [
         "libfuzzer",
@@ -433,7 +433,7 @@ ci.builder(
         category = "centipede",
         short_name = "cent",
     ),
-    contact_team_email = "chrome-deet-core@google.com",
+    contact_team_email = "chrome-fuzzing-core@google.com",
     execution_timeout = 4 * time.hour,
     properties = {
         "upload_bucket": "chromium-browser-centipede",
@@ -487,7 +487,7 @@ Those fuzzers require more resources to run correctly.\
         category = "centipede",
         short_name = "cent high",
     ),
-    contact_team_email = "chrome-deet-core@google.com",
+    contact_team_email = "chrome-fuzzing-core@google.com",
     properties = {
         "upload_bucket": "chromium-browser-centipede",
         "upload_directory": "asan",
@@ -537,7 +537,7 @@ in release mode with dcheck_always_on.\
         category = "centipede",
         short_name = "cent high dc",
     ),
-    contact_team_email = "chrome-deet-core@google.com",
+    contact_team_email = "chrome-fuzzing-core@google.com",
     properties = {
         "upload_bucket": "chromium-browser-centipede",
         "upload_directory": "asan",

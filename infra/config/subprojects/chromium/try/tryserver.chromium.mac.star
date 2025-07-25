@@ -215,7 +215,7 @@ try_.builder(
             "skip_generate_fuzzer_owners",
         ],
     ),
-    contact_team_email = "chrome-deet-core@google.com",
+    contact_team_email = "chrome-fuzzing-core@google.com",
 )
 
 try_.builder(
