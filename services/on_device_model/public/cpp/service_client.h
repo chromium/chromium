@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -53,6 +54,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ServiceClient final {
 
   base::WeakPtr<ServiceClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+  base::SafeRef<ServiceClient> GetSafeRef() {
+    return weak_ptr_factory_.GetSafeRef();
   }
 
   bool is_bound() { return remote_.is_bound(); }

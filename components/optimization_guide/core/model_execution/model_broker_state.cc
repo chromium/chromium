@@ -14,18 +14,17 @@ ModelBrokerState::ModelBrokerState(
     std::unique_ptr<OnDeviceModelComponentStateManager::Delegate> delegate,
     on_device_model::ServiceClient::LaunchFn launch_fn)
     : local_state_(local_state),
-      component_state_manager_(local_state, std::move(delegate)),
-      launch_fn_(std::move(launch_fn)) {}
+      service_client_(std::move(launch_fn)),
+      component_state_manager_(local_state, std::move(delegate)) {}
 ModelBrokerState::~ModelBrokerState() = default;
 
 void ModelBrokerState::Init() {
-  CHECK(launch_fn_);
+  CHECK(!service_controller_);
   component_state_manager_.OnStartup();
   service_controller_ = std::make_unique<OnDeviceModelServiceController>(
       std::make_unique<OnDeviceModelAccessController>(*local_state_),
-      component_state_manager_.GetWeakPtr(), std::move(launch_fn_));
+      component_state_manager_.GetWeakPtr(), service_client_.GetSafeRef());
   service_controller_->Init();
-  launch_fn_.Reset();  // Explicitly reset so this will CHECK if called again.
 }
 
 std::unique_ptr<OnDeviceAssetManager> ModelBrokerState::CreateAssetManager(

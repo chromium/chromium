@@ -79,7 +79,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager,
-      on_device_model::ServiceClient::LaunchFn launch_fn);
+      base::SafeRef<on_device_model::ServiceClient> service_client);
   ~OnDeviceModelServiceController() override;
 
   // Initializes OnDeviceModelServiceController. This should be called once
@@ -366,7 +366,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
 
-  on_device_model::ServiceClient service_client_;
+  base::SafeRef<on_device_model::ServiceClient> service_client_;
   SafetyClient safety_client_;
 
   // Map from feature to its adaptation assets. Present only for features that

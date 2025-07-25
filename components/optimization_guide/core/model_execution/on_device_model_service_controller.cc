@@ -145,14 +145,14 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
     std::unique_ptr<OnDeviceModelAccessController> access_controller,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
-    on_device_model::ServiceClient::LaunchFn launch_fn)
+    base::SafeRef<on_device_model::ServiceClient> service_client)
     : access_controller_(std::move(access_controller)),
       on_device_component_state_manager_(
           std::move(on_device_component_state_manager)),
-      service_client_(launch_fn),
-      safety_client_(service_client_.GetWeakPtr()) {
+      service_client_(std::move(service_client)),
+      safety_client_(service_client_->GetWeakPtr()) {
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(), nullptr);
-  service_client_.set_on_disconnect_fn(base::BindRepeating(
+  service_client_->set_on_disconnect_fn(base::BindRepeating(
       &OnDeviceModelServiceController::OnServiceDisconnected,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -523,7 +523,7 @@ OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote() {
   if (remote_) {
     return remote_;
   }
-  controller_->service_client_.AddPendingUsage();  // Warm up the service.
+  controller_->service_client_->AddPendingUsage();  // Warm up the service.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&on_device_model::LoadModelAssets, PopulateModelPaths()),
@@ -532,9 +532,9 @@ OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote() {
              mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel>
                  receiver,
              on_device_model::ModelAssets assets) {
-            if (!self || !self->controller_->service_client_.is_bound()) {
+            if (!self || !self->controller_->service_client_->is_bound()) {
               if (self) {
-                self->controller_->service_client_.RemovePendingUsage();
+                self->controller_->service_client_->RemovePendingUsage();
               }
               CloseFilesInBackground(std::move(assets));
               return;
@@ -605,10 +605,10 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
              proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE) {
     params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
   }
-  controller_->service_client_.Get()->LoadModel(
+  controller_->service_client_->Get()->LoadModel(
       std::move(params), std::move(model),
       base::BindOnce(&RecordOnDeviceLoadModelResult));
-  controller_->service_client_.RemovePendingUsage();
+  controller_->service_client_->RemovePendingUsage();
 }
 
 void OnDeviceModelServiceController::BaseModelController::OnDisconnect(
@@ -797,7 +797,7 @@ void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
   }
 
   performance_class_state_ = PerformanceClassState::kComputing;
-  service_client_.Get()->GetDevicePerformanceInfo(
+  service_client_->Get()->GetDevicePerformanceInfo(
       base::BindOnce([](on_device_model::mojom::DevicePerformanceInfoPtr info) {
         return info->performance_class;
       })

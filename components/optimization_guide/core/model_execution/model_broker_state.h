@@ -46,10 +46,8 @@ class ModelBrokerState {
 
  private:
   raw_ptr<PrefService> local_state_;
+  on_device_model::ServiceClient service_client_;
   OnDeviceModelComponentStateManager component_state_manager_;
-  // The launch function for the on-device model service. This is used in
-  // initialization of the service controller.
-  on_device_model::ServiceClient::LaunchFn launch_fn_;
   std::unique_ptr<OnDeviceModelServiceController> service_controller_;
 };
 
