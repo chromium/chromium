@@ -114,7 +114,14 @@ void RecordMetricsForLoginWithChangedPassword(
     bool login_successful) {
   const PasswordForm* change_password_login =
       password_manager_util::FindLoginWithChangedPassword(submitted_manager);
-  if (!change_password_login) {
+  if (!change_password_login || !change_password_login->GetPasswordBackup()) {
+    return;
+  }
+  // If date_last_used is set after the backup creation time, it means that
+  // there was already a successful login after the password change flow. We
+  // don't want to count these cases as login with changed password.
+  if (change_password_login->date_last_used >
+      change_password_login->GetPasswordBackupDateCreated()) {
     return;
   }
 

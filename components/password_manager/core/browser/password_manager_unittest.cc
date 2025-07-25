@@ -1753,6 +1753,10 @@ TEST_P(PasswordManagerTest,
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
   form.type = PasswordForm::Type::kChangeSubmission;
+  // Since date_last_used is earlier than the backup creation time, this is the
+  // first login with the backup password.
+  form.date_last_used = base::Time::Now() - base::Seconds(1);
+  form.SetPasswordBackupNote(u"backup_password");
   store_->AddLogin(form);
   FormData observed_form = form.form_data;
   manager()->OnPasswordFormsParsed(&driver_, {observed_form});
@@ -1783,6 +1787,10 @@ TEST_P(PasswordManagerTest,
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
   form.type = PasswordForm::Type::kChangeSubmission;
+  // Since date_last_used is earlier than the backup creation time, this is the
+  // first login with the backup password.
+  form.date_last_used = base::Time::Now() - base::Seconds(1);
+  form.SetPasswordBackupNote(u"backup_password");
   store_->AddLogin(form);
   std::vector<FormData> observed = {form.form_data};
   manager()->OnPasswordFormsParsed(&driver_, observed);
@@ -1814,6 +1822,9 @@ TEST_P(PasswordManagerTest,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
+  // Since date_last_used is earlier than the backup creation time, this is the
+  // first login with the backup password.
+  form.date_last_used = base::Time::Now() - base::Seconds(1);
   std::u16string backup_password = u"backup_password";
   form.SetPasswordBackupNote(backup_password);
   // Set the backup password as input of the login form.
@@ -1848,6 +1859,9 @@ TEST_P(PasswordManagerTest,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
+  // Since date_last_used is earlier than the backup creation time, this is the
+  // first login with the backup password.
+  form.date_last_used = base::Time::Now() - base::Seconds(1);
   std::u16string backup_password = u"backup_password";
   form.SetPasswordBackupNote(backup_password);
   // Set the backup password as input of the login form.
@@ -1878,6 +1892,37 @@ TEST_P(PasswordManagerTest,
           kLogInWithPasswordChangeSubmissionName,
       static_cast<int>(
           LogInWithChangedPasswordOutcome::kBackupPasswordSucceeded));
+}
+
+TEST_P(PasswordManagerTest,
+       MetricsNotReportedSecondLogInWithBackupPasswordChangeSubmission) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  base::HistogramTester histogram_tester;
+  PasswordForm form(MakeSimpleForm());
+  std::u16string backup_password = u"backup_password";
+  form.SetPasswordBackupNote(backup_password);
+  // date_last_used is set after the backup creation time. This means this is
+  // the second login with the backup password and we shouldn't report it.
+  form.date_last_used =
+      form.GetPasswordBackupDateCreated().value() + base::Seconds(1);
+  // Set the backup password as input of the login form.
+  test_api(form.form_data).field(1).set_value(backup_password);
+  form.type = PasswordForm::Type::kChangeSubmission;
+  store_->AddLogin(form);
+  std::vector<FormData> observed = {form.form_data};
+
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  OnPasswordFormSubmitted(form.form_data);
+  observed.clear();
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.LogInWithPasswordChangeSubmission", 0);
 }
 
 #if BUILDFLAG(IS_ANDROID)
