@@ -141,14 +141,6 @@ BASE_FEATURE(kHigherRendererMemoryLimit,
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC)
-// Enables caching compiled sandbox profiles. Only some profiles support this,
-// as controlled by CanCacheSandboxPolicy().
-BASE_FEATURE(kCacheMacSandboxProfiles,
-             "CacheMacSandboxProfiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables the experimental Android GPU sandbox using Landlock.
 BASE_FEATURE(kAndroidGpuSandbox,
