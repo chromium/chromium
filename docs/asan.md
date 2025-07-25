@@ -155,20 +155,6 @@ defaults for some options, so the default behavior may be different from that
 observed in other projects.
 See `build/sanitizers/sanitizer_options.cc` for more details.
 
-## NaCl support under ASan
-
-On Linux (and soon on macOS) you can build and run Chromium with NaCl under ASan.
-Untrusted code (nexe) itself is not instrumented with ASan in this mode, but
-everything else is.
-
-To do this, remove `enable_nacl=false` from your `args.gn`, and define
-`NACL_DANGEROUS_SKIP_QUALIFICATION_TEST=1` in your environment at run time.
-
-Pipe chromium output (stderr) through ``tools/valgrind/asan/asan_symbolize.py
-`pwd`/`` to get function names and line numbers in ASan reports.
-If you're seeing crashes within `nacl_helper_bootstrap`, try deleting
-`out/Release/nacl_helper`.
-
 ## Building on iOS
 
 It's possible to build and run Chrome tests for iOS simulator (which are x86

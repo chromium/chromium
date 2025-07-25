@@ -75,7 +75,6 @@ or running `gn args out/Default`:
     is_component_build = true  # Links faster.
     is_debug = false           # Release build, runs faster.
     dcheck_always_on = true    # Enables DCHECK despite release build.
-    enable_nacl = false        # Skips native client build, compiles faster.
 
     # Builds Chrome instead of Chromium. This requires a src-internal
     # checkout. Adds internal features and branded art assets.

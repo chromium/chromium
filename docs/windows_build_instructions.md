@@ -271,11 +271,7 @@ in the editor that appears when you create your output directory
 Some helpful settings to consider using include:
 * `is_component_build = true` - this uses more, smaller DLLs, and may avoid
 having to relink chrome.dll after every change.
-* `enable_nacl = false` - this disables Native Client which is usually not
-needed for local builds.
-* `target_cpu = "x86"` - x86 builds may be slightly faster than x64 builds. Note
-that if you set this but don't set `enable_nacl = false` then build times may
-get worse.
+* `target_cpu = "x86"` - x86 builds may be slightly faster than x64 builds.
 * `blink_symbol_level = 0` - turn off source-level debugging for
 blink to reduce build times, appropriate if you don't plan to debug blink.
 * `v8_symbol_level = 0` - turn off source-level debugging for v8 to reduce

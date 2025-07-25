@@ -37,8 +37,6 @@ is_debug = false
 
 Note: Only ```target_os = "chromeos"``` is required, the others are recommended
 for a good experience but you can configure Chrome however you like otherwise.
-Note that Native Client is required, so do not put `enable_nacl = false` in
-your file anywhere!
 
 Now build Chrome as usual, e.g.:
 
