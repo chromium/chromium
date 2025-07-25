@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ComposeboxFileTypes">
+  <variant name="Image"/>
+  <variant name="Other"/>
+  <variant name="Pdf"/>
+</variants>
+
 <variants name="ContentSuggestionCategory">
   <variant name=".Articles" summary="Articles for you"/>
   <variant name=".Bookmarks" summary="Bookmarks"/>
@@ -336,6 +342,83 @@ chromium-metrics-reviews@google.com.
     duplicate sessions recorded if multiple navigations occur. Recorded at the
     end of the session.
   </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.Composebox.Session.File.Browser.UploadAttemptCount.{ComposeboxFileTypes}"
+    units="count" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of times the browser attempted to process {ComposeboxFileTypes}
+    files. Recorded at the end of the session. Note: Only recorded for files
+    that the WebUI approved for file upload (e.g., they passed the file size
+    check).
+  </summary>
+  <token key="ComposeboxFileTypes" variants="ComposeboxFileTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="NewTabPage.Composebox.Session.File.Browser.UploadFailureCount.{ComposeboxFileTypes}"
+    units="count" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of failures for {ComposeboxFileTypes} files within the session.
+    Recorded at the end of the session. This does not include files that failed
+    browser validation. Note: Only recorded for files that the WebUI approved
+    for file upload (e.g., they passed the file size check).
+  </summary>
+  <token key="ComposeboxFileTypes" variants="ComposeboxFileTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="NewTabPage.Composebox.Session.File.Browser.UploadSuccessCount.{ComposeboxFileTypes}"
+    units="count" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of successful file upload attempts to the Lens server for
+    {ComposeboxFileTypes} files within the session. Recorded at the end of the
+    session. Note: Only recorded for files that the WebUI approved for file
+    upload (e.g., they passed the file size check).
+  </summary>
+  <token key="ComposeboxFileTypes" variants="ComposeboxFileTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="NewTabPage.Composebox.Session.File.Browser.ValidationFailureCount.{ComposeboxFileTypes}.{ErrorType}"
+    units="count" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The total number of {ComposeboxFileTypes} files that failed validation with
+    the error {ErrorType}. Recorded at the end of the session. Note: Only
+    recorded for files that the WebUI approved for file upload (e.g., they
+    passed the file size check).
+  </summary>
+  <token key="ComposeboxFileTypes" variants="ComposeboxFileTypes">
+    <variant name=""/>
+  </token>
+  <token key="ErrorType">
+    <variant name="AbortedError"/>
+    <variant name="BrowserProcessingError"/>
+    <variant name="ImageProcessingError"/>
+    <variant name="NetworkError"/>
+    <variant name="ServerError"/>
+    <variant name="ServerLimitExceededError"/>
+    <variant name="Unknown"/>
+  </token>
 </histogram>
 
 <histogram name="NewTabPage.ComposeEntrypoint.Click.UserTextPresent"

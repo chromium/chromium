@@ -14,6 +14,14 @@ const char kComposeboxSessionAbandonedDuration[] =
     "Composebox.Session.Duration.Abandoned";
 const char kComposeboxQuerySubmissionTime[] =
     "Composebox.Query.Time.ToSubmission";
+const char kComposeboxFileUploadAttemptPerFileType[] =
+    "Composebox.Session.File.Browser.UploadAttemptCount.";
+const char kComposeboxFileUploadSuccessPerFileType[] =
+    "Composebox.Session.File.Browser.UploadSuccessCount.";
+const char kComposeboxFileUploadFailure[] =
+    "Composebox.Session.File.Browser.UploadFailureCount.";
+const char kComposeboxFileValidationErrorTypes[] =
+    "Composebox.Session.File.Browser.ValidationFailureCount.";
 }  // namespace
 
 SessionMetrics::SessionMetrics() = default;
@@ -57,6 +65,37 @@ void ComposeboxMetricsRecorder::NotifySessionStateChanged(
   }
 }
 
+void ComposeboxMetricsRecorder::OnFileUploadStatusChanged(
+    lens::MimeType file_mime_type,
+    FileUploadStatus file_upload_status,
+    const std::optional<FileUploadErrorType>& error_type) {
+  switch (file_upload_status) {
+    case FileUploadStatus::kProcessing:
+      session_metrics_->file_upload_attempt_count_per_type[file_mime_type]++;
+      break;
+    case FileUploadStatus::kUploadSuccessful:
+      session_metrics_->file_upload_success_count_per_type[file_mime_type]++;
+      break;
+    // Every validation error will have an error type, but not every file status
+    // has an error, hence safeguarding the error value.
+    case FileUploadStatus::kValidationFailed:
+      if (error_type.has_value()) {
+        session_metrics_
+            ->file_validation_failure_count_per_type[file_mime_type]
+                                                    [error_type.value()]++;
+      }
+      break;
+    case FileUploadStatus::kUploadFailed:
+      session_metrics_->file_upload_failure_count_per_type[file_mime_type]++;
+      break;
+    // The following are not file upload success or failure statuses.
+    case FileUploadStatus::kNotUploaded:
+    case FileUploadStatus::kUploadStarted:
+    case FileUploadStatus::kUploadExpired:
+      break;
+  }
+}
+
 void ComposeboxMetricsRecorder::NotifySessionStarted() {
   session_metrics_->session_elapsed_timer =
       std::make_unique<base::ElapsedTimer>();
@@ -76,6 +115,7 @@ void ComposeboxMetricsRecorder::RecordSessionAbandonedMetrics() {
       metric_category_name_ + kComposeboxSessionAbandonedDuration,
       session_duration);
   RecordTotalSessionDuration(session_duration);
+  FinalizeSessionMetrics();
 }
 
 void ComposeboxMetricsRecorder::RecordSessionCompletedMetrics() {
@@ -91,10 +131,97 @@ void ComposeboxMetricsRecorder::RecordSessionCompletedMetrics() {
         session_duration);
     RecordTotalSessionDuration(session_duration);
   }
+  FinalizeSessionMetrics();
 }
 
 void ComposeboxMetricsRecorder::RecordTotalSessionDuration(
     base::TimeDelta session_duration) {
   base::UmaHistogramMediumTimes(
       metric_category_name_ + kComposeboxSessionDuration, session_duration);
+}
+
+void ComposeboxMetricsRecorder::FinalizeSessionMetrics() {
+  // Log upload attempt metrics.
+  for (const auto& file_info :
+       session_metrics_->file_upload_attempt_count_per_type) {
+    std::string file_type = MimeTypeToString(file_info.first);
+    std::string histogram_name = metric_category_name_ +
+                                 kComposeboxFileUploadAttemptPerFileType +
+                                 file_type;
+    base::UmaHistogramCounts100(histogram_name, file_info.second);
+  }
+
+  // Log successful uploads.
+  for (const auto& file_info :
+       session_metrics_->file_upload_success_count_per_type) {
+    std::string file_type = MimeTypeToString(file_info.first);
+    std::string histogram_name = metric_category_name_ +
+                                 kComposeboxFileUploadSuccessPerFileType +
+                                 file_type;
+    base::UmaHistogramCounts100(histogram_name, file_info.second);
+  }
+
+  // Log file upload failures.
+  for (const auto& file_info :
+       session_metrics_->file_upload_failure_count_per_type) {
+    std::string file_type = MimeTypeToString(file_info.first);
+    std::string histogram_name =
+        metric_category_name_ + kComposeboxFileUploadFailure + file_type;
+    base::UmaHistogramCounts100(histogram_name, file_info.second);
+  }
+
+  // Log file validation errors.
+  for (const auto& file_info :
+       session_metrics_->file_validation_failure_count_per_type) {
+    for (const auto& error_info : file_info.second) {
+      std::string file_type = MimeTypeToString(file_info.first);
+      std::string error_type = FileErrorToString(error_info.first);
+      std::string histogram_name = metric_category_name_ +
+                                   kComposeboxFileValidationErrorTypes +
+                                   file_type + "." + error_type;
+      base::UmaHistogramCounts100(histogram_name, error_info.second);
+    }
+  }
+  ResetSessionMetrics();
+}
+
+void ComposeboxMetricsRecorder::ResetSessionMetrics() {
+  session_metrics_->session_elapsed_timer.reset();
+  session_metrics_->time_to_query_submissions.clear();
+  session_metrics_->file_upload_attempt_count_per_type.clear();
+  session_metrics_->file_upload_success_count_per_type.clear();
+  session_metrics_->file_upload_failure_count_per_type.clear();
+  session_metrics_->file_validation_failure_count_per_type.clear();
+}
+
+std::string ComposeboxMetricsRecorder::FileErrorToString(
+    FileUploadErrorType error) {
+  switch (error) {
+    case FileUploadErrorType::kUnknown:
+      return "Unknown";
+    case FileUploadErrorType::kBrowserProcessingError:
+      return "BrowserProcessingError";
+    case FileUploadErrorType::kNetworkError:
+      return "NetworkError";
+    case FileUploadErrorType::kServerError:
+      return "ServerError";
+    case FileUploadErrorType::kServerSizeLimitExceeded:
+      return "ServerLimitExceededError";
+    case FileUploadErrorType::kAborted:
+      return "AbortedError";
+    case FileUploadErrorType::kImageProcessingError:
+      return "ImageProcessingError";
+  }
+}
+
+std::string ComposeboxMetricsRecorder::MimeTypeToString(
+    lens::MimeType mime_type) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      return "Pdf";
+    case lens::MimeType::kImage:
+      return "Image";
+    default:
+      return "Other";
+  }
 }

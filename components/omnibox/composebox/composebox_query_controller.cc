@@ -508,7 +508,8 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
 
   file_info->upload_status_ = status;
   for (auto& observer : observers_) {
-    observer.OnFileUploadStatusChanged(file_token, status, error_type);
+    observer.OnFileUploadStatusChanged(file_token, file_info->mime_type_,
+                                       status, error_type);
   }
 }
 

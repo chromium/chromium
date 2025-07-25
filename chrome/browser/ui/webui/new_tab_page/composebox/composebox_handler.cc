@@ -112,7 +112,10 @@ void ComposeboxHandler::ClearFiles() {
 
 void ComposeboxHandler::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
+    lens::MimeType mime_type,
     composebox_query::mojom::FileUploadStatus file_upload_status,
     const std::optional<FileUploadErrorType>& error_type) {
   page_->OnFileUploadStatusChanged(file_token, file_upload_status, error_type);
+  metrics_recorder_->OnFileUploadStatusChanged(mime_type, file_upload_status,
+                                               error_type);
 }

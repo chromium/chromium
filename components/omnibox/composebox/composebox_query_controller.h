@@ -90,6 +90,7 @@ class ComposeboxQueryController {
    public:
     virtual void OnFileUploadStatusChanged(
         const base::UnguessableToken& file_token,
+        lens::MimeType mime_type,
         FileUploadStatus file_upload_status,
         const std::optional<FileUploadErrorType>& error_type) = 0;
 
