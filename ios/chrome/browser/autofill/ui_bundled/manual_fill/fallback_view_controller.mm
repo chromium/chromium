@@ -11,9 +11,11 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -21,6 +23,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   HeaderSectionIdentifier = kSectionIdentifierEnumZero,
@@ -194,6 +197,25 @@ UIColor* GetBackgroundColor() {
 
 - (void)presentPlusAddressActionItems:(NSArray<TableViewItem*>*)actions {
   [self presentItems:actions ofItemType:ItemType::kItemTypePlusAddressAction];
+}
+
+- (void)loadFaviconForCellIdentifier:(NSString*)cellIdentifier
+                      itemIdentifier:(NSString*)itemIdentifier
+                          faviconURL:(const GURL&)faviconURL
+                          completion:
+                              (ConfigureFaviconCompletionBlock)completion {
+  // Only set the favicon if the cell hasn't been reused.
+  if (![cellIdentifier isEqualToString:itemIdentifier]) {
+    return;
+  }
+
+  CrURL* crURL = [[CrURL alloc] initWithGURL:faviconURL];
+  [self.imageDataSource
+      faviconForPageURL:crURL
+             completion:^(FaviconAttributes* faviconAttributes) {
+               CHECK(faviconAttributes);
+               completion(faviconAttributes);
+             }];
 }
 
 #pragma mark - UITableViewDelegate

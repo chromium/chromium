@@ -12,14 +12,11 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
-#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -144,18 +141,14 @@ enum ManualFallbackItemType : NSInteger {
   ManualFillPlusAddressCell* plusAddressCell =
       base::apple::ObjCCastStrict<ManualFillPlusAddressCell>(cell);
 
-  NSString* itemIdentifier = plusAddressItem.uniqueIdentifier;
-  CrURL* crurl = [[CrURL alloc] initWithGURL:plusAddressItem.faviconURL];
-  [self.imageDataSource
-      faviconForPageURL:crurl
-             completion:^(FaviconAttributes* attributes) {
-               // Only set favicon if the cell hasn't been reused.
-               if ([plusAddressCell.uniqueIdentifier
-                       isEqualToString:itemIdentifier]) {
-                 CHECK(attributes);
-                 [plusAddressCell configureWithFaviconAttributes:attributes];
-               }
-             }];
+  [self
+      loadFaviconForCellIdentifier:plusAddressCell.uniqueIdentifier
+                    itemIdentifier:plusAddressItem.uniqueIdentifier
+                        faviconURL:plusAddressItem.faviconURL
+                        completion:^(FaviconAttributes* faviconAttributes) {
+                          [plusAddressCell
+                              configureWithFaviconAttributes:faviconAttributes];
+                        }];
 }
 
 @end
