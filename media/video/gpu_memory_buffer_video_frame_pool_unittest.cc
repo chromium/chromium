@@ -671,6 +671,22 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
   EXPECT_TRUE(frame->HasSharedImage());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
+
+  auto* client_si = sii_->MostRecentMappableSharedImage();
+  EXPECT_TRUE(!!client_si);
+  auto mapping = client_si->Map();
+
+  const auto* y_memory =
+      reinterpret_cast<uint16_t*>(mapping->GetMemoryForPlane(0).data());
+  const auto* uv_memory =
+      reinterpret_cast<uint16_t*>(mapping->GetMemoryForPlane(1).data());
+
+  EXPECT_EQ(software_frame->visible_data(VideoFrame::Plane::kY)[0] << 6,
+            y_memory[0]);
+  EXPECT_EQ(software_frame->visible_data(VideoFrame::Plane::kU)[0] << 6,
+            uv_memory[0]);
+  EXPECT_EQ(software_frame->visible_data(VideoFrame::Plane::kV)[0] << 6,
+            uv_memory[1]);
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
