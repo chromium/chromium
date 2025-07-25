@@ -282,10 +282,8 @@ docs for more detailed information, but some key points:
 *   WebView is a separate "platform" for UMA/Finch purposes; experiments
     targeting "android" only affect Chrome for Android, _not_ WebView.
 
-*   WebView's beta population is fairly small, and its dev and canary
-    populations are tiny. The dev and canary channels are also only available on
-    Android 7 and later, so data from Android 5 and 6 is limited to beta and
-    stable.
+*   WebView's dev and canary populations are fairly small, although the beta
+    population is decently sized.
 
 *   WebView currently uses _per-app_ anonymous IDs for privacy reasons - this
     means that each individual app on a particular Android device will be

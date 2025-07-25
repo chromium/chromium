@@ -45,11 +45,9 @@ access if the app requeested it). One consequence of this is WebView uses the
 app's data directory, so each app has a separate cookie jar, network cache, etc.
 
 WebView follows Chrome's architecture by separating browser and renderer code.
-Due to platform limitations, WebView runs renderer content "in process" (in the
-browser process) on Android L, M, and N devices and "out of process" (in a
-separate renderer process) on Android O and above. See [this document][renderer]
-for details. WebView's renderer process also runs in the app's context, although
-this process is sandboxed so it actually has even fewer permissions.
+See [this document][renderer] for details. WebView's renderer process also runs
+in the app's context, although this process is sandboxed so it actually has even
+fewer permissions.
 
 WebView runs other services (ex. GPU service, Network Service) in-process on all
 OS versions. This saves memory (which is why Chrome for Android does the same
@@ -65,8 +63,7 @@ details.
 ## Packaging variants
 
 Since Android Lollipop, WebView has been implemented by an updatable package. We
-ship WebView to users in one of 3 packaging variants: standalone WebView,
-Monochrome, and Trichrome. See [Packaging
+ship WebView to users as either standalone WebView or Trichrome. See [Packaging
 Variants](webview-packaging-variants.md) for details.
 
 ## See also

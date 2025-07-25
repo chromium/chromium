@@ -10,7 +10,8 @@ of Android and the bugs and limitations that exist. This is important if making
 changes to how WebView is packaged, as we typically need to maintain backward
 compatibility. This may not be 100% complete as a lot of things have changed
 over the years that WebView has been updatable. This currently covers Android L
-to Q.
+and beyond, however Android L through Android P are no longer supported for
+WebView updates.
 
 ## General stuff
 

@@ -29,7 +29,6 @@ $ adb shell pm path com.google.android.webview
 package:/system/app/WebViewGoogle/WebViewGoogle.apk
 $ adb root
 
-# This is necessary for M and up:
 $ adb disable-verity
 $ adb reboot
 # wait for device to reboot...

@@ -14,10 +14,9 @@ Canary](prerelease.md). These channels will have a launcher icon which will
 launch WebView DevTools.
 
 *** note
-**Note:** the WebView DevTools icon does not appear by default on Android 7
-through 9 (Nougat/Oreo/Pie). To enable the launcher icon, first [change your
-WebView provider](prerelease.md#Android-7-through-9-Nougat_Oreo_Pie) and then
-launch the same Chrome channel or any WebView app (ex. [WebView shell
+**Note:** the WebView DevTools icon does not appear by default. To enable the
+launcher icon, first [change your WebView provider](prerelease.md#trichrome-dev)
+and then launch the same Chrome channel or any WebView app (ex. [WebView shell
 browser](webview-shell.md), or open an email in Gmail).
 ***
 
@@ -223,11 +222,11 @@ below the Components Summary.
 
 ### Switching WebView provider
 
-Since Android 7 (Nougat), Android supports installing [multiple WebView
-packages](prerelease.md) side by side and switching between them. After
-installing the WebView channel you want, launch WebView DevTools, open the
-three-dotted menu, and select "Change WebView Provider." This launches the
-system UI where you can select your new WebView channel.
+Android supports installing [multiple WebView packages](prerelease.md) side by
+side and switching between them. After installing the WebView channel you want,
+launch WebView DevTools, open the three-dotted menu, and select "Change WebView
+Provider." This launches the system UI where you can select your new WebView
+channel.
 
 ### Filing a bug report
 

@@ -45,10 +45,8 @@ $ source build/android/envsetup.sh
 ## Device setup
 
 The recommend configuration is to use an **Android 10 (Q) emulator**. Android R
-or higher is also OK. If you need to use Android N-P instead then you can use
-the [old version of this guide](./quick-start-legacy.md). If you need to use any
-other configuration, then you need to switch to the full [build
-guide](./build-instructions.md) instead.
+or higher is also OK. If you need to use any other configuration, then you need
+to switch to the full [build guide](./build-instructions.md) instead.
 
 Set up an [Android emulator](/docs/android_emulator.md). You have 2 options for
 this:
@@ -267,8 +265,7 @@ Otherwise, please [reach out to the team][1].
 Either your package didn't install (see below) or you chose a package name which
 is [not eligible as a WebView provider](webview-providers.md#Package-name) for
 this device. Double-check the package name in your GN args. If you're on AOSP
-(any OS level), choose `"com.android.webview"`. If you're on L-M, choose
-`"com.google.android.webview"`. In either case, you'll likely need to [remove
+(any OS level), choose `"com.android.webview"`. You'll likely need to [remove
 the preinstalled WebView
 APK](/android_webview/tools/remove_preinstalled_webview.py).
 
