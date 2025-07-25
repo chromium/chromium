@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] Cloning with global registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Cloning with explicit global registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Cloning with scoped registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Cloning including shadow tree with global registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Cloning including shadow tree with explicit global registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Cloning including shadow tree with scoped registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Cloning with global registry (null registry target)
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Cloning with explicit global registry (null registry target)
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Cloning with scoped registry (null registry target)
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Cloning including shadow tree with global registry (null registry target)
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Cloning including shadow tree with explicit global registry (null registry target)
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Cloning including shadow tree with scoped registry (null registry target)
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

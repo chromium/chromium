@@ -14,7 +14,7 @@ This is a testharness.js-based test.
 [FAIL] Adding definition to scoped registry affects associated shadow roots in all iframes
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry affects associated shadow roots in other frame trees
-  assert_true: expected true got false
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry should not upgrade disconnected elements
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry should not upgrade nodes in constructed documents
