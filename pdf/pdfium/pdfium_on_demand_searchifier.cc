@@ -85,6 +85,12 @@ void PDFiumOnDemandSearchifier::OnOcrDisconnected() {
       // will try to connect to the service again.
       return;
 
+    case State::kWaitingForPageAvailability:
+      // If waiting for page availability takes long, OCR service may shutdown
+      // to release resources. Disconnection is expected in this case and the
+      // service will reconnect on next request.
+      return;
+
     case State::kWaitingForResults:
       // Assume OCR cannot be used anymore if it gets disconnected while
       // waiting for results. Therefore cancel all pending requests and move
@@ -121,7 +127,9 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
     engine_->OnSearchifyStateChange(/*busy=*/true);
   }
   pages_queue_.push_back(page_index);
-  if (state_ == State::kWaitingForResults || perform_ocr_callback_.is_null()) {
+  if (state_ == State::kWaitingForResults ||
+      state_ == State::kWaitingForPageAvailability ||
+      perform_ocr_callback_.is_null()) {
     return;
   }
 
@@ -195,14 +203,20 @@ void PDFiumOnDemandSearchifier::SearchifyNextImage() {
 }
 
 void PDFiumOnDemandSearchifier::CommitResultsToPage() {
+  CHECK(state_ == State::kWaitingForResults ||
+        state_ == State::kWaitingForPageAvailability);
   // Ignore the results if the page got unloaded before committing them.
   if (!current_page_) {
     current_page_ocr_results_.clear();
   }
 
   if (!current_page_ocr_results_.empty()) {
-    // If the page is being painted, wait for paint to finish.
-    if (engine_->IsPageScheduledForPaint(current_page_->index())) {
+    // If the page is being painted or cannot be unloaded, wait.
+    if (!current_page_->PageCanBeUnloaded() ||
+        engine_->IsPageScheduledForPaint(current_page_->index())) {
+      if (state_ == State::kWaitingForResults) {
+        state_ = State::kWaitingForPageAvailability;
+      }
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&PDFiumOnDemandSearchifier::CommitResultsToPage,
@@ -227,6 +241,10 @@ void PDFiumOnDemandSearchifier::CommitResultsToPage() {
       LOG(ERROR) << "Failed to generate content";
     }
   }
+
+  // `kWaitingForPageAvailability` is only set by this function, hence change
+  // the state back to `kWaitingForResults` in case it is changed.
+  state_ = State::kWaitingForResults;
 
   ClearCurrentPage();
 

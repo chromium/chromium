@@ -144,6 +144,9 @@ class PDFiumPage {
   // Returns if Searchify has run on the page, regardless of whether it added
   // any text to the page or not.
   bool IsPageSearchified() const;
+
+  // Returns if the page can be unloaded.
+  bool PageCanBeUnloaded() const;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   // For all the highlights on the page, get their underlying text ranges and

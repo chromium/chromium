@@ -970,6 +970,10 @@ void PDFiumPage::OnSearchifyGotOcrResult(bool added_text) {
 bool PDFiumPage::IsPageSearchified() const {
   return has_searchify_added_text_.has_value();
 }
+
+bool PDFiumPage::PageCanBeUnloaded() const {
+  return preventing_unload_count_ == 0;
+}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(

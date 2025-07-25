@@ -16,6 +16,7 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
 namespace chrome_pdf {
 
 class PDFiumOnDemandSearchifier {
@@ -42,12 +43,16 @@ class PDFiumOnDemandSearchifier {
   void SchedulePage(int page_index);
 
   bool HasFailed() const { return state_ == State::kFailed; }
-  bool IsIdleForTesting() const { return state_ == State::kIdle; }
-
   bool PerformedOCR() const { return performed_ocr_; }
 
  private:
-  enum class State { kIdle, kWaitingForResults, kFailed };
+  friend class PDFiumOnDemandSearchifierTest;
+  enum class State {
+    kIdle,
+    kWaitingForResults,
+    kWaitingForPageAvailability,
+    kFailed
+  };
 
   void SearchifyNextPage();
   void SearchifyNextImage();
