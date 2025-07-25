@@ -45,7 +45,7 @@ def _unsplit_version(version: tuple[int, ...]) -> str:
 
 
 _REQUIRED_OS_VERSION = _split_version('15.5')
-_REQUIRED_ACTOOL_VERSION = _split_version('16.4')
+_REQUIRED_ACTOOL_VERSION = _split_version('26.0')
 
 
 def _verify_os_version() -> None:
@@ -138,11 +138,37 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         source_dir = path.joinpath(os.pardir)
 
         command = [
-            'xcrun', 'actool', '--output-format=xml1', '--notices',
-            '--warnings', '--errors', '--platform=macosx',
-            '--target-device=mac', '--app-icon=AppIcon',
+            # The binary.
+            'xcrun',
+            'actool',
+
+            # Output and error handling.
+            '--output-format=xml1',
+            '--notices',
+            '--warnings',
+            '--errors',
+
+            # Platform.
+            '--platform=macosx',
+            '--target-device=mac',
+
+            # Correctness. This command-line argument is undocumented. It forces
+            # `actool` aka `ibtool` to use bundled versions of the asset catalog
+            # frameworks so that it generates consistent results no matter what
+            # OS release it is run on. Xcode 26+ includes this when invoking
+            # `actool`; see various copies of the `AssetCatalogCompiler.xcspec`
+            # file found in various places inside the Xcode package.
+            '--lightweight-asset-runtime-mode=enabled',
+
+            # Target information.
+            '--app-icon=AppIcon',
             f'--minimum-deployment-target={min_deployment_target}',
-            f'--output-partial-info-plist={tmp_plist}', f'--compile={tmp_dir}',
+
+            # Where to place the outputs.
+            f'--output-partial-info-plist={tmp_plist}',
+            f'--compile={tmp_dir}',
+
+            # What to compile.
             path
         ]
         if verbose:
