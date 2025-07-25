@@ -1104,6 +1104,9 @@
       <message name="IDS_IOS_BWG_LOCATION_TITLE" desc="The title text of the BWG location settings page.">
         Precise Location
       </message>
+      <message name="IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL" desc="Accessibility label for the page action menu entry point.">
+          Open on-page AI tools
+      </message>
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_BODY" desc="First box body text for the Gemini Promo page.">
           Get relevant answers based on the content of the page you're on
       </message>
