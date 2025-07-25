@@ -148,18 +148,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   // thread where it is passed to the IPC::Channel's Send method.
   bool Send(Message* message) override;
 
-  // Used to intercept messages as they are received on the background thread.
-  //
-  // Ordinarily, messages sent to the ChannelProxy are routed to the matching
-  // listener on the worker thread.  This API allows code to intercept messages
-  // before they are sent to the worker thread.
-  // If you call this before the target process is launched, then you're
-  // guaranteed to not miss any messages.  But if you call this anytime after,
-  // then some messages might be missed since the filter is added internally on
-  // the IO thread.
-  void AddFilter(MessageFilter* filter);
-  void RemoveFilter(MessageFilter* filter);
-
   // Set the `UrgentMessageObserver` for the channel. Must be called on the
   // proxy thread before initialization.
   void SetUrgentMessageObserver(UrgentMessageObserver* observer);

@@ -530,20 +530,6 @@ void ChannelProxy::SendInternal(Message* message) {
   context_->Send(message);
 }
 
-void ChannelProxy::AddFilter(MessageFilter* filter) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  context_->AddFilter(filter);
-}
-
-void ChannelProxy::RemoveFilter(MessageFilter* filter) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  context_->ipc_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&Context::OnRemoveFilter, context_,
-                                base::RetainedRef(filter)));
-}
-
 void ChannelProxy::AddGenericAssociatedInterfaceForIOThread(
     const std::string& name,
     const GenericAssociatedInterfaceFactory& factory) {
