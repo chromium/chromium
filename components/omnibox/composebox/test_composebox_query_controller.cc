@@ -48,13 +48,15 @@ TestComposeboxQueryController::TestComposeboxQueryController(
     version_info::Channel channel,
     std::string locale,
     TemplateURLService* template_url_service,
-    variations::VariationsClient* variations_client)
+    variations::VariationsClient* variations_client,
+    bool send_lns_surface)
     : ComposeboxQueryController(identity_manager,
                                 url_loader_factory,
                                 channel,
                                 locale,
                                 template_url_service,
-                                variations_client) {}
+                                variations_client,
+                                send_lns_surface) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 
 std::unique_ptr<EndpointFetcher>
@@ -110,4 +112,11 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   auto response = std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   response->disable_responding_ = disable_response;
   return response;
+}
+
+void TestComposeboxQueryController::ResetRequestClusterInfoState() {
+  if (!enable_cluster_info_ttl_) {
+    return;
+  }
+  ComposeboxQueryController::ResetRequestClusterInfoState();
 }

@@ -4,9 +4,12 @@
 
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
+import type {FileUploadStatus} from '../composebox_query.mojom-webui.js';
+
 export interface ComposeboxFile {
   uuid: UnguessableToken;
   name: string;
   objectUrl: string|null;
   type: string;
+  status: FileUploadStatus;
 }

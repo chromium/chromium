@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_NTP_COMPOSEBOX_FIELDTRIAL_H_
-#define COMPONENTS_SEARCH_NTP_COMPOSEBOX_FIELDTRIAL_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_COMPOSEBOX_FIELDTRIAL_H_
+#define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_COMPOSEBOX_FIELDTRIAL_H_
 
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/browser_process.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
 
-namespace ntp_composebox_fieldtrial {
+namespace ntp_composebox {
 
 inline constexpr char kConfigParamParseSuccessHistogram[] =
     "NewTabPage.Composebox.ConfigParseSuccess";
 
 BASE_DECLARE_FEATURE(kNtpSearchboxComposeEntrypoint);
+BASE_DECLARE_FEATURE(kNtpSearchboxComposeEntrypointEnglishUS);
 
-bool IsNtpSearchboxComposeEntrypointEnabled();
+bool IsNtpSearchboxComposeEntrypointEnabled(BrowserProcess* browser_process);
 
 BASE_DECLARE_FEATURE(kNtpComposebox);
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
@@ -29,6 +31,10 @@ extern const base::FeatureParam<size_t> kDownscaleMaxImageWidthParam;
 extern const base::FeatureParam<size_t> kDownscaleMaxImageHeightParam;
 // The composition quality to use when encoding images.
 extern const base::FeatureParam<size_t> ImageCompressionQualityParam;
+// Whether to send the lns_surface parameter.
+// TODO(crbug.com/430070871): Remove this flag once the server supports the
+// `lns_surface` parameter.
+extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
 
 struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   // Whether the feature is enabled.
@@ -36,11 +42,11 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   // The configuration proto for the feature.
   omnibox::NTPComposeboxConfig config;
   // Maximum image size downscaling target (in pixels).
-  int downscale_max_image_size = 0;
+  int downscale_max_image_size = 1;
   // Maximum image width downscaling target (in pixels).
-  int downscale_max_image_width = 0;
+  int downscale_max_image_width = 1;
   // Maximum image height downscaling target (in pixels).
-  int downscale_max_image_height = 0;
+  int downscale_max_image_height = 1;
   // Composition quality to use when encoding images.
   int image_compression_quality = 0;
 
@@ -53,6 +59,6 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
 using ScopedFeatureConfigForTesting =
     omnibox_feature_configs::ScopedConfigForTesting<FeatureConfig>;
 
-}  // namespace ntp_composebox_fieldtrial
+}  // namespace ntp_composebox
 
-#endif  // COMPONENTS_SEARCH_NTP_COMPOSEBOX_FIELDTRIAL_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_COMPOSEBOX_FIELDTRIAL_H_

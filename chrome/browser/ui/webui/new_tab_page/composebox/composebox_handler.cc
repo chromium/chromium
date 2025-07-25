@@ -5,25 +5,32 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "content/public/browser/page_navigator.h"
 
 ComposeboxHandler::ComposeboxHandler(
-    mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler> handler,
+    mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
+    mojo::PendingRemote<composebox::mojom::Page> pending_page,
     std::unique_ptr<ComposeboxQueryController> query_controller,
     content::WebContents* web_contents)
-    : handler_(this, std::move(handler)),
-      query_controller_(std::move(query_controller)),
-      web_contents_(web_contents) {}
+    : query_controller_(std::move(query_controller)),
+      web_contents_(web_contents),
+      page_{std::move(pending_page)},
+      handler_(this, std::move(pending_handler)) {
+  query_controller_->AddObserver(this);
+}
 
-ComposeboxHandler::~ComposeboxHandler() = default;
+ComposeboxHandler::~ComposeboxHandler() {
+  query_controller_->RemoveObserver(this);
+}
 
 void ComposeboxHandler::NotifySessionStarted() {
   query_controller_->NotifySessionStarted();
 }
 
 void ComposeboxHandler::NotifySessionAbandoned() {
+  query_controller_->ClearFiles();
   query_controller_->NotifySessionAbandoned();
 }
 
@@ -69,7 +76,7 @@ void ComposeboxHandler::AddFile(
     file_info_metadata->mime_type_ = lens::MimeType::kPdf;
   } else if ((file_info_mojom->mime_type).find("image") != std::string::npos) {
     file_info_metadata->mime_type_ = lens::MimeType::kImage;
-    auto field_config = ntp_composebox_fieldtrial::FeatureConfig::Get();
+    auto field_config = ntp_composebox::FeatureConfig::Get();
     image_options = composebox::ImageEncodingOptions{
         .max_size = field_config.downscale_max_image_size,
         .max_height = field_config.downscale_max_image_height,
@@ -91,4 +98,15 @@ void ComposeboxHandler::DeleteFile(const base::UnguessableToken& file_token) {
   if (!query_controller_->DeleteFile(file_token)) {
     handler_.ReportBadMessage("An invalid file token was sent to DeleteFile");
   }
+}
+
+void ComposeboxHandler::ClearFiles() {
+  query_controller_->ClearFiles();
+}
+
+void ComposeboxHandler::OnFileUploadStatusChanged(
+    const base::UnguessableToken& file_token,
+    composebox_query::mojom::FileUploadStatus file_upload_status,
+    const std::optional<FileUploadErrorType>& error_type) {
+  page_->OnFileUploadStatusChanged(file_token, file_upload_status, error_type);
 }

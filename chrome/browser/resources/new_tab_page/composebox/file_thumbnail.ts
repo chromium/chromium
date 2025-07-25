@@ -7,6 +7,8 @@ import '//resources/cr_elements/icons.html.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {FileUploadStatus} from '../composebox_query.mojom-webui.js';
+
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './file_thumbnail.css.js';
 import {getHtml} from './file_thumbnail.html.js';
@@ -42,6 +44,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     type: '',
     objectUrl: null,
     uuid: '',
+    status: FileUploadStatus.kNotUploaded,
   };
 
   protected deleteFile_() {

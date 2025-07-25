@@ -1,3 +1,6 @@
+<!-- #html_wrapper_imports_start
+import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
+#html_wrapper_imports_end -->
 <div id="content">
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
     <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
@@ -30,7 +33,7 @@
         ?composebox-enabled="${this.composeboxEnabled}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
-      <ntp-composebox @toggle-composebox="${this.toggleComposebox_}">
+      <ntp-composebox id="composebox" @close-composebox="${this.closeComposebox_}">
       </ntp-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
@@ -111,7 +114,8 @@ ${this.showVoiceSearchOverlay_ ? html`
   </ntp-voice-search-overlay>
 ` : ''}
 ${this.showComposebox_ ? html`
-  <div id="composeboxScrim" @click="${this.closeComposebox_}"></div>
+  <div id="composeboxScrim"
+       @click="${this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"></div>
 ` : ''}
 <svg>
   <defs>

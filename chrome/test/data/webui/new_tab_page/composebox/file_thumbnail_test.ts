@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FileUploadStatus} from 'chrome://new-tab-page/composebox_query.mojom-webui.js';
 import {ComposeboxFileThumbnailElement} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -15,6 +16,20 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fileThumbnailElement = new ComposeboxFileThumbnailElement();
     document.body.appendChild(fileThumbnailElement);
+  });
+
+  test('display loading spinner', async () => {
+    // Arrange.
+    fileThumbnailElement.file = createComposeboxFile(1, {
+      type: 'image/jpeg',
+      objectUrl: 'data:foo',
+      status: FileUploadStatus.kUploadStarted,
+    });
+    await microtasksFinished();
+
+    // Assert.
+    const spinner = fileThumbnailElement.shadowRoot.querySelector('.spinner');
+    assertTrue(!!spinner);
   });
 
   test('display image file', async () => {

@@ -48,6 +48,34 @@
   width: var(--ntp-composebox-width, 337px);
 }
 
+:host([show-error-scrim_]) #composebox {
+  opacity: 0.05;
+}
+
+#errorScrim {
+  align-items: center;
+  color: var(--color-new-tab-page-composebox-font);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  height: 100%;
+  position: absolute;
+  opacity: 0.90;
+  width: 100%;
+  z-index: 1;
+}
+
+#errorScrim > p {
+  margin: 0;
+}
+
+#dismissErrorButton {
+  --cr-button-background-color: var(--ntp-composebox-background-color);
+  --cr-button-border-color: var(--color-new-tab-page-composebox-font);
+  --cr-button-text-color: var(--color-new-tab-page-composebox-font);
+}
+
 #composebox {
   align-items: flex-end;
   animation: var(--height-expand-duration) slide-down var(--standard-curve);
@@ -131,6 +159,10 @@
   opacity: 1;
 }
 
+:host([inputs-disabled_]) .upload-icon {
+  color: var(--color-new-tab-page-composebox-upload-button-disabled);
+}
+
 #imageUploadButton {
   --cr-icon-button-margin-start: -12px;
 }
@@ -148,20 +180,36 @@
   right: 16px;
 }
 
+@keyframes icon-fade-in {
+  0% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 0;
+  }
+}
+
 #cancelIcon {
   --cr-icon-button-fill-color:
       var(--color-new-tab-page-composebox-cancel-button);
-  --cr-icon-button-icon-size: contain 14px;
+  /* SVG is size 24 with 5px of padding so actual size is 14px */
+  --cr-icon-button-icon-size: 24px;
   top: 16px;
 }
 
 #submitIcon {
   --cr-icon-button-fill-color: white;
-  --cr-icon-button-icon-size: contain 16px;
+  --cr-icon-button-icon-size: 16px;
   background-color: var(--color-new-tab-page-composebox-submit-button);
   bottom: var(--input-bottom-spacing);
   cursor: default;
   opacity: 30%;
+}
+
+#submitIcon:focus-visible:focus {
+  box-shadow: none;
+  outline: 2px solid var(--color-searchbox-results-icon-focused-outline);
+  outline-offset: 2px;
 }
 
 :host([submit-enabled_]) #submitIcon {
@@ -169,12 +217,10 @@
   opacity: 100%;
 }
 
-@keyframes icon-fade-in {
-  0% {
-    opacity: 0;
-  }
-  70% {
-    opacity: 0;
+@media (forced-colors: active) {
+  :host,
+  .action-icon {
+    border: solid var(--color-new-tab-page-composebox-outline-hcm);
   }
 }
 

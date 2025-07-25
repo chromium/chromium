@@ -38,4 +38,7 @@ message LensOverlayRequestId {
 
   // Information about where to route the request.
   LensOverlayRoutingInfo routing_info = 6;
+
+  // The Epoch Micro Wall time when the request id is built.
+  uint64 time_usec = 7;
 }

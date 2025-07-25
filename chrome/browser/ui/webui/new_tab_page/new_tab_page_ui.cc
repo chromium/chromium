@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
@@ -82,7 +83,6 @@
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -228,6 +228,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},
+      {"dismissButton", IDS_NTP_DISMISS},
       {"title", IDS_NEW_TAB_TITLE},
       {"undo", IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE},
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
@@ -476,6 +477,20 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
       {"composeboxSubmitButtonTitle", IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL},
       {"composeboxDeleteFileTitle", IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL},
+      {"composeboxFileUploadStartedText",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_STARTED_A11Y_TEXT},
+      {"composeboxFileUploadCompleteText",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_COMPLETE_A11Y_TEXT},
+      {"composeboxFileUploadInvalidEmptySize",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE},
+      {"composeboxFileUploadInvalidTooLarge",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE},
+      {"composeboxFileUploadImageProcessingError",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR},
+      {"composeboxFileUploadValidationFailed",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED},
+      {"composeboxFileUploadFailed", IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED},
+      {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
   };
 
   source->AddLocalizedStrings(kStrings);
@@ -499,13 +514,22 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddInteger("composeboxFileMaxSize", 1000000);
   source->AddInteger("composeboxFileMaxCount", 1);
 
-  source->AddBoolean(
-      "searchboxShowComposeEntrypoint",
-      ntp_composebox_fieldtrial::IsNtpSearchboxComposeEntrypointEnabled() &&
-          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
-  source->AddBoolean("searchboxShowComposebox",
-                     ntp_composebox_fieldtrial::FeatureConfig::Get().enabled &&
+  source->AddBoolean("searchboxShowComposeEntrypoint",
+                     ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
+                         g_browser_process) &&
                          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+  source->AddBoolean("searchboxShowComposebox",
+                     ntp_composebox::FeatureConfig::Get().enabled &&
+                         omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+
+  source->AddBoolean("composeboxCloseByEscape",
+                     ntp_composebox::FeatureConfig::Get()
+                         .config.composebox()
+                         .close_by_escape());
+  source->AddBoolean("composeboxCloseByClickOutside",
+                     ntp_composebox::FeatureConfig::Get()
+                         .config.composebox()
+                         .close_by_click_outside());
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
@@ -542,6 +566,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       page_factory_receiver_(this),
       customize_buttons_factory_receiver_(this),
       most_visited_page_factory_receiver_(this),
+      composebox_page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
@@ -747,20 +772,6 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler>
-        pending_receiver) {
-  composebox_handler_ = std::make_unique<ComposeboxHandler>(
-      std::move(pending_receiver),
-      std::make_unique<ComposeboxQueryController>(
-          IdentityManagerFactory::GetForProfile(profile_),
-          g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
-          g_browser_process->GetApplicationLocale(),
-          TemplateURLServiceFactory::GetForProfile(profile_),
-          profile_->GetVariationsClient()),
-      web_contents());
-}
-
-void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
         pending_page_handler) {
   google_calendar_handler_ = std::make_unique<GoogleCalendarPageHandler>(
@@ -786,6 +797,15 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   microsoft_files_handler_ = std::make_unique<MicrosoftFilesPageHandler>(
       std::move(pending_page_handler), profile_);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
+        pending_receiver) {
+  if (composebox_page_factory_receiver_.is_bound()) {
+    composebox_page_factory_receiver_.reset();
+  }
+  composebox_page_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
 void NewTabPageUI::BindInterface(
@@ -870,6 +890,23 @@ void NewTabPageUI::CreatePageHandler(
       navigation_start_time_);
   most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
+}
+
+void NewTabPageUI::CreatePageHandler(
+    mojo::PendingRemote<composebox::mojom::Page> pending_page,
+    mojo::PendingReceiver<composebox::mojom::PageHandler>
+        pending_page_handler) {
+  DCHECK(pending_page.is_valid());
+  composebox_handler_ = std::make_unique<ComposeboxHandler>(
+      std::move(pending_page_handler), std::move(pending_page),
+      std::make_unique<ComposeboxQueryController>(
+          IdentityManagerFactory::GetForProfile(profile_),
+          g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
+          g_browser_process->GetApplicationLocale(),
+          TemplateURLServiceFactory::GetForProfile(profile_),
+          profile_->GetVariationsClient(),
+          ntp_composebox::kSendLnsSurfaceParam.Get()),
+      web_contents());
 }
 
 void NewTabPageUI::CreateHelpBubbleHandler(

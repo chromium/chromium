@@ -4,6 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {FileUploadStatus} from '../composebox_query.mojom-webui.js';
+
 import type {ComposeboxFileThumbnailElement} from './file_thumbnail.js';
 
 export function getHtml(this: ComposeboxFileThumbnailElement) {
@@ -12,20 +14,33 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
 <div id="container">
   ${this.file.objectUrl ? html`
     <div id="imgChip" aria-label="${this.file.name}">
-      <img class="img-thumbnail"
-           src="${this.file.objectUrl}"></img>
-        <cr-icon-button
-            class="img-overlay"
-            id="removeImgButton"
-            iron-icon="cr:clear"
-            title="${this.deleteFileButtonTitle}"
-            @click="${this.deleteFile_}">
-        </cr-icon-button>
+      ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
+        <img class="img-thumbnail"
+          src="${this.file.objectUrl}">
+        </img>
+      ` : html`
+        <svg class="spinner" viewBox="0 0 100 100">
+          <circle class="spinner-circle" cx="50" cy="50" r="40" />
+        </svg>
+      `}
+      <cr-icon-button
+          class="img-overlay"
+          id="removeImgButton"
+          iron-icon="cr:clear"
+          title="${this.deleteFileButtonTitle}"
+          @click="${this.deleteFile_}">
+      </cr-icon-button>
     </div>` : html`
     <div id="pdfChip">
       <div id="pdfThumbnail">
-        <cr-icon icon="thumbnail:pdf" class="pdf-icon">
-        </cr-icon>
+        ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
+          <cr-icon icon="thumbnail:pdf" class="pdf-icon">
+          </cr-icon>
+        ` : html`
+          <svg class="spinner" viewBox="0 0 100 100">
+            <circle class="spinner-circle" cx="50" cy="50" r="40" />
+          </svg>
+        `}
         <div class="pdf-overlay">
           <cr-icon-button
               id="removePdfButton"

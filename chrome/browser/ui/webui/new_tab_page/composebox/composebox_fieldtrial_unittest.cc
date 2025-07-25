@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search/ntp_composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 
 #include <string>
 
@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
 
-namespace ntp_composebox_fieldtrial {
+namespace ntp_composebox {
 
 namespace {
 
@@ -125,4 +125,4 @@ TEST_F(NtpComposeboxFieldTrialTest,
                                      1);
 }
 
-}  // namespace ntp_composebox_fieldtrial
+}  // namespace ntp_composebox

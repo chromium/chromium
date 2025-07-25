@@ -264,9 +264,11 @@
   E_CPONLY(kColorNewTabPageComposeboxFont) \
   E_CPONLY(kColorNewTabPageComposeboxCancelButton) \
   E_CPONLY(kColorNewTabPageComposeboxHover) \
+  E_CPONLY(kColorNewTabPageComposeboxOutlineHcm) \
   E_CPONLY(kColorNewTabPageComposeboxScrimBackground) \
   E_CPONLY(kColorNewTabPageComposeboxSubmitButton) \
   E_CPONLY(kColorNewTabPageComposeboxUploadButton) \
+  E_CPONLY(kColorNewTabPageComposeboxUploadButtonDisabled) \
   E_CPONLY(kColorNewTabPageComposeboxFileChipBackground) \
   E_CPONLY(kColorNewTabPageComposeboxFileChipText) \
   E_CPONLY(kColorNewTabPageComposeboxPdfChipIcon) \

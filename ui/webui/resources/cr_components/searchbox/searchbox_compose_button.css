@@ -153,6 +153,11 @@
   z-index: 100;
 }
 
+:host-context([dir='rtl']) .glow-container {
+  left: 8px;
+  right: unset;
+}
+
 /* A wrapper class to hold each gradient and its mask. Don't show unless on page
  * load or on hover. */
 .gradient-and-mask-wrapper {
@@ -177,6 +182,10 @@
 /* The outer blurred glow. */
 .outer-glow {
   filter: blur(40px);
+}
+
+#glowAnimationWrapper:hover .outer-glow{
+  filter: none;
 }
 
 /* Containers used to position the gradient and masks correctly. The gradient
@@ -222,13 +231,13 @@
 
 
 #glowAnimationWrapper:hover .mask:before {
-  --anim-duration: 10s;
+  --anim-duration: 8s;
   animation: rotate-mask-anim-infinite var(--anim-duration) linear infinite,
              fade-in-out-infinite var(--anim-duration) linear forwards;
 }
 
 #glowAnimationWrapper:hover .gradient:before {
-  --anim-duration: 10s;
+  --anim-duration: 8s;
   animation: rotate-glif-anim-infinite var(--anim-duration) linear infinite,
              fade-in-out-infinite var(--anim-duration) linear forwards;
 }

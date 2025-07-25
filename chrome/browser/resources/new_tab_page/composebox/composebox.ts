@@ -11,9 +11,12 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
-import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerRemote} from '../composebox.mojom-webui.js';
+import {FileUploadErrorType, FileUploadStatus} from '../composebox_query.mojom-webui.js';
 import {recordLoadDuration} from '../metrics_utils.js';
 import {WindowProxy} from '../window_proxy.js';
 
@@ -32,10 +35,23 @@ export interface ComposeboxElement {
     imageUploadButton: CrIconButtonElement,
     input: HTMLInputElement,
     composebox: HTMLElement,
+    submitIcon: CrIconButtonElement,
   };
 }
 
-export class ComposeboxElement extends CrLitElement {
+const FILE_VALIDATION_ERRORS_MAP = new Map<FileUploadErrorType, string>([
+  [
+    FileUploadErrorType.kImageProcessingError,
+    'composeboxFileUploadImageProcessingError',
+  ],
+  [
+    FileUploadErrorType.kUnknown,
+    'composeboxFileUploadValidationFailed',
+  ],
+]);
+
+export class ComposeboxElement extends I18nMixinLit
+(CrLitElement) {
   static get is() {
     return 'ntp-composebox';
   }
@@ -53,7 +69,10 @@ export class ComposeboxElement extends CrLitElement {
       attachmentFileTypes_: {type: String},
       files_: {type: Object},
       imageFileTypes_: {type: String},
-      inputsDisabled_: {type: Boolean},
+      inputsDisabled_: {
+        reflect: true,
+        type: Boolean,
+      },
       submitEnabled_: {
         reflect: true,
         type: Boolean,
@@ -61,6 +80,13 @@ export class ComposeboxElement extends CrLitElement {
       submitting_: {
         reflect: true,
         type: Boolean,
+      },
+      showErrorScrim_: {
+        reflect: true,
+        type: Boolean,
+      },
+      errorMessage_: {
+        type: String,
       },
     };
   }
@@ -73,15 +99,23 @@ export class ComposeboxElement extends CrLitElement {
   protected accessor inputsDisabled_: boolean = false;
   protected accessor submitEnabled_: boolean = false;
   protected accessor submitting_: boolean = false;
+  protected accessor showErrorScrim_: boolean = false;
+  protected accessor errorMessage_: string = '';
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
-  private pageHandler_: ComposeboxPageHandlerRemote;
+  private callbackRouter_: PageCallbackRouter;
+  private pageHandler_: PageHandlerRemote;
+  private setFileUploadStatusListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
+
+  private composeboxCloseByEscape_: boolean =
+      loadTimeData.getBoolean('composeboxCloseByEscape');
 
   constructor() {
     super();
+    this.callbackRouter_ = ComposeboxProxyImpl.getInstance().callbackRouter;
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
     this.pageHandler_.notifySessionStarted();
     recordLoadDuration(
@@ -91,6 +125,50 @@ export class ComposeboxElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.setFileUploadStatusListenerId_ =
+        this.callbackRouter_.onFileUploadStatusChanged.addListener(
+            (token: UnguessableToken, status: FileUploadStatus,
+             errorType: FileUploadErrorType) => {
+              let file = this.files_.get(token);
+              if (file) {
+                if ([
+                      FileUploadStatus.kValidationFailed,
+                      FileUploadStatus.kUploadFailed,
+                      FileUploadStatus.kUploadExpired,
+                    ].includes(status)) {
+                  this.files_.delete(token);
+
+                  switch (status) {
+                    case FileUploadStatus.kValidationFailed:
+                      this.errorMessage_ = this.i18n(
+                          FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
+                          'composeboxFileUploadValidationFailed');
+                      break;
+                    case FileUploadStatus.kUploadFailed:
+                      this.errorMessage_ =
+                          this.i18n('composeboxFileUploadFailed');
+                      break;
+                    case FileUploadStatus.kUploadExpired:
+                      this.errorMessage_ =
+                          this.i18n('composeboxFileUploadExpired');
+                      break;
+                  }
+                  this.showErrorScrim_ = true;
+                } else {
+                  file = {...file, status: status};
+                  this.files_.set(token, file);
+
+                  if (status === FileUploadStatus.kUploadSuccessful) {
+                    const announcer = getAnnouncerInstance();
+                    announcer.announce(
+                        this.i18n('composeboxFileUploadCompleteText'));
+                  }
+                }
+                this.files_ = new Map([...this.files_]);
+              }
+            });
+
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.$.input.value.trim().length > 0;
     });
@@ -99,6 +177,7 @@ export class ComposeboxElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.callbackRouter_.removeListener(this.setFileUploadStatusListenerId_!);
     this.eventTracker_.removeAll();
   }
 
@@ -109,23 +188,32 @@ export class ComposeboxElement extends CrLitElement {
         changedProperties as Map<PropertyKey, unknown>;
 
     if (changedPrivateProperties.has('files_')) {
-      this.computeInputsDisabled_();
+      this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
+      this.submitEnabled_ = this.submitEnabled_ || this.files_.size > 0;
     }
   }
 
-  private computeInputsDisabled_() {
-    this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
+  getText() {
+    return this.$.input.value;
+  }
+
+  resetText() {
+    this.$.input.value = '';
   }
 
   protected onDeleteFile_(e: CustomEvent) {
     if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;
     }
-    const newFileMap: Map<UnguessableToken, ComposeboxFile> =
-        new Map(this.files_.entries());
-    newFileMap.delete(e.detail.uuid);
-    this.files_ = newFileMap;
+
+    this.files_ = new Map([...this.files_.entries()].filter(
+        ([uuid, _]) => uuid !== e.detail.uuid));
     this.pageHandler_.deleteFile(e.detail.uuid);
+  }
+
+  protected onDismissErrorButtonClick_() {
+    this.errorMessage_ = '';
+    this.showErrorScrim_ = false;
   }
 
   protected async onFileChange_(e: Event) {
@@ -135,12 +223,14 @@ export class ComposeboxElement extends CrLitElement {
         this.files_.size >= this.maxFileCount_) {
       return;
     }
-    const newFileMap: Map<UnguessableToken, ComposeboxFile> =
-        new Map(this.files_.entries());
-    for (let i = 0; i < files.length; i++) {
-      const file = files.item(i)!;
+
+    for (const file of files) {
       if (file.size === 0 || file.size > this.maxFileSize_) {
-        // TODO(crbug.com/422559050): Show error state.
+        this.showErrorScrim_ = true;
+        this.errorMessage_ = file.size === 0 ?
+            this.i18n('composeboxFileUploadInvalidEmptySize') :
+            this.i18n('composeboxFileUploadInvalidTooLarge');
+        return;
       } else {
         const fileBuffer = await file.arrayBuffer();
         if (!file.type.includes('pdf') && !file.type.includes('image')) {
@@ -149,7 +239,6 @@ export class ComposeboxElement extends CrLitElement {
 
         const bigBuffer:
             BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
-
         const {token} = await this.pageHandler_.addFile(
             {
               fileName: file.name,
@@ -157,16 +246,21 @@ export class ComposeboxElement extends CrLitElement {
               selectionTime: new Date(),
             },
             bigBuffer);
-        newFileMap.set(token, {
+
+        const attachment: ComposeboxFile = {
           uuid: token,
           name: file.name,
           objectUrl: input === this.$.imageInput ? URL.createObjectURL(file) :
                                                    null,
           type: file.type,
-        });
+          status: FileUploadStatus.kNotUploaded,
+        };
+        this.files_ = new Map([...this.files_.entries(), [token, attachment]]);
+
+        const announcer = getAnnouncerInstance();
+        announcer.announce(this.i18n('composeboxFileUploadStartedText'));
       }
     }
-    this.files_ = newFileMap;
     // Clear the file input.
     input.value = '';
   }
@@ -182,23 +276,29 @@ export class ComposeboxElement extends CrLitElement {
   protected onCancelClick_() {
     if (this.$.input.value.trim().length > 0) {
       this.$.input.value = '';
-      // TODO(rtatum@): Send request to handler to clear file cache.
       this.files_ = new Map();
       this.submitEnabled_ = false;
+      this.pageHandler_.clearFiles();
     } else {
-      this.notifySessionAbandoned_();
+      this.closeComposebox_();
+    }
+  }
+
+  protected onInputKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey && this.submitEnabled_) {
+      e.preventDefault();
+      this.onSubmitClick_(e);
     }
   }
 
   protected onKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      this.notifySessionAbandoned_();
+    if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
+      this.closeComposebox_();
     }
   }
 
-  private notifySessionAbandoned_() {
-    this.pageHandler_.notifySessionAbandoned();
-    this.fire('toggle-composebox');
+  private closeComposebox_() {
+    this.fire('close-composebox', {composeboxText: this.$.input.value});
   }
 
   protected onSubmitClick_(e: KeyboardEvent|MouseEvent) {

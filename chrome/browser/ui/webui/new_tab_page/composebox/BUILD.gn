@@ -8,15 +8,23 @@ assert(!is_android)
 
 source_set("composebox") {
   sources = [
+    "composebox_fieldtrial.cc",
+    "composebox_fieldtrial.h",
     "composebox_handler.cc",
     "composebox_handler.h",
   ]
   deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//components/application_locale_storage",
+    "//components/omnibox/common",
     "//components/omnibox/composebox",
     "//components/search",
+    "//components/variations/service",
     "//content/public/browser",
+    "//third_party/omnibox_proto",
     "//ui/base:base",
   ]
 }
@@ -24,12 +32,18 @@ source_set("composebox") {
 mojom("mojo_bindings") {
   sources = [ "composebox.mojom" ]
   webui_module_path = "/"
-  public_deps = [ "//mojo/public//mojom/base" ]
+  public_deps = [
+    "//components/omnibox/composebox:mojo_bindings",
+    "//mojo/public//mojom/base",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "composebox_handler_unittest.cc" ]
+  sources = [
+    "composebox_fieldtrial_unittest.cc",
+    "composebox_handler_unittest.cc",
+  ]
   deps = [
     ":composebox",
     "//base/test:test_support",
@@ -38,5 +52,17 @@ source_set("unit_tests") {
     "//components/omnibox/composebox:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "composebox_fieldtrial_browsertest.cc" ]
+  deps = [
+    ":composebox",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//components/variations/service:service",
   ]
 }
