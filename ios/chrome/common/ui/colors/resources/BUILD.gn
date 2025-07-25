@@ -89,6 +89,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/static_green_50_color.colorset/Contents.json",
     "Assets.xcassets/static_green_700_color.colorset/Contents.json",
     "Assets.xcassets/static_grey_300_color.colorset/Contents.json",
+    "Assets.xcassets/static_grey_400_color.colorset/Contents.json",
+    "Assets.xcassets/static_grey_50_color.colorset/Contents.json",
     "Assets.xcassets/static_grey_600_color.colorset/Contents.json",
     "Assets.xcassets/static_grey_900_color.colorset/Contents.json",
     "Assets.xcassets/tab_group_cyan_color.colorset/Contents.json",

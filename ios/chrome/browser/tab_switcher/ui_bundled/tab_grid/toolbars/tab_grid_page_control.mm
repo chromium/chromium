@@ -669,8 +669,10 @@ TabGridPage ThirdTabGridPage() {
 
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
-    UIGlassEffect* glassEffect = [[UIGlassEffect alloc] init];
+    UIGlassEffect* glassEffect =
+        [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
     glassEffect.interactive = YES;
+    glassEffect.tintColor = TabGridGlassButtonTintColor();
     UIVisualEffectView* backgroundView =
         [[UIVisualEffectView alloc] initWithEffect:glassEffect];
     backgroundView.frame = CGRectMake(0, 0, kOverallWidth, kSegmentHeight);

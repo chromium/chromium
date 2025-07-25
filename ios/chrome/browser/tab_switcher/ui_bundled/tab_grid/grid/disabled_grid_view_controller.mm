@@ -77,7 +77,7 @@ NSString* GetTitleString(TabGridPage page) {
   UILabel* topLabel = [[UILabel alloc] init];
   topLabel.translatesAutoresizingMaskIntoConstraints = NO;
   topLabel.text = GetTitleString(self.page);
-  topLabel.textColor = UIColorFromRGB(kTabGridEmptyStateTitleTextColor);
+  topLabel.textColor = [UIColor colorNamed:kStaticGrey50Color];
   topLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   topLabel.adjustsFontForContentSizeCategory = YES;
   topLabel.numberOfLines = 0;
@@ -90,7 +90,7 @@ NSString* GetTitleString(TabGridPage page) {
   bottomTextView.editable = NO;
   bottomTextView.delegate = self;
   bottomTextView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-  bottomTextView.textColor = UIColorFromRGB(kTabGridEmptyStateBodyTextColor);
+  bottomTextView.textColor = [UIColor colorNamed:kStaticGrey400Color];
   bottomTextView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   bottomTextView.adjustsFontForContentSizeCategory = YES;
   bottomTextView.textAlignment = NSTextAlignmentCenter;

@@ -314,17 +314,16 @@ CGFloat HorizontalMargin() {
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration glassButtonConfiguration];
-    buttonConfiguration.baseForegroundColor =
-        UIColorFromRGB(kTabGridToolbarTextButtonColor);
+        [UIButtonConfiguration prominentGlassButtonConfiguration];
     buttonConfiguration.title = title;
     buttonConfiguration.image = image;
     button = [UIButton buttonWithConfiguration:buttonConfiguration
                                  primaryAction:nil];
+    button.tintColor = TabGridGlassButtonTintColor();
   } else {
 #endif
     button = [UIButton systemButtonWithPrimaryAction:nil];
-    button.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    button.tintColor = UIColor.whiteColor;
     [button setTitle:title forState:UIControlStateNormal];
     [button setImage:image forState:UIControlStateNormal];
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
@@ -466,7 +465,7 @@ CGFloat HorizontalMargin() {
   _selectedTabsLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _selectedTabsLabel.text =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
-  _selectedTabsLabel.textColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _selectedTabsLabel.textColor = UIColor.whiteColor;
   _selectedTabsLabel.adjustsFontSizeToFitWidth = YES;
   _selectedTabsLabel.font =
       [[UIFontMetrics metricsForTextStyle:UIFontTextStyleBody]

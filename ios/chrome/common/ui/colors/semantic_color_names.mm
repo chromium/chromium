@@ -132,7 +132,9 @@ NSString* const kGrey600Color = @"grey_600_color";
 NSString* const kGrey700Color = @"grey_700_color";
 NSString* const kGrey800Color = @"grey_800_color";
 NSString* const kGrey900Color = @"grey_900_color";
+NSString* const kStaticGrey50Color = @"static_grey_50_color";
 NSString* const kStaticGrey300Color = @"static_grey_300_color";
+NSString* const kStaticGrey400Color = @"static_grey_400_color";
 NSString* const kStaticGrey600Color = @"static_grey_600_color";
 NSString* const kStaticGrey900Color = @"static_grey_900_color";
 

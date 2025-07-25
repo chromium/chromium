@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_CONSTANTS_H_
 
 #import <CoreGraphics/CoreGraphics.h>
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 namespace base {
 class TimeDelta;
@@ -51,12 +51,8 @@ extern NSString* const kTabCellActivityLabelIdentifier;
 // converted into UIColors using the UIColorFromRGB() function, from
 // uikit_ui_util.h
 
-// The color of the text buttons in the toolbars.
-extern const int kTabGridToolbarTextButtonColor;
-
-// Colors for the empty state.
-extern const int kTabGridEmptyStateTitleTextColor;
-extern const int kTabGridEmptyStateBodyTextColor;
+// Tint color for the buttons in the TabGrid.
+UIColor* TabGridGlassButtonTintColor();
 
 // The distance the toolbar content is inset from either side.
 extern const CGFloat kTabGridToolbarHorizontalInset;
