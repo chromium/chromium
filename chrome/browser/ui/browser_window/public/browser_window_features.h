@@ -96,6 +96,7 @@ class Mv2DisabledDialogController;
 
 namespace tabs {
 class TabDeclutterController;
+class VerticalTabStripStateController;
 }  // namespace tabs
 
 namespace commerce {
@@ -239,6 +240,10 @@ class BrowserWindowFeatures {
 
   tabs::TabDeclutterController* tab_declutter_controller() {
     return tab_declutter_controller_.get();
+  }
+
+  tabs::VerticalTabStripStateController* vertical_tab_strip_state_controller() {
+    return vertical_tab_strip_state_controller_.get();
   }
 
   tabs::GlicNudgeController* glic_nudge_controller() {
@@ -442,6 +447,9 @@ class BrowserWindowFeatures {
       mv2_disabled_dialog_controller_;
 
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
+
+  std::unique_ptr<tabs::VerticalTabStripStateController>
+      vertical_tab_strip_state_controller_;
 
   std::unique_ptr<MemorySaverOptInIPHController>
       memory_saver_opt_in_iph_controller_;

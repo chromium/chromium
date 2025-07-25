@@ -43,6 +43,8 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
@@ -53,6 +55,7 @@
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
@@ -204,6 +207,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       }
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+    if (tabs::AreVerticalTabsEnabled()) {
+      vertical_tab_strip_state_controller_ =
+          std::make_unique<tabs::VerticalTabStripStateController>(
+              browser->GetProfile()->GetPrefs());
+    }
   }
 
   // The LensOverlayEntryPointController is constructed for all browser types
