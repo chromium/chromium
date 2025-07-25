@@ -41,8 +41,9 @@ CoreAccountInfo GetAccountInfoFromProfileDetails(
       return primary_account_info;
     case api::identity::AccountStatus::kNone:
     case api::identity::AccountStatus::kSync:
-      return sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                 syncer::UserSelectableType::kExtensions)
+      return sync_service &&
+                     sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                         syncer::UserSelectableType::kExtensions)
                  ? primary_account_info
                  : CoreAccountInfo();
   }

@@ -846,6 +846,38 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
   EXPECT_TRUE(info->id.empty());
 }
 
+class IdentityGetProfileUserInfoFunctionNoSyncServiceTest
+    : public IdentityGetProfileUserInfoFunctionTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IdentityGetProfileUserInfoFunctionTest::SetUpBrowserContextKeyedServices(
+        context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindOnce(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return nullptr;
+            }));
+  }
+};
+
+// Regression test for crbug.com/433499860.
+IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionNoSyncServiceTest,
+                       NoCrash) {
+  // SyncService is not created.
+  ASSERT_EQ(nullptr, SyncServiceFactory::GetForProfile(browser()->profile()));
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  // This should not crash.
+  std::optional<api::identity::ProfileUserInfo> profile_user_info =
+      RunGetProfileUserInfoWithEmail();
+  EXPECT_TRUE(profile_user_info->email.empty());
+  EXPECT_TRUE(profile_user_info->id.empty());
+}
+
 class IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam
     : public IdentityGetProfileUserInfoFunctionTest,
       public ::testing::WithParamInterface<std::string> {
