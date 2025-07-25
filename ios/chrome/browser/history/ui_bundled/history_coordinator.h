@@ -20,10 +20,6 @@ enum class UrlLoadStrategy;
 // Optional: If provided, search terms to filter the displayed history items.
 @property(nonatomic, copy) NSString* searchTerms;
 
-// Indicates if the tabs closure animation for Quick Delete can be performed.
-// Defaults to YES.
-@property(nonatomic, readwrite) BOOL canPerformTabsClosureAnimation;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_UI_BUNDLED_HISTORY_COORDINATOR_H_

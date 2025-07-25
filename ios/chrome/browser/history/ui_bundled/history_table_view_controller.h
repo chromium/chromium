@@ -16,9 +16,6 @@
 // `searchTerms` will be the initial value of the text in the search bar.
 @property(nonatomic, copy) NSString* searchTerms;
 
-// Indicates if the tabs closure animation for Quick Delete can be performed.
-@property(nonatomic, readwrite) BOOL canPerformTabsClosureAnimation;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_UI_BUNDLED_HISTORY_TABLE_VIEW_CONTROLLER_H_
