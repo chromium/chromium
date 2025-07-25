@@ -18,11 +18,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/menu/ui_bundled/tab_context_menu_delegate.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_mediator.h"
@@ -31,9 +29,7 @@
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -129,21 +125,12 @@
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   _syncService = SyncServiceFactory::GetForProfile(profile);
-  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
-  SceneState* currentSceneState = self.browser->GetSceneState();
-  BOOL isDisabled = IsIncognitoModeForced(profile->GetPrefs());
-  self.mediator = [[RecentTabsMediator alloc]
-      initWithSessionSyncService:sessionSyncService
-                 identityManager:identityManager
-                  restoreService:restoreService
-                   faviconLoader:faviconLoader
-                     syncService:_syncService
-                     browserList:browserList
-                      sceneState:currentSceneState
-                disabledByPolicy:isDisabled
-               engagementTracker:feature_engagement::TrackerFactory::
-                                     GetForProfile(profile)
-                      modeHolder:nil];
+  self.mediator =
+      [[RecentTabsMediator alloc] initWithSessionSyncService:sessionSyncService
+                                             identityManager:identityManager
+                                              restoreService:restoreService
+                                               faviconLoader:faviconLoader
+                                                 syncService:_syncService];
 
   // Set the consumer first before calling [self.mediator initObservers] and
   // then [self.mediator configureConsumer].
@@ -246,7 +233,7 @@
   [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
 }
 
-- (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
+- (void)showHistoryFromRecentTabs {
   // Dismiss recent tabs before presenting history.
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<ApplicationCommands> handler =

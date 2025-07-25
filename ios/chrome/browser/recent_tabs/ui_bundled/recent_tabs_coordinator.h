@@ -12,7 +12,6 @@
 enum class UrlLoadStrategy;
 
 @protocol RecentTabsCoordinatorDelegate;
-@class TabGridModeHolder;
 
 // Coordinator that presents Recent Tabs.
 @interface RecentTabsCoordinator : ChromeCoordinator
@@ -21,9 +20,6 @@ enum class UrlLoadStrategy;
 
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;
-
-// Holder for the current Tab Grid mode.
-@property(nonatomic, strong) TabGridModeHolder* tabGridModeHolder;
 
 @end
 

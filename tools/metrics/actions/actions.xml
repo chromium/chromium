@@ -26478,6 +26478,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileRecentTabManagerRecentTabOpenedSearchResult">
+  <obsolete>
+    Deprecated as of 7/2025. Recent tabs are no longer displayed in the tab
+    grid.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <description>
@@ -26518,6 +26522,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileRecentTabManagerTabFromOtherDeviceOpenedSearchResult">
+  <obsolete>
+    Deprecated as of 7/2025. Recent tabs are no longer displayed in the tab
+    grid.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <description>
@@ -46030,7 +46038,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabsSearch.SuggestedActions.RecentTabs">
-  <obsolete>Recent tabs are no longer displayed in the tab grid.</obsolete>
+  <obsolete>
+    Deprecated as of 7/2025. Recent tabs are no longer displayed in the tab
+    grid.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <description>

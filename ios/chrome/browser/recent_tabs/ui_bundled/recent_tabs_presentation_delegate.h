@@ -18,9 +18,8 @@ struct DistantSession;
 // tab UI is already visible. Receiver may also dismiss recent tabs.
 - (void)showActiveRegularTabFromRecentTabs;
 // Tells the receiver to show the history UI. Receiver may also dismiss recent
-// tabs. If `searchTerms` is not empty, it will be used to pre-populate the
-// search bar and filter results.
-- (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms;
+// tabs.
+- (void)showHistoryFromRecentTabs;
 // Tells the receiver to show the History Sync Opt-In screen. If the user has
 // signed-in just before this step for the sole purpose of enabling history sync
 // (Eg. using the Recent Tabs sync promo), `dedicatedSignInDone` will be `YES`,
@@ -31,12 +30,6 @@ struct DistantSession;
 // Asks the presenter to display the reauthenticate the primary account.
 // The primary should be available.
 - (void)showPrimaryAccountReauth;
-
-@optional
-// Tells the receiver to display the tab grid. It is assumed the tab grid will
-// already be aware of the ongoing search mode and terms. If this method is not
-// implemented, the "Search Open Tabs" Suggested Action will not be displayed.
-- (void)showRegularTabGridFromRecentTabs;
 @end
 
 #endif  // IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_PRESENTATION_DELEGATE_H_
