@@ -32,6 +32,7 @@ static_library("browser") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//content/public/common",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

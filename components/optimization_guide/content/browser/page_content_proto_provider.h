@@ -15,7 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
-#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 
 namespace content {
 class WebContents;
@@ -58,7 +58,7 @@ struct AIPageContentResult {
   ~AIPageContentResult();
 
   optimization_guide::proto::AnnotatedPageContent proto;
-  optimization_guide::mojom::PageMetadataPtr metadata;
+  blink::mojom::PageMetadataPtr metadata;
   // A map from a serialized unguessable token to the document pointer.
   // Callers should use this to map the frame identifiers in the proto to the
   // right frame host.

@@ -11,11 +11,11 @@
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/page_content_proto_serializer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -585,12 +585,12 @@ bool ConvertAttributes(
 void ConvertFrameMetadata(
     GURL url,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
-    optimization_guide::mojom::PageMetadata& metadata) {
-  auto frame_metadata = optimization_guide::mojom::FrameMetadata::New();
+    blink::mojom::PageMetadata& metadata) {
+  auto frame_metadata = blink::mojom::FrameMetadata::New();
   frame_metadata->url = url;
 
   for (const auto& mojom_meta_tag : mojom_frame_data.meta_data) {
-    auto meta_tag = optimization_guide::mojom::MetaTag::New();
+    auto meta_tag = blink::mojom::MetaTag::New();
     meta_tag->name = mojom_meta_tag->name;
     meta_tag->content = mojom_meta_tag->content;
     frame_metadata->meta_tags.push_back(std::move(meta_tag));
@@ -615,7 +615,7 @@ void ConvertFrameData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
     optimization_guide::proto::FrameData* proto_frame_data,
-    optimization_guide::mojom::PageMetadata& metadata,
+    blink::mojom::PageMetadata& metadata,
     FrameTokenSet& frame_token_set) {
   ConvertFrameMetadata(render_frame_info.url, mojom_frame_data, metadata);
   SecurityOriginSerializer::Serialize(
@@ -661,7 +661,7 @@ void ConvertIframeData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
     const blink::mojom::AIPageContentFrameData& mojom_local_frame_data,
-    optimization_guide::mojom::PageMetadata& metadata,
+    blink::mojom::PageMetadata& metadata,
     FrameTokenSet& frame_token_set,
     optimization_guide::proto::IframeData* proto_iframe_data) {
   proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
@@ -676,7 +676,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
                  const AIPageContentMap& page_content_map,
                  FrameTokenSet& frame_token_set,
                  GetRenderFrameInfo get_render_frame_info,
-                 optimization_guide::mojom::PageMetadata& metadata,
+                 blink::mojom::PageMetadata& metadata,
                  optimization_guide::proto::ContentNode* proto_node) {
   const auto& mojom_attributes = *mojom_node.content_attributes;
   if (!ConvertAttributes(mojom_attributes,

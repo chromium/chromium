@@ -234,10 +234,17 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//mojo/public/mojom/base:protobuf_support",
     "//skia/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
+
+  overridden_deps = [
+    "//third_party/blink/public/mojom:mojom_platform",
+  ]
+
+  component_deps = [ "//content/public/common" ]
 }
 
 source_set("unit_tests") {

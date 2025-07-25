@@ -6,7 +6,6 @@ module glic.mojom;
 
 import "chrome/browser/glic/host/glic_features.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
-import "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -15,6 +14,7 @@ import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom";
 
 // The ready state of the profile.
 enum ProfileReadyState {
@@ -1063,7 +1063,7 @@ struct AnnotatedPageData {
   mojo_base.mojom.ProtoWrapper? annotated_page_content;
 
   // Metadata about the page content.
-  optimization_guide.mojom.PageMetadata? metadata;
+  blink.mojom.PageMetadata? metadata;
 };
 
 // Annotates an image, providing security relevant information about the origins

@@ -158,7 +158,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
-  const optimization_guide::mojom::PageMetadata& metadata() {
+  const blink::mojom::PageMetadata& metadata() {
     return *metadata_;
   }
   const base::flat_map<std::string, content::WeakDocumentPtr>&
@@ -211,7 +211,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::optional<proto::AnnotatedPageContent> page_content_;
-  optimization_guide::mojom::PageMetadataPtr metadata_;
+  blink::mojom::PageMetadataPtr metadata_;
   base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers_;
 };
 

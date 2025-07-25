@@ -314,7 +314,7 @@ void OnGotAIPageContentForFrame(
 }  // namespace
 
 AIPageContentResult::AIPageContentResult() {
-  metadata = optimization_guide::mojom::PageMetadata::New();
+  metadata = blink::mojom::PageMetadata::New();
 }
 AIPageContentResult::~AIPageContentResult() = default;
 AIPageContentResult::AIPageContentResult(AIPageContentResult&& other) = default;
