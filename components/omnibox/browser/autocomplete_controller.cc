@@ -255,13 +255,11 @@ std::string ConstructAvailableAutocompletion(
   return result.str();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Returns whether this match is provided by an extension in unscoped mode.
 bool IsUnscopedExtensionMatch(const AutocompleteMatch& match) {
   return match.provider && match.provider->type() ==
                                AutocompleteProvider::TYPE_UNSCOPED_EXTENSION;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns which rich autocompletion type, if any, had (or would have had for
 // counterfactual variations) an impact; i.e. whether the top scoring rich
@@ -1848,7 +1846,6 @@ void AutocompleteController::UpdateKeywordDescriptions(
     AutocompleteResult* result) {
   // No need to update the description on Android since description for plain
   // text match is not allowed.
-#if !BUILDFLAG(IS_ANDROID)
   // The Lens searchbox does not require the search engine name description
   // label since all suggestions will be from a single source.
   // TODO(crbug.com/338094774): Remove this Lens-specific change and implement a
@@ -1857,6 +1854,11 @@ void AutocompleteController::UpdateKeywordDescriptions(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Do not include search engine name for the DSE.
+  auto* default_engine = template_url_service_->GetDefaultSearchProvider();
+#endif
+
   std::u16string last_keyword;
   bool last_contextual = false;
   for (auto i(result->begin()); i != result->end(); ++i) {
@@ -1864,6 +1866,13 @@ void AutocompleteController::UpdateKeywordDescriptions(
       if (i->HasCustomDescription() || IsUnscopedExtensionMatch(*i)) {
         continue;
       }
+
+#if BUILDFLAG(IS_ANDROID)
+      if (i->keyword == default_engine->keyword()) {
+        continue;
+      }
+#endif
+
       i->description.clear();
       i->description_class.clear();
       DCHECK(!i->keyword.empty());
@@ -1899,7 +1908,6 @@ void AutocompleteController::UpdateKeywordDescriptions(
       last_keyword.clear();
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {

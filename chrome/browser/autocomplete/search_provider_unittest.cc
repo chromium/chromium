@@ -1103,6 +1103,9 @@ TEST_F(SearchProviderTest, InlineMixedCaseMatches) {
 // Verifies AutocompleteControllers return results (including keyword
 // results) in the right order and set descriptions for them correctly.
 TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kOmniboxSiteSearch);
+
   // Add an entry that corresponds to a keyword search with 'term2'.
   AddSearchToHistory(keyword_t_url_, u"term2", 1);
   profile_->BlockUntilHistoryProcessesPendingRequests();
@@ -1130,15 +1133,7 @@ TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
   EXPECT_EQ(u"k", result.match_at(0).keyword);
   EXPECT_EQ(u"k", result.match_at(1).keyword);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // On non-android, the top result will always have a description. Whether the
-  // second result has one doesn't matter much.  (If it was missing, people
-  // would infer that it's the same search provider as the one above it.)
   EXPECT_FALSE(result.match_at(0).description.empty());
-#else
-  // On Android, the top result should not have a description.
-  EXPECT_TRUE(result.match_at(0).description.empty());
-#endif
 }
 
 TEST_F(SearchProviderTest, KeywordVerbatim) {

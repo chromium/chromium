@@ -6887,10 +6887,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxShowPopupOnMouseReleasedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kShowPopupOnMouseReleased)},
 
-    {"omnibox-site-search", flag_descriptions::kOmniboxSiteSearchName,
-     flag_descriptions::kOmniboxSiteSearchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxSiteSearch)},
-
     {"omnibox-hide-suggestion-group-headers",
      flag_descriptions::kOmniboxHideSuggestionGroupHeadersName,
      flag_descriptions::kOmniboxHideSuggestionGroupHeadersDescription,
@@ -6953,6 +6949,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMultilineEditFieldName,
      flag_descriptions::kOmniboxMultilineEditFieldDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kMultilineEditField)},
+
+    {"omnibox-site-search", flag_descriptions::kOmniboxSiteSearchName,
+     flag_descriptions::kOmniboxSiteSearchDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxSiteSearch)},
 
     {"omnibox-diagnostics", flag_descriptions::kOmniboxDiagnosticsName,
      flag_descriptions::kOmniboxDiagnosticsDescription, kOsAndroid,
