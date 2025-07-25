@@ -44,6 +44,7 @@ using ::autofill::test::CreateTestFormField;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
@@ -110,16 +111,6 @@ class AutocompleteHistoryManagerTest : public testing::Test {
 
   bool PendingQueryEmpty() {
     return !autocomplete_manager_ || !autocomplete_manager_->pending_query_;
-  }
-
-  static bool IsEmptySuggestionVector(
-      const std::vector<Suggestion>& suggestions) {
-    return suggestions.empty();
-  }
-
-  static bool NonEmptySuggestionVector(
-      const std::vector<Suggestion>& suggestions) {
-    return !suggestions.empty();
   }
 
   std::unique_ptr<WDTypedResult> GetMockedDbResults(
@@ -444,8 +435,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that call to the handler's OnSuggestionsReturned
   // is triggered with no suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(test_field_.global_id(),
-                                 testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), IsEmpty()));
 
   EXPECT_CALL(*web_data_service_, GetFormValuesForElementName).Times(0);
 
@@ -476,8 +466,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   // OnSuggestionsReturned
-  EXPECT_CALL(mock_callback, Run(test_field_.global_id(),
-                                 testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), IsEmpty()));
 
   // Simulate response from DB.
   autocomplete_manager_->OnAutofillValuesReturned(
@@ -656,8 +645,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
-  EXPECT_CALL(mock_callback, Run(test_field_.global_id(),
-                                 testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), IsEmpty()));
 
   // Simulate response from DB.
   autocomplete_manager_->OnAutofillValuesReturned(
@@ -818,8 +806,7 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
       CreateTestFormField("Address", "address", "", FormControlType::kTextArea);
 
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback,
-              Run(field.global_id(), testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(mock_callback, Run(field.global_id(), IsEmpty()));
 
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       field, autofill_client_, mock_callback.Get());
