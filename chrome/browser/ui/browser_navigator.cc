@@ -616,6 +616,10 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
+  if (params->browser && params->browser->IsBrowserClosing()) {
+    return nullptr;
+  }
+
   // Block navigation requests when in locked fullscreen mode. We allow
   // navigation requests in the webapp when locked for OnTask (only relevant for
   // non-web browser scenarios).
