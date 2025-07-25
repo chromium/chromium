@@ -174,9 +174,7 @@ const char kBWGAppActivityURL[] =
     "https://myactivity.google.com/product/gemini?utm_source=gemini&pli=1";
 
 const char kBWGPreciseLocationURL[] =
-    "https://support.google.com/gemini/answer/"
-    "13594961?hl=en#location_info&zippy=%2Cwhat-location-information-do-gemini-"
-    "apps-collect-why-and-how-is-it-used";
+    "http://support.google.com/gemini?p=gcr_location_info";
 
 const char kBWGPageContentSharingURL[] =
     "https://support.google.com/gemini?p=chrome_PH#topic=15280100";
