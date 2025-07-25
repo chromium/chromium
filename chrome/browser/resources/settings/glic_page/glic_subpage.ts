@@ -110,6 +110,13 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         },
       },
 
+      glicExtensionsFeatureEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('glicExtensionsFeatureEnabled');
+        },
+      },
+
       glicUserStatusCheckFeatureEnabled_: {
         type: Boolean,
         value: () =>
@@ -172,6 +179,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       MetricsBrowserProxyImpl.getInstance();
   declare private tabAccessToggleExpanded_: boolean;
   declare private closedCaptionsFeatureEnabled_: boolean;
+  declare private glicExtensionsFeatureEnabled_: boolean;
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
   declare private locationSubLabel_: string;
   declare private locationLearnMoreUrl_: string;
@@ -303,6 +311,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   private onActivityRowClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('glicActivityButtonUrl'));
+  }
+
+  private onExtensionsRowClick_() {
+    // TODO(crbug.com/434213151): Append url param when ready.
+    const url = new URL(this.i18n('glicExtensionsManagementUrl'));
+    OpenWindowProxyImpl.getInstance().openUrl(url.toString());
   }
 
   private onShortcutsLearnMoreClick_() {

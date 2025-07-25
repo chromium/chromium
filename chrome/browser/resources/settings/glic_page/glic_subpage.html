@@ -244,6 +244,12 @@
           label="$i18n{glicActivityButton}"
           sub-label="$i18n{glicActivityButtonSublabel}" external>
       </cr-link-row>
+      <cr-link-row id="extensionsButton"
+          hidden="[[!glicExtensionsFeatureEnabled_]]"
+          on-click="onExtensionsRowClick_"
+          label="$i18n{glicExtensionsButton}"
+          sub-label="$i18n{glicExtensionsButtonSublabel}" external>
+      </cr-link-row>
     </template>
   </div>
 </settings-subpage>

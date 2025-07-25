@@ -773,6 +773,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicActivityButton", IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON},
       {"glicActivityButtonSublabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL},
+      {"glicExtensionsButton", IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON},
+      {"glicExtensionsButtonSublabel",
+       IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON_SUBLABEL},
       {"glicActivityButtonUrl",
        IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL},
       {"glicTabAccessWhenOn1",
@@ -806,9 +809,14 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       features::kGlicTabAccessToggleLearnMoreURLDataProtected.Get());
   html_source->AddString("glicSettingsPageLearnMoreUrl",
                          features::kGlicSettingsPageLearnMoreURL.Get());
+  html_source->AddString("glicExtensionsManagementUrl",
+                         features::kGlicExtensionsManagementUrl.Get());
   html_source->AddBoolean(
       "glicClosedCaptionsFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicClosedCaptioning));
+  html_source->AddBoolean(
+      "glicExtensionsFeatureEnabled",
+      base::FeatureList::IsEnabled(features::kGlicExtensions));
   html_source->AddBoolean(
       "glicUserStatusCheckFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
