@@ -362,6 +362,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_chrome_colors_option` appears to be unused"/>
     <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_theme_collections_option` appears to be unused"/>
 
+    <!-- TODO(https://crbug.com/421606013): Remove the following line once the auto-pip permission is implemented. -->
+    <ignore regexp="The resource `R.string.website_settings_automatic_picture_in_picture_page_description` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

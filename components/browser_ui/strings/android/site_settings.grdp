@@ -133,6 +133,9 @@
   <message name="IDS_WINDOW_MANAGEMENT_PERMISSION_TITLE" desc="Title of the permission for Window Management [CHAR_LIMIT=32]">
     Window management
   </message>
+  <message name="IDS_AUTO_PICTURE_IN_PICTURE_PERMISSION_TITLE" desc="Title of the permission for Automatic Picture-in-Picture [CHAR_LIMIT=32]">
+    Automatic picture-in-picture
+  </message>
 
   <!-- Site settings global toggles -->
 
@@ -1242,6 +1245,26 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_WINDOW_MANAGEMENT_BLOCK" desc="Primary text corresponding to the block button in the window management permission radio button group.">
     Don’t allow sites to manage windows on all your displays
+  </message>
+
+    <!-- Automatic Picture-in-Picture -->
+  <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_PICTURE_IN_PICTURE_PAGE_DESCRIPTION" desc="Description of the automatic picture-in-picture content setting.">
+    Sites use this feature to enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_PICTURE_IN_PICTURE_ALLOWED" desc="Summary text explaining that sites are alllowed to enter picture-in-picture automatically.">
+   Sites can enter picture-in-picture automatically
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_PICTURE_IN_PICTURE_BLOCKED" desc="Summary text explaining that sites are blocked from entering picture-in-picture automatically.">
+    Don't allow sites to enter picture-in-picture automatically
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_PICTURE_IN_PICTURE_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can enter picture-in-picture automatically. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can enter picture-in-picture automatically. When off, sites can’t enter picture-in-picture automatically.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_PICTURE_IN_PICTURE_ALLOW" desc="Primary text corresponding to the ask button in the automatic picture-in-picture permission radio button group.">
+    Sites can enter picture-in-picture automatically
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_PICTURE_IN_PICTURE_BLOCK" desc="Primary text corresponding to the block button in the automatic picture-in-picture permission radio button group.">
+    Don't allow sites to enter picture-in-picture automatically
   </message>
 
   <!-- Advanced protection -->
