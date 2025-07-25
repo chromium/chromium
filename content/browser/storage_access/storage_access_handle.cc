@@ -16,6 +16,7 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
