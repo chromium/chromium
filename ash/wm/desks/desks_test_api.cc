@@ -128,12 +128,6 @@ bool DesksTestApi::IsDeskShortcutViewVisible(DeskMiniView* mini_view) {
 }
 
 // static
-DeskProfilesButton* DesksTestApi::GetDeskProfileButton(
-    DeskMiniView* mini_view) {
-  return mini_view->desk_profile_button_;
-}
-
-// static
 bool DesksTestApi::DesksControllerHasDesk(Desk* desk) {
   return DesksController::Get()->HasDesk(desk);
 }
