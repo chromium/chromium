@@ -81,7 +81,7 @@ source_set("test_support") {
     ":page_action",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
     "//ui/actions:actions_headers",
   ]
 }

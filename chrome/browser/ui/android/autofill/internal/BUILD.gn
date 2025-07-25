@@ -48,7 +48,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   visibility = [
     ":*",
-    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
@@ -85,7 +85,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",

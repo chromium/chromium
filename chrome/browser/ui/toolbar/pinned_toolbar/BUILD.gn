@@ -44,7 +44,7 @@ source_set("impl") {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toolbar",
-      "//chrome/browser/ui/views/page_action:page_action",
+      "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/toolbar",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]

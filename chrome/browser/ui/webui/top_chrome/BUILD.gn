@@ -61,7 +61,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/prefs",
     "//chrome/common",
-    "//components/site_engagement/content:content",
+    "//components/site_engagement/content",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",

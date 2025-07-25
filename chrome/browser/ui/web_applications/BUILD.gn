@@ -145,8 +145,8 @@ source_set("browser_tests") {
       "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/constants",
-      "//components/session_manager/core:core",
-      "//components/user_manager:user_manager",
+      "//components/session_manager/core",
+      "//components/user_manager",
     ]
   }
 }

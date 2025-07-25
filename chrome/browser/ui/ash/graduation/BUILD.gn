@@ -15,7 +15,7 @@ static_library("graduation") {
   deps = [
     "//ash",
     "//ash/constants",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser/ash/browser_delegate",

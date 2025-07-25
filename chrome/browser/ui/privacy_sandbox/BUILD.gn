@@ -91,7 +91,7 @@ source_set("browser_tests") {
   if (is_chromeos) {
     deps += [
       "//ash/webui/help_app_ui",
-      "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+      "//chromeos/ash/components/browser_context_helper",
     ]
   }
 }

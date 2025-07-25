@@ -36,7 +36,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common",
     "//chrome/common:constants",

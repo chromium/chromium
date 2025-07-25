@@ -17,13 +17,13 @@ source_set("commerce") {
   ]
   public_deps = [
     "//chrome/browser/ui/webui/top_chrome",
-    "//components/bookmarks/browser:browser",
+    "//components/bookmarks/browser",
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core/mojom:mojo_bindings",
-    "//components/commerce/core/subscriptions:subscriptions",
+    "//components/commerce/core/subscriptions",
     "//components/commerce/core/webui",
-    "//components/feature_engagement/public:public",
+    "//components/feature_engagement/public",
     "//components/page_image_service/mojom:mojo_bindings",
     "//ui/views",
     "//ui/web_dialogs",

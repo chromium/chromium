@@ -18,11 +18,11 @@ source_set("tab_alert") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/vr:vr",
+    "//chrome/browser/vr",
     "//content/public/browser",
   ]
 
-  deps = [ "//chrome/browser/media/webrtc:webrtc" ]
+  deps = [ "//chrome/browser/media/webrtc" ]
 }
 
 source_set("impl") {
@@ -34,14 +34,14 @@ source_set("impl") {
   deps = [
     ":tab_alert",
     ":tab_alert_enum",
-    "//chrome/app/vector_icons:vector_icons",
-    "//chrome/browser/media/webrtc:webrtc",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/media/webrtc",
     "//chrome/common:chrome_features",
-    "//components/vector_icons:vector_icons",
+    "//components/vector_icons",
   ]
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic:glic" ]
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 

@@ -18,7 +18,7 @@ source_set("toasts") {
     "//ui/base",
     "//ui/menus",
   ]
-  deps = [ "//components/vector_icons:vector_icons" ]
+  deps = [ "//components/vector_icons" ]
 }
 
 source_set("unit_tests") {

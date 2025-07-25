@@ -57,16 +57,16 @@ source_set("editor_menu") {
     "//chrome/browser/ui/ash/read_write_cards",
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//chromeos/crosapi/mojom",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//ui/gfx",
     "//ui/views",
   ]
 
   if (is_chrome_branded) {
     deps += [
-      "//chromeos/ash/resources/internal/strings:strings",
+      "//chromeos/ash/resources/internal/strings",
       "//chromeos/ash/resources/internal/strings:strings_grit",
     ]
   }
@@ -94,7 +94,7 @@ source_set("views") {
     "//base",
     "//build:branding_buildflags",
     "//chromeos/ash/components/editor_menu/public/cpp",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
     "//components/application_locale_storage",
@@ -108,7 +108,7 @@ source_set("views") {
 
   if (is_chrome_branded) {
     deps += [
-      "//chromeos/ash/resources/internal/strings:strings",
+      "//chromeos/ash/resources/internal/strings",
       "//chromeos/ash/resources/internal/strings:strings_grit",
     ]
   }

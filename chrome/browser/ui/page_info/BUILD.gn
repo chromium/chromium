@@ -56,15 +56,13 @@ source_set("impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/hid",
-      "//chrome/browser/smart_card:smart_card",
+      "//chrome/browser/smart_card",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
     ]
     if (is_chromeos) {
-      deps += [
-        "//chrome/browser/ui/webui/ash/settings/app_management:app_management",
-      ]
+      deps += [ "//chrome/browser/ui/webui/ash/settings/app_management" ]
     }
   }
   deps += [

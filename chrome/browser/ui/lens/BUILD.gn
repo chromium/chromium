@@ -154,7 +154,7 @@ source_set("impl") {
     "//components/lens:enterprise_policy",
     "//components/lens:features",
     "//components/lens/proto/server:proto",
-    "//components/metrics_services_manager:metrics_services_manager",
+    "//components/metrics_services_manager",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/prefs",
@@ -167,7 +167,7 @@ source_set("impl") {
     "//components/variations",
     "//components/variations:variations_mojom",
     "//components/version_info:channel",
-    "//components/web_modal:web_modal",
+    "//components/web_modal",
     "//components/zoom",
     "//google_apis",
     "//google_apis/common",
@@ -322,7 +322,7 @@ source_set("interactive_ui_tests") {
     "//testing/gtest",
   ]
   if (enable_pdf) {
-    deps += [ "//components/pdf/browser:browser" ]
+    deps += [ "//components/pdf/browser" ]
   }
 }
 

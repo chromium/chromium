@@ -47,7 +47,7 @@ source_set("exclusive_access") {
     "//chrome/browser/ui:ui_features",
     "//chrome/common:constants",
     "//components/content_settings/core/browser",
-    "//components/fullscreen_control:fullscreen_control",
+    "//components/fullscreen_control",
     "//components/history/core/browser",
     "//components/input",
     "//components/permissions:permissions_common",
@@ -102,7 +102,7 @@ if (!is_android) {
     ]
     deps = [
       ":test_support",
-      "//components/fullscreen_control:fullscreen_control",
+      "//components/fullscreen_control",
     ]
   }
 

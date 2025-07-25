@@ -19,6 +19,6 @@ static_library("watermark") {
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
-    "//ui/webui:webui",
+    "//ui/webui",
   ]
 }

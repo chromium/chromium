@@ -10,7 +10,7 @@ source_set("page_info") {
   ]
 
   public_deps = [
-    "//base:base",
+    "//base",
     "//chrome/browser/ui/page_info",
     "//components/content_settings/core/common",
     "//components/page_info/core",
@@ -30,7 +30,7 @@ source_set("impl") {
 
   deps = [
     ":page_info",
-    "//base:base",
+    "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/page_info",

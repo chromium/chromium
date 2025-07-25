@@ -51,7 +51,7 @@ source_set("impl") {
     "//build:branding_buildflags",
     "//chrome/app/vector_icons",
     "//chrome/browser:shell_integration",
-    "//chrome/browser/feedback:feedback",
+    "//chrome/browser/feedback",
     "//chrome/browser/feedback:feedback_enum",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -89,8 +89,8 @@ source_set("impl") {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/extensions/",
-      "//chrome/browser/ui/hats:hats",
-      "//chrome/browser/ui/lens:lens",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/lens",
       "//chrome/common",
       "//components/bookmarks/browser",
       "//components/favicon/content",
@@ -221,7 +221,7 @@ if (!is_android) {
         deps += [
           ":omnibox",
           "//chrome/browser/ui:browser_navigator_params_headers",
-          "//chrome/browser/ui/browser_window:browser_window",
+          "//chrome/browser/ui/browser_window",
         ]
       }
     }

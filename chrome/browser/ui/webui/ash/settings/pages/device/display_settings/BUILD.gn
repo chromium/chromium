@@ -14,7 +14,7 @@ mojom("mojom") {
   webui_module_path = "/"
 
   public_deps = [
-    "//ash/public/mojom:mojom",
+    "//ash/public/mojom",
     "//mojo/public/mojom/base",
   ]
 }

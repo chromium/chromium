@@ -27,7 +27,7 @@ source_set("browser_tests") {
     "//ash/webui/os_feedback_ui:url_constants",
     "//ash/webui/shortcut_customization_ui:url_constants",
     "//base",
-    "//chrome/browser/apps/app_service:app_service",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/test:browser_test_support",
     "//chrome/browser/ash/app_list/search/test:test_support",

@@ -15,8 +15,8 @@ static_library("borealis_motd") {
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
-    "//ui/web_dialogs:web_dialogs",
-    "//ui/webui:webui",
+    "//ui/web_dialogs",
+    "//ui/webui",
   ]
 
   deps = [ "//chrome/browser/resources/chromeos/borealis_motd:resources" ]

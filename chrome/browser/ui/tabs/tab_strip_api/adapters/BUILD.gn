@@ -29,7 +29,7 @@ source_set("impl") {
     ":adapters",
     "tree_builder",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//content/public/browser",

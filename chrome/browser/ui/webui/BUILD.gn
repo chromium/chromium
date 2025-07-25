@@ -37,7 +37,7 @@ source_set("configs") {
 
   deps = [
     ":webui",
-    "//chrome/browser/optimization_guide:optimization_guide",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/accessibility",
@@ -47,7 +47,7 @@ source_set("configs") {
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
     "//content/public/browser",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
     "//printing/buildflags",
     "//skia",
     "//third_party/abseil-cpp:absl",
@@ -106,7 +106,7 @@ source_set("configs") {
   }
 
   if (enable_dice_support) {
-    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
+    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
   }
 
   if (enable_glic) {
@@ -151,7 +151,7 @@ if (!is_android) {
     ]
 
     deps = [
-      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tabs_public",
     ]
   }

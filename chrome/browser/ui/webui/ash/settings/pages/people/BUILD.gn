@@ -65,7 +65,7 @@ static_library("people") {
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common",
     "//chromeos/ash/components/account_manager",
-    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/experiences/arc:arc_app_constants",
