@@ -21,4 +21,17 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
 
 }  // namespace features
 
+namespace media {
+
+#if BUILDFLAG(IS_MAC)
+MEDIA_EXPORT bool IsMacCatapSystemLoopbackCaptureSupported();
+MEDIA_EXPORT bool IsMacSckSystemLoopbackCaptureSupported();
+#endif
+
+// Returns true if system audio loopback capture is implemented for the current
+// OS.
+MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();
+
+}  // namespace media
+
 #endif  // MEDIA_AUDIO_AUDIO_FEATURES_H_

@@ -8,6 +8,20 @@
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
+namespace {
+#if BUILDFLAG(IS_MAC)
+// Enables system audio loopback capture using the macOS Screen Capture Kit
+// framework, regardless of the system version.
+BASE_FEATURE(kMacSckSystemAudioLoopbackOverride,
+             "MacSckSystemAudioLoopbackOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+}  // namespace
+
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -52,3 +66,33 @@ BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
 
 }  // namespace features
 
+namespace media {
+#if BUILDFLAG(IS_MAC)
+bool IsMacCatapSystemLoopbackCaptureSupported() {
+  return (base::mac::MacOSVersion() >= 14'02'00);
+}
+
+bool IsMacSckSystemLoopbackCaptureSupported() {
+  // Only supported on macOS 13.0+.
+  // Disabled on macOS 15.0 due to problems with permission prompt.
+  // The override feature is useful for testing on unsupported versions.
+  return (base::mac::MacOSVersion() >= 13'00'00 &&
+          base::mac::MacOSVersion() < 15'00'00) ||
+         base::FeatureList::IsEnabled(kMacSckSystemAudioLoopbackOverride);
+}
+#endif
+
+bool IsSystemLoopbackCaptureSupported() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
+  return true;
+#elif BUILDFLAG(IS_MAC)
+  return (IsMacSckSystemLoopbackCaptureSupported() ||
+          IsMacCatapSystemLoopbackCaptureSupported());
+#elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
+}
+
+}  // namespace media

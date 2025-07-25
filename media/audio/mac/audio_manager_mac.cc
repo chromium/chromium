@@ -62,9 +62,6 @@ bool IsCatapLoopbackAudioEnabledForDevice(const std::string& device_id) {
   if (device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast) {
     return base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForCast);
   }
-  if (device_id == AudioDeviceDescription::kLoopbackAllDevicesId) {
-    return base::FeatureList::IsEnabled(kSystemLoopbackAsAecReference);
-  }
   return base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForScreenShare);
 }
 }  // namespace
