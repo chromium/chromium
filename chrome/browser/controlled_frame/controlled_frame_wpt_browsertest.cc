@@ -27,11 +27,14 @@ namespace controlled_frame {
 
 namespace {
 
-// TODO(crbug.com/423697478): webrequest_auth times out on win-asan bots
+// TODO(crbug.com/423697478): frame_event_handlers_part_1 and webrequest_auth
+// times out on win-asan bots
 const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "camera.window.js",
                                         "client_hints_user_agent.window.js",
+#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
                                         "frame_event_handlers_part_1.window.js",
+#endif
                                         "frame_event_handlers_part_2.window.js",
                                         "geolocation.window.js",
                                         "navigation.window.js",
