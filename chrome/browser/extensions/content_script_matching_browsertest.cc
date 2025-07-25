@@ -2,25 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "extensions/browser/script_injection_tracker.h"
-
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/script_injection_tracker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
-#include "extensions/shell/browser/shell_extension_loader.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -32,7 +36,7 @@ namespace extensions {
 // //chrome/browser/extensions/script_injection_tracker_browsertest.cc.
 // TODO(crbug.com/40061759): Add test coverage for dynamic content and user
 // scripts matching.
-class ContentScriptMatchingBrowserTest : public ShellApiTest,
+class ContentScriptMatchingBrowserTest : public ExtensionApiTest,
                                          public content::WebContentsDelegate {
  public:
   ContentScriptMatchingBrowserTest() = default;
@@ -45,16 +49,17 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
   ~ContentScriptMatchingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void TearDownOnMainThread() override {
+    extension_ = nullptr;
     tab1_.reset();
     tab2_.reset();
-    ShellApiTest::TearDownOnMainThread();
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
   const Extension* InstallContentScriptsExtension(
@@ -71,12 +76,12 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
     dir_.WriteFile(FILE_PATH_LITERAL("content_script.css"), "");
     dir_.WriteFile(FILE_PATH_LITERAL("content_script.js"), "");
 
-    ShellExtensionLoader loader(browser_context());
+    ChromeTestExtensionLoader loader(profile());
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       extension_ = loader.LoadExtension(dir_.UnpackedPath());
     }
-    return extension_;
+    return extension_.get();
   }
 
   // Returns whether the class-under-test (ScriptInjectionTracker) thinks that
@@ -143,7 +148,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
     url::Origin bar_origin = url::Origin::Create(bar_url);
 
     tab1_ = content::WebContents::Create(
-        content::WebContents::CreateParams(browser_context()));
+        content::WebContents::CreateParams(profile()));
     tab1_->SetDelegate(this);
     ASSERT_TRUE(content::NavigateToURL(tab1_.get(), foo_url));
 
@@ -253,7 +258,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   // Populated by InstallContentScriptsExtension (called by individual tests).
   TestExtensionDir dir_;
-  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
+  scoped_refptr<const Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
@@ -327,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
 }
 
 // Flaky on MacOS since r622662. See https://crbug.com/921883
-#if BUILDFLAG(IS_MAC)
+// Also flaky on desktop Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ContentScriptMatching_NotAllFrames \
   DISABLED_ContentScriptMatching_NotAllFrames
 #else

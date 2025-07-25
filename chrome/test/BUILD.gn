@@ -1592,6 +1592,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/webstore_private/webstore_private_apitest.cc",
       "../browser/extensions/background_script_executor_browsertest.cc",
       "../browser/extensions/commands/command_service_browsertest.cc",
+      "../browser/extensions/content_script_matching_browsertest.cc",
       "../browser/extensions/content_security_policy_apitest.cc",
       "../browser/extensions/content_verifier_browsertest.cc",
       "../browser/extensions/content_verifier_test_utils.cc",
