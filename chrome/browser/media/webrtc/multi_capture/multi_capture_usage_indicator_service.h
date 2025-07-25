@@ -12,7 +12,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -29,7 +31,9 @@ class WebAppProvider;
 
 namespace multi_capture {
 
-class MultiCaptureUsageIndicatorService : public KeyedService {
+class MultiCaptureUsageIndicatorService
+    : public KeyedService,
+      public MultiCaptureDataService::Observer {
  public:
   struct AllowListedAppNames {
     AllowListedAppNames(
@@ -50,17 +54,23 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
   static std::unique_ptr<MultiCaptureUsageIndicatorService> Create(
       PrefService* prefs,
       web_app::WebAppProvider* provider,
-      NotificationDisplayService* notification_display_service);
+      NotificationDisplayService* notification_display_service,
+      MultiCaptureDataService* data_service);
 
   void MultiCaptureStarted(const std::string& label,
                            const webapps::AppId& app_id);
   void MultiCaptureStopped(const std::string& label);
 
+  // MultiCaptureDataService::Observer:
+  void MultiCaptureDataChanged() override;
+  void MultiCaptureDataServiceDestroyed() override;
+
  protected:
   explicit MultiCaptureUsageIndicatorService(
       PrefService* prefs,
       web_app::WebAppProvider* provider,
-      NotificationDisplayService* notification_display_service);
+      NotificationDisplayService* notification_display_service,
+      MultiCaptureDataService* data_service);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -77,7 +87,6 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
       const std::string& app_name,
       bool should_reuse_future_notification_id);
 
-  void ShowUsageIndicatorsOnStart();
   AllowListedAppNames GetInstalledAndAllowlistedAppNames() const;
   void ShowFutureMultiCaptureNotification(const AllowListedAppNames& apps);
   void ShowActiveMultiCaptureNotifications(const AllowListedAppNames& apps);
@@ -92,6 +101,7 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<web_app::WebAppProvider> provider_;
   const raw_ptr<NotificationDisplayService> notification_display_service_;
+  const raw_ptr<MultiCaptureDataService> data_service_;
   base::Value::List multi_screen_capture_allow_list_on_login_;
 
   // Stores started captures and stores a mapping `app_id` --> `label`.
@@ -100,6 +110,10 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
   // with that `label`.
   std::map<std::string, webapps::AppId> label_to_app_id_;
   std::set<webapps::AppId> notification_shown_for_app_id_;
+
+  base::ScopedObservation<MultiCaptureDataService,
+                          MultiCaptureDataService::Observer>
+      data_service_observer_{this};
 
   base::WeakPtrFactory<MultiCaptureUsageIndicatorService> weak_ptr_factory_{
       this};

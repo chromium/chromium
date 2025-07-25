@@ -398,6 +398,7 @@
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -805,6 +806,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::MultiScreenCapturePolicyServiceFactory::GetInstance();
   if (base::FeatureList::IsEnabled(
           chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
+    multi_capture::MultiCaptureDataServiceFactory::GetInstance();
     multi_capture::MultiCaptureUsageIndicatorServiceFactory::GetInstance();
   }
   if (chromeos::features::

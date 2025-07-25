@@ -12,6 +12,8 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -220,9 +222,9 @@ class MultiCaptureUsageIndicatorBrowserTest
 IN_PROC_BROWSER_TEST_P(
     MultiCaptureUsageIndicatorBrowserTest,
     YouMayBeCapturedNotificationShowsIfAppInstalledAndAllowlisted) {
-  multi_capture::MultiCaptureUsageIndicatorServiceFactory::GetForBrowserContext(
-      profile())
-      ->ShowUsageIndicatorsOnStart();
+  CHECK_DEREF(
+      multi_capture::MultiCaptureDataServiceFactory::GetForProfile(profile()))
+      .LoadData();
 
   ASSERT_TRUE(visible_notifications_.contains(
       "multi-capture-login-privacy-indicators"));
@@ -236,11 +238,13 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     MultiCaptureUsageIndicatorBrowserTest,
     YouAreCapturedNotificationShowsIfAppInstalledAndAllowlisted) {
-  multi_capture::MultiCaptureUsageIndicatorService& service =
-      CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
-                      GetForBrowserContext(profile()));
-
-  service.ShowUsageIndicatorsOnStart();
+  multi_capture::MultiCaptureUsageIndicatorService&
+      MultiCaptureUsageIndicatorService =
+          CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
+                          GetForBrowserContext(profile()));
+  CHECK_DEREF(
+      multi_capture::MultiCaptureDataServiceFactory::GetForProfile(profile()))
+      .LoadData();
 
   ASSERT_TRUE(visible_notifications_.contains(
       "multi-capture-login-privacy-indicators"));
@@ -255,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   for (const InstalledApp& app : GetParam().capturing_apps) {
-    service.MultiCaptureStarted(
+    MultiCaptureUsageIndicatorService.MultiCaptureStarted(
         /*label=*/"label1",
         /*app_id=*/GetAppIdForBundle(app.bundle_id.id()));
   }
