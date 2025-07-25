@@ -145,10 +145,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   std::unique_ptr<CrossOriginNavigationObserver> navigation_observer_;
 
-  // URL of the last committed page in `originator_` on the password change flow
-  // startup.
-  const GURL last_committed_url_;
-
   base::CallbackListSubscription tab_will_detach_subscription_;
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};

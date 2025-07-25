@@ -175,8 +175,7 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       username_(std::move(username)),
       original_password_(std::move(password)),
       originator_(tab_interface->GetContents()),
-      profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
-      last_committed_url_(originator_->GetLastCommittedURL()) {
+      profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())) {
   tab_will_detach_subscription_ = tab_interface->RegisterWillDetach(
       base::BindRepeating(&PasswordChangeDelegateImpl::OnTabWillDetach,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -389,7 +388,8 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
     return;
   }
 
-  if (last_committed_url_ == originator_->GetLastCommittedURL()) {
+  if (navigation_observer_->IsSameOrAffiliatedDomain(
+          originator_->GetLastCommittedURL())) {
     ManagePasswordsUIController::FromWebContents(originator_)
         ->ShowChangePasswordBubble(username_, generated_password_);
   } else {

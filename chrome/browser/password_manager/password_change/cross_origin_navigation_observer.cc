@@ -70,7 +70,8 @@ void CrossOriginNavigationObserver::NavigationEntryCommitted(
   std::move(on_cross_origin_navigation_detected_).Run();
 }
 
-bool CrossOriginNavigationObserver::IsSameOrAffiliatedDomain(const GURL& url) {
+bool CrossOriginNavigationObserver::IsSameOrAffiliatedDomain(
+    const GURL& url) const {
   return affiliated_domains_.contains(
       affiliations::GetExtendedTopLevelDomain(url, psl_extension_list_));
 }
