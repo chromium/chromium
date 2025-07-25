@@ -530,6 +530,7 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
 
 void ProfilePickerFlowController::SwitchToReauth(
     Profile* profile,
+    StepSwitchFinishedCallback switch_finished_callback,
     base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
@@ -553,7 +554,7 @@ void ProfilePickerFlowController::SwitchToReauth(
                          std::move(on_error_callback))));
 
   SwitchToStep(
-      Step::kReauth, true, StepSwitchFinishedCallback(),
+      Step::kReauth, true, std::move(switch_finished_callback),
       /*pop_step_callback=*/CreateSwitchToStepPopCallback(current_step()));
 }
 
@@ -685,7 +686,8 @@ void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
 
 void ProfilePickerFlowController::PickProfile(
     const base::FilePath& profile_path,
-    ProfilePicker::ProfilePickingArgs args) {
+    ProfilePicker::ProfilePickingArgs args,
+    base::OnceCallback<void(bool)> pick_profile_complete_callback) {
   if (args.should_record_startup_metrics &&
       // Avoid overriding the picked time if already recorded. This can happen
       // for example if multiple profiles are picked: https://crbug.com/1277466.
@@ -696,17 +698,26 @@ void ProfilePickerFlowController::PickProfile(
   profiles::SwitchToProfile(
       profile_path, /*always_create=*/false,
       base::BindOnce(&ProfilePickerFlowController::OnSwitchToProfileComplete,
-                     weak_ptr_factory_.GetWeakPtr(), args.open_settings));
+                     weak_ptr_factory_.GetWeakPtr(), args.open_settings,
+                     std::move(pick_profile_complete_callback)));
 }
 
-void ProfilePickerFlowController::OnSwitchToProfileComplete(bool open_settings,
-                                                            Browser* browser) {
+void ProfilePickerFlowController::OnSwitchToProfileComplete(
+    bool open_settings,
+    base::OnceCallback<void(bool)> pick_profile_complete_callback,
+    Browser* browser) {
   if (!browser || browser->is_delete_scheduled()) {
     // The browser is destroyed or about to be destroyed.
+    if (pick_profile_complete_callback) {
+      std::move(pick_profile_complete_callback).Run(false);
+    }
     return;
   }
 
   DCHECK(browser->window());
+  if (pick_profile_complete_callback) {
+    std::move(pick_profile_complete_callback).Run(true);
+  }
   Profile* profile = browser->profile();
   TRACE_EVENT1("browser",
                "ProfilePickerFlowController::OnSwitchToProfileComplete",

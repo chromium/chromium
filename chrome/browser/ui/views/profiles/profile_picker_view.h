@@ -15,6 +15,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -193,9 +194,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile or
   // load an existing one based on the `profile_info` content).
-  void SwitchToDiceSignIn(
-      ProfilePicker::ProfileInfo profile_info,
-      base::OnceCallback<void(bool)> switch_finished_callback);
+  void SwitchToDiceSignIn(ProfilePicker::ProfileInfo profile_info,
+                          StepSwitchFinishedCallback switch_finished_callback);
 
   // Switches the profile picker layout to display the reauth page to the main
   // account of the given `profile` if needed. On success the `profile` is
@@ -204,6 +204,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // `on_error_callback`.
   void SwitchToReauth(
       Profile* profile,
+      StepSwitchFinishedCallback switch_finished_callback,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 

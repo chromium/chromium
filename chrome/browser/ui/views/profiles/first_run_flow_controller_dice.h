@@ -42,8 +42,10 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   // ProfileManagementFlowControllerImpl:
   void Init() override;
   void CancelPostSignInFlow() override;
-  void PickProfile(const base::FilePath& profile_path,
-                   ProfilePicker::ProfilePickingArgs args) override;
+  void PickProfile(
+      const base::FilePath& profile_path,
+      ProfilePicker::ProfilePickingArgs args,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback) override;
 
  protected:
   // ProfileManagementFlowControllerImpl

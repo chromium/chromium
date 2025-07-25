@@ -5,10 +5,10 @@
 import 'chrome://profile-picker/profile_picker.js';
 
 import type {ProfileCardElement, ProfilePickerMainViewElement, ProfileState} from 'chrome://profile-picker/profile_picker.js';
-import {loadTimeData, ManageProfilesBrowserProxyImpl, NavigationMixin, Routes} from 'chrome://profile-picker/profile_picker.js';
+import {loadTimeData, ManageProfilesBrowserProxyImpl, navigateTo, NavigationMixin, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -118,8 +118,10 @@ suite('ProfilePickerMainViewTest', function() {
       const profile = profiles[i]!;
       const expectedProfile = expectedProfiles[i]!;
       assertTrue(!!profile.shadowRoot.querySelector('profile-card-menu'));
-      profile.shadowRoot.querySelector('cr-button')!.click();
+      profile.$.profileCardButton.click();
       await browserProxy.whenCalled('launchSelectedProfile');
+      webUIListenerCallback('reset-picker-buttons');
+      await microtasksFinished();
       assertEquals(
           profile.shadowRoot
               .querySelector<HTMLElement>('#forceSigninContainer')!.hidden,
@@ -165,6 +167,8 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(isVisible(mainViewElement.$.addProfile));
     mainViewElement.$.browseAsGuestButton.click();
     await browserProxy.whenCalled('launchGuestProfile');
+    webUIListenerCallback('reset-picker-buttons');
+    await microtasksFinished();
     // Ask when chrome opens.
     mainViewElement.$.askOnStartup.click();
     await browserProxy.whenCalled('askOnStartupChanged');
@@ -257,6 +261,79 @@ suite('ProfilePickerMainViewTest', function() {
     addProfileButton.click();
     await microtasksFinished();
     assertFalse(navigationElement.changeCalled);
+  });
+
+  test('ProfileCreationDisableButtons', async function() {
+    resetTest();
+    const addProfileButton = mainViewElement.$.addProfile;
+    assertFalse(isVisible(addProfileButton));
+    await browserProxy.whenCalled('initializeMainView');
+    await simulateProfilesListChanged(generateProfilesList(2));
+    navigationElement.reset();
+    assertTrue(isVisible(addProfileButton));
+    assertFalse(addProfileButton.disabled);
+    const profileCards =
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card');
+    profileCards.forEach(profileCard => {
+      assertFalse(profileCard.$.profileCardButton.disabled);
+    });
+
+    // Clicking on the add profile button should disable all buttons.
+    addProfileButton.click();
+    await microtasksFinished();
+    assertTrue(navigationElement.changeCalled);
+    assertEquals(navigationElement.route, Routes.NEW_PROFILE);
+    assertTrue(addProfileButton.disabled);
+    profileCards.forEach(profileCard => {
+      assertTrue(profileCard.$.profileCardButton.disabled);
+    });
+
+    // Navigating back to the main route should re-enable the buttons.
+    navigationElement.reset();
+    navigateTo(Routes.MAIN);
+    await microtasksFinished();
+    assertTrue(navigationElement.changeCalled);
+    assertEquals(navigationElement.route, Routes.MAIN);
+    assertFalse(addProfileButton.disabled);
+    profileCards.forEach(profileCard => {
+      assertFalse(profileCard.$.profileCardButton.disabled);
+    });
+  });
+
+  test('ProfileCardClickDisableButtons', async function() {
+    resetTest();
+    const addProfileButton = mainViewElement.$.addProfile;
+    assertFalse(isVisible(addProfileButton));
+    await browserProxy.whenCalled('initializeMainView');
+    await simulateProfilesListChanged(generateProfilesList(2));
+    assertTrue(isVisible(addProfileButton));
+    assertFalse(addProfileButton.disabled);
+    const profileCards =
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card');
+    profileCards.forEach(profileCard => {
+      assertFalse(profileCard.$.profileCardButton.disabled);
+    });
+
+    // Clicking on a profile button should disable all buttons.
+    assertGE(profileCards.length, 1);
+    const firstProfileCard = profileCards[0]!;
+    firstProfileCard.$.profileCardButton.click();
+    await microtasksFinished();
+    assertTrue(addProfileButton.disabled);
+    profileCards.forEach(profileCard => {
+      assertTrue(profileCard.$.profileCardButton.disabled);
+    });
+
+    // Receiving the signal that the step was completed should re-enable the
+    // buttons.
+    webUIListenerCallback('reset-picker-buttons');
+    await microtasksFinished();
+    assertFalse(addProfileButton.disabled);
+    profileCards.forEach(profileCard => {
+      assertFalse(profileCard.$.profileCardButton.disabled);
+    });
   });
 
   test('AskOnStartupSingleToMultipleProfiles', async function() {

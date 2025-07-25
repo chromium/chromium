@@ -101,8 +101,11 @@ class ProfileManagementFlowController {
   virtual void CancelPostSignInFlow() = 0;
 
   // Picks the profile with `profile_path`.
-  virtual void PickProfile(const base::FilePath& profile_path,
-                           ProfilePicker::ProfilePickingArgs args) = 0;
+  // `pick_profile_complete_callback` will be called on profile load.
+  virtual void PickProfile(
+      const base::FilePath& profile_path,
+      ProfilePicker::ProfilePickingArgs args,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback) = 0;
 
   // Clears the current state and reset it to the initial state that shows the
   // main screen. When calling this function the state should not be the

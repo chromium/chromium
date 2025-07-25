@@ -11,6 +11,7 @@ import './profile_card.js';
 import '/strings.m.js';
 
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -32,7 +33,7 @@ import {getHtml} from './profile_picker_main_view.html.js';
 
 export interface ProfilePickerMainViewElement {
   $: {
-    addProfile: HTMLElement,
+    addProfile: CrButtonElement,
     askOnStartup: CrCheckboxElement,
     'picker-logo': HTMLElement,
     browseAsGuestButton: HTMLElement,
@@ -70,6 +71,7 @@ export class ProfilePickerMainViewElement extends
       askOnStartup_: {type: Boolean},
       guestModeEnabled_: {type: Boolean},
       profileCreationAllowed_: {type: Boolean},
+      pickerButtonsDisabled_: {type: Boolean},
       forceSigninErrorDialogTitle_: {type: String},
       forceSigninErrorDialogBody_: {type: String},
       forceSigninErrorProfilePath_: {type: String},
@@ -100,6 +102,8 @@ export class ProfilePickerMainViewElement extends
   private dragDelegate_: DragDropReorderTileListDelegate|null = null;
   private dragDuration_: number = 300;
 
+  protected accessor pickerButtonsDisabled_: boolean = false;
+
   // TODO(crbug.com/40280498): Move the dialog into it's own element with the
   // below members. This dialog state should be independent of the Profile
   // Picker itself.
@@ -112,8 +116,6 @@ export class ProfilePickerMainViewElement extends
 
   override firstUpdated() {
     this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
-
-    this.addEventListener('toggle-drag', this.toggleDrag_);
   }
 
   override connectedCallback() {
@@ -127,6 +129,9 @@ export class ProfilePickerMainViewElement extends
         'display-force-signin-error-dialog',
         (title: string, body: string, profilePath: string) =>
             this.showForceSigninErrorDialog(title, body, profilePath));
+    this.addWebUiListener('reset-picker-buttons', () => {
+      this.enableAllPickerButtons_();
+    });
     if (!this.isGlic_) {
       this.addWebUiListener(
           'guest-mode-availability-updated',
@@ -170,6 +175,9 @@ export class ProfilePickerMainViewElement extends
 
   override onRouteChange(route: Routes) {
     if (route === Routes.MAIN) {
+      // Every time we go back to the main route, we re-enable all the profile
+      // card buttons.
+      this.enableAllPickerButtons_();
       return;
     }
     this.previousRoute_ = route;
@@ -255,6 +263,8 @@ export class ProfilePickerMainViewElement extends
     if (!isProfileCreationAllowed()) {
       return;
     }
+
+    this.disableAllPickerButtons_();
     chrome.metricsPrivate.recordUserAction('ProfilePicker_AddClicked');
     navigateTo(Routes.NEW_PROFILE);
   }
@@ -291,13 +301,27 @@ export class ProfilePickerMainViewElement extends
     return !isAskOnStartupAllowed() || this.profilesList_.length < 2;
   }
 
-  private toggleDrag_(e: Event) {
+  protected toggleDrag_(e: Event) {
     if (!this.dragDelegate_) {
       return;
     }
 
     const customEvent = e as CustomEvent;
     this.dragDelegate_.toggleDrag(customEvent.detail.toggle);
+  }
+
+  protected disableAllPickerButtons_() {
+    this.pickerButtonsDisabled_ = true;
+    if (this.dragDelegate_) {
+      this.dragDelegate_.toggleDrag(false);
+    }
+  }
+
+  private enableAllPickerButtons_() {
+    this.pickerButtonsDisabled_ = false;
+    if (this.dragDelegate_) {
+      this.dragDelegate_.toggleDrag(true);
+    }
   }
 
   // Redirects the call to the handler, to create/use a browser to show the

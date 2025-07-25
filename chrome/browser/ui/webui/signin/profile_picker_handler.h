@@ -120,6 +120,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleRecordSignInPromoImpression(const base::Value::List& args);
 
   void OnLoadSigninFinished(bool success);
+  void OnResetPickerButtons(bool success);
   void GatherProfileStatistics(Profile* profile);
   void OnProfileStatisticsReceived(const base::FilePath& profile_path,
                                    profiles::ProfileCategoryStats result);

@@ -27,13 +27,16 @@ ${function() {
   <div id="profilesWrapper" ?hidden="${(this.shouldHideProfilesWrapper_())}">
     <div id="profilesContainer" class="custom-scrollbar">
       ${this.profilesList_.map((item, index) => html`
-        <profile-card class="profile-item" .profileState="${item}"
-            data-index="${index}">
+        <profile-card class="profile-item" data-index="${index}"
+            .profileState="${item}" .disabled="${this.pickerButtonsDisabled_}"
+            @toggle-drag="${this.toggleDrag_}"
+            @disable-all-picker-buttons="${this.disableAllPickerButtons_}">
         </profile-card>
       `)}
       <cr-button id="addProfile" class="profile-item"
           @click="${this.onAddProfileClick_}"
           ?hidden="${!this.profileCreationAllowed_}"
+          ?disabled="${this.pickerButtonsDisabled_}"
           aria-labelledby="addProfileButtonLabel">
         <div id="addProfileButtonLabel"
             class="profile-card-info prominent-text">
@@ -53,7 +56,8 @@ ${function() {
 <div class="footer">
   <cr-button id="browseAsGuestButton"
       @click="${this.onLaunchGuestProfileClick_}"
-      ?hidden="${!this.guestModeEnabled_}">
+      ?hidden="${!this.guestModeEnabled_}"
+      ?disabled="${this.pickerButtonsDisabled_}">
     <cr-icon icon="profiles:account-circle" slot="prefix-icon"></cr-icon>
     $i18n{browseAsGuestButton}
   </cr-button>

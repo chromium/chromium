@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -373,7 +374,9 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
       *profile_path,
       ProfilePicker::ProfilePickingArgs{
           .open_settings = open_settings,
-          .should_record_startup_metrics = should_record_startup_metrics});
+          .should_record_startup_metrics = should_record_startup_metrics},
+      base::BindOnce(&ProfilePickerHandler::OnResetPickerButtons,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ProfilePickerHandler::TryLaunchLockedProfile(
@@ -394,6 +397,7 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
       DisplayForceSigninErrorDialog(
           /*profile_path=*/base::FilePath(),
           ForceSigninUIError::ReauthNotSupportedByGlicFlow());
+      OnResetPickerButtons(false);
       return;
     }
 
@@ -411,9 +415,14 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
     // Triggers a fresh sign in via profile picker without existing email
     // address.
     ProfilePicker::SwitchToDiceSignIn(
-        entry.GetPath(),
-        base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
-                       weak_factory_.GetWeakPtr()));
+        entry.GetPath(), CombineCallbacks<StepSwitchFinishedCallback, bool>(
+                             StepSwitchFinishedCallback(base::BindOnce(
+                                 &ProfilePickerHandler::OnLoadSigninFinished,
+                                 weak_factory_.GetWeakPtr())),
+                             StepSwitchFinishedCallback(base::BindOnce(
+                                 &ProfilePickerHandler::OnResetPickerButtons,
+                                 weak_factory_.GetWeakPtr())))
+                             .value());
     return;
   }
 
@@ -424,6 +433,7 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
   DisplayForceSigninErrorDialog(
       /*profile_path=*/base::FilePath(),
       ForceSigninUIError::ReauthNotAllowed());
+  OnResetPickerButtons(false);
 }
 
 void ProfilePickerHandler::OnProfileLoadedForSwitchToReauth(Profile* profile) {
@@ -432,6 +442,8 @@ void ProfilePickerHandler::OnProfileLoadedForSwitchToReauth(Profile* profile) {
   }
   ProfilePicker::SwitchToReauth(
       profile,
+      base::BindOnce(&ProfilePickerHandler::OnResetPickerButtons,
+                     weak_factory_.GetWeakPtr()),
       base::BindOnce(&ProfilePickerHandler::DisplayForceSigninErrorDialog,
                      weak_factory_.GetWeakPtr(), profile->GetPath()));
 }
@@ -453,8 +465,10 @@ void ProfilePickerHandler::HandleLaunchGuestProfile(
   // checking has been added to the UI.
   ProfilePicker::PickProfile(
       ProfileManager::GetGuestProfilePath(),
-      ProfilePicker::ProfilePickingArgs{
-          .open_settings = false, .should_record_startup_metrics = false});
+      ProfilePicker::ProfilePickingArgs{.open_settings = false,
+                                        .should_record_startup_metrics = false},
+      base::BindOnce(&ProfilePickerHandler::OnResetPickerButtons,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ProfilePickerHandler::HandleAskOnStartupChanged(
@@ -572,8 +586,10 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
   // flow.
   ProfilePicker::PickProfile(
       *profile_path,
-      ProfilePicker::ProfilePickingArgs{
-          .open_settings = false, .should_record_startup_metrics = false});
+      ProfilePicker::ProfilePickingArgs{.open_settings = false,
+                                        .should_record_startup_metrics = false},
+      base::BindOnce(&ProfilePickerHandler::OnResetPickerButtons,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ProfilePickerHandler::HandleCancelProfileSwitch(
@@ -730,8 +746,14 @@ void ProfilePickerHandler::HandleSelectNewAccount(
     profile_color = GenerateNewProfileColor().color;
   }
   ProfilePicker::SwitchToDiceSignIn(
-      profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
-                                    weak_factory_.GetWeakPtr()));
+      profile_color, CombineCallbacks<StepSwitchFinishedCallback, bool>(
+                         StepSwitchFinishedCallback(base::BindOnce(
+                             &ProfilePickerHandler::OnLoadSigninFinished,
+                             weak_factory_.GetWeakPtr())),
+                         StepSwitchFinishedCallback(base::BindOnce(
+                             &ProfilePickerHandler::OnResetPickerButtons,
+                             weak_factory_.GetWeakPtr())))
+                         .value());
 #else
   NOTERACHED();
 #endif
@@ -740,6 +762,11 @@ void ProfilePickerHandler::HandleSelectNewAccount(
 void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
   AllowJavascript();
   FireWebUIListener("load-signin-finished", base::Value(success));
+}
+
+void ProfilePickerHandler::OnResetPickerButtons(bool success) {
+  AllowJavascript();
+  FireWebUIListener("reset-picker-buttons", base::Value(success));
 }
 
 void ProfilePickerHandler::PushProfilesList() {
