@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -1449,6 +1450,12 @@ INSTANTIATE_TEST_SUITE_P(
                     CTEnforcement::kDisabledByProto,
                     CTEnforcement::kDisabledByFeature));
 
+std::string X509CertificateToString(scoped_refptr<net::X509Certificate> cert) {
+  std::vector<std::string> pem_encoded_chain;
+  EXPECT_TRUE(cert->GetPEMEncodedChain(&pem_encoded_chain));
+  return base::JoinString(pem_encoded_chain, "\n");
+}
+
 // Checks that navigation responses were served over a connection where the
 // server provided the given `expected_server_certificate_chain`. Note that this
 // checks the certificate chain that the server served, not the chain that the
@@ -1482,7 +1489,12 @@ class CertificateCheckingThrottle : public content::NavigationThrottle {
     EXPECT_TRUE(navigation_handle()
                     ->GetSSLInfo()
                     ->unverified_cert->EqualsIncludingChain(
-                        expected_server_certificate_chain_.get()));
+                        expected_server_certificate_chain_.get()))
+        << "\n\nExpected server chain: "
+        << X509CertificateToString(expected_server_certificate_chain_)
+        << "\n\nObserved unverified server chain: "
+        << X509CertificateToString(
+               navigation_handle()->GetSSLInfo()->unverified_cert);
     ++num_responses_;
     return content::NavigationThrottle::PROCEED;
   }
@@ -1719,18 +1731,6 @@ IN_PROC_BROWSER_TEST_F(
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-
-    // TODO(https://crbug.com/431064813): this is a speculative attempt to fix a
-    // test flake. It isn't clear why this should be needed because updating the
-    // SSLConfig should close idle sockets and prevent socket reuse. If this
-    // fixes the flake, we should investigate further why this is needed.
-    base::RunLoop close_all_connections_loop;
-    chrome_test_utils::GetActiveWebContents(this)
-        ->GetBrowserContext()
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->CloseAllConnections(close_all_connections_loop.QuitClosure());
-    close_all_connections_loop.Run();
 
     // The server should now serve a single leaf, without any intermediates,
     // because the client should signal that it trusts the intermediate as a
