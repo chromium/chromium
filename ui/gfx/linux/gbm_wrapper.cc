@@ -498,4 +498,9 @@ std::unique_ptr<GbmDevice> CreateGbmDevice(int fd) {
   return std::make_unique<gbm_wrapper::Device>(device);
 }
 
+std::unique_ptr<GbmDevice> WrapGbmDevice(gbm_device* device) {
+  CHECK(device);
+  return std::make_unique<gbm_wrapper::Device>(device);
+}
+
 }  // namespace ui

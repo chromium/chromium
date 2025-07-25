@@ -377,8 +377,10 @@ struct GL_EXPORT ClientExtensionsEGL {
   bool b_EGL_EXT_device_base;
   bool b_EGL_EXT_device_enumeration;
   bool b_EGL_EXT_device_query;
+  bool b_EGL_EXT_platform_base;
   bool b_EGL_EXT_platform_device;
   bool b_EGL_KHR_debug;
+  bool b_EGL_KHR_platform_gbm;
   bool b_EGL_MESA_platform_surfaceless;
 
   void InitializeClientExtensionSettings();

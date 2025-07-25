@@ -6,6 +6,7 @@
 #define UI_GFX_LINUX_GBM_DEVICE_H_
 
 #include <gbm.h>
+
 #include <memory>
 
 #include "base/files/file.h"
