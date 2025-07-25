@@ -116,7 +116,7 @@ public class HomeSurfaceTestUtils {
         TabPersistentStore.TabModelSelectorMetadata selectorMetaData =
                 new TabPersistentStore.TabModelSelectorMetadata(normalInfo, incognitoInfo);
 
-        TabPersistentStore.saveTabModelPrefs(normalInfo, incognitoInfo, 0, ActiveTabState.OTHER);
+        TabPersistentStore.saveTabModelPrefs(0, ActiveTabState.OTHER);
         File metadataFile =
                 new File(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),

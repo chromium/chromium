@@ -18,7 +18,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -43,11 +42,13 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
@@ -104,15 +105,14 @@ public class TabPersistentStore {
      * The prefix of the name of the file where the metadata is saved. Values returned by {@link
      * #getMetadataFileName(String)} must begin with this prefix.
      */
-    @VisibleForTesting static final String SAVED_METADATA_FILE_PREFIX = "tab_state";
+    @VisibleForTesting /* package */ static final String SAVED_METADATA_FILE_PREFIX = "tab_state";
 
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
 
-    private static boolean sDeferredStartupComplete;
+    @VisibleForTesting /* package */ static final int MAX_MIGRATIONS_PER_SAVE = 5;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static int sMaxMigrationsPerSave = 5;
+    private static boolean sDeferredStartupComplete;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
@@ -139,7 +139,7 @@ public class TabPersistentStore {
     })
     @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
-    protected @interface TabRestoreMethod {
+    /* package */ @interface TabRestoreMethod {
         /** Tab restored using TabState. */
         int TAB_STATE = 0;
 
@@ -185,16 +185,17 @@ public class TabPersistentStore {
     }
 
     /** Alerted at various stages of operation. */
-    public abstract static class TabPersistentStoreObserver {
+    public interface TabPersistentStoreObserver {
         /**
          * To be called when the file containing the initial information about the TabModels has
          * been loaded.
+         *
          * @param tabCountAtStartup How many tabs there are in the TabModels.
          */
-        public void onInitialized(int tabCountAtStartup) {}
+        default void onInitialized(int tabCountAtStartup) {}
 
         /** Called when details about a Tab are read from the metadata file. */
-        public void onDetailsRead(
+        default void onDetailsRead(
                 int index,
                 int id,
                 String url,
@@ -204,17 +205,19 @@ public class TabPersistentStore {
                 boolean fromMerge) {}
 
         /** To be called when the TabStates have all been loaded. */
-        public void onStateLoaded() {}
+        default void onStateLoaded() {}
 
         /** To be called when the TabState from another instance has been merged. */
-        public void onStateMerged() {}
+        default void onStateMerged() {}
 
         /**
-         * Called when the metadata file has been saved out asynchronously.
-         * This currently does not get called when the metadata file is saved out on the UI thread.
+         * Called when the metadata file has been saved out asynchronously. This currently does not
+         * get called when the metadata file is saved out on the UI thread.
+         *
          * @param modelSelectorMetadata The saved metadata of current tab model selector.
          */
-        public void onMetadataSavedAsynchronously(TabModelSelectorMetadata modelSelectorMetadata) {}
+        default void onMetadataSavedAsynchronously(
+                TabModelSelectorMetadata modelSelectorMetadata) {}
     }
 
     /** Stores information about a TabModel. */
@@ -377,7 +380,7 @@ public class TabPersistentStore {
         if (mPersistencePolicy.isMergeInProgress()) return;
 
         // TODO(smaier): We likely can move everything onto the SequencedTaskRunner when the
-        //  SERIAL_EXECUTOR path is gone. crbug.com/957735
+        // SERIAL_EXECUTOR path is gone. crbug.com/957735
         TaskRunner taskRunner =
                 needsInitialization ? mSequencedTaskRunner : PostTask.getTaskRunner(taskTraits);
 
@@ -397,14 +400,9 @@ public class TabPersistentStore {
     @Initializer
     public void onNativeLibraryReady() {
         TabStateAttributes.Observer attributesObserver =
-                new TabStateAttributes.Observer() {
-                    @Override
-                    public void onTabStateDirtinessChanged(
-                            Tab tab, @TabStateAttributes.DirtinessState int dirtiness) {
-                        if (dirtiness == TabStateAttributes.DirtinessState.DIRTY
-                                && !tab.isDestroyed()) {
-                            addTabToSaveQueue(tab);
-                        }
+                (Tab tab, @DirtinessState int dirtiness) -> {
+                    if (dirtiness == DirtinessState.DIRTY && !tab.isDestroyed()) {
+                        addTabToSaveQueue(tab);
                     }
                 };
         mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
@@ -414,8 +412,7 @@ public class TabPersistentStore {
                     public void onTabRegistered(Tab tab) {
                         TabStateAttributes attributes = TabStateAttributes.from(tab);
                         assumeNonNull(attributes);
-                        if (attributes.addObserver(attributesObserver)
-                                == TabStateAttributes.DirtinessState.DIRTY) {
+                        if (attributes.addObserver(attributesObserver) == DirtinessState.DIRTY) {
                             addTabToSaveQueue(tab);
                         }
                     }
@@ -578,9 +575,7 @@ public class TabPersistentStore {
             }
             // Now all pending saves (and migrations, if applicable) are complete we are ok to
             // resume any migrations which would be triggered by another Tab save.
-            for (Tab tab : tabsToMigrateCopy) {
-                mTabsToMigrate.add(tab);
-            }
+            mTabsToMigrate.addAll(tabsToMigrateCopy);
             updateMigratedFiles();
             mTabsToSave.clear();
         } finally {
@@ -593,7 +588,7 @@ public class TabPersistentStore {
      * written. Otherwise if the user restarts in the experiment they may have their Tab restored
      * using an out of date FlatBuffer file.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected void updateMigratedFiles() {
         List<Tab> updatedMigrations = new LinkedList<>();
         for (Tab tab : mTabsToMigrate) {
@@ -673,7 +668,7 @@ public class TabPersistentStore {
 
             // Restore the tabs for the other TabPersistentStore instance if its tab metadata file
             // exists.
-            if (mPrefetchTabListToMergeTasks.size() > 0) {
+            if (!mPrefetchTabListToMergeTasks.isEmpty()) {
                 for (Pair<AsyncTask<DataInputStream>, String> mergeTask :
                         mPrefetchTabListToMergeTasks) {
                     AsyncTask<DataInputStream> task = mergeTask.first;
@@ -685,7 +680,7 @@ public class TabPersistentStore {
                             stream,
                             createOnTabStateReadCallback(
                                     mTabModelSelector.isIncognitoSelected(),
-                                    mTabsToRestore.size() != 0),
+                                    !mTabsToRestore.isEmpty()),
                             null);
                 }
                 if (!mMergedFileNames.isEmpty()) {
@@ -839,7 +834,7 @@ public class TabPersistentStore {
         } catch (Exception e) {
             // Catch generic exception to prevent a corrupted state from crashing the app
             // at startup.
-            Log.i(TAG, "loadTabs exception: " + e.toString(), e);
+            Log.i(TAG, "loadTabs exception: " + e, e);
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
@@ -1034,28 +1029,24 @@ public class TabPersistentStore {
         mPersistencePolicy.cancelCleanupInProgress();
 
         mSequencedTaskRunner.execute(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        File[] baseStateFiles =
-                                TabStateDirectory.getOrCreateBaseStateDirectory().listFiles();
-                        if (baseStateFiles == null) return;
-                        for (File baseStateFile : baseStateFiles) {
-                            // In legacy scenarios (prior to migration, state files could reside in
-                            // the
-                            // root state directory.  So, handle deleting direct child files as well
-                            // as those that reside in sub directories.
-                            if (!baseStateFile.isDirectory()) {
-                                if (!baseStateFile.delete()) {
-                                    Log.e(TAG, "Failed to delete file: " + baseStateFile);
-                                }
-                            } else {
-                                File[] files = baseStateFile.listFiles();
-                                if (files == null) continue;
-                                for (File file : files) {
-                                    if (!file.delete()) {
-                                        Log.e(TAG, "Failed to delete file: " + file);
-                                    }
+                () -> {
+                    File[] baseStateFiles =
+                            TabStateDirectory.getOrCreateBaseStateDirectory().listFiles();
+                    if (baseStateFiles == null) return;
+                    for (File baseStateFile : baseStateFiles) {
+                        // In legacy scenarios (prior to migration, state files could reside in
+                        // the root state directory.  So, handle deleting direct child files as
+                        // well as those that reside in sub directories.
+                        if (!baseStateFile.isDirectory()) {
+                            if (!baseStateFile.delete()) {
+                                Log.e(TAG, "Failed to delete file: " + baseStateFile);
+                            }
+                        } else {
+                            File[] files = baseStateFile.listFiles();
+                            if (files == null) continue;
+                            for (File file : files) {
+                                if (!file.delete()) {
+                                    Log.e(TAG, "Failed to delete file: " + file);
                                 }
                             }
                         }
@@ -1099,10 +1090,8 @@ public class TabPersistentStore {
     private void addTabToSaveQueueIfApplicable(@Nullable Tab tab) {
         if (tab == null || tab.isDestroyed()) return;
         TabStateAttributes tabStateAttributes = assumeNonNull(TabStateAttributes.from(tab));
-        @TabStateAttributes.DirtinessState
-        int dirtinessState = tabStateAttributes.getDirtinessState();
-        if (mTabsToSave.contains(tab)
-                || dirtinessState == TabStateAttributes.DirtinessState.CLEAN) {
+        @DirtinessState int dirtinessState = tabStateAttributes.getDirtinessState();
+        if (mTabsToSave.contains(tab) || dirtinessState == DirtinessState.CLEAN) {
             return;
         }
 
@@ -1199,9 +1188,7 @@ public class TabPersistentStore {
         // The metadata file may be being written out before all of the Tabs have been restored.
         // Save that information out, as well.
         if (mTabBatchLoader != null) tabsToRestore.addAll(mTabBatchLoader.getTabsInBatch());
-        for (TabRestoreDetails details : mTabsToRestore) {
-            tabsToRestore.add(details);
-        }
+        tabsToRestore.addAll(mTabsToRestore);
 
         return saveTabModelSelectorMetadata(mTabModelSelector, tabsToRestore);
     }
@@ -1220,52 +1207,48 @@ public class TabPersistentStore {
      */
     private OnTabStateReadCallback createOnTabStateReadCallback(
             final boolean isIncognitoSelected, final boolean fromMerge) {
-        return new OnTabStateReadCallback() {
-            @Override
-            public void onDetailsRead(
-                    int index,
-                    int id,
-                    String url,
-                    @Nullable Boolean isIncognito,
-                    boolean isStandardActiveIndex,
-                    boolean isIncognitoActiveIndex) {
-                if (mLoadInProgress) {
-                    // If a load and merge are both in progress, that means two metadata files
-                    // are being read. If a merge was previously started and interrupted due to the
-                    // app dying, the two metadata files may contain duplicate IDs. Skip tabs with
-                    // duplicate IDs.
-                    if (mPersistencePolicy.isMergeInProgress() && mTabIdsToRestore.contains(id)) {
-                        return;
-                    }
-
-                    mTabIdsToRestore.add(id);
+        return (int index,
+                int id,
+                String url,
+                @Nullable Boolean isIncognito,
+                boolean isStandardActiveIndex,
+                boolean isIncognitoActiveIndex) -> {
+            if (mLoadInProgress) {
+                // If a load and merge are both in progress, that means two metadata files
+                // are being read. If a merge was previously started and interrupted due to the
+                // app dying, the two metadata files may contain duplicate IDs. Skip tabs with
+                // duplicate IDs.
+                if (mPersistencePolicy.isMergeInProgress() && mTabIdsToRestore.contains(id)) {
+                    return;
                 }
 
-                // Note that incognito tab may not load properly so we may need to use
-                // the current tab from the standard model.
-                // This logic only works because we store the incognito indices first.
-                TabRestoreDetails details =
-                        new TabRestoreDetails(id, index, isIncognito, url, fromMerge);
+                mTabIdsToRestore.add(id);
+            }
 
-                if (!fromMerge
-                        && ((isIncognitoActiveIndex && isIncognitoSelected)
-                                || (isStandardActiveIndex && !isIncognitoSelected))) {
-                    // Active tab gets loaded first
-                    mTabsToRestore.addFirst(details);
-                } else {
-                    mTabsToRestore.addLast(details);
-                }
+            // Note that incognito tab may not load properly so we may need to use
+            // the current tab from the standard model.
+            // This logic only works because we store the incognito indices first.
+            TabRestoreDetails details =
+                    new TabRestoreDetails(id, index, isIncognito, url, fromMerge);
 
-                for (TabPersistentStoreObserver observer : mObservers) {
-                    observer.onDetailsRead(
-                            index,
-                            id,
-                            url,
-                            isStandardActiveIndex,
-                            isIncognitoActiveIndex,
-                            isIncognito,
-                            fromMerge);
-                }
+            if (!fromMerge
+                    && ((isIncognitoActiveIndex && isIncognitoSelected)
+                            || (isStandardActiveIndex && !isIncognitoSelected))) {
+                // Active tab gets loaded first
+                mTabsToRestore.addFirst(details);
+            } else {
+                mTabsToRestore.addLast(details);
+            }
+
+            for (TabPersistentStoreObserver observer : mObservers) {
+                observer.onDetailsRead(
+                        index,
+                        id,
+                        url,
+                        isStandardActiveIndex,
+                        isIncognitoActiveIndex,
+                        isIncognito,
+                        fromMerge);
             }
         };
     }
@@ -1356,10 +1339,10 @@ public class TabPersistentStore {
         // Only migrate TabState to FlatBuffer format if:
         // - FlatBuffer schema flag is enabled
         // - We haven't hit the limit of sMaxMigrationsPerSave migrations per save yet
-        // - Deferred startup is complete (to reduce the risk of Jank).
+        // - Deferred startup is complete (to reduce the risk of jank).
         if (!isFlatBufferSchemaEnabled()
                 || mTabsToMigrate.isEmpty()
-                || numMigration > sMaxMigrationsPerSave
+                || numMigration > MAX_MIGRATIONS_PER_SAVE
                 || !sDeferredStartupComplete) {
             return;
         }
@@ -1441,8 +1424,9 @@ public class TabPersistentStore {
     private class SaveTabTask extends AsyncTask<Void> {
         final Tab mTab;
         final int mId;
-        @Nullable TabState mState;
         final boolean mEncrypted;
+
+        @Nullable TabState mState;
         boolean mStateSaved;
 
         SaveTabTask(Tab tab) {
@@ -1473,13 +1457,14 @@ public class TabPersistentStore {
     }
 
     /** Migrate Tab to new FlatBuffer format. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     class MigrateTabTask extends AsyncTask<Void> {
-        Tab mTab;
-        int mId;
+        final Tab mTab;
+        final int mId;
+        final boolean mEncrypted;
+        final int mNumMigration;
+
         @Nullable TabState mState;
-        boolean mEncrypted;
-        int mNumMigration;
         boolean mMigrationComplete;
 
         MigrateTabTask(Tab tab, int numMigration) {
@@ -1614,7 +1599,7 @@ public class TabPersistentStore {
         for (TabPersistentStoreObserver observer : mObservers) {
             // mergeState() starts an AsyncTask to call this and this calls
             // onTabStateInitialized which should be called from the UI thread.
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> observer.onStateLoaded());
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, observer::onStateLoaded);
         }
     }
 
@@ -1808,19 +1793,16 @@ public class TabPersistentStore {
     /** Asynchronously triggers a cleanup of any unused persistent data. */
     private void cleanUpPersistentData() {
         mPersistencePolicy.cleanupUnusedFiles(
-                new Callback<>() {
-                    @Override
-                    public void onResult(TabPersistenceFileInfo result) {
-                        if (result == null) return;
-                        for (String metadataFile : result.getMetadataFiles()) {
-                            deleteFileAsync(metadataFile, true);
-                        }
-                        for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
-                            TabStateFileManager.deleteAsync(
-                                    getStateDirectory(),
-                                    tabStateFileInfo.tabId,
-                                    tabStateFileInfo.isEncrypted);
-                        }
+                result -> {
+                    if (result == null) return;
+                    for (String metadataFile : result.getMetadataFiles()) {
+                        deleteFileAsync(metadataFile, true);
+                    }
+                    for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
+                        TabStateFileManager.deleteAsync(
+                                getStateDirectory(),
+                                tabStateFileInfo.tabId,
+                                tabStateFileInfo.isEncrypted);
                     }
                 });
         performPersistedTabDataMaintenance(null);
@@ -1853,26 +1835,22 @@ public class TabPersistentStore {
     public void cleanupStateFile(int instanceId) {
         mPersistencePolicy.cleanupInstanceState(
                 instanceId,
-                new Callback<>() {
-                    @Override
-                    public void onResult(TabPersistenceFileInfo result) {
-                        // Delete the instance state file (tab_stateX) as well.
-                        deleteFileAsync(
-                                TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(
-                                        instanceId),
-                                true);
+                (TabPersistenceFileInfo result) -> {
+                    // Delete the instance state file (tab_stateX) as well.
+                    deleteFileAsync(
+                            TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(instanceId),
+                            true);
 
-                        // |result| can be null if the task gets cancelled.
-                        if (result == null) return;
-                        for (String metadataFile : result.getMetadataFiles()) {
-                            deleteFileAsync(metadataFile, true);
-                        }
-                        for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
-                            TabStateFileManager.deleteAsync(
-                                    mPersistencePolicy.getOrCreateStateDirectory(),
-                                    tabStateFileInfo.tabId,
-                                    tabStateFileInfo.isEncrypted);
-                        }
+                    // |result| can be null if the task gets cancelled.
+                    if (result == null) return;
+                    for (String metadataFile : result.getMetadataFiles()) {
+                        deleteFileAsync(metadataFile, true);
+                    }
+                    for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
+                        TabStateFileManager.deleteAsync(
+                                mPersistencePolicy.getOrCreateStateDirectory(),
+                                tabStateFileInfo.tabId,
+                                tabStateFileInfo.isEncrypted);
                     }
                 });
     }
@@ -1894,11 +1872,7 @@ public class TabPersistentStore {
                 }
             }.executeOnTaskRunner(mSequencedTaskRunner);
         } else {
-            PostTask.runOrPostTask(
-                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                    () -> {
-                        deleteStateFile(file);
-                    });
+            PostTask.runOrPostTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> deleteStateFile(file));
         }
     }
 
@@ -1920,7 +1894,6 @@ public class TabPersistentStore {
     private class LoadTabsTask extends AsyncTask<@Nullable List<@Nullable TabState>> {
         private final List<TabRestoreDetails> mBatchedTabsToRestore;
         private final int mId;
-        private @Nullable List<@Nullable TabState> mTabStates;
 
         public LoadTabsTask(List<TabRestoreDetails> tabsToRestore) {
             mBatchedTabsToRestore = tabsToRestore;
@@ -1953,14 +1926,13 @@ public class TabPersistentStore {
         @Override
         protected void onPostExecute(@Nullable List<@Nullable TabState> tabStates) {
             TraceEvent.finishAsync("LoadTabState", mId);
-            mTabStates = tabStates;
 
             TraceEvent.finishAsync("LoadTabTask", mId);
             if (mDestroyed || isCancelled()) {
                 return;
             }
-            assumeNonNull(mTabStates);
-            completeLoad(mBatchedTabsToRestore, mTabStates);
+            assumeNonNull(tabStates);
+            completeLoad(mBatchedTabsToRestore, tabStates);
         }
     }
 
@@ -1990,7 +1962,7 @@ public class TabPersistentStore {
      * <p>This function can fail to determine if a Tab is incognito if not enough data about the Tab
      * was successfully saved out.
      *
-     * @return True if the tab is definitely Incognito, false if it's not or if it's undecideable.
+     * @return True if the tab is definitely Incognito, false if it's not or if it's undecidable.
      */
     private boolean isIncognitoTabBeingRestored(
             TabRestoreDetails tabDetails, @Nullable TabState tabState) {
@@ -2079,8 +2051,7 @@ public class TabPersistentStore {
      */
     @VisibleForTesting
     public static TabModelSelectorMetadata saveTabModelSelectorMetadata(
-            TabModelSelector selector, List<TabRestoreDetails> tabsBeingRestored)
-            throws IOException {
+            TabModelSelector selector, List<TabRestoreDetails> tabsBeingRestored) {
         ThreadUtils.assertOnUiThread();
 
         // TODO(crbug.com/40549331): Convert TabModelMetadata to use GURL.
@@ -2102,9 +2073,8 @@ public class TabPersistentStore {
                             : ActiveTabState.OTHER;
         }
 
-        // Add information about the tabs that haven't finished being loaded.
-        // We shouldn't have to worry about Tab duplication because the tab details are processed
-        // only on the UI Thread.
+        // Add information about the tabs that haven't finished being loaded. We shouldn't have to
+        // worry about Tab duplication because the tab details are processed only on the UI Thread.
         if (tabsBeingRestored != null) {
             for (TabRestoreDetails details : tabsBeingRestored) {
                 // isIncognito was added in M61 (see https://crbug.com/485217), so it is extremely
@@ -2130,16 +2100,13 @@ public class TabPersistentStore {
                         + ", "
                         + incognitoInfo.ids.size());
 
-        saveTabModelPrefs(normalInfo, incognitoInfo, activeTabId, activeTabState);
+        saveTabModelPrefs(activeTabId, activeTabState);
         return new TabModelSelectorMetadata(normalInfo, incognitoInfo);
     }
 
     @VisibleForTesting
     public static void saveTabModelPrefs(
-            TabModelMetadata normalInfo,
-            TabModelMetadata incognitoInfo,
-            int activeTabId,
-            int activeTabState) {
+            @TabId int activeTabId, @ActiveTabState int activeTabState) {
         // Always override the existing value in case there is no active tab.
         SharedPreferences.Editor editor = ChromeSharedPreferences.getInstance().getEditor();
         editor.putInt(ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, activeTabId);
@@ -2224,8 +2191,7 @@ public class TabPersistentStore {
                 stream.writeInt(metadata.normalModelMetadata.index + incognitoCount);
 
                 // Save incognito state first, so when we load, if the incognito files are
-                // unreadable
-                // we can fall back easily onto the standard selected tab.
+                // unreadable we can fall back easily onto the standard selected tab.
                 for (int i = 0; i < incognitoCount; i++) {
                     stream.writeInt(metadata.incognitoModelMetadata.ids.get(i));
                     stream.writeUTF(metadata.incognitoModelMetadata.urls.get(i));

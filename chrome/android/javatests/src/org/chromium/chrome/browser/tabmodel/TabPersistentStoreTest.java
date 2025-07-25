@@ -267,7 +267,7 @@ public class TabPersistentStoreTest {
         }
     }
 
-    static class MockTabPersistentStoreObserver extends TabPersistentStoreObserver {
+    static class MockTabPersistentStoreObserver implements TabPersistentStoreObserver {
         public final CallbackHelper initializedCallback = new CallbackHelper();
         public final CallbackHelper detailsReadCallback = new CallbackHelper();
         public final CallbackHelper stateLoadedCallback = new CallbackHelper();
@@ -599,13 +599,13 @@ public class TabPersistentStoreTest {
                 () -> {
                     Criteria.checkThat(
                             store.getTabsToMigrateForTesting().size(),
-                            Matchers.is(tabs.length - TabPersistentStore.sMaxMigrationsPerSave));
+                            Matchers.is(tabs.length - TabPersistentStore.MAX_MIGRATIONS_PER_SAVE));
                     Criteria.checkThat(store.getMigrateTabTaskForTesting(), Matchers.nullValue());
                 });
         // First 5 (= sMaxMigrationsPerSave) Tabs should be migrated.
         for (Tab tab :
                 Arrays.stream(tabs)
-                        .limit(TabPersistentStore.sMaxMigrationsPerSave)
+                        .limit(TabPersistentStore.MAX_MIGRATIONS_PER_SAVE)
                         .collect(Collectors.toList())) {
             File flatBufferFile =
                     TabStateFileManager.getTabStateFile(
