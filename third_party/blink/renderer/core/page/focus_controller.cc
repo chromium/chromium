@@ -97,6 +97,27 @@ bool ElementHasCarouselPseudoElement(const Element& element) {
          ElementHasScrollButton(element);
 }
 
+bool IsScrollButtonPseudoElement(PseudoId pseudo_id) {
+  return pseudo_id == kPseudoIdScrollButtonBlockStart ||
+         pseudo_id == kPseudoIdScrollButtonInlineStart ||
+         pseudo_id == kPseudoIdScrollButtonInlineEnd ||
+         pseudo_id == kPseudoIdScrollButtonBlockEnd;
+}
+
+Element* GetOriginatingElementOfActiveScrollMarker(const Element& scroller) {
+  if (auto* after_group = DynamicTo<ScrollMarkerGroupPseudoElement>(
+          scroller.GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+      after_group && after_group->Selected()) {
+    return &after_group->Selected()->UltimateOriginatingElement();
+  }
+  if (auto* before_group = DynamicTo<ScrollMarkerGroupPseudoElement>(
+          scroller.GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+      before_group && before_group->Selected()) {
+    return &before_group->Selected()->UltimateOriginatingElement();
+  }
+  return nullptr;
+}
+
 // As per https://drafts.csswg.org/css-overflow-5/#focus-order,
 // focus order for carousel scroller and pseudo-elements is different
 // from usual DOM order, these functions here help to achieve the specced
@@ -120,12 +141,21 @@ Element* GetSelectedScrollMarkerFromScrollMarkerGroup(
   return nullptr;
 }
 
-bool IsScrollerInLinksMode(const Element& scroller) {
-  std::optional<ScrollMarkerGroup::ScrollMarkerMode> mode =
+bool IsScrollerInMode(const Element& scroller,
+                      ScrollMarkerGroup::ScrollMarkerMode mode) {
+  std::optional<ScrollMarkerGroup::ScrollMarkerMode> scroller_mode =
       scroller.ComputedStyleRef().ScrollMarkerGroupMode();
-  return mode.has_value() &&
-         mode.value() == ScrollMarkerGroup::ScrollMarkerMode::kLinks &&
+  return scroller_mode.has_value() && scroller_mode.value() == mode &&
          RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled();
+}
+
+bool IsScrollerInLinksMode(const Element& scroller) {
+  return IsScrollerInMode(scroller,
+                          ScrollMarkerGroup::ScrollMarkerMode::kLinks);
+}
+
+bool IsScrollerInTabsMode(const Element& scroller) {
+  return IsScrollerInMode(scroller, ScrollMarkerGroup::ScrollMarkerMode::kTabs);
 }
 
 // Carousel pseudo-elements order.
@@ -170,6 +200,19 @@ Element* GetInCarouselOrder(const Element& scroller,
     }
   }
   DCHECK_NE(current_pseudo_id, kPseudoIdNone);
+  // In the `tabs` mode, the ::scroll-marker pseudo-element is a focus
+  // navigation scope owner for its associated originating element. This means
+  // that tab focus moves from the scroll marker to the content, but for
+  // carousel we want to go:
+  // ::scroll-marker, ::scroll-buttons, the ultimate originating element of
+  // the ::scroll-marker.
+  if constexpr (forward) {
+    if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() &&
+        IsScrollButtonPseudoElement(current_pseudo_id) &&
+        IsScrollerInTabsMode(scroller)) {
+      return GetOriginatingElementOfActiveScrollMarker(scroller);
+    }
+  }
   return forward ? const_cast<Element*>(&scroller) : nullptr;
 }
 
@@ -264,6 +307,25 @@ Element* GetPreviousForCarouselPseudoInFocusOrder(
       }
     }
     return GetPrevInCarouselOrder(*scroller, pseudo_id);
+  }
+  // In the `tabs` mode, the ::scroll-marker pseudo-element is a focus
+  // navigation scope owner for its associated originating element. This means
+  // that the backwards tab focus moves from the content to the scroll marker,
+  // but for carousel we want to go: The ultimate originating element of the
+  // ::scroll-marker,
+  // ::scroll-buttons, ::scroll-marker.
+  // Here it would be equal to finding the rightmost carousel pseudo-element, as
+  // it would be either scroll button or active ::scroll-marker.
+  if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+    if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(
+            current.GetPseudoElement(kPseudoIdScrollMarker))) {
+      if (scroll_marker->IsSelected()) {
+        Element* scroller = scroll_marker->ScrollMarkerGroup()->parentElement();
+        if (IsScrollerInTabsMode(*scroller)) {
+          return GetPrevInCarouselOrder(*scroller, kPseudoIdNone);
+        }
+      }
+    }
   }
   if (ElementHasCarouselPseudoElement(current)) {
     return GetPrevInCarouselOrder(current, kPseudoIdNone);
