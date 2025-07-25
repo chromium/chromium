@@ -132,8 +132,9 @@ TEST_F(CredentialStoreTest,
        FindCredentialsFromCredentialDescriptorList_LegacyCredentials) {
 #if BUILDFLAG(IS_MAC)
   // See https://crbug.com/354937434 .
-  if (base::mac::MacOSMajorVersion() == 15) {
-    GTEST_SKIP() << "Disabled on macOS Sequoia.";
+  if (base::mac::MacOSMajorVersion() == 15 ||
+      base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia and Tahoe.";
   }
 #endif
 
