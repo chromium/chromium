@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_SAVE_AND_FILL_DIALOG_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
@@ -43,6 +44,9 @@ class SaveAndFillDialogController {
   virtual bool IsValidExpirationDate(
       std::u16string_view expiration_date) const = 0;
   virtual bool IsValidNameOnCard(std::u16string_view input_text) const = 0;
+
+  // Returns empty vector if no legal message should be shown.
+  virtual const LegalMessageLines& GetLegalMessageLines() const = 0;
 
   // Dismisses the dialog by destroying its view and associated widget.
   virtual void Dismiss() = 0;

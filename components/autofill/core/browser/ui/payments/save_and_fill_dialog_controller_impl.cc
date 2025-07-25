@@ -219,6 +219,11 @@ bool SaveAndFillDialogControllerImpl::IsValidNameOnCard(
   return autofill::IsValidNameOnCard(input_text);
 }
 
+const LegalMessageLines& SaveAndFillDialogControllerImpl::GetLegalMessageLines()
+    const {
+  return legal_message_lines_;
+}
+
 void SaveAndFillDialogControllerImpl::Dismiss() {
   dialog_view_.reset();
 }

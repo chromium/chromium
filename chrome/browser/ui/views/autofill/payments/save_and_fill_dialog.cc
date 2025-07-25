@@ -20,8 +20,10 @@
 namespace autofill {
 
 SaveAndFillDialog::SaveAndFillDialog(
-    base::WeakPtr<SaveAndFillDialogController> controller)
-    : controller_(controller) {
+    base::WeakPtr<SaveAndFillDialogController> controller,
+    base::RepeatingCallback<void(const GURL&)> on_legal_message_link_clicked)
+    : controller_(controller),
+      on_legal_message_link_clicked_(on_legal_message_link_clicked) {
   // Set the ownership of the delegate, not the View. The View is owned by the
   // Widget as a child view.
   // TODO(crbug.com/338254375): Remove the following line once this is the
@@ -196,6 +198,10 @@ void SaveAndFillDialog::InitViews() {
       /*error_message=*/controller_->GetInvalidNameOnCardErrorMessage());
   name_on_card_data_.GetInputTextField().SetController(this);
   AddChildView(std::move(name_on_card_data_.container));
+
+  if (controller_->IsUploadSaveAndFill()) {
+    AddChildView(CreateLegalMessageView());
+  }
 }
 
 payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
@@ -234,6 +240,19 @@ void SaveAndFillDialog::OnDialogClosed(views::Widget::ClosedReason reason) {
   } else {
     controller_->Dismiss();
   }
+}
+
+std::unique_ptr<views::View> SaveAndFillDialog::CreateLegalMessageView() {
+  const LegalMessageLines& message_lines = controller_->GetLegalMessageLines();
+
+  if (message_lines.empty()) {
+    return nullptr;
+  }
+
+  // TODO(crbug.com/378164165): Add account info to the server dialog.
+  return autofill::CreateLegalMessageView(
+      message_lines, std::u16string(), ui::ImageModel(),
+      base::BindRepeating(on_legal_message_link_clicked_));
 }
 
 }  // namespace autofill

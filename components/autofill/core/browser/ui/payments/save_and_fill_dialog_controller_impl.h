@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
@@ -61,6 +62,8 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   bool IsValidExpirationDate(
       std::u16string_view expiration_date) const override;
   bool IsValidNameOnCard(std::u16string_view input_text) const override;
+
+  const LegalMessageLines& GetLegalMessageLines() const override;
 
   void Dismiss() override;
   void OnUserAcceptedDialog(

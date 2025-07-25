@@ -23,7 +23,8 @@ class SaveAndFillDialog : public views::DialogDelegateView,
                           public views::FocusChangeListener {
  public:
   explicit SaveAndFillDialog(
-      base::WeakPtr<SaveAndFillDialogController> controller);
+      base::WeakPtr<SaveAndFillDialogController> controller,
+      base::RepeatingCallback<void(const GURL&)> on_legal_message_link_clicked);
   SaveAndFillDialog(const SaveAndFillDialog&) = delete;
   SaveAndFillDialog& operator=(const SaveAndFillDialog&) = delete;
   ~SaveAndFillDialog() override;
@@ -50,8 +51,11 @@ class SaveAndFillDialog : public views::DialogDelegateView,
   GetUserProvidedDataFromInput() const;
   // Callback that is triggered when the dialog is accepted or canceled.
   void OnDialogClosed(views::Widget::ClosedReason reason);
+  // Create a view with a legal message.
+  std::unique_ptr<views::View> CreateLegalMessageView();
 
   base::WeakPtr<SaveAndFillDialogController> controller_;
+  base::RepeatingCallback<void(const GURL&)> on_legal_message_link_clicked_;
 
   // The focus manager associated with this view. The focus manager is expected
   // to outlive this view.

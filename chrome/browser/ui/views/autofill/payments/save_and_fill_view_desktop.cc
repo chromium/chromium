@@ -25,8 +25,12 @@ std::unique_ptr<SaveAndFillDialogView> CreateAndShowSaveAndFillDialog(
 
 SaveAndFillViewDesktop::SaveAndFillViewDesktop(
     base::WeakPtr<SaveAndFillDialogController> controller,
-    content::WebContents* web_contents) {
-  auto dialog_view = std::make_unique<SaveAndFillDialog>(controller);
+    content::WebContents* web_contents)
+    : web_contents_(web_contents) {
+  auto dialog_view = std::make_unique<SaveAndFillDialog>(
+      controller,
+      base::BindRepeating(&SaveAndFillViewDesktop::OnLegalMessageLinkClicked,
+                          weak_ptr_factory_.GetWeakPtr()));
   TabInterface* tab_interface = TabInterface::GetFromContents(web_contents);
   CHECK(tab_interface);
   dialog_widget_ = tab_interface->GetTabFeatures()
@@ -37,5 +41,13 @@ SaveAndFillViewDesktop::SaveAndFillViewDesktop(
 }
 
 SaveAndFillViewDesktop::~SaveAndFillViewDesktop() = default;
+
+void SaveAndFillViewDesktop::OnLegalMessageLinkClicked(const GURL& url) {
+  web_contents_->OpenURL(
+      content::OpenURLParams(
+          url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+}
 
 }  // namespace autofill
