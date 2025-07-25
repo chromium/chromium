@@ -34,6 +34,7 @@ bool IsInIncognito(bool from_tab_grid,
 }  // namespace
 
 const CGFloat kChromeAppBarPrototypeHeight = 58;
+const CGFloat kChromeAppBarPrototypeSymbolSize = 22;
 
 const CGFloat kDiamondBrowserCornerRadius = 18;
 

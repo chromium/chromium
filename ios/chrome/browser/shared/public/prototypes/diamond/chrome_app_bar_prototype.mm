@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/shared/public/prototypes/diamond/chrome_app_bar_prototype.h"
 
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/diamond_grid_button.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -15,9 +17,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-// Size of the symbols.
-const CGFloat kSymbolSize = 22;
 
 // Height of the "gap" in the mask of the browser background. This needs to be
 // twice the corner radius because the
@@ -97,11 +96,11 @@ UIButtonConfiguration* ButtonConfiguration() {
 
     UIButtonConfiguration* askGeminiConfiguration = ButtonConfiguration();
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-    askGeminiConfiguration.image =
-        CustomSymbolWithPointSize(kGeminiBrandedLogoImage, kSymbolSize);
+    askGeminiConfiguration.image = CustomSymbolWithPointSize(
+        kGeminiBrandedLogoImage, kChromeAppBarPrototypeSymbolSize);
 #else
-    askGeminiConfiguration.image =
-        DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage, kSymbolSize);
+    askGeminiConfiguration.image = DefaultSymbolWithPointSize(
+        kGeminiNonBrandedLogoImage, kChromeAppBarPrototypeSymbolSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
     askGeminiConfiguration.title =
@@ -111,8 +110,8 @@ UIButtonConfiguration* ButtonConfiguration() {
     _askGeminiButton.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIButtonConfiguration* openNewTabConfiguration = ButtonConfiguration();
-    openNewTabConfiguration.image =
-        DefaultSymbolWithPointSize(kPlusInCircleSymbol, kSymbolSize);
+    openNewTabConfiguration.image = DefaultSymbolWithPointSize(
+        kPlusInCircleSymbol, kChromeAppBarPrototypeSymbolSize);
     openNewTabConfiguration.title =
         l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB);
     _openNewTabButton =
@@ -124,11 +123,16 @@ UIButtonConfiguration* ButtonConfiguration() {
     // TODO(crbug.com/429955447): replace the symbol with a tab grid icon,
     // including number of tabs.
     tabGridConfiguration.image =
-        DefaultSymbolWithPointSize(@"square", kSymbolSize);
+        DefaultSymbolWithPointSize(@"square", kChromeAppBarPrototypeSymbolSize);
+    tabGridConfiguration.imageColorTransformer = ^UIColor*(UIColor* color) {
+      return UIColor.clearColor;
+    };
     tabGridConfiguration.title =
         l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_ALL_TABS);
-    _tabGridButton = [UIButton buttonWithConfiguration:tabGridConfiguration
-                                         primaryAction:nil];
+    _tabGridButton =
+        [DiamondGridButton buttonWithConfiguration:tabGridConfiguration
+                                     primaryAction:nil];
+    [_tabGridButton setup];
     _tabGridButton.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -163,6 +167,17 @@ UIButtonConfiguration* ButtonConfiguration() {
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self updateMask];
+}
+
+- (void)setCurrentPage:(TabGridPage)currentPage {
+  _currentPage = currentPage;
+  if (currentPage == TabGridPageRegularTabs) {
+    [_tabGridButton
+        configureWithWebStateList:self.regularBrowser->GetWebStateList()];
+  } else {
+    [_tabGridButton
+        configureWithWebStateList:self.incognitoBrowser->GetWebStateList()];
+  }
 }
 
 #pragma mark - Private

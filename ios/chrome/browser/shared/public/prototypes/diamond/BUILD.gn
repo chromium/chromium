@@ -6,6 +6,8 @@ source_set("diamond") {
   sources = [
     "chrome_app_bar_prototype.h",
     "chrome_app_bar_prototype.mm",
+    "diamond_grid_button.h",
+    "diamond_grid_button.mm",
     "new_tab_prototype_view_controller.h",
     "new_tab_prototype_view_controller.mm",
     "utils.h",
@@ -33,6 +35,8 @@ source_set("diamond") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:buildflags",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/web/model",

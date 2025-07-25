@@ -11,6 +11,7 @@ class Browser;
 
 // Height of the app bar.
 extern const CGFloat kChromeAppBarPrototypeHeight;
+extern const CGFloat kChromeAppBarPrototypeSymbolSize;
 
 // The corner radius of the browser container.
 extern const CGFloat kDiamondBrowserCornerRadius;

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 
 @protocol ApplicationCommands;
+@class ChromeAppBarPrototype;
 @class GridContainerViewController;
 @protocol GridCommands;
 class GURL;
@@ -210,7 +211,7 @@ enum class TabGridPageConfiguration {
 - (void)updateActivePageToCurrent;
 
 // Sets the app bar.
-- (void)setAppBar:(UIView*)appBar;
+- (void)setAppBar:(ChromeAppBarPrototype*)appBar;
 
 @end
 

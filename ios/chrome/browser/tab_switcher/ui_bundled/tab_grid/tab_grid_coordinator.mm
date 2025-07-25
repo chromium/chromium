@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/chrome_app_bar_prototype.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/diamond_grid_button.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -1022,6 +1023,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   if (IsDiamondPrototypeEnabled()) {
     _appBar = [[ChromeAppBarPrototype alloc] init];
+    _appBar.regularBrowser = _regularBrowser;
+    _appBar.incognitoBrowser = _incognitoBrowser;
     [_appBar.askGeminiButton addTarget:self
                                 action:@selector(prototypeGeminiCallback)
                       forControlEvents:UIControlEventTouchUpInside];

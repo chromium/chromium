@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/chrome_app_bar_prototype.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -198,7 +199,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Current mode of the TabGrid.
   TabGridMode _mode;
   // The app bar, for diamond prototype.
-  UIView* _appBar;
+  ChromeAppBarPrototype* _appBar;
 }
 
 - (instancetype)initWithPageConfiguration:
@@ -541,7 +542,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.activePage = newActivePage;
 }
 
-- (void)setAppBar:(UIView*)appBar {
+- (void)setAppBar:(ChromeAppBarPrototype*)appBar {
   CHECK(IsDiamondPrototypeEnabled());
   _appBar = appBar;
 }
@@ -723,6 +724,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setCurrentPage:(TabGridPage)currentPage {
+  if (IsDiamondPrototypeEnabled()) {
+    _appBar.currentPage =
+        (currentPage == TabGridPageTabGroups) ? self.activePage : currentPage;
+  }
   // Record the idle metric if the previous page was the third panel.
   if (_currentPage != currentPage) {
     [self tabGridDidPerformAction:TabGridActionType::kChangePage];
