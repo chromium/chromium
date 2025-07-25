@@ -12,12 +12,12 @@ import android.os.SystemClock;
 import android.provider.Browser;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -29,11 +29,12 @@ import java.util.Map;
 /**
  * Launches an activity that displays a relevant support page and has an option to provide feedback.
  */
+@NullMarked
 public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     protected static final String FALLBACK_SUPPORT_URL =
             "https://support.google.com/chrome/topic/6069782";
 
-    private static ProfileKeyedMap<HelpAndFeedbackLauncher> sProfileToLauncherMap;
+    private static @Nullable ProfileKeyedMap<HelpAndFeedbackLauncher> sProfileToLauncherMap;
     private final HelpAndFeedbackLauncherDelegate mDelegate;
     private final Profile mProfile;
 

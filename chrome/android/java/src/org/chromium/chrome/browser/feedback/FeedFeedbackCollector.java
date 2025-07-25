@@ -27,10 +27,11 @@ public class FeedFeedbackCollector extends FeedbackCollector<FeedFeedbackCollect
     /** Initialization parameters needed by the Feed overload of FeedbackCollector<T>. */
     public static class InitParams {
         public Profile profile;
-        public String url;
-        public Map<String, String> feedContext;
+        public @Nullable String url;
+        public @Nullable Map<String, String> feedContext;
 
-        public InitParams(Profile profile, String url, Map<String, String> feedContext) {
+        public InitParams(
+                Profile profile, @Nullable String url, @Nullable Map<String, String> feedContext) {
             this.profile = profile;
             this.url = url;
             this.feedContext = feedContext;

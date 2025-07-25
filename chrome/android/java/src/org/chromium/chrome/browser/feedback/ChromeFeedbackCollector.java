@@ -28,10 +28,10 @@ public class ChromeFeedbackCollector extends FeedbackCollector<ChromeFeedbackCol
     /** Initialization Parameters of the Chrome overload of FeedbackCollector<T>. */
     public static class InitParams {
         public Profile profile;
-        public String url;
-        public String feedbackContext;
+        public @Nullable String url;
+        public @Nullable String feedbackContext;
 
-        public InitParams(Profile profile, String url, String feedbackContext) {
+        public InitParams(Profile profile, @Nullable String url, @Nullable String feedbackContext) {
             this.profile = profile;
             this.url = url;
             this.feedbackContext = feedbackContext;
