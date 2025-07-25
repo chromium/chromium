@@ -214,14 +214,10 @@ bool GraphiteSharedContext::InsertRecordingImpl(
 
   auto insert_status = graphite_context_->insertRecording(*info_ptr);
 
+  // TODO(433845560): Check the kAddCommandsFailed failures.
   // Crash only if we're not simulating a failure for testing.
   const bool simulating_insert_failure =
       info_ptr->fSimulatedStatus != skgpu::graphite::InsertStatus::kSuccess;
-
-  // InsertStatus::kAddCommandsFailed indicates an unrecoverable error in Skia.
-  // Continuing to render would lead to severe graphical corruption.
-  CHECK(simulating_insert_failure ||
-        insert_status != skgpu::graphite::InsertStatus::kAddCommandsFailed);
 
   // InsertStatus::kAsyncShaderCompilesFailed is also an unrecoverable error for
   // which we should also clear the disk shader cache in case the error was due
