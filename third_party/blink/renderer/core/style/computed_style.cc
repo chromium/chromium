@@ -764,7 +764,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   StyleDifference diff;
   uint64_t field_diff = FieldInvalidationDiff(*this, other);
 
-  if ((field_diff & kReshape) || ShouldWrapLine() != other.ShouldWrapLine()) {
+  if (DiffNeedsReshape(other, field_diff)) {
     diff.SetNeedsReshape();
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
@@ -916,6 +916,25 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   // transition properly.
 
   return diff;
+}
+
+bool ComputedStyle::DiffNeedsReshape(const ComputedStyle& other,
+                                     uint64_t field_diff) const {
+  if (field_diff & kReshape) {
+    return true;
+  }
+
+  if (ShouldWrapLine() != other.ShouldWrapLine()) {
+    return true;
+  }
+
+  if (field_diff & kBorderWidth) {
+    if (Display() == EDisplay::kInline && HasBorder() != other.HasBorder()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
