@@ -1125,9 +1125,28 @@ export declare interface TabData {
    * Whether the tab is audible or visible. Specifically this is the visibility
    * of the WebContents as returned by: `WebContents::GetVisibility`. If the
    * visibility is either VISIBLE or OCCLUDED, we consider the web contents to
-   * be visible.
+   * be visible. @todo: This field is being added as a temporary solution.
+   * b/433995475
    */
   isObservable?: boolean;
+
+  /**
+   * Whether the tab has active audio or video playing, used for showing tab UI.
+   * This is a best effort signal, and may not be accurate/stale due to not
+   * observing media events directly. @todo: This field is being added as a
+   * temporary solution. b/433995475
+   */
+  isMediaActive?: boolean;
+
+
+  /**
+   * Whether the tab content is being captured by another functionality (e.g.,
+   * screen share in video chat). This is a best effort signal, and may not be
+   * accurate/stale due to not observing tab content capture events
+   * directly. @todo: This field is being added as a temporary solution.
+   * b/433995475
+   */
+  isTabContentCaptured?: boolean;
 }
 
 /** A candidate for pinning. */

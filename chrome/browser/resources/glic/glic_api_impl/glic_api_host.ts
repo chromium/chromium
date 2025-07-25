@@ -1323,6 +1323,8 @@ function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
   }
 
   const isObservable = optionalToClient(tabData.isObservable);
+  const isMediaActive = optionalToClient(tabData.isMediaActive);
+  const isTabContentCaptured = optionalToClient(tabData.isTabContentCaptured);
   return {
     tabId: tabIdToClient(tabData.tabId),
     windowId: windowIdToClient(tabData.windowId),
@@ -1332,6 +1334,8 @@ function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
     faviconUrl,
     documentMimeType: tabData.documentMimeType,
     isObservable,
+    isMediaActive,
+    isTabContentCaptured,
   };
 }
 

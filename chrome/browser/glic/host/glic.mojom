@@ -1029,6 +1029,14 @@ struct TabData {
   string document_mime_type;
   // Whether the tab is observable (i.e., audible or visible).
   bool? is_observable;
+  // Whether the tab has active audio or video playing, used for showing tab UI.
+  // This is a best effort signal, and may not be accurate/stale due to not
+  // observing media events directly.
+  bool? is_media_active;
+  // Whether the tab content is being captured by another functionality (e.g., screen share in video chat).
+  // This is a best effort signal, and may not be accurate/stale due to not
+  // observing tab content capture events directly.
+  bool? is_tab_content_captured;
 };
 
 // Data about the focused tab state.

@@ -144,14 +144,18 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
     }
   }
 
+  // TODO(b/426644734): investigate triggering updates due to changes to
+  // observability for focused tab data.
   bool is_audible = web_contents->IsCurrentlyAudible();
+  bool is_tab_content_captured = web_contents->IsBeingCaptured();
   bool is_foreground = IsForeground(web_contents->GetVisibility());
   bool is_observable = is_audible || is_foreground;
   return glic::mojom::TabData::New(
       GetTabId(web_contents),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
       GetTabUrl(web_contents), base::UTF16ToUTF8(web_contents->GetTitle()),
-      favicon, favicon_url, web_contents->GetContentsMimeType(), is_observable);
+      favicon, favicon_url, web_contents->GetContentsMimeType(), is_observable,
+      is_audible, is_tab_content_captured);
 }
 
 // CreateFocusedTabData Implementation:
