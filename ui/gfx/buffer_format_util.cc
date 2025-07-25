@@ -32,35 +32,6 @@ base::span<const BufferFormat> GetBufferFormatsForTesting() {
   return kBufferFormats;
 }
 
-size_t AlphaBitsForBufferFormat(BufferFormat format) {
-  switch (format) {
-    case BufferFormat::RGBA_4444:
-      return 4;
-    case BufferFormat::RGBA_8888:
-      return 8;
-    case BufferFormat::BGRA_1010102:
-    case BufferFormat::RGBA_1010102:
-      return 2;
-    case BufferFormat::BGRA_8888:
-    case BufferFormat::YUVA_420_TRIPLANAR:
-      return 8;
-    case BufferFormat::RGBA_F16:
-      return 16;
-    case BufferFormat::R_8:
-    case BufferFormat::R_16:
-    case BufferFormat::RG_88:
-    case BufferFormat::RG_1616:
-    case BufferFormat::BGR_565:
-    case BufferFormat::RGBX_8888:
-    case BufferFormat::BGRX_8888:
-    case BufferFormat::YVU_420:
-    case BufferFormat::YUV_420_BIPLANAR:
-    case BufferFormat::P010:
-      return 0;
-  }
-  NOTREACHED();
-}
-
 size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format) {
   switch (format) {
     case BufferFormat::R_8:
