@@ -8,8 +8,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
+#include "components/password_manager/core/browser/form_fetcher.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace password_manager {
+class FormFetcherImpl;
+class PasswordManagerClient;
+}  // namespace password_manager
 
 namespace actor_login {
 
@@ -17,7 +23,8 @@ namespace actor_login {
 // intrinsically tied to a specific browser tab.
 class ActorLoginDelegateImpl
     : public ActorLoginDelegate,
-      public content::WebContentsUserData<ActorLoginDelegateImpl> {
+      public content::WebContentsUserData<ActorLoginDelegateImpl>,
+      public password_manager::FormFetcher::Consumer {
  public:
   ~ActorLoginDelegateImpl() override;
 
@@ -35,16 +42,24 @@ class ActorLoginDelegateImpl
   // Private constructor for `WebContentsUserData`.
   // This is the constructor that `WebContentsUserData::FromWebContents` will
   // call when no instance exists and it needs to create one.
-  explicit ActorLoginDelegateImpl(content::WebContents* web_contents);
+  explicit ActorLoginDelegateImpl(
+      content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client);
 
   // Private helper methods for handling asynchronous task completion.
-  void OnGetCredentialsCompleted();
   void OnAttemptLoginCompleted();
+
+  // `FormFetcher::Consumer`:
+  void OnFetchCompleted() override;
 
   // Store the pending callbacks. A non-null callback indicates an active
   // request.
   CredentialsOrErrorReply pending_get_credentials_callback_;
   LoginStatusResultOrErrorReply pending_attempt_login_callback_;
+
+  std::unique_ptr<password_manager::FormFetcherImpl> form_fetcher_;
+
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   base::WeakPtrFactory<ActorLoginDelegateImpl> weak_ptr_factory_{this};
 

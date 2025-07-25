@@ -5,10 +5,15 @@
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -17,8 +22,42 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 namespace actor_login {
-
+namespace {
 using testing::Return;
+
+class FakePasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
+ public:
+  FakePasswordManagerClient() {
+    profile_store_ = base::MakeRefCounted<password_manager::TestPasswordStore>(
+        password_manager::IsAccountStore(false));
+    account_store_ = base::MakeRefCounted<password_manager::TestPasswordStore>(
+        password_manager::IsAccountStore(true));
+  }
+  ~FakePasswordManagerClient() override = default;
+
+  scoped_refptr<password_manager::TestPasswordStore> profile_store() {
+    return profile_store_;
+  }
+  scoped_refptr<password_manager::TestPasswordStore> account_store() {
+    return account_store_;
+  }
+
+ private:
+  // PasswordManagerClient:
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore()
+      const override {
+    return profile_store_.get();
+  }
+  password_manager::PasswordStoreInterface* GetAccountPasswordStore()
+      const override {
+    return account_store_.get();
+  }
+  scoped_refptr<password_manager::TestPasswordStore> profile_store_;
+  scoped_refptr<password_manager::TestPasswordStore> account_store_;
+};
+
+}  // namespace
 
 class ActorLoginDelegateImplTest : public ::testing::Test {
  public:
@@ -28,8 +67,17 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
     profile_ = std::make_unique<TestingProfile>();
 
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
-    delegate_ =
-        ActorLoginDelegateImpl::GetOrCreateForWebContents(web_contents_);
+    delegate_ = ActorLoginDelegateImpl::GetOrCreateForWebContents(web_contents_,
+                                                                  &client_);
+    client_.profile_store()->Init(profile_->GetPrefs(),
+                                  /* affiliated_match_helper=*/nullptr);
+    client_.account_store()->Init(profile_->GetPrefs(),
+                                  /* affiliated_match_helper=*/nullptr);
+  }
+
+  void TearDown() override {
+    client_.profile_store()->ShutdownOnUIThread();
+    client_.account_store()->ShutdownOnUIThread();
   }
 
  protected:
@@ -42,21 +90,36 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
   // `raw_ptr` because `TestWebContentsFactory` owns it
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 
+  FakePasswordManagerClient client_;
+
   // `raw_ptr` because `WebContentsUserData` owns it
   raw_ptr<ActorLoginDelegateImpl> delegate_ = nullptr;
 };
 
-TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess) {
+TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
   base::test::TestFuture<CredentialsOrError> future;
   delegate_->GetCredentials(future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_TRUE(future.Get()
-                  .value()
-                  .empty());  // Delegate's default impl returns an empty vector
+  EXPECT_TRUE(future.Get().value().empty());
 }
 
-TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy) {
+TEST_F(ActorLoginDelegateImplTest, GetCredentials_FeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kActorLogin);
+  base::test::TestFuture<CredentialsOrError> future;
+  delegate_->GetCredentials(future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_TRUE(future.Get().value().empty());
+}
+
+TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
   // Start the first request.
   base::test::TestFuture<CredentialsOrError> first_future;
   delegate_->GetCredentials(first_future.GetCallback());
@@ -70,7 +133,9 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy) {
   ASSERT_TRUE(first_future.Get().has_value());
 }
 
-TEST_F(ActorLoginDelegateImplTest, AttemptLoginSuccess) {
+TEST_F(ActorLoginDelegateImplTest, AttemptLoginSuccess_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
   tabs::MockTabInterface mock_tab;
   Credential credential;
 
@@ -82,7 +147,22 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLoginSuccess) {
   EXPECT_FALSE(future.Get().value().value());
 }
 
-TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy) {
+TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kActorLogin);
+  Credential credential;
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  delegate_->AttemptLogin(credential, future.GetCallback());
+
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(), ActorLoginError::kUnknown);
+}
+
+TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
   Credential credential;
 
   // Start the first request (`AttemptLogin`).
@@ -109,7 +189,9 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy) {
   ASSERT_TRUE(first_future.Get().has_value());
 }
 
-TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion) {
+TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
   // First `GetCredentials` call.
   base::test::TestFuture<CredentialsOrError> future1;
   delegate_->GetCredentials(future1.GetCallback());
@@ -130,6 +212,74 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion) {
   base::test::TestFuture<LoginStatusResultOrError> future4;
   delegate_->AttemptLogin(credential, future4.GetCallback());
   ASSERT_TRUE(future4.Get().has_value());
+}
+
+TEST_F(ActorLoginDelegateImplTest, GetCredentialsFiltersByDomain_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
+
+  password_manager::PasswordForm form1;
+  form1.url = GURL("https://foo.com");
+  form1.signon_realm = form1.url.spec();
+  form1.username_value = u"foo_username";
+  form1.password_value = u"foo_password";
+  client_.profile_store()->AddLogin(form1);
+
+  password_manager::PasswordForm form2;
+  form2.url = GURL("https://bar.com");
+  form2.signon_realm = form2.url.spec();
+  form2.username_value = u"bar_username";
+  form2.password_value = u"bar_password";
+  client_.account_store()->AddLogin(form2);
+
+  content::WebContentsTester::For(web_contents_)
+      ->SetLastCommittedURL(GURL("https://foo.com"));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  delegate_->GetCredentials(future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  ASSERT_EQ(future.Get().value().size(), 1u);
+  EXPECT_EQ(future.Get().value()[0].username, u"foo_username");
+  EXPECT_EQ(future.Get().value()[0].type, kPassword);
+  EXPECT_EQ(future.Get().value()[0].source_site_or_app, u"https://foo.com/");
+  EXPECT_FALSE(future.Get().value()[0].immediatelyAvailableToLogin);
+}
+
+TEST_F(ActorLoginDelegateImplTest, GetCredentialsFromAllStores_FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kActorLogin);
+
+  password_manager::PasswordForm form1;
+  form1.url = GURL("https://foo.com");
+  form1.signon_realm = form1.url.spec();
+  form1.username_value = u"foo_username";
+  form1.password_value = u"foo_password";
+  client_.profile_store()->AddLogin(form1);
+
+  password_manager::PasswordForm form2;
+  form2.url = GURL("https://foo.com");
+  form2.signon_realm = form2.url.spec();
+  form2.username_value = u"bar_username";
+  form2.password_value = u"bar_password";
+  client_.account_store()->AddLogin(form2);
+
+  content::WebContentsTester::For(web_contents_)
+      ->SetLastCommittedURL(GURL("https://foo.com"));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  delegate_->GetCredentials(future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 2u);
+
+  std::vector<std::u16string> usernames;
+  for (const auto& credential : credentials) {
+    usernames.push_back(credential.username);
+  }
+  EXPECT_THAT(usernames,
+              testing::UnorderedElementsAre(u"foo_username", u"bar_username"));
 }
 
 }  // namespace actor_login

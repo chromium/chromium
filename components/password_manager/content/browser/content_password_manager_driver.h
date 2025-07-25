@@ -150,6 +150,8 @@ class ContentPasswordManagerDriver final
     return render_frame_host_;
   }
 
+  PasswordManagerClient* client() { return client_; }
+
 #if defined(UNIT_TEST)
   // Exposed to allow browser tests to hook the driver.
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>&
