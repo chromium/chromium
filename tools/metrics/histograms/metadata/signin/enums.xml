@@ -672,6 +672,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Sync"/>
   <int value="1" label="Wallpaper Google Photos fetcher"/>
   <int value="2" label="Wallpaper fetcher delegate"/>
+  <int value="3" label="Ip Protection Service"/>
+  <int value="4" label="Sanitized image source"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

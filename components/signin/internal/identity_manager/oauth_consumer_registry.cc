@@ -12,6 +12,8 @@ constexpr char kSyncOAuthConsumerName[] = "sync";
 constexpr char kWallpaperGooglePhotosFetcherName[] =
     "wallpaper_google_photos_fetcher";
 constexpr char kWallpaperFetcherDelegateName[] = "wallpaper_fetcher_delegate";
+constexpr char kIpProtectionServiceName[] = "ip_protection_service";
+constexpr char kSanitizedImageSourceName[] = "sanitized_image_source";
 }
 
 namespace signin {
@@ -45,6 +47,14 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
     case OAuthConsumerId::kWallpaperFetcherDelegate:
       return OAuthConsumer(
           /*name=*/kWallpaperFetcherDelegateName,
+          /*scopes=*/{GaiaConstants::kPhotosModuleImageOAuth2Scope});
+    case OAuthConsumerId::kIpProtectionService:
+      return OAuthConsumer(
+          /*name=*/kIpProtectionServiceName,
+          /*scopes=*/{GaiaConstants::kIpProtectionAuthScope});
+    case OAuthConsumerId::kSanitizedImageSource:
+      return OAuthConsumer(
+          /*name=*/kSanitizedImageSourceName,
           /*scopes=*/{GaiaConstants::kPhotosModuleImageOAuth2Scope});
   }
   NOTREACHED();

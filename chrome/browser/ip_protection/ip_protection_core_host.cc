@@ -304,9 +304,6 @@ void IpProtectionCoreHost::RequestOAuthToken(
 
 void IpProtectionCoreHost::RequestOAuthTokenInternal(
     RequestOAuthTokenInternalCallback callback) {
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kIpProtectionAuthScope);
-
   // Waits for the account to have a refresh token before making the request.
   auto mode =
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable;
@@ -319,7 +316,7 @@ void IpProtectionCoreHost::RequestOAuthTokenInternal(
   // destroyed.
   auto oauth_token_fetcher =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          /*consumer_name=*/"IpProtectionService", identity_manager_, scopes,
+          signin::OAuthConsumerId::kIpProtectionService, identity_manager_,
           mode, signin::ConsentLevel::kSignin);
   auto* oauth_token_fetcher_ptr = oauth_token_fetcher.get();
   oauth_token_fetcher_ptr->Start(base::BindOnce(
