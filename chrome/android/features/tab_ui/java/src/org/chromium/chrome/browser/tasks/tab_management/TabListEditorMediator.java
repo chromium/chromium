@@ -164,10 +164,8 @@ class TabListEditorMediator
                     }
                 };
 
-        mOnTabGroupModelFilterChanged.onResult(
-                assumeNonNull(
-                        mCurrentTabGroupModelFilterSupplier.addObserver(
-                                mOnTabGroupModelFilterChanged)));
+        mCurrentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
+                mOnTabGroupModelFilterChanged);
 
         mBackPressChangedSupplier.set(isEditorVisible());
         mModel.addObserver(

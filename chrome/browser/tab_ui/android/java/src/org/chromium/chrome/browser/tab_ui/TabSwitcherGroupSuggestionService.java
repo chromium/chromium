@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import static java.util.Comparator.comparingInt;
 
 import org.chromium.base.Callback;
@@ -168,10 +166,8 @@ public class TabSwitcherGroupSuggestionService {
 
         mGroupSuggestionsService = GroupSuggestionsServiceFactory.getForProfile(profile);
 
-        mOnTabGroupModelFilterChanged.onResult(
-                assumeNonNull(
-                        mCurrentTabGroupModelFilterSupplier.addObserver(
-                                mOnTabGroupModelFilterChanged)));
+        mCurrentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
+                mOnTabGroupModelFilterChanged);
     }
 
     public void destroy() {

@@ -215,8 +215,8 @@ public class TabSwitcherMessageManager {
                 new TabGridIphDialogCoordinator(activity, mModalDialogManager);
 
         mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
-        mOnTabGroupModelFilterChanged.onResult(
-                currentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged));
+        currentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
+                mOnTabGroupModelFilterChanged);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;

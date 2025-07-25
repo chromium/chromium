@@ -545,8 +545,8 @@ public class TabGridDialogMediator
                     }
                 };
 
-        mOnTabGroupModelFilterChanged.onResult(
-                mCurrentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged));
+        mCurrentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
+                mOnTabGroupModelFilterChanged);
 
         // Setup ScrimView click Runnable.
         mScrimClickRunnable =

@@ -1424,8 +1424,8 @@ class TabListMediator implements TabListNotificationHandler {
         mOriginalProfile = originalProfile;
         mTabListFaviconProvider.initWithNative(originalProfile);
 
-        mOnTabGroupModelFilterChanged.onResult(
-                mCurrentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged));
+        mCurrentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
+                mOnTabGroupModelFilterChanged);
 
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(originalProfile);
         if (mTabGroupSyncService != null) {

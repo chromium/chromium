@@ -100,6 +100,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                 }
             };
 
+    private final Callback<@Nullable TabSwitcherPaneCoordinator> mOnPaneCoordinatorChanged =
+            new ValueChangedCallback<>(this::onTabSwitcherPaneCoordinatorChanged);
     private final Callback<Boolean> mScrollingObserver = this::onScrollingChanged;
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final SharedPreferences mSharedPreferences;
@@ -177,8 +179,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
 
         profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);
         getIsVisibleSupplier().addObserver(mVisibilityObserver);
-        getTabSwitcherPaneCoordinatorSupplier()
-                .addObserver(new ValueChangedCallback<>(this::onTabSwitcherPaneCoordinatorChanged));
+        getTabSwitcherPaneCoordinatorSupplier().addObserver(mOnPaneCoordinatorChanged);
     }
 
     @Override
@@ -195,6 +196,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     public void destroy() {
         // Do this before super.destroy() since the visibility supplier is owned by the base class.
         getIsVisibleSupplier().removeObserver(mVisibilityObserver);
+        getTabSwitcherPaneCoordinatorSupplier().removeObserver(mOnPaneCoordinatorChanged);
         super.destroy();
         mTabSwitcherPaneDrawableCoordinator.destroy();
         if (mPriceAnnotationsPrefListener != null) {
