@@ -19,110 +19,36 @@
 #include "third_party/openxr/dev/xr_android.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
-namespace {
-constexpr uint32_t kMaxHitTestResults = 2;
-}  // namespace
-
 namespace device {
-
-OpenXRSceneUnderstandingManagerAndroid::
-    ~OpenXRSceneUnderstandingManagerAndroid() = default;
 
 OpenXRSceneUnderstandingManagerAndroid::OpenXRSceneUnderstandingManagerAndroid(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     XrSpace mojo_space)
-    : extension_helper_(extension_helper),
-      session_(session),
-      mojo_space_(mojo_space) {}
-
-bool OpenXRSceneUnderstandingManagerAndroid::OnNewHitTestSubscription() {
-  if (plane_tracker_ == XR_NULL_HANDLE) {
-    XrTrackableTrackerCreateInfoANDROID create_info{
-        XR_TYPE_TRACKABLE_TRACKER_CREATE_INFO_ANDROID};
-    create_info.trackableType = XR_TRACKABLE_TYPE_PLANE_ANDROID;
-
-    XrResult result =
-        extension_helper_->ExtensionMethods().xrCreateTrackableTrackerANDROID(
-            session_, &create_info, &plane_tracker_);
-    RETURN_VAL_IF_XR_FAILED(result, false);
-  }
-
-  return true;
+    : extension_helper_(extension_helper), mojo_space_(mojo_space) {
+  plane_manager_ =
+      std::make_unique<OpenXrPlaneManagerAndroid>(extension_helper, session);
+  hit_test_manager_ = std::make_unique<OpenXrHitTestManagerAndroid>(
+      plane_manager_.get(), extension_helper, session, mojo_space_);
 }
 
-void OpenXRSceneUnderstandingManagerAndroid::
-    OnAllHitTestSubscriptionsRemoved() {
-  if (plane_tracker_ != XR_NULL_HANDLE) {
-    // We don't really need to handle if we fail to destroy the plane tracker,
-    // but log it for future debuggability.
-    XrResult result =
-        extension_helper_->ExtensionMethods().xrDestroyTrackableTrackerANDROID(
-            plane_tracker_);
-    plane_tracker_ = XR_NULL_HANDLE;
-    if (XR_FAILED(result)) {
-      LOG(ERROR) << __func__ << " Could not destroy a plane tracker";
-    }
-  }
+OpenXRSceneUnderstandingManagerAndroid::
+    ~OpenXRSceneUnderstandingManagerAndroid() = default;
+
+OpenXrPlaneManager* OpenXRSceneUnderstandingManagerAndroid::GetPlaneManager() {
+  return plane_manager_.get();
+}
+
+OpenXrHitTestManager*
+OpenXRSceneUnderstandingManagerAndroid::GetHitTestManager() {
+  return hit_test_manager_.get();
 }
 
 void OpenXRSceneUnderstandingManagerAndroid::OnFrameUpdate(
     XrTime predicted_display_time) {
-  predicted_display_time_ = predicted_display_time;
-}
-
-std::vector<mojom::XRHitResultPtr>
-OpenXRSceneUnderstandingManagerAndroid::RequestHitTest(
-    const gfx::Point3F& ray_origin,
-    const gfx::Vector3dF& ray_direction) {
-  if (predicted_display_time_ == 0 || plane_tracker_ == XR_NULL_HANDLE) {
-    DLOG(ERROR)
-        << __func__
-        << " Missing either predicted display time or plane tracker. Returning";
-    return {};
+  if (plane_manager_) {
+    plane_manager_->OnFrameUpdate(predicted_display_time, mojo_space_);
   }
-
-  XrRaycastInfoANDROID raycast_info = {XR_TYPE_RAYCAST_INFO_ANDROID};
-  raycast_info.maxResults = kMaxHitTestResults;
-  raycast_info.trackerCount = 1;
-  raycast_info.trackers = &plane_tracker_;
-  raycast_info.origin =
-      XrVector3f{ray_origin.x(), ray_origin.y(), ray_origin.z()};
-  raycast_info.trajectory =
-      XrVector3f{ray_direction.x(), ray_direction.y(), ray_direction.z()};
-  raycast_info.space = mojo_space_;
-  raycast_info.time = predicted_display_time_;
-
-  XrRaycastHitResultANDROID xr_results_array[kMaxHitTestResults];
-  XrRaycastHitResultsANDROID xr_hit_results = {
-      XR_TYPE_RAYCAST_HIT_RESULTS_ANDROID};
-  xr_hit_results.resultsCapacityInput = kMaxHitTestResults;
-  xr_hit_results.results = xr_results_array;
-
-  RETURN_VAL_IF_XR_FAILED(
-      extension_helper_->ExtensionMethods().xrRaycastANDROID(
-          session_, &raycast_info, &xr_hit_results),
-      {});
-
-  // SAFETY: The length of xr_results_array is guaranteed by the successful call
-  // to xrRaycastAndroid to have `resultsCountOutput` elements.
-  UNSAFE_BUFFERS(auto xr_results = base::span(
-                     xr_results_array, xr_hit_results.resultsCountOutput));
-
-  // We receive the hit test results back in increasing distance from the item
-  // that they hit, with the Y-direction matching the normal of the plane, and
-  // in the space that we specified (which is mojo space), this all matches what
-  // WebXR expects, so we simply have to convert the XrPosef to a device pose.
-  std::vector<mojom::XRHitResultPtr> hit_results;
-  hit_results.reserve(xr_results.size());
-  for (const auto& xr_result : xr_results) {
-    mojom::XRHitResultPtr result = mojom::XRHitResult::New();
-    result->mojo_from_result = XrPoseToDevicePose(xr_result.pose);
-    hit_results.push_back(std::move(result));
-  }
-
-  DVLOG(2) << __func__ << ": hit_results->size()=" << hit_results.size();
-  return hit_results;
 }
 
 OpenXrSceneUnderstandingManagerAndroidFactory::

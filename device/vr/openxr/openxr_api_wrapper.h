@@ -113,6 +113,7 @@ class OpenXrApiWrapper {
 
   // Various manager getters if they exist.
   OpenXrAnchorManager* GetAnchorManager();
+  OpenXrHitTestManager* GetHitTestManager();
   OpenXrLightEstimator* GetLightEstimator();
   OpenXRSceneUnderstandingManager* GetSceneUnderstandingManager();
   OpenXrDepthSensor* GetDepthSensor();

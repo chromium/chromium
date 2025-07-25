@@ -428,6 +428,12 @@ OpenXrAnchorManager* OpenXrApiWrapper::GetAnchorManager() {
   return anchor_manager_.get();
 }
 
+OpenXrHitTestManager* OpenXrApiWrapper::GetHitTestManager() {
+  return scene_understanding_manager_
+             ? scene_understanding_manager_->GetHitTestManager()
+             : nullptr;
+}
+
 OpenXrLightEstimator* OpenXrApiWrapper::GetLightEstimator() {
   return light_estimator_.get();
 }
@@ -523,7 +529,9 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         scene_understanding_manager_ =
             extension_helper.CreateSceneUnderstandingManager(session_,
                                                              local_space_);
-        is_enabled = scene_understanding_manager_ != nullptr;
+        is_enabled =
+            scene_understanding_manager_ != nullptr &&
+            scene_understanding_manager_->GetHitTestManager() != nullptr;
         break;
 
       case mojom::XRSessionFeature::LIGHT_ESTIMATION:
