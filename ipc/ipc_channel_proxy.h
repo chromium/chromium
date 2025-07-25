@@ -302,11 +302,8 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
 
     // Methods called on the IO thread.
     void OnSendMessage(std::unique_ptr<Message> message_ptr);
-    void OnAddFilter();
-    void OnRemoveFilter(MessageFilter* filter);
 
     // Methods called on the listener thread.
-    void AddFilter(MessageFilter* filter);
     void OnDispatchConnected();
     void OnDispatchError();
     void OnDispatchBadMessage(const Message& message);
@@ -334,8 +331,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     scoped_refptr<base::SingleThreadTaskRunner> default_listener_task_runner_;
     raw_ptr<Listener> listener_;
 
-    // List of filters.  This is only accessed on the IPC thread.
-    std::vector<scoped_refptr<MessageFilter> > filters_;
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
 
     // Note, channel_ may be set on the Listener thread or the IPC thread.
@@ -353,10 +348,7 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     // on which message classes a filter might support.
     std::unique_ptr<MessageFilterRouter> message_filter_router_;
 
-    // Holds filters between the AddFilter call on the listerner thread and the
-    // IPC thread when they're added to filters_.
-    std::vector<scoped_refptr<MessageFilter> > pending_filters_;
-    // Lock for pending_filters_.
+    // Lock for pending_io_thread_interfaces_ (formerly for pending_filters_)
     base::Lock pending_filters_lock_;
 
     // Cached copy of the peer process ID. Set on IPC but read on both IPC and
