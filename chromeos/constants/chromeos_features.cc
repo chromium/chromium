@@ -95,13 +95,6 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
              "DisableQuickAnswersV2Translation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables import of PKCS12 files to software backed Chaps storage together with
-// import to NSS DB via the "Import" button in the certificates manager.
-// When the feature is disabled, PKCS12 files are imported to NSS DB only.
-BASE_FEATURE(kEnablePkcs12ToChapsDualWrite,
-             "EnablePkcs12ToChapsDualWrite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Essential Search in Omnibox for both launcher and browser.
 BASE_FEATURE(kEssentialSearch,
              "EssentialSearch",
@@ -592,10 +585,6 @@ bool IsRoundedWindowsEnabled() {
 bool IsSystemBlurEnabled() {
   static bool disable_blur = base::FeatureList::IsEnabled(kDisableSystemBlur);
   return !disable_blur;
-}
-
-bool IsPkcs12ToChapsDualWriteEnabled() {
-  return base::FeatureList::IsEnabled(kEnablePkcs12ToChapsDualWrite);
 }
 
 bool IsFeatureManagementHistoryEmbeddingEnabled() {

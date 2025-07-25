@@ -837,8 +837,7 @@ class WritableClientCertSource
       // be imported into Chaps. `import_hardware_backed_` == true means that
       // the cert came from the "Import and Bind" button and it's import into
       // Chaps by default.
-      if (!import_hardware_backed_ &&
-          chromeos::features::IsPkcs12ToChapsDualWriteEnabled()) {
+      if (!import_hardware_backed_) {
         // Record the dual-write event. Even if the import fails, it's
         // theoretically possible that some related objects are still created
         // and would need to be deleted in case of a rollback.

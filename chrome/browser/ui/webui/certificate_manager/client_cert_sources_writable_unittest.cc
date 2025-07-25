@@ -146,7 +146,7 @@ class FakeCertificateManagerPage
 class ClientCertSourceWritableUnitTest
     : public ChromeRenderViewHostTestHarness,
 #if BUILDFLAG(IS_CHROMEOS)
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>>
+      public testing::WithParamInterface<std::tuple<bool, bool>>
 #else
       // In the non-ChromeOS case, the test does not actually need any
       // parameters, but to allow more commonality between the platforms keep
@@ -163,9 +163,7 @@ class ClientCertSourceWritableUnitTest
     test_nss_user_.FinishInit();
 
     feature_list_.InitWithFeatureStates(
-        {{chromeos::features::kEnablePkcs12ToChapsDualWrite,
-          dual_write_enabled()},
-         { ash::features::kUseKcerClientCertStore,
+        {{ ash::features::kUseKcerClientCertStore,
            kcer_enabled() }});
 
     ash::LoginState::Initialize();
@@ -209,9 +207,8 @@ class ClientCertSourceWritableUnitTest
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  bool dual_write_enabled() const { return std::get<0>(GetParam()); }
-  bool kcer_enabled() const { return std::get<1>(GetParam()); }
-  bool use_hardware_backed() const { return std::get<2>(GetParam()); }
+  bool kcer_enabled() const { return std::get<0>(GetParam()); }
+  bool use_hardware_backed() const { return std::get<1>(GetParam()); }
 
   std::string username_hash() const {
     return user_manager::FakeUserManager::GetFakeUsernameHash(account_);
@@ -438,7 +435,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
   // already gets imported to Chaps so the dual write isn't needed.)
   EXPECT_EQ(
       profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist),
-      dual_write_enabled() && !use_hardware_backed());
+      !use_hardware_backed());
 #endif
 
   EXPECT_TRUE(NSSContainsCertWithHash(client_1_hash_hex));
@@ -813,7 +810,6 @@ INSTANTIATE_TEST_SUITE_P(Foo,
                          ClientCertSourceWritableUnitTest,
 #if BUILDFLAG(IS_CHROMEOS)
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool())
 #else
                          testing::Values(true)

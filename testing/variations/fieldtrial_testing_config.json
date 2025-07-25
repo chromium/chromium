@@ -9291,21 +9291,6 @@
             ]
         }
     ],
-    "EnablePkcs12ToChapsDualWrite": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnablePkcs12ToChapsDualWrite"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnablePolicyPromotionBanner": [
         {
             "platforms": [
