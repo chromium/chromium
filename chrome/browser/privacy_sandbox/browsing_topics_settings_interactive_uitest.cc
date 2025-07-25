@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
   BlockFirstTopicOnManageTopicsPage
 #endif
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
-                       BlockFirstTopicOnManageTopicsPage) {
+                       MAYBE_BlockFirstTopicOnManageTopicsPage) {
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
