@@ -390,7 +390,7 @@ void CanvasRenderingContext2DState::SetFont(
     // Convert word spacing to pixel length and set it in font_description.
     float word_spacing_in_pixel =
         conversion_data.ZoomedComputedPixels(word_spacing_, word_spacing_unit_);
-    font_description.SetWordSpacing(word_spacing_in_pixel);
+    font_description.SetWordSpacing(Length::Fixed(word_spacing_in_pixel));
   }
 
   // If wordSpacing is set in CanvasRenderingContext2D, then update the
@@ -934,7 +934,7 @@ void CanvasRenderingContext2DState::SetWordSpacing(
   float word_spacing_in_pixel =
       conversion_data.ZoomedComputedPixels(num_spacing, unit);
 
-  font_description.SetWordSpacing(word_spacing_in_pixel);
+  font_description.SetWordSpacing(Length::Fixed(word_spacing_in_pixel));
   if (selector) {
     SetFontInternal(font_description, selector);
   }

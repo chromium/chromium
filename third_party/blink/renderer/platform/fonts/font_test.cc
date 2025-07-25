@@ -208,7 +208,7 @@ TEST_F(FontTest, TabWidthWithSpacing) {
   auto& font_description =
       const_cast<FontDescription&>(font->GetFontDescription());
   font_description.SetLetterSpacing(Length::Fixed(3));
-  font_description.SetWordSpacing(20);
+  font_description.SetWordSpacing(Length::Fixed(20));
   TabSize tab_size(8);
 
   const float kTolerance = 1.0f / LayoutUnit::kFixedPointDenominator;

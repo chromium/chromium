@@ -214,7 +214,7 @@ TEST_F(FallbackListCompositeKeyTest, AllFeatures) {
   key_a = FallbackListCompositeKey(font_description);
   EXPECT_EQ(key_a, key_b);
 
-  font_description.SetWordSpacing(1.2);
+  font_description.SetWordSpacing(Length::Fixed(1.2));
   key_b = FallbackListCompositeKey(font_description);
   EXPECT_NE(key_a, key_b);
   key_a = FallbackListCompositeKey(font_description);

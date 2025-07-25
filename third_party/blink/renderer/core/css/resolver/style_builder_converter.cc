@@ -2604,27 +2604,14 @@ ShapeValue* StyleBuilderConverter::ConvertShapeValue(StyleResolverState& state,
   return MakeGarbageCollected<ShapeValue>(css_box);
 }
 
-// TODO(crbug.com/327740939): Merge ConvertLetterSpacing and ConvertWordSpacing
-// if percentage for word-spacing is implemented.
-Length StyleBuilderConverter::ConvertLetterSpacing(StyleResolverState& state,
-                                                   const CSSValue& value) {
+Length StyleBuilderConverter::ConvertSpacing(StyleResolverState& state,
+                                             const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kNormal) {
-    return ComputedStyleInitialValues::InitialLetterSpacing();
+    return Length::Fixed();
   }
   return ConvertLength(state, value);
-}
-
-float StyleBuilderConverter::ConvertWordSpacing(StyleResolverState& state,
-                                                const CSSValue& value) {
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value &&
-      identifier_value->GetValueID() == CSSValueID::kNormal) {
-    return 0;
-  }
-  return To<CSSPrimitiveValue>(value).ComputeLength<float>(
-      state.CssToLengthConversionData());
 }
 
 SVGDashArray* StyleBuilderConverter::ConvertStrokeDasharray(

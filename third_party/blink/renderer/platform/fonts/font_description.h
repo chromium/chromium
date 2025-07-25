@@ -314,9 +314,14 @@ class PLATFORM_EXPORT FontDescription {
   }
 
   FontSelectionRequest GetFontSelectionRequest() const;
-  float WordSpacing() const { return word_spacing_; }
+
+  float WordSpacing() const;
+  const Length& ComputedWordSpacing() const { return word_spacing_; }
 
   float LetterSpacing() const;
+  // TODO(crbug.com/327740939): Rename this like word spacing because
+  // `Specified` is a term that normally refers to specified styles which could
+  // be a relative length.
   const Length& SpecifiedLetterSpacing() const { return letter_spacing_; }
 
   FontOrientation Orientation() const {
@@ -442,7 +447,7 @@ class PLATFORM_EXPORT FontDescription {
   void SetVariantEmoji(FontVariantEmoji variant_emoji) {
     fields_.variant_emoji_ = variant_emoji;
   }
-  void SetWordSpacing(float s) { word_spacing_ = s; }
+  void SetWordSpacing(const Length& s) { word_spacing_ = s; }
   void SetLetterSpacing(const Length& s) {
     letter_spacing_ = s;
     UpdateTypesettingFeatures();
@@ -523,7 +528,7 @@ class PLATFORM_EXPORT FontDescription {
   float adjusted_size_;
 
   Length letter_spacing_;
-  float word_spacing_;
+  Length word_spacing_;
 
   FontSizeAdjust size_adjust_;
   ResolvedFontFeatures resolved_font_features_;

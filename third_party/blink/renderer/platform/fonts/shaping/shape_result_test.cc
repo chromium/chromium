@@ -463,7 +463,7 @@ TEST_F(ShapeResultTest, LetterSpacingNotAppliedForCursiveScripts) {
   ShapeResultSpacing<String> spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(Length::Fixed(5));
-  font_description.SetWordSpacing(20);
+  font_description.SetWordSpacing(Length::Fixed(20));
   spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
   EXPECT_FALSE(spacing.IsLetterSpacingAppliedForTesting());

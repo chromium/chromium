@@ -799,10 +799,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   if (builder.GetFontDescription().WordSpacing() >
       kMaximumWordSpacingToFontSizeRatio * builder.FontSize()) {
-    builder.SetWordSpacing(builder.FontSize() *
-                           kMaximumWordSpacingToFontSizeRatio);
+    builder.SetWordSpacing(
+        Length::Fixed(builder.FontSize() * kMaximumWordSpacingToFontSizeRatio));
   } else if (builder.GetFontDescription().WordSpacing() < 0) {
-    builder.SetWordSpacing(0);
+    builder.SetWordSpacing(Length::Fixed(0));
   }
 
   if (builder.GetFontDescription().LetterSpacing() >

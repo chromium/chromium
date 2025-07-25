@@ -332,6 +332,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       success = true;
       break;
     case CSSPropertyID::kLetterSpacing:
+      // TODO(crbug.com/327740939): Change to |style.SpecifiedLetterSpacing()|
       result = Length::Fixed(style.LetterSpacing());
       success = true;
       break;
@@ -392,7 +393,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       success = true;
       break;
     case CSSPropertyID::kWordSpacing:
-      result = Length::Fixed(style.WordSpacing());
+      result = style.ComputedWordSpacing();
       success = true;
       break;
 

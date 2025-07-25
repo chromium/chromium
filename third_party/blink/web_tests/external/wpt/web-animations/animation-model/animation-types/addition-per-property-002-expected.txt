@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] position-visibility: "anchors-valid" onto "always"
   assert_equals: The value should be anchors-valid at 0ms expected "anchors-valid" but got "always"
 [FAIL] stroke-dasharray: dasharray
@@ -8,19 +8,4 @@ Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: The value should be overline at 0ms expected "overline" but got "overline rgb(0, 0, 0)"
 [FAIL] text-decoration: "underline" onto "overline"
   assert_equals: The value should be underline at 0ms expected "underline" but got "underline rgb(0, 0, 0)"
-[FAIL] word-spacing: percentage
-  assert_equals: The value should be 130% at 0ms expected "130%" but got "0px"
-[FAIL] word-spacing: units "%" onto "px"
-  assert_equals: The value should be calc(10% + 10px) at 0ms expected "calc(10% + 10px)" but got "10px"
-[FAIL] word-spacing: units "px" onto "%"
-  assert_equals: The value should be calc(10% + 10px) at 0ms expected "calc(10% + 10px)" but got "10px"
-[FAIL] word-spacing: units "rem" onto "%"
-  assert_equals: The value should be calc(10% + 20px) at 0ms expected "calc(10% + 20px)" but got "20px"
-[FAIL] word-spacing: units "%" onto "rem"
-  assert_equals: The value should be calc(10% + 20px) at 0ms expected "calc(10% + 20px)" but got "20px"
-[FAIL] word-spacing: units "calc" onto "px"
-  assert_equals: The value should be calc(20% + 30px) at 0ms expected "calc(20% + 30px)" but got "10px"
-[FAIL] word-spacing: calc
-  assert_equals: The value should be calc(30% + 30px) at 0ms expected "calc(30% + 30px)" but got "0px"
 Harness: the test ran to completion.
-

@@ -1355,7 +1355,7 @@
       status: "experimental",
     },
     {
-      name: "CSSLetterSpacingPercentage",
+      name: "CSSLetterAndWordSpacingPercentage",
       status: "experimental",
     },
     {

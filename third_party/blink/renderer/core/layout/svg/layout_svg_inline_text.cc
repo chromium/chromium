@@ -204,8 +204,8 @@ const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
   const float zoom = style.EffectiveZoom();
   font_description.SetLetterSpacing(
       Length::Fixed(font_description.LetterSpacing() * scaling_factor / zoom));
-  font_description.SetWordSpacing(font_description.WordSpacing() *
-                                  scaling_factor / zoom);
+  font_description.SetWordSpacing(
+      Length::Fixed(font_description.WordSpacing() * scaling_factor / zoom));
 
   return MakeGarbageCollected<Font>(
       font_description, document.GetStyleEngine().GetFontSelector());

@@ -58,8 +58,9 @@ struct SameSizeAsFontDescription {
   scoped_refptr<FontPalette> palette_;
   scoped_refptr<FontVariantAlternates> font_variant_alternates_;
   AtomicString locale;
-  float sizes[4];
+  float sizes[3];
   Length letter_spacing;
+  Length word_spacing;
   FontSizeAdjust size_adjust_;
   ResolvedFontFeatures resolved_font_features_;
   FontSelectionRequest selection_request_;
@@ -88,7 +89,7 @@ FontDescription::FontDescription()
       computed_size_(0),
       adjusted_size_(0),
       letter_spacing_(Length(0, Length::kFixed)),
-      word_spacing_(0),
+      word_spacing_(Length(0, Length::kFixed)),
       font_selection_request_(kNormalWeightValue,
                               kNormalWidthValue,
                               kNormalSlopeValue) {
@@ -205,6 +206,20 @@ float FontDescription::LetterSpacing() const {
     case Length::kCalculated:
       return letter_spacing_.NonNanCalculatedValue(LayoutUnit(computed_size_),
                                                    {});
+    default:
+      NOTREACHED();
+  }
+}
+
+float FontDescription::WordSpacing() const {
+  switch (word_spacing_.GetType()) {
+    case Length::kFixed:
+      return word_spacing_.Pixels();
+    case Length::kPercent:
+      return word_spacing_.Percent() / 100 * computed_size_;
+    case Length::kCalculated:
+      return word_spacing_.NonNanCalculatedValue(LayoutUnit(computed_size_),
+                                                 {});
     default:
       NOTREACHED();
   }
@@ -400,7 +415,7 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   AddFloatToHash(hash, computed_size_);
   AddFloatToHash(hash, adjusted_size_);
   AddIntToHash(hash, letter_spacing_.GetHash());
-  AddFloatToHash(hash, word_spacing_);
+  AddIntToHash(hash, word_spacing_.GetHash());
   AddIntToHash(hash, fields_as_unsigned_.parts[0]);
   AddIntToHash(hash, fields_as_unsigned_.parts[1]);
   AddIntToHash(hash, font_selection_request_.GetHash());
@@ -797,7 +812,7 @@ String FontDescription::ToString() const {
       // string method.
       (locale_ ? locale_->LocaleString().Ascii().c_str() : ""), specified_size_,
       computed_size_, adjusted_size_, size_adjust_.ToString().Ascii().c_str(),
-      LetterSpacing(), word_spacing_,
+      LetterSpacing(), WordSpacing(),
       font_selection_request_.ToString().Ascii().c_str(),
       blink::ToString(
           static_cast<TypesettingFeatures>(fields_.typesetting_features_))
