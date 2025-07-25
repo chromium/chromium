@@ -48,8 +48,10 @@ CGFloat const kAvatarImageDimension = 30.0;
   [_accountsTable registerClass:[UITableViewCell class]
          forCellReuseIdentifier:NSStringFromClass([UITableViewCell class])];
 
-  // TODO(crbug.com/425571657): Add strings translation.
-  self.title = @"Accounts";
+  self.title = NSLocalizedString(
+      @"IDS_IOS_ACCOUNTS_TITLE_SHARE_EXTENSION",
+      @"The title of the item representing a signed out user.");
+  ;
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
@@ -102,7 +104,10 @@ CGFloat const kAvatarImageDimension = 30.0;
   UIListContentConfiguration* content = cell.defaultContentConfiguration;
   if ([accountInfo.gaiaID isEqual:@"Default"]) {
     // TODO(crbug.com/425571657): Add strings translation.
-    content.text = @"Signed out";
+    content.text = NSLocalizedString(
+        @"IDS_IOS_SIGNED_OUT_USER_TITLE_SHARE_EXTENSION",
+        @"The title of the item representing a signed out user.");
+    ;
     content.image = [[UIImage systemImageNamed:@"person.crop.circle"]
         imageWithTintColor:[UIColor colorNamed:kGrey400Color]
              renderingMode:UIImageRenderingModeAlwaysOriginal];

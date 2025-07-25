@@ -280,8 +280,9 @@ CGFloat const kAvatarImageDimension = 30.0;
 
   UIListContentConfiguration* content = cell.defaultContentConfiguration;
   if ([self.selectedAccountInfo.gaiaID isEqual:@"Default"]) {
-    // TODO(crbug.com/425571657): Add strings translation.
-    content.text = @"Signed out";
+    content.text = NSLocalizedString(
+        @"IDS_IOS_SIGNED_OUT_USER_TITLE_SHARE_EXTENSION",
+        @"The title of the item representing a signed out user.");
     content.image = [[UIImage systemImageNamed:@"person.crop.circle"]
         imageWithTintColor:[UIColor colorNamed:kGrey400Color]
              renderingMode:UIImageRenderingModeAlwaysOriginal];
