@@ -40,7 +40,7 @@
 #endif
 
 class Browser;
-class PageActionIconView;
+class IconLabelBubbleView;
 
 namespace base {
 class CommandLine;
@@ -501,7 +501,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   Browser* app_browser() { return app_browser_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
-  PageActionIconView* pwa_install_view();
+  IconLabelBubbleView* pwa_install_view();
   views::Button* intent_chip_view();
 
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
