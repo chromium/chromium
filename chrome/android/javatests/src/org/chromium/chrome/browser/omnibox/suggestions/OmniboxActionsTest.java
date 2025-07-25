@@ -37,7 +37,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.EntityInfoProto.ActionInfo;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo.TemplateAction;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionJni;
@@ -114,7 +114,7 @@ public class OmniboxActionsTest {
                 .build();
     }
 
-    private AutocompleteMatch createFakeActionInSuggest(ActionInfo.ActionType... types) {
+    private AutocompleteMatch createFakeActionInSuggest(TemplateAction.ActionType... types) {
         var actions = new ArrayList<OmniboxAction>();
         for (var type : types) {
             actions.add(
@@ -134,17 +134,17 @@ public class OmniboxActionsTest {
     public void testActionInSuggestShown() throws Exception {
         setSuggestions(
                 createFakeSuggestion(null),
-                createFakeActionInSuggest(ActionInfo.ActionType.CALL),
-                createFakeActionInSuggest(ActionInfo.ActionType.DIRECTIONS));
+                createFakeActionInSuggest(TemplateAction.ActionType.CALL),
+                createFakeActionInSuggest(TemplateAction.ActionType.DIRECTIONS));
 
         mOmniboxUtils.clearFocus();
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        ActionInfo.ActionType.CALL_VALUE, /* position= */ 1, /* executed= */ false);
+                        TemplateAction.ActionType.CALL_VALUE, /* position= */ 1, /* executed= */ false);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        ActionInfo.ActionType.DIRECTIONS_VALUE,
+                        TemplateAction.ActionType.DIRECTIONS_VALUE,
                         /* position= */ 2,
                         /* executed= */ false);
         verifyNoMoreInteractions(mOmniboxActionJni);
@@ -156,17 +156,17 @@ public class OmniboxActionsTest {
         // None of these actions have a linked intent, so no action will be taken.
         setSuggestions(
                 createFakeSuggestion(null),
-                createFakeActionInSuggest(ActionInfo.ActionType.CALL),
-                createFakeActionInSuggest(ActionInfo.ActionType.DIRECTIONS));
+                createFakeActionInSuggest(TemplateAction.ActionType.CALL),
+                createFakeActionInSuggest(TemplateAction.ActionType.DIRECTIONS));
 
         mOmniboxUtils.clickOnAction(1, 0);
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        ActionInfo.ActionType.CALL_VALUE, /* position= */ 1, /* executed= */ true);
+                        TemplateAction.ActionType.CALL_VALUE, /* position= */ 1, /* executed= */ true);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        ActionInfo.ActionType.DIRECTIONS_VALUE,
+                        TemplateAction.ActionType.DIRECTIONS_VALUE,
                         /* position= */ 2,
                         /* executed= */ false);
         verifyNoMoreInteractions(mOmniboxActionJni);
@@ -179,23 +179,23 @@ public class OmniboxActionsTest {
         setSuggestions(
                 createFakeSuggestion(null),
                 createFakeActionInSuggest(
-                        ActionInfo.ActionType.CALL,
-                        ActionInfo.ActionType.DIRECTIONS,
-                        ActionInfo.ActionType.REVIEWS));
+                        TemplateAction.ActionType.CALL,
+                        TemplateAction.ActionType.DIRECTIONS,
+                        TemplateAction.ActionType.REVIEWS));
 
         mOmniboxUtils.clickOnAction(1, 2);
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        ActionInfo.ActionType.CALL_VALUE, /* position= */ 1, /* executed= */ false);
+                        TemplateAction.ActionType.CALL_VALUE, /* position= */ 1, /* executed= */ false);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        ActionInfo.ActionType.DIRECTIONS_VALUE,
+                        TemplateAction.ActionType.DIRECTIONS_VALUE,
                         /* position= */ 1,
                         /* executed= */ false);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        ActionInfo.ActionType.REVIEWS_VALUE,
+                        TemplateAction.ActionType.REVIEWS_VALUE,
                         /* position= */ 1,
                         /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);

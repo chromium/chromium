@@ -649,7 +649,7 @@ TEST_P(BaseSearchProviderOnDeviceSuggestionTest,
 }
 
 TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
-  using omnibox::ActionInfo;
+  using TemplateAction = omnibox::SuggestTemplateInfo::TemplateAction;
   // Correlation between ActionType and UMA-recorded bucket.
   struct {
     const char* test_name;
@@ -665,12 +665,12 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     // Cases explicitly not meant to produce any changes.
     { "no change: no supplied url, no search params",
       "https://www.google.com",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "", {}, {}},
 
     { "no change: supplied url, no search params",
       "https://www.google.com",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "https://maps.google.com", {}, {}},
 
     // Cases meant to generate new URL:
@@ -678,22 +678,22 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     // - search_params have to be non-empty.
     { "generate: single query param",
       "https://g.co",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "", {{"a", "3"}}, {"a=3"}},
 
     { "generate: multiple query params",
       "https://g.co:119/search?q=a#f",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "", {{"a", "3"}, {"A", "7"}},
         {"A=7&a=3", "a=3&A=7"}},
       // clang-format on
   };
 
   for (const auto& test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_uri(test_case.action_url);
+    TemplateAction template_action;
+    template_action.set_action_uri(test_case.action_url);
     for (const auto& param : test_case.search_params) {
-      action_info.mutable_search_parameters()->insert(
+      template_action.mutable_search_parameters()->insert(
           {param.first, param.second});
     }
 
@@ -705,7 +705,7 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     auto template_url = std::make_unique<TemplateURL>(template_url_data);
 
     auto action = BaseSearchProvider::CreateActionInSuggest(
-        std::move(action_info), template_url->url_ref(), search_terms_args,
+        std::move(template_action), template_url->url_ref(), search_terms_args,
         search_terms_data);
 
     auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action.get());

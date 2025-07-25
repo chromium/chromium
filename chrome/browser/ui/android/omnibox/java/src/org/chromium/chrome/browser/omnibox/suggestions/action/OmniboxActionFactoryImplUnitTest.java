@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.omnibox.EntityInfoProto;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 
 /** Tests for {@link OmniboxActionFactoryImpl}. */
@@ -95,7 +95,7 @@ public class OmniboxActionFactoryImplUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
+                                SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "url"));
     }
 
@@ -108,7 +108,7 @@ public class OmniboxActionFactoryImplUnitTest {
                                 0,
                                 "hint",
                                 "accessibility",
-                                EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
+                                SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                                 "url"));
     }
 }

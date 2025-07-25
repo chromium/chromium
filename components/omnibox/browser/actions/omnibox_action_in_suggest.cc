@@ -40,51 +40,53 @@ enum class ActionInSuggestUmaType {
 };
 
 constexpr const char* ToUmaUsageHistogramName(
-    omnibox::ActionInfo::ActionType type) {
+    omnibox::SuggestTemplateInfo_TemplateAction_ActionType type) {
   switch (type) {
-    case omnibox::ActionInfo_ActionType_CALL:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
       return "Omnibox.ActionInSuggest.UsageByType.Call";
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
       return "Omnibox.ActionInSuggest.UsageByType.Directions";
-    case omnibox::ActionInfo_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return "Omnibox.ActionInSuggest.UsageByType.Reviews";
   }
   NOTREACHED() << "Unexpected type of Action: " << (int)type;
 }
 
-// Get the UMA action type from ActionInfo::ActionType.
+// Get the UMA action type from TemplateAction::ActionType.
 constexpr ActionInSuggestUmaType ToUmaActionType(
-    omnibox::ActionInfo::ActionType action_type) {
+    omnibox::SuggestTemplateInfo_TemplateAction_ActionType action_type) {
   switch (action_type) {
-    case omnibox::ActionInfo_ActionType_CALL:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
       return ActionInSuggestUmaType::kCall;
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
       return ActionInSuggestUmaType::kDirections;
-    case omnibox::ActionInfo_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return ActionInSuggestUmaType::kReviews;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
 
-constexpr int ToActionHint(omnibox::ActionInfo::ActionType action_type) {
+constexpr int ToActionHint(
+    omnibox::SuggestTemplateInfo_TemplateAction_ActionType action_type) {
   switch (action_type) {
-    case omnibox::ActionInfo_ActionType_CALL:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT;
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT;
-    case omnibox::ActionInfo_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
 
-constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
+constexpr int ToActionContents(
+    omnibox::SuggestTemplateInfo_TemplateAction_ActionType action_type) {
   switch (action_type) {
-    case omnibox::ActionInfo_ActionType_CALL:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS;
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS;
-    case omnibox::ActionInfo_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
@@ -92,15 +94,15 @@ constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
 }  // namespace
 
 OmniboxActionInSuggest::OmniboxActionInSuggest(
-    omnibox::ActionInfo action_info,
+    omnibox::SuggestTemplateInfo::TemplateAction template_action,
     std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args)
     : OmniboxAction(OmniboxAction::LabelStrings(
-                        ToActionHint(action_info.action_type()),
-                        ToActionContents(action_info.action_type()),
+                        ToActionHint(template_action.action_type()),
+                        ToActionContents(template_action.action_type()),
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        ToActionContents(action_info.action_type())),
+                        ToActionContents(template_action.action_type())),
                     {}),
-      action_info{std::move(action_info)},
+      template_action{std::move(template_action)},
       search_terms_args{std::move(search_terms_args)} {}
 
 OmniboxActionInSuggest::~OmniboxActionInSuggest() = default;
@@ -111,8 +113,8 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
     j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
         env, reinterpret_cast<intptr_t>(this), strings_.hint,
-        strings_.accessibility_hint, action_info.action_type(),
-        action_info.action_uri()));
+        strings_.accessibility_hint, template_action.action_type(),
+        template_action.action_uri()));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }
@@ -120,7 +122,7 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
 
 void OmniboxActionInSuggest::RecordActionShown(size_t position,
                                                bool used) const {
-  RecordShownAndUsedMetrics(action_info.action_type(), used);
+  RecordShownAndUsedMetrics(template_action.action_type(), used);
 }
 
 void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
@@ -151,7 +153,7 @@ OmniboxActionInSuggest* OmniboxActionInSuggest::FromAction(
 
 // static
 void OmniboxActionInSuggest::RecordShownAndUsedMetrics(
-    omnibox::ActionInfo::ActionType type,
+    omnibox::SuggestTemplateInfo_TemplateAction_ActionType type,
     bool used) {
   base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Shown",
                                 ToUmaActionType(type));
@@ -163,6 +165,7 @@ void OmniboxActionInSuggest::RecordShownAndUsedMetrics(
   base::UmaHistogramBoolean(ToUmaUsageHistogramName(type), used);
 }
 
-omnibox::ActionInfo::ActionType OmniboxActionInSuggest::Type() const {
-  return action_info.action_type();
+omnibox::SuggestTemplateInfo_TemplateAction_ActionType
+OmniboxActionInSuggest::Type() const {
+  return template_action.action_type();
 }

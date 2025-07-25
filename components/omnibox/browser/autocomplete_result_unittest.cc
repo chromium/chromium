@@ -56,8 +56,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
 
@@ -3397,10 +3397,12 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
                            : AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
       for (auto& action_id : actions) {
         if (action_id == OmniboxActionId::ACTION_IN_SUGGEST) {
-          omnibox::ActionInfo info;
-          info.set_action_type(omnibox::ActionInfo_ActionType_DIRECTIONS);
+          omnibox::SuggestTemplateInfo::TemplateAction action;
+          action.set_action_type(
+              omnibox::
+                  SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS);
           match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
-              std::move(info), std::nullopt));
+              std::move(action), std::nullopt));
         } else {
           match.actions.push_back(
               base::MakeRefCounted<FakeOmniboxAction>(action_id));

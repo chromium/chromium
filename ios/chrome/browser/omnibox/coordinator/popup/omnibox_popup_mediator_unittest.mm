@@ -55,7 +55,8 @@ namespace {
 // Returns an autocomplete suggestion with a reviews action attached to it.
 id<AutocompleteSuggestion> SuggestionWithReviewsAction() {
   AutocompleteMatch actionMatch = CreateActionInSuggestMatch(
-      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS});
+      u"Action",
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS});
 
   AutocompleteMatchFormatter* suggestion =
       [[AutocompleteMatchFormatter alloc] initWithMatch:actionMatch];

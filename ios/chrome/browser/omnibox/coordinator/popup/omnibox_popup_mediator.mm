@@ -211,7 +211,7 @@ const std::string kShortcutEntrypointAimID = "62";
                                                     true /* used */);
 
   switch (action.type) {
-    case omnibox::ActionInfo_ActionType_CALL: {
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL: {
       NSURL* URL = net::NSURLWithGURL(action.actionURI);
       __weak __typeof__(self) weakSelf = self;
       [[UIApplication sharedApplication] openURL:URL
@@ -223,7 +223,7 @@ const std::string kShortcutEntrypointAimID = "62";
                                }];
       break;
     }
-    case omnibox::ActionInfo_ActionType_DIRECTIONS: {
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS: {
       NSURL* URL = net::NSURLWithGURL(action.actionURI);
 
       if (IsGoogleMapsAppInstalled() && !self.incognito) {
@@ -235,7 +235,7 @@ const std::string kShortcutEntrypointAimID = "62";
       }
       break;
     }
-    case omnibox::ActionInfo_ActionType_REVIEWS: {
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS: {
       [self openNewTabWithSuggestAction:action];
       break;
     }

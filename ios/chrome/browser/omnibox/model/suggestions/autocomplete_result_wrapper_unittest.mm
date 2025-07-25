@@ -73,8 +73,9 @@ class AutocompleteResultWrapperTest : public PlatformTest {
 TEST_F(AutocompleteResultWrapperTest,
        testWrapMatchesFromResultWithStarredMatch) {
   AutocompleteMatch match1 = CreateActionInSuggestMatch(
-      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
-                  omnibox::ActionInfo_ActionType_DIRECTIONS});
+      u"Action",
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS});
   AutocompleteMatch match2 = CreateSearchMatch(u"search");
 
   AutocompleteResult result;
@@ -126,8 +127,9 @@ TEST_F(AutocompleteResultWrapperTest, testChangeSearchEngine) {
   AutocompleteResult result;
 
   AutocompleteMatch match1 = CreateActionInSuggestMatch(
-      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
-                  omnibox::ActionInfo_ActionType_DIRECTIONS});
+      u"Action",
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS});
   AutocompleteMatch match2 = CreateSearchMatch(u"search");
 
   result.AppendMatches({match1, match2});

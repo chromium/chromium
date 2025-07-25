@@ -112,15 +112,16 @@ AutocompleteMatch CreateFeaturedEnterpriseSearch(std::u16string keyword) {
 
 AutocompleteMatch CreateActionInSuggestMatch(
     std::u16string description,
-    std::vector<omnibox::ActionInfo::ActionType> action_types) {
+    std::vector<omnibox::SuggestTemplateInfo::TemplateAction::ActionType>
+        action_types) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY;
   match.description = description;
   for (auto action_type : action_types) {
-    omnibox::ActionInfo action_info;
-    action_info.set_action_type(action_type);
+    omnibox::SuggestTemplateInfo::TemplateAction template_action;
+    template_action.set_action_type(action_type);
     match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
-        std::move(action_info), std::nullopt));
+        std::move(template_action), std::nullopt));
   }
   return match;
 }

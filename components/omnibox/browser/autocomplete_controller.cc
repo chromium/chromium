@@ -2077,7 +2077,7 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
           match->search_terms_args->searchbox_stats);
 
       if (action_in_suggest != nullptr) {
-        action_in_suggest->action_info.set_action_uri(
+        action_in_suggest->template_action.set_action_uri(
             ComputeURLFromSearchTermsArgs(
                 match->GetTemplateURL(template_url_service_, false),
                 *search_terms_args)

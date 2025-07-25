@@ -54,7 +54,6 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
-#include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -1779,12 +1778,13 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
 
   // Sort: Call -> Directions -> Reviews, or Reviews -> Directions -> Call.
   auto less_comparator = [](auto k1, auto k2) -> bool {
-    bool is_less_ascending = (k1 == omnibox::ActionInfo_ActionType_CALL) ||
-                             (k2 == omnibox::ActionInfo_ActionType_REVIEWS);
+    bool is_less_ascending =
+        (k1 == omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL) ||
+        (k2 == omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS);
     return is_less_ascending;
   };
-  std::multimap<omnibox::ActionInfo::ActionType, scoped_refptr<OmniboxAction>,
-                decltype(less_comparator)>
+  std::multimap<omnibox::SuggestTemplateInfo_TemplateAction_ActionType,
+                scoped_refptr<OmniboxAction>, decltype(less_comparator)>
       actions_in_suggest_to_reinsert(less_comparator);
 
   // Collect all Actions in Suggest.

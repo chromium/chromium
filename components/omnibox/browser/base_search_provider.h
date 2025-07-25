@@ -25,6 +25,7 @@
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 class AutocompleteProviderClient;
 class GURL;
@@ -100,7 +101,7 @@ class BaseSearchProvider : public AutocompleteProvider {
       bool is_tail_suggestion);
 
   static scoped_refptr<OmniboxAction> CreateActionInSuggest(
-      omnibox::ActionInfo action_info,
+      omnibox::SuggestTemplateInfo::TemplateAction template_action,
       const TemplateURLRef& search_url,
       const TemplateURLRef::SearchTermsArgs& original_search_terms,
       const SearchTermsData& search_terms_data);

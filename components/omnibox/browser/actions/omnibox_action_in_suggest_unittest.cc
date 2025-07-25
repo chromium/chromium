@@ -13,12 +13,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-using omnibox::ActionInfo;
-using ActionType = omnibox::ActionInfo_ActionType;
+using TemplateAction = omnibox::SuggestTemplateInfo::TemplateAction;
+using ActionType = omnibox::SuggestTemplateInfo_TemplateAction_ActionType;
 
 namespace {
 class FakeOmniboxAction : public OmniboxAction {
@@ -35,11 +36,11 @@ class FakeOmniboxAction : public OmniboxAction {
 // Note: can't use operator<<, because ActionType is a plain old enum.
 const char* ToString(ActionType type) {
   switch (type) {
-    case omnibox::ActionInfo_ActionType_CALL:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
       return "Call";
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
       return "Directions";
-    case omnibox::ActionInfo_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return "Reviews";
     default:
       NOTREACHED();
@@ -69,34 +70,35 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
     int want_contents;
     int want_accessibility_focus_hint;
     int want_accessibility_activate_hint;
-  } test_cases[] = {{
-                        omnibox::ActionInfo_ActionType_CALL,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
-                    },
-                    {
-                        omnibox::ActionInfo_ActionType_DIRECTIONS,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
-                    },
-                    {
-                        omnibox::ActionInfo_ActionType_REVIEWS,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
-                    }};
+  } test_cases[] = {
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
+      },
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
+      },
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
+      }};
 
   for (const auto& test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_type(test_case.action_type);
+    TemplateAction template_action;
+    template_action.set_action_type(test_case.action_type);
 
     auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
-        std::move(action_info), std::nullopt);
+        std::move(template_action), std::nullopt);
     EXPECT_EQ(OmniboxActionId::ACTION_IN_SUGGEST, action->ActionId())
         << "while evaluatin action " << ToString(test_case.action_type);
     EXPECT_EQ(test_case.action_type, action->Type());
@@ -119,16 +121,17 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
 }
 
 TEST_F(OmniboxActionInSuggestTest, ConversionFromAction) {
-  const ActionType test_cases[]{omnibox::ActionInfo_ActionType_CALL,
-                                omnibox::ActionInfo_ActionType_DIRECTIONS,
-                                omnibox::ActionInfo_ActionType_REVIEWS};
+  const ActionType test_cases[]{
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS};
 
   for (auto test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_type(test_case);
+    TemplateAction template_action;
+    template_action.set_action_type(test_case);
 
     scoped_refptr<OmniboxAction> upcasted_action =
-        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info),
+        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(template_action),
                                                      std::nullopt);
 
     auto* downcasted_action =
@@ -156,15 +159,15 @@ TEST_F(OmniboxActionInSuggestTest, AllDeclaredActionTypesAreProperlyReflected) {
   // This test verifies that we're not quietly migrating new action types, and
   // failing to recognize the need for appropriate coverage, both in terms of
   // labels (hints, accessibility) but also UMA metrics.
-  for (int type = ActionInfo::ActionType_MIN;
-       type <= ActionInfo::ActionType_MAX; type++) {
-    if (omnibox::ActionInfo_ActionType_IsValid(type)) {
-      ActionInfo action_info;
-      action_info.set_action_type(ActionType(type));
+  for (int type = TemplateAction::ActionType_MIN;
+       type <= TemplateAction::ActionType_MAX; type++) {
+    if (omnibox::SuggestTemplateInfo_TemplateAction_ActionType_IsValid(type)) {
+      TemplateAction template_action;
+      template_action.set_action_type(ActionType(type));
 
       // This is a valid action type. Object MUST build.
       auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
-          std::move(action_info), std::nullopt);
+          std::move(template_action), std::nullopt);
       // This is a valid action type. Object MUST be able to report metrics.
       {
         base::HistogramTester histograms;
@@ -200,23 +203,24 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
 
   // Correlation between ActionType and UMA-recorded bucket.
   struct {
-    omnibox::ActionInfo::ActionType type;
+    omnibox::SuggestTemplateInfo::TemplateAction::ActionType type;
     UmaTypeForTest recordedUmaType;
     const char* dedicatedHistogram;
   } test_cases[]{
-      {omnibox::ActionInfo_ActionType_CALL, UmaTypeForTest::kCall,
-       "Omnibox.ActionInSuggest.UsageByType.Call"},
-      {omnibox::ActionInfo_ActionType_DIRECTIONS, UmaTypeForTest::kDirections,
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
+       UmaTypeForTest::kCall, "Omnibox.ActionInSuggest.UsageByType.Call"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
+       UmaTypeForTest::kDirections,
        "Omnibox.ActionInSuggest.UsageByType.Directions"},
-      {omnibox::ActionInfo_ActionType_REVIEWS, UmaTypeForTest::kReviews,
-       "Omnibox.ActionInSuggest.UsageByType.Reviews"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+       UmaTypeForTest::kReviews, "Omnibox.ActionInSuggest.UsageByType.Reviews"},
   };
 
   for (const auto& test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_type(test_case.type);
+    TemplateAction template_action;
+    template_action.set_action_type(test_case.type);
     scoped_refptr<OmniboxAction> action =
-        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info),
+        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(template_action),
                                                      std::nullopt);
 
     {

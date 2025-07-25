@@ -155,7 +155,8 @@
       continue;
     }
 
-    if (suggestAction.type != omnibox::ActionInfo_ActionType_CALL) {
+    if (suggestAction.type !=
+        omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL) {
       [actions addObject:suggestAction];
       continue;
     }
