@@ -74,7 +74,6 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
       bool used) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
   void DidUpdateAudioMutingState(bool muted) override;
-  void OnAudioStateChanged(bool audible) override;
 
   // MediaStreamCaptureIndicator::Observer:
   void OnIsCapturingVideoChanged(content::WebContents* contents,
@@ -99,6 +98,8 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   void OnGlicTabPinningChanged(tabs::TabInterface* tab_interface,
                                bool is_sharing);
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+  void OnRecentlyAudibleStateChanged(bool was_audible);
 
   // Adds `alert` to the set of already active alerts for this tab if it isn't
   // currently active. Otherwise, removes `alert` from the set and is considered
@@ -125,6 +126,7 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
       vr_tab_helper_observation_{this};
 
   // Subscriptions to be notified when an alert status has changed.
+  base::CallbackListSubscription recently_audible_subscription_;
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 };
 }  // namespace tabs

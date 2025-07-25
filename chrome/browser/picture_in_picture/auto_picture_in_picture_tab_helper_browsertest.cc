@@ -514,7 +514,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
     WasRecentlyAudibleWaiter audible_waiter;
     base::CallbackListSubscription subscription =
-        audible_helper->RegisterCallbackForTesting(
+        audible_helper->RegisterRecentlyAudibleChangedCallback(
             audible_waiter.GetRecentlyAudibleCallback());
     audible_waiter.WaitUntilDone();
     DCHECK_EQ(expected_recently_audible, audible_waiter.WasRecentlyAudible());

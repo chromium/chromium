@@ -42,7 +42,8 @@ bool RecentlyAudibleHelper::WasRecentlyAudible() const {
 }
 
 base::CallbackListSubscription
-RecentlyAudibleHelper::RegisterCallbackForTesting(const Callback& callback) {
+RecentlyAudibleHelper::RegisterRecentlyAudibleChangedCallback(
+    const Callback& callback) {
   return callback_list_.Add(callback);
 }
 

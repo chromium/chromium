@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
   base::CallbackListSubscription subscription =
       RecentlyAudibleHelper::FromWebContents(
           browser()->tab_strip_model()->GetWebContentsAt(0))
-          ->RegisterCallbackForTesting(
+          ->RegisterRecentlyAudibleChangedCallback(
               base::BindRepeating(&MemorySaverDiscardPolicyInteractiveTest::
                                       OnRecentlyAudibleCallback,
                                   base::Unretained(this), kFirstTabContents));

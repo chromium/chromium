@@ -9,6 +9,8 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -140,6 +142,15 @@ class TabAlertControllerTest : public testing::Test {
 
   TabInterface* tab_interface() { return tab_model_.get(); }
 
+  void SimulateAudioState(bool is_playing_audio) {
+    content::WebContentsTester::For(tab_model_->GetContents())
+        ->SetIsCurrentlyAudible(is_playing_audio);
+  }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
 #if BUILDFLAG(ENABLE_GLIC)
   TestGlicKeyedService* test_glic_keyed_service() {
     return test_glic_keyed_service_.get();
@@ -148,7 +159,8 @@ class TabAlertControllerTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
@@ -178,7 +190,7 @@ TEST_F(TabAlertControllerTest, NotifiedOnAlertShouldShowChanged) {
   EXPECT_CALL(*mock_subscriber,
               OnPrioritizedAlertStateChanged(
                   std::make_optional(TabAlert::AUDIO_PLAYING)));
-  tab_alert_controller()->OnAudioStateChanged(true);
+  SimulateAudioState(true);
   ::testing::Mock::VerifyAndClearExpectations(mock_subscriber.get());
 
   // Simulate a higher priority alert being activated.
@@ -193,7 +205,8 @@ TEST_F(TabAlertControllerTest, NotifiedOnAlertShouldShowChanged) {
   EXPECT_CALL(*mock_subscriber,
               OnPrioritizedAlertStateChanged(std::optional<TabAlert>()))
       .Times(0);
-  tab_alert_controller()->OnAudioStateChanged(false);
+  SimulateAudioState(false);
+  task_environment()->FastForwardBy(base::Seconds(2));
   ::testing::Mock::VerifyAndClearExpectations(mock_subscriber.get());
 
   // Remove the last active tab alert.
@@ -204,7 +217,7 @@ TEST_F(TabAlertControllerTest, NotifiedOnAlertShouldShowChanged) {
 }
 
 TEST_F(TabAlertControllerTest, GetAllAlert) {
-  tab_alert_controller()->OnAudioStateChanged(true);
+  SimulateAudioState(true);
   tab_alert_controller()->OnCapabilityTypesChanged(
       content::WebContentsCapabilityType::kBluetoothConnected, true);
   tab_alert_controller()->MediaPictureInPictureChanged(true);
@@ -226,7 +239,7 @@ TEST_F(TabAlertControllerTest, GetAllAlert) {
 }
 
 TEST_F(TabAlertControllerTest, AlertIsActive) {
-  tab_alert_controller()->OnAudioStateChanged(true);
+  SimulateAudioState(true);
   tab_alert_controller()->OnCapabilityTypesChanged(
       content::WebContentsCapabilityType::kBluetoothConnected, true);
   tab_alert_controller()->MediaPictureInPictureChanged(true);
@@ -251,6 +264,26 @@ TEST_F(TabAlertControllerTest, VrStateUpdatesAlertController) {
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
             TabAlert::VR_PRESENTING_IN_HEADSET);
   vr_tab_helper->SetIsContentDisplayedInHeadset(false);
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
+TEST_F(TabAlertControllerTest, AudioStateUpdatesAlertController) {
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+  SimulateAudioState(true);
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::AUDIO_PLAYING);
+
+  // The audio playing alert should still be active even though the audio has
+  // stopped to prevent the audio state from toggling too frequently on pause.
+  SimulateAudioState(false);
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::AUDIO_PLAYING);
+
+  // The tab alert should go away after 2 seconds of consistently not playing
+  // audio.
+  task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
 }
 
