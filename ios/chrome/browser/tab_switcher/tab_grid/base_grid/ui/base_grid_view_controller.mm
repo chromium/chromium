@@ -1037,13 +1037,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.tabGridHandler showHistoryForText:self.searchText];
 }
 
-- (void)didSelectSearchRecentTabsInSuggestedActionsViewController:
-    (SuggestedActionsViewController*)viewController {
-  base::RecordAction(
-      base::UserMetricsAction("TabsSearch.SuggestedActions.RecentTabs"));
-  [self.tabGridHandler showRecentTabsForText:self.searchText];
-}
-
 - (void)didSelectSearchWebInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController {
   base::RecordAction(

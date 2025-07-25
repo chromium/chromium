@@ -615,12 +615,6 @@
 // the tab grid.
 + (id<GREYMatcher>)tabGridTabGroupsPanelButton;
 
-// Returns the GREYMatcher for the button to go to the third panel in
-// the tab grid. If Tab Group Sync is enabled, it's equivalent to
-// `tabGridTabGroupsPanelButton`. Otherwise, it's equivalent to
-// `tabGridOtherDevicesPanelButton`.
-+ (id<GREYMatcher>)tabGridThirdPanelButton;
-
 // Returns a matcher that matches tab grid normal mode page control - The
 // PageControl panel always exist only on the tab grid normal mode, So this can
 // be used to validate that the tab grid normal mode is active.

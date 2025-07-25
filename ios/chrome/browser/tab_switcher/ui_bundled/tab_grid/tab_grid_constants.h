@@ -15,7 +15,6 @@ class TimeDelta;
 // Keys of UMA IOS.TabSwitcher.Idle histograms.
 extern const char kUMATabSwitcherIdleIncognitoTabGridPageHistogram[];
 extern const char kUMATabSwitcherIdleRegularTabGridPageHistogram[];
-extern const char kUMATabSwitcherIdleRecentTabsHistogram[];
 extern const char kUMATabSwitcherIdleTabGroupsHistogram[];
 
 // Accessibility identifiers for automated testing.

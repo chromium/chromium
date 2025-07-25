@@ -9,8 +9,7 @@
 typedef NS_ENUM(NSUInteger, TabGridPage) {
   TabGridPageIncognitoTabs = 0,
   TabGridPageRegularTabs = 1,
-  TabGridPageRemoteTabs = 2,
-  TabGridPageTabGroups = 3,
+  TabGridPageTabGroups = 2,
 };
 
 // Modes of the tab grid and its elements.

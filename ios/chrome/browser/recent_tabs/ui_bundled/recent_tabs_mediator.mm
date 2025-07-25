@@ -307,7 +307,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     [self.toolbarsMutator
         setToolbarConfiguration:
             [TabGridToolbarsConfiguration
-                disabledConfigurationForPage:TabGridPageRemoteTabs]];
+                disabledConfigurationForPage:TabGridPageTabGroups]];
     return;
   }
 
@@ -328,7 +328,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   }
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
-      [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageRemoteTabs];
+      [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageTabGroups];
   toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];

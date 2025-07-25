@@ -55,17 +55,13 @@ TEST_F(SuggestedActionsViewControllerTest, Initialization) {
             IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT),
         item.title);
   } else {
-    // This is a static table it should have 3 items in that order: (SearchWeb,
-    // SearchRecentTabs, SearchHistory).
+    // This is a static table it should have 2 items in that order: (SearchWeb,
+    // SearchHistory).
     TableViewImageItem* item = GetTableViewItem(0, 0);
     EXPECT_NSEQ(
         l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB),
         item.title);
     item = GetTableViewItem(0, 1);
-    EXPECT_NSEQ(l10n_util::GetNSString(
-                    IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_RECENT_TABS),
-                item.title);
-    item = GetTableViewItem(0, 2);
     EXPECT_NSEQ(
         l10n_util::GetNSString(
             IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT),
@@ -84,23 +80,6 @@ TEST_F(SuggestedActionsViewControllerTest, SelectSearchWebSuggestedAction) {
   EXPECT_OCMOCK_VERIFY(delegate_);
 }
 
-// Tests that selecting the search recent tabs item should call the relevant
-// delegate.
-TEST_F(SuggestedActionsViewControllerTest,
-       SelectSearchRecentTabsSuggestedAction) {
-  if (IsTabGroupSyncEnabled()) {
-    return;
-  }
-  CreateController();
-  CheckController();
-  OCMExpect(
-      [delegate_ didSelectSearchRecentTabsInSuggestedActionsViewController:
-                     (SuggestedActionsViewController*)controller()]);
-  [controller() tableView:controller().tableView
-      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-  EXPECT_OCMOCK_VERIFY(delegate_);
-}
-
 // Tests that selecting the search history item should call the relevant
 // delegate.
 TEST_F(SuggestedActionsViewControllerTest, SelectSearchHistorySuggestedAction) {
@@ -108,12 +87,7 @@ TEST_F(SuggestedActionsViewControllerTest, SelectSearchHistorySuggestedAction) {
   CheckController();
   OCMExpect([delegate_ didSelectSearchHistoryInSuggestedActionsViewController:
                            (SuggestedActionsViewController*)controller()]);
-  if (IsTabGroupSyncEnabled()) {
-    [controller() tableView:controller().tableView
-        didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-  } else {
-    [controller() tableView:controller().tableView
-        didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
-  }
+  [controller() tableView:controller().tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
   EXPECT_OCMOCK_VERIFY(delegate_);
 }

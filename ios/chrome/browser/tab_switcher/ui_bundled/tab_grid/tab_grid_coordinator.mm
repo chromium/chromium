@@ -235,10 +235,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Tab Groups panel coordinator.
   TabGroupsPanelCoordinator* _tabGroupsPanelCoordinator;
 
-  // Remote grid container.
-  // TODO(crbug.com/40273478): To remove when remote coordinator handles it.
-  GridContainerViewController* _remoteGridContainerViewController;
-
   // The frame of the Tab Grid when it is presented.
   CGRect _frameWhenEntering;
 
@@ -269,8 +265,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, weak) IncognitoGridMediator* incognitoTabsMediator;
 // Mediator for PriceCardView - this is only for regular Tabs.
 @property(nonatomic, strong) PriceCardMediator* priceCardMediator;
-// Mediator for remote Tabs.
-@property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
 // Mediator for the inactive tabs button.
 @property(nonatomic, strong)
     InactiveTabsButtonMediator* inactiveTabsButtonMediator;
@@ -279,8 +273,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // YES if the TabViewController has never been shown yet.
 @property(nonatomic, assign) BOOL firstPresentation;
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
-@property(nonatomic, strong)
-    RecentTabsContextMenuHelper* recentTabsContextMenuHelper;
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 // Coordinator for snackbar presentation on `_regularBrowser`.
@@ -393,8 +385,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
-  // A modal may be presented on top of the Recent Tabs or tab grid.
-  [self.baseViewController dismissModals];
   [self setActiveMode:TabGridMode::kNormal];
 
   [_incognitoGridCoordinator stopChildCoordinators];
@@ -435,7 +425,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)showTabGridPage:(TabGridPage)page {
-  CHECK_NE(page, TabGridPageRemoteTabs);
   CHECK_NE(page, TabGridPageTabGroups);
   [_mediator setActivePage:page];
 
@@ -901,7 +890,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       return !self.regularBrowser->GetWebStateList()->empty();
     case TabGridPageIncognitoTabs:
       return !self.incognitoBrowser->GetWebStateList()->empty();
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       NOTREACHED();
   }
@@ -1061,8 +1049,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.regularGridHandler = _regularGridCoordinator.gridHandler;
   self.regularTabsMediator = _regularGridCoordinator.regularGridMediator;
 
-  ProfileIOS* regularProfile =
-      _regularBrowser ? _regularBrowser->GetProfile() : nullptr;
   WebStateList* regularWebStateList =
       _regularBrowser ? _regularBrowser->GetWebStateList() : nullptr;
   self.priceCardMediator =
@@ -1110,76 +1096,20 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.incognitoGridContainerViewController =
       _incognitoGridCoordinator.gridContainerViewController;
 
-  self.recentTabsContextMenuHelper =
-      [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                            recentTabsPresentationDelegate:self
-                                    tabContextMenuDelegate:self];
-  self.baseViewController.remoteTabsViewController.menuProvider =
-      self.recentTabsContextMenuHelper;
+  _tabGroupsPanelCoordinator = [[TabGroupsPanelCoordinator alloc]
+          initWithBaseViewController:_baseViewController
+                      regularBrowser:_regularBrowser
+                     toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
+      disabledViewControllerDelegate:_baseViewController];
 
-  if (IsTabGroupSyncEnabled()) {
-    _tabGroupsPanelCoordinator = [[TabGroupsPanelCoordinator alloc]
-            initWithBaseViewController:_baseViewController
-                        regularBrowser:_regularBrowser
-                       toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
-        disabledViewControllerDelegate:_baseViewController];
+  [_tabGroupsPanelCoordinator start];
 
-    [_tabGroupsPanelCoordinator start];
-
-    baseViewController.tabGroupsPanelViewController =
-        _tabGroupsPanelCoordinator.gridViewController;
-    baseViewController.tabGroupsDisabledGridViewController =
-        _tabGroupsPanelCoordinator.disabledViewController;
-    baseViewController.tabGroupsGridContainerViewController =
-        _tabGroupsPanelCoordinator.gridContainerViewController;
-  } else {
-    // TODO(crbug.com/41390276) : Remove RecentTabsTableViewController
-    // dependency on ProfileIOS so that we don't need to expose the view
-    // controller.
-    baseViewController.remoteTabsViewController.browser = self.regularBrowser;
-    sync_sessions::SessionSyncService* syncService =
-        SessionSyncServiceFactory::GetForProfile(regularProfile);
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(regularProfile);
-    sessions::TabRestoreService* restoreService =
-        IOSChromeTabRestoreServiceFactory::GetForProfile(regularProfile);
-    FaviconLoader* faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForProfile(regularProfile);
-    syncer::SyncService* service =
-        SyncServiceFactory::GetForProfile(regularProfile);
-    BrowserList* browserList =
-        BrowserListFactory::GetForProfile(regularProfile);
-    SceneState* currentSceneState = self.regularBrowser->GetSceneState();
-    // TODO(crbug.com/40273478): Rename in recentTabsMediator.
-    self.remoteTabsMediator = [[RecentTabsMediator alloc]
-        initWithSessionSyncService:syncService
-                   identityManager:identityManager
-                    restoreService:restoreService
-                     faviconLoader:faviconLoader
-                       syncService:service
-                       browserList:browserList
-                        sceneState:currentSceneState
-                  disabledByPolicy:_pageConfiguration ==
-                                   TabGridPageConfiguration::kIncognitoPageOnly
-                 engagementTracker:feature_engagement::TrackerFactory::
-                                       GetForProfile(regularProfile)
-                        modeHolder:_modeHolder];
-    self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
-    self.remoteTabsMediator.tabGridHandler = self;
-    baseViewController.remoteTabsViewController.imageDataSource =
-        self.remoteTabsMediator;
-    baseViewController.remoteTabsViewController.applicationHandler =
-        applicationCommandsHandler;
-    baseViewController.remoteTabsViewController.loadStrategy =
-        UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
-    baseViewController.remoteTabsViewController.presentationDelegate = self;
-    baseViewController.activityObserver = self.remoteTabsMediator;
-
-    _remoteGridContainerViewController =
-        [[GridContainerViewController alloc] init];
-    self.baseViewController.remoteGridContainerViewController =
-        _remoteGridContainerViewController;
-  }
+  baseViewController.tabGroupsPanelViewController =
+      _tabGroupsPanelCoordinator.gridViewController;
+  baseViewController.tabGroupsDisabledGridViewController =
+      _tabGroupsPanelCoordinator.disabledViewController;
+  baseViewController.tabGroupsGridContainerViewController =
+      _tabGroupsPanelCoordinator.gridContainerViewController;
 
   self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -1196,36 +1126,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.firstPresentation = YES;
 
-  // TODO(crbug.com/41393201) : Currently, consumer calls from the mediator
-  // prematurely loads the view in `RecentTabsTableViewController`. Fix this so
-  // that the view is loaded only by an explicit placement in the view
-  // hierarchy. As a workaround, the view controller hierarchy is loaded here
-  // before `RecentTabsMediator` updates are started.
   SceneState* sceneState = self.regularBrowser->GetSceneState();
   sceneState.window.rootViewController = self.baseViewController;
-  if (regularProfile) {
-    [self.remoteTabsMediator initObservers];
-    [self.remoteTabsMediator refreshSessionsView];
-  }
 
   _mediator.regularPageMutator = _regularGridCoordinator.regularGridMediator;
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
-  if (IsTabGroupSyncEnabled()) {
-    _mediator.tabGroupsPageMutator = _tabGroupsPanelCoordinator.mediator;
-  } else {
-    _mediator.remotePageMutator = self.remoteTabsMediator;
-  }
+  _mediator.tabGroupsPageMutator = _tabGroupsPanelCoordinator.mediator;
   _mediator.toolbarsMutator = _toolbarsCoordinator.toolbarsMutator;
-
-  self.remoteTabsMediator.toolbarsMutator =
-      _toolbarsCoordinator.toolbarsMutator;
 
   self.incognitoTabsMediator.tabPresentationDelegate = self;
   self.regularTabsMediator.tabPresentationDelegate = self;
 
   self.incognitoTabsMediator.gridConsumer = self.baseViewController;
   self.regularTabsMediator.gridConsumer = self.baseViewController;
-  self.remoteTabsMediator.gridConsumer = self.baseViewController;
 
   // Set the `baseViewController` active and current page.
   TabGridPage page = profile->IsOffTheRecord() ? TabGridPageIncognitoTabs
@@ -1269,7 +1182,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // handler after this coordinator has stopped; make this action a no-op by
   // setting the handler to nil.
   self.baseViewController.handler = nil;
-  self.recentTabsContextMenuHelper = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
@@ -1289,12 +1201,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_tabGroupsPanelCoordinator stop];
   _tabGroupsPanelCoordinator = nil;
 
-  // TODO(crbug.com/41390276) : RecentTabsTableViewController behaves like a
-  // coordinator and that should be factored out.
-  [self.baseViewController.remoteTabsViewController dismissModals];
-  self.baseViewController.remoteTabsViewController.browser = nil;
-  [self.remoteTabsMediator disconnect];
-  self.remoteTabsMediator = nil;
   [self dismissActionSheetCoordinator];
 
   [self.snackbarCoordinator stop];
@@ -1341,12 +1247,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       DCHECK_GT(self.regularBrowser->GetWebStateList()->count(), 0);
       activeBrowser = self.regularBrowser;
       break;
-    case TabGridPageRemoteTabs:
-      DUMP_WILL_BE_NOTREACHED()
-          << "It is invalid to have an active tab in Recent Tabs.";
-      // This appears to come up in release -- see crbug.com/1069243.
-      // Defensively early return instead of continuing.
-      return;
     case TabGridPageTabGroups:
       DUMP_WILL_BE_NOTREACHED()
           << "It is invalid to have an active tab in Tab Groups.";
@@ -1519,7 +1419,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     case TabGridPageRegularTabs:
       browser = self.regularBrowser;
       break;
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       NOTREACHED();
   }
@@ -1609,7 +1508,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   self.regularBrowser->GetProfile()->GetPrefs(),
                                   NO) !=
       history_sync::HistorySyncSkipReason::kNone) {
-    [self.remoteTabsMediator refreshSessionsView];
+    // No-op. Removed soon.
   } else {
     _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
         initWithBaseViewController:_baseViewController
@@ -1649,7 +1548,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   OpenDistantSessionInBackground(
       session, inIncognito, GetDefaultNumberOfTabsToLoadSimultaneously(),
       UrlLoadingBrowserAgent::FromBrowser(self.regularBrowser),
-      self.baseViewController.remoteTabsViewController.loadStrategy);
+      UrlLoadStrategy::NORMAL);
 
   [self showActiveRegularTabFromRecentTabs];
 }
@@ -1845,14 +1744,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
-  [self.baseViewController.remoteTabsViewController
-      removeSessionAtTableSectionWithIdentifier:sectionIdentifier];
+  NOTREACHED(base::NotFatalUntil::M142);
 }
 
 - (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifier {
-  return [self.baseViewController.remoteTabsViewController
-      sessionForTableSectionWithIdentifier:sectionIdentifier];
+  NOTREACHED(base::NotFatalUntil::M142);
+  return nullptr;
 }
 
 #pragma mark - SceneStateObserver
@@ -1964,11 +1862,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self openLinkWithURL:searchURL];
 }
 
-- (void)showRecentTabsForText:(NSString*)text {
-  [self.baseViewController setCurrentPageAndPageControl:TabGridPageRemoteTabs
-                                               animated:YES];
-}
-
 - (void)showPage:(TabGridPage)page animated:(BOOL)animated {
   if (page == TabGridPageTabGroups) {
     CHECK(IsTabGroupSyncEnabled());
@@ -2075,7 +1968,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
                 didFinishWithResult:(HistorySyncResult)result {
   [self stopHistorySyncPopupCoordinator];
-  [self.remoteTabsMediator refreshSessionsView];
 }
 
 #pragma mark - TabGroupPositioner
@@ -2097,7 +1989,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       return [_incognitoGridCoordinator isSelectedCellVisible];
     case TabGridPageRegularTabs:
       return [_regularGridCoordinator isSelectedCellVisible];
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       return NO;
   }
@@ -2141,7 +2032,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     case TabGridPageRegularTabs:
       potentialGridContainer = [_regularGridCoordinator gridView];
       break;
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       NOTREACHED();
   }
@@ -2163,7 +2053,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       potentialAnimationContainer =
           [_regularGridCoordinator gridContainerForAnimation];
       break;
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       NOTREACHED();
   }
@@ -2190,7 +2079,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       return [_incognitoGridCoordinator transitionLayout];
     case TabGridPageRegularTabs:
       return [_regularGridCoordinator transitionLayout];
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       return nil;
   }

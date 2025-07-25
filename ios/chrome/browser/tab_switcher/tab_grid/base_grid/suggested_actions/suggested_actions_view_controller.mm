@@ -31,8 +31,7 @@ const int kSectionIdentifierSuggestedActions = kSectionIdentifierEnumZero + 1;
 }  // namespace
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeSuggestedActionSearchRecentTabs = kItemTypeEnumZero,
-  ItemTypeSuggestedActionSearchWeb,
+  ItemTypeSuggestedActionSearchWeb = kItemTypeEnumZero,
   ItemTypeSuggestedActionSearchHistory,
 };
 
@@ -118,19 +117,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:searchWebItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
 
-  if (!IsTabGroupSyncEnabled()) {
-    TableViewImageItem* searchRecentTabsItem = [[TableViewImageItem alloc]
-        initWithType:ItemTypeSuggestedActionSearchRecentTabs];
-    searchRecentTabsItem.title = l10n_util::GetNSString(
-        IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_RECENT_TABS);
-    searchRecentTabsItem.image =
-        [[UIImage imageNamed:@"suggested_action_recent_tabs"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    searchRecentTabsItem.textColor = actionsTextColor;
-    [model addItem:searchRecentTabsItem
-        toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
-  }
-
   TableViewTabsSearchSuggestedHistoryItem* searchHistoryItem =
       [[TableViewTabsSearchSuggestedHistoryItem alloc]
           initWithType:ItemTypeSuggestedActionSearchHistory];
@@ -175,10 +161,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger itemTypeSelected =
       [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemTypeSelected) {
-    case ItemTypeSuggestedActionSearchRecentTabs:
-      [self.delegate
-          didSelectSearchRecentTabsInSuggestedActionsViewController:self];
-      break;
     case ItemTypeSuggestedActionSearchWeb:
       [self.delegate didSelectSearchWebInSuggestedActionsViewController:self];
       break;

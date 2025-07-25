@@ -117,9 +117,6 @@
     case TabGridPageRegularTabs:
       _currentPageMutator = self.regularPageMutator;
       break;
-    case TabGridPageRemoteTabs:
-      _currentPageMutator = self.remotePageMutator;
-      break;
     case TabGridPage::TabGridPageTabGroups:
       _currentPageMutator = self.tabGroupsPageMutator;
       break;

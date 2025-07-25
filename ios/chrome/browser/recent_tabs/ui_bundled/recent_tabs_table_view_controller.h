@@ -20,7 +20,6 @@ struct DistantSession;
 @protocol SettingsCommands;
 @protocol RecentTabsMenuProvider;
 @protocol RecentTabsPresentationDelegate;
-@protocol RecentTabsTableViewControllerUIDelegate;
 @protocol TableViewFaviconDataSource;
 
 @interface RecentTabsTableViewController
@@ -35,9 +34,6 @@ struct DistantSession;
 
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;
-// Delegate for UI-related events.
-@property(nonatomic, weak) id<RecentTabsTableViewControllerUIDelegate>
-    UIDelegate;
 // Whether the updates of the RecentTabs should be ignored. Setting this to NO
 // would trigger a reload of the TableView.
 @property(nonatomic, assign) BOOL preventUpdates;

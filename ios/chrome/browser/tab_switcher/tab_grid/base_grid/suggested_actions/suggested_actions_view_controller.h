@@ -15,9 +15,6 @@
 // Tells the delegate that the user tapped on the search in history item.
 - (void)didSelectSearchHistoryInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController;
-// Tells the delegate that the user tapped on the search in reecent tabs item.
-- (void)didSelectSearchRecentTabsInSuggestedActionsViewController:
-    (SuggestedActionsViewController*)viewController;
 // Tells the delegate that the user tapped on search in web item.
 - (void)didSelectSearchWebInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController;

@@ -505,10 +505,8 @@ CGFloat CompactButtonHorizontalPadding() {
   [self hideAllButtons];
 
   BOOL useCompactLayout = [self shouldUseCompactLayout];
-  BOOL hideToolbar =
-      self.mode == TabGridMode::kSearch ||
-      (!useCompactLayout && (self.page == TabGridPageRemoteTabs ||
-                             self.page == TabGridPageTabGroups));
+  BOOL hideToolbar = self.mode == TabGridMode::kSearch ||
+                     (!useCompactLayout && (self.page == TabGridPageTabGroups));
   if (hideToolbar) {
     self.hidden = YES;
     [self updateBackgroundVisibility];
@@ -531,8 +529,7 @@ CGFloat CompactButtonHorizontalPadding() {
   }
 
   if (useCompactLayout) {
-    if (self.page == TabGridPageRemoteTabs ||
-        self.page == TabGridPageTabGroups) {
+    if (self.page == TabGridPageTabGroups) {
       _doneButton.hidden = NO;
     } else if (self.isInTabGroupView) {
       _smallNewTabButton.hidden = NO;

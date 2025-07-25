@@ -51,9 +51,6 @@
 // Opens the recent tabs and tap in the primary sign-in button.
 + (void)tapPrimarySignInButtonInRecentTabs;
 
-// Opens the tab switcher and tap in the primary sign-in button.
-+ (void)tapPrimarySignInButtonInTabSwitcher;
-
 // Checks that the sign-in promo view (with a close button) is visible using the
 // right mode.
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode;

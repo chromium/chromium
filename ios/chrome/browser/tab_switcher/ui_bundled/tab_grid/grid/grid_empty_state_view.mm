@@ -24,9 +24,6 @@ UIImage* ImageForPage(TabGridPage page) {
       return [UIImage imageNamed:@"tab_grid_incognito_tabs_empty"];
     case TabGridPageRegularTabs:
       return [UIImage imageNamed:@"tab_grid_regular_tabs_empty"];
-    case TabGridPageRemoteTabs:
-      // No-op. Empty page.
-      break;
     case TabGridPageTabGroups:
       return [UIImage imageNamed:@"tab_grid_tab_groups_empty"];
   }
@@ -45,9 +42,6 @@ NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
           IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE);
     case TabGridPageRegularTabs:
       return l10n_util::GetNSString(IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_TITLE);
-    case TabGridPageRemoteTabs:
-      // No-op. Empty page.
-      break;
     case TabGridPageTabGroups:
       return l10n_util::GetNSString(IDS_IOS_TAB_GRID_TAB_GROUPS_EMPTY_TITLE);
   }
@@ -68,9 +62,6 @@ NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
     case TabGridPageRegularTabs:
       return l10n_util::GetNSString(
           IDS_IOS_TAB_GRID_REGULAR_TABS_EMPTY_MESSAGE);
-    case TabGridPageRemoteTabs:
-      // No-op. Empty page.
-      break;
     case TabGridPageTabGroups:
       return l10n_util::GetNSString(IDS_IOS_TAB_GRID_TAB_GROUPS_EMPTY_MESSAGE);
   }

@@ -71,7 +71,6 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
   OpenPrimarySigninMethodFromBookmarks,
   OpenSecondarySigninMethodFromBookmarks,
   OpenSigninMethodFromRecentTabs,
-  OpenSigninMethodFromTabSwitcher,
 };
 
 namespace {
@@ -451,9 +450,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       break;
     case OpenSigninMethodFromRecentTabs:
       [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
-      break;
-    case OpenSigninMethodFromTabSwitcher:
-      [SigninEarlGreyUI tapPrimarySignInButtonInTabSwitcher];
       break;
   }
   [ChromeEarlGreyUI waitForAppToIdle];

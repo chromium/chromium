@@ -29,8 +29,6 @@ enum class IPHDismissalReasonType;
 @class LayoutGuideCenter;
 @class PinnedTabsViewController;
 @protocol PriceCardDataSource;
-@protocol RecentTabsConsumer;
-@class RecentTabsTableViewController;
 @class RegularGridViewController;
 @class TabGridBottomToolbar;
 @protocol TabCollectionConsumer;
@@ -93,8 +91,7 @@ enum class TabGridPageConfiguration {
 @end
 
 // View controller representing a tab switcher. The tab switcher has an
-// incognito tab grid, regular tab grid, and a third panel (either Tab Groups or
-// Recent Tabs).
+// incognito tab grid, regular tab grid, and tab groups grid.
 @interface TabGridViewController
     : UIViewController <DisabledGridViewControllerDelegate,
                         GridConsumer,
@@ -121,9 +118,6 @@ enum class TabGridPageConfiguration {
 // Mutator to apply all user change in the model.
 @property(nonatomic, weak) id<TabGridMutator> mutator;
 
-// Consumers send updates from the model layer to the UI layer.
-@property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
-
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularGridHandler;
 @property(nonatomic, weak) id<GridCommands> incognitoGridHandler;
@@ -144,12 +138,6 @@ enum class TabGridPageConfiguration {
     IncognitoGridViewController* incognitoTabsViewController;
 @property(nonatomic, strong)
     TabGroupsPanelViewController* tabGroupsPanelViewController;
-// The view controller for Recent Tabs.
-// TODO(crbug.com/41390276) : This was only exposed in the public interface so
-// that TabGridViewController does not need to know about model objects. The
-// model objects used in this view controller should be factored out.
-@property(nonatomic, readonly)
-    RecentTabsTableViewController* remoteTabsViewController;
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
@@ -175,8 +163,6 @@ enum class TabGridPageConfiguration {
     UIViewController* incognitoGridContainerViewController;
 @property(nonatomic, weak)
     UIViewController* tabGroupsGridContainerViewController;
-@property(nonatomic, weak)
-    GridContainerViewController* remoteGridContainerViewController;
 
 // Active page of the tab grid. The active page is the page that
 // contains the most recent active tab.
@@ -199,9 +185,6 @@ enum class TabGridPageConfiguration {
 - (void)contentWillAppearAnimated:(BOOL)animated;
 - (void)contentDidAppear;
 - (void)contentWillDisappearAnimated:(BOOL)animated;
-
-// Dismisses any modal UI which may be presented.
-- (void)dismissModals;
 
 // Sets both the current page and page control's selected page to `page`.
 // Animation is used if `animated` is YES.

@@ -137,7 +137,6 @@ const CGFloat kLargeSizeIPad = 52;
       }
 #endif
       break;
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
       break;
   }

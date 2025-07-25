@@ -11,8 +11,6 @@ const char kUMATabSwitcherIdleIncognitoTabGridPageHistogram[] =
     "IOS.TabSwitcher.Idle.IncognitoTabGridPage";
 const char kUMATabSwitcherIdleRegularTabGridPageHistogram[] =
     "IOS.TabSwitcher.Idle.RegularTabGridPage";
-const char kUMATabSwitcherIdleRecentTabsHistogram[] =
-    "IOS.TabSwitcher.Idle.RecentTabs";
 const char kUMATabSwitcherIdleTabGroupsHistogram[] =
     "IOS.TabSwitcher.Idle.TabGroups";
 

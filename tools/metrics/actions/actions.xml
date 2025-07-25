@@ -46030,6 +46030,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabsSearch.SuggestedActions.RecentTabs">
+  <obsolete>Recent tabs are no longer displayed in the tab grid.</obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <description>

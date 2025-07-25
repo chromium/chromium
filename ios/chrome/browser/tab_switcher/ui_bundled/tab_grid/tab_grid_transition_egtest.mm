@@ -37,7 +37,7 @@ using chrome_test_util::TabGridOtherDevicesPanelButton;
 using chrome_test_util::TabGridSearchCancelButton;
 using chrome_test_util::TabGridSearchModeToolbar;
 using chrome_test_util::TabGridSearchTabsButton;
-using chrome_test_util::TabGridThirdPanelButton;
+using chrome_test_util::TabGridTabGroupsPanelButton;
 
 namespace {
 
@@ -183,7 +183,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [ChromeEarlGrey showTabSwitcher];
   ShowTabViewController();
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
@@ -208,7 +207,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   id<GREYMatcher> matcher = TabGridNewTabButton();
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
@@ -238,7 +236,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   id<GREYMatcher> matcher = TabGridNewIncognitoTabButton();
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 1);
@@ -284,7 +281,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [[EarlGrey selectElementWithMatcher:TabGridNewTabButton()]
       performAction:grey_tap()];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 1);
@@ -338,7 +334,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [ChromeEarlGrey
       waitForWebStateContainingText:base::SysNSStringToUTF8(tab3_title)];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 3);
@@ -390,7 +385,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [ChromeEarlGrey
       waitForWebStateContainingText:base::SysNSStringToUTF8(tab3_title)];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
   ExpectIdleHistogramBucketCount(
@@ -435,7 +429,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [ChromeEarlGrey
       waitForWebStateContainingText:base::SysNSStringToUTF8(incognito_title)];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 1);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
@@ -456,17 +449,15 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab1_title]];
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
 
   [ChromeEarlGrey showTabSwitcher];
 
   // Switch to the third panel.
-  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
 
   // Switch back to the regular tabs panel and open the selected tab.
@@ -474,17 +465,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
       performAction:grey_tap()];
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
-  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 1);
-    ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleTabGroupsHistogram, 1,
-                                   YES);
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
-  } else {
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 1);
-    ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleRecentTabsHistogram, 1,
-                                   YES);
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
-  }
+  ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 1);
+  ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleTabGroupsHistogram, 1, YES);
 
   SelectTab(tab1_title);
 
@@ -492,17 +474,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
   ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleRegularTabGridPageHistogram,
                                  1, YES);
-  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 1);
-    ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleTabGroupsHistogram, 1,
-                                   YES);
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
-  } else {
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 1);
-    ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleRecentTabsHistogram, 1,
-                                   YES);
-    ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
-  }
+  ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 1);
+  ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleTabGroupsHistogram, 1, YES);
 }
 
 // Tests deleting a tab and exiting the tab switcher after switch back and forth
@@ -537,7 +510,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
       performAction:grey_tap()];
   SelectTab(tab2_title);
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
@@ -585,7 +557,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [ChromeEarlGrey
       waitForWebStateContainingText:base::SysNSStringToUTF8(tab1_title)];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 2);
@@ -619,7 +590,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
       performAction:grey_tap()];
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 1);
@@ -644,7 +614,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   // Leave switcher by tap "Done" button.
   ShowTabViewController();
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
@@ -673,7 +642,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
       waitForSufficientlyVisibleElementWithMatcher:TabGridDoneButton()];
   ShowTabViewController();
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
@@ -712,7 +680,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
       performAction:grey_tap()];
   ShowTabViewController();
 
-  ExpectIdleHistogramCount(kUMATabSwitcherIdleRecentTabsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);

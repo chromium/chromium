@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller_ui_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
@@ -1200,10 +1199,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                                     sectionIdentifierForSectionIndex:section]]
              ? 1.0
              : kSeparationSpaceBetweenSections;
-}
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self.UIDelegate recentTabsScrollViewDidScroll:self];
 }
 
 #pragma mark - UITableViewDataSource
