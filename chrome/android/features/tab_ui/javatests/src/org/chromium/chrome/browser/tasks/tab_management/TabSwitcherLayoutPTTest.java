@@ -323,6 +323,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @TestAnimations.EnableAnimations
+    @DisabledTest(message = "crbug.com/433892577 thumbnail capture is flaky")
     @RequiresRestart("Flaky on desktop (crbug.com/381679686), affects flake rate of other tests")
     public void testTabToGridAndBack_SoftCleanup_Ntp() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
