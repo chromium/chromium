@@ -2247,12 +2247,10 @@ TEST(Table, NoThrowMoveAssign) {
 }
 
 TEST(Table, NoThrowSwappable) {
-  ASSERT_TRUE(
-      container_internal::IsNoThrowSwappable<absl::Hash<absl::string_view>>());
-  ASSERT_TRUE(container_internal::IsNoThrowSwappable<
-              std::equal_to<absl::string_view>>());
-  ASSERT_TRUE(container_internal::IsNoThrowSwappable<std::allocator<int>>());
-  EXPECT_TRUE(container_internal::IsNoThrowSwappable<StringTable>());
+  ASSERT_TRUE(std::is_nothrow_swappable<absl::Hash<absl::string_view>>());
+  ASSERT_TRUE(std::is_nothrow_swappable<std::equal_to<absl::string_view>>());
+  ASSERT_TRUE(std::is_nothrow_swappable<std::allocator<int>>());
+  EXPECT_TRUE(std::is_nothrow_swappable<StringTable>());
 }
 
 TEST(Table, HeterogeneousLookup) {

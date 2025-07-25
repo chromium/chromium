@@ -144,3 +144,44 @@ cc_binary(
         "@google_benchmark//:benchmark_main",
     ],
 )
+
+cc_library(
+    name = "profile_builder",
+    srcs = ["internal/profile_builder.cc"],
+    hdrs = ["internal/profile_builder.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl:__subpackages__",
+    ],
+    deps = [
+        "//absl/base",
+        "//absl/base:config",
+        "//absl/base:raw_logging_internal",
+        "//absl/container:btree",
+        "//absl/container:flat_hash_map",
+        "//absl/strings",
+        "//absl/types:span",
+    ],
+)
+
+cc_library(
+    name = "hashtable",
+    srcs = ["hashtable.cc"],
+    hdrs = ["hashtable.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl:__subpackages__",
+    ],
+    deps = [
+        ":profile_builder",
+        "//absl/base:config",
+        "//absl/container:hashtablez_sampler",
+        "//absl/status:statusor",
+        "//absl/strings",
+        "//absl/strings:string_view",
+        "//absl/time",
+        "//absl/types:span",
+    ],
+)

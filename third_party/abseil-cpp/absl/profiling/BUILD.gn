@@ -63,3 +63,32 @@ absl_test("periodic_sampler_test") {
     "//third_party/abseil-cpp/absl/base:core_headers",
   ]
 }
+
+absl_source_set("profile_builder") {
+  sources = [ "internal/profile_builder.cc" ]
+  public = [ "internal/profile_builder.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/container:btree",
+    "//third_party/abseil-cpp/absl/container:flat_hash_map",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/types:span",
+  ]
+}
+
+absl_source_set("hashtable") {
+  sources = [ "hashtable.cc" ]
+  public = [ "hashtable.h" ]
+  deps = [
+    ":profile_builder",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/container:hashtablez_sampler",
+    "//third_party/abseil-cpp/absl/status:statusor",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+    "//third_party/abseil-cpp/absl/time",
+    "//third_party/abseil-cpp/absl/types:span",
+  ]
+}
