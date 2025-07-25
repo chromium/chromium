@@ -265,8 +265,7 @@ message ScrollToAction {
 // Next ID: 5
 message ScriptToolAction {
   // The Document which provides the associated Tool.
-  DocumentIdentifier document_identifier = 1
-      [features = { field_presence: EXPLICIT }];
+  DocumentIdentifier document_identifier = 1 [features = { field_presence: EXPLICIT }];
 
   int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
 

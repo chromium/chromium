@@ -768,8 +768,7 @@ message ScriptTool {
   string input_schema = 4 [features = { field_presence: EXPLICIT }];
 
   // Annotations for the tool.
-  ScriptToolAnnotations annotations = 5
-      [features = { field_presence: EXPLICIT }];
+  ScriptToolAnnotations annotations = 5 [features = { field_presence: EXPLICIT }];
 }
 
 // Annotations for the script tool.
@@ -1861,7 +1860,7 @@ enum ContentAttributeType {
 }
 
 // The reason why a node is clickable.
-// Next ID: 10
+// Next ID: 11
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -1898,6 +1897,9 @@ enum ClickabilityReason {
   // visibility of other elements. This reason implies that the associated
   // control is currently collapsed.
   CLICKABILITY_REASON_ARIA_EXPANDED_FALSE = 9;
+
+  // The node has the tabIndex attribute set to a valid value.
+  CLICKABILITY_REASON_TAB_INDEX = 10;
 }
 
 // Next ID: 5

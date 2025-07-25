@@ -37,8 +37,7 @@ message AutofillAiTypeRequest {
   // The context of the page that the form is on.
   // In practice, only the PageContext::url is set. Notably, annotated page
   // content is passed through AutofillAiTypeRequest::annotated_page_content.
-  // TODO(crbug.com/389625970): Remove in favor of `url` once most clients set
-  // it.
+  // TODO(crbug.com/389625970): Remove in favor of `url` once most clients set it.
   PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
 
   // The form to predict values for. It is expected that the values for each
