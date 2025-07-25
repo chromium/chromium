@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
-#include "third_party/blink/renderer/core/css/css_custom_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
@@ -446,15 +445,12 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSPositionTryRule>(
           To<StyleRulePositionTry>(self), parent_sheet);
       break;
-    case kCustomMedia:
-      rule = MakeGarbageCollected<CSSCustomMediaRule>(
-          To<StyleRuleCustomMedia>(self), parent_sheet);
-      break;
     case kFontFeature:
     case kKeyframe:
     case kCharset:
     case kMixin:
     case kApplyMixin:
+    case kCustomMedia:
       NOTREACHED();
   }
   if (parent_rule) {

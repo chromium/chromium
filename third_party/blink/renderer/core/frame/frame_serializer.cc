@@ -1262,7 +1262,6 @@ function main(metadata) {
       case CSSRule::kPositionTryRule:
       case CSSRule::kFunctionDeclarationsRule:
       case CSSRule::kFunctionRule:
-      case CSSRule::kCustomMediaRule:
         break;
     }
   }

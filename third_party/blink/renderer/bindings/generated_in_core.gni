@@ -786,8 +786,6 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_container_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_counter_style_rule.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_counter_style_rule.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_custom_media_rule.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_custom_media_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_font_face_rule.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_font_face_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_font_feature_values_map.cc",
@@ -1846,8 +1844,6 @@ generated_typedef_sources_in_core = [
 ]
 
 generated_union_sources_in_core = [
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_boolean_medialist.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_boolean_medialist.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_undefined_unsignedlonglongenforcerange.cc",
