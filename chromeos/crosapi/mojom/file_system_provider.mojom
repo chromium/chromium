@@ -190,12 +190,8 @@ interface FileSystemProvider {
 // fileSystemProvider extension API.
 [Uuid="82db93f7-e0a5-4a9c-a09f-db92f9e45348"]
 interface FileSystemProviderService {
-  // Makes a filesystem provided by an extension visible to the operating system
-  // and other consumers.
-  Mount@1(FileSystemMetadata metadata, bool persistent) => (string error);
-
-  // Makes a filesystem provided by an extension unavailable.
-  Unmount@2(FileSystemId file_system_id) => (string error);
+  // Mount@1 was removed.
+  // Unmount@2 was removed.
 
   // Returns all file systems mounted by the extension.
   GetAll@3(string provider) => (array<FileSystemInfo> infos);

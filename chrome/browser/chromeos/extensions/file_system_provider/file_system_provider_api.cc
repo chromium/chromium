@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
@@ -160,31 +163,26 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
         Error(FileErrorToString(base::File::FILE_ERROR_INVALID_OPERATION)));
   }
 
-  bool persistent =
-      params->options.persistent ? *params->options.persistent : true;
-  crosapi::mojom::FileSystemMetadataPtr metadata =
-      crosapi::mojom::FileSystemMetadata::New();
-  metadata->file_system_id = crosapi::mojom::FileSystemId::New();
-  metadata->file_system_id->provider = GetProviderId();
-  metadata->file_system_id->id = params->options.file_system_id;
-  metadata->display_name = params->options.display_name;
-  metadata->writable =
-      params->options.writable ? *params->options.writable : false;
-  metadata->opened_files_limit = base::saturated_cast<uint32_t>(
-      params->options.opened_files_limit ? *params->options.opened_files_limit
-                                         : 0);
-  metadata->supports_notify = params->options.supports_notify_tag
-                                  ? *params->options.supports_notify_tag
-                                  : false;
+  ash::file_system_provider::MountOptions options;
+  options.file_system_id = params->options.file_system_id;
+  options.display_name = params->options.display_name;
+  options.writable = params->options.writable.value_or(false);
+  options.opened_files_limit = params->options.opened_files_limit.value_or(0);
+  options.supports_notify_tag =
+      params->options.supports_notify_tag.value_or(false);
+  options.persistent = params->options.persistent.value_or(true);
 
-  auto callback =
-      base::BindOnce(&FileSystemProviderMountFunction::RespondWithError, this);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->file_system_provider_service_ash()
-      ->MountWithProfile(std::move(metadata), persistent, std::move(callback),
-                         Profile::FromBrowserContext(browser_context()));
-  return RespondLater();
+  auto& service =
+      CHECK_DEREF(ash::file_system_provider::Service::Get(browser_context()));
+  const base::File::Error result = service.MountFileSystem(
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          GetProviderId()),
+      options);
+
+  if (result != base::File::FILE_OK) {
+    return RespondNow(Error(extensions::FileErrorToString(result)));
+  }
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction FileSystemProviderUnmountFunction::Run() {
@@ -192,17 +190,17 @@ ExtensionFunction::ResponseAction FileSystemProviderUnmountFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto id = crosapi::mojom::FileSystemId::New();
-  id->provider = GetProviderId();
-  id->id = params->options.file_system_id;
-  auto callback = base::BindOnce(
-      &FileSystemProviderUnmountFunction::RespondWithError, this);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->file_system_provider_service_ash()
-      ->UnmountWithProfile(std::move(id), std::move(callback),
-                           Profile::FromBrowserContext(browser_context()));
-  return RespondLater();
+  auto& service =
+      CHECK_DEREF(ash::file_system_provider::Service::Get(browser_context()));
+  const base::File::Error result = service.UnmountFileSystem(
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          GetProviderId()),
+      params->options.file_system_id,
+      ash::file_system_provider::Service::UNMOUNT_REASON_USER);
+  if (result != base::File::FILE_OK) {
+    return RespondNow(Error(extensions::FileErrorToString(result)));
+  }
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction FileSystemProviderGetAllFunction::Run() {

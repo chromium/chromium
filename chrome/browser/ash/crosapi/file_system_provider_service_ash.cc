@@ -252,20 +252,6 @@ std::optional<GURL> ToPNGDataURL(const gfx::ImageSkia& image) {
 FileSystemProviderServiceAsh::FileSystemProviderServiceAsh() = default;
 FileSystemProviderServiceAsh::~FileSystemProviderServiceAsh() = default;
 
-void FileSystemProviderServiceAsh::Mount(mojom::FileSystemMetadataPtr metadata,
-                                         bool persistent,
-                                         MountCallback callback) {
-  MountWithProfile(std::move(metadata), persistent, std::move(callback),
-                   ProfileManager::GetPrimaryUserProfile());
-}
-
-void FileSystemProviderServiceAsh::Unmount(
-    mojom::FileSystemIdPtr file_system_id,
-    UnmountCallback callback) {
-  UnmountWithProfile(std::move(file_system_id), std::move(callback),
-                     ProfileManager::GetPrimaryUserProfile());
-}
-
 void FileSystemProviderServiceAsh::GetAll(const std::string& provider,
                                           GetAllCallback callback) {
   GetAllWithProfile(provider, std::move(callback),
@@ -403,40 +389,6 @@ void FileSystemProviderServiceAsh::ExtensionUnloaded(const std::string& id,
       due_to_shutdown
           ? ash::file_system_provider::Service::UNMOUNT_REASON_SHUTDOWN
           : ash::file_system_provider::Service::UNMOUNT_REASON_USER);
-}
-
-void FileSystemProviderServiceAsh::MountWithProfile(
-    mojom::FileSystemMetadataPtr metadata,
-    bool persistent,
-    MountCallback callback,
-    Profile* profile) {
-  Service* const service = Service::Get(profile);
-  DCHECK(service);
-
-  MountOptions options;
-  options.file_system_id = metadata->file_system_id->id;
-  options.display_name = metadata->display_name;
-  options.writable = metadata->writable;
-  options.opened_files_limit =
-      base::saturated_cast<int>(metadata->opened_files_limit);
-  options.supports_notify_tag = metadata->supports_notify;
-  options.persistent = persistent;
-
-  const base::File::Error result = service->MountFileSystem(
-      ProviderId::CreateFromExtensionId(metadata->file_system_id->provider),
-      options);
-  RunErrorCallback(std::move(callback), result);
-}
-
-void FileSystemProviderServiceAsh::UnmountWithProfile(
-    mojom::FileSystemIdPtr file_system_id,
-    UnmountCallback callback,
-    Profile* profile) {
-  Service* const service = Service::Get(profile);
-  const base::File::Error result = service->UnmountFileSystem(
-      ProviderId::CreateFromExtensionId(file_system_id->provider),
-      file_system_id->id, Service::UNMOUNT_REASON_USER);
-  RunErrorCallback(std::move(callback), result);
 }
 
 void FileSystemProviderServiceAsh::GetAllWithProfile(
