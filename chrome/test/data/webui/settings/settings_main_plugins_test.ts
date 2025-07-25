@@ -6,10 +6,11 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {Route, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, pageVisibility, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, pageVisibility, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting, SignedInState, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {simulateSyncStatus} from './sync_test_util.js';
 import {TestSearchManager} from './test_search_manager.js';
 
 suite('SettingsMain', function() {
@@ -39,8 +40,14 @@ suite('SettingsMain', function() {
       isGuest: false,
       showAiPage: false,
       showResetProfileBanner: false,
+      replaceSyncPromosWithSignInPromos: true,
     });
     createSettingsMain();
+    simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    });
+    flush();
   });
 
   test('UpdatesActiveViewWhenRouteChanges', async function() {

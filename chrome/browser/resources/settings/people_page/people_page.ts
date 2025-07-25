@@ -185,6 +185,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       },
 
       showSignoutDialog_: Boolean,
+      primaryAccountName_: String,
+      primaryAccountEmail_: String,
+      primaryAccountIconUrl_: String,
       // </if>
     };
   }
@@ -204,6 +207,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   declare private shouldShowAccountSettingsPage_: boolean;
   declare private showImportDataDialog_: boolean;
   declare private showSignoutDialog_: boolean;
+  declare private primaryAccountName_: string;
+  declare private primaryAccountEmail_: string;
+  declare private primaryAccountIconUrl_: string;
   // </if>
 
   private syncBrowserProxy_: SyncBrowserProxy =
@@ -236,11 +242,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         'sync-status-changed', this.handleSyncStatus_.bind(this));
 
     // <if expr="not is_chromeos">
-    const handleStoredAccounts = (accounts: StoredAccount[]) => {
-      this.storedAccounts = accounts;
-    };
-    this.syncBrowserProxy_.getStoredAccounts().then(handleStoredAccounts);
-    this.addWebUiListener('stored-accounts-updated', handleStoredAccounts);
+    this.syncBrowserProxy_.getStoredAccounts().then(
+        this.handleStoredAccounts_.bind(this));
+    this.addWebUiListener(
+        'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
 
     this.addWebUiListener('sync-settings-saved', () => {
       this.$.toast.show();
@@ -306,6 +311,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
    * Handler for when the sync state is pushed from the browser.
    */
   private handleSyncStatus_(syncStatus: SyncStatus) {
+    // <if expr="is_chromeos">
+    this.syncStatus = syncStatus;
+    // </if>
+    // <if expr="not is_chromeos">
     // Sign-in impressions should be recorded only if the sign-in promo is
     // shown. They should be recorder only once, the first time
     // |this.syncStatus| is set.
@@ -318,6 +327,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       // SyncAccountControl records the impressions user actions.
       chrome.metricsPrivate.recordUserAction('Signin_Impression_FromSettings');
     }
+    // </if>
   }
 
   // <if expr="not is_chromeos">
@@ -360,6 +370,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   // <if expr="not is_chromeos">
+  private onAccountClick_() {
+    Router.getInstance().navigateTo(routes.ACCOUNT);
+  }
+
   private onImportDataClick_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }
@@ -367,6 +381,33 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private onImportDataDialogClosed_() {
     Router.getInstance().navigateToPreviousRoute();
     focusWithoutInk(this.$.importDataDialogTrigger);
+  }
+
+  private shouldLinkToAccountSettingsPage_(): boolean {
+    return this.shouldShowAccountSettingsPage_ && !!this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN;
+  }
+
+  private shouldShowSyncAccountControl_(): boolean {
+    if (this.syncStatus === undefined) {
+      return false;
+    }
+    return !!this.syncStatus!.syncSystemEnabled && this.signinAllowed_ &&
+        !this.shouldLinkToAccountSettingsPage_();
+  }
+
+  private handleStoredAccounts_(accounts: StoredAccount[]) {
+    this.storedAccounts = accounts;
+
+    // The user might not have any GAIA accounts (e.g. signed out). In this case
+    // the link row to the account settings page does not exist, so there's
+    // nothing to do.
+    if (accounts.length === 0) {
+      return;
+    }
+    this.primaryAccountName_ = accounts[0].fullName!;
+    this.primaryAccountEmail_ = accounts[0].email;
+    this.primaryAccountIconUrl_ = accounts[0].avatarImage!;
   }
   // </if>
 
@@ -377,18 +418,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('googleAccountUrl'));
     chrome.metricsPrivate.recordUserAction('ManageGoogleAccount_Clicked');
-  }
-
-  private shouldShowSyncAccountControl_(): boolean {
-    // <if expr="is_chromeos">
-    return false;
-    // </if>
-    // <if expr="not is_chromeos">
-    if (this.syncStatus === undefined) {
-      return false;
-    }
-    return !!this.syncStatus!.syncSystemEnabled && this.signinAllowed_;
-    // </if>
   }
 
   /**
@@ -417,6 +446,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
               '#edit-profile' :
               '#profile-row .subpage-arrow');
     }
+    if (routes.ACCOUNT) {
+      map.set(routes.ACCOUNT.path, '#account-subpage-row');
+    }
     // </if>
     return map;
   }
@@ -443,9 +475,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         break;
       case 'account':
         assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
-        // TODO(crbug.com/429139804): Replace with actual entry point once
-        // implemented.
-        triggerId = 'sync-setup';
+        triggerId = 'account-subpage-row';
         break;
         // </if>
     }
