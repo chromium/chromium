@@ -32,7 +32,7 @@ source_set("encoder") {
 
   deps = [
     ":vpx_codec",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/proto",
     "//remoting/protocol:session_config",
     "//third_party/libaom",
@@ -87,8 +87,8 @@ source_set("decoder") {
 
   deps = [
     ":vpx_codec",
-    "//base:base",
-    "//remoting/base:base",
+    "//base",
+    "//remoting/base",
     "//remoting/proto",
     "//remoting/protocol:session_config",
     "//third_party/libvpx",
@@ -109,7 +109,7 @@ source_set("vpx_codec") {
   public_deps = [ "//third_party/libvpx" ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//remoting/proto",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -134,7 +134,7 @@ source_set("unit_tests") {
     ":decoder",
     ":encoder",
     "//base",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/proto",
     "//testing/gtest",
     "//third_party/webrtc_overrides:webrtc_component",

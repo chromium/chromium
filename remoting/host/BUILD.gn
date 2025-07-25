@@ -123,7 +123,7 @@ source_set("common_headers") {
   }
   deps = [
     ":platform_interfaces",
-    "//base:base",
+    "//base",
     "//ipc",
     "//remoting/base",
     "//remoting/host/base",
@@ -185,7 +185,7 @@ source_set("client_session_control") {
   deps = [
     "//remoting/base",
     "//remoting/protocol",
-    "//ui/events:events",
+    "//ui/events",
   ]
 }
 
@@ -194,7 +194,7 @@ source_set("clipboard") {
 
   deps = [
     "//base",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host/base",
     "//remoting/proto",
     "//remoting/protocol",
@@ -518,12 +518,12 @@ static_library("common") {
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",
     "//remoting/resources",
-    "//remoting/signaling:signaling",
+    "//remoting/signaling",
     "//services/network:network_service",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//ui/events:events",
+    "//ui/events",
 
     # //remoting uses the power_save_blocker directly. See crbug.com/689423
     "//services/device/wake_lock/power_save_blocker",
@@ -675,7 +675,7 @@ static_library("common") {
       ":remoting_version",
       "//remoting/host/base",
       "//remoting/host/mac:permission_checking",
-      "//ui/events:events",
+      "//ui/events",
     ]
   }
 
@@ -706,8 +706,8 @@ static_library("common") {
       # On Windows, we use //media/gpu/MediaFoundationVideoEncodeAcceleratorWin
       # to detect whether HW encoder is supported by the system.
       "//media",
-      "//media/gpu:gpu",
-      "//mojo/core/embedder:embedder",
+      "//media/gpu",
+      "//mojo/core/embedder",
       "//remoting/base/crash",
       "//remoting/host/crash:crash_uploader",
       "//remoting/host/win",
@@ -756,14 +756,14 @@ static_library("test_support") {
     "//remoting/host/mojom",
     "//remoting/host/remote_open_url:common",
     "//remoting/host/remote_open_url:test_support",
-    "//remoting/host/security_key:security_key",
+    "//remoting/host/security_key",
     "//remoting/host/webauthn",
     "//remoting/proto",
-    "//remoting/protocol:protocol",
+    "//remoting/protocol",
     "//remoting/protocol:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/events:events",
+    "//ui/events",
   ]
   public_deps = [
     ":common",
@@ -848,7 +848,7 @@ source_set("unit_tests") {
     "//remoting/codec:encoder",
     "//remoting/host/base",
     "//remoting/host/file_transfer:unit_tests",
-    "//remoting/host/input_monitor:input_monitor",
+    "//remoting/host/input_monitor",
     "//remoting/host/it2me:common",
     "//remoting/host/it2me:constants",
     "//remoting/host/mojom",
@@ -1141,11 +1141,11 @@ if (enable_me2me_host) {
       "//remoting/host",
       "//remoting/host/base",
       "//remoting/host/mojom",
-      "//remoting/host/security_key:security_key",
+      "//remoting/host/security_key",
       "//remoting/proto",
-      "//remoting/protocol:protocol",
-      "//remoting/signaling:signaling",
-      "//services/network/public/cpp:cpp",
+      "//remoting/protocol",
+      "//remoting/signaling",
+      "//services/network/public/cpp",
       "//third_party/libjingle_xmpp:rtc_xmllite",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
@@ -1154,7 +1154,7 @@ if (enable_me2me_host) {
       defines += [ "REMOTING_USE_X11" ]
       deps += [
         "//remoting/host/linux:platform_impls",
-        "//ui/events/platform/x11:x11",
+        "//ui/events/platform/x11",
       ]
       if (is_linux) {
         deps += [ "//ui/gtk:gtk_config" ]
@@ -1201,7 +1201,7 @@ if (enable_me2me_host) {
       ":resources",
       "//base",
       "//base:debugging_buildflags",
-      "//mojo/core/embedder:embedder",
+      "//mojo/core/embedder",
       "//remoting/base",
       "//remoting/base/crash",
       "//remoting/host/base",

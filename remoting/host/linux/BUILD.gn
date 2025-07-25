@@ -52,7 +52,7 @@ if (enable_me2me_host) {
         "$root_build_dir/libbase.so",
         "$root_build_dir/libthird_party_boringssl.so",
       ]
-      deps += [ "//base:base" ]
+      deps += [ "//base" ]
       if (use_custom_libcxx) {
         sources += [ "$root_build_dir/libc++.so" ]
         deps += [ "//buildtools/third_party/libc++" ]
@@ -105,7 +105,7 @@ source_set("gvariant") {
   ]
   deps = [
     "//base",
-    "//remoting/host/base:base",
+    "//remoting/host/base",
   ]
 }
 
@@ -120,7 +120,7 @@ source_set("utils") {
   deps = [
     "dbus_interfaces:interface_headers",
     "//base",
-    "//remoting/host/base:base",
+    "//remoting/host/base",
     "//ui/base",
   ]
   configs += [ "//build/linux:gio_config" ]

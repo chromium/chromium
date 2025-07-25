@@ -20,7 +20,7 @@ static_library("transport") {
     ":errors",
     "//base",
     "//net",
-    "//remoting/base:base",
+    "//remoting/base",
   ]
 }
 
@@ -243,7 +243,7 @@ static_library("protocol") {
     "//components/webrtc:net_address_utils",
     "//components/webrtc:thread_wrapper",
     "//crypto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
@@ -255,7 +255,7 @@ static_library("protocol") {
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//third_party/libyuv",
@@ -312,7 +312,7 @@ static_library("protocol") {
     ]
 
     deps += [
-      "//media:media",
+      "//media",
       "//remoting/codec:encoder",
     ]
   }
@@ -368,16 +368,16 @@ static_library("test_support") {
   ]
 
   deps = [
-    "//base:base",
-    "//net:net",
+    "//base",
+    "//net",
+    "//net/traffic_annotation",
     "//net/traffic_annotation:test_support",
-    "//net/traffic_annotation:traffic_annotation",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/base:errors",
     "//remoting/base:session_policies",
     "//remoting/codec:encoder",
-    "//remoting/signaling:signaling",
-    "//testing/gtest:gtest",
+    "//remoting/signaling",
+    "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",
   ]
 }
@@ -447,7 +447,7 @@ source_set("unit_tests") {
     "//base",
     "//components/webrtc:thread_wrapper",
     "//net:test_support",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/base:session_policies",
     "//remoting/base:test_support",
     "//remoting/codec:encoder",
@@ -455,7 +455,7 @@ source_set("unit_tests") {
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",

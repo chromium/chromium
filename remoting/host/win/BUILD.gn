@@ -127,11 +127,11 @@ component("rdp_window") {
   ]
 
   deps = [
-    "//net:net",
+    "//net",
     "//remoting/host/base",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/wtl",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 
@@ -450,14 +450,14 @@ shared_library("remoting_core") {
     "//base:i18n",
     "//build/win:default_exe_manifest",
     "//ipc",
-    "//mojo/core/embedder:embedder",
+    "//mojo/core/embedder",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/base/crash",
-    "//remoting/host:host",
+    "//remoting/host",
     "//remoting/host:host_main_headers",
     "//remoting/host:implementation",
     "//remoting/host:ipc_constants",

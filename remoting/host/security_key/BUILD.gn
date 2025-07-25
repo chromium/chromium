@@ -28,13 +28,13 @@ source_set("security_key") {
   deps = [
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
-    "//net:net",
-    "//net/traffic_annotation:traffic_annotation",
+    "//net",
+    "//net/traffic_annotation",
     "//remoting/base:logging",
     "//remoting/host:host_extension",
     "//remoting/host/mojom",
     "//remoting/proto",
-    "//remoting/protocol:protocol",
+    "//remoting/protocol",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
   public_deps = [ "//remoting/host:common_headers" ]
@@ -112,7 +112,7 @@ source_set("unit_tests") {
   deps = [
     ":security_key",
     "//mojo/core/test:test_support",
-    "//net:net",
+    "//net",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//remoting:test_support",
@@ -120,7 +120,7 @@ source_set("unit_tests") {
     "//remoting/host:test_support",
     "//remoting/host/mojom",
     "//remoting/host/setup:common",
-    "//remoting/protocol:protocol",
+    "//remoting/protocol",
   ]
 
   if (is_posix) {

@@ -54,7 +54,7 @@ source_set("permission_checking") {
     ":constants",
     "//remoting/host:remoting_version",
     "//remoting/resources",
-    "//ui/base:base",
+    "//ui/base",
   ]
 
   frameworks = [ "AVFoundation.framework" ]
@@ -336,7 +336,7 @@ source_set("unit_tests") {
     ":agent_process_broker_client",
     "//base",
     "//base/test:test_support",
-    "//components/named_mojo_ipc_server:named_mojo_ipc_server",
+    "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
     "//remoting/host:chromoting_host_services_client",
     "//remoting/host:chromoting_host_services_server",

@@ -83,7 +83,7 @@ if (is_win) {
       ":crash_uploader",
       ":crash_uploader_main_headers",
       "//base",
-      "//mojo/core/embedder:embedder",
+      "//mojo/core/embedder",
       "//remoting/base",
       "//remoting/base/crash",
       "//remoting/host:common_headers",

@@ -43,7 +43,7 @@ source_set("chromeos") {
 
   deps = [
     ":features",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host:clipboard",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/manager",
@@ -66,9 +66,9 @@ source_set("browser_interop") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//net",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host",
   ]
 }
@@ -98,9 +98,9 @@ source_set("remoting_service") {
     ":features",
     "//chrome/common:constants",
     "//mojo/public/cpp/bindings",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host",
-    "//remoting/host/mojom:mojom",
+    "//remoting/host/mojom",
   ]
 }
 

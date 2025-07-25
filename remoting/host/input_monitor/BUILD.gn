@@ -79,6 +79,6 @@ source_set("input_monitor") {
       "local_pointer_input_monitor_chromeos.cc",
     ]
 
-    deps += [ "//remoting/host/chromeos:chromeos" ]
+    deps += [ "//remoting/host/chromeos" ]
   }
 }
