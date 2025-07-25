@@ -653,7 +653,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.InputGainChangedSource" enum="AudioSettingsChangeSource"
-    expires_after="2025-08-20">
+    expires_after="2026-08-20">
   <owner>gavinwill@google.com</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
@@ -661,7 +661,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.InputGainMutedSource" enum="AudioSettingsChangeSource"
-    expires_after="2025-08-20">
+    expires_after="2026-08-20">
   <owner>gavinwill@google.com</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
