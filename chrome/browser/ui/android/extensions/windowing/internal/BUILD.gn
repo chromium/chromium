@@ -13,6 +13,7 @@ source_set("internal") {
   deps = [
     ":jni",
     "//base",
+    "//chrome/browser/ui/browser_window",
   ]
 }
 
@@ -47,6 +48,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
     "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_jni",
+    "//chrome/browser/ui/browser_window",
     "//testing/gtest",
   ]
 }

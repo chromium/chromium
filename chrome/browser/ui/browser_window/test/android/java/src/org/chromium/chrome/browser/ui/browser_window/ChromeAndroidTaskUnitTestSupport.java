@@ -15,14 +15,21 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Supports Robolectric tests relevant to {@link ChromeAndroidTask}.
- *
- * <p>This class is package-private as it hasn't been needed outside this package.
- */
+/** Supports Robolectric and native unit tests relevant to {@link ChromeAndroidTask}. */
 @NullMarked
-final class ChromeAndroidTaskUnitTestSupport {
+public final class ChromeAndroidTaskUnitTestSupport {
     private ChromeAndroidTaskUnitTestSupport() {}
+
+    /**
+     * Creates a real {@link ChromeAndroidTask} with mock dependencies.
+     *
+     * @param taskId ID for {@link ChromeAndroidTask#getId()}.
+     * @return A new instance of {@link ChromeAndroidTask}.
+     */
+    public static ChromeAndroidTask createChromeAndroidTaskWithMockDeps(int taskId) {
+        var mockActivityWindowAndroid = createMockActivityWindowAndroid(taskId);
+        return new ChromeAndroidTaskImpl(mockActivityWindowAndroid);
+    }
 
     /**
      * Creates a mock {@link ActivityWindowAndroid}, which has a mock {@link Activity} with the

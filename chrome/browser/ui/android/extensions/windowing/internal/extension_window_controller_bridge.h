@@ -9,6 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 
+class BrowserWindowInterface;
+
 // Native class for the Java |ExtensionWindowControllerBridge|.
 //
 // The primary purpose of this class is to own a cross-platform
@@ -18,7 +20,8 @@ class ExtensionWindowControllerBridge final {
  public:
   ExtensionWindowControllerBridge(JNIEnv* env,
                                   const base::android::JavaParamRef<jobject>&
-                                      java_extension_window_controller_bridge);
+                                      java_extension_window_controller_bridge,
+                                  BrowserWindowInterface* browser_window);
   ExtensionWindowControllerBridge(const ExtensionWindowControllerBridge&) =
       delete;
   ExtensionWindowControllerBridge& operator=(
@@ -28,9 +31,16 @@ class ExtensionWindowControllerBridge final {
   // Implements Java |ExtensionWindowControllerBridgeImpl.Natives#destroy|.
   void Destroy(JNIEnv* env);
 
+  // TODO(crbug.com/424856725): replace with a test-only function that returns
+  // the |extensions::WindowController|.
+  BrowserWindowInterface* GetBrowserWindowForTesting() const;
+
  private:
   base::android::ScopedJavaGlobalRef<jobject>
       java_extension_window_controller_bridge_;
+
+  // TODO(crbug.com/424856725): replace with an |extensions::WindowController|.
+  BrowserWindowInterface* browser_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_WINDOWING_INTERNAL_EXTENSION_WINDOW_CONTROLLER_BRIDGE_H_

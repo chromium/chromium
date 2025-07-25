@@ -190,6 +190,29 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void getOrCreateNativeBrowserWindowPtr_returnsPtrValue() {
+        // Arrange.
+        var chromeAndroidTask = createChromeAndroidTask();
+
+        // Act.
+        long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
+
+        // Assert.
+        assertEquals(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, nativeBrowserWindowPtr);
+    }
+
+    @Test
+    public void getOrCreateNativeBrowserWindowPtr_calledAfterTaskDestroyed_throwsException() {
+        // Arrange.
+        var chromeAndroidTask = createChromeAndroidTask();
+        chromeAndroidTask.destroy();
+
+        // Act & Assert.
+        assertThrows(
+                AssertionError.class, () -> chromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
+    }
+
+    @Test
     public void destroy_clearsActivityWindowAndroid() {
         // Arrange.
         var chromeAndroidTask = createChromeAndroidTask();
@@ -223,9 +246,7 @@ public class ChromeAndroidTaskImplUnitTest {
     public void destroy_destroysAndroidBrowserWindow() {
         // Arrange: create a ChromeAndroidTask and a fake native AndroidBrowserWindow pointer value.
         var chromeAndroidTask = createChromeAndroidTask();
-        long nativeAndroidBrowserWindowPtr =
-                chromeAndroidTask.getAndroidBrowserWindowForTesting().getOrCreateNativePtr();
-        assertEquals(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, nativeAndroidBrowserWindowPtr);
+        long nativeAndroidBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
 
         // Act.
         chromeAndroidTask.destroy();

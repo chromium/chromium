@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 @NullMarked
 final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowControllerBridge {
 
-    @SuppressWarnings("UnusedVariable")
     private final ChromeAndroidTask mChromeAndroidTask;
 
     private long mNativeExtensionWindowControllerBridge;
@@ -29,7 +28,10 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
                 : "ExtensionWindowControllerBridge is already added to a task.";
 
         mNativeExtensionWindowControllerBridge =
-                ExtensionWindowControllerBridgeImplJni.get().create(this);
+                ExtensionWindowControllerBridgeImplJni.get()
+                        .create(
+                                /* caller= */ this,
+                                mChromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
     }
 
     @Override
@@ -51,7 +53,15 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
     @NativeMethods
     interface Natives {
-        long create(ExtensionWindowControllerBridgeImpl caller);
+        /**
+         * Creates a native {@code ExtensionWindowControllerBridge}.
+         *
+         * @param caller The Java object calling this method.
+         * @param nativeBrowserWindowPtr The address of a native {@code BrowserWindowInterface}.
+         *     It's the caller's responsibility to ensure the validity of the address. Failure to do
+         *     so will result in undefined behavior on the native side.
+         */
+        long create(ExtensionWindowControllerBridgeImpl caller, long nativeBrowserWindowPtr);
 
         void destroy(long nativeExtensionWindowControllerBridge);
     }

@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/android/extensions/windowing/test/native_unit_test_support_jni/ExtensionWindowControllerBridgeNativeUnitTestSupport_jni.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -26,7 +27,10 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
             AttachCurrentThread()));
   }
 
-  void TearDown() override { InvokeJavaOnTaskRemoved(); }
+  void TearDown() override {
+    Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_tearDown(
+        AttachCurrentThread(), java_test_support_);
+  }
 
   void InvokeJavaOnAddedToTask() const {
     Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnAddedToTask(
@@ -49,14 +53,17 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
 };
 
 TEST_F(ExtensionWindowControllerBridgeUnitTest,
-       JavaOnAddedToTaskCreatesNativeObj) {
+       JavaOnAddedToTaskCreatesNativeObjects) {
   // Act.
   InvokeJavaOnAddedToTask();
 
   // Assert.
-  ExtensionWindowControllerBridge* native_ptr =
+  ExtensionWindowControllerBridge* extension_window_controller_bridge =
       InvokeJavaGetNativePtrForTesting();
-  EXPECT_NE(nullptr, native_ptr);
+  BrowserWindowInterface* browser_window =
+      extension_window_controller_bridge->GetBrowserWindowForTesting();
+  EXPECT_NE(nullptr, extension_window_controller_bridge);
+  EXPECT_NE(nullptr, browser_window);
 }
 
 TEST_F(ExtensionWindowControllerBridgeUnitTest,

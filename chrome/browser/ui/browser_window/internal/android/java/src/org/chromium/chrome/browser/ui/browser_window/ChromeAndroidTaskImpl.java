@@ -107,6 +107,12 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
     }
 
     @Override
+    public long getOrCreateNativeBrowserWindowPtr() {
+        assertAlive();
+        return mAndroidBrowserWindow.getOrCreateNativePtr();
+    }
+
+    @Override
     public void destroy() {
         // Immediately change the state to "DESTROYING" to block access to public methods that
         // should only be called when the state is "ALIVE".
@@ -142,10 +148,6 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
      */
     @Nullable ActivityWindowAndroid getActivityWindowAndroidForTesting() {
         return getActivityWindowAndroidInternal(/* assertAlive= */ false);
-    }
-
-    AndroidBrowserWindow getAndroidBrowserWindowForTesting() {
-        return mAndroidBrowserWindow;
     }
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
