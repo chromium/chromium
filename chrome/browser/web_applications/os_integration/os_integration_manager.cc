@@ -118,6 +118,11 @@ GetUpdateShortcutsForAllAppsCallback() {
   return *callback;
 }
 
+base::OnceClosure& GetOnFileHandlersSynchronizedCallbackForTesting() {
+  static base::NoDestructor<base::OnceClosure> callback;
+  return *callback;
+}
+
 }  // namespace
 
 OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting() {
@@ -154,6 +159,12 @@ void OsIntegrationManager::RegisterProfilePrefs(
 void OsIntegrationManager::SetUpdateShortcutsForAllAppsCallback(
     UpdateShortcutsForAllAppsCallback callback) {
   GetUpdateShortcutsForAllAppsCallback() = std::move(callback);
+}
+
+// static
+void OsIntegrationManager::SetOnFileHandlersSynchronizedCallbackForTesting(
+    base::OnceClosure callback) {
+  GetOnFileHandlersSynchronizedCallbackForTesting() = std::move(callback);
 }
 
 // static
@@ -211,6 +222,13 @@ void OsIntegrationManager::Start() {
     protocol_handler_manager_->Start();
   }
   UpdateShortcutsForAllAppsIfNeeded();
+#if BUILDFLAG(IS_CHROMEOS)
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kDefaultHandlersForFileExtensions,
+      base::BindRepeating(&OsIntegrationManager::UpdateWebAppFileHandlers,
+                          weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OsIntegrationManager::Synchronize(
@@ -687,6 +705,29 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfoForWebApp(
 #endif
 
   return shortcut_info;
+}
+
+void OsIntegrationManager::UpdateWebAppFileHandlers() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::ConcurrentClosures concurrent;
+
+  for (const webapps::AppId& app_id :
+       provider_->registrar_unsafe().GetAppIds()) {
+    Synchronize(app_id, concurrent.CreateClosure());
+  }
+
+  std::move(concurrent)
+      .Done(base::BindOnce(&OsIntegrationManager::OnAllFileHandlersSynchronized,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OsIntegrationManager::OnAllFileHandlersSynchronized() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (base::OnceClosure& callback =
+          GetOnFileHandlersSynchronizedCallbackForTesting()) {
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace web_app

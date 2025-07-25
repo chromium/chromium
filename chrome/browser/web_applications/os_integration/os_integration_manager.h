@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -73,6 +74,9 @@ class OsIntegrationManager {
   // dependency layering.
   static void SetUpdateShortcutsForAllAppsCallback(
       UpdateShortcutsForAllAppsCallback callback);
+
+  static void SetOnFileHandlersSynchronizedCallbackForTesting(
+      base::OnceClosure callback);
 
   static base::OnceClosure& OnSetCurrentAppShortcutsVersionCallbackForTesting();
 
@@ -217,6 +221,9 @@ class OsIntegrationManager {
 
   std::unique_ptr<ShortcutInfo> BuildShortcutInfoForWebApp(const WebApp* app);
 
+  void UpdateWebAppFileHandlers();
+  void OnAllFileHandlersSynchronized();
+
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
@@ -229,6 +236,8 @@ class OsIntegrationManager {
 
   base::RepeatingCallback<void(const webapps::AppId&)>
       force_unregister_callback_for_testing_ = base::DoNothing();
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
