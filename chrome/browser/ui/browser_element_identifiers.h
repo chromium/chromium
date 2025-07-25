@@ -99,6 +99,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupBarElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupOverflowButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupOverflowMenuId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSharedTabGroupCommentsActionElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSharedTabGroupFeedbackElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kCollaborationMessagingPageActionIconElementId);

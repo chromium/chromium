@@ -5,15 +5,25 @@
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
 
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/comments/comments_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/collaboration/public/features.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 using SidePanelWebUIViewT_CommentsSidePanelUI =
@@ -21,6 +31,108 @@ using SidePanelWebUIViewT_CommentsSidePanelUI =
 BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_CommentsSidePanelUI,
                         SidePanelWebUIViewT)
 END_METADATA
+
+CommentsSidePanelCoordinator::CommentsSidePanelCoordinator(
+    BrowserView* browser_view)
+    : browser_view_(browser_view),
+      tab_group_sync_service_(
+          tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+              browser_view->browser()->profile())) {
+  browser_view->browser()->GetTabStripModel()->AddObserver(this);
+}
+
+CommentsSidePanelCoordinator::~CommentsSidePanelCoordinator() = default;
+
+void CommentsSidePanelCoordinator::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  // TODO(crbug.com/433773768): This should also handle when the current tab
+  // group becomes shared or when the active tab is added to a shared group.
+  if (selection.active_tab_changed()) {
+    const bool should_show_comments_action =
+        ShouldShowCommentsAction(selection);
+    UpdateCommentsActionVisibility(should_show_comments_action);
+    UpdateCommentsSidePanelVisibility(should_show_comments_action);
+  }
+}
+
+bool CommentsSidePanelCoordinator::ShouldShowCommentsAction(
+    const TabStripSelectionChange& selection) {
+  if (!selection.new_tab) {
+    return false;
+  }
+
+  std::optional<tab_groups::TabGroupId> group = selection.new_tab->GetGroup();
+  if (!group.has_value()) {
+    return false;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_sync_service_->GetGroup(group.value());
+
+  // If the group is shared, we should show the comments action.
+  return saved_group.has_value() && saved_group->is_shared_tab_group();
+}
+
+void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
+    bool should_show_comments_action) {
+  PinnedToolbarActionsContainer* container =
+      browser_view_->toolbar()->pinned_toolbar_actions_container();
+  if (!container) {
+    return;
+  }
+
+  if (should_show_comments_action ==
+      container->IsActionPoppedOut(kActionSidePanelShowComments)) {
+    // Do nothing if the action is already in the correct state.
+    return;
+  }
+
+  container->ShowActionEphemerallyInToolbar(kActionSidePanelShowComments,
+                                            should_show_comments_action);
+
+  if (should_show_comments_action) {
+    PinnedActionToolbarButton* button =
+        container->GetButtonFor(kActionSidePanelShowComments);
+    CHECK(button);
+
+    button->SetProperty(views::kElementIdentifierKey,
+                        kSharedTabGroupCommentsActionElementId);
+  }
+}
+
+void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(
+    bool should_show_comments_action) {
+  SidePanelCoordinator* side_panel_coordinator =
+      browser_view_->browser()->GetFeatures().side_panel_coordinator();
+
+  // TODO(crbug.com/430352059): This should also handle when a different side
+  // panel is open.
+  const bool side_panel_showing =
+      side_panel_coordinator->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+
+  if (should_show_comments_action == side_panel_showing) {
+    // Do nothing if the side panel is in the correct state.
+    return;
+  }
+
+  if (side_panel_showing) {
+    // Close the side panel, setting the flag to recall the state when the
+    // comments action is shown again.
+    side_panel_coordinator->Close();
+    side_panel_should_be_resumed_ = true;
+    return;
+  }
+
+  if (side_panel_should_be_resumed_) {
+    // Resume the side panel if it was closed due to changing the active tab.
+    side_panel_coordinator->Show(
+        SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+    side_panel_should_be_resumed_ = false;
+  }
+}
 
 // static
 bool CommentsSidePanelCoordinator::IsSupported() {

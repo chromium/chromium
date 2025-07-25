@@ -461,7 +461,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
   if (CommentsSidePanelCoordinator::IsSupported()) {
     comments_side_panel_coordinator_ =
-        std::make_unique<CommentsSidePanelCoordinator>();
+        std::make_unique<CommentsSidePanelCoordinator>(browser_view);
   }
 
   side_panel_coordinator_->Init(browser_view->browser());
