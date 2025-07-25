@@ -22,7 +22,7 @@ source_set("tts") {
     ":libchrometts",
     "//base",
     "//chromeos/services/tts/public/mojom",
-    "//services/audio/public/cpp:cpp",
+    "//services/audio/public/cpp",
   ]
 }
 

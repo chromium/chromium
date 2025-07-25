@@ -61,7 +61,7 @@ static_library("invalidations") {
     "//components/account_id",
     "//components/gcm_driver",
     "//components/keyed_service/core",
-    "//google_apis/common:common",
+    "//google_apis/common",
     "//net",
   ]
 }
@@ -98,7 +98,7 @@ static_library("spotlight") {
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/strings:strings_grit",
     "//components/signin/public/identity_manager",
-    "//google_apis/common:common",
+    "//google_apis/common",
     "//net",
     "//ui/message_center",
   ]

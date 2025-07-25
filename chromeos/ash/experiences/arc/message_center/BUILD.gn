@@ -42,7 +42,7 @@ static_library("message_center") {
     "//components/account_id",
     "//components/exo",
     "//mojo/public/cpp/system",
-    "//ui/accessibility:accessibility",
+    "//ui/accessibility",
     "//ui/accessibility:ax_base",
     "//ui/aura",
     "//ui/chromeos/styles:cros_tokens_color_mappings",

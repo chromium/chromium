@@ -13,7 +13,7 @@ static_library("test_support") {
     "test_support/scoped_assistant_browser_delegate.h",
   ]
   deps = [
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//base",
     "//chromeos/ash/components/assistant:buildflags",

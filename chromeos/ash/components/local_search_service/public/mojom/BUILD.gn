@@ -71,7 +71,7 @@ source_set("unit_tests") {
     ":mojom",
     "//base",
     "//mojo/public/cpp/test_support:test_utils",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -38,7 +38,7 @@ component("scalable_iph") {
 
   deps = [
     ":constants",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/browser_context_helper",
     "//components/feature_engagement/public",

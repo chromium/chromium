@@ -104,7 +104,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base/test:test_support",
     "//components/account_id",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:tribool",
     "//components/user_manager:test_support",

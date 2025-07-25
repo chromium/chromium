@@ -29,7 +29,7 @@ source_set("cpp") {
     "//chromeos/ash/components/local_search_service",
     "//chromeos/ash/components/local_search_service:local_search_service_provider",
     "//chromeos/ash/components/local_search_service/public/mojom",
-    "//components/keyed_service/content:content",
-    "//components/prefs:prefs",
+    "//components/keyed_service/content",
+    "//components/prefs",
   ]
 }

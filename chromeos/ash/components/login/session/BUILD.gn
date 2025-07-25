@@ -13,7 +13,7 @@ component("session") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
-    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/power",
     "//third_party/protobuf:protobuf_lite",
   ]
   sources = [
@@ -31,7 +31,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/session",
-    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/power",
     "//testing/gtest",
   ]
   sources = [ "session_termination_manager_unittest.cc" ]

@@ -22,7 +22,7 @@ source_set("scheduling") {
 
   deps = [
     "//base",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/prefs",
     "//content/public/browser",
     "//services/network/public/cpp",

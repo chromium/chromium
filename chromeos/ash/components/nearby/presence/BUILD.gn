@@ -25,14 +25,14 @@ static_library("presence") {
     "//chromeos/ash/components/nearby/presence/credentials",
     "//chromeos/ash/components/nearby/presence/metrics",
     "//chromeos/ash/components/nearby/presence/proto",
-    "//chromeos/ash/services/nearby/public/cpp:cpp",
+    "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//components/cross_device/logging:logging",
-    "//components/keyed_service/content:content",
+    "//components/cross_device/logging",
+    "//components/keyed_service/content",
     "//components/keyed_service/core",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
-    "//components/push_notification:push_notification",
+    "//components/push_notification",
     "//content/public/browser",
   ]
 
@@ -61,8 +61,8 @@ source_set("nearby_presence_connections_manager") {
 
   deps = [
     "//base",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
-    "//components/cross_device/logging:logging",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//components/cross_device/logging",
   ]
 }
 
@@ -98,12 +98,12 @@ source_set("unit_tests") {
     "//chromeos/ash/components/nearby/presence/credentials:test_support",
     "//chromeos/ash/components/nearby/presence/credentials:unit_tests",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/prefs:test_support",
     "//components/push_notification:test_support",
     "//content/public/browser",
     "//content/test:test_support",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 

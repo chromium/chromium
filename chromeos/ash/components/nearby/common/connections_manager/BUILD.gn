@@ -20,15 +20,15 @@ source_set("connections_manager") {
 
   deps = [
     "//chrome/browser/nearby_sharing/common",
-    "//chromeos/ash/components/nearby/presence/conversions:conversions",
-    "//components/cross_device/logging:logging",
-    "//components/cross_device/nearby:nearby",
+    "//chromeos/ash/components/nearby/presence/conversions",
+    "//components/cross_device/logging",
+    "//components/cross_device/nearby",
     "//third_party/abseil-cpp:absl",
   ]
 
   public_deps = [
     "//base",
-    "//chromeos/ash/services/nearby/public/cpp:cpp",
+    "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cross_device/nearby:platform",
     "//net",
@@ -78,7 +78,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//components/cross_device/nearby:nearby",
+    "//components/cross_device/nearby",
     "//content/test:test_support",
     "//net:test_support",
     "//net/traffic_annotation:test_support",

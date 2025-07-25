@@ -12,7 +12,7 @@ component("account_manager") {
     "account_manager_factory.h",
   ]
 
-  public_deps = [ "//components/account_manager_core:account_manager_core" ]
+  public_deps = [ "//components/account_manager_core" ]
 
   deps = [
     "//base",

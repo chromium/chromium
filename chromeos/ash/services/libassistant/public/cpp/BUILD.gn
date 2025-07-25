@@ -26,7 +26,7 @@ component("structs") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//url",
   ]
 }
@@ -36,5 +36,5 @@ source_set("loader") {
 
   sources = [ "libassistant_loader.h" ]
 
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 }

@@ -13,7 +13,7 @@ component("certificate_provider") {
   defines = [ "IS_CERTIFICATE_PROVIDER_IMPL" ]
 
   public_deps = [
-    "//base:base",
-    "//net:net",
+    "//base",
+    "//net",
   ]
 }

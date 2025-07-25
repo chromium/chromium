@@ -15,10 +15,10 @@ component("launcher_search") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_LAUNCHER_SEARCH_IMPL" ]
 
   deps = [
-    "//ash/strings:strings",
+    "//ash/strings",
     "//base",
     "//chromeos/ash/components/system_info",
-    "//chromeos/ash/services/cros_healthd/public/mojom:mojom",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/power:power_manager_proto",
     "//ui/base",
   ]

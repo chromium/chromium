@@ -14,7 +14,7 @@ source_set("metrics") {
 
   configs += [ "//chromeos/ash/components/network:network_config" ]
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/feature_usage",
@@ -53,7 +53,6 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//ash/constants",
-    "//ash/constants:constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/shill",

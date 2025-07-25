@@ -125,7 +125,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/chaps",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//content/test:test_support",

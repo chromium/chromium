@@ -55,6 +55,6 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//chromeos/ash/services/device_sync/public/cpp:cpp",
+    "//chromeos/ash/services/device_sync/public/cpp",
   ]
 }
