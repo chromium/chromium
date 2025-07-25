@@ -117,7 +117,7 @@ TabModel* TabModelList::FindTabModelWithId(SessionID desired_id) {
 }
 
 TabModel* TabModelList::FindNativeTabModelForJavaObject(
-    const base::android::ScopedJavaLocalRef<jobject>& jtab_model) {
+    const base::android::JavaRef<jobject>& jtab_model) {
   JNIEnv* env = base::android::AttachCurrentThread();
   for (TabModel* model : models()) {
     if (env->IsSameObject(jtab_model.obj(), model->GetJavaObject().obj())) {

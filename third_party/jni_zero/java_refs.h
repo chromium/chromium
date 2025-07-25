@@ -155,7 +155,7 @@ class JavaRef : public JavaRef<jobject> {
   // Only defined for JavaRef<jobjectArray>.
   // You must pass the type of the array elements (usually jobject) as the
   // template parameter.
-  template <typename ElementType,
+  template <typename ElementType = jobject,
             typename T_ = T,
             typename = std::enable_if_t<std::is_same_v<T_, jobjectArray>>>
   JavaObjectArrayReader<ElementType> ReadElements() const {
