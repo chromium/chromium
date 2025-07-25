@@ -28,6 +28,9 @@ constexpr char kLnaPath[] =
     "/set-header"
     "?Access-Control-Allow-Origin: *";
 
+constexpr char kWorkerHtmlPath[] =
+    "/private_network_access/fetch-from-worker-as-public-address.html";
+
 class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
  public:
   using WebFeature = blink::mojom::WebFeature;
@@ -212,6 +215,48 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, IframeAcceptPermission) {
 
   // Check that the child iframe failed to fetch.
   EXPECT_TRUE(nav_manager.was_successful());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, WorkerDenyPermission) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Enable auto-deny of LNA permission request.
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_worker($1);";
+  // Failure to fetch URL
+  EXPECT_EQ("TypeError: Failed to fetch",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, WorkerAcceptPermission) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_worker($1);";
+  // URL fetched, body is just the header that's set.
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
