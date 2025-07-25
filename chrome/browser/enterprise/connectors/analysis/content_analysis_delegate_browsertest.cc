@@ -1651,8 +1651,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   content_analysis_run_loop.Run();
 }
 
+// TODO(crbug.com/413427796): Fix flaky test.
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockUntilVerdict) {
+                       DISABLED_BlockUntilVerdict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
