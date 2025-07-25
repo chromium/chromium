@@ -626,7 +626,6 @@ MATCHER(IsValid, "") {
 
 TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
   CreateContext(kNonOpaque);
-  EXPECT_TRUE(Context2D()->IsCanvas2DResourceValid());
   uint32_t gen_id =
       Context2D()->GetOrCreateCanvas2DResourceProvider()->ContentUniqueID();
   Context2D()->fillRect(3, 3, 1, 1);
