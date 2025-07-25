@@ -7085,8 +7085,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="Shown in the tab switcher to inform the user how long the relevant tabs and tab groups have been inactive for.">
         {INACTIVE_TIME_DAYS, plural,
-          =1 {Tabs and tab groups not used for 1 day or more}
-          other {Tabs and tab groups not used for # days or more}}
+          =1 {Tabs and groups not used for 1 day or more}
+          other {Tabs and groups not used for # days or more}}
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE" desc="In product help shown as a message in the archived tabs dialog.">
         Tabs you haven’t used for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and deleted after 3 months</ex></ph>. You can change this anytime in <ph name="SETTINGS_TITLE">%3$s<ex>Settings</ex></ph>.
