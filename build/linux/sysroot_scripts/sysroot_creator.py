@@ -649,17 +649,8 @@ def removing_unnecessary_files(install_root, arch):
 def strip_sections(install_root: str, arch: str):
     """
     Strips all sections from ELF files except for dynamic linking and
-    essential sections. Skips static libraries (.a), object files (.o), and a
-    few files used by other Chromium-related projects.
+    essential sections. Skips static libraries (.a) and object files (.o).
     """
-    PRESERVED_FILES = (
-        # Old debian(bullseye) has ld-2.31.so,
-        # while in trixie, it is ld-linux-$ARCH.so.2
-        r'(libc\.so\.\d)|(libc-\d.\d\d\.so)',
-        r'(libm\.so\.\d)|(libm-\d.\d\d\.so)',
-        r'(ld-linux.*\.so\.\d)|(ld-\d.\d\d\.so)',
-    )
-
     PRESERVED_SECTIONS = {
         ".dynamic",
         ".dynstr",
@@ -672,19 +663,9 @@ def strip_sections(install_root: str, arch: str):
         ".note.gnu.build-id",
     }
 
-    preserved_files_count = 0
-    lib_dir = LIB_DIRS[RELEASES[arch]]
-    lib_arch_path = os.path.join(install_root, lib_dir, TRIPLES[arch])
     for root, _, files in os.walk(install_root):
         for file in files:
             file_path = os.path.join(root, file)
-            if file_path.startswith(lib_arch_path):
-                for preserved in PRESERVED_FILES:
-                    if re.match(preserved,
-                                file) and not os.path.islink(file_path):
-                        preserved_files_count += 1
-                        continue
-
             if (os.access(file, os.X_OK) or file.endswith((".a", ".o"))
                     or os.path.islink(file_path)):
                 continue
@@ -719,10 +700,6 @@ def strip_sections(install_root: str, arch: str):
                     for section in sections_to_remove
                 ] + [file_path])
                 subprocess.run(objcopy_cmd, check=True, stderr=subprocess.PIPE)
-    if preserved_files_count != len(PRESERVED_FILES):
-        raise Exception(
-            f"Expected file(s) to preserve missing, preserved " +
-            f"{preserved_files_count}, expected {len(PRESERVED_FILES)}")
 
 
 def record_metadata(install_root: str) -> dict[str, tuple[float, float]]:
