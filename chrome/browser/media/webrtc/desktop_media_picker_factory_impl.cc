@@ -74,7 +74,7 @@ std::unique_ptr<DesktopMediaPicker> DesktopMediaPickerFactoryImpl::CreatePicker(
   // desktop Android builds.
 #if defined(TOOLKIT_VIEWS)
   return DesktopMediaPicker::Create(request);
-#elif BUILDFLAG(IS_DESKTOP_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kAndroidMediaPicker)) {
     return DesktopMediaPicker::Create(request);
   }
