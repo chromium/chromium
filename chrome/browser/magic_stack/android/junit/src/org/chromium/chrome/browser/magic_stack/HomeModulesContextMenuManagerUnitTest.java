@@ -130,7 +130,7 @@ public class HomeModulesContextMenuManagerUnitTest {
                                 MODULE_TYPE)
                         .build();
 
-        mMenu.onItemClick(null, null, 0, 0);
+        mMenu.clickItemForTesting(0);
 
         histogramWatcher.assertExpected();
         verify(mModuleDelegate).removeModuleAndDisable(eq(MODULE_TYPE));
@@ -146,7 +146,7 @@ public class HomeModulesContextMenuManagerUnitTest {
                                 MODULE_TYPE)
                         .build();
 
-        mMenu.onItemClick(null, null, 1, 0);
+        mMenu.clickItemForTesting(1);
 
         histogramWatcher.assertExpected();
         verify(mModuleDelegate).customizeSettings();

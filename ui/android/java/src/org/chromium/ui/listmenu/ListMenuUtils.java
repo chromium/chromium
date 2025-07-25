@@ -41,7 +41,7 @@ public class ListMenuUtils {
      */
     @NonNull
     public static ModelListAdapter createAdapter(ModelList listItems) {
-        return createAdapter(listItems, Set.of());
+        return createAdapter(listItems, Set.of(), /* delegate= */ null);
     }
 
     /**
@@ -53,12 +53,16 @@ public class ListMenuUtils {
      *
      * @param listItems The {@link ModelList} containing the items to be displayed in the menu.
      * @param disabledTypes Additional integer types which should not be enabled in the adapter.
+     * @param delegate The {@link ListMenu.Delegate} used to handle menu clicks. If not provided,
+     *     the item's CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
      * @return A configured {@link ModelListAdapter} ready to be set on the {@link ListView}.
      */
     @NonNull
     public static ModelListAdapter createAdapter(
-            ModelList listItems, Collection<Integer> disabledTypes) {
-        ModelListAdapter adapter = new ListMenuItemAdapter(listItems, disabledTypes);
+            ModelList listItems,
+            Collection<Integer> disabledTypes,
+            ListMenu.@Nullable Delegate delegate) {
+        ModelListAdapter adapter = new ListMenuItemAdapter(listItems, disabledTypes, delegate);
 
         adapter.registerType(
                 ListItemType.DIVIDER,

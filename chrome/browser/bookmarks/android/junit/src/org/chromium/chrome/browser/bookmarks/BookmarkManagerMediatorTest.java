@@ -1288,19 +1288,19 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(menu);
 
         // Select.
-        menu.onItemClick(null, null, 0, 0);
+        clickChildAt(menu, 0);
         verify(mSelectionDelegate).toggleSelectionForItem(mBookmarkId21);
 
         // Edit.
         // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
-        menu.onItemClick(null, null, 1, 0);
+        clickChildAt(menu, 1);
 
         // Move.
         // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
-        menu.onItemClick(null, null, 2, 0);
+        clickChildAt(menu, 2);
 
         // Delete.
-        menu.onItemClick(null, null, 3, 0);
+        clickChildAt(menu, 3);
         verify(mBookmarkModel).deleteBookmarks(mBookmarkId21);
     }
 
@@ -1343,7 +1343,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(menu);
 
         // Delete.
-        menu.onItemClick(null, null, 4, 0);
+        clickChildAt(menu, 4);
         verify(mPriceTrackingUtilsJniMock)
                 .setPriceTrackingStateForBookmark(
                         any(), anyLong(), anyBoolean(), any(), anyBoolean());
@@ -1903,7 +1903,7 @@ public class BookmarkManagerMediatorTest {
         assertFalse(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
 
         // Show in folder.
-        menu.onItemClick(null, null, 4, 0);
+        clickChildAt(menu, 4);
         assertTrue(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
     }
 
@@ -2460,5 +2460,9 @@ public class BookmarkManagerMediatorTest {
         assertEquals(2, mModelList.size());
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
         assertEquals(ViewType.EMPTY_STATE, mModelList.get(1).type);
+    }
+
+    private void clickChildAt(BasicListMenu menu, int i) {
+        menu.clickItemForTesting(i);
     }
 }

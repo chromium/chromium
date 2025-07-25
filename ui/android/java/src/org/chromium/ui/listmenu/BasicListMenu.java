@@ -4,13 +4,14 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.chromium.ui.listmenu.ListMenuUtils.createAdapter;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import androidx.annotation.ColorRes;
@@ -21,7 +22,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -29,13 +29,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An implementation of a list menu. Uses app_menu_layout as the default layout of menu and
  * list_menu_item as the default layout of a menu item.
  */
 @NullMarked
-public class BasicListMenu implements ListMenu, OnItemClickListener {
+public class BasicListMenu implements ListMenu {
 
     /**
      * Helper function to build a ListItem of a divider.
@@ -104,15 +105,15 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
     private final ListView mListView;
     private final ModelListAdapter mAdapter;
     private final View mContentView;
-    private final List<Runnable> mClickRunnables;
-    private final Delegate mDelegate;
+    private final List<Runnable> mClickRunnables = new LinkedList<>();
 
     /**
      * @param context The {@link Context} to inflate the layout.
      * @param data Data representing the list items. All items in data are assumed to be enabled.
      * @param contentView The background of the list menu.
      * @param listView The {@link ListView} of the list menu.
-     * @param delegate The {@link Delegate} that would be called when the menu is clicked.
+     * @param delegate The {@link ListMenu.Delegate} used to handle menu clicks. If not provided,
+     *     the item's CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
      * @param backgroundTintColor The background tint color of the menu.
      */
     public BasicListMenu(
@@ -120,17 +121,24 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
             ModelList data,
             View contentView,
             ListView listView,
-            Delegate delegate,
+            @Nullable Delegate delegate,
             @ColorRes int backgroundTintColor) {
-        mAdapter = new ListMenuItemAdapter(data);
-        registerListItemTypes();
+        mAdapter =
+                createAdapter(
+                        data,
+                        Set.of(),
+                        (model) -> {
+                            if (delegate != null) delegate.onItemSelected(model);
+                            // We will run the runnables that are registered by the time this lambda
+                            // is called.
+                            for (Runnable r : mClickRunnables) {
+                                r.run();
+                            }
+                        });
         mContentView = contentView;
         mListView = listView;
         mListView.setAdapter(mAdapter);
         mListView.setDivider(null);
-        mListView.setOnItemClickListener(this);
-        mDelegate = delegate;
-        mClickRunnables = new LinkedList<>();
 
         if (backgroundTintColor != 0) {
             ViewCompat.setBackgroundTintList(
@@ -154,14 +162,6 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mDelegate.onItemSelected(((ListItem) mAdapter.getItem(position)).model);
-        for (Runnable r : mClickRunnables) {
-            r.run();
-        }
-    }
-
-    @Override
     public int getMaxItemWidth() {
         return UiUtils.computeListAdapterContentDimensions(mAdapter, mListView)[0];
     }
@@ -180,18 +180,12 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         return result;
     }
 
-    private void registerListItemTypes() {
-        mAdapter.registerType(
-                ListItemType.MENU_ITEM,
-                new LayoutViewBuilder(R.layout.list_menu_item),
-                ListMenuItemViewBinder::binder);
-        mAdapter.registerType(
-                ListItemType.DIVIDER,
-                new LayoutViewBuilder(R.layout.list_section_divider),
-                ListSectionDividerViewBinder::bind);
-    }
-
     public ModelListAdapter getAdapterForTesting() {
         return mAdapter;
+    }
+
+    public void clickItemForTesting(int i) {
+        mAdapter.getView(i, new View(mContentView.getContext()), (ViewGroup) mContentView)
+                .performClick();
     }
 }

@@ -10,8 +10,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -68,9 +66,7 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
 
         listener.onLongClick(menuView);
 
-        ViewGroup menuContent = (ViewGroup) coordinator.getContentViewForTesting();
-        ListView menuListView = menuContent.findViewById(R.id.app_menu_list);
-        menuListView.performItemClick(null, 0, menuListView.getAdapter().getItemId(0));
+        coordinator.getListMenuForTesting().clickItemForTesting(0);
 
         verify(menuView).showMenu();
         verify(mCallback).onResult(R.id.customize_adaptive_button_menu_id);

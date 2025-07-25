@@ -13,6 +13,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -38,10 +39,11 @@ public class BrowserUiListMenuUtils {
      *
      * @param context The Android context.
      * @param data The data to display in the list.
-     * @param delegate Delegate to handle item clicks.
+     * @param delegate The {@link ListMenu.Delegate} used to handle menu clicks. If not provided,
+     *     the item's CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
      */
     public static BasicListMenu getBasicListMenu(
-            Context context, MVCListAdapter.ModelList data, ListMenu.Delegate delegate) {
+            Context context, MVCListAdapter.ModelList data, ListMenu.@Nullable Delegate delegate) {
         return getBasicListMenu(context, data, delegate, 0);
     }
 
@@ -50,13 +52,14 @@ public class BrowserUiListMenuUtils {
      *
      * @param context The Android context.
      * @param data The data to display in the list.
-     * @param delegate Delegate to handle item clicks.
+     * @param delegate The {@link ListMenu.Delegate} used to handle menu clicks. If not provided,
+     *     the item's CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
      * @param backgroundTintColor tint for the menu background.
      */
     public static BasicListMenu getBasicListMenu(
             Context context,
             MVCListAdapter.ModelList data,
-            ListMenu.Delegate delegate,
+            ListMenu.@Nullable Delegate delegate,
             @ColorRes int backgroundTintColor) {
         View contentView = LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
         ListView listView = contentView.findViewById(R.id.app_menu_list);

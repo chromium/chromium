@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
@@ -61,8 +60,6 @@ import java.util.Set;
  */
 @NullMarked
 public class ContextMenuCoordinator implements ContextMenuUi {
-
-    private static final int INVALID_ITEM_ID = -1;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ContextMenuItemType.HEADER, ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON})
@@ -362,17 +359,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mListView = menu.findViewById(R.id.context_menu_list_view);
         mListView.setAdapter(adapter);
 
-        // TODO(crbug.com/427797271): Clean up click handling and remove this.
-        mListView.setOnItemClickListener(
-                (p, v, pos, id) -> {
-                    if (id == INVALID_ITEM_ID) return;
-                    @Nullable ListItem item = findItem((int) id);
-                    if (item == null) return;
-                    if (item.model.containsKey(CLICK_LISTENER) && item.type == MENU_ITEM) {
-                        item.model.get(CLICK_LISTENER).onClick(v);
-                    }
-                });
-
         mListView.setItemsCanFocus(true);
         // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
         // ideally this could be enabled for all forms of context menu.
@@ -555,7 +541,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     @VisibleForTesting
     /* package */ static ModelListAdapter createAdapter(ModelList listItems) {
         ModelListAdapter adapter =
-                ListMenuUtils.createAdapter(listItems, Set.of(ContextMenuItemType.HEADER));
+                ListMenuUtils.createAdapter(
+                        listItems, Set.of(ContextMenuItemType.HEADER), /* delegate= */ null);
         // Register types / view binders not covered by the default adapter
         adapter.registerType(
                 ContextMenuItemType.HEADER,

@@ -142,4 +142,8 @@ public class AdaptiveButtonActionMenuCoordinator {
     public View getContentViewForTesting() {
         return assumeNonNull(mListMenu).getContentView();
     }
+
+    public @Nullable BasicListMenu getListMenuForTesting() {
+        return mListMenu;
+    }
 }
