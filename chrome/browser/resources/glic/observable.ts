@@ -132,3 +132,34 @@ export class ObservableValue<T> {
     return resultValue;
   }
 }
+
+/**
+ * A simple observable with no memory of previous values.
+ */
+export class Subject<T> {
+  private subscribers: Set<ObservableSubscription<T>> = new Set();
+
+  subscribe(change: (newValue: T) => void): Subscriber {
+    const newSub =
+        new ObservableSubscription(change, this.onUnsubscribe.bind(this));
+    this.subscribers.add(newSub);
+    return newSub;
+  }
+
+  next(v: T) {
+    this.subscribers.forEach((sub) => {
+      // Ignore if removed since forEach was called.
+      if (this.subscribers.has(sub)) {
+        try {
+          sub.onChange(v);
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    });
+  }
+
+  private onUnsubscribe(sub: ObservableSubscription<T>) {
+    this.subscribers.delete(sub);
+  }
+}

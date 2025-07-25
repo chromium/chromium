@@ -94,15 +94,6 @@ export declare interface GlicWebClient {
   notifyPanelWasClosed?(): Promise<void>;
 
   /**
-   * Called when the browser wants the web client to change its view to match
-   * a requested change (e.g., because the user clicked a UI element to toggle
-   * to a different view).
-   *
-   * The web client should update its view to match the requested change.
-   */
-  requestViewChange?(viewChangeRequest: ViewChangeRequest): void;
-
-  /**
    * The web client should resolve the promise after verifying the app is
    * responsive.
    *
@@ -636,6 +627,15 @@ export declare interface GlicBrowserHost {
    * Returns the list of capabilities of the glic host.
    */
   getHostCapabilities?(): Set<HostCapability>;
+
+  /**
+   * Emits when the browser wants the web client to change its view to match
+   * a requested change (e.g., because the user clicked a UI element to toggle
+   * to a different view).
+   *
+   * The web client should update its view to match the requested change.
+   */
+  getViewChangeRequests?(): Observable<ViewChangeRequest>;
 
   /**
    * Notifies the browser that the web client has changed the view shown to the

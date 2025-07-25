@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskState} from '../glic_api/glic_api.js';
-import {ObservableValue as ObservableValueImpl} from '../observable.js';
+import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -88,7 +88,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }
 
   glicWebClientRequestViewChange(payload: {request: ViewChangeRequest}): void {
-    this.webClient.requestViewChange?.(payload.request);
+    this.host.viewChangeRequestsSubject.next(payload.request);
   }
 
   glicWebClientZeroStateSuggestionsChanged(payload: {
@@ -234,6 +234,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private hostCapabilities: Set<HostCapability> = new Set();
   private actorTaskState =
       new Map<number, ObservableValueImpl<ActorTaskState>>();
+  readonly viewChangeRequestsSubject = new Subject<ViewChangeRequest>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -745,6 +746,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getHostCapabilities(): Set<HostCapability> {
     return this.hostCapabilities;
+  }
+
+  getViewChangeRequests(): Observable<ViewChangeRequest> {
+    return this.viewChangeRequestsSubject;
   }
 
   onViewChanged(notification: ViewChangedNotification) {

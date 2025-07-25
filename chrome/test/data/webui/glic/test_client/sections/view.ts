@@ -8,7 +8,7 @@ import {ClientView} from '/glic/glic_api/glic_api.js';
 import {client, logMessage} from '../client.js';
 import {$} from '../page_element_types.js';
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   for (const [key, value] of Object.entries(ClientView)) {
     const option = document.createElement('option');
     option.textContent = `${key}: ${value}`;
@@ -25,19 +25,20 @@ window.addEventListener('load', () => {
     client.browser!.onViewChanged!({currentView});
   });
 
-  client.getInitialized().then(async () => {
-    if (!client?.browser?.onViewChanged) {
-      $.viewChangedBtn.disabled = true;
-      $.viewChangedAutomaticallyAccept.checked = false;
-      $.viewChangedAutomaticallyAccept.disabled = true;
-    }
-  });
-});
+  await client.getInitialized();
 
-export function requestViewChange(request: ViewChangeRequest) {
-  logMessage(`requestViewChange(${JSON.stringify(request)})`);
-  if ($.viewChangedAutomaticallyAccept.checked) {
-    $.viewChangedCurrentView.value = request.desiredView;
-    client.browser!.onViewChanged!({currentView: request.desiredView});
+  if (!client.browser?.onViewChanged) {
+    $.viewChangedBtn.disabled = true;
+    $.viewChangedAutomaticallyAccept.checked = false;
+    $.viewChangedAutomaticallyAccept.disabled = true;
   }
-}
+
+  client.browser?.getViewChangeRequests?.()?.subscribe(
+      (request: ViewChangeRequest) => {
+        logMessage(`requestViewChange(${JSON.stringify(request)})`);
+        if ($.viewChangedAutomaticallyAccept.checked) {
+          $.viewChangedCurrentView.value = request.desiredView;
+          client.browser!.onViewChanged!({currentView: request.desiredView});
+        }
+      });
+});
