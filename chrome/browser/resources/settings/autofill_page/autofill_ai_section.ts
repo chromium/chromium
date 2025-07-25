@@ -144,6 +144,13 @@ export class SettingsAutofillAiSectionElement extends
     };
   }
 
+  static get observers() {
+    return [
+      `onAutofillAiPrefChanged_(
+          prefs.autofill.profile_enabled.value)`,
+    ];
+  }
+
   declare ineligibleUser: boolean;
   declare private optedIn_: chrome.settingsPrivate.PrefObject;
   declare private activeEntityInstance_: EntityInstance|null;
@@ -327,6 +334,17 @@ export class SettingsAutofillAiSectionElement extends
     }
     this.showRemoveEntityInstanceDialog_ = false;
     this.activeEntityInstance_ = null;
+  }
+
+  // Adjusts the opt-in state when address autofill status changes.
+  //
+  // This covers the case where a user disables address autofill and then checks
+  // the AutofillAI opt-in status. In this case, we do not remove the AutofillAI
+  // entry, but just set the opt-in to false. Note that other
+  // preconditions (e.g., sync) are not covered.
+  private async onAutofillAiPrefChanged_(prefValue: boolean) {
+    const optedIn = await this.entityDataManager_.getOptInStatus();
+    this.set('optedIn_.value', !this.ineligibleUser && optedIn && prefValue);
   }
 
   // SettingsViewMixin implementation.

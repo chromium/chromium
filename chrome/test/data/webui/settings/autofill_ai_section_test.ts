@@ -126,6 +126,24 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     toggle.click();
     assertFalse(await entityDataManager.whenCalled('setOptInStatus'));
   });
+
+  test('DisablingClassicAutofillPrefDisabledTheFeature', async function() {
+    section.ineligibleUser = false;
+    entityDataManager.setGetOptInStatusResponse(true);
+    document.body.appendChild(section);
+    await flushTasks();
+
+    const addButton = section.shadowRoot!.querySelector<CrButtonElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    assertFalse(addButton.disabled);
+
+    // Check that when the autofill pref is off, the add button becomes
+    // disabled, which essentially means the feature is off.
+    section.set('prefs.autofill.profile_enabled.value', false);
+    await flushTasks();
+    assertTrue(addButton.disabled);
+  });
 });
 
 suite('AutofillAiSectionUiTest', function() {
