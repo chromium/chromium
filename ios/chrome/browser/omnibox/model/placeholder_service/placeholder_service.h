@@ -112,6 +112,8 @@ class PlaceholderService : public KeyedService,
   // Map of icon sizes to a list of callbacks awaiting an icon of that size.
   // This is cleared when default search engine changes.
   std::map<CGFloat, std::vector<PlaceholderImageCallback>> icon_callbacks_;
+  // Map of icon sizes to a timestamp after which a fetch is allowed.
+  std::map<CGFloat, base::TimeTicks> fetch_cooldowns_;
 
   base::WeakPtrFactory<PlaceholderService> weak_ptr_factory_{this};
 };
