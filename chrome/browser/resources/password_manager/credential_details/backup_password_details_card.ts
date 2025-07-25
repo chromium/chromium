@@ -38,7 +38,6 @@ export interface BackupPasswordDetailsCardElement {
     copyPasswordButton: CrIconButtonElement,
     deleteButton: CrButtonElement,
     domainLabel: HTMLElement,
-    editButton: CrButtonElement,
     passwordValue: CrInputElement,
     noteValue: CredentialNoteElement,
     showMore: HTMLAnchorElement,
@@ -125,16 +124,6 @@ export class BackupPasswordDetailsCardElement extends
             'passwordDetailsCardAriaLabel', this.getCredentialTypeString_(),
             this.password.username) :
         this.getCredentialTypeString_();
-  }
-
-  private getAriaLabelForEditButton_(): string {
-    return this.password.username ?
-        this.i18n(
-            'passwordDetailsCardEditButtonAriaLabel',
-            this.getCredentialTypeString_(), this.password.username) :
-        this.i18n(
-            'passwordDetailsCardEditButtonNoUsernameAriaLabel',
-            this.getCredentialTypeString_());
   }
 
   private getAriaLabelForDeleteButton_(): string {

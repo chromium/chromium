@@ -68,7 +68,6 @@ suite('BackupPasswordDetailsCardTest', function() {
                 card.i18n('localPasswordManager'))}`);
     assertTrue(isVisible(card.$.showPasswordButton));
     assertTrue(isVisible(card.$.copyPasswordButton));
-    assertTrue(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
   });
 
