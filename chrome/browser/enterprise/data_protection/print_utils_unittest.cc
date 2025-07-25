@@ -462,7 +462,9 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
   validator_run_loop.Run();
 }
 
-TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
+// TODO(http://crbug.com/434099738): Flaky on multiple platforms.
+TEST_P(PrintContentAnalysisUtilsTest,
+       DISABLED_PrintIfAllowedByPolicyWarnedThenBypass) {
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
   enterprise_connectors::PagePrintRequestHandler::SetFactoryForTesting(
