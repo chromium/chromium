@@ -1,0 +1,17 @@
+{
+  "name": "landmines",
+  "version": "1.0.0",
+  "contextFileName": "GEMINI.md",
+  "excludeTools": [
+    "run_shell_command(autoninja)",
+    "glob",
+    "search_file_content",
+    "run_shell_command(find .)",
+    "run_shell_command(ls -R)",
+    "run_shell_command(grep -r)",
+    "run_shell_command(grep -R)",
+    "run_shell_command(git grep)",
+    "run_shell_command(gn ls)",
+    "read_many_files"
+  ]
+}

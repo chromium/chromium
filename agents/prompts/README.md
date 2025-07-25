@@ -21,12 +21,14 @@ prompts using @, for example, a typical desktop developer will use:
 
 ```src/GEMINI.md
 @agents/prompts/common.GEMINI.md
+@agents/prompts/templates/common.md
 @agents/prompts/templates/desktop.md
 ```
 
 Whereas an Android developer would use:
 ```src/GEMINI.md
 @agents/prompts/common.GEMINI.md
+@agents/prompts/templates/common.md
 @agents/prompts/templates/android.md
 ```
 

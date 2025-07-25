@@ -57,13 +57,19 @@ src/agents/
         └── README.md
 ```
 
+Use `agents/mcp/install.py` to list and configure available servers.
+
+### Extensions
+
+Similar to `mcp`, but not a server.
+
 ## Contributing
 
 Please freely add self-contained task prompts and prompt templates that match
 the format of the existing examples.
 
-New MCP server configurations should be for owned and supported MCP servers
-and include OWNERS.
+New MCP server configurations should be for owned and supported MCP servers and
+include OWNERS.
 
 Changes to `common.GEMINI.md` should be done carefully as it's meant to be used
 broadly.
