@@ -53,6 +53,16 @@ def __step_config(ctx, step_config, use_windows_worker = None):
             "action_outs": [
                 # keep-sorted start
                 "./obj/content/test/content_unittests/auction_runner_unittest.o",
+                "./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o",
+                "./obj/third_party/highway/highway_tests/convert_test.o",
+                "./obj/third_party/highway/highway_tests/demote_test.o",
+                "./obj/third_party/highway/highway_tests/interleaved_test.o",
+                "./obj/third_party/highway/highway_tests/mask_mem_test.o",
+                "./obj/third_party/highway/highway_tests/mask_test.o",
+                "./obj/third_party/highway/highway_tests/masked_arithmetic_test.o",
+                "./obj/third_party/highway/highway_tests/memory_test.o",
+                "./obj/third_party/highway/highway_tests/shuffle4_test.o",
+                "./obj/third_party/highway/highway_tests/widen_mul_test.o",
                 # keep-sorted end
             ],
             "timeout": "4m",
