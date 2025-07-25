@@ -450,7 +450,8 @@ void ShellPlatformDelegate::SetTitle(Shell* shell,
   shell_data.window_widget->widget_delegate()->SetTitle(title);
 }
 
-void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
+void ShellPlatformDelegate::MainFrameCreated(Shell* shell,
+                                             RenderFrameHost* main_frame) {}
 
 bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));

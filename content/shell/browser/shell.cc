@@ -139,7 +139,8 @@ Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
   // main frame being created as a WebContentsObservers. This gives the delegate
   // a chance to act on the main frame accordingly.
   if (raw_web_contents->GetPrimaryMainFrame()->IsRenderFrameLive())
-    g_platform->MainFrameCreated(shell);
+    g_platform->MainFrameCreated(shell,
+                                 raw_web_contents->GetPrimaryMainFrame());
 
   return shell;
 }
@@ -242,8 +243,9 @@ Shell* Shell::CreateNewWindow(BrowserContext* browser_context,
 }
 
 void Shell::RenderFrameCreated(RenderFrameHost* frame_host) {
-  if (frame_host == web_contents_->GetPrimaryMainFrame())
-    g_platform->MainFrameCreated(this);
+  if (frame_host == frame_host->GetOutermostMainFrame()) {
+    g_platform->MainFrameCreated(this, frame_host);
+  }
 }
 
 void Shell::LoadURL(const GURL& url) {

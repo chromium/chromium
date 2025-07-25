@@ -295,7 +295,8 @@ void ShellPlatformDelegate::SetTitle(Shell* shell,
   shell_data.delegate.window.title = base::SysUTF16ToNSString(title);
 }
 
-void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
+void ShellPlatformDelegate::MainFrameCreated(Shell* shell,
+                                             RenderFrameHost* main_frame) {}
 
 bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));
