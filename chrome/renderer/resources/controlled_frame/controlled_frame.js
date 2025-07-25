@@ -15,6 +15,9 @@ var CONTROLLED_FRAME_DELETED_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_DELETED_API_METHODS;
 var CONTROLLED_FRAME_PROMISE_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_PROMISE_API_METHODS;
+var convertURLPatternsToMatchPatterns =
+    require('controlledFrameURLPatternsHelper')
+        .convertURLPatternsToMatchPatterns;
 var registerElement = require('guestViewContainerElement').registerElement;
 var WebViewAttributeNames = require('webViewConstants').WebViewAttributeNames;
 var WebViewElement = require('webViewElement').WebViewElement;
@@ -85,16 +88,24 @@ function convertFromWebNaming(webRules) {
     // Prefill |webViewRule| based on |webRule|.
     let webViewRule = webRule;
 
+    // Remove webview fields we don't support.
+    delete webViewRule['include_globs'];
+    delete webViewRule['exclude_globs'];
+
     // Convert the keys in |webViewRule|.
     webViewRule = convertContentScriptDetailsKeys(webViewRule, [
       {from: 'allFrames', to: 'all_frames'},
-      {from: 'excludeGlobs', to: 'exclude_globs'},
       {from: 'excludeURLPatterns', to: 'exclude_matches'},
-      {from: 'includeGlobs', to: 'include_globs'},
       {from: 'matchAboutBlank', to: 'match_about_blank'},
       {from: 'runAt', to: 'run_at'},
       {from: 'urlPatterns', to: 'matches'},
     ]);
+
+    // Convert URLPatterns to match patterns.
+    webViewRule.matches =
+        convertURLPatternsToMatchPatterns(webViewRule.matches);
+    webViewRule.exclude_matches =
+        convertURLPatternsToMatchPatterns(webViewRule.exclude_matches);
 
     webViewRules.push(webViewRule);
   }
