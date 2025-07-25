@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -77,8 +76,6 @@ const CGFloat kLabelOffset = 3;
 }
 
 - (void)setTabGroupState:(ToolbarTabGroupState)tabGroupState {
-  CHECK(tabGroupState == ToolbarTabGroupState::kNormal ||
-        (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()));
   if (_tabGroupState == tabGroupState) {
     return;
   }

@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
@@ -381,7 +380,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
     height += kTabGroupIndicatorHeight;
     // If the Omnibox is not at the top, remove the top vertical margin to avoid
     // extra space when the tab group indicator is present.
-    if (!isTopOmnibox && !HasTabGroupIndicatorBelowOmnibox()) {
+    if (!isTopOmnibox) {
       height -= kTopToolbarUnsplitMargin;
     }
   }
@@ -760,13 +759,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   CGFloat alphaValue = fmax(progress * 2 - 1, 0);
   _bannerPromoBackground.alpha = alphaValue;
 
-  if (!_tabGroupIndicatorView.hidden && HasTabGroupIndicatorBelowOmnibox()) {
-    CGFloat tabgroupIndicatorHeight =
-        self.tabGroupIndicatorView.hidden
-            ? 0
-            : kTabGroupIndicatorHeight * alphaValue;
-    _tabGroupIndicatorHeightConstraint.constant = tabgroupIndicatorHeight;
-  }
   self.tabGroupIndicatorView.alpha = alphaValue;
 
   _bannerPromoBackgroundHeightConstraint.constant =
@@ -842,23 +834,12 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   _tabGroupIndicatorTopOmniboxConstraint.active = NO;
   _tabGroupIndicatorBottomOmniboxConstraint.active = NO;
 
-  BOOL isTopOmnibox = self.locationBarView != nil;
+  [self updateConstraintsForIndicatorBelowOmnibox:NO];
 
-  // If the tab group indicator is below the omnibox.
-  if (HasTabGroupIndicatorBelowOmnibox() && isTopOmnibox) {
-    [self updateConstraintsForIndicatorBelowOmnibox:YES];
-
-    _tabGroupIndicatorTopOmniboxConstraint =
-        [self.tabGroupIndicatorView.topAnchor
-            constraintEqualToAnchor:self.locationBarContainer.bottomAnchor];
-  } else {
-    [self updateConstraintsForIndicatorBelowOmnibox:NO];
-
-    _tabGroupIndicatorTopOmniboxConstraint =
-        [self.tabGroupIndicatorView.bottomAnchor
-            constraintEqualToAnchor:self.locationBarContainer.topAnchor
-                           constant:-kAdaptiveLocationBarVerticalMargin];
-  }
+  _tabGroupIndicatorTopOmniboxConstraint =
+      [self.tabGroupIndicatorView.bottomAnchor
+          constraintEqualToAnchor:self.locationBarContainer.topAnchor
+                         constant:-kAdaptiveLocationBarVerticalMargin];
 
   _tabGroupIndicatorBottomOmniboxConstraint =
       [self.tabGroupIndicatorView.bottomAnchor

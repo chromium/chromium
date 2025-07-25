@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -757,27 +756,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
         [[UIBarButtonItem alloc] initWithCustomView:facePileButton];
   }
 
-  if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
-    NSMutableArray* buttons = [NSMutableArray array];
-    [buttons addObject:menuItem];
-    if (facePileBarButton) {
-      [buttons addObject:facePileBarButton];
-    }
-    navigationItem.rightBarButtonItems = buttons;
-  } else {
-    UIImage* plusImage =
-        DefaultSymbolWithPointSize(kPlusSymbol, kLegacyMenuImageSize);
-    UIBarButtonItem* plusItem =
-        [[UIBarButtonItem alloc] initWithImage:plusImage
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(didTapPlusButton)];
-    plusItem.accessibilityIdentifier = kTabGroupNewTabButtonIdentifier;
-    plusItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
-
-    navigationItem.rightBarButtonItems = @[ menuItem, plusItem ];
+  NSMutableArray* buttons = [NSMutableArray array];
+  [buttons addObject:menuItem];
+  if (facePileBarButton) {
+    [buttons addObject:facePileBarButton];
   }
+  navigationItem.rightBarButtonItems = buttons;
   return navigationItem;
 }
 
@@ -918,10 +902,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
 // Adds the bottom toolbar containing the "plus" button.
 - (void)configureBottomToolbar {
-  if (!IsTabGroupIndicatorEnabled() || !HasTabGroupIndicatorButtonsUpdated()) {
-    return;
-  }
-
   TabGridBottomToolbar* bottomToolbar = [[TabGridBottomToolbar alloc] init];
   _bottomToolbar = bottomToolbar;
   bottomToolbar.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1157,16 +1137,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
         _bottomToolbar.intrinsicContentSize.height + kBottomToolbarMargin, 0);
     return;
   }
-  CGFloat bottomToolbarInset = 0;
-  if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
-    BOOL shouldUseCompactLayout = self.traitCollection.verticalSizeClass ==
-                                      UIUserInterfaceSizeClassRegular &&
-                                  self.traitCollection.horizontalSizeClass ==
-                                      UIUserInterfaceSizeClassCompact;
-
-    bottomToolbarInset =
-        shouldUseCompactLayout ? _bottomToolbar.intrinsicContentSize.height : 0;
-  }
+  BOOL shouldUseCompactLayout = self.traitCollection.verticalSizeClass ==
+                                    UIUserInterfaceSizeClassRegular &&
+                                self.traitCollection.horizontalSizeClass ==
+                                    UIUserInterfaceSizeClassCompact;
+  CGFloat bottomToolbarInset =
+      shouldUseCompactLayout ? _bottomToolbar.intrinsicContentSize.height : 0;
 
   UIEdgeInsets safeAreaInsets = self.view.safeAreaInsets;
   safeAreaInsets.top = 0;

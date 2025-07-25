@@ -488,10 +488,6 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsTabGroupIndicatorEnabled() {
-  return true;
-}
-
 BASE_FEATURE(kNewSyncOptInIllustration,
              "NewSyncOptInIllustration",
              base::FEATURE_DISABLED_BY_DEFAULT);
