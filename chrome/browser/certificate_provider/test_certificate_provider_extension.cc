@@ -24,7 +24,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/certificate_provider.h"
 #include "content/public/browser/browser_context.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/sign.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/test.h"
@@ -33,8 +33,6 @@
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
-#include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace ash {
 
@@ -102,50 +100,34 @@ base::Value ParseJsonToValue(const std::string& json) {
   return std::move(*value);
 }
 
-bool RsaSignRawData(crypto::RSAPrivateKey* key,
-                    uint16_t openssl_signature_algorithm,
-                    const std::vector<uint8_t>& input,
-                    std::vector<uint8_t>* signature) {
-  const EVP_MD* const digest_algorithm =
-      SSL_get_signature_algorithm_digest(openssl_signature_algorithm);
-  bssl::ScopedEVP_MD_CTX ctx;
-  EVP_PKEY_CTX* pkey_ctx = nullptr;
-  if (!EVP_DigestSignInit(ctx.get(), &pkey_ctx, digest_algorithm,
-                          /*ENGINE* e=*/nullptr, key->key()))
-    return false;
-  if (SSL_is_signature_algorithm_rsa_pss(openssl_signature_algorithm)) {
-    // For RSA-PSS, configure the special padding and set the salt length to be
-    // equal to the hash size.
-    if (!EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING) ||
-        !EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, /*salt_len=*/-1)) {
-      return false;
-    }
-  }
-  size_t sig_len = 0;
-  // Determine the signature length for the buffer.
-  if (!EVP_DigestSign(ctx.get(), /*out_sig=*/nullptr, &sig_len, input.data(),
-                      input.size()))
-    return false;
-  signature->resize(sig_len);
-  return EVP_DigestSign(ctx.get(), signature->data(), &sig_len, input.data(),
-                        input.size()) != 0;
-}
-
 void SendReplyToJs(ExtensionTestMessageListener* message_listener,
                    const base::Value& response) {
   message_listener->Reply(ConvertValueToJson(response));
   message_listener->Reset();
 }
 
-std::unique_ptr<crypto::RSAPrivateKey> LoadPrivateKeyFromFile(
-    const base::FilePath& path) {
-  std::string key_pk8;
+crypto::keypair::PrivateKey LoadPrivateKeyFromFile(const base::FilePath& path) {
+  std::optional<std::vector<uint8_t>> key_pk8;
   {
     base::ScopedAllowBlockingForTesting allow_io;
-    EXPECT_TRUE(base::ReadFileToString(path, &key_pk8));
+    key_pk8 = base::ReadFileToBytes(path);
   }
-  return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(
-      base::as_byte_span(key_pk8));
+  CHECK(key_pk8);
+  return *crypto::keypair::PrivateKey::FromPrivateKeyInfo(*key_pk8);
+}
+
+crypto::sign::SignatureKind SignatureKindFromProviderApi(
+    extensions::api::certificate_provider::Algorithm algorithm) {
+  if (algorithm == extensions::api::certificate_provider::Algorithm::
+                       kRsassaPkcs1V1_5Sha256) {
+    return crypto::sign::RSA_PKCS1_SHA256;
+  } else if (algorithm == extensions::api::certificate_provider::Algorithm::
+                              kRsassaPkcs1V1_5Sha1) {
+    return crypto::sign::RSA_PKCS1_SHA1;
+  } else {
+    NOTREACHED() << "Unexpected signature request algorithm: "
+                 << extensions::api::certificate_provider::ToString(algorithm);
+  }
 }
 
 }  // namespace
@@ -194,7 +176,6 @@ TestCertificateProviderExtension::TestCertificateProviderExtension(
       message_listener_(ReplyBehavior::kWillReply) {
   DCHECK(browser_context_);
   CHECK(certificate_);
-  CHECK(private_key_);
   // Ignore messages targeted to other extensions or browser contexts.
   message_listener_.set_extension_id(kExtensionId);
   message_listener_.set_browser_context(browser_context);
@@ -272,21 +253,6 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
   const std::vector<uint8_t> input =
       ExtractBytesFromValue(*sign_request.GetDict().Find("input"));
 
-  const extensions::api::certificate_provider::Algorithm algorithm =
-      extensions::api::certificate_provider::ParseAlgorithm(
-          *sign_request.GetDict().FindString("algorithm"));
-  int openssl_signature_algorithm = 0;
-  if (algorithm == extensions::api::certificate_provider::Algorithm::
-                       kRsassaPkcs1V1_5Sha256) {
-    openssl_signature_algorithm = SSL_SIGN_RSA_PKCS1_SHA256;
-  } else if (algorithm == extensions::api::certificate_provider::Algorithm::
-                              kRsassaPkcs1V1_5Sha1) {
-    openssl_signature_algorithm = SSL_SIGN_RSA_PKCS1_SHA1;
-  } else {
-    LOG(FATAL) << "Unexpected signature request algorithm: "
-               << extensions::api::certificate_provider::ToString(algorithm);
-  }
-
   if (should_fail_sign_digest_requests_) {
     // Simulate a failure.
     std::move(callback).Run(/*response=*/base::Value());
@@ -345,10 +311,13 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
     stop_pin_request_parameters.Set("signRequestId", sign_request_id);
     response.Set("stopPinRequest", std::move(stop_pin_request_parameters));
   }
+
   // Generate and return a valid signature.
-  std::vector<uint8_t> signature;
-  CHECK(RsaSignRawData(private_key_.get(), openssl_signature_algorithm, input,
-                       &signature));
+  const extensions::api::certificate_provider::Algorithm algorithm =
+      extensions::api::certificate_provider::ParseAlgorithm(
+          *sign_request.GetDict().FindString("algorithm"));
+  std::vector<uint8_t> signature = crypto::sign::Sign(
+      SignatureKindFromProviderApi(algorithm), private_key_, input);
   response.Set("signature", ConvertBytesToValue(signature));
   std::move(callback).Run(base::Value(std::move(response)));
 }
