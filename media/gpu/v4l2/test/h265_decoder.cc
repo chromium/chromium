@@ -176,16 +176,20 @@ v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
     PPS_TO_V4L2PPS(num_tile_rows_minus1);
 
     if (!pps->uniform_spacing_flag) {
-      static_assert(std::size(v4l2_pps.column_width_minus1) >=
-                        std::extent<decltype(pps->column_width_minus1)>(),
-                    "column_width_minus1 arrays must be same size");
+      static_assert(
+          std::size(v4l2_pps.column_width_minus1) >=
+              std::tuple_size_v<
+                  std::remove_reference_t<decltype(pps->column_width_minus1)>>,
+          "column_width_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_columns_minus1; ++i) {
         v4l2_pps.column_width_minus1[i] = pps->column_width_minus1[i];
       }
 
-      static_assert(std::size(v4l2_pps.row_height_minus1) >=
-                        std::extent<decltype(pps->row_height_minus1)>(),
-                    "row_height_minus1 arrays must be same size");
+      static_assert(
+          std::size(v4l2_pps.row_height_minus1) >=
+              std::tuple_size_v<
+                  std::remove_reference_t<decltype(pps->row_height_minus1)>>,
+          "row_height_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_rows_minus1; ++i) {
         v4l2_pps.row_height_minus1[i] = pps->row_height_minus1[i];
       }
@@ -324,7 +328,7 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
     }
 
     memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
-           scaling_list.scaling_list_dc_coef_16x16,
+           scaling_list.scaling_list_dc_coef_16x16.data(),
            sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
     v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
         scaling_list.scaling_list_dc_coef_32x32[0];
