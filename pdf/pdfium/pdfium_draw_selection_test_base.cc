@@ -24,11 +24,10 @@ void PDFiumDrawSelectionTestBase::DrawSelectionAndCompare(
     PDFiumEngine& engine,
     int page_index,
     std::string_view expected_png_filename) {
-  return DrawAndCompareImpl(engine, page_index,
-                            FILE_PATH_LITERAL("text_selection"),
-                            expected_png_filename,
-                            /*use_platform_suffix=*/false,
-                            /*draw_caret=*/false);
+  DrawAndCompareImpl(engine, page_index, FILE_PATH_LITERAL("text_selection"),
+                     expected_png_filename,
+                     /*use_platform_suffix=*/false,
+                     /*draw_caret=*/false);
 }
 
 void PDFiumDrawSelectionTestBase::
@@ -36,32 +35,30 @@ void PDFiumDrawSelectionTestBase::
         PDFiumEngine& engine,
         int page_index,
         std::string_view expected_png_filename) {
-  return DrawAndCompareImpl(engine, page_index,
-                            FILE_PATH_LITERAL("text_selection"),
-                            expected_png_filename,
-                            /*use_platform_suffix=*/true,
-                            /*draw_caret=*/false);
+  DrawAndCompareImpl(engine, page_index, FILE_PATH_LITERAL("text_selection"),
+                     expected_png_filename,
+                     /*use_platform_suffix=*/true,
+                     /*draw_caret=*/false);
 }
 
 void PDFiumDrawSelectionTestBase::DrawHighlightsAndCompare(
     PDFiumEngine& engine,
     int page_index,
     std::string_view expected_png_filename) {
-  return DrawAndCompareImpl(engine, page_index,
-                            FILE_PATH_LITERAL("text_fragments"),
-                            expected_png_filename,
-                            /*use_platform_suffix=*/false,
-                            /*draw_caret=*/false);
+  DrawAndCompareImpl(engine, page_index, FILE_PATH_LITERAL("text_fragments"),
+                     expected_png_filename,
+                     /*use_platform_suffix=*/false,
+                     /*draw_caret=*/false);
 }
 
 void PDFiumDrawSelectionTestBase::DrawCaretAndCompareWithPlatformExpectations(
     PDFiumEngine& engine,
     int page_index,
     std::string_view expected_png_filename) {
-  return DrawAndCompareImpl(engine, page_index, FILE_PATH_LITERAL("caret"),
-                            expected_png_filename,
-                            /*use_platform_suffix=*/true,
-                            /*draw_caret=*/true);
+  DrawAndCompareImpl(engine, page_index, FILE_PATH_LITERAL("caret"),
+                     expected_png_filename,
+                     /*use_platform_suffix=*/true,
+                     /*draw_caret=*/true);
 }
 
 void PDFiumDrawSelectionTestBase::SetSelection(PDFiumEngine& engine,
