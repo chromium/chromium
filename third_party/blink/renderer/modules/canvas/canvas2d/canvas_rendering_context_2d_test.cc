@@ -692,7 +692,6 @@ TEST_P(CanvasRenderingContext2DTest,
       CompositingMode::kDoesNotSupportDirectCompositing);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
-  EXPECT_TRUE(Context2D()->IsCanvas2DResourceValid());
   CanvasElement().SetIsDisplayed(true);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
@@ -716,7 +715,6 @@ TEST_P(CanvasRenderingContext2DTest,
       CompositingMode::kSupportsDirectCompositing);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
-  EXPECT_TRUE(Context2D()->IsCanvas2DResourceValid());
   CanvasElement().SetIsDisplayed(true);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
@@ -738,7 +736,6 @@ TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
       CompositingMode::kSupportsDirectCompositing);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
-  EXPECT_TRUE(Context2D()->IsCanvas2DResourceValid());
   CanvasElement().SetIsDisplayed(true);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
@@ -763,7 +760,6 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
       CompositingMode::kSupportsDirectCompositing);
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
-  ASSERT_TRUE(Context2D()->IsCanvas2DResourceValid());
 
   EXPECT_FALSE(Context2D()
                    ->GetImage(FlushReason::kTesting)
@@ -1745,7 +1741,7 @@ TEST_P(CanvasRenderingContext2DTest,
       .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
 
   CreateContext(kNonOpaque);
-  EXPECT_TRUE(Context2D()->IsCanvas2DResourceValid());
+  EXPECT_TRUE(Context2D()->GetOrCreateCanvas2DResourceProvider());
 
   // Draw to the canvas and verify that the canvas is composited.
   Context2D()->fillRect(0, 0, 1, 1);
@@ -1758,7 +1754,7 @@ TEST_P(CanvasRenderingContext2DTest,
   ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(false);
 
   CreateContext(kNonOpaque);
-  EXPECT_TRUE(Context2D()->IsCanvas2DResourceValid());
+  EXPECT_TRUE(Context2D()->GetOrCreateCanvas2DResourceProvider());
 
   // Ensure that native support for BGRA GMBs is present, as otherwise
   // compositing will not occur irrespective of whether
@@ -1848,7 +1844,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, GetImage) {
 
   ASSERT_TRUE(Context2D()->GetOrCreateCanvas2DResourceProvider());
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  ASSERT_TRUE(Context2D()->IsCanvas2DResourceValid());
 
   // Verify that CanvasRenderingContext2D::GetImage() creates an accelerated
   // image given that the underlying CanvasResourceProvider does so.
@@ -2002,7 +1997,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
 
   EXPECT_TRUE(Context2D()->GetOrCreateCanvas2DResourceProvider());
-  EXPECT_TRUE(Context2D()->IsCanvas2DResourceValid());
 
   test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_EQ(nullptr, Context2D()->GetOrCreateCanvas2DResourceProvider());
