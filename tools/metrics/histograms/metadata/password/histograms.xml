@@ -4285,22 +4285,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus2"
-    enum="UnifiedPasswordManagerActiveStatus" expires_after="2024-03-29">
-  <owner>kazinova@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <summary>
-    Recorded on profile open after the sync service is initialized and once per
-    regular profile. It is recorded for clients that have UPM enabled and logs
-    whether UPM is actually active for them. Reasons why UPM might be inactive
-    are: passwords sync off or client unenrolled due to unresolvable errors.
-    Note a client can have both sync off and be unenrolled, in which case it
-    will still only appear in the sync off bucket, since this is considered the
-    main reason why the client is inactive for UPM.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.UpdateUIDismissalReason"
     enum="PasswordManagerUIDismissalReason" expires_after="2025-12-07">
   <owner>vasilii@chromium.org</owner>

@@ -30,21 +30,6 @@ class PrefService;
 
 namespace password_manager {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Update enums.xml whenever updating
-// this enum.
-enum class UnifiedPasswordManagerActiveStatus {
-  // UPM is active.
-  kActive = 0,
-  // UPM is inactive because passwords sync is off.
-  kInactiveSyncOff = 1,
-  // UPM is inactive because the client has been unenrolled due to unresolvable
-  // errors
-  // Deprecated: kInactiveUnenrolledDueToErrors = 2,
-
-  kMaxValue = kInactiveSyncOff
-};
-
 // This enum is used in the JobReturnHandler for tracking the store operation
 // that started the job so that the correct operation can be retried when the
 // job encountered an error.

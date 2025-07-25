@@ -1891,12 +1891,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UI error, not shown"/>
 </enum>
 
-<enum name="UnifiedPasswordManagerActiveStatus">
-  <int value="0" label="Active"/>
-  <int value="1" label="Inactive - passwords sync off"/>
-  <int value="2" label="(obsolete) Inactive - unenrolled due to errors"/>
-</enum>
-
 <enum name="UsernameDetectionMethod">
   <int value="0" label="No username detected"/>
   <int value="1" label="Base heuristic"/>

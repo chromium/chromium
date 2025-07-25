@@ -75,8 +75,6 @@ constexpr char kBackendErrorCodeMetric[] =
     "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
 constexpr char kBackendApiErrorMetric[] =
     "PasswordManager.PasswordStoreAndroidBackend.APIError";
-constexpr char kUPMActiveHistogram[] =
-    "PasswordManager.UnifiedPasswordManager.ActiveStatus2";
 constexpr char kRetryHistogramBase[] =
     "PasswordManager.PasswordStoreAndroidBackend.Retry";
 constexpr AndroidBackendErrorType kExternalErrorType =
@@ -1308,33 +1306,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(kStartedMetric),
               ElementsAre(base::Bucket(/* Requested */ 0, 1),
                           base::Bucket(/* Completed */ 2, 1)));
-}
-
-TEST_F(PasswordStoreAndroidAccountBackendTest,
-       RecordActiveStatusOnSyncServiceInitialized) {
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-  base::HistogramTester histogram_tester;
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      false, {syncer::UserSelectableType::kPasswords});
-  backend().OnSyncServiceInitialized(sync_service());
-  histogram_tester.ExpectUniqueSample(
-      kUPMActiveHistogram, UnifiedPasswordManagerActiveStatus::kActive, 1);
-}
-
-TEST_F(PasswordStoreAndroidAccountBackendTest, RecordInactiveStatusSyncOff) {
-  base::HistogramTester histogram_tester;
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-  sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
-  backend().OnSyncServiceInitialized(sync_service());
-  histogram_tester.ExpectUniqueSample(
-      kUPMActiveHistogram, UnifiedPasswordManagerActiveStatus::kInactiveSyncOff,
-      1);
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
