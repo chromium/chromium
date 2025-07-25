@@ -217,12 +217,12 @@ public class TabPersistentStore {
     private final ArrayDeque<File> mLegacyTabStateFilesToDelete;
     private final Deque<TabRestoreDetails> mTabsToRestore;
     private final Set<Integer> mTabIdsToRestore;
-    private final SequencedTaskRunner mSequencedTaskRunner;
     private final List<Pair<AsyncTask<@Nullable DataInputStream>, String>>
             mPrefetchTabListToMergeTasks;
     // A set of filenames which are tracked to merge.
     private final Set<String> mMergedFileNames;
 
+    private SequencedTaskRunner mSequencedTaskRunner;
     private TabModelObserver mTabModelObserver;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private int mDuplicateTabIdsSeen;
@@ -248,8 +248,10 @@ public class TabPersistentStore {
      * Creates an instance of a TabPersistentStore.
      *
      * @param clientTag The client tag used to record metrics.
+     * @param policy Abstraction around activity specific behaviors.
      * @param modelSelector The {@link TabModelSelector} to restore to and save from.
      * @param tabCreatorManager The {@link TabCreatorManager} to use.
+     * @param tabWindowManager Used to avoid deleting archived tab state files.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      */
     public TabPersistentStore(
@@ -358,6 +360,14 @@ public class TabPersistentStore {
 
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        // Initialization will create the current tab and select it, this isn't a
+                        // meaningful change that needs to be saved.
+                        if (ChromeFeatureList.sTabModelInitFixes.isEnabled()
+                                && !mTabModelSelector.isTabStateInitialized()
+                                && lastId == TabList.INVALID_TAB_INDEX) {
+                            return;
+                        }
+
                         saveTabListAsynchronously();
                     }
 
@@ -372,6 +382,14 @@ public class TabPersistentStore {
                             @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
+                        // Ignore all tabs being restored as part of init, they're all already on
+                        // disk.
+                        if (ChromeFeatureList.sTabModelInitFixes.isEnabled()
+                                && !mTabModelSelector.isTabStateInitialized()
+                                && type == TabLaunchType.FROM_RESTORE) {
+                            return;
+                        }
+
                         saveTabListAsynchronously();
                     }
 
@@ -2133,5 +2151,9 @@ public class TabPersistentStore {
 
     public @Nullable AsyncTask<@Nullable TabState> getPrefetchTabStateActiveTabTaskForTesting() {
         return mPrefetchTabStateActiveTabTask;
+    }
+
+    public void setSequencedTaskRunnerForTesting(SequencedTaskRunner sequencedTaskRunner) {
+        mSequencedTaskRunner = sequencedTaskRunner;
     }
 }
