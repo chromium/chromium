@@ -15,16 +15,16 @@ class CrWebJavaScriptTest : public web::JavascriptTest {
 
     ASSERT_TRUE(LoadHtml(@"<p>"));
 
-    web::test::ExecuteJavaScriptInWebView(
-        web_view(), @"__gCrWeb.unit_tests.setupRegisterApi()");
+    web::test::ExecuteJavaScriptInWebView(web_view(), @"__gCrWeb.unit_tests."
+                                                      @"setupRegisterApi()");
   }
 };
 
 // Tests to retrieve the value of a property exported through gCrWeb API.
 TEST_F(CrWebJavaScriptTest, RetrieveExportedProperty) {
-  NSString* getExportedProperty =
-      @"__gCrWeb.unit_tests.getRegisteredApi('crWebAPI').getProperty('"
-      @"stringProperty')";
+  NSString* getExportedProperty = @"__gCrWeb.unit_tests."
+                                  @"getRegisteredApi('crWebAPI')."
+                                  @"getProperty('stringProperty')";
 
   id result = web::test::ExecuteJavaScript(web_view(), getExportedProperty);
 
@@ -33,8 +33,9 @@ TEST_F(CrWebJavaScriptTest, RetrieveExportedProperty) {
 
 // Tests executing a real function exported through gCrWeb API.
 TEST_F(CrWebJavaScriptTest, ExecuteRealFunction) {
-  NSString* executeFunction = @"__gCrWeb.unit_tests.getRegisteredApi('crWebAPI'"
-                              @").getFunction('addNum')(4, 3)";
+  NSString* executeFunction = @"__gCrWeb.unit_tests."
+                              @"getRegisteredApi('crWebAPI')."
+                              @"getFunction('addNum')(4, 3)";
 
   id result = web::test::ExecuteJavaScript(web_view(), executeFunction);
 
@@ -44,23 +45,22 @@ TEST_F(CrWebJavaScriptTest, ExecuteRealFunction) {
 // Tests having an array as property and having it updates through gCrWeb API.
 TEST_F(CrWebJavaScriptTest, PropertyAsArray) {
   id result_size_zero = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.unit_tests.getRegisteredApi('crWebAPI')."
-                  @"getProperty('arrayProperty').length");
-
+      web_view(), @"const array = __gCrWeb.unit_tests."
+                  @"getRegisteredApi('crWebAPI')."
+                  @"getProperty('arrayProperty');"
+                  @"array.length");
   ASSERT_NSEQ(@0, result_size_zero);
 
   web::test::ExecuteJavaScriptInWebView(
-      web_view(), @"__gCrWeb.unit_tests.getRegisteredApi('crWebAPI')."
+      web_view(), @"__gCrWeb.unit_tests."
+                  @"getRegisteredApi('crWebAPI')."
                   @"getProperty('arrayProperty').push(8)");
-  id result_size_one = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.unit_tests.getRegisteredApi('crWebAPI')."
-                  @"getProperty('arrayProperty').length");
+  id result_size_one =
+      web::test::ExecuteJavaScript(web_view(), @"array.length");
 
   ASSERT_NSEQ(@1, result_size_one);
 
-  id result_value = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.unit_tests.getRegisteredApi('crWebAPI')."
-                  @"getProperty('arrayProperty')[0]");
+  id result_value = web::test::ExecuteJavaScript(web_view(), @"array[0]");
 
   EXPECT_NSEQ(@8, result_value);
 }
@@ -68,19 +68,21 @@ TEST_F(CrWebJavaScriptTest, PropertyAsArray) {
 // Tests if an exception is thrown when trying to override an API.
 TEST_F(CrWebJavaScriptTest, ThrowExceptionInCollision) {
   NSError* execution_error = nil;
-  web::test::ExecuteJavaScriptInWebView(
-      web_view(), @"__gCrWeb.unit_tests.registerApi('crWebAPI')",
-      &execution_error);
+  web::test::ExecuteJavaScriptInWebView(web_view(),
+                                        @"__gCrWeb.unit_tests"
+                                        @".registerApi('crWebAPI')",
+                                        &execution_error);
 
   ASSERT_NE(execution_error, nil);
-  EXPECT_NSEQ(@"Error: API crWebAPI already registered.",
+  EXPECT_NSEQ(@"CrWebError: API crWebAPI already registered.",
               execution_error.userInfo[@"WKJavaScriptExceptionMessage"]);
 }
 
 // Tests that a frameId is created.
 TEST_F(CrWebJavaScriptTest, FrameId) {
-  id frame_id1 = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+  id frame_id1 =
+      web::test::ExecuteJavaScript(web_view(), @"__gCrWeb.unit_tests."
+                                               @"getFrameId()");
 
   ASSERT_TRUE(frame_id1);
   ASSERT_TRUE([frame_id1 isKindOfClass:[NSString class]]);
@@ -88,20 +90,23 @@ TEST_F(CrWebJavaScriptTest, FrameId) {
 
   // Validating that once created the frame id remain the same if the page isn't
   // reloaded.
-  id frame_id2 = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+  id frame_id2 =
+      web::test::ExecuteJavaScript(web_view(), @"__gCrWeb.unit_tests."
+                                               @"getFrameId()");
   EXPECT_NSEQ(frame_id1, frame_id2);
 }
 
 // Tests that the frameId is unique between two page loads.
 TEST_F(CrWebJavaScriptTest, UniqueFrameID) {
   ASSERT_TRUE(LoadHtml(@"<p>"));
-  id frame_id1 = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+  id frame_id1 =
+      web::test::ExecuteJavaScript(web_view(), @"__gCrWeb.unit_tests."
+                                               @"getFrameId()");
 
   ASSERT_TRUE(LoadHtml(@"<p>"));
-  id frame_id2 = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.unit_tests.getFrameId()");
+  id frame_id2 =
+      web::test::ExecuteJavaScript(web_view(), @"__gCrWeb.unit_tests."
+                                               @"getFrameId()");
 
   // Validate second frameId.
   ASSERT_TRUE(frame_id2);
