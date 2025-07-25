@@ -20,6 +20,7 @@
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/shared_comment_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -246,6 +247,8 @@ const char* ProtoEnumToString(
 
 const char* ProtoEnumToString(
     sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme);
+
+const char* ProtoEnumToString(sync_pb::SharedUrlContext::Source source);
 
 }  // namespace syncer
 

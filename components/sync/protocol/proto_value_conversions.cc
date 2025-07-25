@@ -50,6 +50,7 @@
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/shared_comment_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -398,6 +399,7 @@ IMPLEMENT_PROTO_TO_VALUE(SessionHeader)
 IMPLEMENT_PROTO_TO_VALUE(SessionSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SessionTab)
 IMPLEMENT_PROTO_TO_VALUE(SessionWindow)
+IMPLEMENT_PROTO_TO_VALUE(SharedCommentSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SharingMessageSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SyncCycleCompletedEventInfo)
 IMPLEMENT_PROTO_TO_VALUE(TabNavigation)

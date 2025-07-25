@@ -27,6 +27,9 @@ BASE_DECLARE_FEATURE(kSyncAutofillLoyaltyCard);
 // Enables syncing account-local metadata for shared tab groups.
 BASE_DECLARE_FEATURE(kSyncSharedTabGroupAccountData);
 
+// Enables syncing comments for shared contexts.
+BASE_DECLARE_FEATURE(kSyncSharedComment);
+
 #if BUILDFLAG(IS_ANDROID)
 // Flag that controls Uno fast-follow features which are:
 // - Batch upload of left-behind bookmarks from the bookmark manager

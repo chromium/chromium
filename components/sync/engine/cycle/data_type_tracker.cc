@@ -109,6 +109,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case PLUS_ADDRESS_SETTING:
     case AUTOFILL_VALUABLE:
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
+    case SHARED_COMMENT:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED();
@@ -179,6 +180,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case COOKIES:
     case AUTOFILL_VALUABLE:
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
+    case SHARED_COMMENT:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

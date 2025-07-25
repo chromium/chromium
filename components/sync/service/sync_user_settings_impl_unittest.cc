@@ -544,14 +544,14 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
       GetPreferredUserTypes(*sync_user_settings),
       Union(AlwaysPreferredUserTypes(),
             {COLLABORATION_GROUP, HISTORY, HISTORY_DELETE_DIRECTIVES,
-             SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, SESSIONS, USER_EVENTS,
-             SHARED_TAB_GROUP_ACCOUNT_DATA, WORKSPACE_DESK}));
+             SAVED_TAB_GROUP, SHARED_COMMENT, SHARED_TAB_GROUP_DATA, SESSIONS,
+             USER_EVENTS, SHARED_TAB_GROUP_ACCOUNT_DATA, WORKSPACE_DESK}));
 #else
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
                   {HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS, USER_EVENTS,
                    WORKSPACE_DESK}));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // History only: SESSIONS-related types are gone.
   sync_user_settings->SetSelectedTypes(
@@ -570,11 +570,11 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
             Union(AlwaysPreferredUserTypes(),
                   {COLLABORATION_GROUP, SAVED_TAB_GROUP, SESSIONS,
                    SHARED_TAB_GROUP_DATA, SHARED_TAB_GROUP_ACCOUNT_DATA,
-                   WORKSPACE_DESK}));
+                   WORKSPACE_DESK, SHARED_COMMENT}));
 #else
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(), {SESSIONS, WORKSPACE_DESK}));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // SavedTabGroups enabled on desktop. It should enable both saved tab groups and
 // shared tab groups.
@@ -584,8 +584,8 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
       /*types=*/{UserSelectableType::kSavedTabGroups});
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
-                  {COLLABORATION_GROUP, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
-                   SHARED_TAB_GROUP_ACCOUNT_DATA}));
+                  {COLLABORATION_GROUP, SAVED_TAB_GROUP, SHARED_COMMENT,
+                   SHARED_TAB_GROUP_DATA, SHARED_TAB_GROUP_ACCOUNT_DATA}));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 

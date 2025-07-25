@@ -855,6 +855,22 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             sync_service, collaboration_service_.value()));
   }
 
+  if (!disabled_types.Has(syncer::SHARED_COMMENT) &&
+      base::FeatureList::IsEnabled(syncer::kSyncSharedComment)) {
+    // TODO(crbug.com/433556051): In a future CL, register the type, i.e.
+    // instantiate the DataTypeController. There is more than one way to go
+    // about it, but one option is:
+    // - Create a trivial implementation of DataTypeSyncBridge which lives in
+    //   your feature's directory. It should have synchronous access to your
+    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
+    //   CoolKeyedService (often the model itself).
+    // - Expose CoolKeyedService::GetControllerDelegate() which calls
+    //   bridge->change_processor()->GetControllerDelegate().
+    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
+    //   on it to create the DataTypeController.
+    // In following CLs implement the bridge and keep adding unit tests.
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   if (!disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {
     syncer::DataTypeControllerDelegate* delegate =

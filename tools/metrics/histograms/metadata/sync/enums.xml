@@ -902,6 +902,7 @@ chromium-metrics-reviews@google.com.
   <int value="68" label="Plus Address Settings"/>
   <int value="69" label="Autofill Valuable"/>
   <int value="70" label="Shared Tab Group Account Data"/>
+  <int value="71" label="SharedComment"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

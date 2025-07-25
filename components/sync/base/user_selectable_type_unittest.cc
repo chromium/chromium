@@ -51,6 +51,7 @@ class UserSelectableTypeTest : public ::testing::Test {
     data_types.Put(SHARED_TAB_GROUP_DATA);
     data_types.Put(COLLABORATION_GROUP);
     data_types.Put(SHARED_TAB_GROUP_ACCOUNT_DATA);
+    data_types.Put(SHARED_COMMENT);
 
     return data_types;
   }

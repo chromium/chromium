@@ -175,7 +175,10 @@ enum DataType {
   // Account-local metadata for shared tab groups.
   SHARED_TAB_GROUP_ACCOUNT_DATA,
 
-  LAST_USER_DATA_TYPE = SHARED_TAB_GROUP_ACCOUNT_DATA,
+  // Comments for shared contexts.
+  SHARED_COMMENT,
+
+  LAST_USER_DATA_TYPE = SHARED_COMMENT,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -275,7 +278,8 @@ enum class DataTypeForHistograms {
   kPlusAddressSettings = 68,
   kAutofillValuable = 69,
   kSharedTabGroupAccountData = 70,
-  kMaxValue = kSharedTabGroupAccountData,
+  kSharedComment = 71,
+  kMaxValue = kSharedComment,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
@@ -398,7 +402,7 @@ constexpr DataTypeSet SharedTypes() {
 // any pending account data or abort, depending on the platform.
 constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
   static_assert(
-      55 == GetNumDataTypes(),
+      56 == GetNumDataTypes(),
       "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
       "should be a warning when the user signs out and the types have unsynced "
       "data. The warning offers the user to either proceed with sign-out "

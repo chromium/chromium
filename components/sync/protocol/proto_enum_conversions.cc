@@ -1075,6 +1075,17 @@ const char* ProtoEnumToString(
   }
 }
 
+const char* ProtoEnumToString(sync_pb::SharedUrlContext::Source source) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SharedUrlContext, Source, SOURCE_UNSPECIFIED,
+                     CANONICAL_URL);
+  switch (source) {
+    ENUM_CASE(sync_pb::SharedUrlContext, SOURCE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SharedUrlContext, OMNIBOX);
+    ENUM_CASE(sync_pb::SharedUrlContext, FROM_SYNC);
+    ENUM_CASE(sync_pb::SharedUrlContext, CANONICAL_URL);
+  }
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 

@@ -45,7 +45,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
     // TODO(crbug.com/412602018): Remove this parameter once the feature is
     // launched.
     bool skip_feature_checks_if_early = false) {
-  static_assert(55 == syncer::GetNumDataTypes(),
+  static_assert(56 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -104,7 +104,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
       return {
           kTabsTypeName,
           SESSIONS,
-          {SESSIONS, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
+          {SESSIONS, SAVED_TAB_GROUP, SHARED_COMMENT, SHARED_TAB_GROUP_DATA,
            COLLABORATION_GROUP, SHARED_TAB_GROUP_ACCOUNT_DATA, WORKSPACE_DESK}};
 #else
       return {kTabsTypeName, SESSIONS, {SESSIONS, WORKSPACE_DESK}};
@@ -116,8 +116,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
       // together with open tabs same as mobile.
       return {kSavedTabGroupsTypeName,
               SAVED_TAB_GROUP,
-              {SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP,
-               SHARED_TAB_GROUP_ACCOUNT_DATA}};
+              {SAVED_TAB_GROUP, SHARED_COMMENT, SHARED_TAB_GROUP_DATA,
+               COLLABORATION_GROUP, SHARED_TAB_GROUP_ACCOUNT_DATA}};
     case UserSelectableType::kPayments:
       return {kPaymentsTypeName,
               AUTOFILL_WALLET_DATA,

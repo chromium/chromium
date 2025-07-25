@@ -53,6 +53,7 @@
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/shared_comment_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -727,7 +728,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(55 == GetNumDataTypes(),
+  static_assert(56 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -773,6 +774,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(security_event);
   VISIT(send_tab_to_self);
   VISIT(session);
+  VISIT(shared_comment);
   VISIT(shared_tab_group_account_data);
   VISIT(shared_tab_group_data);
   VISIT(sharing_message);
@@ -2039,6 +2041,58 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupAccountDataSpecifics& proto) {
   VISIT(shared_tab_details);
   VISIT(shared_tab_group_details);
   VISIT(update_time_windows_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::CommentData::Attribution::CommentTarget::FragmentLink&
+        proto) {
+  VISIT(fragment);
+  VISIT(text_preview);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::CommentData::Attribution::CommentTarget& proto) {
+  VISIT(shared_url_context_uuid);
+  VISIT(link_fragment);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CommentData::Attribution::InReplyTo& proto) {
+  VISIT(parent_id);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CommentData::Attribution& proto) {
+  VISIT(top_level);
+  VISIT(parent);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CommentData::OrderKey& proto) {
+  VISIT(device_guid);
+  VISIT(local_sequence);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CommentData& proto) {
+  VISIT(text);
+  VISIT(attribution);
+  VISIT(order_key);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SharedUrlContext::UrlRepresentation& proto) {
+  VISIT_ENUM(source);
+  VISIT(value);
+  VISIT(version);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SharedUrlContext& proto) {
+  VISIT_REP(representations);
+  VISIT(title);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SharedCommentSpecifics& proto) {
+  VISIT(uuid);
+  VISIT(context_id);
+  VISIT(proto_version);
+  VISIT(comment);
+  VISIT(shared_url_context);
 }
 
 }  // namespace syncer
