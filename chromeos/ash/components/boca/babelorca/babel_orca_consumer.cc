@@ -36,6 +36,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -329,6 +330,13 @@ void BabelOrcaConsumer::OnJoinGroupResponse(TachyonResponse response) {
 void BabelOrcaConsumer::OnTranscriptReceived(
     media::SpeechRecognitionResult transcript,
     std::string language) {
+  if (!transcript_lang_.has_value() || transcript_lang_.value() != language) {
+    transcript_lang_ = language;
+    caption_controller_->OnLanguageIdentificationEvent(
+        media::mojom::LanguageIdentificationEvent::New(
+            /*language=*/language, media::mojom::ConfidenceLevel::kConfident,
+            media::mojom::AsrSwitchResult::kSwitchSucceeded));
+  }
   if (caption_controller_->IsTranslateAllowedAndEnabled()) {
     translator_->Translate(
         transcript,

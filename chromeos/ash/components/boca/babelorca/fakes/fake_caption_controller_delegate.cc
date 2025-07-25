@@ -42,8 +42,8 @@ class FakeCaptionBubbleController : public captions::CaptionBubbleController {
   void OnLanguageIdentificationEvent(
       content::RenderFrameHost*,
       captions::CaptionBubbleContext*,
-      const media::mojom::LanguageIdentificationEventPtr&) override {
-    delegate_->OnLanguageIdentificationEvent();
+      const media::mojom::LanguageIdentificationEventPtr& event) override {
+    delegate_->OnLanguageIdentificationEvent(event);
   }
 
   void UpdateCaptionStyle(std::optional<ui::CaptionStyle> style) override {
@@ -101,7 +101,7 @@ FakeCaptionControllerDelegate::GetCaptionStyleObserver() {
 }
 
 size_t FakeCaptionControllerDelegate::GetOnLanguageIdentificationEventCount() {
-  return language_identification_event_count_;
+  return language_identification_events_.size();
 }
 
 const std::vector<std::optional<ui::CaptionStyle>>&
@@ -114,6 +114,11 @@ FakeCaptionControllerDelegate::GetTranscriptions() {
   return transcriptions_;
 }
 
+const std::vector<media::mojom::LanguageIdentificationEventPtr>&
+FakeCaptionControllerDelegate::GetLanguageIdentificationEvents() {
+  return language_identification_events_;
+}
+
 bool FakeCaptionControllerDelegate::AddTranscription(
     media::SpeechRecognitionResult transcription) {
   transcriptions_.push_back(std::move(transcription));
@@ -124,8 +129,9 @@ void FakeCaptionControllerDelegate::SetOnTranscriptionSuccess(bool success) {
   on_transcritption_success_ = success;
 }
 
-void FakeCaptionControllerDelegate::OnLanguageIdentificationEvent() {
-  ++language_identification_event_count_;
+void FakeCaptionControllerDelegate::OnLanguageIdentificationEvent(
+    const media::mojom::LanguageIdentificationEventPtr& event) {
+  language_identification_events_.push_back(event->Clone());
 }
 
 void FakeCaptionControllerDelegate::AddStyleUpdate(
