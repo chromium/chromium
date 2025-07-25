@@ -257,6 +257,7 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   if (logs_uploader_) {
     logs_uploader_->SetFlowInterrupted();
   }
+  navigation_observer_.reset();
   submission_verifier_.reset();
   form_finder_.reset();
   executor_.reset();
@@ -309,6 +310,7 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
     }
     // Reset pointers immediately to avoid keeping dangling pointer to the tab.
     originator_ = nullptr;
+    navigation_observer_.reset();
     submission_verifier_.reset();
     ui_controller_.reset();
     form_finder_.reset();

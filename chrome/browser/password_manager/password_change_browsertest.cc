@@ -66,6 +66,7 @@
 namespace {
 
 using ::affiliations::MockAffiliationService;
+using ::base::test::RunOnceCallback;
 using ::optimization_guide::TestModelQualityLogsUploaderService;
 using ::testing::_;
 using ::testing::An;
@@ -1077,6 +1078,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(https_test_server().GetURL(
           kMainHost, "/password/update_form_empty_fields.html")));
+  EXPECT_CALL(*affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+  EXPECT_CALL(*affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce(RunOnceCallback<1>(affiliations::AffiliatedFacets(), true));
 
   password_change_service()->OfferPasswordChangeUi(main_url, u"test",
                                                    u"pa$$word", WebContents());
