@@ -34,7 +34,7 @@ bindingUtil.registerEventArgumentMassager(
 
       const sendTtsAudio = function(audioBufferParams) {
         const {audioBuffer, charIndex, isLastBuffer} = audioBufferParams;
-        if (currentRequestId == requestId) {
+        if (currentRequestId === requestId) {
           if (!audioBuffer) {
             throw new Error('Invalid audio buffer: ' + audioBuffer);
           }
@@ -49,7 +49,7 @@ bindingUtil.registerEventArgumentMassager(
           chrome.ttsEngine.sendTtsAudio(requestId, {
             audioBuffer,
             charIndex: charIndex !== undefined ? charIndex : -1,
-            isLastBuffer: !!isLastBuffer
+            isLastBuffer: !!isLastBuffer,
           });
         }
       };

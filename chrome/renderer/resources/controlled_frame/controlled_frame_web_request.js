@@ -11,7 +11,8 @@
 const $Headers = require('safeMethods').SafeMethods.$Headers;
 
 const convertURLPatternsToMatchPatterns =
-  require('controlledFrameURLPatternsHelper').convertURLPatternsToMatchPatterns;
+    require('controlledFrameURLPatternsHelper')
+        .convertURLPatternsToMatchPatterns;
 
 function convertExtensionHeadersToWeb(httpHeaders) {
   const headers = new $Headers.self();

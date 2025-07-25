@@ -34,8 +34,9 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   apiFunctions.setCustomCallback(
       'getMediaFileSystems', function(callback, response) {
         var result = createFileSystemObjectsAndUpdateMetadata(response);
-        if (callback)
+        if (callback) {
           callback(result);
+        }
       });
 
   apiFunctions.setCustomCallback(
@@ -51,8 +52,9 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
             selectedFileSystemName = fileSystems[selectedFileSystemIndex].name;
           }
         }
-        if (callback)
+        if (callback) {
           callback(fileSystems, selectedFileSystemName);
+        }
       });
 
   apiFunctions.setHandleRequest(
@@ -71,18 +73,20 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
       });
 
   function getMetadataCallback(uuid, callback, response, blobs) {
-    if (response && blobs)
+    if (response && blobs) {
       response.metadata.attachedImages = blobs;
+    }
 
-    if (callback)
+    if (callback) {
       callback(response ? response.metadata : null);
+    }
 
     delete blobsAwaitingMetadata[uuid];
   }
 
   apiFunctions.setHandleRequest(
       'getMetadata', function(mediaFile, options, callback) {
-        var blobUuid = blobNatives.GetBlobUuid(mediaFile)
+        var blobUuid = blobNatives.GetBlobUuid(mediaFile);
         // Store the blob in a global object to keep its refcount nonzero --
         // this prevents the object from being garbage collected before any
         // metadata parsing gets to occur (see crbug.com/415792).

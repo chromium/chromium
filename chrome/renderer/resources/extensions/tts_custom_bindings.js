@@ -19,7 +19,7 @@ apiBridge.registerCustomHook(function(api) {
         type: event.type,
         charIndex: event.charIndex,
         length: event.length,
-        errorMessage: event.errorMessage
+        errorMessage: event.errorMessage,
       });
       if (event.isFinalEvent) {
         delete handlers[event.srcId];

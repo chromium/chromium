@@ -33,7 +33,7 @@ function getUrlSpecs(imageSizes, notificationDetails) {
       path: notificationDetails.iconUrl,
       width: imageSizes.icon.width * imageSizes.scaleFactor,
       height: imageSizes.icon.height * imageSizes.scaleFactor,
-      callback: imageDataSetter(notificationDetails, 'iconBitmap')
+      callback: imageDataSetter(notificationDetails, 'iconBitmap'),
     });
   }
 
@@ -43,7 +43,7 @@ function getUrlSpecs(imageSizes, notificationDetails) {
       path: notificationDetails.appIconMaskUrl,
       width: imageSizes.appIconMask.width * imageSizes.scaleFactor,
       height: imageSizes.appIconMask.height * imageSizes.scaleFactor,
-      callback: imageDataSetter(notificationDetails, 'appIconMaskBitmap')
+      callback: imageDataSetter(notificationDetails, 'appIconMaskBitmap'),
     });
   }
 
@@ -53,7 +53,7 @@ function getUrlSpecs(imageSizes, notificationDetails) {
       path: notificationDetails.imageUrl,
       width: imageSizes.image.width * imageSizes.scaleFactor,
       height: imageSizes.image.height * imageSizes.scaleFactor,
-      callback: imageDataSetter(notificationDetails, 'imageBitmap')
+      callback: imageDataSetter(notificationDetails, 'imageBitmap'),
     });
   }
 
@@ -67,7 +67,7 @@ function getUrlSpecs(imageSizes, notificationDetails) {
           path: buttonList[i].iconUrl,
           width: imageSizes.buttonIcon.width * imageSizes.scaleFactor,
           height: imageSizes.buttonIcon.height * imageSizes.scaleFactor,
-          callback: imageDataSetter(buttonList[i], 'iconBitmap')
+          callback: imageDataSetter(buttonList[i], 'iconBitmap'),
         });
       }
     }
@@ -100,7 +100,7 @@ function replaceNotificationOptionURLs(notification_details, callback) {
         url_spec.callback(imageData[index]);
       }
       callback(true);
-    }
+    },
   });
 }
 

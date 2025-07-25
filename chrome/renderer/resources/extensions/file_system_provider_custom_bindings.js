@@ -40,8 +40,9 @@ function annotateDate(date) {
  */
 function verifyImageURI(uri) {
   // The URI is specified by a user, so the type may be incorrect.
-  if (typeof uri !== 'string' && !(uri instanceof String))
+  if (typeof uri !== 'string' && !(uri instanceof String)) {
     return false;
+  }
 
   return METADATA_THUMBNAIL_FORMAT.test(uri);
 }
@@ -54,14 +55,18 @@ function verifyImageURI(uri) {
 function verifyMetadata(options, metadata) {
   // Ideally we'd like to consider the following as errors, but for backward
   // compatibility they are warnings only.
-  if (!options.isDirectory && metadata.isDirectory !== undefined)
+  if (!options.isDirectory && metadata.isDirectory !== undefined) {
     console.warn('IsDirectory specified, but not requested.');
-  if (!options.name && metadata.name !== undefined)
+  }
+  if (!options.name && metadata.name !== undefined) {
     console.warn('Name specified, but not requested.');
-  if (!options.size && metadata.size !== undefined)
+  }
+  if (!options.size && metadata.size !== undefined) {
     console.warn('Size specified, but not requested.');
-  if (!options.modificationTime && metadata.modificationTime !== undefined)
+  }
+  if (!options.modificationTime && metadata.modificationTime !== undefined) {
     console.warn('Last modification time specified, but not requested.');
+  }
   if (!options.mimeType && metadata.mimeType !== undefined) {
     console.warn('MIME type specified, but not requested.');
   } else {
@@ -137,22 +142,30 @@ function verifyErrorForFailure(error) {
  */
 function annotateMetadata(metadata) {
   var result = {};
-  if (metadata.isDirectory !== undefined)
+  if (metadata.isDirectory !== undefined) {
     result.isDirectory = metadata.isDirectory;
-  if (metadata.name !== undefined)
+  }
+  if (metadata.name !== undefined) {
     result.name = metadata.name;
-  if (metadata.size !== undefined)
+  }
+  if (metadata.size !== undefined) {
     result.size = metadata.size;
-  if (metadata.modificationTime !== undefined)
+  }
+  if (metadata.modificationTime !== undefined) {
     result.modificationTime = annotateDate(metadata.modificationTime);
-  if (metadata.mimeType !== undefined)
+  }
+  if (metadata.mimeType !== undefined) {
     result.mimeType = metadata.mimeType;
-  if (metadata.thumbnail !== undefined)
+  }
+  if (metadata.thumbnail !== undefined) {
     result.thumbnail = metadata.thumbnail;
-  if (metadata.cloudIdentifier !== undefined)
+  }
+  if (metadata.cloudIdentifier !== undefined) {
     result.cloudIdentifier = metadata.cloudIdentifier;
-  if (metadata.cloudFileInfo !== undefined)
+  }
+  if (metadata.cloudFileInfo !== undefined) {
     result.cloudFileInfo = metadata.cloudFileInfo;
+  }
   return result;
 }
 
@@ -170,8 +183,9 @@ function massageArgumentsDefault(args, dispatch) {
         options.fileSystemId, options.requestId, Date.now() - executionStart);
   };
   var onErrorCallback = function(error) {
-    if (!verifyErrorForFailure(error))
+    if (!verifyErrorForFailure(error)) {
       return;
+    }
     fileSystemProviderInternal.operationRequestedError(
         options.fileSystemId, options.requestId, error,
         Date.now() - executionStart);
@@ -200,8 +214,9 @@ bindingUtil.registerEventArgumentMassager(
       };
 
       var onErrorCallback = function(error) {
-        if (!verifyErrorForFailure(error))
+        if (!verifyErrorForFailure(error)) {
           return;
+        }
         fileSystemProviderInternal.operationRequestedError(
             options.fileSystemId, options.requestId, error,
             Date.now() - executionStart);
@@ -219,10 +234,10 @@ bindingUtil.registerEventArgumentMassager(
             Date.now() - executionStart);
       };
 
-      var onErrorCallback =
-          function(error) {
-        if (!verifyErrorForFailure(error))
+      var onErrorCallback = function(error) {
+        if (!verifyErrorForFailure(error)) {
           return;
+        }
         fileSystemProviderInternal.operationRequestedError(
             options.fileSystemId, options.requestId, error,
             Date.now() - executionStart);
@@ -257,8 +272,9 @@ bindingUtil.registerEventArgumentMassager(
       };
 
       var onErrorCallback = function(error) {
-        if (!verifyErrorForFailure(error))
+        if (!verifyErrorForFailure(error)) {
           return;
+        }
         fileSystemProviderInternal.operationRequestedError(
             options.fileSystemId, options.requestId, error,
             Date.now() - executionStart);
@@ -276,8 +292,9 @@ bindingUtil.registerEventArgumentMassager(
             Date.now() - executionStart, metadata);
       };
       var onErrorCallback = function(error) {
-        if (!verifyErrorForFailure(error))
+        if (!verifyErrorForFailure(error)) {
           return;
+        }
         fileSystemProviderInternal.operationRequestedError(
             options.fileSystemId, options.requestId, error,
             Date.now() - executionStart);
@@ -298,8 +315,9 @@ bindingUtil.registerEventArgumentMassager(
             Date.now() - executionStart);
       };
       var onErrorCallback = function(error) {
-        if (!verifyErrorForFailure(error))
+        if (!verifyErrorForFailure(error)) {
           return;
+        }
         fileSystemProviderInternal.operationRequestedError(
             options.fileSystemId, options.requestId, error,
             Date.now() - executionStart);
@@ -358,8 +376,9 @@ bindingUtil.registerEventArgumentMassager(
             requestId, 'OK', Date.now() - executionStart);
       };
       var onErrorCallback = function(error) {
-        if (!verifyErrorForFailure(error))
+        if (!verifyErrorForFailure(error)) {
           return;
+        }
         fileSystemProviderInternal.respondToMountRequest(
             requestId, error, Date.now() - executionStart);
       };

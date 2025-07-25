@@ -19,7 +19,8 @@ const WebViewContextMenusImpl =
 const ControlledFrameInternal = getInternalApi('controlledFrameInternal');
 const WebUrlPatternNatives = requireNative('WebUrlPatternNatives');
 const convertURLPatternsToMatchPatterns =
-  require('controlledFrameURLPatternsHelper').convertURLPatternsToMatchPatterns;
+    require('controlledFrameURLPatternsHelper')
+        .convertURLPatternsToMatchPatterns;
 
 function identity(value) {
   return value;
@@ -92,31 +93,27 @@ ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased =
         handler.bind(this), arguments, callbackIndex, verifyEnvironment,
         /*callbackAllowed=*/ true);
   };
-}
+};
 
-    // Controlled Frame has its own internal definition of Context Menus
-    // create().
-    ControlledFrameContextMenusImpl.prototype.createImpl =
-        function() {
+// Controlled Frame has its own internal definition of Context Menus
+// create().
+ControlledFrameContextMenusImpl.prototype.createImpl = function() {
   const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(
       ControlledFrameInternal.contextMenusCreate, null, args);
-}
+};
 
-        // Controlled Frame has its own internal definition of Context Menus
-        // update().
-        ControlledFrameContextMenusImpl.prototype.updateImpl =
-            function() {
+// Controlled Frame has its own internal definition of Context Menus
+// update().
+ControlledFrameContextMenusImpl.prototype.updateImpl = function() {
   let args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(
       ControlledFrameInternal.contextMenusUpdate, null, args);
-}
+};
 
-            ControlledFrameContextMenusImpl.prototype.create =
-                ControlledFrameContextMenusImpl.prototype
-                    .convertMethodToPromiseBased(
-                        ControlledFrameContextMenusImpl.prototype.createImpl,
-                        'create');
+ControlledFrameContextMenusImpl.prototype.create =
+    ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
+        ControlledFrameContextMenusImpl.prototype.createImpl, 'create');
 
 ControlledFrameContextMenusImpl.prototype.remove =
     ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(

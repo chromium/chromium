@@ -15,7 +15,7 @@ function assertEquals(a, b) {
 }
 
 function assertFalse(condition) {
-  if (!!condition) {
+  if (condition) {
     throw new Error('Assertion failed: expected ' + condition + ' to be false');
   }
 }
@@ -33,7 +33,7 @@ function testGetUrlSpecs() {
     scaleFactor: 1.0,
     icon: {width: 10, height: 10},
     image: {width: 24, height: 32},
-    buttonIcon: {width: 2, height: 2}
+    buttonIcon: {width: 2, height: 2},
   };
 
   var notificationDetails = {};
@@ -76,12 +76,12 @@ function testGetUrlSpecsScaled() {
     scaleFactor: 2.0,
     icon: {width: 10, height: 10},
     image: {width: 24, height: 32},
-    buttonIcon: {width: 2, height: 2}
+    buttonIcon: {width: 2, height: 2},
   };
   var notificationDetails = {
     iconUrl: 'iconUrl',
     imageUrl: 'imageUrl',
-    buttons: [{iconUrl: 'buttonOneIconUrl'}, {iconUrl: 'buttonTwoIconUrl'}]
+    buttons: [{iconUrl: 'buttonOneIconUrl'}, {iconUrl: 'buttonTwoIconUrl'}],
   };
 
   var allSpecs = getUrlSpecs(imageSizes, notificationDetails);

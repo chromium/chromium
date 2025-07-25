@@ -17,8 +17,7 @@ var require = function(library) {
   }[library];
 };
 
-var requireNative =
-    function(library) {
+var requireNative = function(library) {
   return {
     notifications_private: {
       GetNotificationImageSizes: function() {
@@ -26,27 +25,27 @@ var requireNative =
           scaleFactor: 0,
           icon: {width: 0, height: 0},
           image: {width: 0, height: 0},
-          buttonIcon: {width: 0, height: 0}
+          buttonIcon: {width: 0, height: 0},
         };
-      }
-    }
+      },
+    },
   }[library];
-}
+};
 
 var exports = {
   $set: function(k, v) {
     this.k = v;
-  }
+  },
 };
 
 var $Array = {
   push: function(ary, val) {
     ary.push(val);
-  }
+  },
 };
 
 var $Function = {
   bind: function(fn, context) {
     return fn.bind(context);
-  }
+  },
 };

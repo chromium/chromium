@@ -40,15 +40,15 @@ function callbackAdaptor(successCallback, failureCallback, resultHandler) {
     // so that any callers using `arguments` are unaffected.
     if (resultHandler) {
       // If a function has a result handler, it must have a result.
-      logging.CHECK(results.length == 1);
+      logging.CHECK(results.length === 1);
       let finalResult = resultHandler(results[0]);
       successCallback(finalResult);
-    } else if (results.length == 1) {
+    } else if (results.length === 1) {
       successCallback(results[0]);
     } else {
       successCallback();
     }
-  }
+  };
 }
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
@@ -164,7 +164,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           maxResults: params.maxResults,
           modifiedTimestamp: params.modifiedTimestamp || 0,
           category:
-              params.category || chrome.fileManagerPrivate.FileCategory.ALL
+              params.category || chrome.fileManagerPrivate.FileCategory.ALL,
         };
         if (params.rootDir) {
           newParams.rootUrl = getEntryURL(params.rootDir);

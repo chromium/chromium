@@ -12,7 +12,7 @@ mojo.config.autoLoadMojomDeps = false;
 loadScript('chromeos.tts.mojom.google_tts_stream.mojom');
 
 (function() {
-let ptr = new chromeos.tts.mojom.GoogleTtsStreamPtr;
+let ptr = new chromeos.tts.mojom.GoogleTtsStreamPtr();
 Mojo.bindInterface(
     chromeos.tts.mojom.GoogleTtsStream.name, mojo.makeRequest(ptr).handle);
 exports.$set('returnValue', ptr);

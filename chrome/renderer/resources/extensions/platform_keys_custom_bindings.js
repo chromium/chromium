@@ -64,7 +64,7 @@ apiBridge.registerCustomHook(function(api) {
       });
 
   apiFunctions.setHandleRequest('subtleCrypto', function() {
-    return subtleCrypto
+    return subtleCrypto;
   });
 
   apiFunctions.setHandleRequest('getKeyPair', function(cert, params, callback) {

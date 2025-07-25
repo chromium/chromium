@@ -6,8 +6,9 @@
 
 apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   function proxyToGetUserMedia(callback, response) {
-    if (!callback)
+    if (!callback) {
       return;
+    }
 
     if (!response) {
       // When the response is missing, runtime.lastError has already been set.
@@ -19,17 +20,20 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
     // Convenience function for processing getUserMedia() error objects to
     // provide runtime.lastError messages for the tab capture API.
     const getErrorMessage = (error, fallbackMessage) => {
-      if (!error || (typeof error.message !== 'string'))
+      if (!error || (typeof error.message !== 'string')) {
         return fallbackMessage;
+      }
       return error.message.replace(
           'navigator.mediaDevices.getUserMedia', 'tabCapture.capture');
     };
 
     let constraints = {};
-    if (response.audioConstraints)
+    if (response.audioConstraints) {
       constraints.audio = response.audioConstraints;
-    if (response.videoConstraints)
+    }
+    if (response.videoConstraints) {
       constraints.video = response.videoConstraints;
+    }
     try {
       navigator.mediaDevices.getUserMedia(constraints)
           .then(callback)

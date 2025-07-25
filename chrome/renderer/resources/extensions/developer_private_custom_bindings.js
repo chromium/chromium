@@ -24,21 +24,23 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     var renderViewId = options.render_view_id;
     if (typeof renderViewId === 'string') {
       renderViewId = parseInt(renderViewId);
-      if (isNaN(renderViewId))
+      if (isNaN(renderViewId)) {
         throw new Error('Invalid value for render_view_id');
+      }
     }
     var renderProcessId = options.render_process_id;
     if (typeof renderProcessId === 'string') {
       renderProcessId = parseInt(renderProcessId);
-      if (isNaN(renderProcessId))
+      if (isNaN(renderProcessId)) {
         throw new Error('Invalid value for render_process_id');
+      }
     }
     chrome.developerPrivate.openDevTools(
         {
           extensionId: options.extension_id,
           renderProcessId: renderProcessId,
           renderViewId: renderViewId,
-          incognito: options.incognito
+          incognito: options.incognito,
         },
         callback);
   });

@@ -61,7 +61,7 @@ function createContextMenusOnContextMenuEvent(
           var event = {
             preventDefault: function() {
               defaultPrevented = true;
-            }
+            },
           };
 
           // Re-dispatch to subEvent's listeners.
@@ -123,7 +123,7 @@ WebViewContextMenusImpl.prototype.setupEvents = function(webView) {
             utils.lookup(ChromeWebViewSchema.events, 'name', 'onClicked');
         var eventOptions = {
           supportsListeners: true,
-          supportsLazyListeners: false
+          supportsLazyListeners: false,
         };
         var onClickedEvent = createContextMenusOnClickedEvent(
             webView.viewInstanceId, eventName, eventSchema, eventOptions);
@@ -140,7 +140,7 @@ WebViewContextMenusImpl.prototype.setupEvents = function(webView) {
     get: webView.weakWrapper(function() {
       return webView.contextMenusOnContextMenuEvent_;
     }),
-    enumerable: true
+    enumerable: true,
   });
 };
 
@@ -168,12 +168,11 @@ class ChromeWebViewImpl extends WebViewImpl {
   }
 }
 
-ChromeWebViewImpl.prototype.createWebViewContextMenus =
-    function() {
+ChromeWebViewImpl.prototype.createWebViewContextMenus = function() {
   return new WebViewContextMenus(this, this.viewInstanceId);
-}
+};
 
-    ChromeWebViewImpl.prototype.setupContextMenus = function() {
+ChromeWebViewImpl.prototype.setupContextMenus = function() {
   if (!this.contextMenusOnContextMenuEvent_) {
     var eventName = 'chromeWebViewInternal.onContextMenuShow';
     var eventSchema =

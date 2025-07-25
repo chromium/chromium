@@ -20,7 +20,7 @@ function normalizeImportParams(importParams) {
 
   var filteredParams = {
     name: importParams.name,
-    namedCurve: importParams.namedCurve
+    namedCurve: importParams.namedCurve,
   };
 
   var hashIsNone = false;
@@ -31,7 +31,7 @@ function normalizeImportParams(importParams) {
       // This will be reverted to 'none' after normalization.
       filteredParams.hash = {name: 'SHA-1'};
     } else {
-      filteredParams.hash = { name: importParams.hash.name }
+      filteredParams.hash = {name: importParams.hash.name};
     }
   }
 

@@ -51,8 +51,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           result = syncFileSystemNatives.GetSyncFileSystemObject(
               response.name, response.root);
         }
-        if (callback)
+        if (callback) {
           callback(result);
+        }
       });
 
   // Functions which return an array of FileStatusInfo object
@@ -72,8 +73,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             $Array.push(results, result);
           }
         }
-        if (callback)
+        if (callback) {
           callback(results);
+        }
       });
 });
 

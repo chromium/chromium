@@ -18,8 +18,9 @@ bindingUtil.registerEventArgumentMassager(
         // onKeyEvent has a maximum of one listener, we know that any result we
         // find is the one we're interested in.
         var dispatchResult = dispatch(args);
-        if (dispatchResult && dispatchResult.results)
+        if (dispatchResult && dispatchResult.results) {
           result = dispatchResult.results[0];
+        }
       } catch (e) {
         result = false;
         console.error('Error in event handler for onKeyEvent: ' + e.stack);

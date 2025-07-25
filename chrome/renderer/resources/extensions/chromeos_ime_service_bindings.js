@@ -71,7 +71,7 @@ class ImeExtensionChannel {
    * @return {!ash.ime.mojom.InputChannelPtr}.
    */
   getChannelPtr() {
-    return this.binding_.createInterfacePtrAndBind()
+    return this.binding_.createInterfacePtrAndBind();
   }
 
   /**
@@ -243,7 +243,7 @@ class ImeService {
       // TODO(crbug.com/837156): Try to reuse the current engine if possible.
       // Disconnect the current active engine and make a new one.
       this.deactivateIME();
-      this.activeEngine_ = new ash.ime.mojom.InputChannelPtr;
+      this.activeEngine_ = new ash.ime.mojom.InputChannelPtr();
 
       // Null value will cause a disconnection on the Mojo pipe.
       extra = extra ? extra : IME_CHANNEL_EMPTY_EXTRA;
@@ -262,10 +262,10 @@ class ImeService {
             if (bound && onConnectionError) {
               this.activeEngine_.ptr.setConnectionErrorHandler(
                   onConnectionError);
-            };
+            }
             if (onConnection) {
               onConnection(bound);
-            };
+            }
           });
     }
   }
@@ -281,7 +281,7 @@ class ImeService {
 }
 
 (function() {
-let ptr = new ash.ime.mojom.InputEngineManagerPtr;
+let ptr = new ash.ime.mojom.InputEngineManagerPtr();
 Mojo.bindInterface(
     ash.ime.mojom.InputEngineManager.name, mojo.makeRequest(ptr).handle);
 exports.$set('returnValue', new ImeService(ptr));

@@ -14,8 +14,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'setIcon', getSetIconHandler('browserAction.setIcon'));
 
   apiFunctions.setCustomCallback('openPopup', function(callback, response) {
-    if (!callback)
+    if (!callback) {
       return;
+    }
 
     if (bindingUtil.hasLastError()) {
       callback();

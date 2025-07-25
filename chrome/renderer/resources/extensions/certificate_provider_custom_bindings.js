@@ -5,7 +5,7 @@
 var certificateProviderInternal = getInternalApi('certificateProviderInternal');
 
 var certificateProviderSchema =
-    requireNative('schema_registry').GetSchema('certificateProvider')
+    requireNative('schema_registry').GetSchema('certificateProvider');
 var utils = require('utils');
 
 // Custom bindings for chrome.certificateProvider API.
@@ -46,13 +46,15 @@ function handleEvent(eventName, internalReportFunc) {
         // It throws an exception if called more than once and if the provided
         // results don't match the callback schema.
         var reportFunc = function(reportArg1, reportArg2) {
-          if (responded)
+          if (responded) {
             throw new Error(
                 'Event callback must not be called more than once.');
+          }
 
           var reportArgs = [reportArg1];
-          if (reportArg2 !== undefined)
+          if (reportArg2 !== undefined) {
             reportArgs.push(reportArg2);
+          }
           var finalArgs = [];
           try {
             // Validates that the results reported by the extension matche the

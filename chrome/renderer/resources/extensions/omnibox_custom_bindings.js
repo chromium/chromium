@@ -17,8 +17,9 @@ function sanitizeString(text, shouldTrim) {
   // NOTE: This logic mirrors |AutocompleteMatch::SanitizeString()|.
   // 0x2028 = line separator; 0x2029 = paragraph separator.
   var kRemoveChars = /(\r|\n|\t|\u2028|\u2029)/gm;
-  if (shouldTrim)
+  if (shouldTrim) {
     text = text.trimLeft();
+  }
   return text.replace(kRemoveChars, '');
 }
 
@@ -61,7 +62,7 @@ function parseOmniboxDescription(input) {
            child.nodeName === 'url')) {
         var style = {
           'type': child.nodeName,
-          'offset': result.description.length
+          'offset': result.description.length,
         };
         $Array.push(result.descriptionStyles, style);
         walk(child);
@@ -73,7 +74,7 @@ function parseOmniboxDescription(input) {
       // forward compat.
       walk(child);
     }
-  };
+  }
   walk(root);
 
   return result;
@@ -114,7 +115,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
               name: suggestion.actions[j].name,
               label: suggestion.actions[j].label,
               tooltipText: suggestion.actions[j].tooltipText,
-              icon: {}
+              icon: {},
             };
             verifyImageSize(icon);
             imageUtil.verifyImageData(icon);

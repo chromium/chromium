@@ -84,13 +84,15 @@ bindingUtil.registerEventArgumentMassager(
       };
       const onResolve = (index, entry) => {
         results.push({key: index, entry});
-        if (--barrier === 0)
+        if (--barrier === 0) {
           onFinish();
+        }
       };
       const onReject = (message) => {
         console.error(message);
-        if (--barrier === 0)
+        if (--barrier === 0) {
           onFinish();
+        }
       };
       for (let i = 0; i < fileList.length; ++i) {
         GetFileEntry(

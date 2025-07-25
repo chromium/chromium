@@ -13,8 +13,9 @@ bindingUtil.registerEventArgumentMassager(
       var downloadId = downloadItem.id;
       var suggestable = true;
       function isValidResult(result) {
-        if (result === undefined)
+        if (result === undefined) {
           return false;
+        }
         if (typeof result !== 'object') {
           console.error(
               'Error: Invocation of form suggest(' + typeof result +
@@ -29,7 +30,10 @@ bindingUtil.registerEventArgumentMassager(
               'non-empty string');
           return false;
         } else if ([
-                     undefined, 'uniquify', 'overwrite', 'prompt'
+                     undefined,
+                     'uniquify',
+                     'overwrite',
+                     'prompt',
                    ].indexOf(result.conflictAction) < 0) {
           console.error(
               'Error: "conflictAction" parameter to suggest() must be ' +
@@ -56,8 +60,9 @@ bindingUtil.registerEventArgumentMassager(
         var async =
             (results && results.results && (results.results.length !== 0) &&
              (results.results[0] === true));
-        if (suggestable && !async)
+        if (suggestable && !async) {
           suggestCallback();
+        }
       } catch (e) {
         suggestCallback();
         throw e;
