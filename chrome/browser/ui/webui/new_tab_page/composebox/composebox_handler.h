@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
+#include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +29,7 @@ class ComposeboxHandler
       mojo::PendingReceiver<composebox::mojom::PageHandler> handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       std::unique_ptr<ComposeboxQueryController> query_controller,
+      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
       content::WebContents* web_contents);
   ~ComposeboxHandler() override;
 
@@ -56,6 +58,7 @@ class ComposeboxHandler
   void OpenUrl(GURL url, const WindowOpenDisposition disposition);
 
   std::unique_ptr<ComposeboxQueryController> query_controller_;
+  std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder_;
   raw_ptr<content::WebContents> web_contents_;
 
   // These are located at the end of the list of member variables to ensure the

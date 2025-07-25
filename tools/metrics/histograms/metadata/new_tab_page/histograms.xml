@@ -278,6 +278,66 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Composebox.Query.Time.ToSubmission" units="ms"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the duration from composebox session start time to the time a query
+    was submitted. A session starts when the compose button is clicked and the
+    composebox shown. There may be multiple query submission times recorded per
+    composebox shown. Recorded at the end of the session. Only recorded if the
+    user is redirected to the AIM page.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Composebox.Session.Duration.Abandoned" units="ms"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the duration from when a composebox session starts to its
+    abandonment. A session starts when the compose button is clicked and the
+    composebox shown. A composebox session is abandoned if the user ends the
+    session by closing the composebox or by closing the NTP without submitting a
+    query. Recorded at the end of the session.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Composebox.Session.Duration.Completed" units="ms"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the duration from composebox session start time to completion. A
+    session starts when the compose button is clicked and the composebox shown.
+    Completion is when the following happens: 1) user submits a query 2) user is
+    redirected to the AIM page 3) the composebox is closed. Duplicate session
+    durations may be recorded if multiple navigations occur. Recorded at the end
+    of the session.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Composebox.Session.Duration.Total" units="ms"
+    expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Composebox session durations from when the session started to its
+    abandonment or completion. A session starts when the compose button is
+    clicked and the composebox shown. Completion is when the following happens:
+    1) user submits a query 2) user is redirected to the AIM page 3) the
+    composebox is closed. Abandonment is when a user closes the composebox or
+    closes the NTP without query submission. For completed sessions there may be
+    duplicate sessions recorded if multiple navigations occur. Recorded at the
+    end of the session.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ComposeEntrypoint.Click.UserTextPresent"
     enum="Boolean" expires_after="2026-06-10">
   <owner>niharm@google.com</owner>

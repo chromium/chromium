@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -46,6 +47,7 @@ constexpr int kImageMaxHeight = 1000;
 constexpr int kImageMaxWidth = 1000;
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
+constexpr char kQueryText[] = "query";
 
 class MockPage : public composebox::mojom::Page {
  public:
@@ -121,6 +123,14 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
   }
 };
 
+class MockMetricsRecorder : public ComposeboxMetricsRecorder {
+ public:
+  MockMetricsRecorder() : ComposeboxMetricsRecorder("NewTabPage.") {}
+  ~MockMetricsRecorder() override = default;
+
+  MOCK_METHOD(void, NotifySessionStateChanged, (SessionState session_state));
+};
+
 class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   ComposeboxHandlerTest()
@@ -153,10 +163,12 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
         fake_variations_client_.get(), /*send_lns_surface=*/false);
     query_controller_ = query_controller_ptr.get();
     web_contents()->SetDelegate(&delegate_);
+    auto metrics_recorder_ptr = std::make_unique<MockMetricsRecorder>();
+    metrics_recorder_ = metrics_recorder_ptr.get();
     handler_ = std::make_unique<ComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), std::move(query_controller_ptr),
-        web_contents());
+        std::move(metrics_recorder_ptr), web_contents());
 
     // Set all the feature params here to keep the test consistent if future
     // default values are changed.
@@ -170,6 +182,8 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
   ComposeboxHandler& handler() { return *handler_; }
   MockQueryController& query_controller() { return *query_controller_; }
   TemplateURLService& template_url_service() { return *template_url_service_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  MockMetricsRecorder& metrics_recorder() { return *metrics_recorder_; }
 
   ntp_composebox::FeatureConfig& scoped_config() {
     return scoped_config_.Get();
@@ -180,9 +194,20 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)};
   }
 
+  void SubmitQueryAndWaitForNavigation() {
+    content::TestNavigationObserver navigation_observer(web_contents());
+    handler().SubmitQuery(kQueryText, 1, false, false, false, false);
+    auto navigation = content::NavigationSimulator::CreateFromPending(
+        web_contents()->GetController());
+    ASSERT_TRUE(navigation);
+    navigation->Commit();
+    navigation_observer.Wait();
+  }
+
   void TearDown() override {
     template_url_service_ = nullptr;
     query_controller_ = nullptr;
+    metrics_recorder_ = nullptr;
     handler_.reset();
     fake_variations_client_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -217,17 +242,27 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<FakeVariationsClient> fake_variations_client_;
   raw_ptr<MockQueryController> query_controller_;
+  raw_ptr<MockMetricsRecorder> metrics_recorder_;
   std::unique_ptr<ComposeboxHandler> handler_;
+  base::HistogramTester histogram_tester_;
 };
 
-TEST_F(ComposeboxHandlerTest, NotifySessionStarted) {
-  EXPECT_CALL(query_controller(), NotifySessionStarted).Times(1);
+TEST_F(ComposeboxHandlerTest, SessionStarted) {
+  SessionState state_arg = SessionState::kNone;
+  EXPECT_CALL(query_controller(), NotifySessionStarted);
+  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
+      .WillOnce(testing::SaveArg<0>(&state_arg));
   handler().NotifySessionStarted();
+  EXPECT_EQ(state_arg, SessionState::kSessionStarted);
 }
 
-TEST_F(ComposeboxHandlerTest, NotifySessionAbandoned) {
-  EXPECT_CALL(query_controller(), NotifySessionAbandoned).Times(1);
+TEST_F(ComposeboxHandlerTest, SessionAbandoned) {
+  SessionState state_arg = SessionState::kNone;
+  EXPECT_CALL(query_controller(), NotifySessionAbandoned);
+  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
+      .WillOnce(testing::SaveArg<0>(&state_arg));
   handler().NotifySessionAbandoned();
+  EXPECT_EQ(state_arg, SessionState::kSessionAbandoned);
 }
 
 TEST_F(ComposeboxHandlerTest, SubmitQuery) {
@@ -240,6 +275,13 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
         }
       }));
 
+  std::vector<SessionState> session_states;
+  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
+      .Times(3)
+      .WillRepeatedly(testing::Invoke([&](SessionState session_state) {
+        session_states.push_back(session_state);
+      }));
+
   // Start the session.
   EXPECT_CALL(query_controller(), NotifySessionStarted)
       .Times(1)
@@ -248,23 +290,21 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
   handler().NotifySessionStarted();
   run_loop.Run();
 
-  const std::string query = "test";
-  content::TestNavigationObserver navigation_observer(web_contents());
-  handler().SubmitQuery(query, 1, false, false, false, false);
-  auto navigation = content::NavigationSimulator::CreateFromPending(
-      web_contents()->GetController());
-  ASSERT_TRUE(navigation);
-  navigation->Commit();
-  navigation_observer.Wait();
+  SubmitQueryAndWaitForNavigation();
 
   GURL expected_url = query_controller().CreateAimUrl(
-      query, /*query_start_time=*/base::Time::Now());
+      kQueryText, /*query_start_time=*/base::Time::Now());
   GURL actual_url =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
 
   // Ensure navigation occurred.
   EXPECT_EQ(StripTimestampsFromAimUrl(expected_url),
             StripTimestampsFromAimUrl(actual_url));
+
+  EXPECT_THAT(session_states,
+              testing::ElementsAre(SessionState::kSessionStarted,
+                                   SessionState::kQuerySubmitted,
+                                   SessionState::kNavigationOccurred));
 }
 
 TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {

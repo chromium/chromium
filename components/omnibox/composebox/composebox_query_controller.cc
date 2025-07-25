@@ -186,33 +186,20 @@ ComposeboxQueryController::ComposeboxQueryController(
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
-ComposeboxQueryController::~ComposeboxQueryController() {
-  // Ensure NTP exits are tracked. i.e. The user starts a composebox session,
-  // and closes the NTP without explicitly exiting the session or submitting a
-  // query.
-  // TODO(420701010): Add unittest coverage, e.g. ensuring abandoned metrics
-  // are correctly emitted.
-  if (session_state() == SessionState::kSessionStarted) {
-    NotifySessionAbandoned();
-  }
-}
+ComposeboxQueryController::~ComposeboxQueryController() = default;
 
 void ComposeboxQueryController::NotifySessionStarted() {
-  session_state_ = SessionState::kSessionStarted;
-  session_start_time_ = base::Time::Now();
   FetchClusterInfo();
 }
 
 void ComposeboxQueryController::NotifySessionAbandoned() {
-  session_state_ = SessionState::kSessionAbandoned;
-  SetQueryControllerState(QueryControllerState::kOff);
-  cluster_info_access_token_fetcher_.reset();
-  cluster_info_endpoint_fetcher_.reset();
+  ClearFiles();
+  ClearClusterInfo();
+  SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
 }
 
 GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
                                              base::Time query_start_time) {
-  session_state_ = SessionState::kQuerySubmitted;
   if (!active_files_.empty() && cluster_info_.has_value()) {
     // Since multiple file upload isn't supported right now, use the last file
     // uploaded to determine `vit` param.
@@ -373,12 +360,15 @@ ComposeboxQueryController::CreateOAuthHeadersAndContinue(
   return nullptr;
 }
 
-void ComposeboxQueryController::ResetRequestClusterInfoState() {
+void ComposeboxQueryController::ClearClusterInfo() {
   cluster_info_access_token_fetcher_.reset();
   cluster_info_endpoint_fetcher_.reset();
   cluster_info_.reset();
   request_id_generator_.ResetRequestId();
+}
 
+void ComposeboxQueryController::ResetRequestClusterInfoState() {
+  ClearClusterInfo();
   // Iterate through any existing files and mark them as expired.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
