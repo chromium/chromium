@@ -155,7 +155,7 @@ def distro_codename():
 def requires_pinned_linux_libc():
   # See: https://crbug.com/403291652 and b/408002335
   name = subprocess.check_output(["uname", "-r"]).decode().strip()
-  return name == '6.12.12-1rodete2-amd64'
+  return name.startswith('6.12.') and name.endswith('rodete1-amd64')
 
 
 def add_version_workaround(packages):
@@ -862,8 +862,10 @@ def install_packages(options):
   try:
     packages = find_missing_packages(options)
     if packages:
-      quiet = ["-qq", "--assume-yes"] if options.no_prompt else []
-      subprocess.check_call(["sudo", "apt-get", "install"] + quiet + packages)
+      cmd = ["sudo", "apt-get", "install"]
+      if options.no_prompt:
+        cmd += ["-qq", "--allow-downgrades", "--assume-yes"]
+      subprocess.check_call(cmd + packages)
       logger.info("")
     else:
       logger.info("No missing packages, and the packages are up to date.")
