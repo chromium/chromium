@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -41,6 +42,11 @@ const base::Version kVersion1 = base::Version("0.0.1");
 const base::Version kVersion2 = base::Version("0.0.2");
 const base::Version kVersion3 = base::Version("0.0.3");
 const base::Version kVersion4 = base::Version("1.0.0");
+
+constexpr char kGetBundleCachePathSuccessMetric[] =
+    "WebApp.Isolated.GetBundleCachePathSuccess";
+constexpr char kGetBundleCachePathErrorMetric[] =
+    "WebApp.Isolated.GetBundleCachePathError";
 
 }  // namespace
 
@@ -90,26 +96,51 @@ class GetBundleCachePathCommandTest
         url_info, version, GetSessionType(), std::move(callback));
   }
 
+  void ExpectEmptyGetBundleCachePathMetrics() {
+    histogram_tester_.ExpectTotalCount(kGetBundleCachePathSuccessMetric, 0);
+    histogram_tester_.ExpectTotalCount(kGetBundleCachePathErrorMetric, 0);
+  }
+
+  void ExpectSuccessGetBundleCachePathMetric() {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(kGetBundleCachePathSuccessMetric),
+        BucketsAre(base::Bucket(true, 1)));
+    histogram_tester_.ExpectTotalCount(kGetBundleCachePathErrorMetric, 0);
+  }
+
+  void ExpectErrorGetBundleCachePathMetric(
+      const GetBundleCachePathError& error) {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(kGetBundleCachePathSuccessMetric),
+        BucketsAre(base::Bucket(false, 1)));
+    EXPECT_THAT(histogram_tester_.GetAllSamples(kGetBundleCachePathErrorMetric),
+                BucketsAre(base::Bucket(error, 1)));
+  }
+
  private:
   const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
 
   SessionType GetSessionType() { return GetParam(); }
 
+  base::HistogramTester histogram_tester_;
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_P(GetBundleCachePathCommandTest, NoCachedPathToFetch) {
+  ExpectEmptyGetBundleCachePathMetrics();
   TestFuture<GetBundleCachePathResult> get_bundle_future;
   ScheduleCommand(kMainBundleId, /*version=*/std::nullopt,
                   get_bundle_future.GetCallback());
 
   EXPECT_THAT(get_bundle_future.Get(),
               ErrorIs(GetBundleCachePathError::kIwaNotCached));
+  ExpectErrorGetBundleCachePathMetric(GetBundleCachePathError::kIwaNotCached);
 }
 
 TEST_P(GetBundleCachePathCommandTest, RequiredVersionFound) {
+  ExpectEmptyGetBundleCachePathMetrics();
   base::FilePath bundle_path = CreateBundleInCacheDir(kMainBundleId, kVersion1);
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
@@ -117,9 +148,11 @@ TEST_P(GetBundleCachePathCommandTest, RequiredVersionFound) {
 
   EXPECT_THAT(get_bundle_future.Get(),
               ValueIs(GetBundleCachePathSuccess{bundle_path, kVersion1}));
+  ExpectSuccessGetBundleCachePathMetric();
 }
 
 TEST_P(GetBundleCachePathCommandTest, ProvidedVersionNotFound) {
+  ExpectEmptyGetBundleCachePathMetrics();
   base::FilePath bundle_path = CreateBundleInCacheDir(kMainBundleId, kVersion1);
 
   TestFuture<GetBundleCachePathResult> get_bundle_future;
@@ -127,6 +160,8 @@ TEST_P(GetBundleCachePathCommandTest, ProvidedVersionNotFound) {
 
   EXPECT_THAT(get_bundle_future.Get(),
               ErrorIs(GetBundleCachePathError::kProvidedVersionNotFound));
+  ExpectErrorGetBundleCachePathMetric(
+      GetBundleCachePathError::kProvidedVersionNotFound);
 }
 
 TEST_P(GetBundleCachePathCommandTest, NoVersionProvided) {

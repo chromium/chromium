@@ -11,10 +11,13 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
-
+#include "components/webapps/isolated_web_apps/error/uma_logging.h"
 namespace web_app {
 
 using SessionType = IwaCacheClient::SessionType;
+
+constexpr char kGetBundleCachePathMetric[] =
+    "WebApp.Isolated.GetBundleCachePath";
 
 namespace {
 
@@ -93,6 +96,11 @@ GetBundleCachePathResult GetBundleCachePathImpl(
                                    std::move(newest_version.value()));
 }
 
+GetBundleCachePathResult RecordMetric(GetBundleCachePathResult result) {
+  web_app::UmaLogExpectedStatus(kGetBundleCachePathMetric, result);
+  return result;
+}
+
 }  // namespace
 
 std::string GetBundleCachePathErrorToString(GetBundleCachePathError error) {
@@ -114,7 +122,7 @@ GetBundleCachePathCommand::GetBundleCachePathCommand(
     : WebAppCommand<AppLock, GetBundleCachePathResult>(
           "GetBundleCachePathCommand",
           AppLockDescription(url_info.app_id()),
-          std::move(callback),
+          base::BindOnce(&RecordMetric).Then(std::move(callback)),
           /*args_for_shutdown=*/
           base::unexpected(GetBundleCachePathError{
               GetBundleCachePathError::kSystemShutdown})),

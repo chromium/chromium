@@ -185,6 +185,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failed to copy file"/>
 </enum>
 
+<enum name="IsolatedWebAppGetBundleCachePathError">
+  <int value="0" label="System shutdown"/>
+  <int value="1" label="Provided version not found"/>
+  <int value="2" label="IWA not cached"/>
+</enum>
+
 <enum name="IsolatedWebAppInstallError">
   <int value="1" label="Cannot copy to profile directory"/>
   <int value="2" label="Trust check failed"/>
