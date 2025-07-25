@@ -45,17 +45,24 @@ message SyncEntity {
   reserved "old_parent_id";
 
   // The version of this item -- a monotonically increasing value that is
-  // maintained by for each item.  If zero in a CommitMessage, the server
-  // will interpret this entity as a newly-created item and generate a
-  // new server ID and an initial version number.  If nonzero in a
-  // CommitMessage, this item is treated as an update to an existing item, and
-  // the server will use `id_string` to locate the item.  Then, if the item's
-  // current version on the server does not match `version`, the commit will
-  // fail for that item.  The server will not update it, and will return
-  // a result code of CONFLICT.  In a GetUpdatesResponse, `version` is always
-  // positive and identifies the revision of the item data being sent to the
-  // client.
-  // Present in both GetUpdatesResponse and CommitMessage.
+  // maintained by the server (or more precisely, the storage backend). It is
+  // typically a timestamp, in microseconds since the Unix epoch, of the last
+  // backend write. Present in both CommitMessage (set by the client) and
+  // GetUpdatesResponse (set by the server), and there's also an equivalent
+  // field in CommitResponse.
+  //
+  // In a CommitMessage, `version` is set to zero for newly-created items. For
+  // updates to existing items, it is set by the client to the last version the
+  // client knew about when sending the commit. If this version does not match
+  // the latest version on the server, the commit *may* fail for that item with
+  // a result code of CONFLICT. However, this is not guaranteed, and in
+  // practice is not implemented for most data types.
+  //
+  // In a GetUpdatesResponse, `version` is always positive and identifies the
+  // revision of the item stored in the server backend. If the returned version
+  // is smaller than the version the client already knew, the client will ignore
+  // the response.
+  //
   // WARNING: This field used to be required before M60. Any client before this
   // will fail to deserialize if this field is missing.
   optional int64 version = 4;
