@@ -121,20 +121,11 @@ void LogUsingPossibleUsername(PasswordManagerClient* client,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool IsCurrentUserEvicted(PasswordManagerClient* client) {
-  return client->GetPrefs()->GetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
-}
-
 std::optional<PasswordStoreBackendError> GetErrorForErrorMessage(
     std::optional<PasswordStoreBackendError> profile_store_backend_error,
     std::optional<PasswordStoreBackendError> account_store_backend_error,
     PasswordManagerClient* client) {
   if (!profile_store_backend_error && !account_store_backend_error) {
-    return std::nullopt;
-  }
-
-  if (IsCurrentUserEvicted(client)) {
     return std::nullopt;
   }
 

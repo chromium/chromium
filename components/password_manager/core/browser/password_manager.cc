@@ -531,12 +531,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAccountStorageNoticeShown, false);
   registry->RegisterBooleanPref(prefs::kAutoSignInEnabledGMS, true);
   registry->RegisterIntegerPref(
-      prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
-  registry->RegisterIntegerPref(
       prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  registry->RegisterBooleanPref(
-      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
   registry->RegisterIntegerPref(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);

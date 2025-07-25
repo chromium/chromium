@@ -17,7 +17,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
-using password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 namespace password_manager {
@@ -73,20 +72,7 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
     return true;
   }
 
-  // There are no local passwords so GMSCore can be used regardless of
-  // unenrolled or initial UPM migration status.
-  if (pref_service->GetBoolean(prefs::kEmptyProfileStoreLoginDatabase)) {
-    return false;
-  }
-
-  // If the user was unenrolled or has never done the initial migration, update
-  // to the GMSCore version with local passwords support is required.
-  bool is_initial_migration_missing =
-      pref_service->GetInteger(
-          kCurrentMigrationVersionToGoogleMobileServices) == 0;
-  bool is_user_unenrolled = pref_service->GetBoolean(
-      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
-  return is_user_unenrolled || is_initial_migration_missing;
+  return false;
 #endif  //  BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 

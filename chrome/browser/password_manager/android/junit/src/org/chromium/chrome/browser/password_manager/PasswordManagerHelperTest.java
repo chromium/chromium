@@ -138,8 +138,6 @@ public class PasswordManagerHelperTest {
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-        when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
-                .thenReturn(false);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.getAuthError())
@@ -196,40 +194,6 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
         assertFalse(
                 PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
-    }
-
-    @Test
-    public void testResetsUnenrollment() {
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-
-        when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
-                .thenReturn(true);
-        mPasswordManagerHelper.resetUpmUnenrollment();
-
-        verify(mPrefService)
-                .setBoolean(
-                        eq(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS), eq(false));
-    }
-
-    @Test
-    public void testDoesntResetUnenrollmentIfUnnecessary() {
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
-        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-
-        when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
-                .thenReturn(false);
-        mPasswordManagerHelper.resetUpmUnenrollment();
-
-        // If the pref isn't set, don't touch the pref!
-        verify(mPrefService, never())
-                .setBoolean(
-                        eq(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS),
-                        anyBoolean());
     }
 
     @Test

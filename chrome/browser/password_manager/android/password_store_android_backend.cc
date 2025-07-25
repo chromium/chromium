@@ -28,7 +28,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
@@ -292,15 +291,6 @@ void RecordCancelledRetryMetrics(PasswordStoreOperation operation,
       base::StrCat({kRetryHistogramBase, ".CancelledAtAttempt"}), attempt,
       kMaxReportedRetryAttempts);
 }
-enum class ActionOnApiError {
-  // See password_manager_upm_eviction::EvictCurrentUser().
-  kEvict,
-  // See prefs::kSavePasswordsSuspendedByError.
-  kDisableSaving,
-  // See PasswordStoreAndroidBackend::TryFixPassphraseErrorCb.
-  kDisableSavingAndTryFixPassphraseError,
-  kRetry,
-};
 
 bool ShouldRetryOperationOnError(PasswordStoreOperation operation,
                                  AndroidBackendAPIErrorCode api_error_code,
@@ -801,9 +791,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 
   PasswordStoreOperation operation = reply->GetOperation();
 
-  // The error to report is computed before potential eviction. This is because
-  // eviction resets state which might be used to infer the recovery type of
-  // the error.
   base::TimeDelta delay = reply->GetDelay();
   PasswordStoreBackendError reported_error(
       PasswordStoreBackendErrorType::kUncategorized);

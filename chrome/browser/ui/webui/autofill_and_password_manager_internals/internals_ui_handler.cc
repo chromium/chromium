@@ -36,9 +36,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -134,12 +132,7 @@ void InternalsUIHandler::RegisterMessages() {
       "removeAutofillAiCacheEntry",
       base::BindRepeating(&InternalsUIHandler::OnDeleteAutofillAiCacheEntry,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_ANDROID)
-  web_ui()->RegisterMessageCallback(
-      "resetUpmEviction",
-      base::BindRepeating(&InternalsUIHandler::OnResetUpmEviction,
-                          base::Unretained(this)));
-#else
+#if !BUILDFLAG(IS_ANDROID)
   web_ui()->RegisterMessageCallback(
       "checkAutofillAiPermissions",
       base::BindRepeating(&InternalsUIHandler::CheckAutofillAiPermissions,
@@ -228,13 +221,6 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
       "notify-about-incognito",
       base::Value(Profile::FromWebUI(web_ui())->IsIncognitoProfile()));
   FireWebUIListener("notify-about-variations", version_ui::GetVariationsList());
-
-#if BUILDFLAG(IS_ANDROID)
-  auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-
-  FireWebUIListener("enable-reset-upm-eviction-button",
-                    password_manager_upm_eviction::IsCurrentUserEvicted(prefs));
-#endif
 }
 
 void InternalsUIHandler::OnResetCache(const base::Value::List& args) {
@@ -250,27 +236,7 @@ void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
   FireWebUIListener("notify-reset-done", base::Value(message));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
-  auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  bool is_user_unenrolled =
-      password_manager_upm_eviction::IsCurrentUserEvicted(prefs);
-  if (is_user_unenrolled) {
-    prefs->ClearPref(password_manager::prefs::
-                         kUnenrolledFromGoogleMobileServicesDueToErrors);
-  } else {
-    prefs->SetBoolean(
-        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-        true);
-    prefs->SetInteger(
-        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-        0);
-  }
-  FireWebUIListener("enable-reset-upm-eviction-button",
-                    base::Value(!is_user_unenrolled));
-}
-#else
-
+#if !BUILDFLAG(IS_ANDROID)
 void InternalsUIHandler::CheckAutofillAiPermissions(
     const base::Value::List& args) {
   std::string debug_message;

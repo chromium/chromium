@@ -9,7 +9,6 @@
 #include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
@@ -45,13 +44,6 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
     base::UmaHistogramEnumeration(
         kUPMActiveHistogram,
         UnifiedPasswordManagerActiveStatus::kInactiveSyncOff);
-    return;
-  }
-
-  if (password_manager_upm_eviction::IsCurrentUserEvicted(prefs)) {
-    base::UmaHistogramEnumeration(
-        kUPMActiveHistogram,
-        UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors);
     return;
   }
 

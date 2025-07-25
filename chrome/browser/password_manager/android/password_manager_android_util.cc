@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
@@ -27,7 +26,6 @@
 #include "components/sync/base/pref_names.h"
 #include "components/version_info/android/channel_getter.h"
 
-using password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices;
 using password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff;

@@ -62,8 +62,6 @@ struct IsGmsCoreUpdateRequiredTestCase {
   std::string test_case_desc;
   std::string gms_version;
   bool is_pwd_sync_enabled;
-  bool is_evicted;
-  bool was_initial_migration_done;
   bool is_login_db_empty;
   bool expected_is_update_required_automotive;
   bool expected_is_update_required;
@@ -75,12 +73,6 @@ class SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired
  public:
   SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired() {
     pref_service()->registry()->RegisterBooleanPref(
-        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-        false);
-    pref_service()->registry()->RegisterIntegerPref(
-        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-        0);
-    pref_service()->registry()->RegisterBooleanPref(
         password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
   }
 };
@@ -89,12 +81,6 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
        IsGmsCoreUpdateRequired) {
   IsGmsCoreUpdateRequiredTestCase p = GetParam();
   base::test::ScopedFeatureList features;
-  pref_service()->SetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-      p.is_evicted);
-  pref_service()->SetInteger(
-      password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-      p.was_initial_migration_done);
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase,
       p.is_login_db_empty);
@@ -129,8 +115,6 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case_desc = "TrueForVeryOldGms",
             .gms_version = "1",
             .is_pwd_sync_enabled = true,
-            .is_evicted = false,
-            .was_initial_migration_done = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = true},
@@ -138,26 +122,6 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case_desc = "TrueForNonSyncingGmsDoesNotSupportLocal",
             .gms_version = kGmsVersionWithoutLocalPasswordsSupport,
             .is_pwd_sync_enabled = false,
-            .is_evicted = false,
-            .was_initial_migration_done = true,
-            .is_login_db_empty = false,
-            .expected_is_update_required_automotive = true,
-            .expected_is_update_required = true},
-        IsGmsCoreUpdateRequiredTestCase{
-            .test_case_desc = "TrueForEvictedUsersGmsDoesNotSupportLocal",
-            .gms_version = kGmsVersionWithoutLocalPasswordsSupport,
-            .is_pwd_sync_enabled = true,
-            .is_evicted = true,
-            .was_initial_migration_done = true,
-            .is_login_db_empty = false,
-            .expected_is_update_required_automotive = true,
-            .expected_is_update_required = true},
-        IsGmsCoreUpdateRequiredTestCase{
-            .test_case_desc = "TrueForNotEnrolledGmsDoesNotSupportLocal",
-            .gms_version = kGmsVersionWithoutLocalPasswordsSupport,
-            .is_pwd_sync_enabled = true,
-            .is_evicted = false,
-            .was_initial_migration_done = false,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = true},
@@ -165,8 +129,6 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case_desc = "FalseForNewGms",
             .gms_version = kGmsVersionWithLocalPasswordsSupport,
             .is_pwd_sync_enabled = false,
-            .is_evicted = false,
-            .was_initial_migration_done = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = false},
@@ -174,29 +136,7 @@ INSTANTIATE_TEST_SUITE_P(
             .test_case_desc = "FalseForSyncingGmsDoesNotSupportLocal",
             .gms_version = kGmsVersionWithoutLocalPasswordsSupport,
             .is_pwd_sync_enabled = true,
-            .is_evicted = false,
-            .was_initial_migration_done = true,
             .is_login_db_empty = false,
-            .expected_is_update_required_automotive = false,
-            .expected_is_update_required = false},
-        IsGmsCoreUpdateRequiredTestCase{
-            .test_case_desc =
-                "FalseForNotEnrolledWithEmptyLoginDBGmsDoesNotSupportLocal",
-            .gms_version = kGmsVersionWithoutLocalPasswordsSupport,
-            .is_pwd_sync_enabled = true,
-            .is_evicted = true,
-            .was_initial_migration_done = false,
-            .is_login_db_empty = true,
-            .expected_is_update_required_automotive = false,
-            .expected_is_update_required = false},
-        IsGmsCoreUpdateRequiredTestCase{
-            .test_case_desc =
-                "FalseForNotMigratedWithEmptyLoginDBGmsDoesNotSupportLocal",
-            .gms_version = kGmsVersionWithoutLocalPasswordsSupport,
-            .is_pwd_sync_enabled = true,
-            .is_evicted = false,
-            .was_initial_migration_done = false,
-            .is_login_db_empty = true,
             .expected_is_update_required_automotive = false,
             .expected_is_update_required = false}),
     [](const ::testing::TestParamInfo<IsGmsCoreUpdateRequiredTestCase>& info) {

@@ -486,19 +486,6 @@ public class PasswordManagerHelper {
         return true;
     }
 
-    // TODO(http://crbug.com/1371422): Remove method and manage eviction from native code
-    // as this is covered by chrome://password-manager-internals page.
-    public void resetUpmUnenrollment() {
-        PrefService prefs = UserPrefs.get(mProfile);
-
-        // Exit early if the user is not unenrolled.
-        if (!prefs.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)) return;
-
-        // Re-enroll the user by resetting the enroll pref. Other state reset happens on
-        // unenroll.
-        prefs.setBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS, false);
-    }
-
     @VisibleForTesting
     public void launchTheCredentialManager(
             @ManagePasswordsReferrer int referrer,

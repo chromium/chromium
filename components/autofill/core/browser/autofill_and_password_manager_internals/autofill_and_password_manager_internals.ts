@@ -290,23 +290,11 @@ function setUpPasswordManagerInternals() {
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
-  // <if expr="is_android">
-  getRequiredElement('reset-upm-eviction-fake-button').style.display = 'inline';
-  addWebUiListener(
-      'enable-reset-upm-eviction-button', enableResetUpmEvictionButton);
-  // </if>
 }
 
 function enableResetCacheButton() {
   getRequiredElement('reset-cache-fake-button').style.display = 'inline';
 }
-
-// <if expr="is_android">
-function enableResetUpmEvictionButton(isEnabled: boolean) {
-  getRequiredElement('reset-upm-eviction-fake-button').innerText =
-      isEnabled ? 'Reset UPM eviction' : 'Evict from UPM';
-}
-// </if>
 
 function notifyAboutIncognito(isIncognito: boolean) {
   document.body.dataset['incognito'] = isIncognito.toString();
@@ -757,11 +745,5 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetCacheFakeButton = getRequiredElement('reset-cache-fake-button');
   resetCacheFakeButton.addEventListener('click', () => {
     chrome.send('resetCache');
-  });
-
-  const resetUpmEvictionButton =
-      getRequiredElement('reset-upm-eviction-fake-button');
-  resetUpmEvictionButton.addEventListener('click', () => {
-    chrome.send('resetUpmEviction');
   });
 });

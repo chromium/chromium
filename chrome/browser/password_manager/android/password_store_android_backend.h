@@ -40,9 +40,9 @@ enum class UnifiedPasswordManagerActiveStatus {
   kInactiveSyncOff = 1,
   // UPM is inactive because the client has been unenrolled due to unresolvable
   // errors
-  kInactiveUnenrolledDueToErrors = 2,
+  // Deprecated: kInactiveUnenrolledDueToErrors = 2,
 
-  kMaxValue = kInactiveUnenrolledDueToErrors
+  kMaxValue = kInactiveSyncOff
 };
 
 // This enum is used in the JobReturnHandler for tracking the store operation

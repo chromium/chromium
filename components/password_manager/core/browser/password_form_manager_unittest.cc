@@ -408,11 +408,6 @@ class PasswordFormManagerTest : public testing::Test,
         true);
     pref_service_.registry()->RegisterStringPref(
         autofill::prefs::kAutofillUploadEncodingSeed, "seed");
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-        false);
-#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
@@ -4716,17 +4711,6 @@ TEST_P(PasswordFormManagerTest,
        ClientShouldNotShowErrorMessageWhenErrorIsNotAuthError) {
   fetcher_->SetProfileStoreBackendError(
       PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized));
-
-  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
-  fetcher_->NotifyFetchCompleted();
-}
-
-TEST_P(PasswordFormManagerTest, ClientShouldNotShowErrorMessageWhenUnenrolled) {
-  client_.GetPrefs()->SetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-      true);
-  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable));
 
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
   fetcher_->NotifyFetchCompleted();

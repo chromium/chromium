@@ -96,11 +96,6 @@ inline constexpr char kEmptyProfileStoreLoginDatabase[] =
 // mapped to `kCredentialEnableService` will be applied.
 inline constexpr char kOfferToSavePasswordsEnabledGMS[] =
     "profile.save_passwords_enabed_gms";
-
-// Integer value which indicates the version used to migrate passwords from
-// built in storage to Google Mobile Services.
-inline constexpr char kCurrentMigrationVersionToGoogleMobileServices[] =
-    "current_migration_version_to_google_mobile_services";
 #endif
 
 // The total amount of passwords available in Password Manager account store.
@@ -144,12 +139,6 @@ enum class UseUpmLocalAndSeparateStoresState {
 };
 inline constexpr char kPasswordsUseUPMLocalAndSeparateStores[] =
     "passwords_use_upm_local_and_separate_stores";
-
-// Boolean value indicating if the user should not get UPM experience because
-// of user-unresolvable errors received on communication with Google Mobile
-// Services.
-inline constexpr char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
-    "unenrolled_from_google_mobile_services_due_to_errors";
 
 // Timestamp at which the last UPM error message was shown to the user in
 // milliseconds since UNIX epoch (used in Java).

@@ -49,12 +49,6 @@ namespace {
 class PasswordManagerAndroidUtilTest : public testing::Test {
  public:
   PasswordManagerAndroidUtilTest() {
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-        false);
-    pref_service_.registry()->RegisterIntegerPref(
-        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-        0);
     pref_service_.registry()->RegisterIntegerPref(
         password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(kOff));

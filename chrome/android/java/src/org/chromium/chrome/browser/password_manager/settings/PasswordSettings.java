@@ -563,11 +563,6 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                 (preference, newValue) -> {
                     getPrefService()
                             .setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, (boolean) newValue);
-                    // TODO(http://crbug.com/1371422): Remove method and manage evictions from
-                    // native code as this is covered by chrome://password-manager-internals page.
-                    if ((boolean) newValue) {
-                        PasswordManagerHelper.getForProfile(getProfile()).resetUpmUnenrollment();
-                    }
                     return true;
                 });
         savePasswordsSwitch.setManagedPreferenceDelegate(

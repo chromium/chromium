@@ -1034,6 +1034,10 @@ constexpr char kObsoleteSettingsMigratedToUPMLocal[] =
     "profile.settings_migrated_to_upm_local";
 constexpr char kObsoleteShouldShowPostPasswordMigrationSheetAtStartup[] =
     "should_show_post_password_migration_sheet_at_startup";
+constexpr char kObsoleteUnenrolledFromGoogleMobileServicesDueToErrors[] =
+    "unenrolled_from_google_mobile_services_due_to_errors";
+constexpr char kObsoleteCurrentMigrationVersionToGoogleMobileServices[] =
+    "current_migration_version_to_google_mobile_services";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Deprecated 07/2025.
@@ -1497,6 +1501,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kObsoleteSettingsMigratedToUPMLocal, false);
   registry->RegisterBooleanPref(
       kObsoleteShouldShowPostPasswordMigrationSheetAtStartup, false);
+  registry->RegisterBooleanPref(
+      kObsoleteUnenrolledFromGoogleMobileServicesDueToErrors, false);
+  registry->RegisterIntegerPref(
+      kObsoleteCurrentMigrationVersionToGoogleMobileServices, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Deprecated 07/2025.
@@ -2789,6 +2797,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kObsoleteSettingsMigratedToUPMLocal);
   profile_prefs->ClearPref(
       kObsoleteShouldShowPostPasswordMigrationSheetAtStartup);
+  profile_prefs->ClearPref(
+      kObsoleteUnenrolledFromGoogleMobileServicesDueToErrors);
+  profile_prefs->ClearPref(
+      kObsoleteCurrentMigrationVersionToGoogleMobileServices);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 07/2025.

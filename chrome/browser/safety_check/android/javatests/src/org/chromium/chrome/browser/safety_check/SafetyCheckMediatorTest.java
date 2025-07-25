@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_check_wrapper.FakePasswordCheckControllerFactory;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
@@ -274,8 +273,6 @@ public class SafetyCheckMediatorTest {
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-        when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
-                .thenReturn(false);
 
         mSafetyCheckModel = SafetyCheckProperties.createSafetyCheckModel();
         mPasswordCheckModel =
