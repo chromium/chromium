@@ -336,7 +336,14 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkUrlSupervised) {
             GetManagedUiUrl(profile.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkNotManaged) {
+// TODO(crbug.com/410751413): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiMenuLinkNotManaged \
+  DISABLED_GetManagedUiMenuLinkNotManaged
+#else
+#define MAYBE_GetManagedUiMenuLinkNotManaged GetManagedUiMenuLinkNotManaged
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagedUiMenuLinkNotManaged) {
   // Non-managed profile.
   TestingProfile::Builder builder;
   std::unique_ptr<TestingProfile> profile = builder.Build();
