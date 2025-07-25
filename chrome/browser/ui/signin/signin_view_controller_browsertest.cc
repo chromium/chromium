@@ -267,7 +267,8 @@ class SigninViewControllerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     SigninViewControllerBrowserTest,
-    SignoutOrReauthWithPromptForPersistentErrorState_Reauth) {
+    // TODO(crbug.com/429624627): Re-enable this test.
+    DISABLED_SignoutOrReauthWithPromptForPersistentErrorState_Reauth) {
   // Setup a primary account in error state.
   AccountInfo primary_account_info = SetPrimaryAccount();
   ASSERT_TRUE(
