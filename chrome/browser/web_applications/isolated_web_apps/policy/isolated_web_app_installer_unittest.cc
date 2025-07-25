@@ -57,6 +57,13 @@ const SignedWebBundleId kBundleId = test::GetDefaultEd25519WebBundleId();
 const Ed25519KeyPair kKeyPair = test::GetDefaultEd25519KeyPair();
 const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kCopyBundleToCacheSuccessMetric[] =
+    "WebApp.Isolated.CopyBundleToCacheAfterInstallationSuccess";
+constexpr char kCopyBundleToCacheErrorMetric[] =
+    "WebApp.Isolated.CopyBundleToCacheAfterInstallationError";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 enum SessionType {
@@ -404,6 +411,8 @@ class IwaMgsCachingInstallerTest : public IwaInstallerBaseTest {
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, CacheRootPath());
   }
 
+  void DestroyCacheDir() { cache_root_dir_override_.reset(); }
+
   base::FilePath GetBundleDirWithVersion(const SignedWebBundleId& bundle_id,
                                          const base::Version& version) {
     auto session_cache_dir =
@@ -428,6 +437,26 @@ class IwaMgsCachingInstallerTest : public IwaInstallerBaseTest {
                                GetFullBundlePath(web_bundle_id, version)));
   }
 
+  void ExpectEmptyCopyBundleMetrics() {
+    histogram_tester_.ExpectTotalCount(kCopyBundleToCacheSuccessMetric, 0);
+    histogram_tester_.ExpectTotalCount(kCopyBundleToCacheErrorMetric, 0);
+  }
+
+  void ExpectSuccessCopyBundleMetric() {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(kCopyBundleToCacheSuccessMetric),
+        BucketsAre(base::Bucket(true, 1)));
+    histogram_tester_.ExpectTotalCount(kCopyBundleToCacheErrorMetric, 0);
+  }
+
+  void ExpectErrorCopyBundleMetric(const CopyBundleToCacheError& error) {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(kCopyBundleToCacheSuccessMetric),
+        BucketsAre(base::Bucket(false, 1)));
+    EXPECT_THAT(histogram_tester_.GetAllSamples(kCopyBundleToCacheErrorMetric),
+                BucketsAre(base::Bucket(error, 1)));
+  }
+
  protected:
   const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
 
@@ -440,26 +469,44 @@ class IwaMgsCachingInstallerTest : public IwaInstallerBaseTest {
 
 TEST_F(IwaMgsCachingInstallerTest,
        BundleCopiedToCacheAfterSuccessfulInstallation) {
+  ExpectEmptyCopyBundleMetrics();
   CreateAndPublishIwaBundle(kBundleId, kVersion1);
+
   ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
             IwaInstallerResult::Type::kSuccess);
-  AssertAppInstalledAtVersion(kBundleId, kVersion1);
 
+  AssertAppInstalledAtVersion(kBundleId, kVersion1);
   // Checks that bundle exists in cache after successful installation.
   EXPECT_TRUE(
       base::PathExists(GetFullBundlePath(kBundleId, base::Version(kVersion1))));
+  ExpectSuccessCopyBundleMetric();
 }
 
 TEST_F(IwaMgsCachingInstallerTest,
        BundleNotCopiedToCacheAfterFailedInstallation) {
+  ExpectEmptyCopyBundleMetrics();
   CreateAndPublishIwaBundle(kBundleId, kVersion1);
   test_update_server().SetServedUpdateManifestResponse(
       kBundleId, net::HttpStatusCode::HTTP_NOT_FOUND, /*json_content=*/"");
 
   EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
             IwaInstallerResult::Type::kErrorUpdateManifestDownloadFailed);
+
   EXPECT_FALSE(
       base::PathExists(GetFullBundlePath(kBundleId, base::Version(kVersion1))));
+  ExpectEmptyCopyBundleMetrics();
+}
+
+TEST_F(IwaMgsCachingInstallerTest, FailedToCopyBundleToCache) {
+  ExpectEmptyCopyBundleMetrics();
+  DestroyCacheDir();
+  CreateAndPublishIwaBundle(kBundleId, kVersion1);
+
+  ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
+            IwaInstallerResult::Type::kSuccess);
+
+  AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  ExpectErrorCopyBundleMetric(CopyBundleToCacheError::kFailedToCreateDir);
 }
 
 TEST_F(IwaMgsCachingInstallerTest, InstallFromCache) {

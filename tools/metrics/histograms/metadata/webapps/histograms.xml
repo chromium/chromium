@@ -1291,6 +1291,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebApp.Isolated.CopyBundleToCacheAfterInstallationError"
+    enum="IsolatedWebAppCopyBundleToCacheError" expires_after="2026-07-30">
+  <owner>irfedorova@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records the exact error that occurred during the copying the bundle to cache
+    after the installation of Isolated Web App. The error is logged together
+    with WebApp.Isolated.CopyBundleToCacheAfterInstallationSuccess in case an
+    error occurs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.CopyBundleToCacheAfterInstallationSuccess"
+    enum="BooleanSuccess" expires_after="2026-07-30">
+  <owner>irfedorova@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records whether the the copying bundle to cache after the installation of an
+    Isolated Web App was successful or resulted in an error.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.FirstPolicyProcessingDelay" units="ms"
     expires_after="2026-01-01">
   <owner>greengrape@google.com</owner>
@@ -1308,7 +1332,7 @@ chromium-metrics-reviews@google.com.
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
-    Records the exact error that occured during the installation of an Isolated
+    Records the exact error that occurred during the installation of an Isolated
     Web App. The error is logged together with WebApp.Isolated.InstallSuccess in
     case an error occurs.
   </summary>
@@ -1442,8 +1466,8 @@ chromium-metrics-reviews@google.com.
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
-    Records the exact error that occured during reading of a response head for a
-    request to an Isolated Web App via the isolated-app: scheme. The error is
+    Records the exact error that occurred during reading of a response head for
+    a request to an Isolated Web App via the isolated-app: scheme. The error is
     logged together with WebApp.Isolated.ReadResponseHeadSuccess in case when an
     error occurs. Warning: this histogram was expired from 2024-05-08 to
     2024-06-12; data may be missing.
@@ -1550,7 +1574,7 @@ chromium-metrics-reviews@google.com.
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
-    Records the exact error that occured during the update of an Isolated Web
+    Records the exact error that occurred during the update of an Isolated Web
     App. The update process happens at 2 different times: browser launch and
     every 5 hours. Admin installed IWAs are also checked everytime the policy
     value changes. Additional details can be found at go/iwa-managed-updates.

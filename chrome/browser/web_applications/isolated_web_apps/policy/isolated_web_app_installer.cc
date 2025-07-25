@@ -26,10 +26,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_functions.h"
+#include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_bundle_cache_path_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
@@ -247,6 +249,8 @@ void IwaInstaller::OnIwaInstalledFromCache(
 }
 
 void IwaInstaller::OnBundleCopiedToCache(CopyBundleToCacheResult result) {
+  web_app::UmaLogExpectedStatus(
+      "WebApp.Isolated.CopyBundleToCacheAfterInstallation", result);
   if (result.has_value()) {
     log_->Append(base::Value(u"successfully copied bundle to the cache: " +
                              result->cached_bundle_path().LossyDisplayName()));
@@ -254,9 +258,6 @@ void IwaInstaller::OnBundleCopiedToCache(CopyBundleToCacheResult result) {
     log_->Append(base::Value("failed to copy bundle to cache: " +
                              CopyBundleToCacheErrorToString(result.error())));
   }
-
-  // TODO(crbug.com/388727600): add UMA metrics for failed and successful copy
-  // to cache.
 
   // `OnBundleCopiedToCache` is called only after the successful IWA
   // installation.

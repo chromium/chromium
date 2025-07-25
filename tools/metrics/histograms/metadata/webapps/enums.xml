@@ -176,6 +176,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Skipped execution during system shutdown."/>
 </enum>
 
+<enum name="IsolatedWebAppCopyBundleToCacheError">
+  <int value="0" label="System shutdown"/>
+  <int value="1" label="App not installed"/>
+  <int value="2" label="Not IWA"/>
+  <int value="3" label="Cannot extract owned bundle path"/>
+  <int value="4" label="Failed to create dir"/>
+  <int value="5" label="Failed to copy file"/>
+</enum>
+
 <enum name="IsolatedWebAppInstallError">
   <int value="1" label="Cannot copy to profile directory"/>
   <int value="2" label="Trust check failed"/>
