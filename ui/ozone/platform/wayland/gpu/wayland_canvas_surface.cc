@@ -273,24 +273,26 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
                                         float scale) {
   if (size_ == viewport_size)
     return;
-  // TODO(crbug.com/41440520): We could implement more efficient resizes
-  // by allocating buffers rounded up to larger sizes, and then reusing them if
-  // the new size still fits (but still reallocate if the new size is much
-  // smaller than the old size).
-  buffers_.clear();
-  previous_buffer_ = nullptr;
-  pending_buffer_ = nullptr;
-
   // First clear submitted frame, which will execute the pending swap ack
   // callback and only then clear unsubmitted ones. This helps to preserve order
   // of swap ack callbacks.
   submitted_frame_.reset();
+
+  // TODO(crbug.com/41440520): We could implement more efficient resizes
+  // by allocating buffers rounded up to larger sizes, and then reusing them if
+  // the new size still fits (but still reallocate if the new size is much
+  // smaller than the old size).
+  previous_buffer_ = nullptr;
+  pending_buffer_ = nullptr;
 
   // We must preserve FIFO. Thus, manually destroy pending frames.
   for (auto& frame : unsubmitted_frames_) {
     frame.reset();
   }
   unsubmitted_frames_.clear();
+
+  // Clear buffers last to prevent dangling pointers.
+  buffers_.clear();
 
   size_ = viewport_size;
   viewport_scale_ = scale;

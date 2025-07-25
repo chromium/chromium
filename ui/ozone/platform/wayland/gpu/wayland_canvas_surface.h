@@ -96,7 +96,7 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
     // requires execution of the |swap_ack_callback| as viz may still request
     // to swap buffers without calling GetCanvas first. In that case, it skips
     // drawing a root render pass and there is nothing to present.
-    const raw_ptr<SharedMemoryBuffer, DanglingUntriaged> frame_buffer;
+    const raw_ptr<SharedMemoryBuffer> frame_buffer;
   };
 
   void MaybeProcessUnsubmittedFrames();
@@ -127,10 +127,10 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
 
   // Pending buffer that is to be placed into the |unsubmitted_buffers_| to be
   // processed.
-  raw_ptr<SharedMemoryBuffer, DanglingUntriaged> pending_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> pending_buffer_ = nullptr;
 
   // Previously used buffer. Set on OnSubmission().
-  raw_ptr<SharedMemoryBuffer, DanglingUntriaged> previous_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> previous_buffer_ = nullptr;
 
   // Used by the internal VSyncProvider implementation. Set on OnPresentation().
   base::TimeTicks last_timestamp_;
