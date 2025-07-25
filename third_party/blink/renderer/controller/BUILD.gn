@@ -219,7 +219,7 @@ source_set("blink_perf_tests_sources") {
     "//base",
     "//base/test:test_support",
     "//content/test:test_support",
-    "//third_party/blink/renderer/core:core",
+    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/core:perf_tests",
   ]
 
@@ -240,10 +240,10 @@ source_set("blink_bindings_test_sources") {
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
-    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/modules:modules_testing",
     "//third_party/blink/renderer/modules/mediastream:test_support",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
   ]
   configs += [
@@ -300,7 +300,7 @@ source_set("blink_unittests_sources") {
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/core:unit_tests",
-    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/modules:unit_tests",
     "//third_party/blink/renderer/modules/exported:test_support",
     "//third_party/blink/renderer/platform",

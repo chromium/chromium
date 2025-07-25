@@ -78,7 +78,7 @@ blink_platform_sources("heap") {
   deps = [
     ":blink_heap_buildflags",
     "//base",
-    "//gin:gin",
+    "//gin",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/icu",
 
@@ -95,10 +95,10 @@ blink_platform_sources("heap") {
   }
 
   visibility = [
-    "//third_party/blink/renderer/platform:platform",
-    "//third_party/blink/renderer/platform/instrumentation:instrumentation",
-    "//third_party/blink/renderer/platform/loader:loader",
-    "//third_party/blink/renderer/platform/scheduler:scheduler",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform/instrumentation",
+    "//third_party/blink/renderer/platform/loader",
+    "//third_party/blink/renderer/platform/scheduler",
   ]
 }
 
@@ -117,14 +117,14 @@ source_set("test_support") {
     ":blink_heap_buildflags",
     "//testing/gtest",
     "//third_party/blink/public/mojom:mojom_platform_blink_headers",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:bindings_buildflags",
-    "//third_party/blink/renderer/platform:platform",
   ]
 
   # TODO(v8:11952): Switch to `//v8:v8_for_testing` as target once it properly
   # depends on v8 without duplicating the whole library which causes ODR
   # violations when `//v8:v8` is also pulled in otherwise.
-  deps += [ "//v8:v8" ]
+  deps += [ "//v8" ]
 
   public_deps = [ "//base/test:test_support" ]
 }
@@ -183,8 +183,8 @@ source_set("blink_heap_unittests_sources") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//gin:gin",
-    "//mojo/core/embedder:embedder",
+    "//gin",
+    "//mojo/core/embedder",
     "//skia:test_fonts",
     "//testing/gmock",
     "//testing/gtest",
@@ -232,7 +232,7 @@ source_set("blink_heap_perftests_sources") {
   ]
 
   deps = [
-    "//gin:gin",
+    "//gin",
     "//testing/gtest",
     "//testing/perf",
     "//third_party/blink/renderer/platform:test_support",

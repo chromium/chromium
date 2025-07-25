@@ -318,6 +318,6 @@ blink_core_sources("animation") {
   deps = [
     ":buildflags",
     "//third_party/blink/renderer/core:core_generated",
-    "//third_party/blink/renderer/core/probe:probe",
+    "//third_party/blink/renderer/core/probe",
   ]
 }

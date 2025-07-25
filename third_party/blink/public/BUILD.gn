@@ -115,9 +115,9 @@ source_set("test_headers") {
   ]
   public_deps = [ ":blink_headers" ]
   deps = [
-    "//base:base",
-    "//cc:cc",
-    "//testing/gmock:gmock",
+    "//base",
+    "//cc",
+    "//testing/gmock",
   ]
 }
 
@@ -437,7 +437,7 @@ source_set("blink_headers") {
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/ime",
     "//ui/base/ime/mojom",
-    "//ui/base/prediction:prediction",
+    "//ui/base/prediction",
     "//url",
   ]
 
@@ -446,22 +446,22 @@ source_set("blink_headers") {
   }
 
   deps = [
-    "//base:base",
-    "//cc:cc",
-    "//cc/paint:paint",
+    "//base",
+    "//cc",
+    "//cc/paint",
     "//components/viz/common",
     "//media/capture:capture_base",
     "//media/capture:capture_lib",
-    "//media/webrtc:webrtc",
-    "//mojo/public/cpp/bindings:bindings",
-    "//mojo/public/cpp/system:system",
+    "//media/webrtc",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//printing/mojom",
     "//services/device/public/mojom:mojom_shared_cpp_sources",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//third_party/blink/renderer/platform/wtf:wtf",
+    "//third_party/blink/renderer/platform/wtf",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//ui/base:base",
+    "//ui/base",
     "//v8:v8_headers",
   ]
 }

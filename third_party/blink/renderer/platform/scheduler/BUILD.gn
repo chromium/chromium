@@ -178,7 +178,7 @@ blink_platform_sources("scheduler") {
     "//services/metrics/public/mojom",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
     "//third_party/blink/renderer/platform:make_platform_generated",
-    "//third_party/blink/renderer/platform/heap:heap",
+    "//third_party/blink/renderer/platform/heap",
     "//third_party/blink/renderer/platform/instrumentation",
     "//third_party/blink/renderer/platform/wtf",
     "//v8",
@@ -217,7 +217,7 @@ source_set("test_support") {
     "//testing/gmock",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/mojom:mojom_platform_blink_headers",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
@@ -299,7 +299,7 @@ source_set("scheduler_fuzzer_tests") {
 
     deps += [
       ":sequence_manager_test_description_proto",
-      "//third_party/blink/renderer/platform:platform",
+      "//third_party/blink/renderer/platform",
       "//third_party/libprotobuf-mutator",
     ]
   }
@@ -324,8 +324,8 @@ fuzzer_test("sequence_manager_fuzzer") {
   deps = [
     ":sequence_manager_test_description_proto",
     "//base/test:test_support",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
-    "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/libprotobuf-mutator",
   ]

@@ -195,11 +195,11 @@ blink_modules_sources("webgl") {
 
   public_deps = [ "//device/vr/public/mojom:vr_service_blink" ]
   deps = [
-    "//device/vr/buildflags:buildflags",
+    "//device/vr/buildflags",
     "//gpu/command_buffer/client:gles2_implementation",
-    "//third_party/blink/renderer/modules/webcodecs:webcodecs",
-    "//third_party/blink/renderer/modules/xr:xr",
-    "//ui/gl:gl",
+    "//third_party/blink/renderer/modules/webcodecs",
+    "//third_party/blink/renderer/modules/xr",
+    "//ui/gl",
   ]
   if (use_static_angle) {
     deps += [ "//third_party/angle:libGLESv2_thin_static" ]

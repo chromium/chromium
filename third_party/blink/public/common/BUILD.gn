@@ -71,7 +71,7 @@ component("common") {
   output_name = "blink_common"
 
   public_deps = [
-    "//third_party/blink/common/privacy_budget:privacy_budget",
+    "//third_party/blink/common/privacy_budget",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_modules",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings",
@@ -328,7 +328,7 @@ source_set("headers") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom:mojom_permissions_policy",
     "//skia",
     "//skia/public/mojom:shared_typemap_traits",
@@ -360,7 +360,7 @@ source_set("headers") {
     "//mojo/public/cpp/system",
     "//mojo/public/mojom/base",
     "//net",
-    "//ui/base:base",
+    "//ui/base",
   ]
 
   # Chromium without blink doesn't use and must not depend on //media

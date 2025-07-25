@@ -7,8 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 component("privacy_budget") {
   visibility = [
     ":*",
-    "//third_party/blink/common:common",
-    "//third_party/blink/public/common:common",
+    "//third_party/blink/common",
+    "//third_party/blink/public/common",
   ]
 
   configs += [ "//third_party/blink/common:blink_common_implementation" ]
@@ -33,7 +33,7 @@ component("privacy_budget") {
     "//services/metrics/public/mojom",
     "//skia",
     "//third_party/blink/public/common:common_export",
-    "//third_party/blink/public/common/privacy_budget:privacy_budget",
+    "//third_party/blink/public/common/privacy_budget",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings",
   ]
 }
@@ -85,8 +85,8 @@ component("test_support") {
     ":privacy_budget",
     "//base",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/metrics/public/mojom:mojom",
-    "//third_party/blink/public/common:common",
+    "//services/metrics/public/mojom",
+    "//third_party/blink/public/common",
     "//third_party/blink/public/common/privacy_budget:test_support",
   ]
 }

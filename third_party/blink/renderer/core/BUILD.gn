@@ -181,7 +181,7 @@ source_set("core_common") {
 
 source_set("prerequisites") {
   public_deps = [
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp",
     "//skia",
@@ -364,7 +364,7 @@ component("core") {
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/re2",
     "//ui/accessibility:ax_base",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/base:ui_data_pack",
     "//ui/base/cursor",
     "//ui/base/dragdrop/mojom:mojom_blink_headers",
@@ -395,14 +395,14 @@ component("core") {
     "//components/web_package",
     "//gin",
     "//gpu/config",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//printing/buildflags",
     "//printing/mojom:mojom_blink",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:skcms",
@@ -430,7 +430,7 @@ component("core") {
   }
 
   if (is_win) {
-    deps += [ "//components/stylus_handwriting/win:win" ]
+    deps += [ "//components/stylus_handwriting/win" ]
   }
 
   if (enable_printing || enable_printing_tests) {
@@ -492,9 +492,9 @@ blink_core_sources("core_hot") {
     "//third_party/blink/public:image_resources_grit",
     "//third_party/blink/public/strings",
     "//third_party/blink/renderer/bindings:buildflags",
-    "//third_party/blink/renderer/core/animation:animation",
+    "//third_party/blink/renderer/core/animation",
     "//third_party/blink/renderer/core/exported",
-    "//third_party/blink/renderer/core/probe:probe",
+    "//third_party/blink/renderer/core/probe",
   ]
 
   if (enable_vectorized_html_scanning) {
@@ -619,7 +619,7 @@ source_set("testing") {
     "timing/internals_profiler.h",
   ]
 
-  public_deps = [ "//testing/gmock:gmock" ]
+  public_deps = [ "//testing/gmock" ]
 }
 
 if (is_ios) {
@@ -1329,7 +1329,7 @@ target(core_generated_target_type, "core_generated") {
   }
   deps = [
     "//services/metrics/public/cpp:ukm_builders",
-    "//third_party/blink/renderer/core/probe:probe",
+    "//third_party/blink/renderer/core/probe",
   ]
   public_deps = [ ":all_generators" ]
 
@@ -1505,8 +1505,8 @@ source_set("unit_tests") {
     ":unit_test_support",
     "//cc",
     "//components/autofill/core/common:features",
-    "//components/page_load_metrics/browser:browser",
-    "//components/paint_preview/common:common",
+    "//components/page_load_metrics/browser",
+    "//components/paint_preview/common",
     "//components/shared_highlighting/core/common",
     "//components/shared_highlighting/core/common:data_driven_testing",
     "//components/subresource_filter/content/renderer",
@@ -1549,7 +1549,7 @@ source_set("unit_tests") {
   ]
 
   if (is_win) {
-    deps += [ "//components/stylus_handwriting/win:win" ]
+    deps += [ "//components/stylus_handwriting/win" ]
   }
 
   if (enable_nocompile_tests) {

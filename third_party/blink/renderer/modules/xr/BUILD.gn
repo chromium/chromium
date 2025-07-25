@@ -158,7 +158,7 @@ blink_modules_sources("xr") {
   ]
 
   public_deps = [
-    "//third_party/blink/renderer/modules/gamepad:gamepad",
-    "//third_party/blink/renderer/modules/webgpu:webgpu",
+    "//third_party/blink/renderer/modules/gamepad",
+    "//third_party/blink/renderer/modules/webgpu",
   ]
 }

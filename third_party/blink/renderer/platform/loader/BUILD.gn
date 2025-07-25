@@ -195,7 +195,7 @@ blink_platform_sources("loader") {
     ":make_platform_loader_generated_delivery_type_names",
     ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
-    "//components/variations/net:net",
+    "//components/variations/net",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
@@ -204,14 +204,14 @@ blink_platform_sources("loader") {
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
-    "//third_party/blink/renderer/platform/blob:blob",
-    "//third_party/blink/renderer/platform/instrumentation:instrumentation",
-    "//third_party/blink/renderer/platform/network:network",
-    "//third_party/blink/renderer/platform/scheduler:scheduler",
+    "//third_party/blink/renderer/platform/blob",
+    "//third_party/blink/renderer/platform/instrumentation",
+    "//third_party/blink/renderer/platform/network",
+    "//third_party/blink/renderer/platform/scheduler",
   ]
   public_deps = [
     "//third_party/blink/public/mojom:mojom_platform_headers",
-    "//third_party/blink/renderer/platform/heap:heap",
+    "//third_party/blink/renderer/platform/heap",
   ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/platform/network:network" ]
@@ -272,7 +272,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
   ]
 
@@ -285,8 +285,8 @@ test("unencoded_digest_fuzzer") {
   sources = [ "unencoded_digest_fuzzer.cc" ]
 
   deps = [
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
-    "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
@@ -345,7 +345,7 @@ source_set("test_support") {
     "//net",
     "//skia",
     "//third_party/blink/public:blink_headers",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform/blob:generator",
     "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/scheduler:test_support",

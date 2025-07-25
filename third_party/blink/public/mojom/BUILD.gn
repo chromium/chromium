@@ -1784,7 +1784,7 @@ mojom("mojom_modules") {
 mojom("web_bluetooth_mojo_bindings") {
   visibility = [
     "//third_party/blink/common",
-    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common",
     "//third_party/blink/public/common:headers",
   ]
 
@@ -1894,8 +1894,8 @@ mojom("embedded_frame_sink_mojo_bindings") {
 
 mojom("memory_usage_monitor_linux_mojo_bindings") {
   visibility = [
-    "//content/browser:browser",
-    "//third_party/blink/renderer/controller:controller",
+    "//content/browser",
+    "//third_party/blink/renderer/controller",
   ]
   visibility_blink = [ "//third_party/blink/renderer/controller:controller" ]
 
