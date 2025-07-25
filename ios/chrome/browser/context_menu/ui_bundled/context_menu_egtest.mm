@@ -183,7 +183,7 @@ NSString* const kLongLinkHref =
 
 NSString* const kLongImgTitle =
     @"Chromium logo with a long title, well in excess of one hundred "
-     "characters, so formulated as to thest the very limits of the context "
+     "characters, so formulated as to test the very limits of the context "
      "menu layout system, and to ensure that all users can enjoy the full "
      "majesty of image titles, however sesquipedalian they may be!";
 
@@ -666,10 +666,6 @@ void RelaunchApp() {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
 
   // Loads url in first window.
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
@@ -700,10 +696,6 @@ void RelaunchApp() {
 - (void)testOpenIncognitoLinkInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
   [ChromeEarlGrey openNewIncognitoTab];

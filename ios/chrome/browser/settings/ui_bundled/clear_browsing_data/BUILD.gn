@@ -192,7 +192,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "clear_browsing_data_egtest.mm",
-    "quick_delete_browing_data_egtest.mm",
+    "quick_delete_browsing_data_egtest.mm",
     "quick_delete_egtest.mm",
   ]
   deps = [

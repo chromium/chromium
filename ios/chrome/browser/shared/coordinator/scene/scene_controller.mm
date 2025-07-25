@@ -2381,9 +2381,14 @@ using UserFeedbackDataCallback =
     return;  // silent no-op.
   }
 
-  UISceneActivationRequestOptions* options =
-      [[UISceneActivationRequestOptions alloc] init];
+  UIWindowSceneActivationRequestOptions* options =
+      [[UIWindowSceneActivationRequestOptions alloc] init];
   options.requestingScene = self.sceneState.scene;
+  if (@available(iOS 19.0, *)) {
+    // For iOS26 windowing, ensure the new window doesn't fully overlap the
+    // prior window.
+    options.placement = [UIWindowSceneProminentPlacement prominentPlacement];
+  }
 
   ProfileIOS* profile = self.profile;
   if (profile) {

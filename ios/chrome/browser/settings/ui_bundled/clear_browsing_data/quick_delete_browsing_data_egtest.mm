@@ -580,6 +580,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   }
   if (@available(iOS 19.0, *)) {
     // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    // Fails interacting with both windows.
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 

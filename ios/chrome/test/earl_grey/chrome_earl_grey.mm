@@ -1081,21 +1081,21 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   // Allow the UI to become idle, in case any tabs are being opened or closed.
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  GREYCondition* browserCountCheck = [GREYCondition
+  GREYCondition* windowCountCheck = [GREYCondition
       conditionWithName:conditionName
                   block:^{
                     actualCount =
                         [ChromeEarlGreyAppInterface foregroundWindowCount];
                     return actualCount == count;
                   }];
-  bool browserCountEqual =
-      [browserCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+  bool windowCountEqual =
+      [windowCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
 
   NSString* errorString = [NSString
       stringWithFormat:@"Failed waiting for window count to become %" PRIuNS
                         "; actual count: %" PRIuNS,
                        count, actualCount];
-  EG_TEST_HELPER_ASSERT_TRUE(browserCountEqual, errorString);
+  EG_TEST_HELPER_ASSERT_TRUE(windowCountEqual, errorString);
 }
 
 - (void)openNewWindow {

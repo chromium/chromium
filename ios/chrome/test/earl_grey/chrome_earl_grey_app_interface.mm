@@ -508,8 +508,14 @@ NSString* SerializedValue(const base::Value* value) {
 
   NSUserActivity* activity =
       [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
-  UISceneActivationRequestOptions* options =
-      [[UISceneActivationRequestOptions alloc] init];
+  UIWindowSceneActivationRequestOptions* options =
+      [[UIWindowSceneActivationRequestOptions alloc] init];
+  if (@available(iOS 19.0, *)) {
+    // For iOS26 windowing, ensure the new window doesn't fully overlap the
+    // prior window.
+    options.placement = [UIWindowSceneProminentPlacement prominentPlacement];
+  }
+
   [UIApplication.sharedApplication
       requestSceneSessionActivation:nil /* make a new scene */
                        userActivity:activity
