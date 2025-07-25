@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -91,18 +92,33 @@ bool ChromePasswordChangeService::IsPasswordChangeAvailable() const {
     return true;
   }
 
+  // Password generation is disabled.
   if (!feature_manager_->IsGenerationEnabled()) {
     return false;
   }
 
+  // User is not eligible.
   if (!optimization_keyed_service_ ||
       !optimization_keyed_service_->ShouldModelExecutionBeAllowedForUser()) {
     return false;
   }
 
+  // Chrome shouldn't offer to save password. Since during password change a
+  // password is saved, it shouldn't be offered.
   if (!settings_service_ ||
       !settings_service_->IsSettingEnabled(
           password_manager::PasswordManagerSetting::kOfferToSavePasswords)) {
+    return false;
+  }
+
+  // The feature is disabled by enterprise policy.
+  constexpr int kPolicyDisabled =
+      base::to_underlying(optimization_guide::model_execution::prefs::
+                              ModelExecutionEnterprisePolicyValue::kDisable);
+  if (pref_service_->GetInteger(
+          optimization_guide::prefs::
+              kAutomatedPasswordChangeEnterprisePolicyAllowed) ==
+      kPolicyDisabled) {
     return false;
   }
 

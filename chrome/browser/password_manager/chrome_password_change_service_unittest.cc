@@ -18,6 +18,7 @@
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
@@ -33,26 +34,28 @@
 namespace {
 
 struct TestCase {
-  using TupleT = std::tuple<bool, bool, bool, bool>;
+  using TupleT = std::tuple<bool, bool, bool, bool, bool>;
 
   explicit TestCase(TupleT configuration)
       : is_generation_available(std::get<0>(configuration)),
         is_model_execution_allowed(std::get<1>(configuration)),
         is_saving_allowed(std::get<2>(configuration)),
-        is_feature_enabled(std::get<3>(configuration)) {}
+        is_disabled_by_policy(std::get<3>(configuration)),
+        is_feature_enabled(std::get<4>(configuration)) {}
 
   bool expected_outcome() const {
 #if BUILDFLAG(IS_ANDROID)
     return false;
 #else
     return is_generation_available & is_model_execution_allowed &
-           is_saving_allowed & is_feature_enabled;
+           is_saving_allowed & is_feature_enabled & !is_disabled_by_policy;
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
   const bool is_generation_available;
   const bool is_model_execution_allowed;
   const bool is_saving_allowed;
+  const bool is_disabled_by_policy;
   const bool is_feature_enabled;
 };
 
@@ -65,6 +68,10 @@ class ChromePasswordChangeServiceBase {
         optimization_guide::prefs::GetSettingEnabledPrefName(
             optimization_guide::UserVisibleFeatureKey::
                 kPasswordChangeSubmission),
+        /*default_value=*/0);
+    prefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::
+            kAutomatedPasswordChangeEnterprisePolicyAllowed,
         /*default_value=*/0);
     auto feature_manager = std::make_unique<
         testing::StrictMock<password_manager::MockPasswordFeatureManager>>();
@@ -258,6 +265,14 @@ class ChromePasswordChangeServiceAvailabilityTest
     feature_list_.InitWithFeatureState(
         password_manager::features::kImprovedPasswordChangeService,
         GetParam().is_feature_enabled);
+    if (GetParam().is_disabled_by_policy) {
+      constexpr int kPolicyDisabled = base::to_underlying(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kDisable);
+      prefs()->SetInteger(optimization_guide::prefs::
+                              kAutomatedPasswordChangeEnterprisePolicyAllowed,
+                          kPolicyDisabled);
+    }
   }
 
  private:
@@ -345,6 +360,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Combine(testing::Bool(),
                          testing::Bool(),
                          testing::Bool(),
+                         testing::Bool(),
                          testing::Bool())),
     [](const ::testing::TestParamInfo<TestCase>& info) {
       std::string test_name;
@@ -353,6 +369,7 @@ INSTANTIATE_TEST_SUITE_P(
       test_name += info.param.is_model_execution_allowed ? "ExecutionOn"
                                                          : "ExecutionOff";
       test_name += info.param.is_saving_allowed ? "SavingOn" : "SavingOff";
+      test_name += info.param.is_disabled_by_policy ? "DisabledByPolicy" : "";
       test_name += info.param.is_feature_enabled ? "FeatureOn" : "FeatureOff";
       return test_name;
     });
