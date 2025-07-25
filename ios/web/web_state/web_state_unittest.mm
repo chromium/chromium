@@ -266,15 +266,7 @@ TEST_F(WebStateTest, CreateFullPagePdf_InvalidURLs) {
 
 // Tests that CreateFullPagePdf invokes completion callback nil when the
 // WebState content is not HTML (e.g. a PDF file).
-// TODO(crbug.com/428630864): Flaky on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_CreateFullPagePdfWebStatePdfContent \
-  CreateFullPagePdfWebStatePdfContent
-#else
-#define MAYBE_CreateFullPagePdfWebStatePdfContent \
-  DISABLED_CreateFullPagePdfWebStatePdfContent
-#endif
-TEST_F(WebStateTest, MAYBE_CreateFullPagePdfWebStatePdfContent) {
+TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
   CGRect fake_bounds = CGRectMake(0, 0, 100, 100);
   UIGraphicsPDFRenderer* pdf_renderer =
       [[UIGraphicsPDFRenderer alloc] initWithBounds:fake_bounds];
@@ -286,14 +278,6 @@ TEST_F(WebStateTest, MAYBE_CreateFullPagePdfWebStatePdfContent) {
       }];
 
   GURL test_url("https://www.chromium.org/somePDF.pdf");
-  NavigationManager::WebLoadParams load_params(test_url);
-  web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^bool {
-        return web_state()->GetLastCommittedURL() == test_url &&
-               !web_state()->IsLoading();
-      }));
-
   std::string mime_type = "application/pdf";
   web_state()->LoadData(
       pdf_data, [NSString stringWithUTF8String:mime_type.c_str()], test_url);
