@@ -32,10 +32,8 @@ using ::optimization_guide::proto::OptimizationTarget;
 using ::testing::SizeIs;
 using ::testing::ValuesIn;
 
-// TODO(crbug.com/382447738) It does not matter for this test to work, but lets
-// add the correct target as soon as we have it.
 constexpr OptimizationTarget kOptTargetNotification = OptimizationTarget::
-    OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE;
+    OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP;
 
 constexpr std::string_view kZeroReturnModel = "aiv4_ret_0.tflite";
 constexpr std::string_view k0_023ReturnModel = "aiv4_ret_0_023.tflite";

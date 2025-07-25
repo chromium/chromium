@@ -19,6 +19,7 @@ namespace permissions {
 class PredictionModelHandler;
 class PermissionsAiv1Handler;
 class PermissionsAiv3Handler;
+class PermissionsAiv4Handler;
 
 class PredictionModelHandlerProvider : public KeyedService {
  public:
@@ -33,11 +34,19 @@ class PredictionModelHandlerProvider : public KeyedService {
   PermissionsAiv1Handler* GetPermissionsAiv1Handler();
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+  static bool IsAiv4ModelAvailable();
   PredictionModelHandler* GetPredictionModelHandler(RequestType request_type);
   PermissionsAiv3Handler* GetPermissionsAiv3Handler(RequestType request_type);
+  PermissionsAiv4Handler* GetPermissionsAiv4Handler(RequestType request_type);
+
   void set_permissions_aiv3_handler_for_testing(
       RequestType request_type,
       std::unique_ptr<PermissionsAiv3Handler> handler);
+  void set_permissions_aiv4_handler_for_testing(
+      RequestType request_type,
+      std::unique_ptr<PermissionsAiv4Handler> handler);
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
  private:
@@ -48,6 +57,8 @@ class PredictionModelHandlerProvider : public KeyedService {
   std::unique_ptr<PredictionModelHandler> geolocation_prediction_model_handler_;
   std::unique_ptr<PermissionsAiv3Handler> notification_aiv3_handler_;
   std::unique_ptr<PermissionsAiv3Handler> geolocation_aiv3_handler_;
+  std::unique_ptr<PermissionsAiv4Handler> notification_aiv4_handler_;
+  std::unique_ptr<PermissionsAiv4Handler> geolocation_aiv4_handler_;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 };
 }  // namespace permissions

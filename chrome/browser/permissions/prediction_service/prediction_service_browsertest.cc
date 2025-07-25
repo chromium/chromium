@@ -18,6 +18,7 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 #include "chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
@@ -44,6 +45,7 @@
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/test/enums_to_string.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
@@ -92,15 +94,18 @@ constexpr auto kLikelihoodUnspecified =
     PermissionUiSelector::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED;
 
-// This is the only server side reply that will trigger quiet UI at the moment.
+// This is the only server side reply that will trigger quiet UI at the
+// moment.
 constexpr auto kLikelihoodVeryUnlikely =
     PermissionUiSelector::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
 
 constexpr std::string_view kNotificationsModelExecutionSuccessHistogram =
-    "OptimizationGuide.ModelExecutor.ExecutionStatus.NotificationPermissionsV3";
+    "OptimizationGuide.ModelExecutor.ExecutionStatus."
+    "NotificationPermissionsV3";
 constexpr std::string_view kGeolocationModelExecutionSuccessHistogram =
-    "OptimizationGuide.ModelExecutor.ExecutionStatus.GeolocationPermissionsV3";
+    "OptimizationGuide.ModelExecutor.ExecutionStatus."
+    "GeolocationPermissionsV3";
 constexpr std::string_view kSnapshotTakenHistogram =
     "Permissions.AIv3.SnapshotTaken";
 constexpr std::string_view kSnapshotTakenDurationHistogram =
@@ -118,12 +123,13 @@ constexpr char kCpssV3InquiryDurationHistogram[] =
 constexpr std::string_view kZeroDotFiveReturnSignatureModel =
     "signature_model_ret_0.5.tflite";
 
-// An AIv3 model that returns a constant value of 0 which will be converted into
-// a 'very unlikely' for notifications and geolocation permission request.
+// An AIv3 model that returns a constant value of 0 which will be converted
+// into a 'very unlikely' for notifications and geolocation permission
+// request.
 constexpr std::string_view kZeroReturnAiv3Model = "aiv3_ret_0.tflite";
 
-// An AIv3 model that returns a constant value of 1 which will be converted into
-// a 'very likely' for notifications and geolocation permission request.
+// An AIv3 model that returns a constant value of 1 which will be converted
+// into a 'very likely' for notifications and geolocation permission request.
 constexpr std::string_view kOneReturnAiv3Model = "aiv3_ret_1.tflite";
 
 // Non existing model file.
@@ -266,7 +272,10 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
  public:
   explicit PredictionServiceBrowserTestBase(
       const std::vector<FeatureRefAndParams>& enabled_features = {},
-      const std::vector<FeatureRef>& disabled_features = {}) {
+      const std::vector<FeatureRef>& disabled_features = {
+          permissions::features::kPermissionsAIv1,
+          permissions::features::kPermissionsAIv3,
+          permissions::features::kPermissionsAIv4}) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
     PredictionServiceFactory::GetInstance()->set_prediction_service_for_testing(
@@ -307,12 +316,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     return mock_permission_prompt_factory_.get();
   }
 
-  PredictionModelHandler* prediction_model_handler() {
-    return PredictionModelHandlerProviderFactory::GetForBrowserContext(
-               browser()->profile())
-        ->GetPredictionModelHandler(RequestType::kNotifications);
-  }
-
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   PredictionServiceMock& prediction_service() { return prediction_service_; }
@@ -326,10 +329,34 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
             .get());
   }
 
+  virtual RequestType request_type() const {
+    return RequestType::kNotifications;
+  }
+
+  PredictionModelHandlerProvider* model_handler_provider() {
+    return PredictionModelHandlerProviderFactory::GetForBrowserContext(
+        browser()->profile());
+  }
+
+  PredictionModelHandler* prediction_model_handler() {
+    return model_handler_provider()->GetPredictionModelHandler(request_type());
+  }
+
+  PermissionsAiv1Handler* aiv1_model_handler() {
+    return model_handler_provider()->GetPermissionsAiv1Handler();
+  }
+
+  PermissionsAiv3Handler* aiv3_model_handler() {
+    return model_handler_provider()->GetPermissionsAiv3Handler(request_type());
+  }
+
+  PermissionsAiv4Handler* aiv4_model_handler() {
+    return model_handler_provider()->GetPermissionsAiv4Handler(request_type());
+  }
+
   void TriggerPromptAndVerifyUi(
       std::string test_url,
       PermissionAction permission_action,
-      RequestType request_type,
       bool should_expect_quiet_ui,
       std::optional<PermissionRequestRelevance> expected_relevance,
       std::optional<PermissionUiSelector::PredictionGrantLikelihood>
@@ -338,7 +365,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     GURL url = embedded_test_server()->GetURL(test_url, "/title1.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-    auto req = std::make_unique<MockPermissionRequest>(request_type);
+    auto req = std::make_unique<MockPermissionRequest>(request_type());
     manager->AddRequest(GetActiveMainFrame(), std::move(req));
     bubble_factory()->WaitForPermissionBubble();
 
@@ -379,6 +406,9 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTestBase,
                        PredictionServiceEnabled) {
+  EXPECT_FALSE(aiv1_model_handler());
+  EXPECT_FALSE(aiv3_model_handler());
+  EXPECT_FALSE(aiv4_model_handler());
   EXPECT_TRUE(prediction_model_handler());
 }
 
@@ -482,7 +512,6 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
                      /*response_from_cache=*/true, prediction_service_response);
           })));
   TriggerPromptAndVerifyUi(test_url, PermissionAction::DISMISSED,
-                           RequestType::kNotifications,
                            GetParam().should_expect_quiet_ui,
                            /*expected_relevance=*/std::nullopt,
                            GetParam().prediction_service_likelihood);
@@ -523,7 +552,9 @@ class SignatureModelPredictionServiceBrowserTest
                                          {permissions::features::
                                               kPermissionsAIv1,
                                           permissions::features::
-                                              kPermissionsAIv3}) {}
+                                              kPermissionsAIv3,
+                                          permissions::features::
+                                              kPermissionsAIv4}) {}
 
   void TriggerCpssV1AndVerifyUi(
       PermissionAction permission_action,
@@ -532,17 +563,16 @@ class SignatureModelPredictionServiceBrowserTest
       std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           expected_prediction_likelihood) {
     // We need 4 prompts for the CPSS to kick in on the next prompt.
-    // This behaviour is defined by kRequestedPermissionMinimumHistoricalActions
+    // This behaviour is defined by
+    // kRequestedPermissionMinimumHistoricalActions
     std::string test_urls[] = {"a.test", "b.test", "c.test", "d.test"};
     for (std::string test_url : test_urls) {
       TriggerPromptAndVerifyUi(test_url, PermissionAction::GRANTED,
-                               RequestType::kNotifications,
                                /*should_expect_quiet_ui=*/false,
                                /*expected_relevance=*/std::nullopt,
                                /*expected_prediction_likelihood=*/std::nullopt);
     }
     TriggerPromptAndVerifyUi(/*test_url=*/"e.test", permission_action,
-                             RequestType::kNotifications,
                              should_expect_quiet_ui, expected_relevance,
                              expected_prediction_likelihood);
     EXPECT_EQ(5, bubble_factory()->show_count());
@@ -679,12 +709,18 @@ class Aiv3ModelPredictionServiceBrowserTest
                                                   kQuietNotificationPrompts,
                                               {}},
                                              {permissions::features::
+                                                  kPermissionsAIv1,
+                                              {}},
+                                             {permissions::features::
                                                   kPermissionsAIv3,
                                               {}},
-                                         },
-                                         /*disabled_features=*/{}) {}
+                                         }, /*disabled_features=*/
+                                         {permissions::features::
+                                              kPermissionsAIv4}) {}
 
-  RequestType request_type() const { return get<1>(GetParam()).request_type; }
+  RequestType request_type() const override {
+    return get<1>(GetParam()).request_type;
+  }
   OptimizationTarget optimization_target() const {
     return get<1>(GetParam()).optimization_target;
   }
@@ -695,11 +731,12 @@ class Aiv3ModelPredictionServiceBrowserTest
     browser()->profile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
-    // Only one model_handler can be registered for the same optimization target
-    // at the same time. Registering happens in the constructor, deregistering
-    // in the destructor of each ModelHandler. We can either deregister
-    // explicitly in the opt_guide service or just destroy the object. Either
-    // way, we need to do this before we create our fake handler.
+    // Only one model_handler can be registered for the same optimization
+    // target at the same time. Registering happens in the constructor,
+    // deregistering in the destructor of each ModelHandler. We can either
+    // deregister explicitly in the opt_guide service or just destroy the
+    // object. Either way, we need to do this before we create our fake
+    // handler.
     model_handler_provider()->set_permissions_aiv3_handler_for_testing(
         request_type(), nullptr);
 
@@ -725,17 +762,7 @@ class Aiv3ModelPredictionServiceBrowserTest
     aiv3_model_handler_->WaitForModelLoadForTesting();
   }
 
-  PermissionsAiv3Handler* aiv3_model_handler() {
-    return PredictionModelHandlerProviderFactory::GetForBrowserContext(
-               browser()->profile())
-        ->GetPermissionsAiv3Handler(request_type());
-  }
-
  private:
-  PredictionModelHandlerProvider* model_handler_provider() {
-    return PredictionModelHandlerProviderFactory::GetForBrowserContext(
-        browser()->profile());
-  }
 };
 
 std::vector<ModelMetadata> model_data_testcase = {
@@ -786,7 +813,7 @@ std::vector<ModelMetadata> model_data_testcase = {
     },
 };
 
-std::vector<PermissionRequestMetadata> request_data_testcase = {
+std::vector<PermissionRequestMetadata> aiv3_request_data_testcase = {
     {/*optimization_target=*/kAiv3OptTargetGeolocation,
      /*request_type=*/RequestType::kGeolocation},
     {/*optimization_target=*/kAiv3OptTargetNotification,
@@ -796,22 +823,27 @@ std::vector<PermissionRequestMetadata> request_data_testcase = {
 INSTANTIATE_TEST_SUITE_P(
     Aiv3ModelTest,
     Aiv3ModelPredictionServiceBrowserTest,
-    Combine(ValuesIn(model_data_testcase), ValuesIn(request_data_testcase)),
+    Combine(ValuesIn(model_data_testcase),
+            ValuesIn(aiv3_request_data_testcase)),
     /*name_generator=*/
     [](const testing::TestParamInfo<
         Aiv3ModelPredictionServiceBrowserTest::ParamType>& info) {
-      return (std::get<1>(info.param).request_type ==
-                      RequestType::kNotifications
-                  ? "Notification"
-                  : "Geolocation") +
-             std::get<0>(info.param).test_name;
+      return base::StrCat({test::ToString(std::get<1>(info.param).request_type),
+                           std::get<0>(info.param).test_name});
     });
 
 IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
+                       Aiv3ModelHandlerDefined) {
+  EXPECT_FALSE(aiv1_model_handler());
+  EXPECT_TRUE(aiv3_model_handler());
+}
+
+IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                        TestAiv3Workflow) {
+  ASSERT_TRUE(aiv3_model_handler());
+
   const auto& test_case = std::get<0>(GetParam());
 
-  ASSERT_TRUE(aiv3_model_handler());
   PushModelFileToModelExecutor(ModelFilePath(test_case.model_name));
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -838,7 +870,7 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                      /*response_from_cache=*/true, prediction_service_response);
           })));
   TriggerPromptAndVerifyUi(
-      /*test_url=*/"test.a", PermissionAction::DISMISSED, request_type(),
+      /*test_url=*/"test.a", PermissionAction::DISMISSED,
       test_case.should_expect_quiet_ui, test_case.expected_relevance,
       test_case.prediction_service_likelihood);
 
@@ -862,4 +894,62 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                                       /*expected_count=*/1);
 }
 
+// -----------------------------------------------------------------------------
+// --------------- Prediction Service On Device Permissions AIv4 ---------------
+// -----------------------------------------------------------------------------
+
+class Aiv4ModelPredictionServiceBrowserTest
+    : public PredictionServiceBrowserTestBase,
+      public testing::WithParamInterface<RequestType> {
+ public:
+  Aiv4ModelPredictionServiceBrowserTest()
+      : PredictionServiceBrowserTestBase(/*enabled_features=*/
+                                         {
+                                             {permissions::features::
+                                                  kPermissionsAIv1,
+                                              {}},
+                                             {permissions::features::
+                                                  kPermissionsAIv3,
+                                              {}},
+                                             {permissions::features::
+                                                  kPermissionsAIv4,
+                                              {}},
+                                         },
+                                         /*disabled_features=*/{}) {}
+
+  RequestType request_type() const override { return GetParam(); }
+
+  void SetUpOnMainThread() override {
+    PredictionServiceBrowserTestBase::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  }
+
+  PermissionsAiv4Handler* aiv4_model_handler() {
+    return model_handler_provider()->GetPermissionsAiv4Handler(request_type());
+  }
+
+ private:
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Aiv4ModelTest,
+    Aiv4ModelPredictionServiceBrowserTest,
+    ValuesIn<RequestType>({
+        RequestType::kNotifications,
+        RequestType::kGeolocation,
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        Aiv4ModelPredictionServiceBrowserTest::ParamType>& info) {
+      return std::string(test::ToString(info.param));
+    });
+
+IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
+                       Aiv4ModelHandlerDefined) {
+  // If AIv4 flag is defined, no other AIvX model should get initialized.
+  EXPECT_FALSE(aiv1_model_handler());
+  EXPECT_FALSE(aiv3_model_handler());
+  EXPECT_TRUE(aiv4_model_handler());
+}
 }  // namespace permissions

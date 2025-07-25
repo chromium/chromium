@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
+#include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/request_type.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -24,6 +25,12 @@ namespace permissions {
 
 PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     OptimizationGuideKeyedService* optimization_guide) {
+  // We set up model handlers if necessary in order of preference:
+  // Aiv4, Aiv3, Aiv1
+  // CPSSv1 is defined always as backup if further requirements for AivX are not
+  // fulfilled (like the MSBB bit that we don't check here at the moment).
+  // TODO(crbug.com/414527270) Only create models when its really necessary (see
+  // PredictionBasedPermissionUiSelector::GetPredictionTypeToUse).
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   notification_prediction_model_handler_ =
       std::make_unique<PredictionModelHandler>(
@@ -37,6 +44,19 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
 
+  if (IsAiv4ModelAvailable()) {
+    notification_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
+        optimization_guide,
+        optimization_guide::proto::OptimizationTarget::
+            OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP,
+        RequestType::kNotifications);
+    geolocation_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
+        optimization_guide,
+        optimization_guide::proto::OptimizationTarget::
+            OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_DESKTOP,
+        RequestType::kGeolocation);
+    return;
+  }
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
     notification_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
         optimization_guide,
@@ -48,8 +68,8 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE,
         RequestType::kGeolocation);
+    return;
   }
-
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
@@ -92,6 +112,19 @@ PredictionModelHandlerProvider::GetPermissionsAiv3Handler(
   }
 }
 
+PermissionsAiv4Handler*
+PredictionModelHandlerProvider::GetPermissionsAiv4Handler(
+    RequestType request_type) {
+  switch (request_type) {
+    case RequestType::kNotifications:
+      return notification_aiv4_handler_.get();
+    case RequestType::kGeolocation:
+      return geolocation_aiv4_handler_.get();
+    default:
+      NOTREACHED();
+  }
+}
+
 void PredictionModelHandlerProvider::set_permissions_aiv3_handler_for_testing(
     RequestType request_type,
     std::unique_ptr<PermissionsAiv3Handler> aiv3_handler) {
@@ -107,5 +140,29 @@ void PredictionModelHandlerProvider::set_permissions_aiv3_handler_for_testing(
       NOTREACHED();
   }
 }
+
+void PredictionModelHandlerProvider::set_permissions_aiv4_handler_for_testing(
+    RequestType request_type,
+    std::unique_ptr<PermissionsAiv4Handler> aiv4_handler) {
+  CHECK_IS_TEST();
+  switch (request_type) {
+    case RequestType::kNotifications:
+      notification_aiv4_handler_ = std::move(aiv4_handler);
+      break;
+    case RequestType::kGeolocation:
+      geolocation_aiv4_handler_ = std::move(aiv4_handler);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+bool PredictionModelHandlerProvider::IsAiv4ModelAvailable() {
+  return base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4);
+  // TODO(crbug.com/422952428) Add check for language as the text embeddings
+  // model required for preparing the text input of AIv4 only works on english
+  // text for now.
+}
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }  // namespace permissions
