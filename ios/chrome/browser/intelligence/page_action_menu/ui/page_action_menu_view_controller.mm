@@ -48,7 +48,6 @@ const CGFloat kSpaceBetweenSmallButtons = 16;
 const CGFloat kSmallButtonOpacity = 0.95;
 
 // The corner radius of the menu and its elements.
-const CGFloat kMenuCornerRadius = 20;
 const CGFloat kButtonsCornerRadius = 16;
 
 // The padding between the image and text of the large button.
@@ -133,25 +132,14 @@ const CGFloat kLargeButtonImagePadding = 8;
     [buttonsStackView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
+}
 
-  // Configure presentation sheet.
-  __weak PageActionMenuViewController* weakSelf = self;
-  auto detentResolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return [weakSelf preferredMenuHeight];
-  };
-  UISheetPresentationControllerDetent* initialDetent =
-      [UISheetPresentationControllerDetent
-          customDetentWithIdentifier:kAIHubDetentIdentifier
-                            resolver:detentResolver];
-  self.sheetPresentationController.detents = @[
-    initialDetent,
-  ];
-  self.sheetPresentationController.selectedDetentIdentifier =
-      kAIHubDetentIdentifier;
-  self.sheetPresentationController.preferredCornerRadius = kMenuCornerRadius;
-  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-  self.sheetPresentationController.prefersGrabberVisible = NO;
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  __weak __typeof(self) weakSelf = self;
+  [weakSelf.sheetPresentationController animateChanges:^{
+    [weakSelf.sheetPresentationController invalidateDetents];
+  }];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -161,10 +149,10 @@ const CGFloat kLargeButtonImagePadding = 8;
   [self dismissPageActionMenu];
 }
 
-#pragma mark - Private
+#pragma mark - Public
 
-// The total height of the presented menu.
-- (CGFloat)preferredMenuHeight {
+- (CGFloat)resolveDetentValueForSheetPresentation:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context {
   CGFloat bottomPaddingAboveSafeArea =
       kMenuBottomPadding - self.view.safeAreaInsets.bottom;
   return self.navigationController.navigationBar.frame.size.height +
@@ -173,6 +161,8 @@ const CGFloat kLargeButtonImagePadding = 8;
              .height +
          kMenuTopPadding + bottomPaddingAboveSafeArea;
 }
+
+#pragma mark - Private
 
 // Dismisses the page action menu.
 - (void)dismissPageActionMenu {
