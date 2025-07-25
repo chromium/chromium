@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // TOOD(omerkatz): Replace these casts with std::atomic_ref (C++20) once it
 // becomes available.
@@ -213,14 +213,6 @@ ALWAYS_INLINE void AtomicWriteSwap(T& lhs, T& rhs) {
   AsAtomicPtr(&lhs)->store(tmp_val, std::memory_order_relaxed);
 }
 
-}  // namespace WTF
-
-namespace blink {
-using WTF::AsAtomicPtr;
-using WTF::AtomicMemzero;
-using WTF::AtomicReadMemcpy;
-using WTF::AtomicWriteMemcpy;
-using WTF::AtomicWriteSwap;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ATOMIC_OPERATIONS_H_

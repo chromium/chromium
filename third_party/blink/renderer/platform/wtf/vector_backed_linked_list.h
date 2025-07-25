@@ -154,7 +154,7 @@ class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
       static_assert(VectorTraits<Node>::kCanMoveWithMemcpy,
                     "Garbage collected types used in VectorBackedLinkedList "
                     "should be movable with memcpy");
-      WTF::AtomicWriteMemcpy<sizeof(Node), alignof(Node)>(location, &element);
+      AtomicWriteMemcpy<sizeof(Node), alignof(Node)>(location, &element);
       return reinterpret_cast<Node*>(location);
     }
   };

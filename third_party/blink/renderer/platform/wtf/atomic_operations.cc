@@ -9,7 +9,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -137,4 +137,4 @@ void AtomicMemzero(void* buf, size_t bytes) {
   AtomicMemzeroImpl<uintptr_t>(buf, bytes);
 }
 
-}  // namespace WTF
+}  // namespace blink
