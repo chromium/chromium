@@ -447,8 +447,15 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 
 // Test that we don't show "No more suggestions from Google" if the spelling
 // service is enabled and that there is only one suggestion.
+// TODO(crbug.com/434222699): Fix flakiness and re-enable on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NoMoreSuggestionsNotDisplayed \
+  DISABLED_NoMoreSuggestionsNotDisplayed
+#else
+#define MAYBE_NoMoreSuggestionsNotDisplayed NoMoreSuggestionsNotDisplayed
+#endif
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
-                       NoMoreSuggestionsNotDisplayed) {
+                       MAYBE_NoMoreSuggestionsNotDisplayed) {
   menu()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
