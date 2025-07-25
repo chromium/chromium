@@ -155,6 +155,11 @@ extern const char kAnnotatorModeName[];
 extern const char kAnnotatorModeDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kApproximateGeolocationPermissionName[];
+extern const char kApproximateGeolocationPermissionDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 

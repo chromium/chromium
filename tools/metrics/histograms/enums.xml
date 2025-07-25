@@ -18567,6 +18567,7 @@ from previous Chrome versions.
   <int value="1639681180" label="HelpAppAppsDiscovery:enabled"/>
   <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
+  <int value="1640633395" label="ApproximateGeolocationPermission:disabled"/>
   <int value="1641671651" label="ContextualPageActionShareModel:disabled"/>
   <int value="1642200544" label="ArcExtendServiceAnrTimeout:disabled"/>
   <int value="1642478923" label="ContextualTriggersSelectionSize:enabled"/>
@@ -19648,6 +19649,7 @@ from previous Chrome versions.
       label="IsolatedWebAppManagedGuestSessionInstall:disabled"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2017283500" label="DragDropTabTearingEnableOEM:disabled"/>
+  <int value="2017591110" label="ApproximateGeolocationPermission:enabled"/>
   <int value="2018206979" label="FilesLocalImageSearch:disabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2019319052" label="EnableVariableRefreshRate:disabled"/>

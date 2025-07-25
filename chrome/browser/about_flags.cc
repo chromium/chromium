@@ -4748,6 +4748,42 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kApproximateGeolocationPermissionArm1Params[] =
+    {{"prompt_arm", "1"}, {"sample_data", "true"}};
+const FeatureEntry::FeatureParam kApproximateGeolocationPermissionArm2Params[] =
+    {{"prompt_arm", "2"}, {"sample_data", "true"}};
+const FeatureEntry::FeatureParam kApproximateGeolocationPermissionArm3Params[] =
+    {{"prompt_arm", "3"}, {"sample_data", "true"}};
+const FeatureEntry::FeatureParam kApproximateGeolocationPermissionArm4Params[] =
+    {{"prompt_arm", "4"}, {"sample_data", "true"}};
+const FeatureEntry::FeatureParam kApproximateGeolocationPermissionArm5Params[] =
+    {{"prompt_arm", "5"}, {"sample_data", "true"}};
+const FeatureEntry::FeatureParam kApproximateGeolocationPermissionArm6Params[] =
+    {{"prompt_arm", "6"}, {"sample_data", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kApproximateGeolocationPermissionVariations[] = {
+        {"- Prompt arm: Horizontal Minimal",
+         kApproximateGeolocationPermissionArm1Params,
+         std::size(kApproximateGeolocationPermissionArm1Params), nullptr},
+        {"- Prompt arm: Horizontal with Icon",
+         kApproximateGeolocationPermissionArm2Params,
+         std::size(kApproximateGeolocationPermissionArm2Params), nullptr},
+        {"- Prompt arm: Horizontal with Icon + Description",
+         kApproximateGeolocationPermissionArm3Params,
+         std::size(kApproximateGeolocationPermissionArm3Params), nullptr},
+        {"- Prompt arm: Vertical", kApproximateGeolocationPermissionArm4Params,
+         std::size(kApproximateGeolocationPermissionArm4Params), nullptr},
+        {"- Prompt arm: Vertical with Description",
+         kApproximateGeolocationPermissionArm5Params,
+         std::size(kApproximateGeolocationPermissionArm5Params), nullptr},
+        {"- Prompt arm: Horizontal with Icon + Long Description",
+         kApproximateGeolocationPermissionArm6Params,
+         std::size(kApproximateGeolocationPermissionArm6Params), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -9938,6 +9974,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnnotatorModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAnnotatorMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"approximate-geolocation-permission",
+     flag_descriptions::kApproximateGeolocationPermissionName,
+     flag_descriptions::kApproximateGeolocationPermissionDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         content_settings::features::kApproximateGeolocationPermission,
+         kApproximateGeolocationPermissionVariations,
+         "ApproximateGeolocationPermission")},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"omit-cors-client-cert", flag_descriptions::kOmitCorsClientCertName,
      flag_descriptions::kOmitCorsClientCertDescription, kOsAll,

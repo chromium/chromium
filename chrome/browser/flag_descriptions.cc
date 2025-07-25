@@ -231,6 +231,14 @@ const char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kApproximateGeolocationPermissionName[] =
+    "Approximate Geolocation Permission";
+const char kApproximateGeolocationPermissionDescription[] =
+    "Enables the approximate geolocation permission prompt, with options to "
+    "control prompt arm variations.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAriaElementReflectionName[] = "Enable ARIA element reflection";
 const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
