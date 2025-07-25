@@ -354,6 +354,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu:raster_implementation",
     "//gpu:webgpu_implementation",
     "//third_party/khronos:khronos_headers",
+    "//third_party/angle:no_thread_safety_warnings",
   ]
 
   public_deps = [
