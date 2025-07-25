@@ -12,11 +12,13 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -63,7 +65,8 @@ struct TestURLInfo {
   int typed_count;
   int age_in_days;
   bool hidden = false;
-} test_db[] = {
+};
+auto test_db = std::to_array<TestURLInfo>({
     {"http://www.google.com/", "Google", 3, 3, 80},
 
     // High-quality pages should get a host synthesized as a lower-quality
@@ -190,7 +193,7 @@ struct TestURLInfo {
 
     // URL with "history" in it, to test the @history starter pack scope.
     {"https://history.com/", "History.com", 1, 1, 80},
-};
+});
 
 }  // namespace
 
@@ -247,19 +250,24 @@ class HistoryURLProviderTest : public testing::Test,
   void RunTest(const std::u16string& text,
                const std::string& desired_tld,
                bool prevent_inline_autocomplete,
-               const UrlAndLegalDefault* expected_urls,
-               size_t num_results,
+               base::span<const UrlAndLegalDefault> expected_urls,
+               size_t spanification_suspected_redundant_num_results,
                metrics::OmniboxInputType* identified_input_type);
 
   // A version of the above without the final |type| output parameter.
   void RunTest(const std::u16string& text,
                const std::string& desired_tld,
                bool prevent_inline_autocomplete,
-               const UrlAndLegalDefault* expected_urls,
-               size_t num_results) {
+               base::span<const UrlAndLegalDefault> expected_urls,
+               size_t spanification_suspected_redundant_num_results) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(spanification_suspected_redundant_num_results == expected_urls.size(),
+          base::NotFatalUntil::M143);
     metrics::OmniboxInputType type;
     return RunTest(text, desired_tld, prevent_inline_autocomplete,
-                   expected_urls, num_results, &type);
+                   expected_urls, spanification_suspected_redundant_num_results,
+                   &type);
   }
 
   // Verifies that for the given |input_text|, the first match's contents
@@ -351,9 +359,13 @@ void HistoryURLProviderTest::RunTest(
     const std::u16string& text,
     const std::string& desired_tld,
     bool prevent_inline_autocomplete,
-    const UrlAndLegalDefault* expected_urls,
-    size_t num_results,
+    base::span<const UrlAndLegalDefault> expected_urls,
+    size_t spanification_suspected_redundant_num_results,
     metrics::OmniboxInputType* identified_input_type) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_num_results == expected_urls.size(),
+        base::NotFatalUntil::M143);
   AutocompleteInput input(text, std::u16string::npos, desired_tld,
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -374,9 +386,9 @@ void HistoryURLProviderTest::RunTest(
               &AutocompleteMatch::MoreRelevant);
   }
   SCOPED_TRACE(u"input = " + text);
-  ASSERT_EQ(num_results, matches_.size())
+  ASSERT_EQ(spanification_suspected_redundant_num_results, matches_.size())
       << "Input text: " << text << "\nTLD: \"" << desired_tld << "\"";
-  for (size_t i = 0; i < num_results; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_num_results; ++i) {
     EXPECT_EQ(expected_urls[i].url, matches_[i].destination_url.spec());
     EXPECT_EQ(expected_urls[i].allowed_to_be_default_match,
               matches_[i].allowed_to_be_default_match);
@@ -450,7 +462,7 @@ TEST_F(HistoryURLProviderTest, PromoteShorterURLs) {
           std::size(expected_synth));
 
   // Test that unpopular pages are ignored completely.
-  RunTest(u"fresh", std::string(), true, nullptr, 0);
+  RunTest(u"fresh", std::string(), true, {}, 0);
 
   // Test that if we create or promote shorter suggestions that would not
   // normally be inline autocompletable, we make them inline autocompletable if
@@ -557,9 +569,12 @@ TEST_F(HistoryURLProviderTest, CullRedirects) {
   struct TestCase {
     const char* url;
     int count;
-  } test_cases[] = {{"http://redirects/A", 30},
-                    {"http://redirects/B", 20},
-                    {"http://redirects/C", 10}};
+  };
+  auto test_cases = std::to_array<TestCase>({
+      {"http://redirects/A", 30},
+      {"http://redirects/B", 20},
+      {"http://redirects/C", 10},
+  });
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     client_->GetHistoryService()->AddPageWithDetails(
         GURL(test_cases[i].url), u"Title", test_cases[i].count,
@@ -604,8 +619,8 @@ TEST_F(HistoryURLProviderTestNoSearchProvider, WhatYouTypedNoSearchProvider) {
   const UrlAndLegalDefault results_1[] = {{"http://wytmatch/", true}};
   RunTest(u"wytmatch", std::string(), false, results_1, std::size(results_1));
 
-  RunTest(u"wytmatch foo bar", std::string(), false, nullptr, 0);
-  RunTest(u"wytmatch+foo+bar", std::string(), false, nullptr, 0);
+  RunTest(u"wytmatch foo bar", std::string(), false, {}, 0);
+  RunTest(u"wytmatch+foo+bar", std::string(), false, {}, 0);
 
   const UrlAndLegalDefault results_2[] = {
       {"http://wytmatch+foo+bar.com/", true}};
@@ -615,10 +630,10 @@ TEST_F(HistoryURLProviderTestNoSearchProvider, WhatYouTypedNoSearchProvider) {
 
 TEST_F(HistoryURLProviderTest, WhatYouTyped) {
   // Make sure we suggest a What You Typed match at the right times.
-  RunTest(u"wytmatch", std::string(), false, nullptr, 0);
-  RunTest(u"wytmatch foo bar", std::string(), false, nullptr, 0);
-  RunTest(u"wytmatch+foo+bar", std::string(), false, nullptr, 0);
-  RunTest(u"wytmatch+foo+bar.com", std::string(), false, nullptr, 0);
+  RunTest(u"wytmatch", std::string(), false, {}, 0);
+  RunTest(u"wytmatch foo bar", std::string(), false, {}, 0);
+  RunTest(u"wytmatch+foo+bar", std::string(), false, {}, 0);
+  RunTest(u"wytmatch+foo+bar.com", std::string(), false, {}, 0);
 
   const UrlAndLegalDefault results_1[] = {{"http://www.wytmatch.com/", true}};
   RunTest(u"wytmatch", "com", false, results_1, std::size(results_1));
@@ -717,13 +732,13 @@ TEST_F(HistoryURLProviderTest, Files) {
 
 TEST_F(HistoryURLProviderTest, Fixup) {
   // Test for various past crashes we've had.
-  RunTest(u"\\", std::string(), false, nullptr, 0);
-  RunTest(u"#", std::string(), false, nullptr, 0);
-  RunTest(u"%20", std::string(), false, nullptr, 0);
+  RunTest(u"\\", std::string(), false, {}, 0);
+  RunTest(u"#", std::string(), false, {}, 0);
+  RunTest(u"%20", std::string(), false, {}, 0);
   const UrlAndLegalDefault fixup_crash[] = {{"http://%EF%BD%A5@s/", false}};
   RunTest(u"\uff65@s", std::string(), false, fixup_crash,
           std::size(fixup_crash));
-  RunTest(u"\u2015\u2015@ \uff7c", std::string(), false, nullptr, 0);
+  RunTest(u"\u2015\u2015@ \uff7c", std::string(), false, {}, 0);
 
   // Fixing up "http:/" should result in an inline autocomplete offset of just
   // after "http:/", not just after "http:".
@@ -791,7 +806,7 @@ TEST_F(HistoryURLProviderTestNoDB, NavigateWithoutDB) {
   RunTest(u"slash", std::string(), false, navigation_2,
           std::size(navigation_2));
 
-  RunTest(u"this is a query", std::string(), false, nullptr, 0);
+  RunTest(u"this is a query", std::string(), false, {}, 0);
 }
 
 TEST_F(HistoryURLProviderTest, AutocompleteOnTrailingWhitespace) {
@@ -896,7 +911,8 @@ TEST_F(HistoryURLProviderTest, IntranetURLsWithPaths) {
     const char* input;
     int relevance;
     bool allowed_to_be_default_match;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       {"fooey", 0, false},
       {"fooey/", 1200, true},  // 1200 for URL would still navigate by default.
       {"fooey/a", 1200, false},    // 1200 for UNKNOWN would not.
@@ -905,12 +921,11 @@ TEST_F(HistoryURLProviderTest, IntranetURLsWithPaths) {
       {"gooey/", 1410, true},
       {"gooey/a", 1400, true},
       {"gooey/a b", 1400, true},
-  };
+  });
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(test_cases[i].input);
     if (test_cases[i].relevance == 0) {
-      RunTest(ASCIIToUTF16(test_cases[i].input), std::string(), false, nullptr,
-              0);
+      RunTest(ASCIIToUTF16(test_cases[i].input), std::string(), false, {}, 0);
     } else {
       const UrlAndLegalDefault output[] = {
           {url_formatter::FixupURL(test_cases[i].input, std::string()).spec(),
@@ -985,11 +1000,11 @@ TEST_F(HistoryURLProviderTest, IntranetURLCompletion) {
 
 TEST_F(HistoryURLProviderTest, CrashDueToFixup) {
   // This test passes if we don't crash.  The results don't matter.
-  const char* const test_cases[] = {
+  const auto test_cases = std::to_array<const char*>({
       "//c",
       "\\@st",
       "view-source:x",
-  };
+  });
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     AutocompleteInput input(ASCIIToUTF16(test_cases[i]),
                             metrics::OmniboxEventProto::OTHER,
@@ -1080,9 +1095,12 @@ TEST_F(HistoryURLProviderTest, CullSearchResults) {
   struct TestCase {
     const char* url;
     int count;
-  } test_cases[] = {{"https://testsearch.com/", 30},
-                    {"https://testsearch.com/?q=foobar", 20},
-                    {"http://foobar.com/", 10}};
+  };
+  auto test_cases = std::to_array<TestCase>({
+      {"https://testsearch.com/", 30},
+      {"https://testsearch.com/?q=foobar", 20},
+      {"http://foobar.com/", 10},
+  });
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     client_->GetHistoryService()->AddPageWithDetails(
         GURL(test_cases[i].url), u"Title", test_cases[i].count,
@@ -1115,7 +1133,8 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
     // The index of the ACMatchClassification that should have the MATCH bit
     // set, npos if no ACMatchClassification should have the MATCH bit set.
     size_t match_classification_index;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       // clang-format off
     { "http://www.somesite.com", false,
       "http://www.somesite.com", {0, npos, npos}, 0 },
@@ -1168,7 +1187,7 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
     { "view-source:http://x%20y/a%20b", false,
       "view-source:http://x%20y/a b", {0, npos, npos}, 0 },
       // clang-format on
-  };
+  });
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message()
                  << "Index " << i << " input: " << test_cases[i].input
@@ -1241,7 +1260,8 @@ TEST_F(HistoryURLProviderTest, HUPScoringExperiment) {
       int experiment_relevance;
     };
     ExpectedMatch matches[kProviderMaxMatches];
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       // Max score 2000 -> no demotion.
       {"7.com/1",
        max_2000_no_time_decay,
@@ -1275,11 +1295,11 @@ TEST_F(HistoryURLProviderTest, HUPScoringExperiment) {
       {"7.com/5",
        max_1100_visit_typed_decays,
        {{"7.com/5", 1203, 1203}, {"7.com/5a", 1202, 50}, {nullptr, 0, 0}}},
-  };
+  });
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(test_cases[i].input);
-    UrlAndLegalDefault output[kProviderMaxMatches];
-    int max_matches;
+    std::array<UrlAndLegalDefault, kProviderMaxMatches> output;
+    size_t max_matches;
     for (max_matches = 0; max_matches < kProviderMaxMatches; ++max_matches) {
       if (test_cases[i].matches[max_matches].url == nullptr)
         break;
@@ -1292,9 +1312,10 @@ TEST_F(HistoryURLProviderTest, HUPScoringExperiment) {
     provider_->scoring_params_ = test_cases[i].scoring_params;
 
     // Test the experimental scoring params.
-    ASSERT_NO_FATAL_FAILURE(RunTest(ASCIIToUTF16(test_cases[i].input),
-                                    std::string(), false, output, max_matches));
-    for (int j = 0; j < max_matches; ++j) {
+    ASSERT_NO_FATAL_FAILURE(
+        RunTest(ASCIIToUTF16(test_cases[i].input), std::string(), false,
+                base::span(output).first(max_matches), max_matches));
+    for (size_t j = 0; j < max_matches; ++j) {
       EXPECT_EQ(test_cases[i].matches[j].experiment_relevance,
                 matches_[j].relevance);
     }

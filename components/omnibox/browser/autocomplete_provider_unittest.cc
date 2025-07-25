@@ -17,6 +17,7 @@
 
 #include "base/base64url.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -383,15 +384,16 @@ class AutocompleteProviderTest : public testing::Test {
   // UpdateAssociatedKeywords, and checks that the matches have associated
   // keywords as expected.
   void RunKeywordTest(const std::u16string& input,
-                      const KeywordTestData* match_data,
-                      size_t size);
+                      base::span<const KeywordTestData> match_data,
+                      size_t spanification_suspected_redundant_size);
 
   void UpdateResultsWithSuggestionGroupsTestData(
       const SuggestionGroupsTestData& test_data);
 
-  void RunSearchboxStatsTest(const SearchboxStatsTestData* sbs_test_data,
-                             size_t size,
-                             bool input_is_zero_suggest);
+  void RunSearchboxStatsTest(
+      base::span<const SearchboxStatsTestData> sbs_test_data,
+      size_t spanification_suspected_redundant_size,
+      bool input_is_zero_suggest);
 
   void RunQuery(const std::string& query, bool allow_exact_keyword_match);
 
@@ -596,11 +598,16 @@ void AutocompleteProviderTest::RunTest() {
   RunQuery("a", true);
 }
 
-void AutocompleteProviderTest::RunKeywordTest(const std::u16string& input,
-                                              const KeywordTestData* match_data,
-                                              size_t size) {
+void AutocompleteProviderTest::RunKeywordTest(
+    const std::u16string& input,
+    base::span<const KeywordTestData> match_data,
+    size_t spanification_suspected_redundant_size) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_size == match_data.size(),
+        base::NotFatalUntil::M143);
   ACMatches matches;
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_size; ++i) {
     AutocompleteMatch match;
     match.relevance = 1000;  // Arbitrary non-zero value.
     match.allowed_to_be_default_match = true;
@@ -650,9 +657,13 @@ void AutocompleteProviderTest::UpdateResultsWithSuggestionGroupsTestData(
 }
 
 void AutocompleteProviderTest::RunSearchboxStatsTest(
-    const SearchboxStatsTestData* sbs_test_data,
-    size_t size,
+    base::span<const SearchboxStatsTestData> sbs_test_data,
+    size_t spanification_suspected_redundant_size,
     bool input_is_zero_suggest) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_size == sbs_test_data.size(),
+        base::NotFatalUntil::M143);
   if (input_is_zero_suggest) {
     // Prepare the input.
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
@@ -664,7 +675,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
   // Prepare the results.
   const size_t kMaxRelevance = 1000;
   ACMatches matches;
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_size; ++i) {
     AutocompleteMatch match(nullptr, kMaxRelevance - i, false,
                             sbs_test_data[i].match_type);
     match.suggestion_group_id = sbs_test_data[i].group_id;
@@ -686,7 +697,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
   controller_->UpdateSearchboxStats(&result_);
 
   // Verify data.
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < spanification_suspected_redundant_size; ++i) {
     std::string serialized_searchbox_stats;
     result_.match_at(i)->search_terms_args->searchbox_stats.SerializeToString(
         &serialized_searchbox_stats);
@@ -1049,15 +1060,8 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
 
   {
     omnibox::metrics::ChromeSearchboxStats searchbox_stats;
-    SearchboxStatsTestData test_data[] = {
-        //  MSVC doesn't support zero-length arrays, so supply some dummy data.
-        {AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-         {/* GroupID */},
-         searchbox_stats,
-         omnibox::TYPE_NATIVE_CHROME}};
     SCOPED_TRACE("No matches");
-    // Note: We pass 0 here to ignore the dummy data above.
-    RunSearchboxStatsTest(test_data, 0, /*input_is_zero_suggest=*/false);
+    RunSearchboxStatsTest({}, 0, /*input_is_zero_suggest=*/false);
   }
 
   // Note: See suggest.proto for the types and subtypes referenced below.

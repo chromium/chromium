@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -104,9 +105,9 @@ class KeywordProviderTest : public testing::Test {
   void SetUp() override;
 
   template <class ResultType>
-  void RunTest(TestData<ResultType>* keyword_cases,
+  void RunTest(base::span<TestData<ResultType>> keyword_cases,
                int num_cases,
-               ResultType AutocompleteMatch::*member);
+               ResultType AutocompleteMatch::* member);
 
  protected:
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_{
@@ -124,25 +125,31 @@ void KeywordProviderTest::SetUp() {
 }
 
 template <class ResultType>
-void KeywordProviderTest::RunTest(TestData<ResultType>* keyword_cases,
-                                  int num_cases,
-                                  ResultType AutocompleteMatch::*member) {
+void KeywordProviderTest::RunTest(
+    base::span<TestData<ResultType>> keyword_cases,
+    int spanification_suspected_redundant_num_cases,
+    ResultType AutocompleteMatch::* member) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_num_cases ==
+            static_cast<int>(keyword_cases.size()),
+        base::NotFatalUntil::M143);
   ACMatches matches;
-  for (int i = 0; i < num_cases; ++i) {
-    UNSAFE_TODO(SCOPED_TRACE(keyword_cases[i].input));
-    AutocompleteInput input(UNSAFE_TODO(keyword_cases[i]).input,
+  for (int i = 0; i < spanification_suspected_redundant_num_cases; ++i) {
+    SCOPED_TRACE(keyword_cases[i].input);
+    AutocompleteInput input(keyword_cases[i].input,
                             metrics::OmniboxEventProto::OTHER,
                             TestingSchemeClassifier());
     kw_provider_->Start(input, false);
     EXPECT_TRUE(kw_provider_->done());
     matches = kw_provider_->matches();
-    UNSAFE_TODO(ASSERT_EQ(keyword_cases[i].num_results, matches.size()));
+    ASSERT_EQ(keyword_cases[i].num_results, matches.size());
     for (size_t j = 0; j < matches.size(); ++j) {
-      UNSAFE_TODO(
-          EXPECT_EQ(keyword_cases[i].output[j].member, matches[j].*member));
-      UNSAFE_TODO(
-          EXPECT_EQ(keyword_cases[i].output[j].allowed_to_be_default_match,
-                    matches[j].allowed_to_be_default_match));
+      EXPECT_EQ(UNSAFE_TODO(keyword_cases[i].output[j].member),
+                matches[j].*member);
+      EXPECT_EQ(
+          UNSAFE_TODO(keyword_cases[i].output[j].allowed_to_be_default_match),
+          matches[j].allowed_to_be_default_match);
     }
   }
 }

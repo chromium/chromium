@@ -10,7 +10,7 @@
 #include <array>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,15 +19,21 @@ using base::UTF8ToUTF16;
 // Helper function for verifying that the contents of a C++ iterable container
 // of ints matches a C array ints.
 template <typename T>
-bool IntArraysEqual(const size_t* expected,
-                    size_t expected_size,
+bool IntArraysEqual(base::span<const size_t> expected,
+                    size_t spanification_suspected_redundant_expected_size,
                     const T& actual) {
-  if (expected_size != actual.size())
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_expected_size == expected.size(),
+        base::NotFatalUntil::M143);
+  if (spanification_suspected_redundant_expected_size != actual.size()) {
     return false;
-  for (size_t i = 0; i < expected_size; ++i)
-    if (UNSAFE_TODO(expected[i]) != actual[i]) {
+  }
+  for (size_t i = 0; i < spanification_suspected_redundant_expected_size; ++i) {
+    if (expected[i] != actual[i]) {
       return false;
     }
+  }
   return true;
 }
 

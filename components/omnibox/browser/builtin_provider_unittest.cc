@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -108,22 +108,25 @@ class BuiltinProviderTest : public testing::Test {
   }
   void TearDown() override { provider_ = nullptr; }
 
-  void RunTest(const TestData cases[], size_t num_cases) {
+  void RunTest(base::span<const TestData> cases,
+               size_t spanification_suspected_redundant_num_cases) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(spanification_suspected_redundant_num_cases == cases.size(),
+          base::NotFatalUntil::M143);
     ACMatches matches;
-    for (size_t i = 0; i < num_cases; ++i) {
-      UNSAFE_TODO(SCOPED_TRACE(
-          base::StringPrintf("case %" PRIuS ": %s", i,
-                             base::UTF16ToUTF8(cases[i].input).c_str())));
-      AutocompleteInput input(UNSAFE_TODO(cases[i]).input,
-                              metrics::OmniboxEventProto::OTHER,
+    for (size_t i = 0; i < spanification_suspected_redundant_num_cases; ++i) {
+      SCOPED_TRACE(base::StringPrintf(
+          "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));
+      AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,
                               TestSchemeClassifier());
       input.set_prevent_inline_autocomplete(true);
       provider_->Start(input, false);
       EXPECT_TRUE(provider_->done());
       matches = provider_->matches();
-      UNSAFE_TODO(ASSERT_EQ(cases[i].output.size(), matches.size()));
-      for (size_t j = 0; j < UNSAFE_TODO(cases[i]).output.size(); ++j) {
-        UNSAFE_TODO(EXPECT_EQ(cases[i].output[j], matches[j].destination_url));
+      ASSERT_EQ(cases[i].output.size(), matches.size());
+      for (size_t j = 0; j < cases[i].output.size(); ++j) {
+        EXPECT_EQ(cases[i].output[j], matches[j].destination_url);
       }
     }
   }

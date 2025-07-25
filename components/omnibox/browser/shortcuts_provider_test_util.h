@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
@@ -53,8 +54,8 @@ struct TestShortcutData {
 // Fills test data into the shortcuts backend.
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,
-    TestShortcutData* db,
-    size_t db_size);
+    base::span<TestShortcutData> db,
+    size_t spanification_suspected_redundant_db_size);
 
 // Runs an autocomplete query on |text| with the provided
 // |prevent_inline_autocomplete| setting and checks to see that the returned

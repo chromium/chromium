@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,11 +51,16 @@ TestShortcutData::~TestShortcutData() = default;
 
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,
-    TestShortcutData* db,
-    size_t db_size) {
-  size_t expected_size = backend->shortcuts_map().size() + db_size;
-  for (size_t i = 0; i < db_size; ++i) {
-    const TestShortcutData& cur = UNSAFE_TODO(db[i]);
+    base::span<TestShortcutData> db,
+    size_t spanification_suspected_redundant_db_size) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_db_size == db.size(),
+        base::NotFatalUntil::M143);
+  size_t expected_size = backend->shortcuts_map().size() +
+                         spanification_suspected_redundant_db_size;
+  for (size_t i = 0; i < spanification_suspected_redundant_db_size; ++i) {
+    const TestShortcutData& cur = db[i];
     ShortcutsDatabase::Shortcut shortcut(
         cur.guid, base::ASCIIToUTF16(cur.text),
         ShortcutsDatabase::Shortcut::MatchCore(

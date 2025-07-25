@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
 
+#include "components/omnibox/browser/autocomplete_result.h"
+
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -34,7 +36,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
@@ -187,9 +188,10 @@ class AutocompleteResultTest : public testing::Test {
   AutocompleteMatch PopulateAutocompleteMatch(const TestData& data);
 
   // Adds |count| AutocompleteMatches to |matches|.
-  void PopulateAutocompleteMatches(const TestData* data,
-                                   size_t count,
-                                   ACMatches* matches);
+  void PopulateAutocompleteMatches(
+      base::span<const TestData> data,
+      size_t spanification_suspected_redundant_count,
+      ACMatches* matches);
   ACMatches PopulateAutocompleteMatches(const std::vector<TestData>& data);
 
   // Asserts that |result| has |expected_count| matches matching |expected|.
@@ -202,19 +204,21 @@ class AutocompleteResultTest : public testing::Test {
 
   // Creates an AutocompleteResult from |last| and |current|. The two are
   // merged by |TransferOldMatches| and compared by |AssertResultMatches|.
-  void RunTransferOldMatchesTest(const TestData* last,
-                                 size_t last_size,
-                                 const TestData* current,
-                                 size_t current_size,
-                                 const TestData* expected,
-                                 size_t expected_size);
-  void RunTransferOldMatchesTest(const TestData* last,
-                                 size_t last_size,
-                                 const TestData* current,
-                                 size_t current_size,
-                                 const TestData* expected,
-                                 size_t expected_size,
-                                 AutocompleteInput input);
+  void RunTransferOldMatchesTest(
+      base::span<const TestData> last,
+      size_t spanification_suspected_redundant_last_size,
+      base::span<const TestData> current,
+      size_t spanification_suspected_redundant_current_size,
+      const TestData* expected,
+      size_t expected_size);
+  void RunTransferOldMatchesTest(
+      base::span<const TestData> last,
+      size_t spanification_suspected_redundant_last_size,
+      base::span<const TestData> current,
+      size_t spanification_suspected_redundant_current_size,
+      const TestData* expected,
+      size_t expected_size,
+      AutocompleteInput input);
 
   void SortMatchesAndVerifyOrder(
       const std::string& input_text,
@@ -267,11 +271,17 @@ AutocompleteMatch AutocompleteResultTest::PopulateAutocompleteMatch(
   return match;
 }
 
-void AutocompleteResultTest::PopulateAutocompleteMatches(const TestData* data,
-                                                         size_t count,
-                                                         ACMatches* matches) {
-  for (size_t i = 0; i < count; ++i)
+void AutocompleteResultTest::PopulateAutocompleteMatches(
+    base::span<const TestData> data,
+    size_t spanification_suspected_redundant_count,
+    ACMatches* matches) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_count == data.size(),
+        base::NotFatalUntil::M143);
+  for (size_t i = 0; i < spanification_suspected_redundant_count; ++i) {
     matches->push_back(PopulateAutocompleteMatch(data[i]));
+  }
 }
 
 ACMatches AutocompleteResultTest::PopulateAutocompleteMatches(
@@ -313,28 +323,48 @@ void AutocompleteResultTest::AssertMatch(AutocompleteMatch match,
       << i;
 }
 
-void AutocompleteResultTest::RunTransferOldMatchesTest(const TestData* last,
-                                                       size_t last_size,
-                                                       const TestData* current,
-                                                       size_t current_size,
-                                                       const TestData* expected,
-                                                       size_t expected_size) {
+void AutocompleteResultTest::RunTransferOldMatchesTest(
+    base::span<const TestData> last,
+    size_t spanification_suspected_redundant_last_size,
+    base::span<const TestData> current,
+    size_t spanification_suspected_redundant_current_size,
+    const TestData* expected,
+    size_t expected_size) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_last_size == last.size(),
+        base::NotFatalUntil::M143);
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_current_size == current.size(),
+        base::NotFatalUntil::M143);
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  RunTransferOldMatchesTest(last, last_size, current, current_size, expected,
-                            expected_size, input);
+  RunTransferOldMatchesTest(last, spanification_suspected_redundant_last_size,
+                            current,
+                            spanification_suspected_redundant_current_size,
+                            expected, expected_size, input);
 }
 
 void AutocompleteResultTest::RunTransferOldMatchesTest(
-    const TestData* last,
-    size_t last_size,
-    const TestData* current,
-    size_t current_size,
+    base::span<const TestData> last,
+    size_t spanification_suspected_redundant_last_size,
+    base::span<const TestData> current,
+    size_t spanification_suspected_redundant_current_size,
     const TestData* expected,
     size_t expected_size,
     AutocompleteInput input) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_last_size == last.size(),
+        base::NotFatalUntil::M143);
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_current_size == current.size(),
+        base::NotFatalUntil::M143);
   ACMatches last_matches;
-  PopulateAutocompleteMatches(last, last_size, &last_matches);
+  PopulateAutocompleteMatches(last, spanification_suspected_redundant_last_size,
+                              &last_matches);
   AutocompleteResult last_result;
   last_result.AppendMatches(last_matches);
   last_result.SortAndCull(
@@ -343,7 +373,9 @@ void AutocompleteResultTest::RunTransferOldMatchesTest(
       /*mia_enabled*/ false);
 
   ACMatches current_matches;
-  PopulateAutocompleteMatches(current, current_size, &current_matches);
+  PopulateAutocompleteMatches(current,
+                              spanification_suspected_redundant_current_size,
+                              &current_matches);
   AutocompleteResult current_result;
   current_result.AppendMatches(current_matches);
   current_result.SortAndCull(
@@ -3007,7 +3039,8 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
     SCOPED_TRACE("Query from omnibox - without IPH");
     // Remove the IPH suggestion from the list of matches.
     matches.clear();
-    PopulateAutocompleteMatches(data, std::size(data) - 1, &matches);
+    PopulateAutocompleteMatches(base::span(data).first(std::size(data) - 1),
+                                std::size(data) - 1, &matches);
 
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
