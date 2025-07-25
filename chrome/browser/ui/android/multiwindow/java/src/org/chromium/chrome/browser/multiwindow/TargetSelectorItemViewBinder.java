@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -28,7 +29,7 @@ class TargetSelectorItemViewBinder {
             view.findViewById(R.id.title).setSelected(isSelected);
             view.findViewById(R.id.desc).setSelected(isSelected);
             view.findViewById(R.id.last_accessed).setSelected(isSelected);
-            view.findViewById(R.id.close_button).setSelected(isSelected);
+            view.findViewById(R.id.more).setSelected(isSelected);
 
             // Show check mark if selected, otherwise fallback to favicon.
             faviconView.setImageDrawable(
@@ -57,8 +58,8 @@ class TargetSelectorItemViewBinder {
             TextView lastAccessedView = view.findViewById(R.id.last_accessed);
             String text = model.get(TargetSelectorItemProperties.LAST_ACCESSED);
             lastAccessedView.setText(text);
-            ImageView closeButton = view.findViewById(R.id.close_button);
-            closeButton.setVisibility(View.GONE);
+            ListMenuButton moreButton = view.findViewById(R.id.more);
+            moreButton.setVisibility(View.GONE);
         }
     }
 }

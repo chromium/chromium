@@ -413,15 +413,13 @@ public class InstanceSwitcherCoordinator {
                 buildMoreMenu(builder, item);
             }
         } else {
+            buildMoreMenu(builder, item);
             String lastAccessedString =
                     isCurrentWindow
                             ? mContext.getString(R.string.instance_last_accessed_current)
                             : TimeTextResolver.resolveTimeAgoText(
                                     mContext.getResources(), item.lastAccessedTime);
-            builder.with(InstanceSwitcherItemProperties.LAST_ACCESSED, lastAccessedString)
-                    .with(
-                            InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER,
-                            v -> closeWindow(item));
+            builder.with(InstanceSwitcherItemProperties.LAST_ACCESSED, lastAccessedString);
             builder.with(InstanceSwitcherItemProperties.IS_SELECTED, false);
         }
         PropertyModel model = builder.build();

@@ -971,14 +971,16 @@ public class InstanceSwitcherCoordinatorTest {
 
                                     @Override
                                     public void perform(UiController uiController, View view) {
-                                        View v = view.findViewById(R.id.close_button);
+                                        View v = view.findViewById(R.id.more);
                                         v.performClick();
                                     }
                                 }));
-        onView(withText(R.string.close))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()))
+        onView(withText(R.string.instance_switcher_close_window))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());
+        onView(withText(R.string.instance_switcher_close_confirm_header))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.close)).perform(click());
         closeCallbackHelper.waitForCallback(closeCallbackCount);
     }
 

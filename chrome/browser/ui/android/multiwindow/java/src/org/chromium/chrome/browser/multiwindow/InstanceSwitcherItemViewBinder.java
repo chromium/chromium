@@ -33,7 +33,7 @@ class InstanceSwitcherItemViewBinder {
             view.findViewById(R.id.title).setSelected(isSelected);
             view.findViewById(R.id.desc).setSelected(isSelected);
             view.findViewById(R.id.last_accessed).setSelected(isSelected);
-            view.findViewById(R.id.close_button).setSelected(isSelected);
+            view.findViewById(R.id.more).setSelected(isSelected);
 
             // Show check mark if selected, otherwise fallback to favicon.
             faviconView.setImageDrawable(
@@ -90,10 +90,6 @@ class InstanceSwitcherItemViewBinder {
             TextView lastAccessedView = view.findViewById(R.id.last_accessed);
             String text = model.get(InstanceSwitcherItemProperties.LAST_ACCESSED);
             lastAccessedView.setText(text);
-        } else if (InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER == propertyKey) {
-            ImageView closeButton = view.findViewById(R.id.close_button);
-            closeButton.setOnClickListener(
-                    model.get(InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER));
         }
     }
 }

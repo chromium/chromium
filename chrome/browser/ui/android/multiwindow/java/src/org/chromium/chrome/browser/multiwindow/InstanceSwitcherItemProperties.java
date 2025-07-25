@@ -45,9 +45,6 @@ public class InstanceSwitcherItemProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> LAST_ACCESSED =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
-            CLOSE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-
     public static final PropertyModel.WritableBooleanPropertyKey IS_SELECTED =
             new PropertyModel.WritableBooleanPropertyKey();
 
@@ -63,7 +60,6 @@ public class InstanceSwitcherItemProperties {
                 CLICK_LISTENER,
                 MORE_MENU,
                 LAST_ACCESSED,
-                CLOSE_BUTTON_CLICK_LISTENER,
                 IS_SELECTED
             };
 }
