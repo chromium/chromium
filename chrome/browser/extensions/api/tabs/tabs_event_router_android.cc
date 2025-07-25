@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_event_router_android.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
@@ -126,7 +127,14 @@ void TabsEventRouterAndroid::DidAddTab(TabAndroid* tab,
   if (!SessionID::IsValidValue(tab_id)) {
     return;
   }
-  CHECK(!tab_entries_.contains(tab_id));
+  // In the field, sometimes tabs are added with duplicate IDs. See
+  // http://crbug.com/434055707
+  if (tab_entries_.contains(tab_id)) {
+    LOG(ERROR) << "Duplicate tab ID " << tab_id << " for "
+               << tab->GetURL().spec();
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   tab_entries_.emplace(tab_id,
                        std::make_unique<TabEntry>(this, tab->web_contents()));
 }
