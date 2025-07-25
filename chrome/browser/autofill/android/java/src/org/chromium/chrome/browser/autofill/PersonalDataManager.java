@@ -966,33 +966,6 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * Checks whether the Autofill PersonalDataManager has profiles.
-     *
-     * @return True If there are profiles.
-     */
-    public boolean hasProfiles() {
-        return PersonalDataManagerJni.get().hasProfiles(mPersonalDataManagerAndroid);
-    }
-
-    /**
-     * Checks whether the Autofill PersonalDataManager has credit cards.
-     *
-     * @return True If there are credit cards.
-     */
-    public boolean hasCreditCards() {
-        return PersonalDataManagerJni.get().hasCreditCards(mPersonalDataManagerAndroid);
-    }
-
-    /**
-     * @return Whether FIDO authentication is available.
-     */
-    public boolean isFidoAuthenticationAvailable() {
-        return isAutofillPaymentMethodsEnabled()
-                && PersonalDataManagerJni.get()
-                        .isFidoAuthenticationAvailable(mPersonalDataManagerAndroid);
-    }
-
-    /**
      * @return Whether the Autofill feature for Profiles (addresses) is enabled.
      */
     public boolean isAutofillProfileEnabled() {
@@ -1210,12 +1183,6 @@ public class PersonalDataManager implements Destroyable {
 
         void recordAndLogCreditCardUse(
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
-
-        boolean hasProfiles(long nativePersonalDataManagerAndroid);
-
-        boolean hasCreditCards(long nativePersonalDataManagerAndroid);
-
-        boolean isFidoAuthenticationAvailable(long nativePersonalDataManagerAndroid);
 
         boolean isAutofillProfileManaged(long nativePersonalDataManagerAndroid);
 

@@ -174,15 +174,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // date to the current time.
   void RecordAndLogCreditCardUse(JNIEnv* env, std::string& guid);
 
-  // Checks whether the Autofill PersonalDataManager has profiles.
-  jboolean HasProfiles(JNIEnv* env);
-
-  // Checks whether the Autofill PersonalDataManager has credit cards.
-  jboolean HasCreditCards(JNIEnv* env);
-
-  // Checks whether FIDO authentication is available.
-  jboolean IsFidoAuthenticationAvailable(JNIEnv* env);
-
   static base::android::ScopedJavaLocalRef<jobject> CreateJavaIbanFromNative(
       JNIEnv* env,
       const Iban& iban);
