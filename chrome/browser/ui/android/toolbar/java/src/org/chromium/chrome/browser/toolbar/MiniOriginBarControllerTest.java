@@ -460,6 +460,23 @@ public class MiniOriginBarControllerTest {
     }
 
     @Test
+    public void testAnimateWithKeyboard_animationWithZeroMaxHeight() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        final MiniOriginWindowInsetsAnimationListener animationListener =
+                mMiniOriginBarController.getAnimationListenerForTesting();
+
+        final BoundsCompat bounds = new BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, 0));
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+
+        animationListener.onPrepare(mImeAnimation);
+        animationListener.onStart(mImeAnimation, bounds);
+        Assert.assertEquals(
+                MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
+    }
+
+    @Test
     public void testAnimateWithKeyboard_animationFinishesInStartingState() {
         // Predictive back gestures can cause an IME hide animation to run but finish with the IME
         // still showing if the gesture is cancelled.

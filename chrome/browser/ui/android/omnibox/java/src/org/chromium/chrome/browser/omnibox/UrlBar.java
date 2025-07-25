@@ -1267,6 +1267,14 @@ public class UrlBar extends AutocompleteEditText {
     @VisibleForTesting
     void enforceMaxTextHeight() {
         if (mUseSmallTextHeight) return;
+        // Our viewHeight calculation may not be correct if layout is requested, e.g. if our padding
+        // and height change simultaneously. The padding change will be reflected immediately, but
+        // the height change requires a layout cycle to be reflected.
+        if (isLayoutRequested()) {
+            post(mEnforceMaxTextHeight);
+            return;
+        }
+
         int viewHeight = getHeight() - getPaddingTop() - getPaddingBottom();
         // Don't touch the text size if the view has not measured and shown yet, or if it's a
         // subject to custom layout constraints (e.g. CCT) that might result with font size being

@@ -987,6 +987,17 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void layout_adjustFontSizeLayoutRequested() {
+        mUrlBar.setLayoutParams(new LayoutParams(123, 123));
+        mUrlBar.layout(0, 0, 123, 123);
+        verify(mUrlBar).post(mUrlBar.mEnforceMaxTextHeight);
+
+        mUrlBar.forceLayout();
+        mUrlBar.enforceMaxTextHeight();
+        verify(mUrlBar, times(2)).post(mUrlBar.mEnforceMaxTextHeight);
+    }
+
+    @Test
     public void layout_fixedFontSizeWithWrappingHeight() {
         mUrlBar.setLayoutParams(new LayoutParams(123, LayoutParams.WRAP_CONTENT));
         mUrlBar.layout(0, 0, 123, 123);

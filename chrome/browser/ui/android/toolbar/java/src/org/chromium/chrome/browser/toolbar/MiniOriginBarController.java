@@ -527,13 +527,20 @@ public class MiniOriginBarController implements Observer {
                 return;
             }
 
+            mAnimationInProgress = true;
             mMaxKeyboardHeight = bounds.getUpperBound().bottom;
+            // In some cases, e.g. a floating keyboard, we get a notification of an inset animation
+            // even though IME inset bottom will start and end at 0. There is a not a clean way to
+            // handle this, so we just bail out of the animation early.
+            if (mMaxKeyboardHeight == 0) {
+                onEnd(animation);
+                return;
+            }
             // Prevent clipping so that the mini origin bar can draw in bounds allocated for the
             // keyboard; we will prevent overlap by syncing our translation to its movement in
             // onProgress.
             ViewUtils.setAncestorsShouldClipChildren(mContainerView, false, View.NO_ID);
             ViewUtils.setAncestorsShouldClipToPadding(mContainerView, false, View.NO_ID);
-            mAnimationInProgress = true;
             mFinalKeyboardHeight =
                     mKeyboardVisibilityDelegate.isKeyboardShowing(mContext, mContainerView)
                             ? bounds.getUpperBound().bottom
