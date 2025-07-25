@@ -14,7 +14,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:minHeight="@dimen/recent_tabs_foreign_session_group_item_height"
     android:paddingStart="@dimen/recent_tabs_list_item_side_padding"
-    android:paddingEnd="@dimen/recent_tabs_list_item_side_padding">
+    android:paddingEnd="@dimen/recent_tabs_list_item_side_padding"
+    android:background="@drawable/list_item_rounded_background_selector">
 
     <ImageView
         android:id="@+id/recent_tabs_favicon"

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.HoverHighlightViewListener;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -140,6 +141,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private final int mFaviconSize;
     private boolean mHasForeignDataRecorded;
     private final RoundedIconGenerator mIconGenerator;
+    private final HoverHighlightViewListener mHoverListener;
 
     /**
      * A generic group of objects to be shown in the RecentTabsRowAdapter, such as the list of
@@ -222,6 +224,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                                 LayoutInflater.from(mActivity)
                                         .inflate(R.layout.recent_tabs_group_item, parent, false);
             }
+            groupView.setOnHoverListener(mHoverListener);
+            groupView.getExpandCollapseIcon().setOnHoverListener(mHoverListener);
             configureGroupView(groupView, isExpanded);
             return groupView;
         }
@@ -653,6 +657,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             viewHolder.textView.setContentDescription(null);
             // Reset the icon view.
             viewHolder.iconView.setVisibility(View.GONE);
+            // Explicitly telling this specific row's layout should react to hover events.
+            viewHolder.itemLayout.setOnHoverListener(mHoverListener);
             Resources res = mActivity.getResources();
             if (isHistoryLink(childPosition)) {
                 viewHolder.textView.setText(R.string.show_full_history);
@@ -714,7 +720,6 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 }
             } else {
                 RecentlyClosedTab tab = (RecentlyClosedTab) entry;
-
                 String title = TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl());
                 viewHolder.textView.setText(title);
 
@@ -881,6 +886,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         mFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
 
         mIconGenerator = FaviconUtils.createCircularIconGenerator(activity);
+        mHoverListener = new HoverHighlightViewListener();
 
         RecordHistogram.recordEnumeratedHistogram(
                 "HistoryPage.OtherDevicesMenu",

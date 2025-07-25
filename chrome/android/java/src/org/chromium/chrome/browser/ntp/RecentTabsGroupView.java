@@ -68,6 +68,11 @@ public class RecentTabsGroupView extends RelativeLayout {
         mExpandCollapseIcon.setImageDrawable(collapseIcon);
     }
 
+    /** Returns the expand/collapse icon. */
+    public ImageView getExpandCollapseIcon() {
+        return mExpandCollapseIcon;
+    }
+
     /**
      * Configures the view for a foreign session.
      *
