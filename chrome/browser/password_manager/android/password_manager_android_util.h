@@ -63,11 +63,6 @@ bool IsPasswordManagerAvailable(const PrefService* prefs,
 // the correct util to check.
 bool LoginDbDeprecationReady(PrefService* pref_service);
 
-// Used to prevent static casting issues with
-// `PasswordsUseUPMLocalAndSeparateStores` pref.
-password_manager::prefs::UseUpmLocalAndSeparateStoresState
-GetSplitStoresAndLocalUpmPrefValue(PrefService* pref_service);
-
 // Used to decide whether using UPM as backend is possible. The check is based
 // on whether the GMSCore is installed and the internal wiring is present, and
 // whether the requirement for the minimum version is met.
@@ -75,9 +70,9 @@ GetSplitStoresAndLocalUpmPrefValue(PrefService* pref_service);
 // when the only accepted UPM version is the one offering full support.
 bool AreMinUpmRequirementsMet();
 
-// Called on startup to update the value of UsesSplitStoresAndUPMForLocal(),
-// based on minimum GmsCore version and other criteria.
-void SetUsesSplitStoresAndUPMForLocal(
+// The login database is deprecated on Android. This function deletes the data
+// if the user already exported any leftover data.
+void MaybeDeleteLoginDatabases(
     PrefService* pref_service,
     const base::FilePath& login_db_directory,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge);

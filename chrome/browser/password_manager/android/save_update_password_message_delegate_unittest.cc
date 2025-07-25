@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -480,10 +481,8 @@ void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
 
 void SaveUpdatePasswordMessageDelegateTest::
     EnableUseUPMLocalAndSeparateStores() {
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    true);
 }
 
 // Tests that secondary menu icon is set for the save password message
@@ -1151,10 +1150,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        SignedInDescription_UpdatePasswordInAccountStore) {
   // Enables using split storages (local and account).
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    true);
 
   SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
   std::vector<PasswordForm> single_form_best_matches = {
@@ -1240,10 +1237,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, RecordsPromptShownWhenEnqueuing) {
 // if the credential comes from the profile store.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        LocalCredentialNotUsingAccountStorage) {
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    false);
   SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -1260,10 +1255,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // Tests `IsUsingAccountStorage` returns true if the crential comes from
 // the account store.
 TEST_F(SaveUpdatePasswordMessageDelegateTest, CredentialUsingAccountStorage) {
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    false);
   SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());

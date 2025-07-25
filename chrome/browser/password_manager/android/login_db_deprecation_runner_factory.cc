@@ -45,7 +45,7 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
   PrefService* prefs = profile->GetPrefs();
 
   // If the client is already migrated there is no need for export.
-  if (password_manager::UsesSplitStoresAndUPMForLocal(prefs)) {
+  if (password_manager::GetLegacySplitStoresPref(prefs)) {
     return nullptr;
   }
 

@@ -101,14 +101,6 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     : pref_service_(prefs), os_crypt_async_(os_crypt_async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  // This backend shouldn't be created for the users migrated to UPM with
-  // split stores.
-  CHECK_NE(prefs->GetInteger(
-               password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores),
-           static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   DCHECK(background_task_runner_);

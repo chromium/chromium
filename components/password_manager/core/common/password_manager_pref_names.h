@@ -119,27 +119,6 @@ inline constexpr char kPasswordRemovalReasonForProfile[] =
     "password_removal_reason_for_profile";
 
 #if BUILDFLAG(IS_ANDROID)
-// Integer pref indicating whether the client is ready to use UPM for local
-// passwords and settings and split password stores for syncing users.
-// The preconditions for the pref to be set to true:
-// - M2: For users syncing passwords, the profile store contents have been
-// moved to the account store. For the users who are not syncing passwords, the
-// login database is empty and prefs are default.
-// - M3: For the users who are not syncing passwords, the passwords have been
-// successfully copied to GMS Core. The settings will be migrated as well, but
-// their migration doesn't impact this pref.
-//
-// Do not renumber UseUpmLocalAndSeparateStoresState, values are persisted.
-// Values are also used for metrics recording.
-enum class UseUpmLocalAndSeparateStoresState {
-  kOff = 0,
-  kOffAndMigrationPending = 1,
-  kOn = 2,
-  kMaxValue = kOn
-};
-inline constexpr char kPasswordsUseUPMLocalAndSeparateStores[] =
-    "passwords_use_upm_local_and_separate_stores";
-
 // Timestamp at which the last UPM error message was shown to the user in
 // milliseconds since UNIX epoch (used in Java).
 // This is needed to ensure that the UI is prompted only once per given

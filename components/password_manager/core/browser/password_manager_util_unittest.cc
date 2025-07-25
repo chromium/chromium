@@ -142,8 +142,6 @@ class PasswordManagerUtilTest : public testing::Test {
         password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
-    pref_service_.registry()->RegisterIntegerPref(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     pref_service_.registry()->RegisterBooleanPref(

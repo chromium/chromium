@@ -44,7 +44,6 @@ namespace {
 using ::password_manager::PasswordStoreBackend;
 using ::password_manager::PasswordStoreBuiltInBackend;
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 using password_manager_android_util::PasswordManagerUtilBridge;
 #endif
 

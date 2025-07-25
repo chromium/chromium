@@ -60,13 +60,6 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
 
 TEST_F(PasswordFeatureManagerImplTest,
        GenerationEnabledIfNonSyncingAndUsingAccountStorage) {
-#if BUILDFLAG(IS_ANDROID)
-  pref_service_.registry()->RegisterIntegerPref(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
-#endif  // BUILDFLAG(IS_ANDROID)
-
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   ASSERT_EQ(
@@ -127,11 +120,6 @@ TEST_F(PasswordFeatureManagerImplTest, AccountStorageDisabledIfSigninPaused) {
 // available, generation is disabled, but that is decided on a different layer.
 TEST_F(PasswordFeatureManagerImplTest,
        GenerationEnabledEvenIfCannotCreateAccountStore) {
-  pref_service_.registry()->RegisterIntegerPref(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   ASSERT_EQ(

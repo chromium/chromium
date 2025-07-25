@@ -42,7 +42,6 @@
 namespace {
 
 using password_manager::PasswordForm;
-using password_manager::UsesSplitStoresAndUPMForLocal;
 
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;

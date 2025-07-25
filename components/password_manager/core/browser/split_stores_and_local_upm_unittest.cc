@@ -23,10 +23,7 @@ constexpr std::string kGmsVersionWithLocalPasswordsSupport = "240212000";
 class SplitStoresAndLocalUpmTest : public ::testing::Test {
  public:
   SplitStoresAndLocalUpmTest() {
-    pref_service_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+    RegisterLegacySplitStoresPref(pref_service_.registry());
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
@@ -36,26 +33,13 @@ class SplitStoresAndLocalUpmTest : public ::testing::Test {
 };
 
 TEST_F(SplitStoresAndLocalUpmTest, UpmPrefOff) {
-  EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
-}
-
-TEST_F(SplitStoresAndLocalUpmTest, UpmPrefOffAndMigrationPending) {
-  pref_service()->SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
-              kOffAndMigrationPending));
-
-  EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+  EXPECT_FALSE(GetLegacySplitStoresPref(pref_service()));
 }
 
 TEST_F(SplitStoresAndLocalUpmTest, UpmPrefOn) {
-  pref_service()->SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  SetLegacySplitStoresPrefForTest(pref_service(), true);
 
-  EXPECT_TRUE(UsesSplitStoresAndUPMForLocal(pref_service()));
+  EXPECT_TRUE(GetLegacySplitStoresPref(pref_service()));
 }
 
 struct IsGmsCoreUpdateRequiredTestCase {

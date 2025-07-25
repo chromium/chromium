@@ -2503,14 +2503,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 11/2023, but DO NOT REMOVE after the usual year!
-  // TODO(crbug.com/40268177): The pref kPasswordsUseUPMLocalAndSeparateStores
-  // and this call (to compute said pref) should be removed once
-  // kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration is launched and
-  // enough clients have migrated. UsesSplitStoresAndUPMForLocal() should be
-  // updated to check the GmsCoreVersion directly instead of the pref, or
-  // might be removed entirely, depending how the outdated GmsCore case is
-  // handled.
-  password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(
+  // TODO(crbug.com/378653046): This call should be removed once enough time
+  // has passed.
+  password_manager_android_util::MaybeDeleteLoginDatabases(
       profile_prefs, profile_path,
       std::make_unique<
           password_manager_android_util::PasswordManagerUtilBridge>());

@@ -185,14 +185,7 @@ class PasswordStoreTest : public testing::Test {
     OSCryptMocker::SetUp();
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
-#if BUILDFLAG(IS_ANDROID)
-    // All tests currently rely on built-in backend, so the pref should stay
-    // off. Tests relying on the android backend should set this accordingly.
-    pref_service_.registry()->RegisterIntegerPref(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-#else
+#if !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
 #endif

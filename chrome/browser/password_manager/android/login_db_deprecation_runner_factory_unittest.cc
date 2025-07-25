@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -24,20 +25,14 @@ class LoginDbDeprecationRunnerFactoryTest : public testing::Test {
 
 TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfMigrated) {
   PrefService* prefs = testing_profile_.GetPrefs();
-  prefs->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  password_manager::SetLegacySplitStoresPrefForTest(prefs, true);
   EXPECT_FALSE(
       LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
 }
 
 TEST_F(LoginDbDeprecationRunnerFactoryTest, NullIfAlreadyExported) {
   PrefService* prefs = testing_profile_.GetPrefs();
-  prefs->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  password_manager::SetLegacySplitStoresPrefForTest(prefs, false);
   prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
                     true);
   EXPECT_FALSE(
@@ -47,23 +42,7 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest, NullIfAlreadyExported) {
 TEST_F(LoginDbDeprecationRunnerFactoryTest,
        NonNullServiceIfNotEligibleForMigration) {
   PrefService* prefs = testing_profile_.GetPrefs();
-  prefs->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
-                    false);
-  EXPECT_TRUE(
-      LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
-}
-
-TEST_F(LoginDbDeprecationRunnerFactoryTest, NonNullServiceIfMigrationPending) {
-  PrefService* prefs = testing_profile_.GetPrefs();
-  prefs->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
-              kOffAndMigrationPending));
+  password_manager::SetLegacySplitStoresPrefForTest(prefs, false);
   prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
                     false);
   EXPECT_TRUE(

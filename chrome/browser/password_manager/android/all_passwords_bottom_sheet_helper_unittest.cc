@@ -13,6 +13,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,10 +54,8 @@ class AllPasswordsBottomSheetHelperTest
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    profile_.GetPrefs()->SetInteger(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+    password_manager::SetLegacySplitStoresPrefForTest(profile_.GetPrefs(),
+                                                      true);
     profile_store_ = CreateAndUseTestPasswordStore(&profile_);
     account_store_ = CreateAndUseTestAccountPasswordStore(&profile_);
   }

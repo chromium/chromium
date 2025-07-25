@@ -31,7 +31,6 @@
 
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
-using password_manager::UsesSplitStoresAndUPMForLocal;
 
 namespace {
 
@@ -39,7 +38,6 @@ using Consumer =
     password_manager::PasswordSettingsUpdaterAndroidReceiverBridge::Consumer;
 using SyncingAccount = password_manager::
     PasswordSettingsUpdaterAndroidReceiverBridge::SyncingAccount;
-using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 const std::vector<PasswordManagerSetting> GetAllPasswordSettings() {
   return base::FeatureList::IsEnabled(

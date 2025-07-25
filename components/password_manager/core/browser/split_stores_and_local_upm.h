@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SPLIT_STORES_AND_LOCAL_UPM_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SPLIT_STORES_AND_LOCAL_UPM_H_
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace syncer {
@@ -13,14 +14,16 @@ class SyncService;
 
 namespace password_manager {
 
-//  Checks whether the UPM for local users is activated for this client.
-//  This also means that the single password store has been split in
-//  account and local stores.
+void RegisterLegacySplitStoresPref(PrefRegistrySimple* registry);
+
+// WARNING: Do not add new callers without consulting with ioanap@.
 //
-// DEPRECATED: With kLoginDbDeprecationAndroid enabled, the UPM activation
-// pref is no longer set for new users. All users will have split stores, either
-// both empty or both using Google Play Services as storage.
-bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service);
+// This returns the value of a certain pref that used to dictate whether a
+// second PasswordStore should be created. As of 07/2025, Android always creates
+// 2 stores, regardless of the pref. For now, the pref value still exists on
+// disk and is read in specific places for migration reasons. But it is never
+// written in production anymore.
+bool GetLegacySplitStoresPref(const PrefService* pref_service);
 
 // Returns whether it is a requirement to update the GMSCore based on the
 // GMSCore version, whether syncing is enabled and whether the user is enrolled
@@ -40,6 +43,8 @@ inline constexpr int kAccountUpmMinGmsVersion = 223012000;
 // as a function because the value is different on auto / non-auto and the
 // form factor can only be checked in runtime.
 int GetLocalUpmMinGmsVersion();
+
+void SetLegacySplitStoresPrefForTest(PrefService* pref_service, bool enabled);
 
 }  // namespace password_manager
 

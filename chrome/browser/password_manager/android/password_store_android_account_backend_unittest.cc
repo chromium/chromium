@@ -166,9 +166,6 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
     mock_affiliation_service_ =
         std::make_unique<testing::NiceMock<MockAffiliationService>>();
 
-    prefs_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
     prefs_.registry()->RegisterBooleanPref(
         prefs::kEmptyProfileStoreLoginDatabase, false);
 
@@ -1740,9 +1737,6 @@ class PasswordStoreAndroidAccountBackendAbleToSaveTest
         PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
         base::NullCallback(), base::DoNothing());
     backend().OnSyncServiceInitialized(sync_service());
-    prefs()->SetInteger(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
   }
 
   AndroidBackendAPIErrorCode GetAPIErrorCode() { return GetParam().first; }

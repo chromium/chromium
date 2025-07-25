@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -230,10 +231,8 @@ TEST_F(CredentialLeakControllerAndroidTest, NoDirectInteraction) {
 TEST_F(CredentialLeakControllerAndroidTest,
        LeakTypeResetToChangeIfLoginDbDeprecationNotReady) {
   // The export state is only valid for users who are not enrolled in UPM.
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    false);
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
 
@@ -268,10 +267,8 @@ TEST_F(CredentialLeakControllerAndroidTest,
   }
 
   // The export state is only valid for users who are not enrolled in UPM.
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    false);
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kUpmUnmigratedPasswordsExported, true);
 
@@ -305,10 +302,8 @@ TEST_F(CredentialLeakControllerAndroidTest,
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    true);
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
 

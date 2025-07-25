@@ -13,6 +13,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -134,10 +135,8 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonTextOnAutomotive) {
 TEST_F(PasswordReuseControllerAndroidTest,
        VerifyButtonTextLoginDbExportNotDone) {
   // Password export is only relevant if UPM is not already active.
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    false);
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
 
@@ -203,10 +202,8 @@ TEST_F(PasswordReuseControllerAndroidTest,
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
-  profile()->GetPrefs()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
+                                                    true);
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
 
