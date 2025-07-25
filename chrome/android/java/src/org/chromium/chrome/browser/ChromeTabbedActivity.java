@@ -284,6 +284,7 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.TabUndoBarController;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionInitializerImpl;
 import org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionManagerImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
@@ -322,6 +323,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
+import org.chromium.ui.xr.scenecore.XrSceneCoreSessionInitializer;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.url.GURL;
 
@@ -383,6 +385,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             "Startup.Android.Warm.MainIntentTimeToFirstDraw";
     private static final String PIXEL_LAUNCHER_NAME = "PixelLauncher";
     private static final String THIRD_PARTY_LAUNCHER_NAME = "ThirdPartyLauncher";
+    private static final boolean INITIAL_XR_FULL_SPACE_MODE = false;
 
     /**
      * This class is used to warm up the chrome split ClassLoader. See SplitChromeApplication for
@@ -612,6 +615,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mXrSceneCoreSessionManagerSupplier =
                     LazyOneshotSupplier.fromSupplier(this::createXrSceneCoreSessionManager);
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
+    private XrSceneCoreSessionInitializer mXrSceneCoreSessionInitializer;
     private @SupportedProfileType int mSupportedProfileType;
 
     /** Constructs a ChromeTabbedActivity. */
@@ -1356,6 +1360,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::maybeInitializeXrSceneCoreSession);
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::finishNativeInitialization));
@@ -4168,6 +4173,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
             xrSceneCoreSessionManager.destroy();
         }
 
+        if (mXrSceneCoreSessionInitializer != null) {
+            mXrSceneCoreSessionInitializer.destroy();
+        }
+
         super.onDestroyInternal();
     }
 
@@ -4541,6 +4550,15 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private void onXrSpaceModeChanged(boolean fullSpaceMode) {
         if (mCompositorViewHolder != null) {
             mCompositorViewHolder.getCompositorView().setXrFullSpaceMode(fullSpaceMode);
+        }
+    }
+
+    private void maybeInitializeXrSceneCoreSession() {
+        if (XrUtils.isXrDevice()) {
+            mXrSceneCoreSessionInitializer =
+                    new XrSceneCoreSessionInitializerImpl(
+                            getLifecycleDispatcher(), mXrSceneCoreSessionManagerSupplier.get());
+            mXrSceneCoreSessionInitializer.initialize(INITIAL_XR_FULL_SPACE_MODE);
         }
     }
 
