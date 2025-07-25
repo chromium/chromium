@@ -18,6 +18,45 @@
 namespace gpu {
 
 // static
+bool SharedMemoryImageBackingFactory::IsSizeValidForFormat(
+    const gfx::Size& size,
+    viz::SharedImageFormat format) {
+  auto buffer_format = ToBufferFormat(format);
+  switch (buffer_format) {
+    case gfx::BufferFormat::R_8:
+    case gfx::BufferFormat::R_16:
+    case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RG_1616:
+    case gfx::BufferFormat::BGR_565:
+    case gfx::BufferFormat::RGBA_4444:
+    case gfx::BufferFormat::RGBA_8888:
+    case gfx::BufferFormat::RGBX_8888:
+    case gfx::BufferFormat::BGRA_8888:
+    case gfx::BufferFormat::BGRX_8888:
+    case gfx::BufferFormat::BGRA_1010102:
+    case gfx::BufferFormat::RGBA_1010102:
+    case gfx::BufferFormat::RGBA_F16:
+      return true;
+    case gfx::BufferFormat::YVU_420:
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+    case gfx::BufferFormat::P010: {
+      size_t num_planes =
+          gfx::NumberOfPlanesForLinearBufferFormat(buffer_format);
+      for (size_t i = 0; i < num_planes; ++i) {
+        size_t factor = gfx::SubsamplingFactorForBufferFormat(buffer_format, i);
+        if (size.width() % factor || size.height() % factor) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
+  NOTREACHED();
+}
+
+// static
 gfx::GpuMemoryBufferHandle
 SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
     const gfx::Size& size,

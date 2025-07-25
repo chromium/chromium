@@ -429,8 +429,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     // If native buffers are not supported, try to create shared memory based
     // backings.
     if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage) &&
-        gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(
-            size, buffer_format)) {
+        SharedMemoryImageBackingFactory::IsSizeValidForFormat(size, format)) {
       // Clear the external sampler prefs for shared memory case if it is set.
       // https://issues.chromium.org/339546249.
       if (format.PrefersExternalSampler()) {
