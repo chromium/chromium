@@ -1120,8 +1120,54 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testCallbacksAreSent() throws Exception {
+        final Semaphore tabShownSemaphore = new Semaphore(0);
         final Semaphore navigationStartSemaphore = new Semaphore(0);
         final Semaphore navigationFinishedSemaphore = new Semaphore(0);
+        Intent intent =
+                createIntentWithCallback(
+                        tabShownSemaphore, navigationStartSemaphore, navigationFinishedSemaphore);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        Assert.assertTrue(
+                tabShownSemaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
+        Assert.assertTrue(
+                navigationStartSemaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
+        Assert.assertTrue(
+                navigationFinishedSemaphore.tryAcquire(
+                        TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
+    }
+
+    /** Tests that the navigation callbacks are sent for pre-warmed CCT. */
+    @Test
+    @SmallTest
+    public void testCallbacksAreSentForPreWarmedCCT() throws Exception {
+        final Semaphore tabShownSemaphore = new Semaphore(0);
+        final Semaphore navigationStartSemaphore = new Semaphore(0);
+        final Semaphore navigationFinishedSemaphore = new Semaphore(0);
+        CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        Intent intent =
+                createIntentWithCallback(
+                        tabShownSemaphore, navigationStartSemaphore, navigationFinishedSemaphore);
+        final var token = SessionHolder.getSessionHolderFromIntent(intent);
+        Assert.assertTrue(connection.newSession(token.getSessionAsCustomTab()));
+        Assert.assertTrue(
+                connection.mayLaunchUrl(
+                        token.getSessionAsCustomTab(), Uri.parse(mTestPage), null, null));
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        Assert.assertTrue(
+                tabShownSemaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
+        Assert.assertTrue(
+                navigationStartSemaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
+        Assert.assertTrue(
+                navigationFinishedSemaphore.tryAcquire(
+                        TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
+    }
+
+    private Intent createIntentWithCallback(
+            Semaphore tabShownSemaphore,
+            Semaphore navigationStartSemaphore,
+            Semaphore navigationFinishedSemaphore)
+            throws Exception {
         CustomTabsSession session =
                 CustomTabsTestUtils.bindWithCallback(
                                 new CustomTabsCallback() {
@@ -1134,7 +1180,9 @@ public class CustomTabActivityTest {
                                         Assert.assertNotEquals(
                                                 CustomTabsCallback.NAVIGATION_ABORTED,
                                                 navigationEvent);
-                                        if (navigationEvent
+                                        if (navigationEvent == CustomTabsCallback.TAB_SHOWN) {
+                                            tabShownSemaphore.release();
+                                        } else if (navigationEvent
                                                 == CustomTabsCallback.NAVIGATION_STARTED) {
                                             navigationStartSemaphore.release();
                                         } else if (navigationEvent
@@ -1150,13 +1198,7 @@ public class CustomTabActivityTest {
                 new ComponentName(
                         ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        Assert.assertTrue(
-                navigationStartSemaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
-        Assert.assertTrue(
-                navigationFinishedSemaphore.tryAcquire(
-                        TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
+        return intent;
     }
 
     /** Tests that page load metrics are sent. */
