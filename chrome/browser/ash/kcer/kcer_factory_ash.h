@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 #define CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 
-#include "ash/public/cpp/session/session_observer.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/kcer/nssdb_migration/kcer_rollback_helper.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/ash/components/kcer/kcer.h"
@@ -16,7 +14,6 @@
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 
 class Profile;
-class PrefService;
 
 namespace net {
 class NSSCertDatabase;
@@ -35,7 +32,7 @@ namespace kcer {
 // Kcer will talk directly with Chaps without using NSS.
 BASE_DECLARE_FEATURE(kKcerWithoutNss);
 
-class KcerFactoryAsh : public ProfileKeyedServiceFactory, ash::SessionObserver {
+class KcerFactoryAsh : public ProfileKeyedServiceFactory {
  public:
   // Public for the implementation of this class.
   using UniqueSlotId = std::pair<SECMODModuleID, CK_SLOT_ID>;
@@ -159,19 +156,11 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory, ash::SessionObserver {
   void RecordPkcs12CertDualWrittenImpl();
   void ClearNssTokenMapForTestingImpl();
 
-  // Implements ash::SessionObserver.
-  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
-  // Might schedule a rollback of certs that were double-written into Chaps and
-  // NSS (i.e. the deletion of related certs in Chaps).
-  void MaybeScheduleRollbackForCertDoubleWrite(PrefService* pref_service);
-
   // Used by `high_level_chaps_client_` and must outlive it.
   std::unique_ptr<SessionChapsClient> session_chaps_client_;
   // Used by tokens in `chaps_tokens_ui_` (to communicate with Chaps) and must
   // outlive them.
   std::unique_ptr<HighLevelChapsClient> high_level_chaps_client_;
-
-  std::unique_ptr<internal::KcerRollbackHelper> rollback_helper_;
 
   // Stores the mapping between NSS slots and KcerToken-s. Each private or
   // system slot is mapped into a KcerToken, so a Kcer instance equivalent to a
