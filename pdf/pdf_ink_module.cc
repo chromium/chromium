@@ -63,6 +63,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
 
@@ -1101,12 +1102,12 @@ PdfInkModule::GetTextSelectionHighlightStrokeData(
   // direction of the stroke, the points will need to be offset in either the x
   // or y axis. Strokes will always be drawn along the largest dimension of the
   // rectangle.
-  bool should_offset_y =
-      is_vertical_stroke != IsTransposedPageOrientation(orientation);
-  float offset = brush_size / 2;
-  start.Offset(should_offset_y ? 0 : offset, should_offset_y ? offset : 0);
-  end.Offset(should_offset_y ? 0 : -offset, should_offset_y ? -offset : 0);
-
+  gfx::Vector2dF offset(brush_size / 2, 0);
+  if (is_vertical_stroke != IsTransposedPageOrientation(orientation)) {
+    offset.Transpose();
+  }
+  start += offset;
+  end -= offset;
   return TextSelectionHighlightStrokeData{
       .first_point = start, .second_point = end, .brush_size = brush_size};
 }
