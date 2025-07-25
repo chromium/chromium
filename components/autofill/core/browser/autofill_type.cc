@@ -55,12 +55,6 @@ FieldTypeGroup AutofillType::group() const {
                                       : GroupTypeOfHtmlFieldType(html_type_);
 }
 
-bool AutofillType::IsUnknown() const {
-  return server_type_ == UNKNOWN_TYPE &&
-         (html_type_ == HtmlFieldType::kUnspecified ||
-          html_type_ == HtmlFieldType::kUnrecognized);
-}
-
 FieldType AutofillType::GetStorableType() const {
   return server_type_ != UNKNOWN_TYPE
              ? server_type_
@@ -68,7 +62,10 @@ FieldType AutofillType::GetStorableType() const {
 }
 
 std::string_view AutofillType::ToStringView() const {
-  return IsUnknown()                    ? "UNKNOWN_TYPE"
+  const bool is_unknown = server_type_ == UNKNOWN_TYPE &&
+                          (html_type_ == HtmlFieldType::kUnspecified ||
+                           html_type_ == HtmlFieldType::kUnrecognized);
+  return is_unknown                     ? "UNKNOWN_TYPE"
          : server_type_ != UNKNOWN_TYPE ? FieldTypeToStringView(server_type_)
                                         : FieldTypeToStringView(html_type_);
 }
