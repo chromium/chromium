@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -195,13 +194,6 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
     // This is a reorder operation within the same WebStateList.
     destination_browser->GetWebStateList()->MoveGroup(
         source_tab_group, destination_tab_group_index);
-    return;
-  }
-
-  if (!IsTabGroupSyncEnabled()) {
-    MoveTabGroupAcrossBrowsers(source_tab_group, source_browser,
-                               destination_browser,
-                               destination_tab_group_index);
     return;
   }
 

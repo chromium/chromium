@@ -1232,10 +1232,6 @@ NSString* SerializedValue(const base::Value* value) {
          search_engines::SupportsSearchImageWithLens(service);
 }
 
-+ (BOOL)isTabGroupSyncEnabled {
-  return IsTabGroupSyncEnabled();
-}
-
 + (BOOL)isCurrentLayoutBottomOmnibox {
   return IsCurrentLayoutBottomOmnibox(chrome_test_util::GetCurrentBrowser());
 }

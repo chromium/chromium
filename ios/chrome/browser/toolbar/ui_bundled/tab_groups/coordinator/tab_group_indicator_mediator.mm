@@ -252,7 +252,7 @@ using tab_groups::SharingState;
   if (!tabGroup) {
     return;
   }
-  if (IsTabGroupSyncEnabled() && confirmation) {
+  if (confirmation) {
     [_delegate
         showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
                                                        kDeleteTabGroup
@@ -263,7 +263,6 @@ using tab_groups::SharingState;
 }
 
 - (void)deleteSharedGroupWithConfirmation:(BOOL)confirmation {
-  DCHECK(IsTabGroupSyncEnabled());
   const TabGroup* tabGroup = [self currentTabGroup];
   if (!tabGroup) {
     return;
@@ -419,7 +418,7 @@ using tab_groups::SharingState;
 // locally.
 - (void)closeTabGroup:(const TabGroup*)tabGroup
        andDeleteGroup:(BOOL)deleteGroup {
-  if (IsTabGroupSyncEnabled() && !deleteGroup) {
+  if (!deleteGroup) {
     [_delegate showTabGroupIndicatorSnackbarAfterClosingGroup];
     tab_groups::utils::CloseTabGroupLocally(tabGroup, _webStateList.get(),
                                             _tabGroupSyncService);

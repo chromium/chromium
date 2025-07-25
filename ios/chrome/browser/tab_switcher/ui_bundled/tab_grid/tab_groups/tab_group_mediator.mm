@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
@@ -198,16 +197,11 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 - (void)closeGroup {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
-  if (IsTabGroupSyncEnabled()) {
-    tab_groups::TabGroupSyncService* syncService =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            self.browser->GetProfile());
-    tab_groups::utils::CloseTabGroupLocally(_tabGroup.get(), self.webStateList,
-                                            syncService);
-  } else {
-    CloseAllWebStatesInGroup(*self.webStateList, _tabGroup.get(),
-                             WebStateList::ClosingReason::kUserAction);
-  }
+  tab_groups::TabGroupSyncService* syncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+  tab_groups::utils::CloseTabGroupLocally(_tabGroup.get(), self.webStateList,
+                                          syncService);
   _tabGroup.reset();
 }
 

@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_mutator.h"
@@ -250,50 +249,41 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
 
   // Destructive actions.
   NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
-  if (IsTabGroupSyncEnabled()) {
-    [destructiveActions
-        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-          [weakSelf.mutator closeGroup:tabGroupItem];
-        }]];
-    if (!self.incognito) {
-      switch (sharingState) {
-        case SharingState::kNotShared: {
-          [destructiveActions
-              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                [weakSelf.mutator deleteGroup:tabGroupItem
-                                   sourceView:originView];
-              }]];
-          break;
-        }
-        case SharingState::kShared: {
-          [destructiveActions
-              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
-                [weakSelf.handler
-                    startLeaveOrDeleteSharedGroupItem:tabGroupItem
-                                            forAction:TabGroupActionType::
-                                                          kLeaveSharedTabGroup
-                                           sourceView:originView];
-              }]];
-          break;
-        }
-        case SharingState::kSharedAndOwned: {
-          [destructiveActions
-              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
-                [weakSelf.handler
-                    startLeaveOrDeleteSharedGroupItem:tabGroupItem
-                                            forAction:TabGroupActionType::
-                                                          kDeleteSharedTabGroup
-                                           sourceView:originView];
-              }]];
-          break;
-        }
+  [destructiveActions addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                        [weakSelf.mutator closeGroup:tabGroupItem];
+                      }]];
+  if (!self.incognito) {
+    switch (sharingState) {
+      case SharingState::kNotShared: {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+              [weakSelf.mutator deleteGroup:tabGroupItem sourceView:originView];
+            }]];
+        break;
+      }
+      case SharingState::kShared: {
+        [destructiveActions
+            addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+              [weakSelf.handler
+                  startLeaveOrDeleteSharedGroupItem:tabGroupItem
+                                          forAction:TabGroupActionType::
+                                                        kLeaveSharedTabGroup
+                                         sourceView:originView];
+            }]];
+        break;
+      }
+      case SharingState::kSharedAndOwned: {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+              [weakSelf.handler
+                  startLeaveOrDeleteSharedGroupItem:tabGroupItem
+                                          forAction:TabGroupActionType::
+                                                        kDeleteSharedTabGroup
+                                         sourceView:originView];
+            }]];
+        break;
       }
     }
-  } else {
-    [destructiveActions
-        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-          [weakSelf.mutator deleteGroup:tabGroupItem sourceView:originView];
-        }]];
   }
   [menuElements addObject:CreateDisplayInlineUIMenu([destructiveActions copy])];
 

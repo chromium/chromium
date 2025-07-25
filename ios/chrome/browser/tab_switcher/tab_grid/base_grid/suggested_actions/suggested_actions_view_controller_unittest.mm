@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/suggested_actions_view_controller.h"
 
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,37 +35,19 @@ TEST_F(SuggestedActionsViewControllerTest, Initialization) {
   CheckController();
 
   ASSERT_EQ(1, NumberOfSections());
-  if (IsTabGroupSyncEnabled()) {
-    ASSERT_EQ(2, NumberOfItemsInSection(0));
-  } else {
-    ASSERT_EQ(3, NumberOfItemsInSection(0));
-  }
+  ASSERT_EQ(2, NumberOfItemsInSection(0));
 
-  if (IsTabGroupSyncEnabled()) {
-    // This is a static table it should have 2 items in that order:
-    // (SearchWeb, SearchHistory).
-    TableViewImageItem* item = GetTableViewItem(0, 0);
-    EXPECT_NSEQ(
-        l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB),
-        item.title);
-    item = GetTableViewItem(0, 1);
-    EXPECT_NSEQ(
-        l10n_util::GetNSString(
-            IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT),
-        item.title);
-  } else {
-    // This is a static table it should have 2 items in that order: (SearchWeb,
-    // SearchHistory).
-    TableViewImageItem* item = GetTableViewItem(0, 0);
-    EXPECT_NSEQ(
-        l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB),
-        item.title);
-    item = GetTableViewItem(0, 1);
-    EXPECT_NSEQ(
-        l10n_util::GetNSString(
-            IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT),
-        item.title);
-  }
+  // This is a static table it should have 2 items in that order:
+  // (SearchWeb, SearchHistory).
+  TableViewImageItem* item = GetTableViewItem(0, 0);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB),
+      item.title);
+  item = GetTableViewItem(0, 1);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(
+          IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT),
+      item.title);
 }
 
 // Tests that selecting the search web item should call the relevant delegate.

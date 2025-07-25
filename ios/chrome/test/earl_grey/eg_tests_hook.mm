@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -195,8 +194,7 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
     ProfileIOS* profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (!IsTabGroupSyncEnabled() ||
-      !command_line->HasSwitch(test_switches::kEnableFakeTabGroupSyncService)) {
+  if (!command_line->HasSwitch(test_switches::kEnableFakeTabGroupSyncService)) {
     return nullptr;
   }
 

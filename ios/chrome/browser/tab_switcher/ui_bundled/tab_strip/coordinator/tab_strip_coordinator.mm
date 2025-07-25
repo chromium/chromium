@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
@@ -142,8 +141,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   FaviconLoader* faviconLoader = nil;
   // Fetch favicons if in regular mode and sync or shared tab groups is enabled.
   if (!profile->IsOffTheRecord() &&
-      (IsTabGroupSyncEnabled() ||
-       IsSharedTabGroupsJoinEnabled(collaborationService))) {
+      IsSharedTabGroupsJoinEnabled(collaborationService)) {
     faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   }
 
@@ -346,7 +344,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
 - (void)showTabStripTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
-  if (!IsTabGroupSyncEnabled() || self.profile->IsOffTheRecord()) {
+  if (self.profile->IsOffTheRecord()) {
     return;
   }
 

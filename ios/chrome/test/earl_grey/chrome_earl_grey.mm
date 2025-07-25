@@ -1412,10 +1412,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUseLensToSearchForImageEnabled];
 }
 
-- (BOOL)isTabGroupSyncEnabled {
-  return [ChromeEarlGreyAppInterface isTabGroupSyncEnabled];
-}
-
 - (BOOL)isUnfocusedOmniboxAtBottom {
   return !self.isIPadIdiom && self.isSplitToolbarMode &&
          [self localStateBooleanPref:prefs::kBottomOmnibox];

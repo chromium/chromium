@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -262,21 +261,19 @@ int TabsCloser::CloseTabs() {
       break;
   }
 
-  if (IsTabGroupSyncEnabled()) {
-    tab_groups::TabGroupSyncService* sync_service =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser_->GetProfile());
-    CHECK(sync_service);
-    for (const TabGroup* tab_group : web_state_list->GetGroups()) {
-      tab_groups::TabGroupId local_id = tab_group->tab_group_id();
-      std::optional<tab_groups::SavedTabGroup> saved_group =
-          sync_service->GetGroup(local_id);
-      if (saved_group) {
-        local_to_saved_group_ids_.insert(
-            std::make_pair(local_id, saved_group->saved_guid()));
-        sync_service->RemoveLocalTabGroupMapping(
-            local_id, tab_groups::ClosingSource::kCloseAllTabs);
-      }
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  CHECK(sync_service);
+  for (const TabGroup* tab_group : web_state_list->GetGroups()) {
+    tab_groups::TabGroupId local_id = tab_group->tab_group_id();
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        sync_service->GetGroup(local_id);
+    if (saved_group) {
+      local_to_saved_group_ids_.insert(
+          std::make_pair(local_id, saved_group->saved_guid()));
+      sync_service->RemoveLocalTabGroupMapping(
+          local_id, tab_groups::ClosingSource::kCloseAllTabs);
     }
   }
 
@@ -301,10 +298,6 @@ int TabsCloser::UndoCloseTabs() {
   // Invalidate `state_` before performing the "undo" operation.
   std::unique_ptr<UndoStorage> state = std::exchange(state_, {});
   const int result = state->count();
-  if (!IsTabGroupSyncEnabled()) {
-    state->Undo();
-    return result;
-  }
 
   tab_groups::TabGroupSyncService* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(

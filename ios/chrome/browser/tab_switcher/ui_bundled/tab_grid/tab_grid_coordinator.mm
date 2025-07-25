@@ -371,9 +371,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [_incognitoGridCoordinator stopChildCoordinators];
   [_regularGridCoordinator stopChildCoordinators];
-  if (IsTabGroupSyncEnabled()) {
-    [_tabGroupsPanelCoordinator stopChildCoordinators];
-  }
+  [_tabGroupsPanelCoordinator stopChildCoordinators];
 
   [self cancelCollaborationFlows];
 
@@ -1550,28 +1548,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
-             incognito:(BOOL)incognito
             sourceView:(UIView*)sourceView {
-  if (incognito) {
-    CHECK(!IsTabGroupSyncEnabled());
-    [self.incognitoTabsMediator deleteTabGroup:group sourceView:sourceView];
-    return;
-  }
-
   [self.regularTabsMediator deleteTabGroup:group sourceView:sourceView];
 }
 
 - (void)leaveSharedTabGroup:(base::WeakPtr<const TabGroup>)group
                  sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupSyncEnabled());
-
   [self.regularTabsMediator leaveSharedTabGroup:group sourceView:sourceView];
 }
 
 - (void)deleteSharedTabGroup:(base::WeakPtr<const TabGroup>)group
                   sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupSyncEnabled());
-
   [self.regularTabsMediator deleteSharedTabGroup:group sourceView:sourceView];
 }
 
@@ -1735,7 +1722,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)showPage:(TabGridPage)page animated:(BOOL)animated {
   if (page == TabGridPageTabGroups) {
-    CHECK(IsTabGroupSyncEnabled());
     // Return to Normal mode if needed, as Tab Groups panel doesn't support
     // Search.
     [self setActiveMode:TabGridMode::kNormal];

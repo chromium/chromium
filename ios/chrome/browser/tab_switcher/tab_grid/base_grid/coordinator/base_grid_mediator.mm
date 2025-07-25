@@ -207,8 +207,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
     if (!_profile->IsOffTheRecord()) {
       collaboration::CollaborationService* collaborationService =
           collaboration::CollaborationServiceFactory::GetForProfile(_profile);
-      if (IsTabGroupSyncEnabled() ||
-          IsSharedTabGroupsJoinEnabled(collaborationService)) {
+      if (IsSharedTabGroupsJoinEnabled(collaborationService)) {
         faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(_profile);
       }
     }
@@ -466,7 +465,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
                      selectedItemIdentifier:nil];
   }
 
-  if (IsTabGroupSyncEnabled() && !deleteGroup) {
+  if (!deleteGroup) {
     [self showTabGroupSnackbarOrIPH:1];
     tab_groups::TabGroupSyncService* syncService =
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -520,7 +519,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 }
 
 - (void)showTabGroupSnackbarOrIPH:(int)closedGroups {
-  if (!IsTabGroupSyncEnabled() || closedGroups < 1) {
+  if (closedGroups < 1) {
     return;
   }
   [self.tabGroupsHandler
@@ -1120,11 +1119,9 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   int closedGroupsCount = groupIDs.size();
 
   if (closedGroupsCount > 0) {
-    tab_groups::TabGroupSyncService* syncService = nil;
-    if (IsTabGroupSyncEnabled()) {
-      syncService = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
-    }
+    tab_groups::TabGroupSyncService* syncService =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+            self.browser->GetProfile());
 
     // Find and close all groups in `groupIDs`.
     for (const TabGroup* group : webStateList->GetGroups()) {
@@ -1166,28 +1163,21 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
     }
   }
 
-  if (IsTabGroupSyncEnabled() && closedGroupsCount > 0) {
+  if (closedGroupsCount > 0) {
     [self showTabGroupSnackbarOrIPH:closedGroupsCount];
   }
 }
 
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
             sourceView:(UIView*)sourceView {
-  if (IsTabGroupSyncEnabled()) {
-    [self.tabGroupsHandler
-        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
-                                    group:group
-                               sourceView:sourceView];
-    return;
-  }
-
-  DCHECK(!IsTabGroupSyncEnabled());
-  [self closeTabGroup:group.get() andDeleteGroup:YES];
+  [self.tabGroupsHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                  group:group
+                             sourceView:sourceView];
 }
 
 - (void)leaveSharedTabGroup:(base::WeakPtr<const TabGroup>)group
                  sourceView:(UIView*)sourceView {
-  DCHECK(IsTabGroupSyncEnabled());
   [self.tabGroupsHandler
       startLeaveOrDeleteSharedGroup:group
                           forAction:TabGroupActionType::kLeaveSharedTabGroup
@@ -1196,8 +1186,6 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
 - (void)deleteSharedTabGroup:(base::WeakPtr<const TabGroup>)group
                   sourceView:(UIView*)sourceView {
-  DCHECK(IsTabGroupSyncEnabled());
-
   [self.tabGroupsHandler
       startLeaveOrDeleteSharedGroup:group
                           forAction:TabGroupActionType::kDeleteSharedTabGroup
@@ -1210,16 +1198,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
 - (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
              sourceView:(UIView*)sourceView {
-  if (IsTabGroupSyncEnabled()) {
-    [self.tabGroupsHandler
-        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
-                                    group:group
-                               sourceView:sourceView];
-    return;
-  }
-
-  DCHECK(!IsTabGroupSyncEnabled());
-  [self ungroupTabGroup:group.get()];
+  [self.tabGroupsHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                  group:group
+                             sourceView:sourceView];
 }
 
 - (void)closeAllItems {

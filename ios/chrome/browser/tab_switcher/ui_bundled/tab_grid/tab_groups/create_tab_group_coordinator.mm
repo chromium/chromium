@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
@@ -109,8 +108,7 @@
 
   // Fetch favicons if in regular mode and sync or shared tab groups is enabled.
   if (!profile->IsOffTheRecord() &&
-      (IsTabGroupSyncEnabled() ||
-       IsSharedTabGroupsJoinEnabled(collaborationService))) {
+      IsSharedTabGroupsJoinEnabled(collaborationService)) {
     faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   }
 

@@ -403,7 +403,7 @@ using collaboration::CollaborationControllerDelegate;
 
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
-  if (!IsTabGroupSyncEnabled() || self.isOffTheRecord) {
+  if (self.isOffTheRecord) {
     return;
   }
 

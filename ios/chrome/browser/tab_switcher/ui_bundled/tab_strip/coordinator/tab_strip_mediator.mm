@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
@@ -932,7 +931,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                      WebStateSearchCriteria(item.identifier));
 
   int closedGroupCount = 0;
-  if (IsTabGroupSyncEnabled() && _tabGroupSyncService) {
+  if (_tabGroupSyncService) {
     for (const TabGroup* group : _webStateList->GetGroups()) {
       // Remove the local tab group mapping if the `indexToKeep` is not in the
       // group.
@@ -950,7 +949,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                       WebStateList::ClosingReason::kUserAction);
 
   // Show the tab group snackbar if some groups have been closed.
-  if (IsTabGroupSyncEnabled() && closedGroupCount > 0) {
+  if (closedGroupCount > 0) {
     [self.tabStripHandler
         showTabStripTabGroupSnackbarAfterClosingGroups:closedGroupCount];
   }
@@ -1008,31 +1007,21 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 - (void)ungroupGroup:(TabGroupItem*)tabGroupItem
           sourceView:(UIView*)sourceView {
-  if (IsTabGroupSyncEnabled()) {
-    // Show the confirmation dialog only when the tab group sync feature is
-    // enabled.
-    [_tabStripHandler
-        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
-                                groupItem:tabGroupItem
-                               sourceView:sourceView];
-    return;
-  }
-
-  [self ungroupGroup:tabGroupItem];
+  // Show the confirmation dialog only when the tab group sync feature is
+  // enabled.
+  [_tabStripHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                              groupItem:tabGroupItem
+                             sourceView:sourceView];
 }
 
 - (void)deleteGroup:(TabGroupItem*)tabGroupItem sourceView:(UIView*)sourceView {
-  if (IsTabGroupSyncEnabled()) {
-    // Show the confirmation dialog only when the tab group sync feature is
-    // enabled.
-    [_tabStripHandler
-        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
-                                groupItem:tabGroupItem
-                               sourceView:sourceView];
-    return;
-  }
-
-  [self deleteGroup:tabGroupItem];
+  // Show the confirmation dialog only when the tab group sync feature is
+  // enabled.
+  [_tabStripHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                              groupItem:tabGroupItem
+                             sourceView:sourceView];
 }
 
 - (void)closeGroup:(TabGroupItem*)tabGroupItem {
@@ -1040,14 +1029,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
 
-  if (IsTabGroupSyncEnabled()) {
-    tab_groups::utils::CloseTabGroupLocally(
-        tabGroupItem.tabGroup, self.webStateList, _tabGroupSyncService);
-    [self.tabStripHandler showTabStripTabGroupSnackbarAfterClosingGroups:1];
-  } else {
-    CloseAllWebStatesInGroup(*self.webStateList, tabGroupItem.tabGroup,
-                             WebStateList::ClosingReason::kUserAction);
-  }
+  tab_groups::utils::CloseTabGroupLocally(
+      tabGroupItem.tabGroup, self.webStateList, _tabGroupSyncService);
+  [self.tabStripHandler showTabStripTabGroupSnackbarAfterClosingGroups:1];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1255,7 +1239,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
         [_tabStripHandler showAlertForLastTabRemovedFromGroup:group
                                                         tabID:tabInfo.tabID
                                                       closing:NO];
-      } else if (IsTabGroupSyncEnabled()) {
+      } else {
         if (group && group->range().count() == 1) {
           // `_tabGroupSyncService` is nullptr in incognito.
           const tab_groups::TabGroupId& localID = group->tab_group_id();

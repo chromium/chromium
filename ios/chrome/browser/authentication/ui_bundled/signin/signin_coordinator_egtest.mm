@@ -996,54 +996,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the sign-in promo disappear when sync is disabled and reappears
-// when sync is enabled again.
-// Related to crbug.com/1287465.
-- (void)testTurnOffSyncDisablePolicy {
-  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
-  // Recent Tabs is not reachable from the Tab Grid. So the sign-in flow is not
-  // supported with Tab Group Sync enabled.
-  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when "
-                           @"Tab Group Sync is enabled.");
-  }
-
-  // Disable sync by policy.
-  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(GetNSString(
-                                       IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
-                                   grey_userInteractionEnabled(), nil)]
-      performAction:grey_tap()];
-  // Open other device tab.
-  [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridOtherDevicesPanelButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // Check that the sign-in promo is not visible.
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-  // Add an identity to generate a SSO identity update notification.
-  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // Enable sync.
-  policy_test_utils::SetPolicy(false, policy::key::kSyncDisabled);
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // Check that the sign-in promo is visible.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollToContentEdgeWithStartPoint(
-                               kGREYContentEdgeBottom, 0.5, 0.5)
-      onElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kRecentTabsTableViewControllerAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Interrupt the instant sign-in from the reading list. The sign-in flow is
 // interrupted while the sign-in flow displays the managed identity dialog.
 - (void)testInterruptInstantSigninInReadingList {

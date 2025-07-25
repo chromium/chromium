@@ -58,7 +58,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -149,9 +148,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
       SupervisedUserSettingsServiceFactory::GetForProfile(profile));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetTabGroupSyncService(
-      IsTabGroupSyncEnabled()
-          ? tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
-          : nullptr);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
   builder.SetTemplateURLService(nullptr);
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForProfile(profile));

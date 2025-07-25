@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
@@ -40,10 +39,6 @@ namespace {
 std::unique_ptr<KeyedService> BuildService(
     SyntheticFieldTrialHelper* synthetic_field_trial_helper,
     web::BrowserState* context) {
-  if (!IsTabGroupSyncEnabled()) {
-    return nullptr;
-  }
-
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   CHECK(!profile->IsOffTheRecord());
 

@@ -314,9 +314,7 @@
 - (UIAction*)actionToCloseAllTabsWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
-  int titleID = IsTabGroupSyncEnabled()
-                    ? IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS
-                    : IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS;
+  int titleID = IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS;
   UIAction* action = [self actionWithTitle:l10n_util::GetNSString(titleID)
                                      image:image
                                       type:MenuActionType::CloseAllTabs
@@ -560,8 +558,6 @@
 }
 
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   UIAction* action = [self
@@ -574,8 +570,6 @@
 }
 
 - (UIAction*)actionToLeaveSharedTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kMinusInCircleSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -589,8 +583,6 @@
 }
 
 - (UIAction*)actionToDeleteSharedTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -604,8 +596,6 @@
 }
 
 - (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -618,8 +608,6 @@
 }
 
 - (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
   UIAction* action =

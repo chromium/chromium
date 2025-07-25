@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -92,15 +91,13 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
-    if (IsTabGroupSyncEnabled()) {
-      datatypes.Put(syncer::SAVED_TAB_GROUP);
-      if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
-        datatypes.Put(syncer::COLLABORATION_GROUP);
-        datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
-        if (base::FeatureList::IsEnabled(
-                syncer::kSyncSharedTabGroupAccountData)) {
-          datatypes.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
-        }
+    datatypes.Put(syncer::SAVED_TAB_GROUP);
+    if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
+      datatypes.Put(syncer::COLLABORATION_GROUP);
+      datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
+      if (base::FeatureList::IsEnabled(
+              syncer::kSyncSharedTabGroupAccountData)) {
+        datatypes.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
       }
     }
     datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
