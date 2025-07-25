@@ -22,7 +22,7 @@
 // We add nognchecks on these includes so that Android bots do not fail
 // dependency checks.
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"  // nogncheck
 #endif

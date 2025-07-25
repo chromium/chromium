@@ -8,15 +8,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 
-/** Factory for creating an {@link ExtensionWindowControllerBridge}. */
+/**
+ * Stub factory for when {@link ExtensionWindowControllerBridge} isn't compiled into the build.
+ *
+ * <p>TODO(crbug.com/434123514): see if we can remove this stub factory.
+ */
 @NullMarked
 public final class ExtensionWindowControllerBridgeFactory {
     private ExtensionWindowControllerBridgeFactory() {}
 
-    // Mark as nullable to be consistent with the stub factory in
-    // //chrome/browser/ui/android/extensions/windowing/stub.
     @Nullable
     public static ExtensionWindowControllerBridge create(ChromeAndroidTask chromeAndroidTask) {
-        return new ExtensionWindowControllerBridgeImpl(chromeAndroidTask);
+        return null;
     }
 }

@@ -150,8 +150,8 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
         return getActivityWindowAndroidInternal(/* assertAlive= */ false);
     }
 
-    /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
-    List<ChromeAndroidTaskFeature> getAllFeaturesForTesting() {
+    @Override
+    public List<ChromeAndroidTaskFeature> getAllFeaturesForTesting() {
         synchronized (mFeaturesLock) {
             return mFeatures;
         }

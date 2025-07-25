@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 # This is the public interface for a browser window. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular

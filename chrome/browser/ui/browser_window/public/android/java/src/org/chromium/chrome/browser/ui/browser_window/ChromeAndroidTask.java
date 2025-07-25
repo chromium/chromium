@@ -8,6 +8,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
+import java.util.List;
+
 /**
  * Represents an Android window containing Chrome.
  *
@@ -105,4 +107,7 @@ public interface ChromeAndroidTask {
 
     /** Returns whether this {@link ChromeAndroidTask} has been destroyed. */
     boolean isDestroyed();
+
+    /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
+    List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
 }

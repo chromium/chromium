@@ -273,8 +273,10 @@ import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridgeFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -1232,6 +1234,30 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
     }
 
+    private void initializeExtensionWindowControllerBridge() {
+        try (TraceEvent e =
+                TraceEvent.scoped(
+                        "ChromeTabbedActivity.initializeExtensionWindowControllerBridge")) {
+            var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
+            if (chromeAndroidTaskTracker == null) {
+                return;
+            }
+
+            var activityWindowAndroid = getWindowAndroid();
+            assert activityWindowAndroid != null;
+
+            var chromeAndroidTask = chromeAndroidTaskTracker.obtainTask(activityWindowAndroid);
+
+            var extensionWindowControllerBridge =
+                    ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
+            if (extensionWindowControllerBridge == null) {
+                return;
+            }
+
+            chromeAndroidTask.addFeature(extensionWindowControllerBridge);
+        }
+    }
+
     private void maybeCreateIncognitoTabSnapshotController() {
         try (TraceEvent e =
                 TraceEvent.scoped(
@@ -1349,6 +1375,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::initializeToolbarManager));
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    mCallbackController.makeCancelable(
+                            this::initializeExtensionWindowControllerBridge));
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(

@@ -33,14 +33,14 @@ source_set("internal") {
     deps += [
       "//chrome/browser/actor/ui",
       "//chrome/browser/extensions",
-      "//chrome/browser/lens/region_search:region_search",
+      "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/bookmarks:bookmarks",
+      "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/find_bar:find_bar",
+      "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/signin",
@@ -55,9 +55,9 @@ source_set("internal") {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
       "//components/breadcrumbs/core:status",
-      "//components/collaboration/public:public",
+      "//components/collaboration/public",
       "//components/commerce/core:feature_list",
-      "//components/data_sharing/public:public",
+      "//components/data_sharing/public",
       "//components/lens:features",
       "//components/profile_metrics",
       "//components/saved_tab_groups/public",
@@ -116,6 +116,7 @@ if (is_android) {
     visibility = [
       ":*",
       "//chrome/android:chrome_all_java",
+      "//chrome/browser/ui/android/extensions/windowing/internal:javatests",
       "//chrome/browser/ui/browser_window/test:junit_test_support",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
     ]
@@ -158,6 +159,21 @@ if (is_android) {
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskIntegrationTest.java" ]
+    deps = [
+      ":java",
+      "//base:base_java_test_support",
+      "//chrome/android:chrome_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/ui/browser_window:java",
+      "//chrome/test/android:chrome_java_transit",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit",
     ]
   }
 }

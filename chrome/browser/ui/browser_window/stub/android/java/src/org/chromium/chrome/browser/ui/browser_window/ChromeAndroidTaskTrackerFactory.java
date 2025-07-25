@@ -7,20 +7,18 @@ package org.chromium.chrome.browser.ui.browser_window;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Factory for creating {@link ChromeAndroidTaskTracker}. */
+/**
+ * Stub factory for when {@link ChromeAndroidTaskTracker} isn't compiled into the build.
+ *
+ * <p>TODO(crbug.com/434123514): see if we can remove this stub factory.
+ */
 @NullMarked
 public final class ChromeAndroidTaskTrackerFactory {
 
     private ChromeAndroidTaskTrackerFactory() {}
 
-    /**
-     * Obtains the singleton instance of {@link ChromeAndroidTaskTracker}.
-     *
-     * <p>We mark the return value as nullable to be consistent with the stub factory in
-     * //chrome/browser/ui/browser_window/stub.
-     */
     @Nullable
     public static ChromeAndroidTaskTracker getInstance() {
-        return ChromeAndroidTaskTrackerImpl.getInstance();
+        return null;
     }
 }

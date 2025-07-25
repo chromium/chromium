@@ -518,6 +518,8 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/edge_to_edge:java",
       "//chrome/browser/ui/android/ephemeraltab:java",
       "//chrome/browser/ui/android/extensions:java",
+      "//chrome/browser/ui/android/extensions/windowing:factory_java",
+      "//chrome/browser/ui/android/extensions/windowing:java",
       "//chrome/browser/ui/android/fast_checkout:java",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/google_bottom_bar:java",
@@ -545,6 +547,8 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/android/web_app_header:java",
       "//chrome/browser/ui/android/whats_new:java",
+      "//chrome/browser/ui/browser_window:factory_java",
+      "//chrome/browser/ui/browser_window:java",
       "//chrome/browser/ui/messages/android:java",
       "//chrome/browser/ui/plus_addresses/android:java",
       "//chrome/browser/uid/android:java",
@@ -942,6 +946,12 @@ if (_is_default_toolchain) {
       deps += [
         "//chrome/browser/ui/android/extensions/windowing/internal:java",
         "//chrome/browser/ui/browser_window/internal:java",
+      ]
+    } else {
+      # TODO(crbug.com/434123514): see if we can remove these stub targets.
+      deps += [
+        "//chrome/browser/ui/android/extensions/windowing/stub:java",
+        "//chrome/browser/ui/browser_window/stub:java",
       ]
     }
   }
@@ -2404,6 +2414,13 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/plus_addresses/android:javatests",
       "//components/ip_protection/android/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
+
+    if (is_desktop_android) {
+      deps += [
+        "//chrome/browser/ui/android/extensions/windowing/internal:javatests",
+        "//chrome/browser/ui/browser_window/internal:javatests",
+      ]
+    }
 
     data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]
 
