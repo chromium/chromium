@@ -108,6 +108,8 @@ blink_core_sources_css = [
   "css_custom_font_data.h",
   "css_custom_ident_value.cc",
   "css_custom_ident_value.h",
+  "css_custom_media_rule.cc",
+  "css_custom_media_rule.h",
   "css_cyclic_variable_value.cc",
   "css_cyclic_variable_value.h",
   "css_default_style_sheets.cc",

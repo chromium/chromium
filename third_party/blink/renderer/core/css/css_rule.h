@@ -73,6 +73,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kFirstInternalRule = 16,
     // go/keep-sorted start
     kContainerRule = kFirstInternalRule,
+    kCustomMediaRule,
     kFontFeatureRule,
     kFontPaletteValuesRule,
     kFunctionDeclarationsRule,
