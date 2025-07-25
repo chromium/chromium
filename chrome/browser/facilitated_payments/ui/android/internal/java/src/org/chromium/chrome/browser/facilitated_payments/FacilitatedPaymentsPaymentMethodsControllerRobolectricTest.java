@@ -17,10 +17,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
@@ -38,6 +39,9 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.PAYMENT_APP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.ON_PAYMENT_APP_CLICK_ACTION;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
@@ -55,6 +59,12 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -105,6 +115,7 @@ import java.util.stream.StreamSupport;
  * FacilitatedPaymentsPaymentMethodsMediator}
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
 public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     private static final BankAccount BANK_ACCOUNT_1 =
             new BankAccount.Builder()
@@ -178,6 +189,14 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                     .setIsFidoEnrolled(false)
                                     .build())
                     .build();
+    private static final String PAYMENT_APP_1_PACKAGE_NAME = "com.bank.app";
+    private static final String PAYMENT_APP_1_ACTIVITY_NAME = "PaymentActivity";
+    private static final ResolveInfo PAYMENT_APP_1 =
+            createPaymentApp(PAYMENT_APP_1_PACKAGE_NAME, PAYMENT_APP_1_ACTIVITY_NAME);
+    private static final String PAYMENT_APP_2_PACKAGE_NAME = "com.anotherbank.app";
+    private static final String PAYMENT_APP_2_ACTIVITY_NAME = "AnotherPaymentActivity";
+    private static final ResolveInfo PAYMENT_APP_2 =
+            createPaymentApp(PAYMENT_APP_2_PACKAGE_NAME, PAYMENT_APP_2_ACTIVITY_NAME);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -255,6 +274,23 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testCreatesModelForFopSelectorScreen_PaymentAppFopSelector() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
+
+        // Verify that the bottom sheet model is updated to show the FOP selector.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(FOP_SELECTOR));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        // Verify the FOP selector screen model contains the required properties.
+        assertTrue(
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .containsKey(SCREEN_ITEMS));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
+    }
+
+    @Test
     public void testBankAccountsShown() {
         mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
 
@@ -285,6 +321,28 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testPaymentAppsShown() {
+        // TODO REMOVE DIS?
+        // TODO(crbug.com/433169258): Remove dependence on Ewallets once the FOP selector header,
+        // footer, and additional info implementations have been updated.
+        mCoordinator.showSheetForPaymentLink(
+                List.of(EWALLET_1, EWALLET_2), List.of(PAYMENT_APP_1, PAYMENT_APP_2));
+
+        // Verify the screen contents set in the model when 2 payment apps exist.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        assertThat(itemList.size(), is(7));
+        assertEquals(HEADER, itemList.get(0).type);
+        assertEquals(EWALLET, itemList.get(1).type);
+        assertEquals(EWALLET, itemList.get(2).type);
+        assertEquals(PAYMENT_APP, itemList.get(3).type);
+        assertEquals(PAYMENT_APP, itemList.get(4).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(5).type);
+        assertEquals(FOOTER, itemList.get(6).type);
+    }
+
+    @Test
     public void testSingleBankAccountShown() {
         mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1));
 
@@ -312,6 +370,23 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertEquals(ADDITIONAL_INFO, itemList.get(2).type);
         assertEquals(CONTINUE_BUTTON, itemList.get(3).type);
         assertEquals(FOOTER, itemList.get(4).type);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testSinglePaymentAppShown() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
+
+        // Verify the screen contents set in the model when only 1 payment app exists.
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        assertThat(itemList.size(), is(6));
+        assertEquals(HEADER, itemList.get(0).type);
+        assertEquals(EWALLET, itemList.get(1).type);
+        assertEquals(PAYMENT_APP, itemList.get(2).type);
+        assertEquals(ADDITIONAL_INFO, itemList.get(3).type);
+        assertEquals(CONTINUE_BUTTON, itemList.get(4).type);
+        assertEquals(FOOTER, itemList.get(5).type);
     }
 
     @Test
@@ -928,6 +1003,26 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testCallbackIsCalledWhenPaymentAppIsSelected() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+
+        Optional<PropertyModel> paymentAppModel =
+                getPaymentAppModelByPaymentAppLabel(
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS),
+                        PAYMENT_APP_1);
+        assertNotNull(paymentAppModel.get().get(ON_PAYMENT_APP_CLICK_ACTION));
+
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        paymentAppModel.get().get(ON_PAYMENT_APP_CLICK_ACTION).run();
+        verify(mDelegateMock)
+                .onPaymentAppSelected(PAYMENT_APP_1_PACKAGE_NAME, PAYMENT_APP_1_ACTIVITY_NAME);
+    }
+
+    @Test
     public void testNoCallbackForSelectedBankAccountBeforeInputTime() {
         mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
@@ -975,6 +1070,34 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         mClock.advanceCurrentTimeMillis(200);
         eWalletModel.get().get(ON_EWALLET_CLICK_ACTION).run();
         verify(mDelegateMock, times(1)).onEwalletSelected(EWALLET_1.getInstrumentId());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void testNoCallbackForSelectedPaymentAppBeforeInputTime() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+
+        Optional<PropertyModel> paymentAppModel =
+                getPaymentAppModelByPaymentAppLabel(
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS),
+                        PAYMENT_APP_1);
+        assertNotNull(paymentAppModel.get().get(ON_PAYMENT_APP_CLICK_ACTION));
+
+        // Clicking after an interval less than the threshold should be a no-op.
+        mClock.advanceCurrentTimeMillis(
+                InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100);
+        paymentAppModel.get().get(ON_PAYMENT_APP_CLICK_ACTION).run();
+        verify(mDelegateMock, times(0))
+                .onPaymentAppSelected(PAYMENT_APP_1_PACKAGE_NAME, PAYMENT_APP_1_ACTIVITY_NAME);
+
+        // Clicking after the threshold should work.
+        mClock.advanceCurrentTimeMillis(200);
+        paymentAppModel.get().get(ON_PAYMENT_APP_CLICK_ACTION).run();
+        verify(mDelegateMock, times(1))
+                .onPaymentAppSelected(PAYMENT_APP_1_PACKAGE_NAME, PAYMENT_APP_1_ACTIVITY_NAME);
     }
 
     @Test
@@ -1192,5 +1315,32 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                                 .equals(eWallet.getEwalletName()))
                 .findFirst()
                 .map(item -> item.model);
+    }
+
+    private static Optional<PropertyModel> getPaymentAppModelByPaymentAppLabel(
+            ModelList items, ResolveInfo app) {
+        Context context = ApplicationProvider.getApplicationContext();
+        PackageManager pm = context.getPackageManager();
+        return StreamSupport.stream(items.spliterator(), false)
+                .filter(
+                        item ->
+                                item.type == PAYMENT_APP
+                                        && item.model
+                                                .get(PAYMENT_APP_NAME)
+                                                .equals(app.loadLabel(pm).toString()))
+                .findFirst()
+                .map(item -> item.model);
+    }
+
+    private static ResolveInfo createPaymentApp(String packageName, String activityName) {
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = packageName;
+        activityInfo.name = activityName;
+
+        ResolveInfo resolveInfo = mock(ResolveInfo.class);
+        resolveInfo.activityInfo = activityInfo;
+        when(resolveInfo.loadLabel(any(PackageManager.class))).thenReturn("Some Payment App");
+        when(resolveInfo.loadIcon(any(PackageManager.class))).thenReturn(mock(Drawable.class));
+        return resolveInfo;
     }
 }

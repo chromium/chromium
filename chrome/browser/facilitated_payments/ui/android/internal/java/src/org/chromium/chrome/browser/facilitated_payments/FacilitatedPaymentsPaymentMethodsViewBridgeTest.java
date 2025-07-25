@@ -32,9 +32,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.payments.AccountType;
@@ -205,6 +207,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_callsControllerRequestShowContent() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
@@ -217,6 +220,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_callsControllerRequestShowContent_nullAppArray() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
@@ -229,6 +233,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_bottomSheetContentImplIsStubbed() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 

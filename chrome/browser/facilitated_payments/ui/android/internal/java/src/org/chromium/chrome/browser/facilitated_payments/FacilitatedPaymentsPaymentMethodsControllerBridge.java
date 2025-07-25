@@ -65,6 +65,11 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     }
 
     @Override
+    public void onPaymentAppSelected(String packageName, String activityName) {
+        // TODO(crbug.com/433642700): Use the JNI bridge to invoke the selected payment app.
+    }
+
+    @Override
     public boolean showManagePaymentMethodsSettings(Context context) {
         if (context == null) {
             return false;

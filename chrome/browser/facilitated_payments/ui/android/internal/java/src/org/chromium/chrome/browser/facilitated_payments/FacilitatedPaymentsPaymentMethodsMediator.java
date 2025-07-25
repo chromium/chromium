@@ -28,6 +28,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.PAYMENT_APP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.ON_PAYMENT_APP_CLICK_ACTION;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_ICON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
@@ -46,6 +50,7 @@ import static org.chromium.components.browser_ui.settings.SettingsNavigation.Set
 import static org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -64,6 +69,7 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -151,7 +157,13 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
     void showSheetForPaymentLink(List<Ewallet> ewallets, List<ResolveInfo> apps) {
         mInputProtector.markShowTime();
-        if (ewallets == null || ewallets.isEmpty()) {
+        boolean isEwalletAvailable = ewallets != null && !ewallets.isEmpty();
+        boolean isPaymentAppAvailable =
+                apps != null
+                        && !apps.isEmpty()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+        if (!isEwalletAvailable && !isPaymentAppAvailable) {
             return;
         }
 
@@ -161,8 +173,16 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         screenItems.clear();
 
         for (Ewallet ewallet : ewallets) {
-            final PropertyModel model = createEwalletModel(mContext, ewallet);
+            PropertyModel model = createEwalletModel(mContext, ewallet);
             screenItems.add(new ListItem(EWALLET, model));
+        }
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT)) {
+            for (ResolveInfo app : apps) {
+                PropertyModel model = createPaymentAppModel(mContext, app);
+                screenItems.add(new ListItem(PAYMENT_APP, model));
+            }
         }
 
         screenItems.add(buildEwalletAdditionalInfo(ewallets));
@@ -423,6 +443,16 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         return ewalletModelBuilder.build();
     }
 
+    @VisibleForTesting
+    PropertyModel createPaymentAppModel(Context context, ResolveInfo app) {
+        PackageManager packageManager = context.getPackageManager();
+        return new PropertyModel.Builder(PaymentAppProperties.NON_TRANSFORMING_KEYS)
+                .with(PAYMENT_APP_NAME, app.loadLabel(packageManager).toString())
+                .with(PAYMENT_APP_ICON, app.loadIcon(packageManager))
+                .with(ON_PAYMENT_APP_CLICK_ACTION, () -> this.onPaymentAppSelected(app))
+                .build();
+    }
+
     public void onBankAccountSelected(BankAccount bankAccount) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.onBankAccountSelected(bankAccount.getInstrumentId());
@@ -431,6 +461,11 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     public void onEwalletSelected(Ewallet ewallet) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.onEwalletSelected(ewallet.getInstrumentId());
+    }
+
+    public void onPaymentAppSelected(ResolveInfo app) {
+        if (!mInputProtector.shouldInputBeProcessed()) return;
+        mDelegate.onPaymentAppSelected(app.activityInfo.packageName, app.activityInfo.name);
     }
 
     private void onManagePaymentMethodsOptionSelected(String histogramName) {
