@@ -133,6 +133,9 @@ export interface PageElementTypes {
   shareCandidateQuery: HTMLInputElement;
   shareCandidates: HTMLElement;
   unpin: HTMLButtonElement;
+  viewChangedBtn: HTMLButtonElement;
+  viewChangedCurrentView: HTMLSelectElement;
+  viewChangedAutomaticallyAccept: HTMLInputElement;
   mqlsClientIdBtn: HTMLButtonElement;
 }
 

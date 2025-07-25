@@ -762,6 +762,11 @@ interface WebClientHandler {
   // This is useful for debugging the webview without having the responsiveness
   // check get in the way.
   IsDebuggerAttached() => (bool is_attached_to_webview);
+
+  // Called when the web client has changed the view shown to the user. This is
+  // used to trigger updates to browser UI which shows the current state of the
+  // web client, such as toggle controls.
+  OnViewChanged(ViewChangedNotification notification);
 };
 
 // Data sent from the browser to the web client with panel opening information.
@@ -937,6 +942,13 @@ interface WebClient {
   // Notify that the actor task with the given id has changed to the indicated
   // state.
   NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
+
+  // Called when the browser wants the web client to change its view to match
+  // the requested change (e.g., because the user clicked a UI element to toggle
+  // to a different view).
+  //
+  // The web client should update its view to match the requested change.
+  RequestViewChange(ViewChangeRequest request);
 };
 
 // Information extracted from a tab.
@@ -1092,4 +1104,39 @@ struct OpenSettingsOptions {
 enum HostCapability {
   // Glic host supports ScrollTo() with PDF documents.
   kScrollToPdf = 0,
+};
+
+// A request to change the glic web client to a view suitable for tracking the
+// progress of actuation.
+struct ViewChangeRequestActuation {};
+
+// A request to change the glic web client to a view which shows a
+// conversational interface of some type (whether textual, aural or other).
+struct ViewChangeRequestConversation {};
+
+union ViewChangeRequestDetails {
+  ViewChangeRequestActuation actuation;
+  ViewChangeRequestConversation conversation;
+};
+
+// A request to change the glic web client to a view of some type. These all
+// specify what the desired view is (via the union discriminator) but some may
+// carry additional information.
+struct ViewChangeRequest {
+  ViewChangeRequestDetails details;
+};
+
+// A coarse categorization of the view currently shown to the user.
+enum CurrentView {
+  // A conversational interface of some type (whether textual, aural or other).
+  kConversation = 0,
+
+  // A view suitable for tracking the progress of actuation.
+  kActuation = 1,
+};
+
+// A notification that the glic web client has changed the view shown to the
+// user.
+struct ViewChangedNotification {
+  CurrentView current_view;
 };

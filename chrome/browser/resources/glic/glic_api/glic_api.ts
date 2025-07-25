@@ -94,6 +94,15 @@ export declare interface GlicWebClient {
   notifyPanelWasClosed?(): Promise<void>;
 
   /**
+   * Called when the browser wants the web client to change its view to match
+   * a requested change (e.g., because the user clicked a UI element to toggle
+   * to a different view).
+   *
+   * The web client should update its view to match the requested change.
+   */
+  requestViewChange?(viewChangeRequest: ViewChangeRequest): void;
+
+  /**
    * The web client should resolve the promise after verifying the app is
    * responsive.
    *
@@ -627,6 +636,13 @@ export declare interface GlicBrowserHost {
    * Returns the list of capabilities of the glic host.
    */
   getHostCapabilities?(): Set<HostCapability>;
+
+  /**
+   * Notifies the browser that the web client has changed the view shown to the
+   * user. This is used to trigger updates to browser UI which shows the current
+   * state of the web client, such as toggle controls.
+   */
+  onViewChanged?(notification: ViewChangedNotification): void;
 }
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';
@@ -1453,6 +1469,46 @@ export declare interface DraggableArea {
   y: number;
   width: number;
   height: number;
+}
+
+/**
+ * Top-level views of the glic web client.
+ */
+export enum ClientView {
+  ACTUATION = 'actuation',
+  CONVERSATION = 'conversation',
+}
+
+/**
+ * A request to change the glic web client to a view suitable for tracking the
+ * progress of actuation, if possible.
+ */
+export declare interface ViewChangeRequestActuation {
+  readonly desiredView: ClientView.ACTUATION;
+}
+
+/**
+ * A request to change the glic web client to a view which shows a
+ * conversational interface of some type (whether textual, aural or other).
+ */
+export declare interface ViewChangeRequestConversation {
+  readonly desiredView: ClientView.CONVERSATION;
+}
+
+/**
+ * A request to change the glic web client to a view of some type. These all
+ * specify what the desired view is, but some may carry additional information
+ * about the request.
+ */
+export declare type ViewChangeRequest =
+    ViewChangeRequestActuation | ViewChangeRequestConversation;
+
+/**
+ * A notification that the view has changed to the specified view.
+ */
+export declare interface ViewChangedNotification {
+  /** The view that was changed to. */
+  currentView: ClientView;
 }
 
 /**

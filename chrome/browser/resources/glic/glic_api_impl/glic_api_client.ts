@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskState} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
@@ -85,6 +85,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   glicWebClientPanelStateChanged(payload: {panelState: PanelState}): void {
     this.host.getPanelState?.().assignAndSignal(payload.panelState);
+  }
+
+  glicWebClientRequestViewChange(payload: {request: ViewChangeRequest}): void {
+    this.webClient.requestViewChange?.(payload.request);
   }
 
   glicWebClientZeroStateSuggestionsChanged(payload: {
@@ -741,6 +745,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getHostCapabilities(): Set<HostCapability> {
     return this.hostCapabilities;
+  }
+
+  onViewChanged(notification: ViewChangedNotification) {
+    this.sender.requestNoResponse('glicBrowserOnViewChanged', {notification});
   }
 }
 

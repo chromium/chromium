@@ -1143,6 +1143,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                                                     std::move(observer));
   }
 
+  void OnViewChanged(mojom::ViewChangedNotificationPtr notification) override {
+    NOTIMPLEMENTED() << " current view: " << notification->current_view;
+  }
+
   // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state,
                          Browser* attached_browser) override {
@@ -1171,6 +1175,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void ManualResizeChanged(bool resizing) override {
     web_client_->NotifyManualResizeChanged(resizing);
+  }
+
+  void RequestViewChange(mojom::ViewChangeRequestPtr request) override {
+    web_client_->RequestViewChange(std::move(request));
   }
 
   // BrowserAttachmentObserver implementation.

@@ -28,6 +28,11 @@ class GlicWebClientAccess {
   // Informs the web client when the user starts and finishes dragging to resize
   // the panel.
   virtual void ManualResizeChanged(bool resizing) = 0;
+
+  // Called when the browser wants the web client to change its view to match
+  // the requested change (e.g., because the user clicked a UI element to toggle
+  // to a different view).
+  virtual void RequestViewChange(mojom::ViewChangeRequestPtr request) = 0;
 };
 
 }  // namespace glic

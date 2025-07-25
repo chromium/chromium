@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelState, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelState, ViewChangeRequest, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
 import {WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {$} from './page_element_types.js';
+import {requestViewChange} from './sections/view.js';
 
 export function logMessage(message: string) {
   const d = new Date();
@@ -210,6 +211,10 @@ class WebClient implements GlicWebClient {
 
   async checkResponsive() {
     // Nothing need to be checked on the test client.
+  }
+
+  requestViewChange(request: ViewChangeRequest) {
+    requestViewChange(request);
   }
 
   getInitialized(): Promise<void> {

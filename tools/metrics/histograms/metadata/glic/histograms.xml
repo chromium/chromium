@@ -99,6 +99,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OnSessionTerminated"/>
     <variant name="OnTurnCompleted"/>
     <variant name="OnUserInputSubmitted"/>
+    <variant name="OnViewChanged"/>
     <variant name="OpenGlicSettingsPage"/>
     <variant name="OpenOsPermissionSettingsMenu"/>
     <variant name="PauseActorTask"/>
