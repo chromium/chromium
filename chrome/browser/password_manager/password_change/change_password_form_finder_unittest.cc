@@ -107,7 +107,22 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(testing::Return(password_store_.get()));
   }
 
-  std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager() {
+  std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
+      const autofill::FormData& form_data) {
+    auto form_manager = std::make_unique<password_manager::PasswordFormManager>(
+        client(), driver().AsWeakPtr(), form_data, &form_fetcher(),
+        std::make_unique<password_manager::PasswordSaveManagerImpl>(client()),
+        /*metrics_recorder=*/nullptr);
+    // Force form parsing, otherwise there will be no parsed observed form.
+    form_fetcher_.NotifyFetchCompleted();
+    static_cast<password_manager::PasswordFormPredictionWaiter::Client*>(
+        form_manager.get())
+        ->OnWaitCompleted();
+    return form_manager;
+  }
+
+  std::unique_ptr<password_manager::PasswordFormManager>
+  CreateChangePasswordFormManager() {
     std::vector<autofill::FormFieldData> fields;
     fields.push_back(CreateTestFormField(
         /*label=*/"Password:", /*name=*/"password",
@@ -122,16 +137,23 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
     form_data.set_url(GURL("https://www.foo.com"));
     form_data.set_fields(std::move(fields));
 
-    auto form_manager = std::make_unique<password_manager::PasswordFormManager>(
-        client(), driver().AsWeakPtr(), form_data, &form_fetcher(),
-        std::make_unique<password_manager::PasswordSaveManagerImpl>(client()),
-        /*metrics_recorder=*/nullptr);
-    // Force form parsing, otherwise there will be no parsed observed form.
-    form_fetcher_.NotifyFetchCompleted();
-    static_cast<password_manager::PasswordFormPredictionWaiter::Client*>(
-        form_manager.get())
-        ->OnWaitCompleted();
-    return form_manager;
+    return CreateFormManager(form_data);
+  }
+
+  std::unique_ptr<password_manager::PasswordFormManager>
+  CreateLoginFormManager() {
+    std::vector<autofill::FormFieldData> fields;
+    fields.push_back(CreateTestFormField(
+        /*label=*/"Username:", /*name=*/"username",
+        /*value=*/"", autofill::FormControlType::kInputEmail));
+    fields.push_back(CreateTestFormField(
+        /*label=*/"Password:", /*name=*/"password",
+        /*value=*/"", autofill::FormControlType::kInputPassword));
+    autofill::FormData form_data;
+    form_data.set_url(GURL("https://www.foo.com"));
+    form_data.set_fields(std::move(fields));
+
+    return CreateFormManager(form_data);
   }
 
   password_manager::PasswordManagerClient* client() { return &client_; }
@@ -162,7 +184,7 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ChangePasswordFormFinderTest, PasswordChangeFormFound) {
-  auto form_manager = CreateFormManager();
+  auto form_manager = CreateChangePasswordFormManager();
   ModelQualityLogsUploader logs_uploader(web_contents());
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
@@ -205,7 +227,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
           optimization_guide::AIPageContentResult()));
   EXPECT_CALL(completion_callback, Run(nullptr));
   task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),
@@ -258,7 +280,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),
@@ -288,7 +310,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -324,7 +346,7 @@ TEST_F(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
 
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
   task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.FailedCapturingPageContent",
@@ -353,7 +375,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -366,7 +388,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   // Now `form_finder` is waiting for the change password form again.
   EXPECT_TRUE(form_finder->form_waiter());
 
-  auto form_manager = CreateFormManager();
+  auto form_manager = CreateChangePasswordFormManager();
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder->form_waiter())
@@ -417,7 +439,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelPredictsLoginPage) {
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   EXPECT_EQ(GURL(kUrlString), web_contents()->GetURL());
   EXPECT_TRUE(form_finder->form_waiter());
@@ -426,4 +448,34 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelPredictsLoginPage) {
       logs_uploader.GetFinalLog(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
+}
+
+TEST_F(ChangePasswordFormFinderTest, PasswordLoginFormFound) {
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  ChangePasswordFormFinder form_finder(
+      pass_key(), web_contents(), client(), &logs_uploader, GURL(kUrlString),
+      completion_callback.Get(), capture_annotated_page_content.Get());
+
+  ASSERT_TRUE(form_finder.form_waiter());
+  EXPECT_CALL(capture_annotated_page_content, Run).Times(0);
+  EXPECT_CALL(completion_callback, Run).Times(0);
+
+  auto form_manager = CreateLoginFormManager();
+  static_cast<password_manager::PasswordFormManagerObserver*>(
+      form_finder.form_waiter())
+      ->OnPasswordFormParsed(form_manager.get());
+  static_cast<content::WebContentsObserver*>(form_finder.form_waiter())
+      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  task_environment()->FastForwardBy(
+      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+
+  // Verify there was navigation to change-pwd url
+  EXPECT_EQ(GURL(kUrlString), web_contents()->GetURL());
+  // Verify that form waiter is created again.
+  EXPECT_TRUE(form_finder.form_waiter());
 }

@@ -31,13 +31,14 @@ class ChangePasswordFormFinder {
  public:
   // Maximum waiting time for a change password form to appear.
   static constexpr base::TimeDelta kFormWaitingTimeout = base::Seconds(30);
+  using ChangePasswordFormFoundCallback =
+      base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
-  ChangePasswordFormFinder(
-      content::WebContents* web_contents,
-      password_manager::PasswordManagerClient* client,
-      ModelQualityLogsUploader* logs_uploader,
-      const GURL& change_password_url,
-      ChangePasswordFormWaiter::PasswordFormFoundCallback callback);
+  ChangePasswordFormFinder(content::WebContents* web_contents,
+                           password_manager::PasswordManagerClient* client,
+                           ModelQualityLogsUploader* logs_uploader,
+                           const GURL& change_password_url,
+                           ChangePasswordFormFoundCallback callback);
 
   ChangePasswordFormFinder(
       base::PassKey<class ChangePasswordFormFinderTest>,
@@ -45,7 +46,7 @@ class ChangePasswordFormFinder {
       password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
       const GURL& change_password_url,
-      ChangePasswordFormWaiter::PasswordFormFoundCallback callback,
+      ChangePasswordFormFoundCallback callback,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content);
 
@@ -54,13 +55,12 @@ class ChangePasswordFormFinder {
 #if defined(UNIT_TEST)
   void RespondWithFormNotFound() { std::move(callback_).Run(nullptr); }
 
-  ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
+  PasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
   ButtonClickHelper* click_helper() { return click_helper_.get(); }
 #endif
 
  private:
-  void OnInitialFormWaitingResult(
-      password_manager::PasswordFormManager* form_manager);
+  void OnInitialFormWaitingResult(PasswordFormWaiter::Result result);
 
   void OnPageContentReceived(
       std::optional<optimization_guide::AIPageContentResult> content);
@@ -77,13 +77,11 @@ class ChangePasswordFormFinder {
 
   void OnButtonClicked(bool result);
 
-  void OnSubsequentFormWaitingResult(
-      password_manager::PasswordFormManager* form_manager);
+  void OnSubsequentFormWaitingResult(PasswordFormWaiter::Result result);
 
   // Invokes `callback_` if `form_manager` is present, navigates to the
   // `change_password_url_` and awaits for change password form again otherwise.
-  void ProcessPasswordFormManagerOrRefresh(
-      password_manager::PasswordFormManager* form_manager);
+  void ProcessPasswordFormManagerOrRefresh(PasswordFormWaiter::Result result);
   void OnFormNotFound();
 
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
@@ -91,12 +89,12 @@ class ChangePasswordFormFinder {
   raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
   const GURL change_password_url_;
 
-  ChangePasswordFormWaiter::PasswordFormFoundCallback callback_;
+  ChangePasswordFormFoundCallback callback_;
 
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;
 
-  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
+  std::unique_ptr<PasswordFormWaiter> form_waiter_;
 
   std::unique_ptr<ButtonClickHelper> click_helper_;
 
