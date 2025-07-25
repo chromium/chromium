@@ -302,7 +302,12 @@ template("fuzzer_test") {
       test_data_deps += supporting_file_test_data_deps
     }
 
-    test(target_name) {
+    if (is_android) {
+      _template_type = "executable"
+    } else {
+      _template_type = "test"
+    }
+    target(_template_type, target_name) {
       forward_variables_from(invoker,
                              [
                                "cflags",
@@ -318,6 +323,7 @@ template("fuzzer_test") {
       deps = test_deps
       data_deps = test_data_deps
       data = test_data
+      testonly = true
 
       if (defined(invoker.additional_configs)) {
         configs += invoker.additional_configs
