@@ -49,8 +49,15 @@ source_set("controller") {
 
 source_set("utils") {
   sources = [
+    "parsed_share_extension_entry.h",
+    "parsed_share_extension_entry.mm",
     "share_extension_utils.h",
     "share_extension_utils.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/app_group",
+    "//net",
+    "//url",
+  ]
 }

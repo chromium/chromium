@@ -14,9 +14,11 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "ios/chrome/browser/share_extension/model/parsed_share_extension_entry.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_utils.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -25,6 +27,16 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
+
+namespace {
+
+void DeleteFileAtUrl(NSURL* url) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+}
+
+}  // namespace
 
 @interface ShareExtensionController () <NSFilePresenter>
 @end
@@ -168,12 +180,73 @@
 
 - (void)processExistingFiles {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // TODO(crbug.com/40260909): Add files processing.
+  if (_shutdownCalled) {
+    return;
+  }
+
+  NSURL* filesDirectory = [self presentedItemURL];
+
+  if (!filesDirectory) {
+    return;
+  }
+
+  __weak ShareExtensionController* weakSelf = self;
+
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&EnumerateFilesInDirectory, filesDirectory),
+      base::BindOnce(^(NSArray<NSURL*>* files) {
+        [weakSelf handleDirectoryEnumerationResult:files];
+      }));
+}
+
+- (void)handleDirectoryEnumerationResult:(NSArray<NSURL*>*)files {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  if (_shutdownCalled) {
+    return;
+  }
+
+  const NSUInteger filesCount = [files count];
+  if (filesCount) {
+    UMA_HISTOGRAM_COUNTS_100("IOS.ShareExtension.ReceivedEntriesCount",
+                             filesCount);
+
+    for (NSURL* fileURL : files) {
+      [self handleFileAtURL:fileURL];
+    }
+  }
 }
 
 - (void)handleFileAtURL:(NSURL*)url {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // TODO(crbug.com/40260909): Add URL handling.
+  CHECK(_shutdownCalled);
+
+  __weak ShareExtensionController* weakSelf = self;
+
+  ProceduralBlock successCompletion = base::CallbackToBlock(
+      base::BindPostTask(_taskRunner, base::BindOnce(&DeleteFileAtUrl, url)));
+
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&PerformBlockingFileReadAndParse, url),
+      base::BindOnce(^(ParsedShareExtensionEntry* parsedEntry) {
+        [weakSelf handleParsedShareEntryResult:parsedEntry
+                               originalFileURL:url
+                                    completion:successCompletion];
+      }));
+}
+
+- (void)handleParsedShareEntryResult:(ParsedShareExtensionEntry*)parsedEntry
+                     originalFileURL:(NSURL*)originalFileURL
+                          completion:(ProceduralBlock)completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_shutdownCalled) {
+    return;
+  }
+
+  if (completion) {
+    completion();
+  }
+  // TODO(crbug.com/40260909): Handle the parsed entry.
 }
 
 @end
