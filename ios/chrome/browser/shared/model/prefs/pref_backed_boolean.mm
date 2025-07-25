@@ -10,9 +10,6 @@
 
 @implementation PrefBackedBoolean {
   BooleanPrefMember _pref;
-
-  // Record whether -stop was called.
-  BOOL _stopped;
 }
 
 @synthesize observer = _observer;
@@ -29,11 +26,6 @@
   return self;
 }
 
-- (void)dealloc {
-  CHECK(_stopped, base::NotFatalUntil::M145)
-      << "-stop should be called on PrefBackedBoolean";
-}
-
 - (BOOL)value {
   return _pref.GetValue();
 }
@@ -43,7 +35,6 @@
 }
 
 - (void)stop {
-  _stopped = YES;
   _pref.Destroy();
 }
 
