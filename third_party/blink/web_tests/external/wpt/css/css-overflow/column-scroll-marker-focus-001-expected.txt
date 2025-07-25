@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Column 4
+  assert_equals: expected Element node <div tabindex="0" id="flex1" style="width:30%; height:100... but got Element node <div tabindex="0" id="c1first">line</div>
+[FAIL] Column #3
+  assert_equals: expected Element node <div tabindex="0" id="inlineBlock" style="display:inline-... but got Element node <div tabindex="0" id="c1first">line</div>
+[FAIL] Column #8
+  assert_equals: expected Element node <div tabindex="0" id="c7Block" style="width:50px;">block<... but got Element node <div tabindex="0" id="c1first">line</div>
+[FAIL] Column 7
+  assert_equals: expected Element node <div tabindex="0" id="c6Abs" style="position:absolute; le... but got Element node <div tabindex="0" id="c1first">line</div>
+[FAIL] Column 6
+  assert_equals: expected Element node <div tabindex="0" id="tfoot" style="display:table-footer-... but got Element node <div tabindex="0" id="c1first">line</div>
+[FAIL] Column 5
+  assert_equals: expected Element node <div tabindex="0" id="flex4" style="width:30%;">D</div> but got Element node <div tabindex="0" id="c1first">line</div>
+Harness: the test ran to completion.
+

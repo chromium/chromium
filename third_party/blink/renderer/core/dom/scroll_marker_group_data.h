@@ -93,7 +93,7 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
   void AddToFocusGroup(Element& scroll_marker);
   void RemoveFromFocusGroup(Element& scroll_marker);
   void ClearFocusGroup();
-  const HeapVector<Member<Element>>& ScrollMarkers() { return focus_group_; }
+  HeapVector<Member<Element>>& ScrollMarkers() { return focus_group_; }
 
   // Set selected scroll marker. Returns true if the selected marker changed.
   CORE_EXPORT bool SetSelected(Element* scroll_marker,

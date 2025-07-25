@@ -101,12 +101,31 @@ bool ElementHasCarouselPseudoElement(const Element& element) {
 // focus order for carousel scroller and pseudo-elements is different
 // from usual DOM order, these functions here help to achieve the specced
 // order.
-Element* GetSelectedScrollMarkerFromScrollMarkerGroup(const Element& current) {
+// is_scroller_in_links_mode determines if scroll-marker-group property of the
+// scroller is set to `links` (vs `tabs`), as in links mode every
+// ::scroll-marker is a tab stop, so we should return the first/last (based on
+// `forward`) ::scroll-marker here.
+template <bool forward = true>
+Element* GetSelectedScrollMarkerFromScrollMarkerGroup(
+    const Element& current,
+    const bool scroller_in_links_mode) {
   if (auto* scroll_marker_group =
           DynamicTo<ScrollMarkerGroupPseudoElement>(current)) {
+    if (scroller_in_links_mode) {
+      return forward ? scroll_marker_group->First()
+                     : scroll_marker_group->Last();
+    }
     return scroll_marker_group->Selected();
   }
   return nullptr;
+}
+
+bool IsScrollerInLinksMode(const Element& scroller) {
+  std::optional<ScrollMarkerGroup::ScrollMarkerMode> mode =
+      scroller.ComputedStyleRef().ScrollMarkerGroupMode();
+  return mode.has_value() &&
+         mode.value() == ScrollMarkerGroup::ScrollMarkerMode::kLinks &&
+         RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled();
 }
 
 // Carousel pseudo-elements order.
@@ -140,8 +159,11 @@ Element* GetInCarouselOrder(const Element& scroller,
       continue;
     }
     if (PseudoElement* pseudo = scroller.GetPseudoElement(pseudo_id)) {
+      // If the scroll-marker-group mode of the scroller is `links`, every
+      // scroll marker is a tab stop.
       if (Element* scroll_marker =
-              GetSelectedScrollMarkerFromScrollMarkerGroup(*pseudo)) {
+              GetSelectedScrollMarkerFromScrollMarkerGroup<forward>(
+                  *pseudo, IsScrollerInLinksMode(scroller))) {
         return scroll_marker;
       }
       return pseudo;
@@ -185,6 +207,15 @@ Element* GetNextForCarouselPseudoInFocusOrder(
     if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(current)) {
       scroller = scroll_marker->ScrollMarkerGroup()->parentElement();
       pseudo_id = scroll_marker->ScrollMarkerGroup()->GetPseudoId();
+      // If the scroll-marker-group mode of the scroller is `links`, every
+      // scroll marker is a tab stop.
+      if (IsScrollerInLinksMode(*scroller)) {
+        if (auto* next_scroll_marker =
+                scroll_marker->GetLayoutObject()->NextSibling()) {
+          CHECK(next_scroll_marker->IsScrollMarker());
+          return To<Element>(next_scroll_marker->GetNode());
+        }
+      }
     }
     return GetNextInCarouselOrder(*scroller, pseudo_id);
   }
@@ -222,6 +253,15 @@ Element* GetPreviousForCarouselPseudoInFocusOrder(
     if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(current)) {
       scroller = scroll_marker->ScrollMarkerGroup()->parentElement();
       pseudo_id = scroll_marker->ScrollMarkerGroup()->GetPseudoId();
+      // If the scroll-marker-group mode of the scroller is `links`, every
+      // scroll marker is a tab stop.
+      if (IsScrollerInLinksMode(*scroller)) {
+        if (auto* prev_scroll_marker =
+                scroll_marker->GetLayoutObject()->PreviousSibling()) {
+          CHECK(prev_scroll_marker->IsScrollMarker());
+          return To<Element>(prev_scroll_marker->GetNode());
+        }
+      }
     }
     return GetPrevInCarouselOrder(*scroller, pseudo_id);
   }

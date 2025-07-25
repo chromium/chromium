@@ -32,6 +32,10 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
   CORE_EXPORT bool SetSelected(ScrollMarkerPseudoElement& scroll_marker,
                                bool apply_snap_alignment = true);
   ScrollMarkerPseudoElement* Selected() const;
+
+  ScrollMarkerPseudoElement* First() const;
+  ScrollMarkerPseudoElement* Last() const;
+
   void ActivateNextScrollMarker();
   void ActivatePrevScrollMarker();
   CORE_EXPORT void ActivateScrollMarker(

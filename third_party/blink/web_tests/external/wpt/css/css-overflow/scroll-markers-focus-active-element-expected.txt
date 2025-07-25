@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] CSS Test: document.activeElement for ::scroll-marker is scroller
+  assert_equals: document.activeElement for ::scroll-marker is scroller expected Element node <div id="scroller">\n  <div></div>\n  <div></div>\n</div> but got Element node <body><div id="scroller">\n  <div></div>\n  <div></div>\n</d...
+Harness: the test ran to completion.
+
