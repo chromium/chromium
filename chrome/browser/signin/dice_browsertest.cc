@@ -1110,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   // Both LST and Sync Header are received so their time difference must be
   // recorded.
   histogram_tester.ExpectTotalCount(
-      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 1);
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
 
 // Tests that the account is signed in if the ENABLE_SYNC response is received
@@ -1181,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncBeforeToken) {
   // Both LST and Sync Header are received so their time difference must be
   // recorded.
   histogram_tester.ExpectTotalCount(
-      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 1);
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
 
 // Verifies that Chrome doesn't crash on browser window close when the sync
@@ -1433,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSiginInInterceptionInteractiveTest,
   // The sync header was not received so the histogram recording it's time
   // difference from the LST is not recorded.
   histogram_tester.ExpectTotalCount(
-      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 0);
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 0);
 }
 
 class DiceAddAccountTabBrowserTest : public DiceBrowserTest,

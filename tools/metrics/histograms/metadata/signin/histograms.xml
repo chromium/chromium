@@ -2871,8 +2871,8 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SigninManager.SyncHeaderArrivalTimeWindow" units="ms"
-    expires_after="2025-11-30">
+<histogram name="Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst"
+    units="ms" expires_after="2025-11-30">
   <owner>droger@chromium.org</owner>
   <owner>anthie@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

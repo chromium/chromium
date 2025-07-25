@@ -209,7 +209,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // Stops the timer and aborts the interception bubble.
   void StopInterceptionBubbleTimer();
 
-  bool IsTokenExchangeDone();
+  bool IsTokenExchangeDone() const;
 
   static base::TimeDelta g_delay_before_interception_bubble_retry;
 

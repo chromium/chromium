@@ -37,7 +37,7 @@ namespace {
 constexpr char kDiceSyncHeaderTimeoutHistogramNameHistogramName[] =
     "Signin.SigninManager.SyncHeaderTimeout";
 constexpr char kDiceSyncHeaderArrivalTimeWindowHistogramName[] =
-    "Signin.SigninManager.SyncHeaderArrivalTimeWindow";
+    "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst";
 }  // namespace
 
 // static
@@ -237,6 +237,26 @@ DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
       &g_delay_before_interception_bubble_retry, delay);
 }
 
+// Below we elaborate into what actions take place between the LST reception and
+// the `ENABLE_SYNC` header reception (if the latter occurs).
+// There are 3 cases:
+// 1) Chrome receives the Dice `ENABLE_SYNC` header without having received the
+// LST. This is unexpected, and can only happen due to a server bug. The
+// histogram `UnexpectedSyncHeaderProcessingBeforeLST` is recorded in that case.
+// 2) Chrome receives the LST and then the `ENABLE_SYNC` header before a timeout
+// set in `g_delay_before_interception_bubble_retry`. Chrome coordinates the
+// handling of these events so that they are processed in the right order (first
+// LST, the Sync header). The interception bubble is not shown, the histograms
+// are `Signin.SigninManager.SyncHeaderTimeout` and
+// `SyncHeaderArrivalTimeWindow` recorded and all timers are stopped when
+// receiving the sync header. 3) Chrome receives the LST but does not receive
+// the enable sync header within the `g_delay_before_interception_bubble_retry`
+// timeout. Then the interception bubble is shown and the histogram
+// `Signin.SigninManager.SyncHeaderTimeout` is recorded. The
+// retry_interception_bubble_timer is stopped, but
+// `elapsed_time_since_lst_arrival_timer` keeps running. If the enable sync
+// header is later received, then `elapsed_time_since_lst_arrival_timer` is
+// stopped and recorded in the histogram `SyncHeaderArrivalTimeWindow`.
 void DiceTabHelper::StartInterceptionBubbleTimer(
     base::OnceClosure retry_interception_bubble_callback) {
   base::OnceClosure record_timeout_callback = base::BindOnce([] {
@@ -259,8 +279,8 @@ void DiceTabHelper::StartInterceptionBubbleTimer(
 
 void DiceTabHelper::StopInterceptionBubbleTimer() {
   if (state_->retry_interception_bubble_timer.IsRunning()
-      // Edge case where a token exchange hasn't started yet by the time Chrome
-      // processes the Sync header.
+      // Unexpected, edge case where a token exchange hasn't been requested yet
+      // by the time Chrome processes the Sync header.
       || !IsTokenExchangeDone()) {
     base::UmaHistogramBoolean(kDiceSyncHeaderTimeoutHistogramNameHistogramName,
                               false);
@@ -280,11 +300,11 @@ void DiceTabHelper::StopInterceptionBubbleTimer() {
     return;
   }
   auto elapsed_time = state_->elapsed_time_since_lst_arrival_timer->Elapsed();
-  base::UmaHistogramTimes(kDiceSyncHeaderArrivalTimeWindowHistogramName,
-                          elapsed_time);
+  base::UmaHistogramMediumTimes(kDiceSyncHeaderArrivalTimeWindowHistogramName,
+                                elapsed_time);
 }
 
-bool DiceTabHelper::IsTokenExchangeDone() {
+bool DiceTabHelper::IsTokenExchangeDone() const {
   return state_->elapsed_time_since_lst_arrival_timer.get();
 }
 

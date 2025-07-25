@@ -33,7 +33,7 @@ namespace {
 constexpr char kDiceSyncHeaderTimeoutHistogramNameHistogramName[] =
     "Signin.SigninManager.SyncHeaderTimeout";
 constexpr char kDiceSyncHeaderArrivalTimeWindowHistogramName[] =
-    "Signin.SigninManager.SyncHeaderArrivalTimeWindow";
+    "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst";
 constexpr char kDiceUnexpectedSyncHeaderProcessingBeforeLstHistogramName[] =
     "Signin.SigninManager.UnexpectedSyncHeaderProcessingBeforeLST";
 }  // namespace

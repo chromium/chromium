@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   // Both LST and Sync Header are received so their time difference must be
   // recorded.
   histogram_tester.ExpectTotalCount(
-      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 1);
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
 
 class LiveSignInGaiaIntegrationTest
