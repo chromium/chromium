@@ -51,6 +51,7 @@ source_set("impl") {
     "//content/public/browser",
     "//extensions/buildflags",
   ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (enable_extensions) {
     deps += [ "//chrome/browser/apps/app_service" ]
