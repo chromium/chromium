@@ -902,6 +902,10 @@ void ManagePasswordsUIController::OnBubbleHidden() {
       passwords_data_.ClearSingleCredentialModeCredential();
     }
     update_icon = true;
+  } else if (GetState() == password_manager::ui::PASSWORD_CHANGE_STATE) {
+    ClearPopUpFlagForBubble();
+    passwords_data_.OnInactive();
+    update_icon = true;
   }
   if (update_icon) {
     UpdateBubbleAndIconVisibility();

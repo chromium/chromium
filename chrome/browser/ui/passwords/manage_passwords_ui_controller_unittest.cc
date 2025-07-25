@@ -2426,4 +2426,8 @@ TEST_F(ManagePasswordsUIControllerTest, ShowChangePasswordBubble) {
   EXPECT_EQ(controller()->PasswordChangeNewPassword(), kExamplePassword);
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(password_manager::ui::PASSWORD_CHANGE_STATE);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnBubbleHidden();
+  ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
 }
