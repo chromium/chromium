@@ -196,11 +196,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/usb/usb_system_tray_icon.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/webapps/webapps_client_desktop.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_desktop_utils.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)

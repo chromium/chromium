@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_IWA_IDENTITY_VALIDATOR_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_IWA_IDENTITY_VALIDATOR_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IDENTITY_IWA_IDENTITY_VALIDATOR_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IDENTITY_IWA_IDENTITY_VALIDATOR_H_
 
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/identity_validator.h"
@@ -30,4 +30,4 @@ class IwaIdentityValidator : public web_package::IdentityValidator {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_IWA_IDENTITY_VALIDATOR_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_IDENTITY_IWA_IDENTITY_VALIDATOR_H_

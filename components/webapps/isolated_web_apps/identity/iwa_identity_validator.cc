@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 
 #include <variant>
 
