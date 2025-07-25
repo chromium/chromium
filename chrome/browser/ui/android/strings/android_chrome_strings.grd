@@ -860,15 +860,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_GPM_STOPPED_WORKING_SUBTITLE" desc="Subtitle shown under the Google Password Manager entry point, when the password manager is not available for the user. Among other reasons, this can happen when Google Play services is not updated.">
         Stopped working on this device
       </message>
-      <message name="IDS_PASSWORD_MIGRATION_WARNING_ACKNOWLEDGE" desc="The text on the button that acknowledges the password migration warning.">
-        Got it
-      </message>
-      <message name="IDS_PASSWORD_MIGRATION_WARNING_CONTENT_DESCRIPTION" desc="Accessibility string read when the password migration warning sheet opens." formatter_data="android_java">
-        Google Password Manager update
-      </message>
-      <message name="IDS_PASSWORD_MIGRATION_WARNING_CLOSED" desc="Accessibility string read when the password migration warning sheet closes." formatter_data="android_java">
-        Update about password merge is closed
-      </message>
       <message name="IDS_PWD_ACCESS_LOSS_WARNING_CONTENT_DESCRIPTION" desc="Accessibility string read when the password access loss warning sheet opens.">
         Google Password Manager update opened
       </message>
@@ -908,23 +899,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_CSV_DOWNLOAD_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text for the dialog button through which users can initiate password export. The dilog is shown to users who have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated.">
         Export passwords
       </message>
-      <message name="IDS_POST_PASSWORD_MIGRATION_SHEET_TITLE_ABOUT_LOCAL_PWD" desc="The title of the post password migration sheet that informs the user that the migration happened. It means that passwords that the user has saved locally on their device are going to be affected by a change Google is making. 'passwords on this device' is important. It indicates that the change affects passwords saved on the device only. This is different to passwords that are saved and synced to the user's Google Account. Please try to keep this distinction as clear as possible." formatter_data="android_java">
-        We changed how passwords on this device are saved
-      </message>
-      <message name="IDS_POST_PWD_MIGRATION_SHEET_SUBTITLE_ABOUT_LOCAL_PWD" desc="The subtitle of the post password migration sheet that emphasises on merging local passwords." formatter_data="android_java">
-        All passwords saved only to this device for Chrome and <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph> were merged. You can autofill all your saved passwords on both apps.
-      </message>
       <message name="IDS_PASSWORDS_EXPORT_IN_PROGRESS_TITLE" desc="The title of the progress bar that is visible while the passwords are being exported." formatter_data="android_java">
         Exporting
-      </message>
-      <message name="IDS_CHROME_CHANNEL_NAME_CANARY" desc="The Chrome channel name for canary channel">
-        Chrome Canary
-      </message>
-      <message name="IDS_CHROME_CHANNEL_NAME_DEV" desc="The Chrome channel name for dev channel">
-        Chrome Dev
-      </message>
-      <message name="IDS_CHROME_CHANNEL_NAME_BETA" desc="The Chrome channel name for beta channel">
-        Chrome Beta
       </message>
       <message name="IDS_ACCESS_LOSS_UPDATE_GMS_TITLE" desc="The title of the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings having an outdated Goggle Play Services.">
         Update Google Play services

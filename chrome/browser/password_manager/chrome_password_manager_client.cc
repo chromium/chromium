@@ -151,7 +151,6 @@
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend_factory.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
@@ -225,16 +224,6 @@ constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 // TODO(crbug.com/41485955): Get rid of DeprecatedGetOriginAsURL().
 url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
-}
-
-void MaybeShowPostMigrationSheetWrapper(
-    base::WeakPtr<content::WebContents> web_contents,
-    Profile* profile) {
-  if (!web_contents) {
-    return;
-  }
-  local_password_migration::MaybeShowPostMigrationSheet(
-      web_contents->GetTopLevelNativeWindow(), profile);
 }
 
 #endif
@@ -2254,14 +2243,6 @@ gfx::RectF ChromePasswordManagerClient::TransformToRootCoordinates(
 #if BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::ResetErrorMessageDelegate() {
   password_manager_error_message_delegate_.reset();
-}
-
-void ChromePasswordManagerClient::TryToShowPostPasswordMigrationSheet() {
-  // This is to run the function after all the initialization tasks have been
-  // completed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&MaybeShowPostMigrationSheetWrapper,
-                                web_contents()->GetWeakPtr(), profile_));
 }
 #endif
 

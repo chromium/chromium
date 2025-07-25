@@ -1032,6 +1032,8 @@ constexpr char kObsoleteTimeOfLastMigrationAttempt[] =
     "time_of_last_migration_attempt";
 constexpr char kObsoleteSettingsMigratedToUPMLocal[] =
     "profile.settings_migrated_to_upm_local";
+constexpr char kObsoleteShouldShowPostPasswordMigrationSheetAtStartup[] =
+    "should_show_post_password_migration_sheet_at_startup";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Deprecated 07/2025.
@@ -1493,6 +1495,8 @@ void RegisterProfilePrefsForMigration(
                              base::Time());
   registry->RegisterDoublePref(kObsoleteTimeOfLastMigrationAttempt, 0.0);
   registry->RegisterBooleanPref(kObsoleteSettingsMigratedToUPMLocal, false);
+  registry->RegisterBooleanPref(
+      kObsoleteShouldShowPostPasswordMigrationSheetAtStartup, false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Deprecated 07/2025.
@@ -2783,6 +2787,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kObsoletePasswordAccessLossWarningShownTimestamp);
   profile_prefs->ClearPref(kObsoleteTimeOfLastMigrationAttempt);
   profile_prefs->ClearPref(kObsoleteSettingsMigratedToUPMLocal);
+  profile_prefs->ClearPref(
+      kObsoleteShouldShowPostPasswordMigrationSheetAtStartup);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Added 07/2025.

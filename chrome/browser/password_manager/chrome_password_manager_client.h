@@ -490,10 +490,6 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   void ResetErrorMessageDelegate();
 
-  // Called on startup. It will show the post password migration sheet if
-  // needed.
-  void TryToShowPostPasswordMigrationSheet();
-
   password_manager::CredManController* GetOrCreateCredManController();
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>

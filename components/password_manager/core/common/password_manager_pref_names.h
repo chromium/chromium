@@ -172,10 +172,6 @@ inline constexpr char kLocalPasswordHashDataList[] =
 inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
     "password_generation_bottom_sheet_dismiss_count";
 
-// Whether the post password migration sheet should be shown at startup.
-inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
-    "should_show_post_password_migration_sheet_at_startup";
-
 // Whether the auto-exported CSV should be deleted. Normally, it's deleted
 // immediately after export, but if that fails, this pref is used as a signal
 // that deletion should be retried.

@@ -540,8 +540,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
   registry->RegisterIntegerPref(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);
-  registry->RegisterBooleanPref(
-      prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);
   // This pref is used to decide whether the PasswordStore can be connected to
   // the new Android backend without migrating existing entries in the
   // LoginDatabase. In doubt, it's best to assume that's not the case, otherwise
