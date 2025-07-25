@@ -58,6 +58,7 @@ constexpr char kLogTag[] = "cr_seccomp";
 #endif
 
 base::debug::CrashKeyString* seccomp_crash_key = nullptr;
+base::debug::CrashKeyString* seccomp_ioctl_crash_key = nullptr;
 
 inline bool IsArchitectureX86_64() {
 #if defined(__x86_64__)
@@ -210,6 +211,29 @@ intptr_t SIGSYSIoctlFailure(const struct arch_seccomp_data& args,
       __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_IOCTL_CONTENT "\n";
   WriteToStdErr(kSeccompIoctlError, sizeof(kSeccompIoctlError) - 1);
   PrintAndSetSeccompCrashKey(args);
+
+  // Log information about the file descriptor.
+  char message[256];
+  size_t message_len;
+  default_stat_struct stat_buf;
+  const int fstat_ret =
+      syscall(__NR_fstat_default, static_cast<int>(args.args[0]), &stat_buf);
+  if (fstat_ret == 0) {
+    message_len = base::strings::SafeSPrintf(
+        message,
+        "dev=0x%x,ino=%d,mode=0%o,nlink=%d,"
+        "uid=%d,gid=%d,rdev=0x%x,size=%d,blksize=%d,blocks=%d",
+        stat_buf.st_dev, stat_buf.st_ino, stat_buf.st_mode, stat_buf.st_nlink,
+        stat_buf.st_uid, stat_buf.st_gid, stat_buf.st_rdev, stat_buf.st_size,
+        stat_buf.st_blksize, stat_buf.st_blocks);
+  } else {
+    // fstat failed, log the errno.
+    message_len = base::strings::SafeSPrintf(message, "fstat failed, errno=%d",
+                                             -fstat_ret);
+  }
+  WriteToStdErr(message, message_len);
+  base::debug::SetCrashKeyString(seccomp_ioctl_crash_key, message);
+
   // Make "request" volatile so that we can see it on the stack in a minidump.
   volatile uint64_t request = args.args[1];
   volatile char* addr = reinterpret_cast<volatile char*>(request & 0xFFFF);
@@ -524,6 +548,8 @@ void AllocateCrashKeys() {
 
   seccomp_crash_key = base::debug::AllocateCrashKeyString(
       "seccomp-sigsys", base::debug::CrashKeySize::Size256);
+  seccomp_ioctl_crash_key = base::debug::AllocateCrashKeyString(
+      "seccomp-sigsys-ioctl", base::debug::CrashKeySize::Size256);
 }
 
 const char* GetErrorMessageContentForTests() {
