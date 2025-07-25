@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -332,23 +331,33 @@ TEST_F(TabGroupSyncUtilTest, ShouldUpdateHistory) {
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->SetLastCommittedItem(item.get());
 
+  auto profile = TestProfileIOS::Builder().Build();
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetNavigationManager(std::move(navigation_manager));
-
-  auto profile = std::make_unique<web::FakeBrowserState>();
-  profile->SetOffTheRecord(false);
   web_state->SetBrowserState(profile.get());
 
   web::FakeNavigationContext navigation;
   navigation.SetWebState(web_state.get());
   navigation.SetHasCommitted(true);
 
+  std::unique_ptr<web::NavigationItem> otr_item = web::NavigationItem::Create();
+  otr_item->SetTransitionType(ui::PAGE_TRANSITION_TYPED);
+
+  auto otr_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  otr_navigation_manager->SetLastCommittedItem(otr_item.get());
+
+  auto otr_web_state = std::make_unique<web::FakeWebState>();
+  otr_web_state->SetNavigationManager(std::move(otr_navigation_manager));
+  otr_web_state->SetBrowserState(profile->GetOffTheRecordProfile());
+
+  web::FakeNavigationContext otr_navigation;
+  otr_navigation.SetWebState(otr_web_state.get());
+  otr_navigation.SetHasCommitted(true);
+
   EXPECT_TRUE(ShouldUpdateHistory(&navigation));
 
   // Off the record navigation.
-  profile->SetOffTheRecord(true);
-  EXPECT_FALSE(ShouldUpdateHistory(&navigation));
-  profile->SetOffTheRecord(false);
+  EXPECT_FALSE(ShouldUpdateHistory(&otr_navigation));
 
   // Back / forward navigation.
   EXPECT_TRUE(ShouldUpdateHistory(&navigation));
@@ -373,11 +382,9 @@ TEST_F(TabGroupSyncUtilTest, IsSaveableNavigation) {
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->SetLastCommittedItem(item.get());
 
+  auto profile = TestProfileIOS::Builder().Build();
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetNavigationManager(std::move(navigation_manager));
-
-  auto profile = std::make_unique<web::FakeBrowserState>();
-  profile->SetOffTheRecord(false);
   web_state->SetBrowserState(profile.get());
 
   web::FakeNavigationContext navigation;
@@ -451,8 +458,21 @@ TEST_F(TabGroupSyncUtilTest, IsSaveableNavigation) {
 
   // Off the record navigation.
   EXPECT_TRUE(IsSaveableNavigation(&navigation));
-  profile->SetOffTheRecord(true);
-  EXPECT_FALSE(IsSaveableNavigation(&navigation));
+
+  std::unique_ptr<web::NavigationItem> otr_item = web::NavigationItem::Create();
+  otr_item->SetTransitionType(ui::PAGE_TRANSITION_TYPED);
+
+  auto otr_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  otr_navigation_manager->SetLastCommittedItem(item.get());
+
+  auto otr_web_state = std::make_unique<web::FakeWebState>();
+  otr_web_state->SetNavigationManager(std::move(otr_navigation_manager));
+  otr_web_state->SetBrowserState(profile->GetOffTheRecordProfile());
+
+  web::FakeNavigationContext otr_navigation;
+  otr_navigation.SetWebState(web_state.get());
+
+  EXPECT_FALSE(IsSaveableNavigation(&otr_navigation));
 }
 
 // Tests the `IsTabGroupShared` method with a shared group.
