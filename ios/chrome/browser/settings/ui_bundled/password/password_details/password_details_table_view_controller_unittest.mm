@@ -182,6 +182,13 @@ NSString* DisplayName() {
   self.snackbarMessage = messageText;
 }
 
+- (void)showSnackbarWithMessage:(NSString*)messageText
+                     buttonText:(NSString*)buttonText
+        buttonAccessibilityHint:(NSString*)buttonAccesibilityHint
+                  messageAction:(void (^)(void))messageAction
+               completionAction:(void (^)(BOOL))completionAction {
+}
+
 - (void)dismissAllSnackbars {
 }
 

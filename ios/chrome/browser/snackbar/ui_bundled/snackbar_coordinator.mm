@@ -109,6 +109,24 @@ const double kRetainA11yFocusSeconds = 0.75;
   [self showSnackbarMessage:message];
 }
 
+- (void)showSnackbarWithMessage:(NSString*)messageText
+                     buttonText:(NSString*)buttonText
+        buttonAccessibilityHint:(NSString*)buttonAccessibilityHint
+                  messageAction:(void (^)(void))messageAction
+               completionAction:(void (^)(BOOL))completionAction {
+  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
+  if (buttonText) {
+    MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+    action.handler = messageAction;
+    action.title = buttonText;
+    action.accessibilityHint = buttonAccessibilityHint;
+    message.action = action;
+  }
+  message.completionHandler = completionAction;
+
+  [self showSnackbarMessage:message];
+}
+
 - (void)dismissAllSnackbars {
   [[MDCSnackbarManager defaultManager]
       dismissAndCallCompletionBlocksWithCategory:nil];

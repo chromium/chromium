@@ -62,6 +62,8 @@ CGFloat const kHalfSheetCornerRadius = 20;
                    buttonText:
                        l10n_util::GetNSString(
                            IDS_IOS_YOUTUBE_INCOGNITO_SNACKBAR_BUTTON_TITLE)
+      buttonAccessibilityHint:
+          l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT)
                 messageAction:^{
                   [weakSelf.tabOpener
                       dismissModalsAndMaybeOpenSelectedTabInMode:
