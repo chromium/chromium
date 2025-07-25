@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -301,10 +302,7 @@ public class StripLayoutHelper
 
                 @Override
                 public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
-                    final StripLayoutGroupTitle groupTitle = findGroupTitle(tabGroupId);
-                    if (groupTitle == null) return;
-
-                    updateGroupTextAndSharedState(groupTitle, newTitle);
+                    updateGroupTextAndSharedState(tabGroupId);
                     mRenderHost.requestRender();
                 }
 
@@ -1295,7 +1293,7 @@ public class StripLayoutHelper
 
         for (int i = 0; i < mStripGroupTitles.length; ++i) {
             final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-            updateGroupTextAndSharedState(groupTitle, groupTitle.getTitle());
+            updateGroupTextAndSharedStateUnchecked(groupTitle);
         }
     }
 
@@ -3777,29 +3775,28 @@ public class StripLayoutHelper
                 || !mTabGroupModelFilter.tabGroupExists(groupTitle.getTabGroupId())) {
             return;
         }
-        updateGroupTextAndSharedState(
-                groupTitle, mTabGroupModelFilter.getTabGroupTitle(groupTitle.getTabGroupId()));
+        updateGroupTextAndSharedStateUnchecked(groupTitle);
     }
 
     /**
      * Sets a non-empty title text for the given group indicator. Also updates the title text
      * bitmap, accessibility description, and tab/indicator sizes if necessary. If the group is
-     * shared, it may also update user avatars and the notification bubble.
+     * shared, it may also update user avatars and the notification bubble. This method does not
+     * check if the group exists as during initialization it may not yet exist, but should be drawn.
      *
      * @param groupTitle The {@link StripLayoutGroupTitle} that we're update the title text for.
-     * @param titleText The title text to apply. If empty, use a default title text.
      */
-    private void updateGroupTextAndSharedState(
-            StripLayoutGroupTitle groupTitle, @Nullable String titleText) {
+    private void updateGroupTextAndSharedStateUnchecked(StripLayoutGroupTitle groupTitle) {
         if (mLayerTitleCache == null || mTabGroupModelFilter == null) return;
+
         // Ignore updates for closing group indicators. This prevents assertion errors from using
         // stale group properties.
         if (groupTitle.willClose()) return;
 
         // 1. Update indicator text and width.
-        titleText =
-                StripLayoutUtils.getDefaultGroupTitleTextIfEmpty(
-                        mContext, mTabGroupModelFilter, groupTitle.getTabGroupId(), titleText);
+        String titleText =
+                TabGroupTitleUtils.getDisplayableTitle(
+                        mContext, mTabGroupModelFilter, groupTitle.getTabGroupId());
         int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, titleText);
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
         float oldWidth = groupTitle.getWidth();

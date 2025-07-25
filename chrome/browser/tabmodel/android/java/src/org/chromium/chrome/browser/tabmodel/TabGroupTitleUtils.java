@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -58,8 +60,12 @@ public class TabGroupTitleUtils {
      */
     public static String getDisplayableTitle(
             Context context, TabGroupModelFilter tabGroupModelFilter, @Nullable Token tabGroupId) {
-        @Nullable String explicitTitle =
-                tabGroupId == null ? null : tabGroupModelFilter.getTabGroupTitle(tabGroupId);
+        boolean tabGroupExists =
+                tabGroupId != null && tabGroupModelFilter.tabGroupExists(tabGroupId);
+        String explicitTitle =
+                tabGroupExists
+                        ? tabGroupModelFilter.getTabGroupTitle(assumeNonNull(tabGroupId))
+                        : null;
         if (TextUtils.isEmpty(explicitTitle)) {
             int tabCount = tabGroupModelFilter.getTabCountForGroup(tabGroupId);
             return getDefaultTitle(context, tabCount);

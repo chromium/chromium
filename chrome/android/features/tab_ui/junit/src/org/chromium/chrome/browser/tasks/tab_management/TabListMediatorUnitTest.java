@@ -1721,6 +1721,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.size(), equalTo(1));
         assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
 
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab2);
 
         assertThat(mModelList.size(), equalTo(2));

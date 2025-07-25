@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -242,8 +243,8 @@ public class StripDragShadowView extends FrameLayout {
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
         String titleText =
                 layerTitleCache.getUpdatedGroupTitle(
-                        tab.getTabGroupId(),
-                        StripLayoutUtils.getGroupTitleText(context, modelFilter, tab),
+                        tabGroupId,
+                        TabGroupTitleUtils.getDisplayableTitle(context, modelFilter, tabGroupId),
                         isIncognito);
         mTitleView.setText(titleText);
         mTitleView.setTextColor(

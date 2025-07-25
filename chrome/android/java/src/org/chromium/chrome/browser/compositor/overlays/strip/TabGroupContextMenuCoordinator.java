@@ -538,14 +538,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     }
                 });
 
-        // Set the initial text to the existing group title, defaulting to "N tabs" if no title name
-        // is set.
-        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mTabGroupId);
-        if (curGroupTitle == null || curGroupTitle.isEmpty()) {
-            setExistingOrDefaultTitle(getDefaultTitle());
-        } else {
-            setExistingOrDefaultTitle(curGroupTitle);
-        }
+        setExistingOrDefaultTitle(
+                TabGroupTitleUtils.getDisplayableTitle(context, mTabGroupModelFilter, mTabGroupId));
 
         // Add listener to group title EditText to update group title when keyboard starts hiding.
         mWindowAndroid

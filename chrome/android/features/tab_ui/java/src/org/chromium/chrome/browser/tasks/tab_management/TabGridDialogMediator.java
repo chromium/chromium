@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 
@@ -842,7 +843,7 @@ public class TabGridDialogMediator
         assumeNonNull(filter);
         Token tabGroupId = getCurrentTabGroupId();
         String storedTitle = tabGroupId != null ? filter.getTabGroupTitle(tabGroupId) : null;
-        if (storedTitle != null) {
+        if (!TextUtils.isEmpty(storedTitle)) {
             mModel.set(
                     TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                     res.getQuantityString(

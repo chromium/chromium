@@ -132,6 +132,7 @@ public class TabGroupTitleUtilsUnitTest {
     @Test
     public void testGetDisplayableTitle_Explicit() {
         String title = "t1";
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(title);
         assertEquals(
                 title,

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -236,7 +237,7 @@ public class LayerTitleCache {
         assumeNonNull(filter);
         if (!filter.tabGroupExists(groupId)) return;
 
-        String titleString = filter.getTabGroupTitle(groupId);
+        String titleString = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, groupId);
         getUpdatedGroupTitle(groupId, titleString, incognito);
     }
 

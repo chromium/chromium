@@ -120,6 +120,7 @@ public class TabUiUtilsUnitTest {
         when(mFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(mTabsToClose);
         when(mFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(mTabsToClose.size());
         when(mFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(GROUP_TITLE);
+        when(mFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.isClosing()).thenReturn(false);
         when(mTab.getId()).thenReturn(TAB_ID);
