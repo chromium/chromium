@@ -4293,6 +4293,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
 // TODO(crbug.com/41493389): enable this flaky test
+// Both Initiator Incognito tests build but don't run on desktop android.
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_Initiator_SpanningIncognito DISABLED_Initiator_SpanningIncognito
 #else
@@ -4313,12 +4314,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   const ExtensionId extension_id = extension->id();
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  ASSERT_TRUE(incognito_browser);
+  ASSERT_TRUE(PlatformOpenURLOffTheRecord(profile(), GURL("about:blank")));
 
   // iframe.html loads an iframe to title1.html. The extension listens for the
   // request to title1.html and records the request initiator.
-  GURL url = embedded_test_server()->GetURL("google.com", "/iframe.html");
+  const GURL url = embedded_test_server()->GetURL("google.com", "/iframe.html");
   const std::string url_origin = url::Origin::Create(url).Serialize();
 
   static constexpr char kScript[] = R"(
@@ -4334,7 +4334,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   // The extension isn't enabled in incognito. Se we shouldn't intercept the
   // request to |url|.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
+  ASSERT_TRUE(PlatformOpenURLOffTheRecord(profile(), url));
   result = ExecuteScriptAndReturnString(extension_id, profile(), kScript);
   ASSERT_TRUE(result);
   EXPECT_EQ("[]", *result);
@@ -4347,7 +4347,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
   // Now we should be able to intercept the incognito request.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
+  ASSERT_TRUE(NavigateToURL(url));
   result = ExecuteScriptAndReturnString(extension_id, profile(), kScript);
   ASSERT_TRUE(result);
   EXPECT_EQ(base::StringPrintf("[\"%s\"]", url_origin.c_str()), *result);
@@ -4375,8 +4375,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  ASSERT_TRUE(incognito_browser);
+  PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
   EXPECT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
 
   // iframe.html loads an iframe to title1.html. The extension listens for the
@@ -4395,7 +4394,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   )";
 
   ASSERT_TRUE(NavigateToURL(url_normal));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url_incognito));
+  ASSERT_TRUE(PlatformOpenURLOffTheRecord(profile(), url_incognito));
   std::optional<std::string> result =
       ExecuteScriptAndReturnString(extension->id(), profile(), kScript);
   ASSERT_TRUE(result);
