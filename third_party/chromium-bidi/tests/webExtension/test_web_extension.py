@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 import pytest
-from test_helpers import execute_command
+from test_helpers import execute_command, goto_url
 
 SIMPLE_EXTENSION_FILES = {
     "manifest.json": """
@@ -93,6 +93,42 @@ async def test_extensions_can_install(websocket, unpacked_extension_location,
     path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
     result = await install(websocket, path)
     assert result['extension']
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'goog:chromeOptions': {
+        'args':
+            ['--enable-unsafe-extension-debugging', '--remote-debugging-pipe']
+    },
+}],
+                         indirect=True)
+async def test_extensions_can_open_manifest(websocket,
+                                            unpacked_extension_location,
+                                            test_headless_mode,
+                                            create_context):
+    """ Verify the extension page can be opened. https://crbug.com/412926721 """
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support extensions")
+        return
+    path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
+    result = await install(websocket, path)
+    assert result['extension']
+    extension_id = result['extension']
+
+    context_id = await create_context()
+
+    await goto_url(websocket, context_id,
+                   f"chrome-extension://{extension_id}/manifest.json")
+
+    await execute_command(websocket, {
+        "method": "browsingContext.close",
+        "params": {
+            "context": context_id
+        }
+    })
+
+    await create_context()
 
 
 @pytest.mark.asyncio
