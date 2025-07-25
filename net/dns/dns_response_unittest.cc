@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -43,7 +44,7 @@ TEST(DnsRecordParserTest, Constructor) {
 }
 
 TEST(DnsRecordParserTest, ReadName) {
-  const uint8_t data[] = {
+  const auto data = std::to_array<uint8_t>({
       // all labels "foo.example.com"
       0x03, 'f', 'o', 'o', 0x07, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c',
       'o', 'm',
@@ -56,60 +57,79 @@ TEST(DnsRecordParserTest, ReadName) {
       // all pointer to "bar.example.com", 2 jumps
       0xc0, 0x11,
       // byte 0x1a
-  };
+  });
 
   std::string out;
   DnsRecordParser parser(data, 0, /*num_records=*/0);
   ASSERT_TRUE(parser.IsValid());
 
-  UNSAFE_TODO(EXPECT_EQ(0x11u, parser.ReadName(data + 0x00, &out)));
+  EXPECT_EQ(0x11u,
+            parser.ReadName(base::span(data).subspan(0x00u).data(), &out));
   EXPECT_EQ("foo.example.com", out);
   // Check that the last "." is never stored.
   out.clear();
-  UNSAFE_TODO(EXPECT_EQ(0x1u, parser.ReadName(data + 0x10, &out)));
+  EXPECT_EQ(0x1u,
+            parser.ReadName(base::span(data).subspan(0x10u).data(), &out));
   EXPECT_EQ("", out);
   out.clear();
-  UNSAFE_TODO(EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, &out)));
+  EXPECT_EQ(0x6u,
+            parser.ReadName(base::span(data).subspan(0x11u).data(), &out));
   EXPECT_EQ("bar.example.com", out);
   out.clear();
-  UNSAFE_TODO(EXPECT_EQ(0x2u, parser.ReadName(data + 0x17, &out)));
+  EXPECT_EQ(0x2u,
+            parser.ReadName(base::span(data).subspan(0x17u).data(), &out));
   EXPECT_EQ("bar.example.com", out);
 
   // Parse name without storing it.
-  UNSAFE_TODO(EXPECT_EQ(0x11u, parser.ReadName(data + 0x00, nullptr)));
-  UNSAFE_TODO(EXPECT_EQ(0x1u, parser.ReadName(data + 0x10, nullptr)));
-  UNSAFE_TODO(EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, nullptr)));
-  UNSAFE_TODO(EXPECT_EQ(0x2u, parser.ReadName(data + 0x17, nullptr)));
+  EXPECT_EQ(0x11u,
+            parser.ReadName(base::span(data).subspan(0x00u).data(), nullptr));
+  EXPECT_EQ(0x1u,
+            parser.ReadName(base::span(data).subspan(0x10u).data(), nullptr));
+  EXPECT_EQ(0x6u,
+            parser.ReadName(base::span(data).subspan(0x11u).data(), nullptr));
+  EXPECT_EQ(0x2u,
+            parser.ReadName(base::span(data).subspan(0x17u).data(), nullptr));
 
   // Check that it works even if initial position is different.
   parser = DnsRecordParser(data, 0x12, /*num_records=*/0);
-  UNSAFE_TODO(EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, nullptr)));
+  EXPECT_EQ(0x6u,
+            parser.ReadName(base::span(data).subspan(0x11u).data(), nullptr));
 }
 
 TEST(DnsRecordParserTest, ReadNameFail) {
-  const uint8_t data[] = {
+  const auto data = std::to_array<uint8_t>({
       // label length beyond packet
-      0x30, 'x', 'x', 0x00,
+      0x30,
+      'x',
+      'x',
+      0x00,
       // pointer offset beyond packet
-      0xc0, 0x20,
+      0xc0,
+      0x20,
       // pointer loop
-      0xc0, 0x08, 0xc0, 0x06,
+      0xc0,
+      0x08,
+      0xc0,
+      0x06,
       // incorrect label type (currently supports only direct and pointer)
-      0x80, 0x00,
+      0x80,
+      0x00,
       // truncated name (missing root label)
-      0x02, 'x', 'x',
-  };
+      0x02,
+      'x',
+      'x',
+  });
 
   DnsRecordParser parser(data, 0, /*num_records=*/0);
   ASSERT_TRUE(parser.IsValid());
 
   std::string out;
-  UNSAFE_TODO(EXPECT_EQ(0u, parser.ReadName(data + 0x00, &out)));
-  UNSAFE_TODO(EXPECT_EQ(0u, parser.ReadName(data + 0x04, &out)));
-  UNSAFE_TODO(EXPECT_EQ(0u, parser.ReadName(data + 0x08, &out)));
-  UNSAFE_TODO(EXPECT_EQ(0u, parser.ReadName(data + 0x0a, &out)));
-  UNSAFE_TODO(EXPECT_EQ(0u, parser.ReadName(data + 0x0c, &out)));
-  UNSAFE_TODO(EXPECT_EQ(0u, parser.ReadName(data + 0x0e, &out)));
+  EXPECT_EQ(0u, parser.ReadName(base::span(data).subspan(0x00u).data(), &out));
+  EXPECT_EQ(0u, parser.ReadName(base::span(data).subspan(0x04u).data(), &out));
+  EXPECT_EQ(0u, parser.ReadName(base::span(data).subspan(0x08u).data(), &out));
+  EXPECT_EQ(0u, parser.ReadName(base::span(data).subspan(0x0au).data(), &out));
+  EXPECT_EQ(0u, parser.ReadName(base::span(data).subspan(0x0cu).data(), &out));
+  EXPECT_EQ(0u, parser.ReadName(base::span(data).subspan(0x0eu).data(), &out));
 }
 
 // Returns an RFC 1034 style domain name with a length of |name_len|.

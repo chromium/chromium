@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <iterator>
 #include <string>
@@ -136,8 +137,8 @@ using ::testing::StrictMock;
 
 // A selection of characters that have traditionally been mangled in some
 // environment or other, for testing 8-bit cleanliness.
-constexpr char kBinaryBlob[] = {
-    '\n',   '\r',    // BACKWARDS CRNL
+constexpr auto kBinaryBlob = std::to_array<char>({
+    '\n', '\r',      // BACKWARDS CRNL
     '\0',            // nul
     '\x7F',          // DEL
     '\x80', '\xFF',  // NOT VALID UTF-8
@@ -147,7 +148,7 @@ constexpr char kBinaryBlob[] = {
     '\x1B',          // ESC, often special
     '\b',            // backspace
     '\'',            // single-quote, special in PHP
-};
+});
 constexpr size_t kBinaryBlobSize = std::size(kBinaryBlob);
 
 constexpr int kVeryBigTimeoutMillis = 60 * 60 * 24 * 1000;
@@ -2195,7 +2196,7 @@ TEST_F(WebSocketChannelStreamTest, WriteFramesOneAtATime) {
 // complete, and then send them in a single batch. The batching behaviour is
 // important to get good throughput in the "many small messages" case.
 TEST_F(WebSocketChannelStreamTest, WaitingMessagesAreBatched) {
-  static const char input_letters[] = "Hello";
+  static const std::string_view input_letters = "Hello";
   static const InitFrame expected1[] = {
       {FINAL_FRAME, WebSocketFrameHeader::kOpCodeText, MASKED, "H"}};
   static const InitFrame expected2[] = {
@@ -2218,7 +2219,7 @@ TEST_F(WebSocketChannelStreamTest, WaitingMessagesAreBatched) {
   }
 
   CreateChannelAndConnectSuccessfully();
-  for (size_t i = 0; i < strlen(input_letters); ++i) {
+  for (size_t i = 0; i < strlen(input_letters.data()); ++i) {
     EXPECT_EQ(
         channel_->SendFrame(true, WebSocketFrameHeader::kOpCodeText,
                             AsIOBuffer(std::string(1, input_letters[i])), 1U),
@@ -2238,18 +2239,17 @@ TEST_F(WebSocketChannelStreamTest, WrittenBinaryFramesAre8BitClean) {
       .WillOnce(DoAll(SaveArg<0>(&frames), Return(ERR_IO_PENDING)));
 
   CreateChannelAndConnectSuccessfully();
-  EXPECT_EQ(
-      channel_->SendFrame(
-          true, WebSocketFrameHeader::kOpCodeBinary,
-          AsIOBuffer(std::string(kBinaryBlob, kBinaryBlob + kBinaryBlobSize)),
-          kBinaryBlobSize),
-      WebSocketChannel::CHANNEL_ALIVE);
+  EXPECT_EQ(channel_->SendFrame(
+                true, WebSocketFrameHeader::kOpCodeBinary,
+                AsIOBuffer(std::string(base::as_string_view(kBinaryBlob))),
+                kBinaryBlobSize),
+            WebSocketChannel::CHANNEL_ALIVE);
   ASSERT_TRUE(frames != nullptr);
   ASSERT_EQ(1U, frames->size());
   const WebSocketFrame* out_frame = (*frames)[0].get();
   EXPECT_EQ(kBinaryBlobSize, out_frame->header.payload_length);
   ASSERT_FALSE(out_frame->payload.empty());
-  EXPECT_EQ(std::string_view(kBinaryBlob, kBinaryBlobSize),
+  EXPECT_EQ(base::as_string_view(kBinaryBlob),
             base::as_string_view(out_frame->payload));
 }
 
@@ -2261,7 +2261,7 @@ TEST_F(WebSocketChannelEventInterfaceTest, ReadBinaryFramesAre8BitClean) {
   frame_header.final = true;
   frame_header.payload_length = kBinaryBlobSize;
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBinaryBlobSize);
-  memcpy(buffer->data(), kBinaryBlob, kBinaryBlobSize);
+  buffer->first(kBinaryBlobSize).copy_from(base::as_byte_span(kBinaryBlob));
   frame->payload = buffer->span();
   std::vector<std::unique_ptr<WebSocketFrame>> frames;
   frames.push_back(std::move(frame));
@@ -2270,11 +2270,10 @@ TEST_F(WebSocketChannelEventInterfaceTest, ReadBinaryFramesAre8BitClean) {
                                std::move(frames));
   set_stream(std::move(stream));
   EXPECT_CALL(*event_interface_, OnAddChannelResponse(_, _, _));
-  EXPECT_CALL(
-      *event_interface_,
-      OnDataFrameVector(
-          true, WebSocketFrameHeader::kOpCodeBinary,
-          std::vector<char>(kBinaryBlob, kBinaryBlob + kBinaryBlobSize)));
+  EXPECT_CALL(*event_interface_,
+              OnDataFrameVector(
+                  true, WebSocketFrameHeader::kOpCodeBinary,
+                  std::vector<char>(kBinaryBlob.begin(), kBinaryBlob.end())));
 
   CreateChannelAndConnectSuccessfully();
 }

@@ -4,6 +4,7 @@
 
 #include "net/server/web_socket_encoder.h"
 
+#include <array>
 #include <limits>
 #include <string_view>
 #include <utility>

@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -63,10 +64,16 @@ bool ComparePolicy(const AddressSorterPosix::PolicyEntry& p1,
 }
 
 // Creates sorted PolicyTable from |table| with |size| entries.
+// TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+// redundant in M143.
 AddressSorterPosix::PolicyTable LoadPolicy(
-    const AddressSorterPosix::PolicyEntry* table,
-    size_t size) {
-  AddressSorterPosix::PolicyTable result(table, table + size);
+    base::span<const AddressSorterPosix::PolicyEntry> table,
+    size_t spanification_suspected_redundant_size) {
+  CHECK(spanification_suspected_redundant_size == table.size(),
+        base::NotFatalUntil::M143);
+  AddressSorterPosix::PolicyTable result(
+      table.data(),
+      table.subspan(spanification_suspected_redundant_size).data());
   std::sort(result.begin(), result.end(), ComparePolicy);
   return result;
 }

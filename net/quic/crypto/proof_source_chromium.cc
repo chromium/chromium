@@ -5,6 +5,7 @@
 #include "net/quic/crypto/proof_source_chromium.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/x509_util.h"
