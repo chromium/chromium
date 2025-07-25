@@ -29,3 +29,10 @@ void PasswordManagerUIHandler::DeleteAllPasswordManagerData(
   passwords_private_delegate_->DeleteAllPasswordManagerData(
       web_contents_, std::move(callback));
 }
+
+void PasswordManagerUIHandler::CopyPlaintextBackupPassword(
+    int id,
+    CopyPlaintextBackupPasswordCallback callback) {
+  passwords_private_delegate_->CopyPlaintextBackupPassword(id, web_contents_,
+                                                           std::move(callback));
+}

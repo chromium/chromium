@@ -90,4 +90,15 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   EXPECT_TRUE(test_delegate().get_delete_all_password_manager_data_called());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       CopyPlaintextBackupPassword_CallsDelegate) {
+  base::test::TestFuture<bool> future;
+  EXPECT_FALSE(test_delegate().copy_plaintext_backup_password());
+
+  handler().CopyPlaintextBackupPassword(0, future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(test_delegate().copy_plaintext_backup_password());
+}
+
 }  // namespace password_manager

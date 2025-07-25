@@ -90,6 +90,10 @@ class PasswordsPrivateDelegateImpl
                                 api::passwords_private::PlaintextReason reason,
                                 PlaintextPasswordCallback callback,
                                 content::WebContents* web_contents) override;
+  void CopyPlaintextBackupPassword(
+      int id,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> callback) override;
   void RequestCredentialsDetails(const std::vector<int>& ids,
                                  UiEntriesCallback callback,
                                  content::WebContents* web_contents) override;
@@ -211,6 +215,10 @@ class PasswordsPrivateDelegateImpl
       api::passwords_private::PlaintextReason reason,
       PlaintextPasswordCallback callback,
       bool authenticated);
+
+  void OnCopyBackupPasswordAuthResult(int id,
+                                      base::OnceCallback<void(bool)> callback,
+                                      bool authenticated);
 
   // Callback for RequestCredentialDetails() after authentication check.
   void OnRequestCredentialDetailsAuthResult(

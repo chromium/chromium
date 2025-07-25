@@ -945,6 +945,29 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
       1);
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, CopyPlaintextBackupPassword) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  PasswordForm form = CreateSampleForm();
+  form.SetPasswordBackupNote(u"backup");
+  SetUpPasswordStores({form});
+
+  auto delegate = CreateDelegate();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectAuthentication(delegate, /*successful=*/true);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  EXPECT_CALL(result_callback, Run(Eq(true)));
+  delegate->CopyPlaintextBackupPassword(0, web_contents.get(),
+                                        result_callback.Get());
+
+  std::u16string result;
+  test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                            /* data_dst = */ nullptr, &result);
+  EXPECT_EQ(result, form.GetPasswordBackup());
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest, TestShouldEnableAccountStorage) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
@@ -1007,6 +1030,31 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   // Since Reauth had failed password was not copied and metric wasn't recorded
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
 }
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       CopyPlaintextBackupPasswordFailsAuthentication) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  PasswordForm form = CreateSampleForm();
+  form.SetPasswordBackupNote(u"backup");
+  SetUpPasswordStores({form});
+
+  auto delegate = CreateDelegate();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectAuthentication(delegate, /*successful=*/false);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  EXPECT_CALL(result_callback, Run(Eq(false)));
+  delegate->CopyPlaintextBackupPassword(0, web_contents.get(),
+                                        result_callback.Get());
+
+  std::u16string result;
+  test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                            /* data_dst = */ nullptr, &result);
+  EXPECT_EQ(result, std::u16string());
+}
+
 #endif
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {

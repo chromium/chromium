@@ -35,6 +35,10 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
   void DeleteAllPasswordManagerData(
       DeleteAllPasswordManagerDataCallback callback) override;
 
+  void CopyPlaintextBackupPassword(
+      int id,
+      CopyPlaintextBackupPasswordCallback callback) override;
+
  private:
   raw_ptr<content::WebContents> web_contents_;
   scoped_refptr<extensions::PasswordsPrivateDelegate>

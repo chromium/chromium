@@ -54,6 +54,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void RequestCredentialsDetails(const std::vector<int>& ids,
                                  UiEntriesCallback callback,
                                  content::WebContents* web_contents) override;
+  void CopyPlaintextBackupPassword(
+      int id,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> callback) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
   void FetchFamilyMembers(FetchFamilyResultsCallback callback) override;
@@ -163,6 +167,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
     return delete_all_password_manager_data_called_;
   }
 
+  bool copy_plaintext_backup_password() const {
+    return copy_plaintext_backup_password_;
+  }
+
  protected:
   ~TestPasswordsPrivateDelegate() override;
 
@@ -232,6 +240,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Used to track whether `DeleteAllPasswordManagerData` was called.
   bool delete_all_password_manager_data_called_ = false;
+
+  // Used to track whether `CopyPlaintextBackupPassword` was called.
+  bool copy_plaintext_backup_password_ = false;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

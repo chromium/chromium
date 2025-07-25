@@ -123,6 +123,18 @@ class PasswordsPrivateDelegate
       PlaintextPasswordCallback callback,
       content::WebContents* web_contents) = 0;
 
+  // Copies the plain text backup password for entry corresponding to the |id|
+  // generated for each entry of the password list.
+  // |id| the id created when going over the list of saved passwords.
+  // |callback| The callback that gets invoked with true if the copy was
+  // successful, or false otherwise.
+  // |web_contents| The web content object used as the UI; will be used to show
+  //     an OS-level authentication dialog if necessary.
+  virtual void CopyPlaintextBackupPassword(
+      int id,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> callback) = 0;
+
   // Requests the full PasswordUiEntry (with filled password) with the given id.
   // Returns the full PasswordUiEntry with |callback|. Returns |std::nullopt|
   // if no matching credential with |id| is found.

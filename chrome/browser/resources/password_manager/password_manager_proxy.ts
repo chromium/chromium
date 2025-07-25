@@ -198,6 +198,14 @@ export interface PasswordManagerProxy {
       reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
 
   /**
+   * Copies the backup password for a specific ID to the clipboard.
+   * @param id The id for the password entry being being retrieved.
+   * @return A promise that resolves to `true` if the copy was successful, and
+   *     `false` otherwise.
+   */
+  copyPlaintextBackupPassword(id: number): Promise<boolean>;
+
+  /**
    * Saves a new password entry described by the given |options|.
    * @param options Details about a new password and storage to be used.
    * @return A promise that resolves when the new entry is added.
@@ -528,6 +536,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   requestPlaintextPassword(
       id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
     return chrome.passwordsPrivate.requestPlaintextPassword(id, reason);
+  }
+
+  copyPlaintextBackupPassword(id: number) {
+    return this.handler.copyPlaintextBackupPassword(id).then(
+        result => result.success);
   }
 
   addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {

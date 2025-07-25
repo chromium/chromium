@@ -65,6 +65,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeCredential',
       'changePasswordManagerPin',
       'continueImport',
+      'copyPlaintextBackupPassword',
       'deleteAllPasswordManagerData',
       'disconnectCloudAuthenticator',
       'dismissSafetyHubPasswordMenuNotification',
@@ -249,6 +250,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
     this.methodCalled('requestPlaintextPassword', {id, reason});
     return Promise.resolve('plainTextPassword');
+  }
+
+  copyPlaintextBackupPassword(id: number) {
+    this.methodCalled('copyPlaintextBackupPassword', {id});
+    return Promise.resolve(true);
   }
 
   addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {

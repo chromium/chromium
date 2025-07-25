@@ -87,8 +87,13 @@ export class BackupPasswordDetailsCardElement extends
   }
 
   private onCopyPasswordClick_() {
-    // TODO(crbug.com/420801799): Handle copy button for backup entries.
-    return;
+    PasswordManagerImpl.getInstance()
+        .copyPlaintextBackupPassword(this.password.id)
+        .then(() => this.showToast_(this.i18n('passwordCopiedToClipboard')))
+        .catch(() => {});
+    PasswordManagerImpl.getInstance().extendAuthValidity();
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED);
   }
 
   private onShowPasswordClick_() {
@@ -111,6 +116,14 @@ export class BackupPasswordDetailsCardElement extends
       return this.i18n('sitesAndAppsLabel');
     }
     return hasApps ? this.i18n('appsLabel') : this.i18n('sitesLabel');
+  }
+
+  private showToast_(message: string) {
+    this.dispatchEvent(new CustomEvent('value-copied', {
+      bubbles: true,
+      composed: true,
+      detail: {toastMessage: message},
+    }));
   }
 
 

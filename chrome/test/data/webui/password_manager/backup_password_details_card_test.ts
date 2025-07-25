@@ -9,7 +9,7 @@ import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBro
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -69,6 +69,32 @@ suite('BackupPasswordDetailsCardTest', function() {
     assertTrue(isVisible(card.$.showPasswordButton));
     assertTrue(isVisible(card.$.copyPasswordButton));
     assertTrue(isVisible(card.$.deleteButton));
+  });
+
+
+  test('Copy password', async function() {
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      password: 'password',
+      backupPassword: {value: 'backup', creationDate: 'Mar 17'},
+    });
+
+    const card = await createCardElement(password);
+
+    assertTrue(isVisible(card.$.copyPasswordButton));
+
+    card.$.copyPasswordButton.click();
+    await eventToPromise('value-copied', card);
+    await passwordManager.whenCalled('extendAuthValidity');
+    const {id} =
+        await passwordManager.whenCalled('copyPlaintextBackupPassword');
+    assertEquals(password.id, id);
+    assertEquals(
+        PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
+
+    await flushTasks();
   });
 
   test('Links properly displayed', async function() {

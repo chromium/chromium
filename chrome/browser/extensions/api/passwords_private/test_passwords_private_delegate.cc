@@ -174,6 +174,14 @@ void TestPasswordsPrivateDelegate::RequestPlaintextPassword(
   std::move(callback).Run(plaintext_password_);
 }
 
+void TestPasswordsPrivateDelegate::CopyPlaintextBackupPassword(
+    int id,
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> callback) {
+  copy_plaintext_backup_password_ = true;
+  std::move(callback).Run(true);
+}
+
 void TestPasswordsPrivateDelegate::RequestCredentialsDetails(
     const std::vector<int>& ids,
     UiEntriesCallback callback,
