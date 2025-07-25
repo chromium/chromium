@@ -9,6 +9,7 @@ per-file .clang-format=thakis@chromium.org
 per-file .clang-tidy=file://styleguide/c++/OWNERS
 per-file .clang-tidy=flowerhack@google.com
 per-file .clangd=file://styleguide/c++/OWNERS
+per-file .geminiignore=*
 per-file .gitattributes=*
 per-file .gitignore=*
 per-file .gitmodules=*
