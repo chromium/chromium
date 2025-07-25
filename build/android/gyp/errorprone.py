@@ -129,6 +129,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Serveral instances of using a string right before the String.format(),
     # which seems better than inlining.
     'InlineFormatString',
+    # Low priority.
+    'EffectivelyPrivate',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
