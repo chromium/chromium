@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -1037,6 +1038,14 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
+  if (tabs::AreVerticalTabsEnabled()) {
+    auto vertical_tab_strip_container = std::make_unique<views::View>();
+    vertical_tab_strip_container->SetBackground(
+        views::CreateSolidBackground(ui::kColorFrameActive));
+    vertical_tab_strip_container_ =
+        AddChildView(std::move(vertical_tab_strip_container));
+  }
+
   right_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
   right_aligned_side_panel_separator_->SetProperty(
@@ -1156,6 +1165,7 @@ BrowserView::~BrowserView() {
   window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
   contents_container_ = nullptr;
+  vertical_tab_strip_container_ = nullptr;
   unified_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;
   left_aligned_side_panel_separator_ = nullptr;
@@ -5196,9 +5206,9 @@ void BrowserView::AddedToWidget() {
           window_scrim_view_, top_container_, web_app_frame_toolbar_,
           web_app_window_title_, tab_strip_region_view_, tabstrip_, toolbar_,
           infobar_container_, contents_container_, multi_contents_view_,
-          left_aligned_side_panel_separator_, unified_side_panel_,
-          right_aligned_side_panel_separator_, side_panel_rounded_corner_,
-          contents_separator_));
+          vertical_tab_strip_container_, left_aligned_side_panel_separator_,
+          unified_side_panel_, right_aligned_side_panel_separator_,
+          side_panel_rounded_corner_, contents_separator_));
   browser_view_layout->SetUseBrowserContentMinimumSize(
       ShouldUseBrowserContentMinimumSize());
 

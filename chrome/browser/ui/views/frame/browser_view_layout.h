@@ -59,6 +59,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
                     MultiContentsView* multi_contents_view,
+                    views::View* vertical_tab_strip_container,
                     views::View* left_aligned_side_panel_separator,
                     views::View* unified_side_panel,
                     views::View* right_aligned_side_panel_separator,
@@ -122,6 +123,7 @@ class BrowserViewLayout : public views::LayoutManager {
   // Layout the following controls, updating `available_bounds` to leave the
   // remaining space available for future controls.
   void LayoutTitleBarForWebApp(gfx::Rect& available_bounds);
+  void LayoutVerticalTabStrip(gfx::Rect& available_bounds);
   void LayoutTabStripRegion(gfx::Rect& available_bounds);
   void LayoutWebUITabStrip(gfx::Rect& available_bounds);
   void LayoutToolbar(gfx::Rect& available_bounds);
@@ -131,23 +133,19 @@ class BrowserViewLayout : public views::LayoutManager {
   void LayoutInfoBar(gfx::Rect& available_bounds);
 
   // Helper struct and function for LayoutContentsContainerView that calculates
-  // bounds for |contents_container_| and |unified_side_panel_|.
+  // bounds for `contents_container_` and `unified_side_panel_`.
   struct ContentsContainerLayoutResult;
   ContentsContainerLayoutResult CalculateContentsContainerLayout(
-      int top,
-      int bottom,
-      const gfx::Rect& browser_view_bounds) const;
+      const gfx::Rect& available_bounds) const;
 
-  // Layout the |contents_container_| view between the coordinates |top| and
-  // |bottom|. See browser_view.h for details of the relationship between
-  // |contents_container_| and other views. Also lays out |unified_side_panel_|.
-  void LayoutContentsContainerView(int top,
-                                   int bottom,
-                                   const gfx::Rect& browser_view_bounds);
+  // Layout the `contents_container_` within the available bounds.
+  // See browser_view.h for details of the relationship between
+  // `contents_container_` and other views. Also lays out `unified_side_panel_`.
+  void LayoutContentsContainerView(const gfx::Rect& available_bounds);
 
-  // Updates |top_container_|'s bounds. The new bounds depend on the size of
+  // Updates `top_container_`'s bounds. The new bounds depend on the size of
   // the bookmark bar and the toolbar.
-  void UpdateTopContainerBounds(const gfx::Rect& browser_view_bounds);
+  void UpdateTopContainerBounds(const gfx::Rect& available_bounds);
 
   // Layout the contents border, which indicates the tab is being captured.
   void LayoutContentBorder();
@@ -176,6 +174,7 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<InfoBarContainerView> infobar_container_;
   const raw_ptr<views::View> contents_container_;
   const raw_ptr<MultiContentsView> multi_contents_view_;
+  const raw_ptr<views::View> vertical_tab_strip_container_;
   const raw_ptr<views::View> left_aligned_side_panel_separator_;
   const raw_ptr<views::View> unified_side_panel_;
   const raw_ptr<views::View> right_aligned_side_panel_separator_;
