@@ -64,7 +64,7 @@ public class RestoreMigrateTest {
         TabModelSelectorMetadata data =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                TabPersistentStore.saveTabModelSelectorMetadata(
+                                TabPersistentStore.extractTabMetadataFromSelector(
                                         selector, /* tabsBeingRestored= */ null));
 
         File f = TabStateDirectory.getOrCreateTabbedModeStateDirectory();

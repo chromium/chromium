@@ -424,7 +424,7 @@ public class TabPersistentStore {
             // it looked when the SaveListTask was first created.
             if (mSaveListTask != null) mSaveListTask.cancel(true);
             try {
-                saveListToFile(saveTabMetadata());
+                saveListToFile(extractTabMetadata());
             } catch (IOException e) {
                 Log.w(TAG, "Error while saving tabs state; will attempt to continue...", e);
             }
@@ -1089,7 +1089,7 @@ public class TabPersistentStore {
         // done as part of the standard tab removal process.
     }
 
-    private TabModelSelectorMetadata saveTabMetadata() throws IOException {
+    private TabModelSelectorMetadata extractTabMetadata() throws IOException {
         List<TabRestoreDetails> tabsToRestore = new ArrayList<>();
 
         // The metadata file may be being written out before all of the Tabs have been restored.
@@ -1097,7 +1097,7 @@ public class TabPersistentStore {
         if (mTabBatchLoader != null) tabsToRestore.addAll(mTabBatchLoader.getTabsInBatch());
         tabsToRestore.addAll(mTabsToRestore);
 
-        return saveTabModelSelectorMetadata(mTabModelSelector, tabsToRestore);
+        return extractTabMetadataFromSelector(mTabModelSelector, tabsToRestore);
     }
 
     private void saveListToFile(TabModelSelectorMetadata listData) {
@@ -1427,7 +1427,7 @@ public class TabPersistentStore {
         protected void onPreExecute() {
             if (mDestroyed || isCancelled()) return;
             try {
-                mMetadata = saveTabMetadata();
+                mMetadata = extractTabMetadata();
             } catch (IOException e) {
                 mMetadata = null;
             }
@@ -1954,8 +1954,8 @@ public class TabPersistentStore {
      * @return {@link TabModelSelectorMetadata} containing the meta data of {@code selector}.
      */
     @VisibleForTesting
-    public static TabModelSelectorMetadata saveTabModelSelectorMetadata(
-            TabModelSelector selector, List<TabRestoreDetails> tabsBeingRestored) {
+    public static TabModelSelectorMetadata extractTabMetadataFromSelector(
+            TabModelSelector selector, @Nullable List<TabRestoreDetails> tabsBeingRestored) {
         ThreadUtils.assertOnUiThread();
 
         // TODO(crbug.com/40549331): Convert TabModelMetadata to use GURL.
