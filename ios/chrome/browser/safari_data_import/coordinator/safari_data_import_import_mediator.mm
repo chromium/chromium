@@ -20,12 +20,16 @@
   /// The importer instance and the client.
   std::unique_ptr<user_data_importer::SafariDataImporter> _importer;
   std::unique_ptr<IOSSafariDataImportClient> _importClient;
+  /// If `YES`, the import client is configured; otherwise it needs to be
+  /// configured.
+  BOOL _importClientReady;
   /// The `SavedPasswordsPresenter` instance being used by the imported. Needs
   /// to be kept alive in the duration of the importer.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       _savedPasswordsPresenter;
-  /// The file being processed.
-  NSURL* _file;
+  /// Whether we should allow the user to select a file. Workaround for file
+  /// picker latencies.
+  BOOL _disableFileSelection;
   /// Whether the mediator is disconnected.
   BOOL _disconnected;
 }
@@ -59,7 +63,12 @@
   CHECK(_disconnected, base::NotFatalUntil::M143);
 }
 
+- (void)reset {
+  _disableFileSelection = NO;
+}
+
 - (void)disconnect {
+  [self reset];
   _importer.reset();
   _savedPasswordsPresenter.reset();
   _importClient.reset();
@@ -70,17 +79,37 @@
 
 - (void)documentPicker:(UIDocumentPickerViewController*)controller
     didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls {
-  if (_file) {
+  if (_disableFileSelection) {
     return;
   }
-  _file = urls[0];
-  _importClient->SetSafariDataItemConsumer(self.itemConsumer);
-  _importer->PrepareImport(base::apple::NSURLToFilePath(_file));
+  NSURL* file = urls.firstObject;
+  if (!file) {
+    return;
+  }
+  _disableFileSelection = YES;
+  [self setUpImportClient];
+  _importer->PrepareImport(base::apple::NSURLToFilePath(file));
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller {
   [self.importStageConsumer
       transitionToImportStage:SafariDataImportStage::kNotStarted];
+}
+
+#pragma mark - Private
+
+- (void)setUpImportClient {
+  if (_importClientReady) {
+    return;
+  }
+  _importClient->SetSafariDataItemConsumer(self.itemConsumer);
+  __weak __typeof(self) weakSelf = self;
+  _importClient->RegisterCallbackOnImportFailure(base::BindOnce(^{
+    [weakSelf reset];
+    [weakSelf.importStageConsumer
+        transitionToImportStage:SafariDataImportStage::kNotStarted];
+  }));
+  _importClientReady = YES;
 }
 
 @end

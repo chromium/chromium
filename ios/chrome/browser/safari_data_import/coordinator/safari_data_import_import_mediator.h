@@ -50,6 +50,9 @@ class ReadingListModel;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+/// Resets the mediator to the state before any file is selected or processed.
+- (void)reset;
+
 /// Disconnect mediator dependencies; needs to be invoked before deallocating
 /// the coordinator.
 - (void)disconnect;

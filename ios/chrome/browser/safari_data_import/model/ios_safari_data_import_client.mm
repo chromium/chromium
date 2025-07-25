@@ -17,13 +17,21 @@ void IOSSafariDataImportClient::SetSafariDataItemConsumer(
   consumer_ = consumer;
 }
 
+void IOSSafariDataImportClient::RegisterCallbackOnImportFailure(
+    ImportFailureCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  failure_callbacks_subscription_ = failure_callbacks_.Add(std::move(callback));
+}
+
 #pragma mark - IOSSafariDataImportClient
 
 void IOSSafariDataImportClient::OnTotalFailure() {
-  // TODO(crbug.com/420703283): Handle invalid upload.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  failure_callbacks_.Notify();
 }
 
 void IOSSafariDataImportClient::OnBookmarksReady(size_t count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kBookmarks
                                     status:SafariDataItemImportStatus::kReady
@@ -33,6 +41,7 @@ void IOSSafariDataImportClient::OnBookmarksReady(size_t count) {
 void IOSSafariDataImportClient::OnHistoryReady(
     size_t estimated_count,
     std::vector<std::u16string> profiles) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kHistory
                                     status:SafariDataItemImportStatus::kReady
@@ -41,6 +50,7 @@ void IOSSafariDataImportClient::OnHistoryReady(
 
 void IOSSafariDataImportClient::OnPasswordsReady(
     const password_manager::ImportResults& results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/420703283): Extrapolate password details.
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kPasswords
@@ -49,6 +59,7 @@ void IOSSafariDataImportClient::OnPasswordsReady(
 }
 
 void IOSSafariDataImportClient::OnPaymentCardsReady(size_t count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kPayment
                                     status:SafariDataItemImportStatus::kReady
@@ -56,6 +67,7 @@ void IOSSafariDataImportClient::OnPaymentCardsReady(size_t count) {
 }
 
 void IOSSafariDataImportClient::OnBookmarksImported(size_t count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kBookmarks
                                     status:SafariDataItemImportStatus::kImported
@@ -63,6 +75,7 @@ void IOSSafariDataImportClient::OnBookmarksImported(size_t count) {
 }
 
 void IOSSafariDataImportClient::OnHistoryImported(size_t count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kHistory
                                     status:SafariDataItemImportStatus::kImported
@@ -71,6 +84,7 @@ void IOSSafariDataImportClient::OnHistoryImported(size_t count) {
 
 void IOSSafariDataImportClient::OnPasswordsImported(
     const password_manager::ImportResults& results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/420703283): Extrapolate password details.
   SafariDataItem* item =
       [[SafariDataItem alloc] initWithType:SafariDataItemType::kPasswords
@@ -81,6 +95,7 @@ void IOSSafariDataImportClient::OnPasswordsImported(
 }
 
 void IOSSafariDataImportClient::OnPaymentCardsImported(size_t count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kPayment
                                     status:SafariDataItemImportStatus::kImported
@@ -88,5 +103,6 @@ void IOSSafariDataImportClient::OnPaymentCardsImported(size_t count) {
 }
 
 base::WeakPtr<SafariDataImportClient> IOSSafariDataImportClient::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }

@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_MODEL_IOS_SAFARI_DATA_IMPORT_CLIENT_H_
 #define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_MODEL_IOS_SAFARI_DATA_IMPORT_CLIENT_H_
 
+#import "base/callback_list.h"
 #import "base/memory/weak_ptr.h"
+#import "base/sequence_checker.h"
 #import "components/user_data_importer/utility/safari_data_import_client.h"
 
 @protocol SafariDataItemConsumer;
@@ -14,6 +16,11 @@
 // `SafariDataImportClient` on iOS.
 class IOSSafariDataImportClient : public SafariDataImportClient {
  public:
+  // Container for the callbacks registered with
+  // `RegisterCallbackOnImportFailure`.
+  using ImportFailureCallbackList = base::OnceCallbackList<void()>;
+  using ImportFailureCallback = ImportFailureCallbackList::CallbackType;
+
   IOSSafariDataImportClient();
   ~IOSSafariDataImportClient() override;
 
@@ -21,6 +28,10 @@ class IOSSafariDataImportClient : public SafariDataImportClient {
   // importing. This needs to be set before preparing the .zip file containing
   // Safari data.
   void SetSafariDataItemConsumer(id<SafariDataItemConsumer> consumer);
+
+  // Register callback function invoked when no Safari data item could be
+  // loaded.
+  void RegisterCallbackOnImportFailure(ImportFailureCallback callback);
 
   // SafariDataImportClient:
   void OnTotalFailure() override;
@@ -38,7 +49,17 @@ class IOSSafariDataImportClient : public SafariDataImportClient {
   base::WeakPtr<SafariDataImportClient> AsWeakPtr() override;
 
  private:
+  // Ensures all UI updates happen on the main thread.
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Object handling ready or imported Safari Data items.
   __weak id<SafariDataItemConsumer> consumer_;
+
+  // List of registered callbacks, and the object managing its lifetime.
+  ImportFailureCallbackList failure_callbacks_;
+  base::CallbackListSubscription failure_callbacks_subscription_;
+
+  // Weak pointer factory.
   base::WeakPtrFactory<IOSSafariDataImportClient> weak_factory_{this};
 };
 
