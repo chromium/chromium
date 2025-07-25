@@ -213,8 +213,7 @@ void DownloadRequestMaker::Start(
       profile && AdvancedProtectionStatusManagerFactory::GetForProfile(profile)
                      ->IsUnderAdvancedProtection();
 
-  *request_->mutable_population() =
-      GetUserPopulationForProfileWithCookieTheftExperiments(profile);
+  *request_->mutable_population() = GetUserPopulationForProfile(profile);
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kMaliciousApkDownloadCheck)) {

@@ -20,7 +20,6 @@
 #include "components/safe_browsing/core/browser/user_population.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/sync/service/sync_service.h"
-#include "components/webdata/common/web_database_service.h"
 
 namespace safe_browsing {
 
@@ -103,23 +102,6 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
 
   ComparePopulationWithCache(profile, population);
   GetCachedUserPopulation(profile) = population;
-
-  return population;
-}
-
-ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
-    Profile* profile) {
-  ChromeUserPopulation population = GetUserPopulationForProfile(profile);
-
-  if (population.user_population() ==
-      ChromeUserPopulation::ENHANCED_PROTECTION) {
-    static const base::NoDestructor<std::vector<const base::Feature*>>
-        kCookieTheftExperiments{{
-            &features::kUseNewEncryptionKeyForWebData,
-        }};
-
-    GetExperimentStatus(*kCookieTheftExperiments, &population);
-  }
 
   return population;
 }

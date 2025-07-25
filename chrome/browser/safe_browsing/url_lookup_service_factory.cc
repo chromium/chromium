@@ -79,9 +79,7 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<RealTimeUrlLookupService>(
       GetURLLoaderFactory(context),
       VerdictCacheManagerFactory::GetForProfile(profile),
-      base::BindRepeating(
-          &safe_browsing::GetUserPopulationForProfileWithCookieTheftExperiments,
-          profile),
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       profile->GetPrefs(),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),

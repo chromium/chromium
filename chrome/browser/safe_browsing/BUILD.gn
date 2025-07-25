@@ -290,7 +290,6 @@ static_library("safe_browsing") {
       "//components/url_matcher:url_matcher",
       "//components/variations/service",
       "//components/version_info",
-      "//components/webdata/common",
       "//content/public/browser",
       "//services/preferences/public/mojom:mojom",
     ]
