@@ -95,7 +95,7 @@ class WorkerNetworkIsolationKeyBrowserTest : public ContentBrowserTest {
     EvalJsResult result = EvalJs(
         shell()->web_contents()->GetPrimaryMainFrame(),
         JsReplace("createFrame($1, $2)", subframe_url.spec(), subframe_name));
-    DCHECK(result.error.empty());
+    DCHECK(result.is_ok());
     navigation_observer.Wait();
 
     RenderFrameHost* subframe_rfh = FrameMatchingPredicate(

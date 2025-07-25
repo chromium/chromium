@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
   const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
   const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
   const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
   const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
   const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(
       })()
     )");
 
-  EXPECT_TRUE(result_1.error.empty());
+  EXPECT_TRUE(result_1.is_ok());
   const std::optional<GURL>& observed_urn_uuid_1 =
       config_observer_1.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_1.has_value());
@@ -1354,7 +1354,7 @@ IN_PROC_BROWSER_TEST_F(
       })()
     )");
 
-  EXPECT_TRUE(result_2.error.empty());
+  EXPECT_TRUE(result_2.is_ok());
   const std::optional<GURL>& observed_urn_uuid_2 =
       config_observer_2.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_2.has_value());
@@ -1500,7 +1500,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result_1.error.empty());
+  EXPECT_TRUE(result_1.is_ok());
   const std::optional<GURL>& observed_urn_uuid_1 =
       config_observer_1.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_1.has_value());
@@ -1536,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result_2.error.empty());
+  EXPECT_TRUE(result_2.is_ok());
   const std::optional<GURL>& observed_urn_uuid_2 =
       config_observer_2.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_2.has_value());
@@ -2096,7 +2096,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageReportEventBrowserTest,
       })()
     )");
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
   const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
@@ -2215,7 +2215,7 @@ class SharedStorageSelectURLLimitBrowserTestBase
     EvalJsResult result =
         RunSelectURLScript(execution_target, num_urls, saved_query_name);
 
-    EXPECT_TRUE(result.error.empty()) << result.error;
+    EXPECT_TRUE(result.is_ok()) << result.error;
     const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     if (!observed_urn_uuid.has_value()) {
       return std::nullopt;
@@ -3367,7 +3367,7 @@ class SharedStorageContextBrowserTest
     )",
                                                     fenced_frame_url.spec()));
 
-    EXPECT_TRUE(result.error.empty());
+    EXPECT_TRUE(result.is_ok());
     const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     ASSERT_TRUE(observed_urn_uuid.has_value());
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));

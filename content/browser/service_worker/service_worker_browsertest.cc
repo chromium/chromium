@@ -3322,7 +3322,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   // Extract the headers.
   EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                "document.body.textContent");
-  ASSERT_TRUE(result.error.empty());
+  ASSERT_TRUE(result.is_ok());
   std::optional<base::Value> parsed_result =
       base::JSONReader::Read(result.ExtractString());
   ASSERT_TRUE(parsed_result);

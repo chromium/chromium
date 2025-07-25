@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                              "(async () => {"
                              "await self.writer.close();"
                              "})()");
-  EXPECT_TRUE(close_result.error.empty()) << close_result.error;
+  EXPECT_TRUE(close_result.is_ok()) << close_result.error;
 }
 
 // TODO(crbug.com/40639570): Files are only quarantined on windows in

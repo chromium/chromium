@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     auto result = content::EvalJs(web_contents_.get(),
                                   "window.history.replaceState(null, '', "
                                   "window.location.href + '#foo');");
-    EXPECT_TRUE(result.error.empty());
+    EXPECT_TRUE(result.is_ok());
     navigation_observer.Wait();
   }
 

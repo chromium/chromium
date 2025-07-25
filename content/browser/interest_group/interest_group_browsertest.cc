@@ -1956,7 +1956,7 @@ function generateBid(
     EvalJsResult result =
         EvalJs(adapter, JsReplace("navigator.deprecatedURNToURL($1, $2)",
                                   urn_url, send_reports));
-    if (!result.error.empty() || result == base::Value()) {
+    if (!result.is_ok() || result == base::Value()) {
       return std::nullopt;
     }
     return GURL(result.ExtractString());
@@ -2269,7 +2269,7 @@ try {
         base::StringPrintf("navigator.adAuctionComponents(%i)", num_params));
     // Return nullopt if an exception was thrown, as should be the case for
     // loading pages that are not the result of an auction.
-    if (!result.error.empty()) {
+    if (!result.is_ok()) {
       return std::nullopt;
     }
 

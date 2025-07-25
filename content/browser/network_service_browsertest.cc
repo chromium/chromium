@@ -183,7 +183,7 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
         url, !synchronous);
 
     EvalJsResult result = EvalJs(shell(), script);
-    if (!result.error.empty()) {
+    if (!result.is_ok()) {
       return false;
     }
     return result.ExtractBool();

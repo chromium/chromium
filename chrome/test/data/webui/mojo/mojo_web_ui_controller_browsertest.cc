@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest,
                                "  let resp = await barRemote.getBar();"
                                "  return resp.value;"
                                "})()")
-                   .error.empty());
+                   .is_ok());
   watcher.Wait();
   EXPECT_FALSE(watcher.did_exit_normally());
   EXPECT_TRUE(web_contents->IsCrashed());
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, CrashForNoBinder) {
                                "  let resp = await bazRemote.getBaz();"
                                "  return resp.value;"
                                "})()")
-                   .error.empty());
+                   .is_ok());
 
   const char kExpectedMojoError[] =
       "Received bad user message: "

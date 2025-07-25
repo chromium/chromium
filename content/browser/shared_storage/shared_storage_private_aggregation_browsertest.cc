@@ -3402,7 +3402,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           .Serialize());
 
   EvalJsResult result = EvalJs(shell(), select_url_operation_script);
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
 
   CHECK(worklet_host);
   worklet_host->WaitForWorkletResponses();

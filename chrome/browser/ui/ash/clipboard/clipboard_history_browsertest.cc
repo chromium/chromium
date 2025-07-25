@@ -815,7 +815,7 @@ class ClipboardHistoryPasteTypeBrowserTest
     auto result =
         content::EvalJs(web_contents_.get(),
                         "(function() { return window.getLastPaste(); })();");
-    EXPECT_TRUE(result.error.empty());
+    EXPECT_TRUE(result.is_ok());
     return result.ExtractList();
   }
 
@@ -1650,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
 
   // Get the textfield center in the the web contents coordinates.
   auto result = content::EvalJs(web_contents, "getTextfieldCenterOnPage();");
-  ASSERT_TRUE(result.error.empty());
+  ASSERT_TRUE(result.is_ok());
   auto center_as_list = result.ExtractList();
   ASSERT_EQ(center_as_list.size(), 2u);
 

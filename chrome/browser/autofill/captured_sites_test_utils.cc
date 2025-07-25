@@ -2281,11 +2281,11 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
 
   content::EvalJsResult result =
       content::EvalJs(frame, focus_on_target_field_js);
-  if (result.error.empty() && result.is_bool() && result.ExtractBool()) {
+  if (result.is_ok() && result.is_bool() && result.ExtractBool()) {
     return true;
   } else {
     VLOG(1) << "Failed to focus element through script:"
-            << (result.error.empty()
+            << (result.is_ok()
                     ? (result.is_bool() ? "Returned false" : "Not a valid bool")
                     : result.error);
 

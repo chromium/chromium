@@ -937,7 +937,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     }
     ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = true});
     auto result = EvalJs(rfh, kScript, options);
-    if (result.error.empty() && result.ExtractBool()) {
+    if (result.is_ok() && result.ExtractBool()) {
       waiter.Wait();
     }
     return browser->window()->IsFullscreen();
@@ -955,7 +955,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     auto result =
         EvalJs(web_contents, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE);
     waiter.Wait();
-    return result.error.empty() && !browser->window()->IsFullscreen();
+    return result.is_ok() && !browser->window()->IsFullscreen();
   }
 
   std::pair<bool, Browser*> OpenPopupAndRequestFullscreenOnLoad() {
@@ -980,7 +980,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     EXPECT_NE(popup, browser);
     ui_test_utils::WaitUntilBrowserBecomeActive(popup);
     ui_test_utils::FullscreenWaiter waiter(popup, {.tab_fullscreen = true});
-    if (result.error.empty() && result.ExtractBool()) {
+    if (result.is_ok() && result.ExtractBool()) {
       waiter.Wait();
     }
     return std::make_pair(popup->window()->IsFullscreen(), popup);

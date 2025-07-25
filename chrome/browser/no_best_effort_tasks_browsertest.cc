@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
     const auto result =
         content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                         request_reply_javascript);
-    if (result.error.empty()) {
+    if (result.is_ok()) {
       LOG(INFO) << "Got a response from the extension.";
       EXPECT_TRUE(result.ExtractDict().FindBool("pong").value_or(false));
       break;

@@ -1243,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   // Init global `PermissionStatus` variable and add API for assigning and
   // removing event listeners.
-  ASSERT_EQ("", content::EvalJs(main_rfh, R"(
+  ASSERT_TRUE(content::EvalJs(main_rfh, R"(
     var PermissionStatus;
 
     function onChangeListener(event) {}
@@ -1264,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
       PermissionStatus.removeEventListener("change", onChangeListener);
     }
     )")
-                    .error);
+                  .is_ok());
 
   // Initialize global JS variable `PermissionStatus`.
   EXPECT_EQ(true, content::EvalJs(main_rfh, R"(
@@ -1292,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         run_loop.QuitClosure());
 
     // Set PermissionState.onchange listener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "addOnChange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "addOnChange()").is_ok());
 
     // `kAddNotificationsEventListener` execution is async. To informing that an
     // event listener has been added for a permission we should wait otherwise
@@ -1314,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         main_rfh->GetBrowserContext()->GetPermissionController(),
         run_loop.QuitClosure());
 
-    ASSERT_EQ("", content::EvalJs(main_rfh, "removeOnchange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "removeOnchange()").is_ok());
 
     run_loop.Run();
 
@@ -1334,7 +1334,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         run_loop.QuitClosure());
 
     // Add `change` event listener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "addEventListener()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "addEventListener()").is_ok());
 
     run_loop.Run();
 
@@ -1353,7 +1353,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         main_rfh->GetBrowserContext()->GetPermissionController(),
         run_loop.QuitClosure());
     // Add the second lisener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "addOnChange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "addOnChange()").is_ok());
     run_loop.Run();
   }
 
@@ -1361,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
     // Removing the first listener should not endup in disablign
     // `IsPermissionStatusSubscribed`. Do not need to call `run_loop.Run()` as
     // that event will not be processed.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "removeEventListener()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "removeEventListener()").is_ok());
     // run_loop.Run();
 
     IsPermissionStatusSubscribed =
@@ -1377,7 +1377,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         main_rfh->GetBrowserContext()->GetPermissionController(),
         run_loop.QuitClosure());
     // This will remove the internal listener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "removeOnchange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "removeOnchange()").is_ok());
     run_loop.Run();
 
     IsPermissionStatusSubscribed =

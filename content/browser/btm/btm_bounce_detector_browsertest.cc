@@ -3306,7 +3306,7 @@ class CookieStorage : public SiteStorage {
       RenderFrameHost* frame) const override {
     EvalJsResult result =
         EvalJs(frame, "document.cookie", EXECUTE_SCRIPT_NO_USER_GESTURE);
-    if (!result.error.empty()) {
+    if (!result.is_ok()) {
       return base::unexpected(result.error);
     }
     return base::ok(result.ExtractString());
@@ -3339,7 +3339,7 @@ class LocalStorage : public SiteStorage {
       RenderFrameHost* frame) const override {
     EvalJsResult result = EvalJs(frame, "localStorage.getItem('value')",
                                  EXECUTE_SCRIPT_NO_USER_GESTURE);
-    if (!result.error.empty()) {
+    if (!result.is_ok()) {
       return base::unexpected(result.error);
     }
     if (result == base::Value()) {

@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
     meta.content = 'lime';
     document.head.append(meta);
   )";
-  ASSERT_TRUE(EvalJs(web_contents, script).error.empty());
+  ASSERT_TRUE(EvalJs(web_contents, script).is_ok());
   waiter.Wait();
 
   EXPECT_EQ(app_browser->app_controller()->GetThemeColor(),

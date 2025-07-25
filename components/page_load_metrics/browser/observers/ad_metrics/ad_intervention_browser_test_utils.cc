@@ -109,11 +109,11 @@ void TriggerAndDetectLargeStickyAd(content::WebContents* web_contents) {
   // down.
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(web_contents, "", "window.scrollTo(0, 5000)")
-          .error.empty());
+          .is_ok());
 
   // Force a layout update to capture the final state. At this point the
   // detector should have detected the large-sticky-ad.
-  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").error.empty());
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").is_ok());
 }
 
 void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
@@ -125,7 +125,7 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
                   "0.25, window.innerHeight * 0.25, window.innerWidth * 0.5, "
                   "window.innerHeight * 0.5)",
                   content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                  .error.empty());
+                  .is_ok());
 
   // Force a layout update to capture the overlay-popup-ad. Then dismiss the
   // ad.
@@ -134,13 +134,13 @@ void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
                                  "document.getElementsByTagName('iframe')[0]."
                                  "style.display = 'none';",
                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .error.empty());
+          .is_ok());
 
   // Force a layout update to capture the state after the dismissal. At this
   // point the detector should have detected the overlay-popup-ad.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
                   web_contents, "", "", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                  .error.empty());
+                  .is_ok());
 }
 
 void LoadLargeResource(net::test_server::ControllableHttpResponse* response,

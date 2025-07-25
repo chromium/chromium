@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
               .spec()
               .c_str(),
           kSubframeName));
-  ASSERT_TRUE(result.error.empty());
+  ASSERT_TRUE(result.is_ok());
   navigation_observer.Wait();
 
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
               .spec()
               .c_str(),
           kSubframeName));
-  ASSERT_TRUE(result.error.empty());
+  ASSERT_TRUE(result.is_ok());
   navigation_observer.Wait();
 
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameDefault) {
       shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
   EvalJsResult result =
       EvalJs(shell(), "new SharedWorker('/workers/worker.js');");
-  ASSERT_TRUE(result.error.empty());
+  ASSERT_TRUE(result.is_ok());
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameNone) {
   EvalJsResult result = EvalJs(
       shell(),
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'none'});");
-  ASSERT_TRUE(result.error.empty());
+  ASSERT_TRUE(result.is_ok());
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameAll) {
   EvalJsResult result = EvalJs(
       shell(),
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
-  ASSERT_TRUE(result.error.empty());
+  ASSERT_TRUE(result.is_ok());
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
   EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossDefault) {
           "createFrame($1, $2)",
           ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
           kSubframeName));
-  ASSERT_TRUE(frame_result.error.empty());
+  ASSERT_TRUE(frame_result.is_ok());
   navigation_observer.Wait();
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
       shell()->web_contents()->GetPrimaryPage(),
@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossDefault) {
   ASSERT_TRUE(subframe_rfh);
   EvalJsResult worker_result =
       EvalJs(subframe_rfh, "new SharedWorker('/workers/worker.js');");
-  ASSERT_TRUE(worker_result.error.empty());
+  ASSERT_TRUE(worker_result.is_ok());
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
@@ -1062,7 +1062,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossNone) {
           "createFrame($1, $2)",
           ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
           kSubframeName));
-  ASSERT_TRUE(frame_result.error.empty());
+  ASSERT_TRUE(frame_result.is_ok());
   navigation_observer.Wait();
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
       shell()->web_contents()->GetPrimaryPage(),
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossNone) {
   EvalJsResult worker_result = EvalJs(
       subframe_rfh,
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'none'});");
-  ASSERT_TRUE(worker_result.error.empty());
+  ASSERT_TRUE(worker_result.is_ok());
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
           "createFrame($1, $2)",
           ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
           kSubframeName));
-  ASSERT_TRUE(result_frame.error.empty());
+  ASSERT_TRUE(result_frame.is_ok());
   navigation_observer.Wait();
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
       shell()->web_contents()->GetPrimaryPage(),
@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
   EvalJsResult worker_result = EvalJs(
       subframe_rfh,
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
-  ASSERT_FALSE(worker_result.error.empty());
+  ASSERT_FALSE(worker_result.is_ok());
 }
 
 // Test for the SharedWorker extendedLifetime option.

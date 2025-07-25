@@ -645,8 +645,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, HasFirewallHole) {
       std::make_unique<DelegateImpl>(local_port, run_loop.QuitClosure());
   client->AttachDelegate(delegate.get());
 
-  EXPECT_TRUE(EvalJs(shell(), content::test::WrapAsync("socket.close()"))
-                  .error.empty());
+  EXPECT_TRUE(
+      EvalJs(shell(), content::test::WrapAsync("socket.close()")).is_ok());
   run_loop.Run();
 }
 

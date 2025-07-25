@@ -875,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
 
   ASSERT_TRUE(
       NavigateToURLWithPOST(web_contents()->GetPrimaryMainFrame(), kHostB)
-          .error.empty());
+          .is_ok());
 
   // Confirm that navigation from subresource occurred and cookies are still
   // available.

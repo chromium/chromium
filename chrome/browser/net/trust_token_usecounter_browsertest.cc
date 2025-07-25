@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsFetchUse) {
   // to test that the usage metric fired when the command was called.
   EXPECT_FALSE(
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), cmd)
-          .error.empty());
+          .is_ok());
 
   // Navigate away in order to flush use counters.
   EXPECT_TRUE(
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsXhrUse) {
   // to test that the usage metric fired when the command was called.
   EXPECT_FALSE(
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), cmd)
-          .error.empty());
+          .is_ok());
 
   // Navigate away in order to flush use counters.
   EXPECT_TRUE(

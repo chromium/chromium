@@ -1903,7 +1903,7 @@ class ScopedTestDevToolsProtocolClient : public TestDevToolsProtocolClient {
       EvalJs(execution_target, script, options, world_id);
 
   // NOTE: |eval_result.value| is intentionally ignored by ExecJs().
-  if (!eval_result.error.empty()) {
+  if (!eval_result.is_ok()) {
     return ::testing::AssertionFailure() << eval_result.error;
   }
   return ::testing::AssertionSuccess();

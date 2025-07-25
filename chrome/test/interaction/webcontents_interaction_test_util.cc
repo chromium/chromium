@@ -747,7 +747,7 @@ base::Value WebContentsInteractionTestUtil::Evaluate(
     std::string* error_message) {
   CHECK(is_page_loaded());
   auto result = EvalJsLocal(web_contents(), function);
-  if (!result.error.empty()) {
+  if (!result.is_ok()) {
     if (error_message) {
       *error_message = result.error;
       return base::Value();

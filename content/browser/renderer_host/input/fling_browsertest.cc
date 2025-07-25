@@ -139,7 +139,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     // guaranteed to have run.
     ASSERT_TRUE(
         EvalJsAfterLifecycleUpdate(iframe_node->current_frame_host(), "", "")
-            .error.empty());
+            .is_ok());
 
     WaitForHitTestData(iframe_node->current_frame_host());
     ASSERT_EQ(

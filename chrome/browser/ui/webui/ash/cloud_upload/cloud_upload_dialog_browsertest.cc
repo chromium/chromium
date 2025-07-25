@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
         content::EvalJs(web_contents,
                         "document.querySelector('file-handler-page')"
                         ".localTasks.map(task => task.appId)");
-    if (!eval_result.error.empty()) {
+    if (!eval_result.is_ok()) {
       return false;
     }
     observed_app_ids = eval_result.ExtractList();
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
         content::EvalJs(web_contents,
                         "document.querySelector('file-handler-page')"
                         ".localTasks.map(task => task.appId)");
-    if (!eval_result.error.empty()) {
+    if (!eval_result.is_ok()) {
       return false;
     }
     return !eval_result.ExtractList().empty();

@@ -159,7 +159,7 @@ class MagicBoostBrowserTest
     auto result =
         content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                         "getTextfieldBound();");
-    ASSERT_TRUE(result.error.empty());
+    ASSERT_TRUE(result.is_ok());
     const base::Value::List bounds_as_list = result.ExtractList();
     ASSERT_EQ(bounds_as_list.size(), 4u);
     const double left = bounds_as_list[0].GetDouble();

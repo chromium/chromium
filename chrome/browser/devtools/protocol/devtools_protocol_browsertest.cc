@@ -260,9 +260,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* other_web_contents =
       chrome_test_utils::GetActiveWebContents(this);
-  EXPECT_TRUE(
-      content::EvalJs(target_web_contents, setup_logging).error.empty());
-  EXPECT_TRUE(content::EvalJs(other_web_contents, setup_logging).error.empty());
+  EXPECT_TRUE(content::EvalJs(target_web_contents, setup_logging).is_ok());
+  EXPECT_TRUE(content::EvalJs(other_web_contents, setup_logging).is_ok());
 
   base::Value::Dict params;
   params.Set("button", "left");
@@ -449,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(
     document.body.appendChild(specrules);
   )";
 
-  EXPECT_TRUE(content::EvalJs(web_contents(), add_specrules).error.empty());
+  EXPECT_TRUE(content::EvalJs(web_contents(), add_specrules).is_ok());
 
   {
     base::Value::Dict result;

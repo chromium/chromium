@@ -104,7 +104,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
     // the active match is set correctly.
     ASSERT_TRUE(
         EvalJsAfterLifecycleUpdate(contents()->GetPrimaryMainFrame(), "", "")
-            .error.empty());
+            .is_ok());
   }
 
   // Loads a multi-frame page. The page will have a full binary frame tree of

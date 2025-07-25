@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(QuicConnectionMigrationTest,
   // The subresource fetch should fail because the server closed the connection
   // and retry is disabled.
   EvalJsResult result = ResolveDelayedResponse();
-  EXPECT_FALSE(result.error.empty());
+  EXPECT_FALSE(result.is_ok());
   EXPECT_EQ(histograms.GetTotalSum("Net.QuicProtocolError.RetryStatus"), 0);
 
   FetchHistogramsFromChildProcesses();

@@ -5404,8 +5404,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                                         new_width, new_height)));
 
     // Force a style recomputation.
-    ASSERT_TRUE(EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width")
-                    .error.empty());
+    ASSERT_TRUE(
+        EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width").is_ok());
 
     // Check that the inner size hasn't changed.
     EXPECT_TRUE(
@@ -7420,13 +7420,12 @@ class FencedFrameReportEventBrowserTest
             Step::Result::kExceedMaxEventDataLength) {
           // When eventData exceeds the length limit, a security error is thrown
           // instead of a console error.
-          EXPECT_FALSE(result.error.empty());
           EXPECT_THAT(result, EvalJsResult::ErrorIs(testing::HasSubstr(
                                   GetErrorPattern(step.report_event_result))));
           continue;
         }
 
-        EXPECT_TRUE(result.error.empty());
+        EXPECT_TRUE(result.is_ok());
       }
 
       // If relevant, check that the event report succeeded.
@@ -9367,7 +9366,7 @@ class FencedFrameAutomaticBeaconBrowserTest
         if (config.message->length() > blink::kFencedFrameMaxBeaconLength) {
           // When eventData exceeds the length limit, a security error is thrown
           // instead of a console error.
-          EXPECT_FALSE(result.error.empty());
+          EXPECT_FALSE(result.is_ok());
           EXPECT_THAT(
               result.error,
               testing::HasSubstr("The data provided to "
@@ -9378,7 +9377,7 @@ class FencedFrameAutomaticBeaconBrowserTest
               blink::kAutomaticBeaconEventTypeHistogram,
               config.beacon_type.type, 0);
         } else {
-          EXPECT_TRUE(result.error.empty());
+          EXPECT_TRUE(result.is_ok());
           histogram_tester_.ExpectUniqueSample(
               blink::kAutomaticBeaconEventTypeHistogram,
               config.beacon_type.type, 1);

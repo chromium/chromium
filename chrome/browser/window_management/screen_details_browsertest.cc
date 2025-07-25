@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, FullscreenSize) {
   )JS";
   ASSERT_TRUE(EvalJs(tab, kEnterFullscreenAndResizeScript).ExtractBool());
   DevToolsWindowTesting::OpenDevToolsWindowSync(tab, true);
-  ASSERT_TRUE(EvalJs(tab, "window.nextResize").error.empty());
+  ASSERT_TRUE(EvalJs(tab, "window.nextResize").is_ok());
   ASSERT_TRUE(tab->IsFullscreen());
   // `window.screen` dimensions match the display size.
   EXPECT_EQ(display_size, EvalJs(tab, "`${screen.width}x${screen.height}`"));

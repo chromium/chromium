@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest,
   ASSERT_TRUE(
       content::EvalJs(web_contents_.get(),
                       "document.getElementById('username').type = 'password'")
-          .error.empty());
+          .is_ok());
 
   base::RunLoop().RunUntilIdle();  // Allow async operations to complete.
   EXPECT_TRUE(ChromeKeyboardControllerClient::Get()->is_keyboard_visible());
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest,
   ASSERT_TRUE(
       content::EvalJs(web_contents_.get(),
                       "document.getElementById('username').type = 'submit'")
-          .error.empty());
+          .is_ok());
 
   ASSERT_TRUE(WaitUntilHidden());
 }
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest,
   ASSERT_TRUE(
       content::EvalJs(web_contents_.get(),
                       "document.getElementById('username').readOnly = true")
-          .error.empty());
+          .is_ok());
 
   ASSERT_TRUE(WaitUntilHidden());
 }
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest,
   ASSERT_TRUE(content::EvalJs(web_contents_.get(),
                               "document.getElementById('username')."
                               "setAttribute('inputmode', 'numeric')")
-                  .error.empty());
+                  .is_ok());
 
   base::RunLoop().RunUntilIdle();  // Allow async operations to complete.
   EXPECT_TRUE(ChromeKeyboardControllerClient::Get()->is_keyboard_visible());
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest,
   ASSERT_TRUE(content::EvalJs(web_contents_.get(),
                               "document.getElementById('username')."
                               "setAttribute('inputmode', 'none')")
-                  .error.empty());
+                  .is_ok());
 
   ASSERT_TRUE(WaitUntilHidden());
 }
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest, DeleteInputHidesKeyboard) {
 
   ASSERT_TRUE(content::EvalJs(web_contents_.get(),
                               "document.getElementById('username').remove()")
-                  .error.empty());
+                  .is_ok());
 
   ASSERT_TRUE(WaitUntilHidden());
 }
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFocusTest,
                        TriggerInputFocusWithoutUserGestureDoesNotShowKeyboard) {
   ASSERT_TRUE(content::EvalJs(web_contents_.get(),
                               "document.getElementById('text').focus()")
-                  .error.empty());
+                  .is_ok());
 
   base::RunLoop().RunUntilIdle();  // Allow async operations to complete.
   EXPECT_FALSE(ChromeKeyboardControllerClient::Get()->is_keyboard_visible());

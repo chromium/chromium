@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UnusedHeaderFontPreload) {
   )";
   ASSERT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                      wait_for_warning)
-                  .error.empty());
+                  .is_ok());
 
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UnusedFontPreload) {
   )";
   ASSERT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                      wait_for_warning)
-                  .error.empty());
+                  .is_ok());
 
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));

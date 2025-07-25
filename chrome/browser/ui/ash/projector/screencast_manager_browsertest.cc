@@ -56,7 +56,7 @@ constexpr double kTestVideoDurationMillisecond = 16682;
 #if !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
 void VerifyResponse(const content::EvalJsResult& result) {
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
 
   const base::Value::Dict dict = result.ExtractDict();
   const std::string* file_id = dict.FindString("fileId");

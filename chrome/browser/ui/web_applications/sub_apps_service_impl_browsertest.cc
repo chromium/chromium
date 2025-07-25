@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   // Check List results for the second app is empty.
   auto list_result_2 = ListSubAppsJS(iwa_frame_2);
-  EXPECT_TRUE(list_result_2.error.empty());
+  EXPECT_TRUE(list_result_2.is_ok());
   EXPECT_EQ(0ul, list_result_2.ExtractDict().size());
 }
 

@@ -269,7 +269,7 @@ class GlicApiTest : public NonInteractiveGlicTest {
       if (frame) {
         auto result =
             content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
-        if (result.error.empty() && result.ExtractBool()) {
+        if (result.is_ok() && result.ExtractBool()) {
           return;
         }
       }

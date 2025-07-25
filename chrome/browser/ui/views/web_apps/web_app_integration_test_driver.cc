@@ -1502,7 +1502,7 @@ void WebAppIntegrationTestDriver::InstallSubApp(
       content::EvalJs(web_contents, script);
 
   if (option == SubAppInstallDialogOptions::kUserDeny) {
-    EXPECT_FALSE(add_result.error.empty());
+    EXPECT_FALSE(add_result.is_ok());
   } else {
     base::Value::Dict expected_output;
     expected_output.Set(sub_url, "success");

@@ -425,7 +425,7 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
           content::EvalJs(extension_host, kEnsurePdfHasLoadedScript);
       // The dom can be in an unusable state during setup. If the EvalJs
       // errors out tries again.
-      if (js_result.error.empty() && js_result.ExtractBool()) {
+      if (js_result.is_ok() && js_result.ExtractBool()) {
         return true;
       }
     }

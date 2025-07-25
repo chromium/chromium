@@ -9975,7 +9975,7 @@ IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
   // Ensure a frame has been produced.
   ASSERT_TRUE(
       EvalJsAfterLifecycleUpdate(web_contents->GetPrimaryMainFrame(), "", "")
-          .error.empty());
+          .is_ok());
 
   // Verify the renderer received the correct size for the viewport.
   EXPECT_GT(EvalJs(web_contents->GetPrimaryMainFrame(), "window.innerWidth;")

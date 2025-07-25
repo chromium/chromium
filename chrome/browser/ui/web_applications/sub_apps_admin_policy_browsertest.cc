@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsWithGestureNoPolicy) {
 
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}));
 
-  EXPECT_THAT(ret.error, IsEmpty());
+  EXPECT_TRUE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -176,9 +176,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, FailsNoGestureNoPolicy) {
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  EXPECT_THAT(ret.error, AllOf(Not(IsEmpty()),
-                               HasSubstr("This API can only be called shortly "
-                                         "after a user activation.")));
+  // TODO
+  EXPECT_THAT(ret.error, HasSubstr("This API can only be called shortly "
+                                   "after a user activation."));
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 
@@ -192,14 +192,14 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsNoGestureWithPolicy) {
 
   auto ret1 = EvalJs(iwa_frame, AddSubAppsScript({kSub1}),
                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(ret1.error, IsEmpty());
+  EXPECT_TRUE(ret1.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(1));
 
   EXPECT_THAT(CheckPolicyValue(iwa_frame), IsTrue());
 
   auto ret2 = EvalJs(iwa_frame, AddSubAppsScript({kSub2}),
                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(ret2.error, IsEmpty());
+  EXPECT_TRUE(ret2.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsWithPolicyAndGesture) {
   EXPECT_THAT(CheckPolicyValue(iwa_frame), IsTrue());
 
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}));
-  EXPECT_THAT(ret.error, IsEmpty());
+  EXPECT_TRUE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
 
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(ret.error, IsEmpty());
+  EXPECT_TRUE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -245,9 +245,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  EXPECT_THAT(ret.error, AllOf(Not(IsEmpty()),
-                               HasSubstr("This API can only be called shortly "
-                                         "after a user activation.")));
+  // TODO
+  EXPECT_THAT(ret.error, HasSubstr("This API can only be called shortly "
+                                   "after a user activation."));
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 

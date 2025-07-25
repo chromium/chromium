@@ -255,16 +255,16 @@ ResolveWebContentsWaitingForLaunchQueueFlush() {
       base::BindLambdaForTesting([&](content::WebContents& web_contents) {
         content::EvalJsResult has_function = content::EvalJs(
             &web_contents, "typeof resolveLaunchParamsFlush !== 'undefined'");
-        if (!has_function.error.empty() || !has_function.ExtractBool()) {
+        if (!has_function.is_ok() || !has_function.ExtractBool()) {
           // Sometimes the web contents is destroyed while evaluating this
           // javascript. That is fine.
-          DLOG_IF(INFO, !has_function.error.empty())
+          DLOG_IF(INFO, !has_function.is_ok())
               << "Got error: " << has_function.error;
           return;
         }
         content::EvalJsResult result =
             content::EvalJs(&web_contents, "resolveLaunchParamsFlush()");
-        if (!result.error.empty()) {
+        if (!result.is_ok()) {
           errors.push_back(result.error);
         }
       }));

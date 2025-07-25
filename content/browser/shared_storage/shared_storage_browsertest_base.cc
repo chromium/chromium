@@ -432,7 +432,7 @@ std::optional<GURL> SharedStorageBrowserTestBase::SelectFrom8URLsInContext(
         })()
       )");
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
   const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   if (observed_urn_uuid.has_value()) {
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));

@@ -141,7 +141,7 @@ base::Value TabCapturePerformanceTestBase::SendMessageToExtension(
       browser()->tab_strip_model()->GetActiveWebContents();
   for (;;) {
     auto result = content::EvalJs(web_contents, javascript);
-    if (result.error.empty()) {
+    if (result.is_ok()) {
       return std::move(result).TakeValue();
     }
     LOG(INFO) << "Race condition: Waiting for extension to come up, before "

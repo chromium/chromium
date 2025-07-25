@@ -151,7 +151,7 @@ std::map<LocalFrameToken, std::vector<std::string>> AllFieldValues(
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&](content::RenderFrameHost* rfh) {
         content::EvalJsResult r = content::EvalJs(rfh, kExtractValue);
-        if (r.error.empty()) {
+        if (r.is_ok()) {
           LocalFrameToken frame(rfh->GetFrameToken().value());
           for (const base::Value& value : r.ExtractList()) {
             values[frame].push_back(value.GetString());

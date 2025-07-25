@@ -11474,16 +11474,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DisplayLockThrottlesOOPIF) {
 
   // Force a lifecycle update in both frames to get to steady state.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(a_frame->current_frame_host(), "", "")
-                  .error.empty());
+                  .is_ok());
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(b_frame->current_frame_host(), "", "")
-                  .error.empty());
+                  .is_ok());
 
   // Display lock an ancestor of the <iframe> element in a_frame. The display
   // lock status will be propagated to the OOPIF during lifecycle update.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
                   a_frame->current_frame_host(),
                   "document.body.style = 'content-visibility: hidden'", "")
-                  .error.empty());
+                  .is_ok());
 
   // At this point, a_frame should have already sent an IPC to b_frame causing
   // b_frame to become throttled. Create an IntersectionObserver and observe a
@@ -11498,16 +11498,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DisplayLockThrottlesOOPIF) {
       })
   )";
   EvalJsResult result1 = EvalJs(b_frame->current_frame_host(), kObserverScript);
-  ASSERT_TRUE(result1.error.empty());
+  ASSERT_TRUE(result1.is_ok());
   EXPECT_EQ(result1.ExtractString(), "false");
 
   // Unlock the element in a_frame, run through the same steps, and look for an
   // "is intersecting" notification.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(a_frame->current_frame_host(),
                                          "document.body.style = ''", "")
-                  .error.empty());
+                  .is_ok());
   EvalJsResult result2 = EvalJs(b_frame->current_frame_host(), kObserverScript);
-  ASSERT_EQ(result2.error, "");
   EXPECT_EQ(result2.ExtractString(), "true");
 }
 

@@ -451,7 +451,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
   // that should be equivalent in the original and saved pages.
   base::Value GetPageInfo() {
     auto result = EvalJs(shell(), kGetPageInfoScript);
-    EXPECT_EQ(result.error, "");
+    EXPECT_TRUE(result.is_ok());
     return std::move(result).TakeValue();
   }
 
