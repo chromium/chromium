@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -147,6 +148,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private UndoBarThrottle mUndoBarThrottle;
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
+    @Mock private PriceWelcomeMessageController mPriceWelcomeMessageController;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -221,6 +223,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         FrameLayout overlayView = new FrameLayout(activity);
         mRootView.addView(overlayView);
         activity.setContentView(mRootView);
+        when(mMessageManager.getPriceWelcomeMessageController())
+                .thenReturn(mPriceWelcomeMessageController);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -538,5 +542,25 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         .getModelForTesting()
                         .get(TabGridDialogProperties.PAGE_KEY_LISTENER));
         controller.hideDialog(false);
+    }
+
+    @Test
+    public void testPriceMessageObserver() {
+        verify(mPriceWelcomeMessageController).addObserver(any());
+
+        reset(mPriceWelcomeMessageController);
+        mCoordinator.destroy();
+        verify(mPriceWelcomeMessageController).removeObserver(any());
+
+        // Must recreate the coordinator to satisfy the #tearDown() assertions.
+        reset(mMessageManager);
+        onActivityCreated(mActivity);
+    }
+
+    @Test
+    public void testRemovePriceMessageObserver_OnVisibilityChanged() {
+        reset(mPriceWelcomeMessageController);
+        mIsVisibleSupplier.set(false);
+        verify(mPriceWelcomeMessageController).removeObserver(any());
     }
 }

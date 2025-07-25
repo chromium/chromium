@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageController.PriceMessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
@@ -117,7 +118,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 public void onRestoreAllAppendedMessage() {
                     updateBottomPadding();
                 }
+            };
 
+    private final PriceMessageUpdateObserver mPriceMessageUpdateObserver =
+            new PriceMessageUpdateObserver() {
                 @Override
                 public void onShowPriceWelcomeMessage() {
                     updateBottomPadding();
@@ -496,6 +500,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mTabListCoordinator.removeDragObserver(mDragObserver);
         mDragObserver = null;
         mMessageManager.removeObserver(mMessageUpdateObserver);
+        PriceWelcomeMessageController priceWelcomeMessageController =
+                getPriceWelcomeMessageController();
+        if (priceWelcomeMessageController != null) {
+            priceWelcomeMessageController.removeObserver(mPriceMessageUpdateObserver);
+        }
         mMessageManager.unbind(mTabListCoordinator);
         mMediator.destroy();
         mTabListCoordinator.onDestroy();
@@ -801,6 +810,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void onVisibilityChanged(boolean visible) {
+        PriceWelcomeMessageController priceWelcomeMessageController =
+                getPriceWelcomeMessageController();
         if (visible) {
             mMessageManager.bind(
                     mTabListCoordinator,
@@ -808,10 +819,16 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     /* priceWelcomeMessageReviewActionProvider= */ mMediator,
                     (tabId) -> mMediator.onTabSelecting(tabId, false));
             mMessageManager.addObserver(mMessageUpdateObserver);
+            if (priceWelcomeMessageController != null) {
+                priceWelcomeMessageController.addObserver(mPriceMessageUpdateObserver);
+            }
             updateBottomPadding();
             mTabListCoordinator.prepareTabSwitcherPaneView();
         } else {
             mMessageManager.removeObserver(mMessageUpdateObserver);
+            if (priceWelcomeMessageController != null) {
+                priceWelcomeMessageController.removeObserver(mPriceMessageUpdateObserver);
+            }
             mMessageManager.unbind(mTabListCoordinator);
             updateBottomPadding();
             mTabListCoordinator.postHiding();
@@ -827,7 +844,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private PriceWelcomeMessageController getPriceWelcomeMessageController() {
-        return mMessageManager;
+        return mMessageManager.getPriceWelcomeMessageController();
     }
 
     private @Nullable CancelLongPressTabItemEventListener onLongPressOnTabCard(
