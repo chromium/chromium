@@ -5,10 +5,13 @@
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 
 #include "base/barrier_closure.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -62,6 +65,32 @@ void MultiCaptureDataService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void MultiCaptureDataService::OnWebAppInstalled(const webapps::AppId& app_id) {
+  if (MaybeAddAppToCaptureAppLists(app_id)) {
+    observers_.Notify(&Observer::MultiCaptureDataChanged);
+  }
+}
+
+void MultiCaptureDataService::OnWebAppUninstalled(
+    const webapps::AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
+  if (capture_apps_with_notification_.contains(app_id)) {
+    capture_apps_with_notification_.erase(app_id);
+    observers_.Notify(&Observer::MultiCaptureDataChanged);
+    return;
+  }
+
+  if (capture_apps_without_notification_.contains(app_id)) {
+    capture_apps_without_notification_.erase(app_id);
+    observers_.Notify(&Observer::MultiCaptureDataChanged);
+    return;
+  }
+}
+
+void MultiCaptureDataService::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
+}
+
 void MultiCaptureDataService::Init() {
   auto initialized_components_barrier = base::BarrierClosure(
       2u, base::BindOnce(&MultiCaptureDataService::LoadData,
@@ -79,8 +108,12 @@ void MultiCaptureDataService::LoadData() {
       prefs_->GetList(capture_policy::kManagedMultiScreenCaptureAllowedForUrls)
           .Clone();
 
-  app_without_notification_bundle_ids_ =
+  const std::vector<std::string> app_without_notification_bundle_ids_vector =
       info_provider_->GetSkipMultiCaptureNotificationBundleIds();
+  app_without_notification_bundle_ids_ = {
+      app_without_notification_bundle_ids_vector.begin(),
+      app_without_notification_bundle_ids_vector.end()};
+
   web_app::WebAppRegistrar& registrar = provider_->registrar_unsafe();
 
   for (const base::Value& allowlisted_app_value :
@@ -110,7 +143,46 @@ void MultiCaptureDataService::LoadData() {
   }
 
   observers_.Notify(&Observer::MultiCaptureDataChanged);
+
+  // Listen for app installation changes after initial processing.
+  if (!install_manager_observation_.IsObserving()) {
+    install_manager_observation_.Observe(&provider_->install_manager());
+  } else {
+    CHECK_IS_TEST();
+  }
   is_initialized_ = true;
+}
+
+bool MultiCaptureDataService::MaybeAddAppToCaptureAppLists(
+    const webapps::AppId& app_id) {
+  const web_app::WebAppRegistrar& registrar = provider_->registrar_unsafe();
+  ASSIGN_OR_RETURN(const web_app::WebApp& iwa,
+                   web_app::GetIsolatedWebAppById(registrar, app_id),
+                   [](const std::string& error) { return false; });
+  ASSIGN_OR_RETURN(const web_app::IsolatedWebAppUrlInfo& url_info,
+                   web_app::IsolatedWebAppUrlInfo::Create(iwa.manifest_id()),
+                   [](const std::string& error) { return false; });
+  const std::string& bundle_id = url_info.web_bundle_id().id();
+  const bool capture_allowed_by_policy =
+      std::ranges::any_of(multi_screen_capture_allowlist_on_login_,
+                          [&bundle_id](const base::Value& value) {
+                            if (!value.is_string()) {
+                              return false;
+                            }
+                            const GURL url(value.GetString());
+                            return url.is_valid() && url.host() == bundle_id;
+                          });
+  if (!capture_allowed_by_policy) {
+    return false;
+  }
+
+  if (app_without_notification_bundle_ids_.contains(bundle_id)) {
+    capture_apps_without_notification_[app_id] =
+        registrar.GetAppShortName(app_id);
+  } else {
+    capture_apps_with_notification_[app_id] = registrar.GetAppShortName(app_id);
+  }
+  return true;
 }
 
 }  // namespace multi_capture
