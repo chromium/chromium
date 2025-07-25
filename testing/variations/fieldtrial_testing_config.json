@@ -9622,6 +9622,24 @@
             ]
         }
     ],
+    "EnterpriseIframeDlpRulesSupport": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseIframeDlpRulesSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseUpdatedProfileCreationScreen": [
         {
             "platforms": [
