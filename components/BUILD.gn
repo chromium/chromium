@@ -403,6 +403,9 @@ test("components_unittests") {
       "//components/supervised_user/test_support:account_repository_unit_tests",
     ]
   }
+  if (is_android) {
+    deps += [ "//components/supervised_user/core/browser/android:unit_tests" ]
+  }
 
   if (build_allocation_stack_trace_recorder) {
     deps += [
