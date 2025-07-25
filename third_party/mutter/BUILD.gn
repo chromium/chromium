@@ -206,7 +206,7 @@ source_set("mtk") {
   public_configs = [ ":mtk_public_config" ]
 
   public_deps = [
-    "//third_party/glib:glib",
+    "//third_party/glib",
     "//third_party/glib:gobject",
   ]
 }

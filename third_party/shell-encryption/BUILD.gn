@@ -106,9 +106,9 @@ if (is_chromeos) {
     ]
     public_deps = [
       ":serialization_proto",
-      "//base:base",
+      "//base",
       "//third_party/abseil-cpp:absl",
-      "//third_party/boringssl:boringssl",
+      "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
     ]
   }
@@ -138,8 +138,8 @@ if (is_chromeos) {
       ":coefficient_polynomial_proto",
       ":serialization_proto",
       ":shell_encryption",
-      "//testing/gmock:gmock",
-      "//testing/gtest:gtest",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 

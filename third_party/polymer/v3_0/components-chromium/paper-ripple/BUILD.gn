@@ -8,7 +8,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("paper-ripple") {
   deps = [
-    "../iron-a11y-keys-behavior:iron-a11y-keys-behavior",
+    "../iron-a11y-keys-behavior",
     "../polymer:polymer_bundled",
   ]
 }

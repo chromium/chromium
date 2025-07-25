@@ -286,7 +286,7 @@ if (crashpad_is_linux) {
     deps = [
       ":snapshot",
       "$mini_chromium_source_parent:base",
-      "../util:util",
+      "../util",
     ]
     seed_corpus = "elf/elf_image_reader_fuzzer_corpus"
   }
@@ -436,8 +436,8 @@ source_set("snapshot_test") {
     "../compat",
     "../minidump:format",
     "../test",
+    "../third_party/googletest",
     "../third_party/googletest:googlemock",
-    "../third_party/googletest:googletest",
     "../util",
   ]
 

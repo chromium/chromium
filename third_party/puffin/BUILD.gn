@@ -120,6 +120,6 @@ executable("puffin_unittest") {
     ":libpuffdiff",
     ":libpuffpatch",
     "//base",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }

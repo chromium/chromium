@@ -142,7 +142,7 @@ source_set("handler_test") {
     "../snapshot",
     "../snapshot:test_support",
     "../test",
-    "../third_party/googletest:googletest",
+    "../third_party/googletest",
     "../third_party/mini_chromium:base",
     "../util",
   ]
@@ -285,7 +285,7 @@ if (crashpad_is_win) {
     deps = [
       "../client",
       "../test",
-      "../third_party/googletest:googletest",
+      "../third_party/googletest",
       "../third_party/mini_chromium:base",
     ]
   }

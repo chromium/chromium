@@ -269,7 +269,7 @@ static_library("anonymous_tokens_test_support") {
     ":constants",
     ":crypto_utils",
     ":status_utils",
-    "//base:base",
+    "//base",
   ]
   public_deps = [
     ":anonymous_tokens_cc_proto",

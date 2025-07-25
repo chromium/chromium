@@ -84,7 +84,7 @@ instrumentation_test_apk("javascriptengine_test") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 
   # Tell GN to ignore 'incremental_install' even if the user has it in their GN

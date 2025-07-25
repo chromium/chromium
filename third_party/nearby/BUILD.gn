@@ -539,7 +539,7 @@ source_set("nearby_crypto") {
     ":platform_base_logging",
     ":platform_public_types",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -589,9 +589,9 @@ source_set("crypto_cros") {
   ]
   public_deps = [
     ":platform_base_logging",
-    "//base:base",
+    "//base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -742,7 +742,7 @@ source_set("platform_api_types") {
   public_deps = [
     ":platform_base",
     ":platform_impl_crypto",
-    "//crypto:crypto",
+    "//crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -832,7 +832,7 @@ source_set("platform_base_uuid") {
   public_deps = [
     ":platform_base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -868,7 +868,7 @@ source_set("platform_base_logging") {
   public_deps = [
     ":platform_api_platform",
     ":platform_api_types",
-    "//base:base",
+    "//base",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -1007,7 +1007,7 @@ source_set("platform_public_types") {
     ":platform_base_util",
     ":platform_mutex",
     ":platform_public_logging",
-    "//crypto:crypto",
+    "//crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -1218,7 +1218,7 @@ source_set("presence_internal") {
     ":presence_mediums",
     ":presence_types",
     "//third_party/abseil-cpp:absl",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]

@@ -80,6 +80,6 @@ java_library("google_truth_java") {
     "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:org_checkerframework_checker_qual_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 }

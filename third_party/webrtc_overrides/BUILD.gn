@@ -67,7 +67,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/environment:environment_factory",
   "//third_party/webrtc/api/metronome",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
-  "//third_party/webrtc/api/task_queue:task_queue",
+  "//third_party/webrtc/api/task_queue",
   "//third_party/webrtc/api/transport:ecn_marking",
   "//third_party/webrtc/api/transport:enums",
   "//third_party/webrtc/api/transport:field_trial_based_config",
@@ -90,7 +90,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/video_codecs:video_codecs_api",
   "//third_party/webrtc/call:simulated_network",
   "//third_party/webrtc/common_video",
-  "//third_party/webrtc/common_video:common_video",
   "//third_party/webrtc/media:codec",
   "//third_party/webrtc/media:media_channel",
   "//third_party/webrtc/media:media_constants",
@@ -106,7 +105,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/modules/audio_processing:api",
   "//third_party/webrtc/modules/audio_processing:audio_processing_statistics",
   "//third_party/webrtc/modules/audio_processing/aec_dump",
-  "//third_party/webrtc/modules/audio_processing/aec_dump:aec_dump",
   "//third_party/webrtc/modules/desktop_capture",
   "//third_party/webrtc/modules/desktop_capture:primitives",
   "//third_party/webrtc/modules/video_coding:video_codec_interface",
@@ -162,7 +160,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base/network:received_packet",
   "//third_party/webrtc/rtc_base/system:rtc_export",
   "//third_party/webrtc/rtc_base/third_party/sigslot",
-  "//third_party/webrtc/rtc_base/third_party/sigslot:sigslot",
   "//third_party/webrtc/stats",
   "//third_party/webrtc/stats:rtc_stats",
   "//third_party/webrtc/stats:rtc_stats_test_utils",
@@ -316,7 +313,7 @@ source_set("logging_test") {
   deps = [
     ":webrtc_component",
     "//base/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -334,7 +331,7 @@ source_set("metronome_like_task_queue_test") {
     ":webrtc_component",
     "//base",
     "//base/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 

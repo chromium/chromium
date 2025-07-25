@@ -67,7 +67,7 @@ config("freetype-warnings") {
 }
 
 component("freetype") {
-  visibility = [ "//build/config/freetype:freetype" ]
+  visibility = [ "//build/config/freetype" ]
 
   defines = []
   include_dirs = []

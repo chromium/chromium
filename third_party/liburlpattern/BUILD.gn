@@ -12,9 +12,9 @@ config("warnings") {
 component("liburlpattern") {
   defines = [ "IS_LIBURLPATTERN_IMPL" ]
   public_deps = [
-    "//base:base",
+    "//base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/icu:icu",
+    "//third_party/icu",
   ]
 
   configs += [ ":warnings" ]
@@ -43,7 +43,7 @@ test("liburlpattern_unittests") {
     "//base/test:run_all_unittests",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
-    "//third_party/icu:icu",
+    "//third_party/icu",
   ]
 
   # Note, also update the local modifications in README.chromium.

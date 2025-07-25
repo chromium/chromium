@@ -9,7 +9,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_library("neon-animatable") {
   deps = [
     ".:neon-animatable-behavior",
-    "../iron-resizable-behavior:iron-resizable-behavior",
+    "../iron-resizable-behavior",
     "../polymer:polymer_bundled",
   ]
 }
@@ -21,7 +21,7 @@ js_library("neon-animatable-behavior") {
 js_library("neon-animated-pages") {
   deps = [
     ".:neon-animation-runner-behavior",
-    "../iron-resizable-behavior:iron-resizable-behavior",
+    "../iron-resizable-behavior",
     "../iron-selector:iron-selectable",
     "../polymer:polymer_bundled",
   ]

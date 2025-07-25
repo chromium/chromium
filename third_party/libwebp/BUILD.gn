@@ -759,7 +759,7 @@ source_set("libwebp_fuzz_utils") {
   deps = [
     ":libwebp_dsp_headers",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
   ]
 }
 
@@ -769,7 +769,7 @@ test("libwebp_simple_api_fuzzer") {
     ":libwebp",
     ":libwebp_fuzz_utils",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
@@ -784,7 +784,7 @@ test("libwebp_advanced_api_fuzzer") {
     ":libwebp_fuzz_utils",
     ":libwebp_utils",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
@@ -801,7 +801,7 @@ test("libwebp_animation_api_fuzzer") {
     ":libwebp_fuzz_utils",
     ":libwebp_utils",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
@@ -814,7 +814,7 @@ test("libwebp_mux_demux_api_fuzzer") {
     ":libwebp",
     ":libwebp_fuzz_utils",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
@@ -828,7 +828,7 @@ test("libwebp_animencoder_fuzzer") {
     ":libwebp_dsp_headers",
     ":libwebp_fuzz_utils",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
@@ -842,7 +842,7 @@ test("libwebp_enc_dec_api_fuzzer") {
     ":libwebp_dsp_headers",
     ":libwebp_fuzz_utils",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
@@ -857,7 +857,7 @@ test("libwebp_huffman_fuzzer") {
     ":libwebp_fuzz_utils",
     ":libwebp_utils",
     ":libwebp_webp",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   configs += [ ":libwebp_config" ]

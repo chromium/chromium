@@ -27,7 +27,7 @@ shared_library("netty-tcnative-so") {
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   deps = [
     "//third_party/apache-portable-runtime:apr",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
 }
 

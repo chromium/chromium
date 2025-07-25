@@ -939,8 +939,8 @@ source_set("util_test") {
     "../client",
     "../compat",
     "../test",
+    "../third_party/googletest",
     "../third_party/googletest:googlemock",
-    "../third_party/googletest:googletest",
     "../third_party/zlib",
   ]
 
