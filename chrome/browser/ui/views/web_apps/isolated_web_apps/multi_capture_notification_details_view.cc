@@ -13,6 +13,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -29,6 +30,8 @@
 namespace multi_capture {
 
 namespace {
+
+constexpr size_t kAppMaxNameLength = 18;
 
 enum class DetailsMode {
   kOnlyAppsWithNotification = 0,
@@ -100,7 +103,9 @@ std::unique_ptr<views::View> CreateAppList(
         vector_icons::kScreenRecordIcon, ui::kColorIconSecondary, 16));
 
     app_row->AddChildView(std::make_unique<views::Label>(
-        base::UTF8ToUTF16(app_name), views::style::CONTEXT_LABEL));
+        gfx::TruncateString(base::UTF8ToUTF16(app_name), kAppMaxNameLength,
+                            gfx::BreakType::WORD_BREAK),
+        views::style::CONTEXT_LABEL));
   }
   app_list_container->SetProperty(
       views::kMarginsKey,
