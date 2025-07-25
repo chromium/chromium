@@ -54,6 +54,7 @@ build_webui("build") {
     "credential_details/credential_note.ts",
     "credential_details/passkey_details_card.ts",
     "credential_details/password_details_card.ts",
+    "credential_details/backup_password_details_card.ts",
     "dialogs/add_password_dialog.ts",
     "dialogs/auth_timed_out_dialog.ts",
     "dialogs/delete_passkey_dialog.ts",

@@ -25,9 +25,6 @@ async function createCardElement(
 
   const card = document.createElement('password-details-card');
   card.password = password;
-  if (password.backupPassword) {
-    card.isBackup = true;
-  }
   card.prefs = makePasswordManagerPrefs();
   document.body.appendChild(card);
   await flushTasks();
@@ -82,25 +79,6 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(isVisible(card.$.showPasswordButton));
     assertFalse(isVisible(card.$.copyPasswordButton));
     assertFalse(isVisible(card.$.editButton));
-    assertTrue(isVisible(card.$.deleteButton));
-  });
-
-  test('Content displayed properly for backup credential', async function() {
-    const password = createPasswordEntry({
-      url: 'test.com',
-      username: 'vik',
-      backupPassword: {value: 'backup', creationDate: 'Mar 17'},
-    });
-
-    const card = await createCardElement(password);
-
-    assertEquals(password.username, card.$.usernameValue.value);
-    assertEquals(password.backupPassword!.value, card.$.passwordValue.value);
-    assertEquals('password', card.$.passwordValue.type);
-    assertTrue(isVisible(card.$.noteValue));
-    assertTrue(isVisible(card.$.showPasswordButton));
-    assertTrue(isVisible(card.$.copyPasswordButton));
-    assertTrue(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
   });
 
