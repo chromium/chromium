@@ -13,7 +13,7 @@ group("buildflags") {
 
 if (use_partition_alloc && is_clang_or_gcc) {
   group("partition_alloc") {
-    public_deps = [ "src/partition_alloc:partition_alloc" ]
+    public_deps = [ "src/partition_alloc" ]
   }
 }
 

@@ -544,7 +544,7 @@ if (is_clang_or_gcc) {
     if (use_partition_alloc_as_malloc_on_win_component_build) {
       # We need to add explicit libc++ dependency here because of
       # no_default_deps=true.
-      deps += [ "//buildtools/third_party/libc++:libc++" ]
+      deps += [ "//buildtools/third_party/libc++" ]
     }
 
     public_configs = []
@@ -802,7 +802,7 @@ if (is_clang_or_gcc) {
     if (use_partition_alloc_as_malloc_on_win_component_build) {
       # We need to add explicit libc++ dependency here because of
       # no_default_deps=true.
-      deps += [ "//buildtools/third_party/libc++:libc++" ]
+      deps += [ "//buildtools/third_party/libc++" ]
     }
     if (is_fuchsia) {
       public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit" ]
