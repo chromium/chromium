@@ -1759,36 +1759,6 @@ TEST_F(OutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
   EXPECT_EQ(fragmentainer->Children().size(), 2u);
 }
 
-TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowNoInsets) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: absolute; justify-self: center;"></div>
-  )HTML");
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfNoInsets));
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfNoInsets));
-}
-
-TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowSingleInset) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: absolute; right: 0; bottom: 0; justify-self: center;"></div>
-  )HTML");
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfSingleInset));
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfSingleInset));
-}
-
-TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowBothInsets) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: absolute; inset: 0; justify-self: center;"></div>
-  )HTML");
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfBothInsets));
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfBothInsets));
-}
-
 TEST_F(OutOfFlowLayoutPartTest, EmptyFragmentainersBeforeOOF) {
   // There's an OOF in the fourth, fifth and sixth columns.
   SetBodyInnerHTML(

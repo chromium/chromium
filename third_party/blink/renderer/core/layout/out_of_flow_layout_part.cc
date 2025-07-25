@@ -2342,31 +2342,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       node_info.node, space.AvailableSize(), alignment, insets, static_position,
       container_writing_direction, candidate_writing_direction);
 
-  {
-    auto& document = node_info.node.GetDocument();
-    if (alignment.inline_alignment.GetPosition() != ItemPosition::kNormal) {
-      if (insets.inline_start && insets.inline_end) {
-        UseCounter::Count(document,
-                          WebFeature::kOutOfFlowJustifySelfBothInsets);
-      } else if (insets.inline_start || insets.inline_end) {
-        UseCounter::Count(document,
-                          WebFeature::kOutOfFlowJustifySelfSingleInset);
-      } else {
-        UseCounter::Count(document, WebFeature::kOutOfFlowJustifySelfNoInsets);
-      }
-    }
-
-    if (alignment.block_alignment.GetPosition() != ItemPosition::kNormal) {
-      if (insets.block_start && insets.block_end) {
-        UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfBothInsets);
-      } else if (insets.block_start || insets.block_end) {
-        UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfSingleInset);
-      } else {
-        UseCounter::Count(document, WebFeature::kOutOfFlowAlignSelfNoInsets);
-      }
-    }
-  }
-
   const BoxStrut border_padding = ComputeBorders(space, node_info.node) +
                                   ComputePadding(space, candidate_style);
 
