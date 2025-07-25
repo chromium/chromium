@@ -125,6 +125,7 @@ android_resources("java_resources") {
     "java/res/layout/extensions_menu_footer.xml",
     "java/res/layout/extensions_menu_header.xml",
     "java/res/layout/extensions_menu_item.xml",
+    "java/res/values/dimens.xml",
   ]
 
   deps = [
