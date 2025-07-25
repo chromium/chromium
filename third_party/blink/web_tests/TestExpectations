@@ -2715,6 +2715,7 @@ crbug.com/431592647 external/wpt/webdriver/tests/bidi/storage/delete_cookies/par
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/storage/get_cookies/partition.py [ Failure ]
 crbug.com/431592647 external/wpt/webdriver/tests/classic/set_window_rect/set.py [ Failure ]
 crbug.com/431546619 virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-edge-behavior.html [ Failure ]
+crbug.com/431034517 external/wpt/css/css-anchor-position/anchor-scroll-004.html [ Failure ]
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure ]
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-flipY.html [ Failure ]
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.html [ Failure ]
