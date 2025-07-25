@@ -401,6 +401,11 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       ui::TrackedElement* anchor_element,
       const ui::AcceleratorProvider* accelerator_provider) const = 0;
 
+  // Returns the anchor context for a help bubble, in case the help bubble isn't
+  // in the same context as the caller. May return null.
+  virtual UserEducationContextPtr GetContextForHelpBubble(
+      const ui::TrackedElement* anchor_element) const = 0;
+
  private:
   friend BrowserFeaturePromoControllerTestHelper;
 
@@ -442,6 +447,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Callback when a tutorial triggered from a promo is actually started.
   void OnTutorialStarted(const base::Feature* iph_feature,
                          const UserEducationContextPtr& context,
+                         const UserEducationContextPtr& bubble_context,
                          TutorialIdentifier tutorial_id);
 
   // Called when a tutorial launched via StartTutorial() completes.
@@ -453,6 +459,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Called when the user opts to take a custom action.
   void OnCustomAction(const base::Feature* iph_feature,
                       const UserEducationContextPtr& context,
+                      const UserEducationContextPtr& bubble_context,
                       FeaturePromoSpecification::CustomActionCallback callback);
 
   // Create appropriate buttons for a toast promo that's part of a rotating
@@ -469,6 +476,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   std::vector<HelpBubbleButtonParams> CreateTutorialButtons(
       const base::Feature& feature,
       const UserEducationContextPtr& context,
+      const UserEducationContextPtr& bubble_context,
       bool can_snooze,
       TutorialIdentifier tutorial_id);
 
@@ -476,6 +484,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   std::vector<HelpBubbleButtonParams> CreateCustomActionButtons(
       const base::Feature& feature,
       const UserEducationContextPtr& context,
+      const UserEducationContextPtr& bubble_context,
       const std::u16string& custom_action_caption,
       FeaturePromoSpecification::CustomActionCallback custom_action_callback,
       bool custom_action_is_default,

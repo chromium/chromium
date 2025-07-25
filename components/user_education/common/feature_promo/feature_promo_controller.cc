@@ -42,6 +42,38 @@
 
 namespace user_education {
 
+namespace {
+
+// Returns the most relevant valid context for a bubble that is already showing.
+//
+// Typically, this is the `bubble_context` - i.e. the context of the surface
+// the bubble is actually showing in - but in some cases the context may be
+// missing or invalid, in which case fall back to the `original_context` - the
+// context of the surface the IPH was invoked from.
+//
+// If both contexts are missing or invalid, returns null. If a non-null value is
+// returned, the context is guaranteed to be valid.
+//
+// It is not possible to always rely on the `original_context` because an IPH
+// can be triggered from a browser window but appear on e.g. an App window, and
+// while the promo is visible, the original browser window could be closed. The
+// logic here provides the greatest chance at success in that situation, as well
+// as ensuring that, if possible, follow-ups such as custom actions and
+// tutorials will take place in the same window as the IPH.
+UserEducationContextPtr ResolveContext(
+    const UserEducationContextPtr& original_context,
+    const UserEducationContextPtr& bubble_context) {
+  if (bubble_context && bubble_context->IsValid()) {
+    return bubble_context;
+  }
+  if (original_context->IsValid()) {
+    return original_context;
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
 
@@ -278,6 +310,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   const auto& spec = *params.spec;
   HelpBubbleParams bubble_params;
   const auto* const accelerator_provider = context->GetAcceleratorProvider();
+  const auto bubble_context = GetContextForHelpBubble(params.anchor_element);
 
   bool had_screen_reader_promo = false;
   std::unique_ptr<HelpBubble> help_bubble;
@@ -293,6 +326,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
             [](FeaturePromoControllerCommon* controller,
                const FeaturePromoSpecification* spec,
                const UserEducationContextPtr& context,
+               const UserEducationContextPtr& bubble_context,
                CustomHelpBubbleUi::UserAction action) {
               switch (action) {
                 case CustomHelpBubbleUi::UserAction::kCancel:
@@ -307,6 +341,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
                          "specify custom action callback if custom UI "
                          "generates `kAction` result type.";
                   controller->OnCustomAction(spec->feature(), context,
+                                             bubble_context,
                                              spec->custom_action_callback());
                   break;
                 case CustomHelpBubbleUi::UserAction::kSnooze:
@@ -314,7 +349,8 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
                   break;
               }
             },
-            base::Unretained(this), base::Unretained(&spec), context));
+            base::Unretained(this), base::Unretained(&spec), context,
+            bubble_context));
   } else {
     bubble_params.body_text = FeaturePromoSpecification::FormatString(
         spec.bubble_body_string_id(), std::move(params.body_format));
@@ -379,8 +415,9 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
         break;
       case FeaturePromoSpecification::PromoType::kTutorial:
         CHECK(spec.feature());
-        bubble_params.buttons = CreateTutorialButtons(
-            *spec.feature(), context, params.can_snooze, spec.tutorial_id());
+        bubble_params.buttons =
+            CreateTutorialButtons(*spec.feature(), context, bubble_context,
+                                  params.can_snooze, spec.tutorial_id());
         bubble_params.dismiss_callback = base::BindOnce(
             &FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed,
             GetCommonWeakPtr(), base::Unretained(spec.feature()),
@@ -389,8 +426,9 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
       case FeaturePromoSpecification::PromoType::kCustomAction:
         CHECK(spec.feature());
         bubble_params.buttons = CreateCustomActionButtons(
-            *spec.feature(), context, spec.custom_action_caption(),
-            spec.custom_action_callback(), spec.custom_action_is_default(),
+            *spec.feature(), context, bubble_context,
+            spec.custom_action_caption(), spec.custom_action_callback(),
+            spec.custom_action_is_default(),
             spec.custom_action_dismiss_string_id());
         break;
       case FeaturePromoSpecification::PromoType::kCustomUi:
@@ -501,10 +539,13 @@ void FeaturePromoControllerCommon::OnHelpBubbleTimeout(
 void FeaturePromoControllerCommon::OnCustomAction(
     const base::Feature* feature,
     const UserEducationContextPtr& context,
+    const UserEducationContextPtr& bubble_context,
     FeaturePromoSpecification::CustomActionCallback callback) {
-  callback.Run(context->GetElementContext(),
-               CloseBubbleAndContinuePromoWithReason(
-                   *feature, FeaturePromoClosedReason::kAction));
+  if (auto actual_context = ResolveContext(context, bubble_context)) {
+    callback.Run(actual_context->GetElementContext(),
+                 CloseBubbleAndContinuePromoWithReason(
+                     *feature, FeaturePromoClosedReason::kAction));
+  }
 }
 
 void FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed(
@@ -525,19 +566,22 @@ void FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed(
 void FeaturePromoControllerCommon::OnTutorialStarted(
     const base::Feature* iph_feature,
     const UserEducationContextPtr& context,
+    const UserEducationContextPtr& bubble_context,
     TutorialIdentifier tutorial_id) {
   DCHECK_EQ(GetCurrentPromoFeature(), iph_feature);
   tutorial_promo_handle_ = CloseBubbleAndContinuePromoWithReason(
       *iph_feature, FeaturePromoClosedReason::kAction);
   DCHECK(tutorial_promo_handle_.is_valid());
-  tutorial_service_->StartTutorial(
-      tutorial_id, context->GetElementContext(),
-      base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
-                     GetCommonWeakPtr(), base::Unretained(iph_feature)),
-      base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
-                     GetCommonWeakPtr(), base::Unretained(iph_feature)));
-  if (tutorial_service_->IsRunningTutorial()) {
-    tutorial_service_->LogIPHLinkClicked(tutorial_id, true);
+  if (auto actual_context = ResolveContext(context, bubble_context)) {
+    tutorial_service_->StartTutorial(
+        tutorial_id, context->GetElementContext(),
+        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
+                       GetCommonWeakPtr(), base::Unretained(iph_feature)),
+        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
+                       GetCommonWeakPtr(), base::Unretained(iph_feature)));
+    if (tutorial_service_->IsRunningTutorial()) {
+      tutorial_service_->LogIPHLinkClicked(tutorial_id, true);
+    }
   }
 }
 
@@ -598,6 +642,7 @@ std::vector<HelpBubbleButtonParams>
 FeaturePromoControllerCommon::CreateCustomActionButtons(
     const base::Feature& feature,
     const UserEducationContextPtr& context,
+    const UserEducationContextPtr& bubble_context,
     const std::u16string& custom_action_caption,
     FeaturePromoSpecification::CustomActionCallback custom_action_callback,
     bool custom_action_is_default,
@@ -608,9 +653,10 @@ FeaturePromoControllerCommon::CreateCustomActionButtons(
   HelpBubbleButtonParams action_button;
   action_button.text = custom_action_caption;
   action_button.is_default = custom_action_is_default;
-  action_button.callback = base::BindOnce(
-      &FeaturePromoControllerCommon::OnCustomAction, GetCommonWeakPtr(),
-      base::Unretained(&feature), context, custom_action_callback);
+  action_button.callback =
+      base::BindOnce(&FeaturePromoControllerCommon::OnCustomAction,
+                     GetCommonWeakPtr(), base::Unretained(&feature), context,
+                     bubble_context, custom_action_callback);
   buttons.push_back(std::move(action_button));
 
   HelpBubbleButtonParams dismiss_button;
@@ -630,6 +676,7 @@ std::vector<HelpBubbleButtonParams>
 FeaturePromoControllerCommon::CreateTutorialButtons(
     const base::Feature& feature,
     const UserEducationContextPtr& context,
+    const UserEducationContextPtr& bubble_context,
     bool can_snooze,
     TutorialIdentifier tutorial_id) {
   std::vector<HelpBubbleButtonParams> buttons;
@@ -655,7 +702,7 @@ FeaturePromoControllerCommon::CreateTutorialButtons(
   tutorial_button.is_default = true;
   tutorial_button.callback = base::BindRepeating(
       &FeaturePromoControllerCommon::OnTutorialStarted, GetCommonWeakPtr(),
-      base::Unretained(&feature), context, tutorial_id);
+      base::Unretained(&feature), context, bubble_context, tutorial_id);
   buttons.push_back(std::move(tutorial_button));
 
   return buttons;

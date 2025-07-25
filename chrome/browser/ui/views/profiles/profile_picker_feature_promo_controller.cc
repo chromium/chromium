@@ -69,3 +69,9 @@ ProfilePickerFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
   return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
       promo_type, profile_picker_view_, anchor_element);
 }
+
+user_education::UserEducationContextPtr
+ProfilePickerFeaturePromoController::GetContextForHelpBubble(
+    const ui::TrackedElement* anchor_element) const {
+  return nullptr;
+}

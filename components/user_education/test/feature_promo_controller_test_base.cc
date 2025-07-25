@@ -36,6 +36,11 @@ const ui::ElementContext FeaturePromoControllerTestBase::kAnchorElementContext(
 constexpr char
     FeaturePromoControllerTestBase::kTestFocusHelpBubbleAcceleratorPromoRead[];
 
+FeaturePromoControllerTestBase::TestPromoControllerBase::
+    TestPromoControllerBase() = default;
+FeaturePromoControllerTestBase::TestPromoControllerBase::
+    ~TestPromoControllerBase() = default;
+
 FeaturePromoControllerTestBase::TestTutorialService::~TestTutorialService() =
     default;
 

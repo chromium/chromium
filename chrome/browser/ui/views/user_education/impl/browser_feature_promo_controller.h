@@ -17,6 +17,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
+class BrowserFeaturePromoControllerBase {
+ protected:
+  static user_education::UserEducationContextPtr GetContextForHelpBubbleImpl(
+      const ui::TrackedElement* anchor_element);
+};
+
 // Wrapper for classes which implement some descendant of
 // `FeaturePromoControllerCommon`. Provides overrides of methods common to all
 // browser feature promo controllers. Derive your controller from this instead
@@ -26,7 +32,8 @@
 // for examples.)
 template <typename T>
   requires std::derived_from<T, user_education::FeaturePromoControllerCommon>
-class BrowserFeaturePromoController : public T {
+class BrowserFeaturePromoController : public T,
+                                      public BrowserFeaturePromoControllerBase {
  public:
   template <typename... Args>
   explicit BrowserFeaturePromoController(Args&&... args)
@@ -59,6 +66,11 @@ class BrowserFeaturePromoController : public T {
 
   const char* GetScreenReaderPromptPromoEventName() const override {
     return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
+  }
+
+  user_education::UserEducationContextPtr GetContextForHelpBubble(
+      const ui::TrackedElement* anchor_element) const override {
+    return GetContextForHelpBubbleImpl(anchor_element);
   }
 };
 

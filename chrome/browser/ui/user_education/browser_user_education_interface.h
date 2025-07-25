@@ -18,6 +18,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class AppMenuButton;
+class BrowserFeaturePromoControllerBase;
 class BrowserHelpBubble;
 class BrowserView;
 class BrowserWindowInterface;
@@ -77,8 +78,11 @@ class BrowserUserEducationInterface {
 
   // Only a limited number of non-test classes are allowed direct access to the
   // `UserEducationContext`.
+  template <typename T>
+    requires std::same_as<T, BrowserFeaturePromoControllerBase> ||
+             std::same_as<T, UserEducationInternalsPageHandlerImpl>
   const user_education::UserEducationContextPtr& GetUserEducationContext(
-      base::PassKey<UserEducationInternalsPageHandlerImpl>) const {
+      base::PassKey<T>) const {
     return GetUserEducationContextImpl();
   }
 

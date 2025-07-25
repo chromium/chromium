@@ -271,10 +271,12 @@ class BrowserFeaturePromoController2xUiTest
             FeaturePromoSpecification::AcceleratorInfo()));
     RegisterTestFeature(
         browser(),
-        user_education::FeaturePromoSpecification::CreateForCustomAction(
-            kCustomActionTestFeature, kToolbarAppMenuButtonElementId,
-            IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE, IDS_TUTORIAL_TAB_GROUP_COLLAPSE,
-            base::DoNothing()));
+        std::move(
+            user_education::FeaturePromoSpecification::CreateForCustomAction(
+                kCustomActionTestFeature, kToolbarAppMenuButtonElementId,
+                IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE,
+                IDS_TUTORIAL_TAB_GROUP_COLLAPSE, custom_action_callback_.Get())
+                .SetInAnyContext(true)));
 
     RegisterTestFeature(
         browser(),
@@ -307,6 +309,9 @@ class BrowserFeaturePromoController2xUiTest
                                 weak_ptr_factory_.GetWeakPtr())));
   }
 
+  base::MockCallback<FeaturePromoSpecification::CustomActionCallback>
+      custom_action_callback_;
+
  private:
   base::WeakPtrFactory<BrowserFeaturePromoController2xUiTest> weak_ptr_factory_{
       this};
@@ -331,6 +336,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        LogsCustomActionMetrics) {
+  EXPECT_CALL(custom_action_callback_, Run).Times(1);
   RunTestSequence(MaybeShowPromo(kCustomActionTestFeature),
                   PressNonDefaultPromoButton(),
                   CheckMetrics(kCustomActionTestFeature,
@@ -365,6 +371,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
+  EXPECT_CALL(custom_action_callback_, Run).Times(0);
+
   user_education::FeaturePromoParams params(kCustomActionTestFeature);
   params.close_callback =
       base::BindLambdaForTesting([this, &called, &close_reason]() {
@@ -385,6 +393,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        CallbackHappensAfterConfirm) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
+
+  EXPECT_CALL(custom_action_callback_, Run).Times(0);
 
   user_education::FeaturePromoParams params(kCustomActionTestFeature);
   params.close_callback =
@@ -509,6 +519,36 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       CheckPromoRequested(kCustomUiTestFeature, false),
       CheckMetrics(kCustomUiTestFeature,
                    ExpectedMetrics{.custom_action_count = 1}));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       CustomActionCallbackInSecondWindow) {
+  // Create a second browser.
+  Browser* const other = CreateBrowser(browser()->profile());
+
+  // Hide the anchor element in the first browser.
+  auto* const app_menu_button =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kToolbarAppMenuButtonElementId,
+          browser()->window()->GetElementContext());
+  app_menu_button->SetVisible(false);
+
+  EXPECT_CALL(custom_action_callback_,
+              Run(other->window()->GetElementContext(), testing::_))
+      .Times(1);
+
+  RunTestSequence(InAnyContext(
+      // This will always try to trigger the promo from the original `browser()`
+      // because the default context is always checked first in Kombucha, and
+      // the original window is still visible.
+      //
+      // However, the bubble can only show in the `other` browser because we hid
+      // the first browser's app menu button (and the IPH specifies that it need
+      // not show in the original context).
+      MaybeShowPromo(kCustomActionTestFeature),
+      // Perform the action, and verify that the second browser's context is
+      // used when the action button is clicked.
+      PressNonDefaultPromoButton()));
 }
 
 class BrowserFeaturePromoController2xLiveTrackerUiTest

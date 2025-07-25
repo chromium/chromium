@@ -19,6 +19,7 @@
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
 #include "components/user_education/test/feature_promo_controller_test_base.h"
+#include "components/user_education/test/mock_user_education_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
@@ -39,6 +40,8 @@ BASE_FEATURE(kIPHTestActionable,
 BASE_FEATURE(kIPHTestLegalNotice,
              "IPH_TestLegalNotice",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+const ui::ElementContext kAlternateContext(2);
 
 using PriorityInfo = FeaturePromoPriorityProvider::PromoPriorityInfo;
 using PromoPriority = FeaturePromoPriorityProvider::PromoPriority;
@@ -88,15 +91,23 @@ class FeaturePromoControllerQueueTest
             FeaturePromoSpecification::PromoSubtype::kLegalNotice));
   }
 
+  void TearDown() override {
+    test_promo_controller_ = nullptr;
+    test::FeaturePromoControllerTestBase::TearDown();
+  }
+
  protected:
   // FeaturePromoControllerTestBase:
   std::unique_ptr<FeaturePromoControllerCommon> CreateController() override {
     switch (GetParam()) {
       case PromoControllerVersion::kV20: {
-        return std::make_unique<TestPromoController<FeaturePromoController20>>(
-            &tracker(), &promo_registry(), &help_bubble_factory_registry(),
-            &storage_service(), &session_policy(), &tutorial_service(),
-            &messaging_controller());
+        auto result =
+            std::make_unique<TestPromoController<FeaturePromoController20>>(
+                &tracker(), &promo_registry(), &help_bubble_factory_registry(),
+                &storage_service(), &session_policy(), &tutorial_service(),
+                &messaging_controller());
+        test_promo_controller_ = result.get();
+        return result;
       }
       case PromoControllerVersion::kV25: {
         auto result =
@@ -105,6 +116,7 @@ class FeaturePromoControllerQueueTest
                 &storage_service(), &session_policy(), &tutorial_service(),
                 &messaging_controller());
         result->Init();
+        test_promo_controller_ = result.get();
         return result;
       }
     }
@@ -112,6 +124,7 @@ class FeaturePromoControllerQueueTest
 
   base::MockCallback<FeaturePromoSpecification::CustomActionCallback>
       custom_action_callback_;
+  raw_ptr<TestPromoControllerBase> test_promo_controller_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -601,6 +614,150 @@ TEST_P(FeaturePromoControllerQueueTest, QueueWithInvalidContextFails) {
       result, Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)),
       promo_controller().MaybeShowStartupPromo(std::move(params),
                                                promo_context()));
+}
+
+TEST_P(FeaturePromoControllerQueueTest, CustomActionCallbackPassesOnContext) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  FeaturePromoParams params(kIPHTestActionable);
+  params.show_promo_result_callback = result.Get();
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult::Success()),
+      promo_controller().MaybeShowPromo(std::move(params), promo_context()));
+  auto* const help_bubble = GetHelpBubble();
+  ASSERT_NE(nullptr, help_bubble);
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      custom_action_callback_,
+      Run(promo_context()->GetElementContext(), testing::_),
+      help_bubble->SimulateButtonPress(0));
+}
+
+TEST_P(FeaturePromoControllerQueueTest,
+       CustomActionCallbackNotCalledOnInvalidContext) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::BubbleCloseCallback, closed);
+  FeaturePromoParams params(kIPHTestActionable);
+  params.show_promo_result_callback = result.Get();
+  params.close_callback = closed.Get();
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult::Success()),
+      promo_controller().MaybeShowPromo(std::move(params), promo_context()));
+  auto* const help_bubble = GetHelpBubble();
+  ASSERT_NE(nullptr, help_bubble);
+  EXPECT_CALL(*promo_context(), IsValid).WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(custom_action_callback_, Run).Times(0);
+  EXPECT_ASYNC_CALL_IN_SCOPE(closed, Run(),
+                             help_bubble->SimulateButtonPress(0));
+}
+
+TEST_P(FeaturePromoControllerQueueTest,
+       CustomActionCallbackCalledWithAlternativeContext) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  const auto help_bubble_context =
+      base::MakeRefCounted<test::MockUserEducationContext>();
+  test_promo_controller_->set_context_for_help_bubble(kAnchorElementId,
+                                                      help_bubble_context);
+  EXPECT_CALL(*help_bubble_context, IsValid)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*help_bubble_context, GetElementContext)
+      .WillRepeatedly(testing::Return(kAlternateContext));
+  FeaturePromoParams params(kIPHTestActionable);
+  params.show_promo_result_callback = result.Get();
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult::Success()),
+      promo_controller().MaybeShowPromo(std::move(params), promo_context()));
+  auto* const help_bubble = GetHelpBubble();
+  ASSERT_NE(nullptr, help_bubble);
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      custom_action_callback_,
+      Run(help_bubble_context->GetElementContext(), testing::_),
+      help_bubble->SimulateButtonPress(0));
+}
+
+TEST_P(FeaturePromoControllerQueueTest,
+       CustomActionCallbackCalledWithInvalidAlternativeContext) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  const auto help_bubble_context =
+      base::MakeRefCounted<test::MockUserEducationContext>();
+  test_promo_controller_->set_context_for_help_bubble(kAnchorElementId,
+                                                      help_bubble_context);
+  EXPECT_CALL(*help_bubble_context, IsValid)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*help_bubble_context, GetElementContext)
+      .WillRepeatedly(testing::Return(kAlternateContext));
+  FeaturePromoParams params(kIPHTestActionable);
+  params.show_promo_result_callback = result.Get();
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult::Success()),
+      promo_controller().MaybeShowPromo(std::move(params), promo_context()));
+  auto* const help_bubble = GetHelpBubble();
+  ASSERT_NE(nullptr, help_bubble);
+  EXPECT_CALL(*help_bubble_context, IsValid)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      custom_action_callback_,
+      Run(promo_context()->GetElementContext(), testing::_),
+      help_bubble->SimulateButtonPress(0));
+}
+
+TEST_P(
+    FeaturePromoControllerQueueTest,
+    CustomActionCallbackCalledWithInvalidOriginalContextAndValidAlternativeContext) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  const auto help_bubble_context =
+      base::MakeRefCounted<test::MockUserEducationContext>();
+  test_promo_controller_->set_context_for_help_bubble(kAnchorElementId,
+                                                      help_bubble_context);
+  EXPECT_CALL(*help_bubble_context, IsValid)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*help_bubble_context, GetElementContext)
+      .WillRepeatedly(testing::Return(kAlternateContext));
+  FeaturePromoParams params(kIPHTestActionable);
+  params.show_promo_result_callback = result.Get();
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult::Success()),
+      promo_controller().MaybeShowPromo(std::move(params), promo_context()));
+  auto* const help_bubble = GetHelpBubble();
+  ASSERT_NE(nullptr, help_bubble);
+  EXPECT_CALL(*promo_context(), IsValid).WillRepeatedly(testing::Return(false));
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      custom_action_callback_,
+      Run(help_bubble_context->GetElementContext(), testing::_),
+      help_bubble->SimulateButtonPress(0));
+}
+
+TEST_P(
+    FeaturePromoControllerQueueTest,
+    CustomActionCallbackNotCalledOnInvalidContextAndInvalidAlternativeContext) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::BubbleCloseCallback, closed);
+  const auto help_bubble_context =
+      base::MakeRefCounted<test::MockUserEducationContext>();
+  test_promo_controller_->set_context_for_help_bubble(kAnchorElementId,
+                                                      help_bubble_context);
+  EXPECT_CALL(*help_bubble_context, IsValid)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*help_bubble_context, GetElementContext)
+      .WillRepeatedly(testing::Return(kAlternateContext));
+  FeaturePromoParams params(kIPHTestActionable);
+  params.show_promo_result_callback = result.Get();
+  params.close_callback = closed.Get();
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult::Success()),
+      promo_controller().MaybeShowPromo(std::move(params), promo_context()));
+  auto* const help_bubble = GetHelpBubble();
+  ASSERT_NE(nullptr, help_bubble);
+  EXPECT_CALL(*promo_context(), IsValid).WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*help_bubble_context, IsValid)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(custom_action_callback_, Run).Times(0);
+  EXPECT_ASYNC_CALL_IN_SCOPE(closed, Run(),
+                             help_bubble->SimulateButtonPress(0));
 }
 
 class FeaturePromoControllerQueueNoInitializationTest

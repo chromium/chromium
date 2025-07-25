@@ -40,6 +40,8 @@ class ProfilePickerFeaturePromoController
       user_education::FeaturePromoSpecification::PromoType promo_type,
       ui::TrackedElement* anchor_element,
       const ui::AcceleratorProvider* accelerator_provider) const override;
+  user_education::UserEducationContextPtr GetContextForHelpBubble(
+      const ui::TrackedElement* anchor_element) const override;
 
   const raw_ptr<ProfilePickerView> profile_picker_view_;
 };

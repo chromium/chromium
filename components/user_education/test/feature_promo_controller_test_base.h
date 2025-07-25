@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_TEST_FEATURE_PROMO_CONTROLLER_TEST_BASE_H_
 #define COMPONENTS_USER_EDUCATION_TEST_FEATURE_PROMO_CONTROLLER_TEST_BASE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 
@@ -21,6 +22,7 @@
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_help_bubble.h"
@@ -31,6 +33,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/event_modifiers.h"
 
 namespace user_education::test {
@@ -53,11 +56,33 @@ class FeaturePromoControllerTestBase : public testing::Test {
   void TearDown() override;
 
  protected:
+  // Base class for test wrappers (see below); allows setting/getting help
+  // bubble contexts.
+  class TestPromoControllerBase {
+   public:
+    TestPromoControllerBase();
+    virtual ~TestPromoControllerBase();
+
+    void set_context_for_help_bubble(ui::ElementIdentifier id,
+                                     UserEducationContextPtr context) {
+      bubble_contexts_[id] = context;
+    }
+
+    UserEducationContextPtr get_context_for_help_bubble(
+        ui::ElementIdentifier id) const {
+      const auto it = bubble_contexts_.find(id);
+      return it != bubble_contexts_.end() ? it->second : nullptr;
+    }
+
+   private:
+    std::map<ui::ElementIdentifier, UserEducationContextPtr> bubble_contexts_;
+  };
+
   // Wrapper for a promo controller that implements all the application-specific
   // methods.
   template <class T>
     requires std::derived_from<T, FeaturePromoControllerCommon>
-  class TestPromoController : public T {
+  class TestPromoController : public T, public TestPromoControllerBase {
    public:
     using T::T;
     ~TestPromoController() override = default;
@@ -81,6 +106,11 @@ class FeaturePromoControllerTestBase : public testing::Test {
         ui::TrackedElement*,
         const ui::AcceleratorProvider*) const override {
       return u"Focus Help Bubble Screen Reader Hint";
+    }
+
+    UserEducationContextPtr GetContextForHelpBubble(
+        const ui::TrackedElement* anchor_element) const override {
+      return get_context_for_help_bubble(anchor_element->identifier());
     }
   };
 
