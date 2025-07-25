@@ -11,6 +11,7 @@ import android.webkit.WebView;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.ProfileStore;
@@ -118,6 +119,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WARM_UP_RENDERER_PROCESS,
                 Features.EXTRA_HEADER_FOR_ORIGINS,
                 Features.BACK_FORWARD_CACHE_SETTINGS,
+                Features.STARTUP_WEBVIEW_SET_PROFILES_TO_LOAD,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -752,8 +754,28 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                         supportLibResult));
                     };
+
             mAwInit.startUpWebView(
-                    callback, webViewStartUpConfig.shouldRunUiThreadStartUpTasks(), null);
+                    callback,
+                    webViewStartUpConfig.shouldRunUiThreadStartUpTasks(),
+                    getProfilesToLoad(webViewStartUpConfig));
         }
+    }
+
+    // TODO(crbug.com/431984603): Remove and use the get method directly when any breaking change is
+    // done to startUpWebView API.
+    @Nullable
+    private static Set<String> getProfilesToLoad(
+            WebViewStartUpConfigBoundaryInterface webViewStartUpConfig) {
+        Set<String> profilesToLoad = null;
+        try {
+            profilesToLoad = webViewStartUpConfig.getProfileNamesToLoad();
+        } catch (RuntimeException e) {
+            // This is an ugly fix to make sure that we don't crash with older BoundaryInterface in
+            // AndroidX older versions. We should ideally fix that by making the
+            // WebViewStartUpCallbackBoundaryInterface implements FeatureFlagHolderBoundaryInterface
+            // or convert the Proxy way to use BiConsumer similar to WebViewBuilder.
+        }
+        return profilesToLoad;
     }
 }

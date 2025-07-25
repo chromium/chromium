@@ -373,4 +373,8 @@ public class Features {
     // WebSettingsCompat.setBackForwardCacheSettings
     // WebSettingsCompat.getBackForwardCacheSettings
     public static final String BACK_FORWARD_CACHE_SETTINGS = "BACK_FORWARD_CACHE_SETTINGS";
+
+    // WebViewStartupConfig.setProfilesToLoad
+    public static final String STARTUP_WEBVIEW_SET_PROFILES_TO_LOAD =
+            "STARTUP_WEBVIEW_SET_PROFILES_TO_LOAD";
 }
