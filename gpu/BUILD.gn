@@ -119,7 +119,7 @@ static_library("test_support") {
     "//gpu/ipc/client",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
-    "//gpu/skia_bindings:skia_bindings",
+    "//gpu/skia_bindings",
     "//media",
     "//testing/gmock",
     "//testing/gtest",
@@ -156,7 +156,7 @@ if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
 
     deps = [
       ":gl_lpm_fuzzer_proto",
-      "//base:base",
+      "//base",
     ]
   }
 
@@ -195,12 +195,12 @@ if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
       "//gpu/command_buffer/client:gles2_implementation",
       "//gpu/command_buffer/common:gles2_utils",
       "//gpu/ipc:gl_in_process_context",
-      "//gpu/ipc/service:service",
-      "//testing/gtest:gtest",
+      "//gpu/ipc/service",
+      "//testing/gtest",
       "//third_party/libprotobuf-mutator",
-      "//ui/gfx:gfx",
-      "//ui/gl:gl",
-      "//ui/gl/init:init",
+      "//ui/gfx",
+      "//ui/gl",
+      "//ui/gl/init",
     ]
 
     if (use_ozone) {
@@ -324,7 +324,7 @@ test("gl_tests") {
   }
 
   if (enable_vulkan) {
-    deps += [ "//gpu/vulkan/init:init" ]
+    deps += [ "//gpu/vulkan/init" ]
   }
 
   libs = []
@@ -682,7 +682,7 @@ test("gpu_unittests") {
   }
 
   if (is_apple) {
-    deps += [ "//ui/accelerated_widget_mac:accelerated_widget_mac" ]
+    deps += [ "//ui/accelerated_widget_mac" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

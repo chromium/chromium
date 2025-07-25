@@ -117,8 +117,8 @@ component("service") {
     if (is_mac) {
       sources += [ "image_transport_surface_mac.mm" ]
       deps += [
-        "//ui/display:display",
-        "//ui/display/types:types",
+        "//ui/display",
+        "//ui/display/types",
       ]
       lib_dirs = [ "$mac_sdk_path/usr/lib" ]
       frameworks = [
@@ -177,7 +177,7 @@ source_set("test_support") {
   sources = [ "gpu_memory_buffer_factory_test_template.h" ]
   public_deps = [
     ":service",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
   deps = [
     "//base/test:test_support",

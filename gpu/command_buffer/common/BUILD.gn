@@ -162,7 +162,7 @@ source_set("raster_sources") {
     ":gles2_utils",
     "//base",
     "//skia",
-    "//ui/gl:gl",
+    "//ui/gl",
   ]
   public_deps = [
     ":common",

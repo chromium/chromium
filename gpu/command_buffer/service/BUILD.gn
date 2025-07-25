@@ -78,7 +78,7 @@ source_set("service_sources") {
   public_deps = [
     "//base",
     "//gpu/command_buffer/common",
-    "//url:url",
+    "//url",
   ]
   deps = [
     "//base",

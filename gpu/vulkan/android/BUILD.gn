@@ -38,7 +38,7 @@ component("android") {
 test("vk_tests") {
   deps = [
     ":android",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/viz/common:vulkan_context_provider",
     "//testing/gtest",

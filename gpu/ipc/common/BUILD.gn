@@ -125,7 +125,7 @@ source_set("ipc_common_sources") {
     ]
   }
   if (is_android) {
-    visibility += [ "//media/gpu:gpu" ]
+    visibility += [ "//media/gpu" ]
   }
 
   configs += [
@@ -844,7 +844,7 @@ source_set("mojom_traits") {
     ":memory_stats_sources",
     ":surface_handle_type",
     "//gpu/command_buffer/common",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
   ]
 
   if (enable_vulkan) {
