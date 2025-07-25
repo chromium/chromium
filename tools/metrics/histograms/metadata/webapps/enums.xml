@@ -171,6 +171,11 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Ambient badge dismissed"/>
 </enum>
 
+<enum name="IsolatedWebAppCleanupBundleCacheError">
+  <int value="0" label="System shutdown"/>
+  <int value="1" label="Could not delete all bundles"/>
+</enum>
+
 <enum name="IsolatedWebAppCleanupOrphanedIWAsError">
   <int value="1" label="Could not delete all orphaned isolated web apps."/>
   <int value="2" label="Skipped execution during system shutdown."/>

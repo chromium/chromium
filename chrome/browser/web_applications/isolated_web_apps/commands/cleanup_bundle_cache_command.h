@@ -37,7 +37,15 @@ class CleanupBundleCacheSuccess {
 // Represents an error during bundle cache cleanup.
 class CleanupBundleCacheError {
  public:
-  enum class Type { kCouldNotDeleteAllBundles, kSystemShutdown };
+  // These are used in histograms, do not remove/renumber entries. If you're
+  // adding to this enum with the intention that it will be logged, update the
+  // `IsolatedWebAppCleanupBundleCacheError` enum listing in
+  // tools/metrics/histograms/metadata/webapps/enums.xml.
+  enum class Type {
+    kSystemShutdown = 0,
+    kCouldNotDeleteAllBundles = 1,
+    kMaxValue = kCouldNotDeleteAllBundles
+  };
 
   explicit CleanupBundleCacheError(
       Type type,
