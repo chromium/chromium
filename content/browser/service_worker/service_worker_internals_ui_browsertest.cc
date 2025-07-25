@@ -548,8 +548,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   TearDownWindow(sw_internal_ui_window);
 }
 
-// The test is flaky on Mac and Linux. crbug.com/1324856
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// The test is flaky on Mac, Linux, Android. http://crbug.com/1324856
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_StopStartSWReflectedOnInternalUI \
   DISABLED_StopStartSWReflectedOnInternalUI
 #else
