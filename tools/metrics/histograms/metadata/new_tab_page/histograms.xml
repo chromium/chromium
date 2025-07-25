@@ -271,6 +271,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Composebox.File.Size.{ComposeboxFileTypes}"
+    units="bytes" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The size of the file received by the browser from the WebUI. Recorded as
+    soon as the browser receives it.
+  </summary>
+  <token key="ComposeboxFileTypes" variants="ComposeboxFileTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Composebox.FromNTPLoadToSessionStart" units="ms"
     expires_after="2026-06-17">
   <owner>niharm@google.com</owner>

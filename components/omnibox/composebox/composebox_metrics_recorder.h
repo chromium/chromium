@@ -77,6 +77,8 @@ class ComposeboxMetricsRecorder {
   // found in the query.
   void RecordQueryMetrics(int text_length, int file_count);
 
+  void RecordFileSizeMetric(lens::MimeType mime_type, uint64_t file_size_bytes);
+
  private:
   // Called when the session starts to correctly track session
   // durations.
