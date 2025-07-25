@@ -939,6 +939,7 @@ bool GestureProvider::CanHandle(const MotionEvent& event) const {
 }
 
 void GestureProvider::OnTouchEventHandlingBegin(const MotionEvent& event) {
+  last_event_ = event.Clone();
   switch (event.GetAction()) {
     case MotionEvent::Action::DOWN:
       current_down_event_ = event.Clone();
