@@ -6391,6 +6391,21 @@
             ]
         }
     ],
+    "Conch": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Conch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ConditionalImageResize": [
         {
             "platforms": [
