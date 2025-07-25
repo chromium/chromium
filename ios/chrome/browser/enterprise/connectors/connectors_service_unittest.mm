@@ -312,7 +312,6 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_EventReportingEnabled) {
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
-  base::test::ScopedFeatureList feature(kEnterpriseRealtimeEventReportingOnIOS);
   profile()->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
                                     policy::POLICY_SCOPE_USER);
 
@@ -333,8 +332,7 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_MachinePolicyHasPrecedence) {
 
   base::test::ScopedFeatureList feature;
   feature.InitWithFeatures(
-      /*enabled_features=*/{kEnterpriseRealtimeEventReportingOnIOS,
-                            kIOSEnterpriseRealtimeUrlFiltering},
+      /*enabled_features=*/{kIOSEnterpriseRealtimeUrlFiltering},
       /*disabled_features=*/{});
   profile()->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
                                     policy::POLICY_SCOPE_USER);

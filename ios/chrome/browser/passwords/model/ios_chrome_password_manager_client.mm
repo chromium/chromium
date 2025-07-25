@@ -240,10 +240,7 @@ void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     bool is_federated,
     const url::SchemeHostPort& federated_origin,
     const std::u16string& login_user_name) const {
-  // Guard the password login reporting event on iOS behind the feature flag.
-  if (!bridge_.profile ||
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+  if (!bridge_.profile) {
     return;
   }
 
@@ -259,10 +256,7 @@ void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
 void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
     const std::vector<std::pair<GURL, std::u16string>>& identities) const {
-  // Guard the realtime event reporting feature on iOS behind the feature flag.
-  if (!bridge_.profile ||
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+  if (!bridge_.profile) {
     return;
   }
 

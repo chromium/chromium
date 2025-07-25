@@ -174,8 +174,7 @@ class IOSEnterpriseInterstitialTest : public PlatformTest {
 TEST_F(IOSEnterpriseInterstitialTest, EnterpriseBlock_MetricsRecorded) {
   base::test::ScopedFeatureList feature;
   feature.InitWithFeatures(
-      /*enable_features=*/{kEnterpriseRealtimeEventReportingOnIOS,
-                           kIOSEnterpriseRealtimeUrlFiltering},
+      /*enable_features=*/{kIOSEnterpriseRealtimeUrlFiltering},
       /*disable_features=*/{});
 
   base::HistogramTester histograms;
@@ -207,8 +206,7 @@ TEST_F(IOSEnterpriseInterstitialTest, EnterpriseBlock_MetricsRecorded) {
 TEST_F(IOSEnterpriseInterstitialTest, EnterpriseWarn_MetricsRecorded) {
   base::test::ScopedFeatureList feature;
   feature.InitWithFeatures(
-      /*enable_features=*/{kEnterpriseRealtimeEventReportingOnIOS,
-                           kIOSEnterpriseRealtimeUrlFiltering},
+      /*enable_features=*/{kIOSEnterpriseRealtimeUrlFiltering},
       /*disable_features=*/{});
 
   base::HistogramTester histograms;

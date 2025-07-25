@@ -142,10 +142,6 @@ NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
   switch (static_cast<SafeBrowsingErrorCode>(error_code)) {
     case SafeBrowsingErrorCode::kUnsafeResource: {
       page = SafeBrowsingBlockingPage::Create(*resource);
-      // Report the unsafe site visits events, guarding it behind a feature
-      // flag.
-      if (base::FeatureList::IsEnabled(
-              enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
         ProfileIOS* profile =
             ProfileIOS::FromBrowserState(web_state->GetBrowserState());
         PrefService* prefs = profile->GetPrefs();
@@ -163,7 +159,6 @@ NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
               prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
               referrer_chain);
         }
-      }
       break;
     }
     case SafeBrowsingErrorCode::kEnterpriseBlock:

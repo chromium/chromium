@@ -56,8 +56,6 @@ std::vector<std::string> RealtimeReportingTestEnvironment::GetArguments() {
                     policy_server_->GetServiceURL().spec()}),
       base::StrCat({"--", policy::switches::kRealtimeReportingUrl, "=",
                     reporting_server_->GetServiceURL().spec()}),
-      base::StrCat({"--", switches::kEnableFeatures, "=",
-                    kEnterpriseRealtimeEventReportingOnIOS.name}),
   };
 }
 

@@ -244,8 +244,6 @@ TEST_F(IOSChromePasswordManagerClientTest,
 // Tests that MaybeReportEnterpriseLoginEvent invoked router->OnLoginEvent as
 // expected.
 TEST_F(IOSChromePasswordManagerClientTest, OnLogInInvoked) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS};
 
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
   EXPECT_CALL(*reporting_event_router_, OnLoginEvent(_, _, _, _)).Times(1);
@@ -257,8 +255,6 @@ TEST_F(IOSChromePasswordManagerClientTest, OnLogInInvoked) {
 // Tests that MaybeReportEnterprisePasswordBreachEvent invoked
 // router->OnPasswordBreach as expected.
 TEST_F(IOSChromePasswordManagerClientTest, OnPasswordBreachInvoked) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS};
 
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
   std::vector<std::pair<GURL, std::u16string>> expected_data;

@@ -63,8 +63,6 @@ std::string ConnectorsService::GetManagementDomain() {
     }
   }
 
-  // Check the scope of Event Reporting policy.
-  if (base::FeatureList::IsEnabled(kEnterpriseRealtimeEventReportingOnIOS)) {
     // Machine scope has precedence, only update the scope if the previous
     // policy is not already machine-scoped.
     if (policy_scope != policy::PolicyScope::POLICY_SCOPE_MACHINE) {
@@ -73,7 +71,6 @@ std::string ConnectorsService::GetManagementDomain() {
         policy_scope = dm_token.value().scope;
       }
     }
-  }
 
   // Return empty string if none of the policies are enabled.
   if (!policy_scope) {

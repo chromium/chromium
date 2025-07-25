@@ -96,10 +96,6 @@ bool IsPageVisitEventEnabled(ConnectorsService* connectors_service) {
 // Connectors should be displayed. This subsection is visible if Enterprise
 // Event Reporting is enabled.
 bool IsSecurityEventEnabled(ConnectorsService* connectors_service) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
-    return false;
-  }
   return !connectors_service->GetReportingServiceProviderNames().empty();
 }
 

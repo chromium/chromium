@@ -43,9 +43,6 @@ namespace enterprise_connectors {
 void ReportEnterpriseUrlFilteringEvent(UrlFilteringEventType event_type,
                                        const GURL& page_url,
                                        web::WebState* web_state) {
-  if (!base::FeatureList::IsEnabled(kEnterpriseRealtimeEventReportingOnIOS)) {
-    return;
-  }
   if (!base::FeatureList::IsEnabled(kIOSEnterpriseRealtimeUrlFiltering)) {
     return;
   }

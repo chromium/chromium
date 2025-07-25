@@ -1721,12 +1721,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-feed-ablation", flag_descriptions::kEnableFeedAblationName,
      flag_descriptions::kEnableFeedAblationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFeedAblation)},
-    {"enterprise-realtime-event-reporting-on-ios",
-     flag_descriptions::kEnterpriseRealtimeEventReportingOnIOSName,
-     flag_descriptions::kEnterpriseRealtimeEventReportingOnIOSDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)},
     {"content-suggestions-magic-stack", flag_descriptions::kMagicStackName,
      flag_descriptions::kMagicStackDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kMagicStack)},

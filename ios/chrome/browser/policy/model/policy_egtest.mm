@@ -666,9 +666,6 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
                     _server->GetServiceURL().spec()}));
 
-  config.features_enabled.push_back(
-      enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS);
-
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
