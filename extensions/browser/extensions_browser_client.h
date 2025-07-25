@@ -21,7 +21,6 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
-#include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -98,6 +97,7 @@ class ProcessMap;
 class RuntimeAPIDelegate;
 class SafeBrowsingDelegate;
 class ScopedExtensionUpdaterKeepAlive;
+class ScriptExecutor;
 class UserScriptListener;
 
 // Interface to allow the extensions module to make browser-process-specific

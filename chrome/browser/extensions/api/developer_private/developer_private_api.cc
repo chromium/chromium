@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 
+#include "base/lazy_instance.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
