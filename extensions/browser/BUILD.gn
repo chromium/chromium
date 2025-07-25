@@ -549,7 +549,6 @@ source_set("browser_sources") {
     "//components/input",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",
-    "//components/keyed_service/content:content",
     "//components/keyed_service/core",
     "//components/pdf/common:constants",
     "//components/permissions",
@@ -569,10 +568,8 @@ source_set("browser_sources") {
     "//components/vector_icons",
     "//components/version_info",
     "//components/web_cache/browser",
-    "//components/web_cache/browser:browser",
     "//components/zoom",
     "//content/public/browser",
-    "//content/public/browser:browser",
     "//content/public/common",
     "//content/public/common:buildflags",
     "//extensions:extensions_browser_resources",
@@ -591,7 +588,7 @@ source_set("browser_sources") {
     "//net",
     "//pdf:buildflags",
     "//pdf:features",
-    "//services/data_decoder/public/cpp:cpp",
+    "//services/data_decoder/public/cpp",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -601,7 +598,7 @@ source_set("browser_sources") {
     "//skia",
     "//skia/public/mojom",
     "//third_party/blink/public/common",
-    "//third_party/flatbuffers:flatbuffers",
+    "//third_party/flatbuffers",
     "//third_party/re2",
     "//third_party/zlib/google:zip",
     "//tools/json_schema_compiler:generated_api_util",
@@ -630,7 +627,7 @@ source_set("browser_sources") {
     "//extensions/common:mojom",
     "//ipc",
     "//mojo/public/cpp/bindings",
-    "//services/device/public/cpp/usb:usb",
+    "//services/device/public/cpp/usb",
     "//third_party/re2",
   ]
 
@@ -817,16 +814,16 @@ source_set("test_support") {
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/updater:updater",
+    "//extensions/browser/updater",
     "//extensions/common",
     "//extensions/common:test_support",
-    "//extensions/common/api:api",
+    "//extensions/common/api",
     "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base/idle:idle",
+    "//ui/base/idle",
   ]
 
   if (is_chromeos) {
@@ -835,7 +832,7 @@ source_set("test_support") {
       "api/feedback_private/mock_feedback_service.h",
     ]
     deps += [
-      "//components/crash/core/app:app",
+      "//components/crash/core/app",
       "//net:test_support",
     ]
   }
@@ -952,7 +949,7 @@ source_set("unit_tests") {
     "//components/keyed_service/content",
     "//components/onc",
     "//components/permissions:permissions_common",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
@@ -973,7 +970,7 @@ source_set("unit_tests") {
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
-    "//extensions/browser/updater:updater",
+    "//extensions/browser/updater",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common:mojom",

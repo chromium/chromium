@@ -45,7 +45,7 @@ source_set("app_shell_lib") {
     "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",
     "//components/keep_alive_registry",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/network_session_configurator/common",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",

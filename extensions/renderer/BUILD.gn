@@ -417,7 +417,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/crx_file:crx_file",
+    "//components/crx_file",
     "//content/test:test_support",
     "//extensions:extensions_renderer_resources",
     "//extensions:test_support",

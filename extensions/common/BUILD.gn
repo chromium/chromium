@@ -716,7 +716,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:android_buildflags",
     "//components/crx_file",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//content/test:test_support",
     "//extensions:extensions_resources",
     "//extensions/common:mojom",
