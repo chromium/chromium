@@ -867,11 +867,11 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didMoveTabGroup(Tab movedTab, int newIndex, int oldIndex) {
-                        // movedTab is the first tab in the group.
-                        assertEquals(tab1, movedTab);
-                        assertEquals(2, newIndex);
-                        assertEquals(1, oldIndex);
+                    public void didMoveTabGroup(Tab movedTab, int oldIndex, int newIndex) {
+                        // movedTab is the last tab in the group.
+                        assertEquals(tab2, movedTab);
+                        assertEquals(2, oldIndex);
+                        assertEquals(3, newIndex);
                         didMoveTabGroupHelper.notifyCalled();
                     }
                 };
@@ -987,7 +987,7 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didMoveTabGroup(Tab movedTab, int newIndex, int oldIndex) {
+                    public void didMoveTabGroup(Tab movedTab, int oldIndex, int newIndex) {
                         assertEquals(tab1, movedTab);
                         assertEquals(2, newIndex);
                         assertEquals(1, oldIndex);

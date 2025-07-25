@@ -16,6 +16,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
+// TODO(crbug.com/434015906): Remove all references to RootId after TabCollections is launched.
 /** An interface to be notified about changes to a {@link TabGroupModelFilter}. */
 @NullMarked
 public interface TabGroupModelFilterObserver {
@@ -78,6 +79,7 @@ public interface TabGroupModelFilterObserver {
      */
     default void didMergeTabToGroup(Tab movedTab) {}
 
+    // TODO(crbug.com/434015906): Passing the last tab here is a limitation of the current TabGroupModelFilterImpl, we should fix this once tab collections is launched.
     /**
      * This method is called after a group is moved.
      *
@@ -105,6 +107,7 @@ public interface TabGroupModelFilterObserver {
      */
     default void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {}
 
+    // TODO(crbug.com/432794806): Refactor this to either not exist or pass a single metadata object.
     /**
      * This method is called after a group is created manually by user. Either using the
      * TabListEditor (Group tab menu item) or using drag and drop.

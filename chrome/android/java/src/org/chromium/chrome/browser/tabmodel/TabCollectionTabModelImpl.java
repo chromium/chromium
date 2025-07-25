@@ -677,8 +677,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
+        int offset = tabs.size() - 1;
+        Tab lastTab = tabs.get(offset);
+        curIndex += offset;
+        finalIndex += offset;
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
-            observer.didMoveTabGroup(firstTab, finalIndex, curIndex);
+            observer.didMoveTabGroup(lastTab, curIndex, finalIndex);
         }
     }
 
@@ -859,7 +863,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         /* isPinned= */ tab.getIsPinned());
         if (finalIndex != curIndex) {
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
-                observer.didMoveTabGroup(tab, finalIndex, curIndex);
+                observer.didMoveTabGroup(tab, curIndex, finalIndex);
             }
         }
     }
