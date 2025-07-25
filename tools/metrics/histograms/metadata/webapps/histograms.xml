@@ -1314,6 +1314,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.InstallFromCache" enum="BooleanSuccess"
+    expires_after="2026-07-30">
+  <owner>irfedorova@google.com</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records whether the installation of an Isolated Web App from cache was
+    successful or resulted in an error.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.InstallSuccess" enum="BooleanSuccess"
     expires_after="2025-12-07">
   <owner>giovax@chromium.org</owner>

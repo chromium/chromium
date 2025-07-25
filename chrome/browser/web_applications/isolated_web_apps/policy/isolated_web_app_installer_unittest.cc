@@ -38,6 +38,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_paths.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -430,6 +431,7 @@ class IwaMgsCachingInstallerTest : public IwaInstallerBaseTest {
  protected:
   const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
 
+  base::HistogramTester histogram_tester_;
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -461,6 +463,7 @@ TEST_F(IwaMgsCachingInstallerTest,
 }
 
 TEST_F(IwaMgsCachingInstallerTest, InstallFromCache) {
+  histogram_tester_.ExpectTotalCount("WebApp.Isolated.InstallFromCache", 0);
   // Change the response, so the installation can only happen from the cache.
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       CreateIwaBundle(kBundleId, kVersion1);
@@ -473,9 +476,13 @@ TEST_F(IwaMgsCachingInstallerTest, InstallFromCache) {
   ASSERT_EQ(RunInstallerAndWaitForResult(kBundleId),
             IwaInstallerResult::Type::kSuccess);
   AssertAppInstalledAtVersion(kBundleId, kVersion1);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallFromCache"),
+      BucketsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(IwaMgsCachingInstallerTest, InstallFromCacheFailedRetryFromInternet) {
+  histogram_tester_.ExpectTotalCount("WebApp.Isolated.InstallFromCache", 0);
   // Change the response, so the installation can only happen from the cache.
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       CreateIwaBundle(kBundleId, kVersion1);
@@ -493,6 +500,9 @@ TEST_F(IwaMgsCachingInstallerTest, InstallFromCacheFailedRetryFromInternet) {
 
   EXPECT_EQ(RunInstallerAndWaitForResult(kBundleId),
             IwaInstallerResult::Type::kErrorUpdateManifestDownloadFailed);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("WebApp.Isolated.InstallFromCache"),
+      BucketsAre(base::Bucket(false, 1)));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

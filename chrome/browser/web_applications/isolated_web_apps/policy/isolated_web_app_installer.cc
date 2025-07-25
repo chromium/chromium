@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_bundle_cache_path_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
@@ -233,6 +234,8 @@ void IwaInstaller::InstallFromCache(const base::FilePath& cache_file,
 void IwaInstaller::OnIwaInstalledFromCache(
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
+  base::UmaHistogramBoolean("WebApp.Isolated.InstallFromCache",
+                            result.has_value());
   if (result.has_value()) {
     log_->Append(base::Value("successfully installed IWA from the cache"));
     Finish(Result(Result::Type::kSuccess));
@@ -241,8 +244,6 @@ void IwaInstaller::OnIwaInstalledFromCache(
     // When installing from cache failed, try to install IWA from the Internet.
     InstallFromInternet();
   }
-  // TODO(crbug.com/388727600): add UMA metrics for failed and successful cache
-  // installation.
 }
 
 void IwaInstaller::OnBundleCopiedToCache(CopyBundleToCacheResult result) {
