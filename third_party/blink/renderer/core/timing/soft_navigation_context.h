@@ -12,6 +12,7 @@
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -21,20 +22,17 @@
 
 namespace blink {
 
-class ImageRecord;
 class Node;
 class LargestContentfulPaintCalculator;
 struct LargestContentfulPaintDetails;
-class PaintTimingRecord;
-class TextRecord;
 
 class CORE_EXPORT SoftNavigationContext
     : public GarbageCollected<SoftNavigationContext> {
   static uint64_t last_context_id_;
 
  public:
-  explicit SoftNavigationContext(LocalDOMWindow& window,
-                                 features::SoftNavigationHeuristicsMode);
+  SoftNavigationContext(LocalDOMWindow& window,
+                        features::SoftNavigationHeuristicsMode);
 
   bool IsMostRecentlyCreatedContext() const {
     return context_id_ == last_context_id_;
@@ -54,18 +52,17 @@ class CORE_EXPORT SoftNavigationContext
   void SetUserInteractionTimestamp(base::TimeTicks value) {
     user_interaction_timestamp_ = value;
   }
+
   bool HasFirstContentfulPaint() const {
-    return !first_contentful_paint_.is_null();
+    return first_image_or_text_ && first_image_or_text_->HasPaintTime();
   }
   base::TimeTicks FirstContentfulPaint() const {
-    return first_contentful_paint_;
+    return first_image_or_text_ ? first_image_or_text_->PaintTime()
+                                : base::TimeTicks();
   }
-  void SetFirstContentfulPaint(
-      const base::TimeTicks& raw_presentation_timestamp,
-      const DOMPaintTimingInfo& paint_timing_info) {
-    CHECK(first_contentful_paint_.is_null());
-    first_contentful_paint_ = raw_presentation_timestamp;
-    first_contentful_paint_timing_info_ = paint_timing_info;
+  const DOMPaintTimingInfo& FirstContentfulPaintTimingInfo() const {
+    CHECK(HasFirstContentfulPaint());
+    return first_image_or_text_->PaintTimingInfo();
   }
 
   // First Url and Last Url help for cases with multiple client-side redirects.
@@ -106,6 +103,9 @@ class CORE_EXPORT SoftNavigationContext
     return first_input_or_scroll_time_.is_null();
   }
 
+  bool WasEmitted() const { return was_emitted_; }
+  void MarkEmitted() { was_emitted_ = true; }
+
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   void Trace(Visitor* visitor) const;
@@ -117,11 +117,10 @@ class CORE_EXPORT SoftNavigationContext
 
   uint32_t navigation_id_ = kNavigationIdAbsentValue;
   const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
+  bool was_emitted_ = false;
 
   base::TimeTicks user_interaction_timestamp_;
   base::TimeTicks first_input_or_scroll_time_;
-  base::TimeTicks first_contentful_paint_;
-  DOMPaintTimingInfo first_contentful_paint_timing_info_;
 
   String initial_url_;
   String most_recent_url_;
@@ -132,6 +131,7 @@ class CORE_EXPORT SoftNavigationContext
   Member<LargestContentfulPaintCalculator> lcp_calculator_;
   Member<TextRecord> largest_text_;
   Member<ImageRecord> largest_image_;
+  Member<PaintTimingRecord> first_image_or_text_;
 
   // Elements of `modified_nodes_` can get GC-ed, so we need to keep a count of
   // the total nodes modified.

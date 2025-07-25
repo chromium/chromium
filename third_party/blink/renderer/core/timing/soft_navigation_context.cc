@@ -105,6 +105,13 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
       rect.height(), "paintedAreaThisAnimationFrame",
       painted_area_ - painted_area_last_animation_frame_);
 
+  // TODO(crbug.com/434159332): This doesn't currently match hard-FCP semantics
+  // because we aren't notified about images paints until they are "sufficiently
+  // loaded", which is needed for LCP/ICP.
+  if (!first_image_or_text_) {
+    first_image_or_text_ = record;
+  }
+
   if (record->IsImageRecord()) {
     if (!largest_image_ ||
         largest_image_->RecordedSize() < record->RecordedSize()) {
@@ -207,9 +214,10 @@ void SoftNavigationContext::UpdateWebExposedLargestContentfulPaintIfNeeded() {
 }
 
 bool SoftNavigationContext::TryUpdateLcpCandidate() {
-  // After we are ready to start measuring LCP (`HasNavigationId()`) and
-  // before we want to stop (input or scroll), we update LCP candidate.
-  if (!HasNavigationId() || !first_input_or_scroll_time_.is_null()) {
+  // After we are ready to start measuring LCP (after the soft nav entry was
+  // emitted) and before we want to stop (input or scroll), we update LCP
+  // candidate.
+  if (!was_emitted_ || !first_input_or_scroll_time_.is_null()) {
     return false;
   }
 
@@ -253,7 +261,7 @@ void SoftNavigationContext::WriteIntoTrace(
   dict.Add("mostRecentURL", most_recent_url_);
 
   dict.Add("interactionTimestamp", user_interaction_timestamp_);
-  dict.Add("firstContentfulPaint", first_contentful_paint_);
+  dict.Add("firstContentfulPaint", FirstContentfulPaint());
 
   dict.Add("domModifications", num_modified_dom_nodes_);
   dict.Add("paintedArea", painted_area_);
@@ -267,6 +275,7 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(lcp_calculator_);
   visitor->Trace(largest_text_);
   visitor->Trace(largest_image_);
+  visitor->Trace(first_image_or_text_);
 }
 
 }  // namespace blink
