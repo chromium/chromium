@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.on_device_model.mojom.SessionParams;
 
 /**
  * A central bridge to connect between the native and java code for on-device model. Responsible
@@ -22,14 +23,19 @@ class OnDeviceModelBridge {
     /**
      * Creates a new AiCoreSession.
      *
+     * @param topK The top K value for sampling.
+     * @param temperature The temperature value for sampling.
      * @return The AiCoreSession instance.
      */
     @CalledByNative
-    private static AiCoreSession createSession() {
+    private static AiCoreSession createSession(int topK, float temperature) {
+        SessionParams params = new SessionParams();
+        params.topK = topK;
+        params.temperature = temperature;
         AiCoreSessionFactory factory = ServiceLoaderUtil.maybeCreate(AiCoreSessionFactory.class);
         if (factory == null) {
             return new AiCoreSessionUpstreamImpl();
         }
-        return factory.createSession();
+        return factory.createSession(params);
     }
 }

@@ -17,7 +17,8 @@ namespace on_device_model {
 // lifetime will be created when this object is created.
 class BackendSessionImplAndroid : public BackendSession {
  public:
-  BackendSessionImplAndroid();
+  explicit BackendSessionImplAndroid(
+      on_device_model::mojom::SessionParamsPtr params);
   ~BackendSessionImplAndroid() override;
 
   // BackendSession:

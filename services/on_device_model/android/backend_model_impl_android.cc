@@ -18,7 +18,7 @@ BackendModelImplAndroid::~BackendModelImplAndroid() = default;
 std::unique_ptr<BackendSession> BackendModelImplAndroid::CreateSession(
     const ScopedAdaptation* adaptation,
     on_device_model::mojom::SessionParamsPtr params) {
-  return std::make_unique<BackendSessionImplAndroid>();
+  return std::make_unique<BackendSessionImplAndroid>(std::move(params));
 }
 
 std::unique_ptr<BackendModel::ScopedAdaptation>

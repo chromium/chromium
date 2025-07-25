@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.on_device_model;
 
+import static org.junit.Assert.assertEquals;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.on_device_model.mojom.SessionParams;
 
 /**
  * Helper class to verify the JNI bridge. Invoked by native unit tests:
@@ -17,6 +20,12 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
      * back as the response.
      */
     public static class MockAiCoreSession implements AiCoreSession {
+        private final SessionParams mParams;
+
+        public MockAiCoreSession(SessionParams params) {
+            mParams = params;
+        }
+
         @Override
         public void generate(long nativeBackendSession, InputPiece[] inputPieces) {
             StringBuilder sb = new StringBuilder();
@@ -49,12 +58,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     public static class MockAiCoreSessionFactory implements AiCoreSessionFactory {
         MockAiCoreSession mSession;
 
-        public MockAiCoreSessionFactory() {
-            mSession = new MockAiCoreSession();
-        }
+        public MockAiCoreSessionFactory() {}
 
         @Override
-        public AiCoreSession createSession() {
+        public AiCoreSession createSession(SessionParams params) {
+            mSession = new MockAiCoreSession(params);
             return mSession;
         }
     }
@@ -66,6 +74,13 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         mMockAiCoreSessionFactory = new MockAiCoreSessionFactory();
         ServiceLoaderUtil.setInstanceForTesting(
                 AiCoreSessionFactory.class, mMockAiCoreSessionFactory);
+    }
+
+    @CalledByNative
+    public void verifySessionParams(int topK, float temperature) {
+        SessionParams params = mMockAiCoreSessionFactory.mSession.mParams;
+        assertEquals(topK, params.topK);
+        assertEquals(temperature, params.temperature, 0.01f);
     }
 
     @CalledByNative

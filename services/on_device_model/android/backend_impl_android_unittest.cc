@@ -35,6 +35,13 @@ class BackendImplAndroidTest : public testing::Test {
     model_ = std::move(model_result.value());
   }
 
+  mojom::SessionParamsPtr MakeSessionParams(int top_k, float temperature) {
+    auto params = mojom::SessionParams::New();
+    params->top_k = top_k;
+    params->temperature = temperature;
+    return params;
+  }
+
   mojom::AppendOptionsPtr MakeInput(std::vector<ml::InputPiece> input) {
     auto options = mojom::AppendOptions::New();
     options->input = mojom::Input::New(std::move(input));
@@ -50,8 +57,9 @@ class BackendImplAndroidTest : public testing::Test {
 };
 
 TEST_F(BackendImplAndroidTest, GenerateWithDefaultFactory) {
-  std::unique_ptr<BackendSession> session =
-      model_->CreateSession(/*adaptation=*/nullptr, /*params=*/nullptr);
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   TestResponseHolder response_holder;
   session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
@@ -64,8 +72,11 @@ TEST_F(BackendImplAndroidTest, AppendAndGenerate) {
   Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreSessionFactory(
       env_, java_helper_);
 
-  std::unique_ptr<BackendSession> session =
-      model_->CreateSession(/*adaptation=*/nullptr, /*params=*/nullptr);
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_verifySessionParams(
+      env_, java_helper_, /*topK=*/3, /*temperature=*/1.0f);
 
   {
     std::vector<ml::InputPiece> pieces;
@@ -104,8 +115,9 @@ TEST_F(BackendImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
   Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreSessionFactory(
       env_, java_helper_);
 
-  std::unique_ptr<BackendSession> session =
-      model_->CreateSession(/*adaptation=*/nullptr, /*params=*/nullptr);
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
   {
     std::vector<ml::InputPiece> pieces;

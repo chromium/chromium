@@ -58,8 +58,9 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToJavaInputPieceArray(
 
 }  // namespace
 
-BackendSessionImplAndroid::BackendSessionImplAndroid()
-    : java_session_(OnDeviceModelBridge::CreateSession()) {}
+BackendSessionImplAndroid::BackendSessionImplAndroid(
+    on_device_model::mojom::SessionParamsPtr params)
+    : java_session_(OnDeviceModelBridge::CreateSession(std::move(params))) {}
 
 BackendSessionImplAndroid::~BackendSessionImplAndroid() = default;
 
