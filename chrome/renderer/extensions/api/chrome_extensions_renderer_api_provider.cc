@@ -9,6 +9,7 @@
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/notifications_native_handler.h"
+#include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 #include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -23,7 +24,6 @@
 #include "chrome/renderer/extensions/api/app_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/identity_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
-#include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 #include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/native_handler.h"
@@ -52,6 +52,10 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "notifications_private",
       std::make_unique<NotificationsNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "page_capture", std::make_unique<PageCaptureCustomBindings>(
+                          context, bindings_system->GetIPCMessageSender()));
+
   // The following are native handlers that are defined in //extensions, but
   // are only used for APIs defined in Chrome.
   // TODO(devlin): We should clean this up. If an API is defined in Chrome,
@@ -78,9 +82,6 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "mediaGalleries",
       std::make_unique<MediaGalleriesCustomBindings>(context));
-  module_system->RegisterNativeHandler(
-      "page_capture", std::make_unique<PageCaptureCustomBindings>(
-                          context, bindings_system->GetIPCMessageSender()));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
