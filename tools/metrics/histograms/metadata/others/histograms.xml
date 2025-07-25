@@ -9035,11 +9035,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SpellCheck.UniqueWords" units="words" expires_after="M124">
-  <owner>groby@chromium.org</owner>
-  <summary>The number of unique checked words within a session.</summary>
-</histogram>
-
 <histogram
     name="Spellcheck.Windows.ChromeLocalesSupport2{Spellcheck_Windows_LocaleSupportType}"
     units="locales" expires_after="2025-02-02">
