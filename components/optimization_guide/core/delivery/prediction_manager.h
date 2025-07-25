@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/delivery/model_enums.h"
+#include "components/optimization_guide/core/delivery/model_provider_registry.h"
 #include "components/optimization_guide/core/delivery/prediction_model_download_observer.h"
 #include "components/optimization_guide/core/delivery/prediction_model_fetch_timer.h"
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
@@ -159,21 +160,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
           prediction_models);
 
  private:
-  // Contains the model registration specific info to be kept for each
-  // optimization target.
-  struct ModelRegistrationInfo {
-    explicit ModelRegistrationInfo(std::optional<proto::Any> metadata);
-    ~ModelRegistrationInfo();
-
-    // The feature-provided metadata that was registered with the prediction
-    // manager.
-    std::optional<proto::Any> metadata;
-
-    // The set of model observers that were registered to receive model updates
-    // from the prediction manager.
-    base::ObserverList<OptimizationTargetModelObserver> model_observers;
-  };
-
   friend class PredictionManagerTestBase;
   friend class PredictionModelStoreBrowserTestBase;
 
@@ -260,13 +246,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // 2. The last time a fetch attempt was made.
   void ScheduleModelsFetch();
 
-  // Notifies observers of `optimization_target` that the model has been
-  // updated. `model_info` will be nullopt when the model was stopped to be
-  // served from the server, and removed from the store,
-  void NotifyObserversOfNewModel(
-      proto::OptimizationTarget optimization_target,
-      base::optional_ref<const ModelInfo> model_info);
-
   // Updates the metadata for |model|.
   void UpdateModelMetadata(const proto::PredictionModel& model);
 
@@ -294,14 +273,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
     model_cache_key_ = model_cache_key;
   }
 
-  // A map of optimization target to the model file containing the model for the
-  // target.
-  base::flat_map<proto::OptimizationTarget, std::unique_ptr<ModelInfo>>
-      optimization_target_model_info_map_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The map from optimization target to the model registration specific data.
-  std::map<proto::OptimizationTarget, ModelRegistrationInfo>
-      model_registration_info_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ModelProviderRegistry registry_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The fetcher that handles making requests to update the models and host
   // model features from the remote Optimization Guide Service.

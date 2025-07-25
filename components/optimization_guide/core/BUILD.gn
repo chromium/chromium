@@ -354,6 +354,8 @@ static_library("prediction") {
     "delivery/model_enums.h",
     "delivery/model_info.cc",
     "delivery/model_info.h",
+    "delivery/model_provider_registry.cc",
+    "delivery/model_provider_registry.h",
     "delivery/model_store_metadata_entry.cc",
     "delivery/model_store_metadata_entry.h",
     "delivery/model_util.cc",
