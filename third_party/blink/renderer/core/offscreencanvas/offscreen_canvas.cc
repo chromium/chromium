@@ -668,6 +668,7 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
   if (current_frame_damage_rect_.isEmpty() || !canvas_resource)
     return false;
   const base::TimeTicks commit_start_time = base::TimeTicks::Now();
+  canvas_resource->SetOriginClean(OriginClean());
   GetOrCreateResourceDispatcher()->DispatchFrame(
       std::move(canvas_resource), commit_start_time, current_frame_damage_rect_,
       IsOpaque());
