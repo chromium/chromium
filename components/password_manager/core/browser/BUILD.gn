@@ -83,6 +83,7 @@ static_library("browser") {
     "password_autofill_manager.h",
     "password_bubble_experiment.cc",
     "password_bubble_experiment.h",
+    "password_change_service_interface.cc",
     "password_change_service_interface.h",
     "password_check_referrer_android.h",
     "password_counter.cc",
@@ -201,13 +202,13 @@ static_library("browser") {
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/os_crypt/sync",
-    "//components/password_manager/content/common:common",
+    "//components/password_manager/content/common",
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/generation",
-    "//components/password_manager/core/browser/leak_detection:leak_detection",
+    "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/common",
     "//components/pref_registry",
     "//components/prefs",
@@ -218,7 +219,7 @@ static_library("browser") {
     "//components/url_formatter",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//ui/accessibility:accessibility",
+    "//ui/accessibility",
   ]
 
   if (is_android) {
@@ -303,7 +304,7 @@ source_set("passkey_credential") {
     "//components/strings:components_strings",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
-    "//device/fido:fido",
+    "//device/fido",
     "//ui/base",
   ]
   if (is_android) {
@@ -320,11 +321,11 @@ source_set("metrics_util") {
     ":password_form",
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types",
-    "//components/device_reauth:device_reauth",
+    "//components/device_reauth",
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/common",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]
@@ -369,7 +370,7 @@ static_library("hash_password_manager") {
   ]
   deps = [
     ":password_hash_data",
-    "//base:base",
+    "//base",
     "//components/os_crypt/sync",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
@@ -447,7 +448,7 @@ static_library("test_support") {
     "//base",
     "//components/autofill/core/common",
     "//components/version_info:channel",
-    "//net:net",
+    "//net",
     "//services/network:test_support",
   ]
 }
@@ -549,14 +550,14 @@ source_set("unit_tests") {
     "//components/favicon/core/test:test_support",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
-    "//components/password_manager/content/common:common",
+    "//components/password_manager/content/common",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/generation",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/import:importer_unit_tests",
-    "//components/password_manager/core/browser/leak_detection:leak_detection",
+    "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/browser/leak_detection:test_support",
     "//components/password_manager/core/common",
     "//components/prefs:test_support",

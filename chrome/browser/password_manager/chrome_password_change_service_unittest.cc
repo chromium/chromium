@@ -13,7 +13,6 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/metrics/enabled_state_provider.h"
@@ -22,6 +21,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/variations_switches.h"
@@ -220,7 +220,7 @@ TEST_F(ChromePasswordChangeServiceTest,
 TEST_F(ChromePasswordChangeServiceTest,
        PasswordChangeSupportedIfCommandLineArgProvided) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kPasswordChangeUrl, "https://test.com/new_password/");
+      password_manager::kPasswordChangeUrl, "https://test.com/new_password/");
 
   GURL url("https://test.com/");
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
@@ -232,7 +232,7 @@ TEST_F(ChromePasswordChangeServiceTest,
 TEST_F(ChromePasswordChangeServiceTest,
        PasswordChangeSupportedIfPSLMatchedInArg) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kPasswordChangeUrl, "https://test.com/new_password/");
+      password_manager::kPasswordChangeUrl, "https://test.com/new_password/");
 
   GURL url("https://www.test.com/");
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
@@ -280,7 +280,7 @@ TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithNoArgs) {
 
 TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithChangePwdUrlArg) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kPasswordChangeUrl, "https://test.com/new_password/");
+      password_manager::kPasswordChangeUrl, "https://test.com/new_password/");
 
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled).Times(0);
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)

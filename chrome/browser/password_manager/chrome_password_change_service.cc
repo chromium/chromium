@@ -29,14 +29,7 @@ namespace {
 
 // Returns whether chrome switch for change password URLs is used.
 bool HasChangePasswordUrlOverride() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kPasswordChangeUrl);
-}
-
-// Return overridden change password URL passed to chrome switch.
-GURL GetUrlFromCommandArgs() {
-  return GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kPasswordChangeUrl));
+  return password_manager::GetChangePasswordUrlOverride().is_valid();
 }
 
 // Returns whether overridden change password URL matches with `url`.
@@ -45,7 +38,7 @@ bool IsUrlMatchingOverride(const GURL& url) {
     return false;
   }
 
-  GURL change_password_url = GetUrlFromCommandArgs();
+  GURL change_password_url = password_manager::GetChangePasswordUrlOverride();
   if (!url.is_valid() || !change_password_url.is_valid()) {
     return false;
   }
@@ -138,7 +131,7 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
   GURL change_pwd_url = IsUrlMatchingOverride(url)
-                            ? GetUrlFromCommandArgs()
+                            ? password_manager::GetChangePasswordUrlOverride()
                             : affiliation_service_->GetChangePasswordURL(url);
   CHECK(change_pwd_url.is_valid());
 

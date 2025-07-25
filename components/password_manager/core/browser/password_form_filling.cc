@@ -66,7 +66,15 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 bool ShouldNotifyAboutFillingOnPageload(
     PasswordManagerClient* client,
     const std::optional<PasswordForm>& preferred_match) {
+  // Change password url override is provided. Always notify about filling on
+  // page load.
+  if (GetChangePasswordUrlOverride().is_valid()) {
+    return true;
+  }
+  // TODO(crbug.com/392020509): Consider removing check for leak when password
+  // change is launched.
   return preferred_match && preferred_match->change_password_url.is_valid() &&
+         preferred_match->password_issues.contains(InsecureType::kLeaked) &&
          client->GetPasswordChangeService() &&
          client->GetPasswordChangeService()->IsPasswordChangeAvailable();
 }
