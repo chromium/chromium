@@ -7,20 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-enum class ShareExtensionItemReceived {
-  kShareExtensionItemReceivedNone,
-  kInvalidEntry,
-  kCancelledEntry,
-  kRradinglistEntry,
-  kBookmarkEntry,
-  kOpenInChromeEntry,
-  kOpenInChromeIncognitoEntry,
-  kImageSearchEntry,
-  kTextSearchEntry,
-  kIncognitoImageSearchEntry,
-  kIncognitoTextSearchEntry,
-  kShareExtensionItemReceivedCount,
-};
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 // An interface that represents a parsed share extension entry.
 @interface ParsedShareExtensionEntry : NSObject
@@ -29,7 +16,7 @@ enum class ShareExtensionItemReceived {
 @property(nonatomic, strong) NSURL* url;
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, strong) NSDate* date;
-@property(nonatomic, assign) ShareExtensionItemReceived type;
+@property(nonatomic, assign) app_group::ShareExtensionItemType type;
 @property(nonatomic, copy) NSString* source;
 
 // Check whether a parsed entry is valid. An entry is considered valid if it has

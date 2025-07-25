@@ -52,8 +52,6 @@ ParsedShareExtensionEntry* PerformBlockingFileReadAndParse(NSURL* file_url) {
                                                 base::BlockingType::WILL_BLOCK);
   ParsedShareExtensionEntry* result = [[ParsedShareExtensionEntry alloc] init];
 
-  result.type = ShareExtensionItemReceived::kShareExtensionItemReceivedNone;
-
   if (![[NSFileManager defaultManager] fileExistsAtPath:[file_url path]]) {
     return result;
   }
@@ -107,7 +105,7 @@ ParsedShareExtensionEntry* PerformBlockingFileReadAndParse(NSURL* file_url) {
   NSNumber* entryType = base::apple::ObjCCast<NSNumber>(
       [entry objectForKey:app_group::kShareItemType]);
   if (entryType) {
-    result.type = (ShareExtensionItemReceived)[entryType integerValue];
+    result.type = (app_group::ShareExtensionItemType)[entryType integerValue];
   }
 
   NSString* entrySource = base::apple::ObjCCast<NSString>(

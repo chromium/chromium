@@ -10,23 +10,11 @@
 
 namespace {
 
-bool IsEntryURL(ShareExtensionItemReceived type) {
-  switch (type) {
-    case ShareExtensionItemReceived::kRradinglistEntry:
-    case ShareExtensionItemReceived::kBookmarkEntry:
-    case ShareExtensionItemReceived::kOpenInChromeEntry:
-    case ShareExtensionItemReceived::kOpenInChromeIncognitoEntry:
-      return true;
-    case ShareExtensionItemReceived::kShareExtensionItemReceivedNone:
-    case ShareExtensionItemReceived::kInvalidEntry:
-    case ShareExtensionItemReceived::kCancelledEntry:
-    case ShareExtensionItemReceived::kImageSearchEntry:
-    case ShareExtensionItemReceived::kTextSearchEntry:
-    case ShareExtensionItemReceived::kIncognitoImageSearchEntry:
-    case ShareExtensionItemReceived::kIncognitoTextSearchEntry:
-    case ShareExtensionItemReceived::kShareExtensionItemReceivedCount:
-      return false;
-  }
+bool IsEntryURL(app_group::ShareExtensionItemType type) {
+  return type == app_group::READING_LIST_ITEM ||
+         type == app_group::BOOKMARK_ITEM ||
+         type == app_group::OPEN_IN_CHROME_ITEM ||
+         type == app_group::OPEN_IN_CHROME_INCOGNITO_ITEM;
 }
 
 }  // namespace
@@ -39,9 +27,7 @@ bool IsEntryURL(ShareExtensionItemReceived type) {
   BOOL isURL = IsEntryURL(self.type);
   BOOL isURLValid = gurl.is_valid() && gurl.SchemeIsHTTPOrHTTPS();
 
-  return self.source && self.date &&
-         self.type !=
-             ShareExtensionItemReceived::kShareExtensionItemReceivedNone &&
+  return self.source && self.date && self.type &&
          ((isURL && isURLValid) || !isURL);
 }
 

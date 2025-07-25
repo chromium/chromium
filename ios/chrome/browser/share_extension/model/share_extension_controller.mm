@@ -30,10 +30,44 @@
 
 namespace {
 
+// Enum used to send metrics on item reception.
+// If you change this enum, update histograms.xml.
+enum ShareExtensionSource {
+  UNKNOWN_SOURCE = 0,
+  SHARE_EXTENSION,
+  SHARE_EXTENSION_SOURCE_COUNT
+};
+
+enum ShareExtensionItemReceived {
+  INVALID_ENTRY = 0,
+  CANCELLED_ENTRY,
+  READINGLIST_ENTRY,
+  BOOKMARK_ENTRY,
+  OPEN_IN_CHROME_ENTRY,
+  OPEN_IN_CHROME_INCOGNITO_ENTRY,
+  IMAGE_SEARCH_ENTRY,
+  TEXT_SEARCH_ENTRY,
+  INCOGNITO_IMAGE_SEARCH_ENTRY,
+  INCOGNITO_TEXT_SEARCH_ENTRY,
+  SHARE_EXTENSION_ITEM_RECEIVED_COUNT
+};
+
 void DeleteFileAtUrl(NSURL* url) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+}
+
+void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
+  UMA_HISTOGRAM_ENUMERATION("IOS.ShareExtension.ReceivedEntry", type,
+                            SHARE_EXTENSION_ITEM_RECEIVED_COUNT);
+}
+
+ShareExtensionSource SourceIDFromSource(NSString* source) {
+  if ([source isEqualToString:app_group::kShareItemSourceShareExtension]) {
+    return SHARE_EXTENSION;
+  }
+  return UNKNOWN_SOURCE;
 }
 
 }  // namespace
@@ -243,10 +277,46 @@ void DeleteFileAtUrl(NSURL* url) {
     return;
   }
 
+  if (![parsedEntry parsedEntryIsValid]) {
+    LogHistogramReceivedItem(INVALID_ENTRY);
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  if (parsedEntry.cancelled) {
+    LogHistogramReceivedItem(CANCELLED_ENTRY);
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  UMA_HISTOGRAM_TIMES(
+      "IOS.ShareExtension.ReceivedEntryDelay",
+      base::Seconds([[NSDate date] timeIntervalSinceDate:parsedEntry.date]));
+  UMA_HISTOGRAM_ENUMERATION("IOS.ShareExtension.Source",
+                            SourceIDFromSource(parsedEntry.source),
+                            SHARE_EXTENSION_SOURCE_COUNT);
+
+  [self processEntryWithType:parsedEntry.type
+                       title:parsedEntry.title
+                         URL:parsedEntry.url
+                  completion:completion];
+}
+
+- (void)processEntryWithType:(app_group::ShareExtensionItemType)entryType
+                       title:(NSString*)entryTitle
+                         URL:(NSURL*)entryURL
+                  completion:(ProceduralBlock)completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  // TODO(crbug.com/40260909): Bookmark the URL or add it to reading list.
+
   if (completion) {
     completion();
   }
-  // TODO(crbug.com/40260909): Handle the parsed entry.
 }
 
 @end
