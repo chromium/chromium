@@ -21,7 +21,7 @@ source_set("common") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//sandbox:sandbox_buildflags",
   ]
 }

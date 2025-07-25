@@ -56,7 +56,7 @@ component("slim") {
   ]
 
   # Remove when no longer supports wrapping cc.
-  public_deps += [ "//cc:cc" ]
+  public_deps += [ "//cc" ]
   deps += [
     "//cc/animation",
     "//cc/mojo_embedder",

@@ -33,7 +33,7 @@ if (!is_ios) {
       "//base",
       "//ipc:test_support",
       "//testing/gtest",
-      "//url:url",
+      "//url",
     ]
   }
 }

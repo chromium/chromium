@@ -13,7 +13,7 @@ component("shared_mojom_traits") {
   ]
   public_deps = [
     ":mojom_shared",
-    "//cc:cc",
+    "//cc",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//ui/gfx/geometry/mojom:mojom_traits",
   ]

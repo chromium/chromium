@@ -34,13 +34,13 @@ fuzzer_test("string_compare_proto_fuzzer") {
 
 fuzzer_test("snappy_compress_fuzzer") {
   sources = [ "snappy_compress_fuzzer.cc" ]
-  deps = [ "//third_party/snappy:snappy" ]
+  deps = [ "//third_party/snappy" ]
   seed_corpus = "//third_party/snappy/src/testdata"
 }
 
 fuzzer_test("snappy_uncompress_fuzzer") {
   sources = [ "snappy_uncompress_fuzzer.cc" ]
-  deps = [ "//third_party/snappy:snappy" ]
+  deps = [ "//third_party/snappy" ]
   seed_corpus = "//third_party/snappy/src/testdata"
 }
 
@@ -53,7 +53,7 @@ fuzzer_test("template_url_parser_fuzzer") {
     "//mojo/core/embedder",
     "//services/data_decoder/public/cpp",
     "//services/data_decoder/public/cpp:test_support",
-    "//third_party/libxml:libxml",
+    "//third_party/libxml",
   ]
   dict = "//third_party/libxml/fuzz/xml.dict"
   libfuzzer_options = [ "max_len=4096" ]
@@ -66,7 +66,7 @@ fuzzer_test("url_parse_proto_fuzzer") {
     "//base:i18n",
     "//testing/libfuzzer/proto:url_proto",
     "//third_party/libprotobuf-mutator",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -95,7 +95,7 @@ fuzzer_test("gfx_png_image_fuzzer") {
 
 fuzzer_test("libxml_xml_read_memory_fuzzer") {
   sources = [ "libxml_xml_read_memory_fuzzer.cc" ]
-  deps = [ "//third_party/libxml:libxml" ]
+  deps = [ "//third_party/libxml" ]
   dict = "//third_party/libxml/fuzz/xml.dict"
   seed_corpus = "//third_party/libxml/fuzz/seed_corpus"
 }
@@ -402,7 +402,7 @@ fuzzer_test("javascript_parser_proto_fuzzer") {
     ":javascript_parser_proto",
     "//base",
     "//third_party/libprotobuf-mutator",
-    "//v8:v8",
+    "//v8",
     "//v8:v8_libplatform",
   ]
 }
@@ -411,7 +411,7 @@ fuzzer_test("v8_fully_instrumented_fuzzer") {
   sources = [ "v8_fuzzer.cc" ]
   deps = [
     "//base",
-    "//v8:v8",
+    "//v8",
     "//v8:v8_libplatform",
   ]
   dict = "dicts/generated/javascript.dict"
@@ -494,7 +494,7 @@ test("paint_vector_icon_fuzztest") {
     "//base",
     "//skia:skia_switches",
     "//third_party/fuzztest:fuzztest_gtest_main",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
   ]
 }
 
@@ -515,7 +515,7 @@ if (use_centipede) {
     deps = [
       "//base",
       "//third_party/dawn/src/tint/cmd/fuzz/wgsl:fuzz",
-      "//third_party/dawn/src/tint/lang/wgsl/reader:reader",
+      "//third_party/dawn/src/tint/lang/wgsl/reader",
       "//third_party/fuzztest:fuzztest_gtest_main",
     ]
   }

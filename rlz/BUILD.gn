@@ -133,7 +133,7 @@ if (enable_rlz_support) {
       ":rlz_utils",
       "//build:chromeos_buildflags",
       "//net",
-      "//services/network/public/cpp:cpp",
+      "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//url",
     ]
