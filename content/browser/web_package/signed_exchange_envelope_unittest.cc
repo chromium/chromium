@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -67,13 +68,13 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
 
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(test_sxg_path, &contents));
-  auto* contents_bytes = reinterpret_cast<const uint8_t*>(contents.data());
+  base::span<const uint8_t> contents_bytes = base::as_byte_span(contents);
 
   ASSERT_GT(contents.size(),
             signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes);
   signed_exchange_prologue::BeforeFallbackUrl prologue_a =
       signed_exchange_prologue::BeforeFallbackUrl::Parse(
-          UNSAFE_TODO(base::span(contents_bytes,
+          UNSAFE_TODO(base::span(contents_bytes.data(),
                                  signed_exchange_prologue::BeforeFallbackUrl::
                                      kEncodedSizeInBytes)),
           nullptr /* devtools_proxy */);
@@ -83,8 +84,10 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
   signed_exchange_prologue::FallbackUrlAndAfter prologue_b =
       signed_exchange_prologue::FallbackUrlAndAfter::Parse(
           UNSAFE_TODO(base::span(
-              contents_bytes + signed_exchange_prologue::BeforeFallbackUrl::
-                                   kEncodedSizeInBytes,
+              contents_bytes
+                  .subspan(signed_exchange_prologue::BeforeFallbackUrl::
+                               kEncodedSizeInBytes)
+                  .data(),
               prologue_a.ComputeFallbackUrlAndAfterLength())),
           prologue_a, nullptr /* devtools_proxy */);
 
@@ -94,10 +97,12 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
   std::string_view signature_header_field(
       UNSAFE_TODO(contents.data() + signature_header_field_offset),
       prologue_b.signature_header_field_length());
-  const auto cbor_bytes =
-      UNSAFE_TODO(base::span(contents_bytes + signature_header_field_offset +
-                                 prologue_b.signature_header_field_length(),
-                             prologue_b.cbor_header_length()));
+  const auto cbor_bytes = UNSAFE_TODO(
+      base::span(contents_bytes
+                     .subspan(signature_header_field_offset +
+                              prologue_b.signature_header_field_length())
+                     .data(),
+                 prologue_b.cbor_header_length()));
   const std::optional<SignedExchangeEnvelope> envelope =
       SignedExchangeEnvelope::Parse(
           SignedExchangeVersion::kB3, prologue_b.fallback_url(),

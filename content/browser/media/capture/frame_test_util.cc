@@ -14,6 +14,8 @@
 #include <array>
 #include <cmath>
 
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -39,9 +41,13 @@ using TriStim = gfx::ColorTransform::TriStim;
 void LoadStimsFromYUV(const uint8_t y_src[],
                       const uint8_t u_src[],
                       const uint8_t v_src[],
-                      int width,
-                      TriStim stims[]) {
-  for (int i = 0; i < width; ++i) {
+                      int spanification_suspected_redundant_width,
+                      base::span<TriStim> stims) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_width == stims.size(),
+        base::NotFatalUntil::M143);
+  for (int i = 0; i < spanification_suspected_redundant_width; ++i) {
     stims[i].SetPoint(y_src[i] / 255.0f, u_src[i / 2] / 255.0f,
                       v_src[i / 2] / 255.0f);
   }
@@ -49,8 +55,12 @@ void LoadStimsFromYUV(const uint8_t y_src[],
 
 void LoadStimsFromYUV(const uint8_t y_src[],
                       const uint16_t uv_src[],
-                      int width,
-                      TriStim stims[]) {
+                      int spanification_suspected_redundant_width,
+                      base::span<TriStim> stims) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_width == stims.size(),
+        base::NotFatalUntil::M143);
 // https://docs.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12
 // "All of the Y samples appear first in memory as an array of unsigned char
 // values with an even number of lines. The Y plane is followed immediately by
@@ -59,14 +69,14 @@ void LoadStimsFromYUV(const uint8_t y_src[],
 // little-endian WORD values, the LSBs contain the U values, and the MSBs
 // contain the V values."
 #if defined(SK_CPU_BENDIAN)
-  for (int i = 0; i < width; ++i) {
+  for (int i = 0; i < spanification_suspected_redundant_width; ++i) {
     stims[i].SetPoint(
         y_src[i] / 255.0f,
         (uv_src[i / 2] >> 8) / 255.0f,  // MSB contains U values on LE
         (uv_src[i / 2] & 0xFF) / 255.0f);
   }
 #else
-  for (int i = 0; i < width; ++i) {
+  for (int i = 0; i < spanification_suspected_redundant_width; ++i) {
     stims[i].SetPoint(
         y_src[i] / 255.0f,
         (uv_src[i / 2] & 0xFF) / 255.0f,  // LSB contains U values on LE
@@ -83,8 +93,14 @@ uint8_t QuantizeAndClamp(float value) {
 
 // Copies the array of TriStims to the BGRA/RGBA output, mapping
 // [0.0,1.0]⇒[0,255].
-void StimsToN32Row(const TriStim row[], int width, uint8_t bgra_out[]) {
-  for (int i = 0; i < width; ++i) {
+void StimsToN32Row(base::span<const TriStim> row,
+                   int spanification_suspected_redundant_width,
+                   base::span<uint8_t> bgra_out) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_width == row.size(),
+        base::NotFatalUntil::M143);
+  for (int i = 0; i < spanification_suspected_redundant_width; ++i) {
     bgra_out[(i * 4) + (SK_R32_SHIFT / 8)] = QuantizeAndClamp(row[i].x());
     bgra_out[(i * 4) + (SK_G32_SHIFT / 8)] = QuantizeAndClamp(row[i].y());
     bgra_out[(i * 4) + (SK_B32_SHIFT / 8)] = QuantizeAndClamp(row[i].z());
@@ -127,7 +143,7 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
               (row / 2) * frame.stride(media::VideoFrame::Plane::kU),
           frame.visible_data(media::VideoFrame::Plane::kV) +
               (row / 2) * frame.stride(media::VideoFrame::Plane::kV),
-          bitmap.width(), stims.data());
+          bitmap.width(), stims);
     } else {
       CHECK_EQ(frame.format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
       LoadStimsFromYUV(
@@ -136,11 +152,12 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
           reinterpret_cast<const uint16_t*>(
               frame.visible_data(media::VideoFrame::Plane::kUV) +
               (row / 2) * frame.stride(media::VideoFrame::Plane::kUV)),
-          bitmap.width(), stims.data());
+          bitmap.width(), stims);
     }
     transform->Transform(stims.data(), stims.size());
-    StimsToN32Row(stims.data(), bitmap.width(),
-                  reinterpret_cast<uint8_t*>(bitmap.getAddr32(0, row)));
+    StimsToN32Row(
+        stims, bitmap.width(),
+        base::as_writable_byte_span(UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, row)));
   }
 
   return bitmap;

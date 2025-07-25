@@ -11,7 +11,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -690,13 +690,13 @@ class MockSyntheticPointerTouchActionTarget
   testing::AssertionResult SyntheticTouchActionListDispatchedCorrectly(
       const std::vector<SyntheticPointerActionParams>& params_list,
       int start_index,
-      int index_array[]) {
+      base::span<int> index_array) {
     testing::AssertionResult result = testing::AssertionSuccess();
     for (size_t i = 0; i < params_list.size(); ++i) {
       if (params_list[i].pointer_action_type() !=
           SyntheticPointerActionParams::PointerActionType::IDLE)
         result = SyntheticTouchActionDispatchedCorrectly(
-            params_list[i], start_index + i, UNSAFE_TODO(index_array[i]));
+            params_list[i], start_index + i, index_array[i]);
       if (result == testing::AssertionFailure())
         return result;
     }

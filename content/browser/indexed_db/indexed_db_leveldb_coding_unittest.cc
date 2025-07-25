@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -427,25 +428,39 @@ static std::string WrappedEncodeBinary(const std::string& value) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, EncodeBinary) {
-  const unsigned char binary_data[] = {0x00, 0x01, 0xfe, 0xff};
-  EXPECT_EQ(
-      1u,
-      WrappedEncodeBinary(std::string(binary_data, binary_data + 0)).size());
-  EXPECT_EQ(
-      2u,
-      WrappedEncodeBinary(std::string(binary_data, binary_data + 1)).size());
-  EXPECT_EQ(
-      5u,
-      WrappedEncodeBinary(std::string(binary_data, binary_data + 4)).size());
+  const auto binary_data =
+      std::to_array<unsigned char>({0x00, 0x01, 0xfe, 0xff});
+
+  EXPECT_EQ(1u, WrappedEncodeBinary(
+                    std::string(binary_data.data(),
+                                base::span(binary_data).subspan(0u).data()))
+                    .size());
+
+  EXPECT_EQ(2u, WrappedEncodeBinary(
+                    std::string(binary_data.data(),
+                                base::span(binary_data).subspan(1u).data()))
+                    .size());
+
+  EXPECT_EQ(5u, WrappedEncodeBinary(
+                    std::string(binary_data.data(),
+                                base::span(binary_data).subspan(4u).data()))
+                    .size());
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeBinary) {
-  const unsigned char binary_data[] = { 0x00, 0x01, 0xfe, 0xff };
+  const auto binary_data =
+      std::to_array<unsigned char>({0x00, 0x01, 0xfe, 0xff});
 
   std::vector<std::string> test_cases = {
-      std::string(binary_data, binary_data + 0),
-      std::string(binary_data, binary_data + 1),
-      std::string(binary_data, binary_data + 4)};
+      std::string(
+          binary_data.data(),
+          base::span<const unsigned char>(binary_data).subspan(0u).data()),
+      std::string(
+          binary_data.data(),
+          base::span<const unsigned char>(binary_data).subspan(1u).data()),
+      std::string(
+          binary_data.data(),
+          base::span<const unsigned char>(binary_data).subspan(4u).data())};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     std::string value = test_cases[i];

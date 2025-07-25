@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/browser/devtools/devtools_pipe_handler.h"
+
+#include "base/containers/span.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
@@ -357,7 +359,7 @@ class PipeReaderCBOR : public PipeReaderBase {
       : PipeReaderBase(std::move(devtools_handler), read_fd) {}
 
  private:
-  static uint32_t UInt32FromCBOR(const uint8_t* buf) {
+  static uint32_t UInt32FromCBOR(base::span<const uint8_t> buf) {
     return UNSAFE_TODO((buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) +
                        buf[3]);
   }

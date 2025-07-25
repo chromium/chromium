@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -64,11 +65,11 @@ namespace {
 
 const int kBufferSize = 1024;
 const char kTestData1[] = "Hello";
-const char kTestData2[] = "Here it is data.";
+const std::string_view kTestData2 = "Here it is data.";
 const char kTestFileData1[] = "0123456789";
-const char kTestFileData2[] = "This is sample file.";
+const std::string_view kTestFileData2 = "This is sample file.";
 const char kTestFileSystemFileData1[] = "abcdefghijklmnop";
-const char kTestFileSystemFileData2[] = "File system file test data.";
+const std::string_view kTestFileSystemFileData2 = "File system file test data.";
 const char kTestDataHandleData1[] = "data handle test data1.";
 const char kTestDataHandleData2[] = "data handle test data2.";
 const char kTestDiskCacheSideData[] = "test side data";
@@ -272,19 +273,21 @@ class BlobURLTest : public testing::Test {
     *expected_result +=
         std::string(UNSAFE_TODO(kTestFileSystemFileData1 + 3), 4);
 
-    auto str2 = std::string(UNSAFE_TODO(kTestData2 + 4), 5);
+    auto str2 =
+        std::string(base::span<const char>(kTestData2).subspan(4u).data(), 5);
     blob_data_->AppendData(str2);
     *expected_result += str2;
 
     blob_data_->AppendFile(temp_file2_, 5, 6, temp_file_modification_time2_);
-    *expected_result += std::string(UNSAFE_TODO(kTestFileData2 + 5), 6);
+    *expected_result += std::string(
+        base::span<const char>(kTestFileData2).subspan(5u).data(), 6);
 
     blob_data_->AppendFileSystemFile(
         file_system_context_->CrackURLInFirstPartyContext(
             temp_file_system_file2_),
         6, 7, temp_file_system_file_modification_time2_, file_system_context_);
-    *expected_result +=
-        std::string(UNSAFE_TODO(kTestFileSystemFileData2 + 6), 7);
+    *expected_result += std::string(
+        base::span<const char>(kTestFileSystemFileData2).subspan(6u).data(), 7);
   }
 
   storage::BlobDataHandle* GetHandleFromBuilder() {
