@@ -8,6 +8,8 @@ key_rotation_data {
     value {
     }
   }
+  # Test entry: maps Web Bundle ID derived from testing_keys/ecdsa_p256.pem to
+  # the public key of testing_keys/ecdsa_p256_rotated_double.pem.
   key_rotations {
     key: "an43pcfoq6otbo6625jsvszlnv7qwtbjbo6xhenehxb33xai6fayiaacai"
     value {
@@ -19,7 +21,7 @@ key_rotation_data {
 special_app_permissions_data {
   # Test entry: provides notification override for a test app.
   special_app_permissions {
-    key: "2ehqwjhen5u2cwyyymd3viv67gx2hsf7gwqusdltdprjuh3nppuaaaic",
+    key: "2ehqwjhen5u2cwyyymd3viv67gx2hsf7gwqusdltdprjuh3nppuaaaic"
     value: {
       multi_screen_capture: {
         skip_capture_started_notification: true
@@ -28,7 +30,7 @@ special_app_permissions_data {
   }
   # Test entry: provides notification override for a test app.
   special_app_permissions {
-    key: "hbsokgnyjp3cuyuhikquupayzrvbu72ymm7k7lobxq7f5pwbkvwqaaic",
+    key: "hbsokgnyjp3cuyuhikquupayzrvbu72ymm7k7lobxq7f5pwbkvwqaaic"
     value: {
       multi_screen_capture: {
         skip_capture_started_notification: true
@@ -37,9 +39,30 @@ special_app_permissions_data {
   }
 }
 
-iwa_access_control: {
-  managed_allowlist: {
+iwa_access_control {
+  managed_allowlist {
     key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai"
+    value: {}
+  }
+  managed_allowlist {
+    key: "2ehqwjhen5u2cwyyymd3viv67gx2hsf7gwqusdltdprjuh3nppuaaaic"
+    value: {}
+  }
+  managed_allowlist {
+    key: "hbsokgnyjp3cuyuhikquupayzrvbu72ymm7k7lobxq7f5pwbkvwqaaic"
+    value: {}
+  }
+  managed_allowlist {
+    key: "grhw2odotdqioi5nwwftz62kslybtoj5smahu2wkhds4kupuvuraaaic"
+    value: {}
+  }
+  managed_allowlist {
+    key: "t5y5u5ypkkszc6gproxry53r6itx72lzow6tbpxryk5xtjus6ieqaaic"
+    value: {}
+  }
+  # Test entry: blocks Web Bundle ID derived from testing_keys/ed25519_blocked.pem
+  blocklist: {
+    key: "kc27yfbm2ipu5iqqdvgstfrn3jvt5y26zaqtvbh24xl76hantsiqaaic"
     value: {}
   }
 }

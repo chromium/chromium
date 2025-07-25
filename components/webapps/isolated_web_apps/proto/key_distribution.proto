@@ -48,8 +48,12 @@ message IwaSpecialAppPermissions {
 message IwaAccessControl {
   // Types introduced for the future extensibility.
   message ManagedAllowlistItemData {}
+  message BlocklistItemData {}
 
   // Keys represent web bundle ids of allowed apps.
   // Only allowed apps can be installed and updated.
   map<string, ManagedAllowlistItemData> managed_allowlist = 1;
+
+  // Keys represent web bundle ids of blocked apps.
+  map<string, BlocklistItemData> blocklist = 2;
 }
