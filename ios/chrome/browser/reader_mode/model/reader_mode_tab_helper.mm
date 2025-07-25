@@ -432,4 +432,7 @@ void ReaderModeTabHelper::CallLastCommittedUrlEligibilityCallbacks(
 void ReaderModeTabHelper::CancelDistillation() {
   metrics_helper_.RecordReaderDistillerTimedOut();
   SetActive(false);
+  for (auto& observer : observers_) {
+    observer.ReaderModeDistillationFailed(this);
+  }
 }

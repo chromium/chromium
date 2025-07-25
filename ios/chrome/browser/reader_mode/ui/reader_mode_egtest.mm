@@ -82,19 +82,26 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kEnableReaderMode);
+  AppLaunchConfiguration config;
 
   if ([self isRunningTest:@selector
             (testNotEligibleReaderModePageEnabledInToolsMenu)]) {
     config.features_disabled.push_back(
         kEnableReaderModePageEligibilityForToolsMenu);
   } else {
-    config.features_enabled.push_back(
-        kEnableReaderModePageEligibilityForToolsMenu);
+    config.features_enabled_and_params.push_back(
+        {kEnableReaderModePageEligibilityForToolsMenu, {}});
   }
   if ([self isRunningTest:@selector(testReadabilityEnabled)]) {
-    config.features_enabled.push_back(dom_distiller::kReaderModeUseReadability);
+    config.features_enabled_and_params.push_back(
+        {dom_distiller::kReaderModeUseReadability, {}});
+  }
+  if ([self isRunningTest:@selector(testReaderModeDistillationTimeout)]) {
+    config.features_enabled_and_params.push_back(
+        {kEnableReaderMode,
+         {{{kReaderModeDistillationTimeoutDurationStringName, "0s"}}}});
+  } else {
+    config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
   }
   return config;
 }
@@ -789,6 +796,32 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   // Make the page not distillable.
   [ChromeEarlGrey
       evaluateJavaScriptForSideEffect:@"document.body.outerHTML = ''"];
+
+  // Tap the entrypoint to trigger distillation.
+  [[EarlGrey selectElementWithMatcher:entrypoint] performAction:grey_tap()];
+
+  // The entrypoint should disappear.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint];
+
+  // A snackbar should be displayed with a failure message.
+  NSString* failureMessage =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_SNACKBAR_FAILURE_MESSAGE);
+  id<GREYMatcher> snackbarMatcher = grey_allOf(
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
+      grey_accessibilityLabel(failureMessage), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+}
+
+// Tests that the contextual panel entrypoint disappears and a failure snackbar
+// is presented when distillation times out.
+- (void)testReaderModeDistillationTimeout {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Wait for the contextual panel entrypoint to appear.
+  id<GREYMatcher> entrypoint = chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:entrypoint];
 
   // Tap the entrypoint to trigger distillation.
   [[EarlGrey selectElementWithMatcher:entrypoint] performAction:grey_tap()];
