@@ -273,13 +273,12 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            size_t row_bytes,
                                            int x,
                                            int y) {
-  if (!resource_provider_ || !GetOrCreateCanvas2DResourceProvider()) {
+  if (!resource_provider_ || !canvas() || isContextLost() ||
+      !resource_provider_->IsValid()) {
     return false;
   }
 
   CanvasRenderingContextHost* host = Host();
-  CHECK(host);
-
   CanvasResourceProvider* provider = resource_provider_.get();
 
   if (x <= 0 && y <= 0 && x + orig_info.width() >= host->Size().width() &&
