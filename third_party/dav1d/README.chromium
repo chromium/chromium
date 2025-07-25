@@ -6,6 +6,7 @@ License: BSD-2-Clause
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:videolan:dav1d
 Source: https://code.videolan.org/videolan/dav1d
 
 --[ DESCRIPTION ] ------------------
