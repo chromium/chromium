@@ -105,7 +105,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/signin/public/base:signin_switches",
     "//components/sync/base:features",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
