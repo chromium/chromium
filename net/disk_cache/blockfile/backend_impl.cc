@@ -247,7 +247,10 @@ int BackendImpl::SyncInit() {
     new_eviction_ = (GetCacheType() == net::DISK_CACHE);
   }
 
-  if (!CheckIndex()) {
+  BackendImpl::CheckIndexResult check_index_result = CheckIndex();
+  if (check_index_result != BackendImpl::CheckIndexResult::kOk) {
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "check_index_result",
+                            static_cast<int>(check_index_result));
     ReportError(ERR_INIT_FAILED);
     return net::ERR_FAILED;
   }
@@ -1911,18 +1914,18 @@ void BackendImpl::UpgradeTo3_0() {
   data_->header.num_bytes = data_->header.old_v2_num_bytes;
 }
 
-bool BackendImpl::CheckIndex() {
+BackendImpl::CheckIndexResult BackendImpl::CheckIndex() {
   DCHECK(data_);
 
   size_t current_size = index_->GetLength();
   if (current_size < sizeof(Index)) {
     LOG(ERROR) << "Corrupt Index file";
-    return false;
+    return BackendImpl::CheckIndexResult::kCorruptIndexFileInIndexLength;
   }
 
   if (data_->header.magic != kIndexMagic) {
     LOG(ERROR) << "Invalid file magic";
-    return false;
+    return BackendImpl::CheckIndexResult::kInvalidFileMagic;
   }
 
   // 2.0 + new_eviction needs conversion to 2.1.
@@ -1938,18 +1941,18 @@ bool BackendImpl::CheckIndex() {
 
   if (kCurrentVersion != data_->header.version) {
     LOG(ERROR) << "Invalid file version";
-    return false;
+    return BackendImpl::CheckIndexResult::kInvalidFileVersion;
   }
 
   if (!data_->header.table_len) {
     LOG(ERROR) << "Invalid table size";
-    return false;
+    return BackendImpl::CheckIndexResult::kInvalidTableSize;
   }
 
   if (current_size < GetIndexSize(data_->header.table_len) ||
       data_->header.table_len & (kBaseTableLen - 1)) {
     LOG(ERROR) << "Corrupt Index file";
-    return false;
+    return BackendImpl::CheckIndexResult::kCorruptIndexFileInTableLength;
   }
 
   AdjustMaxCacheSize(data_->header.table_len);
@@ -1959,13 +1962,13 @@ bool BackendImpl::CheckIndex() {
       (max_size_ < std::numeric_limits<int32_t>::max() - kDefaultCacheSize &&
        data_->header.num_bytes > max_size_ + kDefaultCacheSize)) {
     LOG(ERROR) << "Invalid cache (current) size";
-    return false;
+    return BackendImpl::CheckIndexResult::kInvalidCacheSize;
   }
 #endif
 
   if (data_->header.num_entries < 0) {
     LOG(ERROR) << "Invalid number of entries";
-    return false;
+    return BackendImpl::CheckIndexResult::kInvalidNumberOfEntries;
   }
 
   if (!mask_) {
@@ -1973,7 +1976,8 @@ bool BackendImpl::CheckIndex() {
   }
 
   // Load the table into memory.
-  return index_->Preload();
+  return index_->Preload() ? BackendImpl::CheckIndexResult::kOk
+                           : BackendImpl::CheckIndexResult::kFailedOnPreload;
 }
 
 int BackendImpl::CheckAllEntries() {
