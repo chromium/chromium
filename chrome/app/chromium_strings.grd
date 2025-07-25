@@ -1471,6 +1471,12 @@ Chromium is unable to recover your settings.
             Open Link in Chromium Inco&amp;gnito Window
           </message>
         </if>
+
+        <!-- On Sign-in Avatar Button Label Desktop -->
+        <!-- TODO(crbug.com/417928515): Finalize the string and make it translateable. -->
+        <message translateable="false" name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="">
+          Making Chromium Yours
+        </message>
       </if>
 
       <!-- Update Recommended dialog -->

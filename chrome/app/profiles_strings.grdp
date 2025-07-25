@@ -548,11 +548,6 @@
         Sorry, your password could not be verified. Please try again.
       </message>
     </if>
-    <!-- On Sign-in Avatar Button Label Desktop -->
-    <!-- TODO(crbug.com/417928515): Finalize the string and make it translateable. -->
-    <message translateable="false" name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="">
-      Making Chrome Yours
-    </message>
   </if>
 
   <if expr="not is_chromeos and not is_android">
