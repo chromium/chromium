@@ -147,7 +147,6 @@ class WebString;
 class WebURL;
 struct FramePolicy;
 struct JavaScriptFrameworkDetectionResult;
-struct SoftNavigationMetrics;
 }  // namespace blink
 
 namespace gfx {
