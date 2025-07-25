@@ -366,7 +366,7 @@ class AckOnSurfaceActivationWhenInteractiveTest
   }
 
   int num_pending_frames(const CompositorFrameSinkSupport* support) const {
-    return support->pending_frames_.size();
+    return support->pending_frames_;
   }
 
   bool client_needs_begin_frame(

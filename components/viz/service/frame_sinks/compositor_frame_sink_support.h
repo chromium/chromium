@@ -362,16 +362,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // This has a HitTestAggregator if and only if |is_root_| is true.
   std::unique_ptr<HitTestAggregator> hit_test_aggregator_;
 
-  struct FrameData {
-    // True if this frame was submitted from viz itself. This happens during
-    // root surface eviction when an empty compositor frame is submitted to
-    // deref existing resources.
-    bool local_frame;
-  };
-
   // Keeps track of CompositorFrames that have been submitted and have not
   // yet received an ACK from their Surface.
-  base::circular_deque<FrameData> pending_frames_;
+  uint32_t pending_frames_ = 0u;
 
   std::vector<ReturnedResource> surface_returned_resources_;
 
