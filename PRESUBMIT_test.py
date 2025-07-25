@@ -1777,9 +1777,11 @@ class LogUsageTest(unittest.TestCase):
         # Util Log usage
         nb = len(msgs[3].items)
         self.assertEqual(
-            3, nb, 'Expected %d items, found %d: %s' % (3, nb, msgs[3].items))
+            5, nb, 'Expected %d items, found %d: %s' % (3, nb, msgs[3].items))
+        self.assertTrue('HasAndroidLog.java:1' in msgs[3].items)
         self.assertTrue('HasAndroidLog.java:3' in msgs[3].items)
         self.assertTrue('HasExplicitUtilLog.java:2' in msgs[3].items)
+        self.assertTrue('IsInBasePackageButImportsLog.java:2' in msgs[3].items)
         self.assertTrue('IsInBasePackageButImportsLog.java:4' in msgs[3].items)
 
         # Tag must not contain

@@ -4894,7 +4894,8 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
         else:
             # Report non cr Log function calls in changed lines
             for line_num, line in f.ChangedContents():
-                if log_call_pattern.search(line):
+                if (log_call_pattern.search(line)
+                        or has_some_log_import_pattern.search(line)):
                     util_log_errors.append("%s:%d" % (f.LocalPath(), line_num))
 
         # Per file checks
