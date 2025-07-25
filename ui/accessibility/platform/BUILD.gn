@@ -35,7 +35,7 @@ component("platform") {
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/ui/webui/accessibility",
     "//ui/accessibility",
-    "//ui/views:views",
+    "//ui/views",
   ]
 
   sources = [

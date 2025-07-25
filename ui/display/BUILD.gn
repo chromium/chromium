@@ -114,8 +114,8 @@ component("display") {
   public_deps = [
     ":display_features",
     "//ui/display/types",
+    "//ui/gfx",
     "//ui/gfx:color_space",
-    "//ui/gfx:gfx",
   ]
 
   deps = [
@@ -242,7 +242,7 @@ static_library("test_support") {
     deps += [
       "//remoting/host:display_layout",
       "//remoting/host/linux:x11_display_utils",
-      "//ui/gfx/x:x",
+      "//ui/gfx/x",
     ]
   }
 

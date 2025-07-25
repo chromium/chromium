@@ -576,7 +576,7 @@ component("views") {
     "//skia",
     "//third_party/icu",
     "//ui/accessibility",
-    "//ui/accessibility/platform:platform",
+    "//ui/accessibility/platform",
     "//ui/actions",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom",
@@ -614,7 +614,7 @@ component("views") {
     "//ui/base/emoji",
     "//ui/base/ime/init",
     "//ui/base/metadata",
-    "//ui/base/mojom:mojom",
+    "//ui/base/mojom",
     "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
     "//ui/display",
@@ -766,8 +766,8 @@ component("views") {
       "/DELAYLOAD:user32.dll",
     ]
     deps += [
-      "//components/stylus_handwriting/win:win",
-      "//services/tracing/public/cpp:cpp",
+      "//components/stylus_handwriting/win",
+      "//services/tracing/public/cpp",
       "//third_party/iaccessible2",
       "//third_party/wtl",
     ]
@@ -1146,7 +1146,7 @@ source_set("test_support") {
   public_deps = [
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base/mojom:mojom",
+    "//ui/base/mojom",
     "//ui/base/mojom:ui_base_types",
   ]
 
@@ -1374,7 +1374,7 @@ test("views_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
     "//ui/base/ime/init",
-    "//ui/base/mojom:mojom",
+    "//ui/base/mojom",
     "//ui/base/mojom:ui_base_types",
     "//ui/color",
     "//ui/color:mixers",
@@ -1412,7 +1412,7 @@ test("views_unittests") {
     ]
 
     deps += [
-      "//components/stylus_handwriting/win:win",
+      "//components/stylus_handwriting/win",
       "//ui/base:data_exchange",
     ]
 
@@ -1545,7 +1545,7 @@ test("views_unittests") {
           "widget/desktop_aura/desktop_window_tree_host_platform_unittest.cc",
         ]
         if (is_linux || is_chromeos) {
-          deps += [ "//ui/platform_window/stub:stub" ]
+          deps += [ "//ui/platform_window/stub" ]
         }
       }
       if (is_linux || is_chromeos) {
@@ -1626,7 +1626,7 @@ source_set("views_interactive_ui_tests") {
     "//ui/strings",
   ]
 
-  public_deps = [ "//ui/base/mojom:mojom" ]
+  public_deps = [ "//ui/base/mojom" ]
 
   if (is_win) {
     sources += [
@@ -1692,7 +1692,7 @@ test("views_perftests") {
     ":test_support",
     ":views",
     "//base/test:test_support",
-    "//cc/base:base",
+    "//cc/base",
     "//mojo/core/embedder",
     "//testing/perf",
     "//ui/resources:ui_test_pak",

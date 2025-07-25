@@ -57,7 +57,7 @@ source_set("x11") {
     "//net",
     "//skia",
     "//third_party/angle:includes",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
     "//ui/base:hit_test",
@@ -192,7 +192,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//ui/aura:aura",
+    "//ui/aura",
     "//ui/base/x",
     "//ui/base/x:test_support",
   ]

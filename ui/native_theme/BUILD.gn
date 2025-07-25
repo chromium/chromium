@@ -161,7 +161,7 @@ test("native_theme_unittests") {
     "//ui/base",
     "//ui/color",
     "//ui/gfx:test_support",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
 
   if (is_mac) {

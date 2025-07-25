@@ -20,8 +20,8 @@ source_set("metadata_headers") {
   ]
 
   public_deps = [
-    "//base:base",
-    "//skia:skia",
+    "//base",
+    "//skia",
     "//ui/base",
     "//ui/base/ime:text_input_types",
     "//ui/gfx",
@@ -40,7 +40,7 @@ component("metadata") {
 
   deps = [
     "//components/url_formatter",
-    "//skia:skia",
+    "//skia",
     "//ui/gfx:color_utils",
   ]
 
@@ -58,7 +58,7 @@ source_set("metadata_tests") {
   deps = [
     ":metadata",
     "//base/test:test_support",
-    "//skia:skia",
+    "//skia",
     "//testing/gtest",
     "//ui/gfx:color_utils",
     "//ui/gfx:test_support",

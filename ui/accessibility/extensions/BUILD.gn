@@ -23,9 +23,7 @@ group("extensions") {
 group("extension_tests") {
   testonly = true
   if (is_chromeos) {
-    deps = [
-      ":colorenhancer_tests",
-    ]
+    deps = [ ":colorenhancer_tests" ]
   }
 }
 
@@ -204,9 +202,9 @@ ts_modules = [
 
 group("highcontrast") {
   deps = [
-    ":copy_service_worker_bundle",
-    ":copy_popup_bundle",
     ":copy_highcontrast_bundle",
+    ":copy_popup_bundle",
+    ":copy_service_worker_bundle",
     ":highcontrast_assets",
     ":highcontrast_strings",
   ]
@@ -289,13 +287,13 @@ copy("copy_highcontrast_bundle") {
 
 copy("highcontrast_assets") {
   sources = [
-    "highcontrast/manifest.json",
-    "highcontrast/popup.html",
-    "highcontrast/popup.css",
+    "highcontrast/highcontrast-128.png",
     "highcontrast/highcontrast-16.png",
     "highcontrast/highcontrast-19.png",
     "highcontrast/highcontrast-48.png",
-    "highcontrast/highcontrast-128.png",
+    "highcontrast/manifest.json",
+    "highcontrast/popup.css",
+    "highcontrast/popup.html",
   ]
   outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }

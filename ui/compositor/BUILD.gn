@@ -205,7 +205,7 @@ static_library("test_support") {
 
   if (is_apple) {
     deps += [
-      "//gpu/ipc/service:service",
+      "//gpu/ipc/service",
       "//ui/accelerated_widget_mac",
     ]
   }

@@ -34,7 +34,7 @@ component("chromeos") {
     "//ui/chromeos/strings",
     "//ui/events",
     "//ui/events:gesture_detection",
-    "//ui/events/devices:devices",
+    "//ui/events/devices",
   ]
 }
 

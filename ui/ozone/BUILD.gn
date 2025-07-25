@@ -139,7 +139,7 @@ component("ozone_base") {
     "//ui/display/util",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
-    "//ui/events/devices:devices",
+    "//ui/events/devices",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",
@@ -287,7 +287,7 @@ source_set("test_support_internal") {
     "//ui/base",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
-    "//ui/platform_window:platform_window",
+    "//ui/platform_window",
   ]
 
   public_deps = [ "//base/test:test_support" ]

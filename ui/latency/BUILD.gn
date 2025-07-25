@@ -31,7 +31,7 @@ source_set("latency") {
   deps = [
     "//base",
     "//build:blink_buildflags",
-    "//services/tracing/public/cpp:cpp",
+    "//services/tracing/public/cpp",
     "//ui/gfx",
   ]
 

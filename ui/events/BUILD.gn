@@ -363,7 +363,7 @@ component("events") {
   # Used for the feature flag check. Should be deleted once the feature is
   # enabled by default.
   if (is_win) {
-    deps += [ "//components/stylus_handwriting/win:win" ]
+    deps += [ "//components/stylus_handwriting/win" ]
   }
 
   if (use_ozone) {

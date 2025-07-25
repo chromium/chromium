@@ -298,8 +298,8 @@ source_set("wayland") {
     "//ui/base/wayland:wayland_client_input_types",
     "//ui/base/wayland:wayland_display_util",
     "//ui/display",
+    "//ui/display/util",
     "//ui/display/util:gpu_info_util",
-    "//ui/display/util:util",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",
@@ -499,7 +499,7 @@ source_set("test_support") {
 
   deps = [
     ":wayland",
-    "//base:base",
+    "//base",
     "//ui/base/wayland:color_manager_util",
     "//ui/base/wayland:wayland_display_util",
     "//ui/ozone:platform",
@@ -527,7 +527,7 @@ source_set("test_support") {
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//third_party/wayland-protocols:xdg_toplevel_icon_protocol",
     "//ui/display:test_support",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
 }
 
@@ -633,7 +633,7 @@ fuzzer_test("wayland_buffer_fuzzer") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/system",
     "//ui/gfx:test_support",
-    "//ui/platform_window:platform_window",
+    "//ui/platform_window",
   ]
 }
 

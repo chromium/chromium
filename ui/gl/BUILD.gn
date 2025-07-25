@@ -224,7 +224,7 @@ component("gl") {
     deps += [
       "//ui/base:features",
       "//ui/base/x",
-      "//ui/events/platform/x11:x11",
+      "//ui/events/platform/x11",
       "//ui/gfx/linux:gpu_memory_buffer_support_x11",
     ]
 
@@ -292,7 +292,7 @@ component("gl") {
     ]
     deps += [
       "//ui/base",
-      "//ui/display:display",
+      "//ui/display",
       "//ui/gfx/mojom:dxgi_info",
     ]
 
@@ -561,7 +561,7 @@ test("gl_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/angle:includes",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",

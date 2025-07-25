@@ -25,7 +25,7 @@ component("emoji") {
     sources += [ "emoji_panel_helper.cc" ]
   }
 
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 
   if (is_win) {
     deps += [ "//ui/events:events_base" ]

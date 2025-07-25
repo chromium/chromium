@@ -48,8 +48,8 @@ component("ui_data_pack") {
     ":base",
     "//chromeos/crosapi/mojom",  # This target requires minimal dependencies.
     "//ios/chrome/tools/strings:generate_localizable_strings",
-    "//third_party/blink/renderer/core:core",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/platform",
     "//ui/gfx:*",
   ]
 
@@ -504,7 +504,7 @@ component("base") {
     "//third_party/brotli:dec",
     "//third_party/icu",
     "//third_party/modp_b64",
-    "//third_party/zlib:zlib",
+    "//third_party/zlib",
     "//third_party/zlib/google:compression_utils",
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
@@ -538,8 +538,8 @@ component("base") {
     deps += [
       ":l10n_util_ios",
       "//base",
+      "//ui/events",
       "//ui/events:dom_keycode_converter",
-      "//ui/events:events",
       "//ui/events:events_base",
     ]
   }
@@ -993,7 +993,7 @@ source_set("run_all_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//mojo/core/embedder:embedder",
+    "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
     "//ui/base",
@@ -1069,7 +1069,7 @@ test("ui_base_unittests") {
     "//ui/base/cursor:unittests",
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/metadata:metadata_tests",
-    "//ui/base/prediction:prediction",
+    "//ui/base/prediction",
     "//ui/color",
     "//ui/display",
     "//ui/gfx:test_support",
@@ -1390,7 +1390,7 @@ source_set("base_interactive_ui_tests") {
       ":test_support",
       "//base/test:test_support",
       "//testing/gtest",
-      "//ui/events:events",
+      "//ui/events",
     ]
   }
 }

@@ -255,7 +255,7 @@ source_set("drm_integration_tests") {
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//skia",
-    "//ui/display/types:types",
+    "//ui/display/types",
     "//ui/gfx/linux:gbm",
     "//ui/gfx/linux:test_support",
     "//ui/ozone:platform",
