@@ -2936,6 +2936,7 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+    @DisabledTest(message = "https://crbug.com/434253831")
     public void testAccessibilityNodeInfo_textFormatting() throws Throwable {
         // Build a simple web page with a variety of text formatting options.
         setupTestFromFile("content/test/data/android/accessibility_text_formatting_examples.html");

@@ -1267,6 +1267,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/434253831")
     public void test_fontSize() {
         performCssTest("font-size.html");
     }
@@ -2411,6 +2412,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/434253831")
     public void test_scrollableOverflow() {
         performHtmlTest("scrollable-overflow.html");
     }
