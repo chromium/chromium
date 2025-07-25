@@ -1852,6 +1852,10 @@ void Browser::PreHandleDragExit() {
   window()->PreHandleDragExit();
 }
 
+void Browser::HandleDragEnded() {
+  window()->HandleDragEnded();
+}
+
 content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
     content::WebContents* source,
     const NativeWebKeyboardEvent& event) {

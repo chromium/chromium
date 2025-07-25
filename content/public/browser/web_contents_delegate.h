@@ -314,6 +314,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void PreHandleDragUpdate(const DropData& drop_data,
                                    const gfx::PointF& client_pt) {}
   virtual void PreHandleDragExit() {}
+  virtual void HandleDragEnded() {}
 
   // Allows delegates to handle keyboard events before sending to the renderer.
   // See enum for description of return values.

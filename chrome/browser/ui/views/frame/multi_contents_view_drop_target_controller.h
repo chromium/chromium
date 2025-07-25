@@ -49,6 +49,7 @@ class MultiContentsViewDropTargetController final : public TabDragDelegate {
                                const gfx::PointF& point,
                                bool is_in_split_view);
   void OnWebContentsDragExit();
+  void OnWebContentsDragEnded();
 
  private:
   // Represents a timer for delaying when a specific drop target view is shown.
