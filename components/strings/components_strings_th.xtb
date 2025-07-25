@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">ติดตั้งเว็บแอปไหม</translation>
 <translation id="1791415068765905273">แสดงตารางเปรียบเทียบทั้งหมด</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
-<translation id="1793473605302304726">จ่ายแบบผ่อนชำระ</translation>
 <translation id="1793631236004319016">ใช้ล่าสุดเมื่อ <ph name="NUM_HOURS_MINUTES_SECONDS" />ที่ผ่านมา</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> มีการทำงานหลายอย่างที่ทำได้ กด Tab เพื่อวนดูการทำงานดังกล่าว</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@
 <translation id="3467081767799433066">เมื่อเปิดใช้การวัดผลโฆษณา ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> เปิดอยู่ กด Tab จากนั้นกด Enter เพื่อเปลี่ยนไปยังแท็บที่เปิดอยู่</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมดที่เปิดอยู่</translation>
+<translation id="3472469028191701821">เปิดในแท็บใหม่</translation>
 <translation id="3474392552865647225">ปุ่มปรับแต่งแบบอักษรใน Chrome เปิดใช้งานเพื่อปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
 <translation id="3478033058537426179">ตามกลุ่ม</translation>
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
@@ -2675,7 +2675,7 @@
 <translation id="5463625433003343978">กำลังค้นหาอุปกรณ์...</translation>
 <translation id="5464236009658034488">อุปกรณ์สำนักงาน</translation>
 <translation id="5465724643247062031">กระจก (ทึบแสง)</translation>
-<translation id="5466018172325111652">หากไม่ได้รับรหัส <ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
+<translation id="5466018172325111652">หากไม่ได้รับรหัส ให้<ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;ทำซ้ำการแก้ไข</translation>
 <translation id="5472588168895083535">การติดตามการเคลื่อนไหวของมือถูกบล็อก</translation>
 <translation id="5479505548832623900">ส่วนขยายอาจไม่สนใจ</translation>
@@ -2962,7 +2962,6 @@
 <translation id="5969199813874624822">บันทึกและติดตามราคา</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ม้วนกระดาษ 6</translation>
-<translation id="5974745851230707809">ตัวเลือกการจ่ายแบบผ่อนชำระ</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
 <translation id="5984570616552610254">ความชื้นของตู้</translation>
@@ -3409,7 +3408,7 @@
 <translation id="6695428916538794739">ภาพยนตร์แอ็กชันและการผจญภัย</translation>
 <translation id="6696424331653607346">คู่มือและสารคดีการท่องเที่ยว</translation>
 <translation id="6696575039575740785">ไม่อนุญาตให้ติดตั้งเว็บแอป</translation>
-<translation id="6698097747703777657">หากไม่ได้รับรหัส <ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
+<translation id="6698097747703777657">หากไม่ได้รับรหัส ให้<ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">สร้าง:</translation>
 <translation id="6698769547327354196">หากต้องการปิด Pix ใน Chrome ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่าการชำระเงิน<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">ตัวควบคุมเวลา</translation>
@@ -3608,7 +3607,6 @@
 <translation id="7042616127917168121">ปรับแต่งผลลัพธ์</translation>
 <translation id="7043552168914147882">แท็บสต็อก</translation>
 <translation id="7044081119134178347">อนุญาตให้ใช้กล้องในครั้งนี้</translation>
-<translation id="704738887031336226">แสดงตัวเลือก<ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />การจ่ายแบบผ่อนชำระ<ph name="PAY_OVER_TIME_HELP_LINK_END" />ที่จุดชำระเงิน</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์ได้แสดงใบรับรองที่มีระยะเวลาที่สามารถใช้ได้นานเกินกว่าที่จะเชื่อถือได้</translation>
 <translation id="7053983685419859001">บล็อก</translation>
@@ -4305,7 +4303,6 @@
 <translation id="8220602974062798186">บล็อก "<ph name="TOPIC" />" และหัวข้อที่เกี่ยวข้องใช่ไหม</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, ถาม <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">ดูแบบ 2 หน้า</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> ต้องการเข้าถึงอุปกรณ์ในเครือข่ายของคุณ</translation>
 <translation id="822925450938886901">หากต้องการดูข้อมูลเพิ่มเติมและนโยบายที่อาจใช้อยู่ ให้เปิด chrome://management ในเบราว์เซอร์</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> มม.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

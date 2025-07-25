@@ -3,7 +3,6 @@
 <translationbundle lang="fa">
 <translation id="1005023885865154304">باز کردن تنظیمات «تکمیل خودکار گذرواژه‌ها»</translation>
 <translation id="1005230401424685968">yyyy</translation>
-<translation id="1010225406377140704">برای درخواست پیوند جدید، با فرستنده تماس بگیرید</translation>
 <translation id="1013952917065545813">می‌توانید به اینجا برگردید و برگه‌هایی را که اخیراً بسته‌اید مجدداً باز کنید</translation>
 <translation id="1016495303386450659">مورد به‌روز شد</translation>
 <translation id="1019990162050689579">‏فعالیت برنامه Gemini</translation>
@@ -284,6 +283,7 @@
 <translation id="2067852168641682340">هر بار در این حساب ذخیره شود</translation>
 <translation id="2074119687904553223">{count,plural, =1{‫۱ برگه}one{‫{count} برگه}other{‫{count} برگه}}</translation>
 <translation id="2074131957428911366">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید.</translation>
+<translation id="2074599390896964828">مکان دقیق</translation>
 <translation id="2078437078822043850">برای مرور در «حالت ناشناس»، می‌توانید به راست پیمایش کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2085876078937250610">ذخیره کردن…</translation>
@@ -312,6 +312,7 @@
 <translation id="219283042927675668">برگه‌های موجود در گروه</translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
 <translation id="2196428379625389579">جستجو در وب</translation>
+<translation id="2198001751007276170">جایگزین کردن گذرواژه‌ها</translation>
 <translation id="2199562093267256223">با این کار، گروه از همه دستگاه‌های واردشده به سیستم <ph name="USER_EMAIL" /> حذف خواهد شد.</translation>
 <translation id="2202084845446535117">حساب ایمیلی وجود ندارد</translation>
 <translation id="2214453882118345682">آنچه را می‌بینید با دوربینتان بخرید، ترجمه کنید، و شناسایی کنید.</translation>
@@ -1221,6 +1222,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5813223718099710537">‏وقتی از این ویژگی استفاده می‌کنید، محتوای صفحه و نشانی‌های وب به Google ارسال می‌شوند. هرزمان خواستید می‌توانید آن را در تنظیمات خاموش کنید.</translation>
 <translation id="5817176759448082654">بازبینی گذرواژه</translation>
 <translation id="5819208479324046259">توسط <ph name="MANAGER" /> مدیریت می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">درحال همگام‌سازی…</translation>
 <translation id="583923961930319521">استفاده از گذرواژه‌ها در همه دستگاه‌هایتان</translation>
 <translation id="5844284118433003733">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
@@ -1605,6 +1607,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7300448350764260141">لایه محافظتی بیشتری دربرابر تهدیدهای آنلاین اضافه کنید.</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
 <translation id="7313347584264171202">برگه‌های ناشناس را اینجا خواهید دید</translation>
+<translation id="7334364820047587268">‏ازقبل گذرواژه‌هایی برای این حساب‌ها در «مدیر گذرواژه Google» خود دارید. اگر بخواهید یکی از گذرواژه‌های زیر را وارد کنید، آن گذرواژه جایگزین گذرواژه موجود می‌شود.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> درصد بارگیری شد</translation>
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
@@ -1821,6 +1824,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8101409298456377967">گذرواژه‌هایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">ج</translation>
 <translation id="8105368624971345109">خاموش کردن</translation>
+<translation id="8106442513853561174">هم‌رسانی مکان دقیق</translation>
 <translation id="8114753159095730575">بارگیری فایل دردسترس است. گزینه‌ها نزدیک انتهای صفحه دردسترس است.</translation>
 <translation id="8123502380991596210">پنهان کردن «ویژگی‌های جدید»</translation>
 <translation id="8123953306357309250">همگام‌سازی لغو شود؟ هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات روشن کنید.</translation>
@@ -1974,7 +1978,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8694281486652655615">این مورد را نشان می‌دهد</translation>
 <translation id="8696297579102085705">ارسال کردن به دستگاه شما</translation>
 <translation id="8697136149718343437">انتقال نوار نشانی به پایین صفحه</translation>
-<translation id="8703372953981978786">این پیوند کار نمی‌کند</translation>
 <translation id="8706253136355675497">دما</translation>
 <translation id="8706806585855470492">امکان هم‌رسانی، پیوستن، و مشارکت در گروه‌های برگه را خواهید داشت</translation>
 <translation id="8709409604518538305">برگه‌ها بسته شد</translation>

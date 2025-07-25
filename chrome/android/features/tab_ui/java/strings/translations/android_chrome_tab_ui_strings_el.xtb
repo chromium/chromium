@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Άνοιγμα της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TAB_COUNT2" /> καρτέλα}other{Άνοιγμα της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TAB_COUNT2" /> καρτέλες}}</translation>
 <translation id="1273910660700874265">Επιλογές ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Επιλέξτε πότε οι καρτέλες και οι ομάδες καρτελών μετακινούνται αυτόματα στην ενότητα ανενεργών.</translation>
+<translation id="1321004960118052490">Τα ανενεργά στοιχεία δεν θα συσσωρευτούν</translation>
 <translation id="1329584516321524826">Ενημερώθηκε μόλις τώρα</translation>
 <translation id="1340839264183302272">Αποχώρηση από την ομάδα</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" /> και με ετικέτα <ph name="CARD_LABEL" />.}other{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" /> και με ετικέτα <ph name="CARD_LABEL" />.}}</translation>
@@ -111,6 +112,7 @@
 <translation id="5073204694187207510">Απόκρυψη πλέγματος πλήρους οθόνης</translation>
 <translation id="5076161749301278626">Εμφάνιση αξιολογήσεων καταστήματος;</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_ONE" /> μήνα. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}other{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_MANY" /> μήνες. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}}</translation>
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>
 <translation id="5380159289133845234">Αρχειοθέτηση διπλότυπων καρτελών</translation>
 <translation id="5400836586163650660">Γκρι</translation>

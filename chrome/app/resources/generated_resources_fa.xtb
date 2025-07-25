@@ -2924,6 +2924,7 @@
 <translation id="3003967365858406397">‏<ph name="PHONE_NAME" /> شما اتصال Wi-Fi خصوصی ایجاد خواهد کرد.</translation>
 <translation id="3004385386820284928">سفارشی‌سازی کلیدهای صفحه‌کلید</translation>
 <translation id="3006881078666935414">هیچ داده مصرفی وجود ندارد</translation>
+<translation id="3007555010975143508">از این برنامه‌ها برای ضبط کردن محتوای صفحه شما استفاده خواهد شد:</translation>
 <translation id="3007771295016901659">کپی کردن برگه</translation>
 <translation id="3008142279736625920">کیک پنیر</translation>
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
@@ -4390,6 +4391,7 @@
 <translation id="4016762287427926315">اجازه‌هایی که به <ph name="APP_NAME" /> می‌دهید به این برنامه نیز داده خواهد شد. <ph name="BEGIN_LINK" />مدیریت<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">ایجاد رمزینه پاسخ‌سریع برای این پیوند</translation>
 <translation id="4019983356493507433">ویرایش فهرست نشانک</translation>
+<translation id="4020701737692625681">سرپرست شما می‌تواند محتوای صفحه‌تان را ضبط کند</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">می‌توانید از پریدن مکان‌نما برای حرکت‌های جزئی سر جلوگیری کنید، اما تأخیر کوتاهی به‌وجود خواهد آمد.</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5291,7 +5293,6 @@
 <translation id="4676616966096505747">برخی‌از داده‌ها هنوز در حساب شما ذخیره نشده است</translation>
 <translation id="4677772697204437347">‏حافظه GPU</translation>
 <translation id="467809019005607715">‏اسلایدنگار Google</translation>
-<translation id="4678729681411398877">‏وقتی یکی از گذرواژه‌هایتان در یک سرقت اطلاعات شبکه پیدا شود، «مدیر گذرواژه Google» می‌پرسد آیا مایلید آن را به یک گذرواژه قوی تغییر دهید.</translation>
 <translation id="4678848110205818817">کارت اعتباری/نقدی</translation>
 <translation id="4679018849559620189">این کار به شما کمک می‌کند به گذرکلیدهای ذخیره‌شده‌تان در هر دستگاهی دسترسی پیدا کنید</translation>
 <translation id="4680105648806843642">این صفحه بی‌صدا شده است</translation>
@@ -6070,6 +6071,7 @@
 <translation id="5235050375939235066">برنامه حذف نصب شود؟</translation>
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
 <translation id="5235750401727657667">جایگزین کردن صفحه‌ای که هنگام باز کردن برگه جدید می‌بینید</translation>
+<translation id="5236054983756407518">‏نشانی خانه‌تان از Chrome برداشته شود؟</translation>
 <translation id="5237124927415201087">‏به‌راحتی <ph name="DEVICE_TYPE" /> را با تلفنتان راه‌اندازی کنید. می‌توانید Wi-Fi و «حساب Google» را بدون وارد کردن دستی گذرواژه‌ها اضافه کنید.
     <ph name="BR" />
     <ph name="BR" />
@@ -6856,6 +6858,7 @@
 <translation id="581659025233126501">روشن کردن همگام‌سازی</translation>
 <translation id="5817918615728894473">مرتبط‌سازی</translation>
 <translation id="5817963443108180228"><ph name="PROFILE_NAME" />، دوباره خوش آمدید</translation>
+<translation id="5818161931099046557">‏ویرایش در «حساب Google»</translation>
 <translation id="581911254119283028">همه برنامه‌ها</translation>
 <translation id="5821565227679781414">ایجاد میان‌بر</translation>
 <translation id="5824976764713185207">خواندن صفحه به‌طور خودکار بعد از اتمام بارگیری</translation>
@@ -7055,6 +7058,7 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">وب‌سایتی می‌خواهد این برنامه را باز کند.</translation>
 <translation id="5955809630138889698">این دستگاه ممکن است فقط برای حالت نمایشی آنلاین واجد شرایط باشد. برای جزئیات بیشتر، لطفاً با نماینده پشتیبانی‌تان تماس بگیرید.</translation>
+<translation id="59561895884837262">هروقت ضبط شروع شود، به شما اطلاع داده خواهد شد.</translation>
 <translation id="5957987129450536192">در کنار تصویر نمایه‌تان روی نماد «انتخاب برای شنیدن» تک‌ضرب بزنید، سپس آنچه را می‌خواهید بشنوید انتخاب کنید.</translation>
 <translation id="5958836583172610505">همگام‌سازی روشن است</translation>
 <translation id="5959471481388474538">شبکه در دسترس نیست</translation>
@@ -7199,6 +7203,7 @@
 <translation id="606449270532897041">مدیریت داده‌های سایت</translation>
 <translation id="6064764629679333574">بهبود کیفیت صدای میکروفون بلوتوث با ارتقای صدای با وضوح پایین به صدای با وضوح بالا.</translation>
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
+<translation id="6065690209261668796">‏نشانی محل کارتان از Chrome برداشته شود؟</translation>
 <translation id="6066794465984119824">درهم‌سازی تصویر تنظیم نشده است</translation>
 <translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>
 <translation id="6071181508177083058">تأیید گذرواژه</translation>
@@ -8029,7 +8034,6 @@
 <translation id="6667187897999649121">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />گروه خانواده‌ای با حداکثر ۶ عضو ایجاد کنید<ph name="END_LINK" /> و بهره بیشتری از محصولات و اشتراک‌ها در Google ببرید.</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">با داده‌ها و سایتی که درحال مشاهده هستید یکسان رفتار می‌شود</translation>
-<translation id="6669637573228217624">بارگذاری فایل</translation>
 <translation id="6670142487971298264">‫<ph name="APP_NAME" /> اکنون دردسترس است</translation>
 <translation id="6670767097276846646">‏بعضی‌از افزونه‌ها می‌توانند موتور جستجو به Chrome اضافه کنند</translation>
 <translation id="6670983860904543332">با به‌روزرسانی‌های خودکار می‌توانید جدیدترین ویژگی‌ها را داشته باشید. ویژگی‌های برجسته مربوط به‌روزرسانی‌های اخیر را کاوش کنید.</translation>
@@ -8286,6 +8290,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{برگه برداشته و گروه حذف شود؟}=1{برگه برداشته و گروه حذف شود؟}one{برگه برداشته و گروه حذف شود؟}other{برگه‌ها برداشته و گروه‌ها حذف شود؟}}</translation>
 <translation id="6833479554815567477">برگه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">متعادل (توصیه می‌شود)</translation>
+<translation id="6835624277262316125">‏نشانی محل کار می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید در <ph name="BEGIN_LINK" />«حساب Google» خود (<ph name="USERNAME" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
 <translation id="6838992358006915573">‏ذره‌بین تمرکز ChromeVox را دنبال کند</translation>
 <translation id="6839916869147598086">ورود به سیستم تغییر کرده است</translation>
@@ -8419,6 +8424,7 @@
 <translation id="6929126689972602640">‏حساب‌های محل تحصیل از «کنترل‌های والدین» پشتیبانی نمی‌کنند. برای افزودن حساب محل تحصیل جهت دسترسی به Google Classroom و وب‌سایت‌های دیگر به‌منظور انجام تکالیف مدرسه در خانه، ابتدا با حساب شخصی فرزند به سیستم وارد شوید. می‌توانید حساب محل تحصیل را بعداً در راه‌اندازی اضافه کنید.</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{یک افزونه رد شد}one{# افزونه رد شد}other{# افزونه رد شد}}</translation>
+<translation id="6930337524857202955">بارگیری جدید دردسترس است</translation>
 <translation id="6931539787433490713">‫<ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">قدرت کلیک</translation>
 <translation id="6933321725007230600">درحال روشن کردن همگام‌سازی…</translation>
@@ -9300,7 +9306,6 @@
 <translation id="7568759527730933493">‏برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمن استفاده می‌شود. این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند. برای برخی‌از دامنه‌هایی که سرپرستتان پیکربندی کرده است، از اتصال ایمن استفاده نمی‌شود.</translation>
 <translation id="756876171895853918">سفارشی کردن چهرک</translation>
 <translation id="7568790562536448087">در حال به‌روزرسانی</translation>
-<translation id="7569113730576914983">‏وقتی Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه پیدا کند، می‌تواند هنگام وارد شدن به سیستم به شما پیشنهاد دهد آن را تغییر دهید</translation>
 <translation id="7569983096843329377">سیاه</translation>
 <translation id="7570548610653957960">کمک گرفتن در خواندن</translation>
 <translation id="7571643774869182231">فضای ذخیره‌سازی برای به‌روزرسانی کافی نیست</translation>
@@ -9631,6 +9636,7 @@
 <translation id="7788298548579301890">‏برنامه دیگری در رایانه شما برنامه‌ای اضافه کرده که ممکن است نحوه کارکرد Chrome را تغییر دهد.
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">‏نشانی خانه می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید در <ph name="BEGIN_LINK" />«حساب Google» خود (<ph name="USERNAME" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
 <translation id="7791269138074599214">روش ورودی</translation>
 <translation id="7791429245559955092">‏این برنامه در نمایه Chrome که اکنون استفاده می‌کنید نصب خواهد شد</translation>
 <translation id="7791436592012979144">پیمایش معکوس فعال است</translation>

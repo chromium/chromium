@@ -3,7 +3,6 @@
 <translationbundle lang="ja">
 <translation id="1005023885865154304">[パスワードの自動入力] 設定を開く</translation>
 <translation id="1005230401424685968">YYYY</translation>
-<translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
 <translation id="1019990162050689579">Gemini アプリ アクティビティ</translation>
@@ -284,6 +283,7 @@
 <translation id="2067852168641682340">毎回このアカウントに保存</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 個のタブ}other{{count} 個のタブ}}</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
+<translation id="2074599390896964828">正確な位置情報</translation>
 <translation id="2078437078822043850">右にスクロールすると、シークレット モードでブラウジングできます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2085876078937250610">保存…</translation>
@@ -312,6 +312,7 @@
 <translation id="219283042927675668">グループ内のタブ</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2196428379625389579">ウェブで検索</translation>
+<translation id="2198001751007276170">パスワードを置き換える</translation>
 <translation id="2199562093267256223"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します。</translation>
 <translation id="2202084845446535117">メール アカウントがありません</translation>
 <translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
@@ -432,7 +433,7 @@
 <translation id="2658056020748144467">ファイルを開けません</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />、<ph name="STATE" />、このデバイスのみ、<ph name="URL" /></translation>
 <translation id="2664621323652615289">停止</translation>
-<translation id="2666092431469916601">一番上</translation>
+<translation id="2666092431469916601">上部</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2671423594960767771">グループを共有</translation>
 <translation id="2673508731173059946">コピーしたリンクにアクセス</translation>
@@ -534,7 +535,7 @@
 検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="3080525922482950719">ページを保存して、後で読んだり、オフラインで読んだりできます</translation>
 <translation id="3081338492074632642">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
-<translation id="3087734570205094154">下</translation>
+<translation id="3087734570205094154">下部</translation>
 <translation id="309710370695886264">使い回しのパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
 <translation id="3102790820790869053">最近使ったタブを検索</translation>
 <translation id="3106258548858559536">リーディング モードをオフにする</translation>
@@ -1221,6 +1222,7 @@
 <translation id="5813223718099710537">この機能を使用すると、ページ　コンテンツと URL が Google に送信されます。この動作は設定でいつでもオフにできます。</translation>
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">同期しています…</translation>
 <translation id="583923961930319521">すべてのデバイスでパスワードを使用する</translation>
 <translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
@@ -1605,6 +1607,7 @@
 <translation id="7300448350764260141">オンラインの脅威に対する保護を強化しましょう。</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7313347584264171202">シークレット タブはここに表示されます</translation>
+<translation id="7334364820047587268">これらのアカウントのパスワードはすでに Google パスワード マネージャーに保存されています。下記のパスワードをインポートすると、既存のパスワードが置き換えられます。</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />%ダウンロード</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
@@ -1821,6 +1824,7 @@
 <translation id="8101409298456377967">パスワードを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
 <translation id="8105368624971345109">オフにする</translation>
+<translation id="8106442513853561174">正確な位置情報を共有する</translation>
 <translation id="8114753159095730575">ファイルのダウンロードが利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="8123502380991596210">最新情報を非表示</translation>
 <translation id="8123953306357309250">同期をキャンセルしますか？同期は設定でいつでもオンにできます。</translation>
@@ -1974,7 +1978,6 @@
 <translation id="8694281486652655615">このアイテムを表示</translation>
 <translation id="8696297579102085705">お使いのデバイスに送信</translation>
 <translation id="8697136149718343437">アドレスバーを一番下に移動</translation>
-<translation id="8703372953981978786">このリンクは機能していません</translation>
 <translation id="8706253136355675497">温度</translation>
 <translation id="8706806585855470492">タブグループの共有、参加、共同作業を行うことができます</translation>
 <translation id="8709409604518538305">タブを閉じました</translation>

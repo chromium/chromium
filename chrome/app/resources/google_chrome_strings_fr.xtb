@@ -173,6 +173,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3037838751736561277">Google Chrome est exécuté en mode arrière-plan.</translation>
 <translation id="3038232873781883849">En attente d'installation...</translation>
 <translation id="3045032126857188731">Langue de traduction : <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Fermer la boîte de dialogue des commentaires</translation>
 <translation id="306179102415443347">Utilisez le raccourci pour accéder rapidement au Gestionnaire de mots de passe de Google. Vous pouvez déplacer ce raccourci vers le Lanceur d'applications ou l'écran d'accueil de votre ordinateur.</translation>
 <translation id="3065168410429928842">Onglet Chrome</translation>
 <translation id="3080151273017101988">Poursuivre l'exécution d'applications en arrière-plan après la fermeture de Google Chrome</translation>
@@ -329,7 +330,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliquez sur "Gestionnaire de mots de passe de Google"</translation>
 <translation id="504867494566807945">Ouvrez les liens dans Chrome depuis n'importe quelle appli. Chrome est épinglé à la barre des tâches pour un accès plus simple.</translation>
-<translation id="5049567194145991071">Lorsque vous cliquez sur "OK", vous pouvez enregistrer et utiliser des mots de passe et d'autres éléments de votre compte Google chaque fois que vous êtes connecté à Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chrome dans votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Se connecter à Chrome lorsque vous vous connectez aux autres services Google</translation>
 <translation id="5126049312684316860">Chrome précharge davantage de pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
@@ -553,7 +553,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7801699035218095297">Google Chrome tente de copier les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="7808348361785373670">Supprimer de Chrome</translation>
 <translation id="7825851276765848807">Échec de l'installation en raison d'erreurs non spécifiées. Veuillez télécharger Google Chrome à nouveau.</translation>
-<translation id="7826342993930002256">Votre Chrome, où que vous soyez</translation>
 <translation id="7827099906024714326">Chrome doit valider votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="7845233973568007926">Merci d'avoir installé notre produit. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Téléchargement… <ph name="SECONDS" /> seconde(s) restante(s)</translation>

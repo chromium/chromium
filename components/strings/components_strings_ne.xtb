@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Chrome मा Dino Run गेम खेल्न चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="1060136083665017312">गेम सिस्टम तथआ कन्सोलहरू</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
+<translation id="1060985736456216896">Google Pay, Zip को लोगो</translation>
 <translation id="1062407476771304334">बदल्नुहोस्</translation>
 <translation id="1063822554756965137">फाइलहरू मेटाइएका छन्</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@
 <translation id="1209206284964581585">अहिलेका लागि लुकाउनुहोस्</translation>
 <translation id="121201262018556460">तपाईंले <ph name="DOMAIN" /> मा पुग्ने प्रयत्न गर्नुभयो, तर सर्भरले एउटा कमजोर कुञ्जी भएको प्रमाणपत्र प्रस्तुत गर्‍यो। कुनै आक्रमणकारीले निजी कुञ्जीलाई तोडेको हुन सक्छ, र त्यो सर्भर तपाईंले अपेक्षा गर्नुभएको सर्भर नहुन सक्छ (तपाईं एउटा आक्रमणकारीसँग सञ्चारण गरिरहनुभएको हुन सक्छ)।</translation>
 <translation id="1212527389003717329">डाउनलोड सुरु भयो। डाउनलोडको स्थिति हेर्न |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्।</translation>
+<translation id="1215738931000958575">पासवर्ड, पासकी, ठेगाना, भुक्तानी विधि र अन्य जानकारी अटोफिल गर्न आफ्नो Google खातामा सेभ गरिएको जानकारी प्रयोग गर्नुहोस्</translation>
 <translation id="1219129156119358924">प्रणाली सुरक्षा</translation>
 <translation id="1222060260947439312">दायाँ ट्रे</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -476,7 +478,6 @@
 <translation id="1785118555253503473">वेब एपहरू इन्स्टल गर्ने हो?</translation>
 <translation id="1791415068765905273">तुलनात्मक जानकारी भएका सबै तालिकाहरू देखाउनुहोस्</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खातामा गई तपाईंको जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
-<translation id="1793473605302304726">समयक्रमसँगै भुक्तानी गर्नुहोस्</translation>
 <translation id="1793631236004319016">पछिल्लो पटक <ph name="NUM_HOURS_MINUTES_SECONDS" /> अघि प्रयोग गरिएको</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकभन्दा बढी कार्य गर्न सकिन्छ, एक एक गरी प्रत्येक कार्य गर्न Tab थिच्नुहोस्</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1469,6 +1470,7 @@
 <translation id="3467081767799433066">"विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा" अन गरिएका खण्डमा साइटहरूका विज्ञापनहरूको पर्फर्मेन्स मापन गर्ने प्रयोजनका लागि साइटहरूका बिचमा तपाईंले कुनै साइट खोलेपछि सामग्री खरिद गर्नुभयो कि गर्नुभएन भन्नेलगायतका सीमित प्रकारका जानकारी सेयर गरिन्छ।</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, हाल खुला रहेको, खुला रहेको ट्याबमा जान Tab र त्यसपछि Enter थिच्नुहोस्</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं हाल खोलिएका सबै इन्कोग्निटो विन्डो बन्द गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="3472469028191701821">नयाँ ट्याबमा खुल्छ</translation>
 <translation id="3474392552865647225">Chrome मा फन्टहरू कस्टमाइज गर्ने बटन, Chrome मा फन्टका आकार तथा टाइपफेसहरू कस्टमाइज गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="3478033058537426179">समूहअनुसार</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
@@ -1536,6 +1538,7 @@
 <translation id="3576616784287504635"><ph name="SITE" /> मा इम्बेड गरिएको पृष्ठले यसो भन्छ</translation>
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3577902790357386792">जिम्नास्टिक्स</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">यो पृष्ठ तयार भएपछि Chrome ले तपाईंलाई यसबारे सूचित गर्ने छ। &lt;a&gt;रद्द गर्नुहोस्&lt;/a&gt;</translation>
 <translation id="3582930987043644930">नाम थप्नुहोस्</translation>
 <translation id="3583757800736429874">&amp;रिडु सार्ने</translation>
@@ -1784,6 +1787,7 @@
 <translation id="398470910934384994">चराहरू</translation>
 <translation id="3985750352229496475">ठेगानाहरू व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="3986506998755860149">सेटिङमा गई AI मा आधारित अटोफिल सुविधाका बारेमा थप जान्नुहोस्</translation>
+<translation id="3986557181852957825">Google Pay, Klarna को लोगो</translation>
 <translation id="3986705137476756801">अहिलेका लागि लाइभ क्याप्सन अफ गर्नुहोस्</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">१ एम.बि. भन्दा कम</translation>
@@ -1858,6 +1862,7 @@
 <translation id="4104702906064390950">IBAN सम्बन्धी जानकारी सेभ गरिँदै छ</translation>
 <translation id="4106887816571530227">इम्बेड गरिएको सामग्री प्रयोग गर्न पाइँदैन</translation>
 <translation id="4107047499377819067">VPN का ब्याकग्राउन्डमा चल्ने सेवाहरू इन्स्टल गर्न थालिएको छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
+<translation id="4110642094637545339">Google Pay, AfterPay को लोगो</translation>
 <translation id="4110652170750985508">आफ्नो भुक्तानीको समीक्षा गर्नुहोस्</translation>
 <translation id="4111546256784973544">पेन्टबल</translation>
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
@@ -2276,6 +2281,7 @@
 <translation id="4807098396393229769">कार्डमा रहेको नाम</translation>
 <translation id="4809079943450490359">तपाईंको डिभाइसको एड्मिनबाट प्राप्त भएका निर्देशनहरू:</translation>
 <translation id="4811450222531576619">यो पेजको स्रोत र विषयका बारेमा जान्नुहोस्</translation>
+<translation id="4811918461974803225">Google Pay, Affirm को लोगो</translation>
 <translation id="4813512666221746211">सञ्जाल त्रुटि</translation>
 <translation id="4814114628197290459">IBAN मेटाउनुहोस्</translation>
 <translation id="4816341377198595747">"बुकमार्कहरू खोज्नुहोस्" बटन, बुकमार्कहरू खोज्न यो बटन एक्टिभेट गर्नुहोस्</translation>
@@ -2525,6 +2531,7 @@
 <translation id="5222812217790122047">इमेल आवश्यक छ</translation>
 <translation id="5225215474235602477">राहदानीसम्बन्धी जानकारी सेभ गर्ने हो?</translation>
 <translation id="5228269245420405804">दूर शिक्षा</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />। <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">ढुवानीको ठेगाना</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2954,7 +2961,6 @@
 <translation id="5969199813874624822">मूल्य सेभ गरी ट्र्याक गर्नुहोस्</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">छैठौँ रोल</translation>
-<translation id="5974745851230707809">समयसँगै भुक्तानी गर्ने विकल्पहरू</translation>
 <translation id="5975083100439434680">जुम आउट</translation>
 <translation id="5979084224081478209">पासवर्डहरूको जाँच गर्नुहोस्</translation>
 <translation id="5984570616552610254">कक्षको आर्द्रता</translation>
@@ -3292,6 +3298,7 @@
 <translation id="6493924760403974580">यो एप यो आकारमा मात्र चल्छ।</translation>
 <translation id="6494750904506170417">पप-अप तथा रिडिरेक्टहरू</translation>
 <translation id="6495664197699704593">यो पासवर्ड यस डिभाइसमा मात्र सेभ गरिएको छ। यो पासवर्ड अन्य डिभाइसहरूमा प्रयोग गर्न <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
+<translation id="649611364763911650">Chrome मा अर्कै अटोफिल सेवा प्रयोग गर्न Android का सेटिङमा गई आफ्नो अटोफिल प्रदायक छनौट गर्नुहोस्</translation>
 <translation id="6499038740797743453">पासवर्ड रिसेट गर्ने हो?</translation>
 <translation id="6502510275417601303">भुक्तानीसम्बन्धी नयाँ सेटिङ मिलाउने अलर्ट बन्द गरिएको छ</translation>
 <translation id="6502991525169604759">तपाईंले गर्नुभएका परिवर्तन लागू नगरी</translation>
@@ -3599,7 +3606,6 @@
 <translation id="7042616127917168121">परिणाम परिष्कृत गर्नुहोस्</translation>
 <translation id="7043552168914147882">ट्याब स्टक</translation>
 <translation id="7044081119134178347">अहिले क्यामेरा प्रयोग गर्ने अनुमति दिइएको छ</translation>
-<translation id="704738887031336226">चेकआउट गर्दा <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />समयक्रमसँगै भुक्तानी गर्ने<ph name="PAY_OVER_TIME_HELP_LINK_END" /> विकल्पहरू देखाउनुहोस्</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">तपाईं <ph name="DOMAIN" /> मा पुग्न प्रयास गर्नुभयो, तर सर्भरले एउटा प्रमाणपत्र प्रस्तुत गर्दछ जसको वैधानिकता अवधि भरोसा योग्य हुन निकै लामो छ।</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
@@ -4295,7 +4301,6 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> र यससँग सम्बन्धित विषयहरू ब्लक गर्ने हो?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> लाई सोध्नुहोस्</translation>
 <translation id="8228419419708659934">दुई पृष्ठमा देखाइने दृश्य</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> तपाईंको नेटवर्कमा रहेको डिभाइस प्रयोग गर्न चाहन्छ:</translation>
 <translation id="822925450938886901">अतिरिक्त जानकारी तथा लागू हुन सक्ने नीतिहरू हेर्न आफ्नो ब्राउजरमा chrome://management खोल्नुहोस्।</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> मिलिमिटर</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

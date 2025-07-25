@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Apri <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> scheda}other{Apri <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> schede}}</translation>
 <translation id="1273910660700874265">Opzioni del gruppo di schede <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Scegli quando spostare automaticamente schede e gruppi di schede nella sezione Inattivi.</translation>
+<translation id="1321004960118052490">Gli elementi non attivi non si accumuleranno</translation>
 <translation id="1329584516321524826">Aggiornata adesso</translation>
 <translation id="1340839264183302272">Lascia il gruppo</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}}</translation>
@@ -107,9 +108,11 @@
 <translation id="492284538114688557">Prezzo in calo rilevato</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}other{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Visualizza</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Sposta scheda in una nuova finestra}other{Sposta schede in un'altra finestra}}</translation>
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome chiude automaticamente le schede e i gruppi di schede inattivi dopo <ph name="AUTO_DELETE_DELAY_ONE" /> mese. Puoi modificare questa opzione nelle Impostazioni.}other{Chrome chiude automaticamente le schede e i gruppi di schede inattivi dopo <ph name="AUTO_DELETE_DELAY_MANY" /> mesi. Puoi modificare questa opzione nelle Impostazioni.}}</translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5380159289133845234">Archivia le schede duplicate</translation>
 <translation id="5400836586163650660">Grigio</translation>

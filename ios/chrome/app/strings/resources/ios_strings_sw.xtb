@@ -3,7 +3,6 @@
 <translationbundle lang="sw">
 <translation id="1005023885865154304">Fungua mipangilio ya Kujaza Manenosiri Kiotomatiki</translation>
 <translation id="1005230401424685968">YYYY</translation>
-<translation id="1010225406377140704">Wasiliana na aliyekituma akupe kiungo kipya</translation>
 <translation id="1013952917065545813">Unaweza kurudi hapa ili ufungue tena vichupo ambavyo ulifunga hivi majuzi</translation>
 <translation id="1016495303386450659">Umesasisha kipengee</translation>
 <translation id="1019990162050689579">Shughuli kwenye Programu ya Gemini</translation>
@@ -1223,6 +1222,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5813223718099710537">Unapotumia kipengele hiki, URL na maudhui ya kurasa hutumwa kwa Google. Unaweza kuzima kipengele hiki katika mipangilio wakati wowote.</translation>
 <translation id="5817176759448082654">Kikagua Manenosiri</translation>
 <translation id="5819208479324046259">Inadhibitiwa na <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Inasawazisha…</translation>
 <translation id="583923961930319521">Kutumia manenosiri kwenye vifaa vyako vyote</translation>
 <translation id="5844284118433003733">Unapoingia katika akaunti, data hii huunganishwa kwenye Akaunti yako ya Google ili kukulinda kwenye huduma zote za Google, kwa mfano kuongeza ulinzi katika Gmail baada ya tukio lililotishia usalama.</translation>
@@ -1978,7 +1978,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8694281486652655615">Huonyesha kipengee hiki</translation>
 <translation id="8696297579102085705">Tuma kwenye kifaa chako</translation>
 <translation id="8697136149718343437">Sogeza sehemu ya anwani kwenda chini</translation>
-<translation id="8703372953981978786">Kiungo hiki hakifanyi kazi</translation>
 <translation id="8706253136355675497">Halijoto</translation>
 <translation id="8706806585855470492">Utaweza kuruhusu ufikiaji, kujiunga na kushirikiana katika vikundi vya vichupo</translation>
 <translation id="8709409604518538305">Vichupo vilifungwa</translation>

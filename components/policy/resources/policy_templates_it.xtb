@@ -878,6 +878,33 @@ Se la policy viene impostata su Enabled, verrà visualizzata l'opzione di attiva
 Se la policy non viene configurata o se viene impostata su Disabled, l'opzione di attivazione/disattivazione verrà nascosta.
 
 Nota: questa policy influirà solo sull'interfaccia utente e ChromeOS manterrà le impostazioni esistenti quando l'interfaccia è nascosta.</translation>
+<translation id="1579027593897822029">Elenco di azioni da eseguire quando viene raggiunto il timeout della policy <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+Avviso: l'impostazione di questa policy può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
+
+Se la policy <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurata, questa policy non ha alcun effetto.
+
+Quando viene raggiunto il timeout della policy <ph name="IDLE_TIMEOUT_POLICY_NAME" />, il browser esegue le azioni configurate in questa policy.
+
+Se questa policy è vuota o se non viene configurata, la policy <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
+
+Le azioni supportate sono:
+
+"<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo. Azione non supportata su Android e iOS.
+
+"<ph name="CLOSE_TABS_ACTION" />": vengono chiuse tutte le schede nelle finestre aperte. Azione supportata solo su iOS.
+
+"<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo. Azione non supportata su Android e iOS.
+
+"<ph name="SIGN_OUT_ACTION" />": l'utente che ha attualmente eseguito l'accesso viene disconnesso. Azione supportata solo su iOS.
+
+"<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi la policy <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. I tipi di azione supportati su iOS sono: "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />" e "<ph name="CLEAR_AUTOFILL_ACTION" />"
+
+"<ph name="RELOAD_PAGES_ACTION" />": vengono ricaricate tutte le pagine web. Per alcune pagine, all'utente potrebbe essere chiesto di confermare prima. Azione non supportata su iOS.
+
+L'utente manterrà l'accesso al proprio Account Google quando elimina i cookie utilizzando "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />".
+
+La configurazione delle azioni "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" comporta la disattivazione della sincronizzazione per i rispettivi tipi di dati se la policy "<ph name="CHROME_SYNC_NAME" />" non viene disattivata impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> né la policy <ph name="BROWSER_SIGNIN_POLICY_NAME" /> viene disattivata.</translation>
 <translation id="1583248206450240930">Utilizza <ph name="PRODUCT_FRAME_NAME" /> per impostazione predefinita</translation>
 <translation id="1587585749332985896">Non è consentito l'uso della modalità headless</translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
@@ -1108,7 +1135,6 @@ policy era la versione 121. È stata rimossa nella versione 122.</translation>
 
       Nota: questa impostazione sostituirà <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se presente.</translation>
 <translation id="172374442286684480">Consenti a tutti i siti di impostare i dati locali</translation>
-<translation id="1725541103767528536">Consenti la compilazione automatica con l'AI senza migliorare i modelli di AI.</translation>
 <translation id="1729169799290004131">La configurazione della policy consente di specificare la percentuale di luminosità dello schermo, che comporta la disattivazione delle funzionalità di luminosità automatica. Il valore iniziale di luminosità dello schermo viene regolato il base al valore della policy, ma gli utenti possono modificarlo.
 
       Se la policy non viene configurata, i controlli o le funzionalità di luminosità automatica dello schermo dell'utente rimangono invariati.
@@ -1747,7 +1773,6 @@ Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 Se viene impostata su Disattivata, gli utenti non possono utilizzare questa funzionalità.
 
       Se la policy viene configurata, gli utenti non possono modificarla in <ph name="PRODUCT_NAME" />. Se non viene configurata, è consentito il controllo della divulgazione delle credenziali, ma l'utente può disattivarlo.</translation>
-<translation id="220834508664708052">Consenti la compilazione automatica con l'AI e migliora i modelli di AI.</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
 <translation id="2212011154693551439">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped per impostazione predefinita.</translation>
 <translation id="2212207215880394506">Non consentire l'editing di foto con AI generativa.</translation>
@@ -3387,15 +3412,6 @@ Se viene disattivata, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3387999258705169775">Comportamento predefinito per il blocco nidificato della funzione setTimeout().</translation>
 <translation id="3388628790024977864">Non consentire il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Attiva l'autenticazione Gnubby per l'host di accesso remoto</translation>
-<translation id="3393332712712388726">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Se un'origine è coperta sia da questa policy sia da LocalNetworkAccessBlockedForUrls, quest'ultima ha la precedenza.
-
-Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Visita la pagina https://github.com/explainers-by-googlers/local-network-access per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="3395744872155955051">Consenti di scegliere i file direttamente da <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Non mostrare consigli delle app in Avvio app di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamento predefinito del sistema (dipende dalle dimensioni dello schermo)</translation>
@@ -5255,6 +5271,19 @@ Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Ser
 <translation id="468822697351680932">Utilizza la policy SiteList di Internet Explorer come fonte di regole</translation>
 <translation id="4693190628432874457">Attiva i report sulla posizione del dispositivo</translation>
 <translation id="4693779768620889402">Destinazioni basate su estensioni</translation>
+<translation id="4693956469331697434">Consente di configurare le impostazioni del periodo di validità dei dati di navigazione per <ph name="PRODUCT_NAME" />. Questa policy consente agli amministratori di configurare (per tipo di dati) quando il browser dovrà eliminare i dati. Questa funzionalità è utile per i clienti che gestiscono dati cliente sensibili.
+
+Avviso: l'impostazione di questa policy può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
+
+I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" /> non sono supportati su Android.
+
+Il browser rimuoverà automaticamente i dati dei tipi selezionati che sono antecedenti al periodo indicato (<ph name="TIME_TO_LIVE_IN_HOURS" />). Il valore minimo impostabile è 1 ora.
+
+I dati scaduti vengono eliminati 15 secondi dopo l'avvio del browser, dopodiché ogni 30 minuti mentre il browser è in esecuzione.
+
+L'utente manterrà l'accesso al proprio Account Google quando elimina i cookie.
+
+Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivata impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="4694138212536142867">Attiva i report sullo stato dell'hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlla la funzionalità di filtro del parametro URL</translation>
 <translation id="4698895924806859508">Non segnalare eventi di rete</translation>
@@ -5530,6 +5559,19 @@ Se questa policy viene impostata su <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_
 <translation id="4918261735182294270">Consenti agli utenti di scegliere se attivare <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Attiva integrazione di <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Attiva trattamento più restrittivo per i contenuti misti</translation>
+<translation id="4919341087029582581">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente.
+
+Avviso: l'impostazione di questa policy può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
+
+Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Questa policy non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+L'utente manterrà l'accesso al proprio Account Google quando elimina i cookie.
+
+Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivata impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
+
+Se per qualche motivo l'eliminazione dei dati è stata avviata ma non è stata completata, i dati di navigazione verranno cancellati al successivo caricamento del profilo.
+
+Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione non verranno cancellati poiché la chiusura del browser non è stata causata dalla chiusura di tutte le finestre del browser da parte dell'utente.</translation>
 <translation id="4921553515199936667">Se questa policy non viene configurata o se viene impostata su true, la decodifica video verrà eseguita con accelerazione hardware, se disponibile.
 
 Se la policy viene impostata su false, la decodifica video non verrà mai eseguita con accelerazione hardware.
@@ -7026,17 +7068,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="5860010874344790473">Se la policy viene impostata su Attivata, i log di sistema vengono inviati al server di gestione per consentire agli amministratori di monitorarli.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, i log di sistema non vengono segnalati.</translation>
-<translation id="5860520143792505638">Elenco di pattern URL. Le richieste inoltrate da siti web pubblicati da origini corrispondenti non possono effettuare richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Se un'origine è coperta sia da questa policy sia da LocalNetworkAccessAllowedForUrls, questa policy ha la precedenza.
-
-A seconda della fase di implementazione di <ph name="LOCAL_NETWORK_ACCESS" />, potrebbe essere necessario abilitare anche LocalNetworkAccessRestrictionsEnabled per consentire a questa policy di bloccare le richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Visita la pagina https://github.com/explainers-by-googlers/local-network-access per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="5861856285460256766">Configurazione codice di accesso genitori</translation>
 <translation id="5864898931148094192">Controlla la visibilità dell'attribuzione dell'estensione nella pagina Nuova scheda</translation>
 <translation id="5868414965372171132">Configurazione di rete a livello di utente</translation>
@@ -11617,11 +11648,6 @@ Se questa policy viene disattivata, tutte le integrazioni verranno disattivate.<
       Se lo stesso pattern URL esiste sia in questa policy sia nella policy <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, quest'ultima ha la priorità e l'accesso ai sensori di movimento o di luce verrà bloccato.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
-<translation id="9002299469625801504">Se questa policy viene impostata su Attivata, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="DEV_TOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCCESS" /> non riusciti, la richiesta principale verrà bloccata.
-
-Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
-
-Visita la pagina https://github.com/explainers-by-googlers/local-network-access per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9003823644527627017">Configura VM Bruschetta su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Se la policy viene attivata, al dispositivo viene consentito di eseguire macchine virtuali su <ph name="PRODUCT_OS_NAME" />. Le policy <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> devono essere attivate per utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Se la policy viene disattivata, significa che il dispositivo non può eseguire macchine virtuali. Tramite la disattivazione della policy, questa viene applicata all'avvio di nuove macchine virtuali, non a quelle già in esecuzione.
 
@@ -11654,7 +11680,6 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
       Se una lingua è inclusa sia in questa policy sia nella policy <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" />, quest'ultima ha la priorità e verrà attivata la lingua per il controllo ortografico.
 
       Le lingue attualmente supportate sono: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
-<translation id="900867836818807386">Impostazioni per la compilazione automatica con l'AI</translation>
 <translation id="9009119876570708617">Questa policy è stata rimossa a partire dalla versione M85. Usa la policy <ph name="POLICY_NAME" /> per consentire i contenuti non sicuri per singolo sito.
        Questa policy consente di stabilire il trattamento dei contenuti misti (contenuti HTTP in siti HTTPS) nel browser.
        Se la policy viene impostata su true o non viene impostata, viene eseguito l'upgrade automatico a HTTPS dei contenuti misti di audio e video (vale a dire che l'URL viene riscritto come HTTPS, senza una riserva se la risorsa non è disponibile tramite HTTPS) e nella barra degli URL viene mostrato un avviso "Non sicuro" per i contenuti misti delle immagini.
@@ -11934,7 +11959,6 @@ Questa policy non ha effetto se la policy <ph name="METRICS_REPORTING_ENABLED_PO
 L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="9197740283131855199">Percentuale di regolazione del ritardo di oscuramento dello schermo se l'utente diventa attivo dopo l'oscuramento</translation>
 <translation id="9200828125069750521">Parametri per l'URL dell'immagine che utilizza POST</translation>
-<translation id="9202520409249547230">Non consentire la compilazione automatica con l'AI.</translation>
 <translation id="9204520300236345497">Consenti l'uso degli identificatori di contenuti protetti con i siti, il che può contribuire a migliorare la qualità della riproduzione dei contenuti protetti.</translation>
 <translation id="9204863016826119209">Le chiavi aziendali possono essere utilizzate dalle app per Android installate ed elencate in questa policy.</translation>
 <translation id="9206472508136116830">Non consentire il rilevamento condivisioni NetBIOS</translation>

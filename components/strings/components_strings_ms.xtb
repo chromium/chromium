@@ -478,7 +478,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1785118555253503473">Pasang apl web?</translation>
 <translation id="1791415068765905273">Paparkan Semua Jadual Perbandingan</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengurus maklumat, privasi dan keselamatan anda dalam Google Account anda</translation>
-<translation id="1793473605302304726">Bayaran ansuran</translation>
 <translation id="1793631236004319016">Terakhir digunakan <ph name="NUM_HOURS_MINUTES_SECONDS" /> yang lalu</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pelbagai tindakan tersedia, tekan Tab untuk pergi ke setiap tindakan</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3467081767799433066">Dengan pengukuran iklan, jenis data yang terhad akan dikongsi antara laman untuk mengukur prestasi iklan laman, seperti sama ada anda membuat pembelian atau tidak selepas melawat laman.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, dibuka sekarang, tekan Tab, kemudian Enter untuk beralih ke tab yang terbuka</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk menutup semua tetingkap Inkognito yang terbuka pada masa ini</translation>
+<translation id="3472469028191701821">Dibuka dalam tab baharu</translation>
 <translation id="3474392552865647225">Butang sesuaikan fon dalam Chrome, aktifkan untuk menyesuaikan saiz fon dan rupa huruf dalam Chrome</translation>
 <translation id="3478033058537426179">Mengikut kumpulan</translation>
 <translation id="3479552764303398839">Bukan sekarang</translation>
@@ -2964,7 +2964,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5969199813874624822">Simpan dan Jejak Harga</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Gulungan Keenam</translation>
-<translation id="5974745851230707809">Pilihan bayaran ansuran</translation>
 <translation id="5975083100439434680">Zum keluar</translation>
 <translation id="5979084224081478209">Semak kata laluan</translation>
 <translation id="5984570616552610254">Kelembapan ruang</translation>
@@ -3610,7 +3609,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7042616127917168121">Perhalusi hasil</translation>
 <translation id="7043552168914147882">Stok Tab</translation>
 <translation id="7044081119134178347">Kamera dibenarkan pada masa ini</translation>
-<translation id="704738887031336226">Tunjukkan pilihan <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />bayaran ansuran<ph name="PAY_OVER_TIME_HELP_LINK_END" /> semasa semak keluar</translation>
 <translation id="7048095965575426564">Fanfold Eropah</translation>
 <translation id="7050187094878475250">Anda cuba untuk mencapai <ph name="DOMAIN" />, tetapi pelayan memberikan sijil yang tempoh sahnya terlalu panjang untuk boleh dipercayai.</translation>
 <translation id="7053983685419859001">Sekat</translation>
@@ -4307,7 +4305,6 @@ Butiran tambahan:
 <translation id="8220602974062798186">Sekat <ph name="TOPIC" /> dan sebarang topik yang berkaitan?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Tanya <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Paparan dua halaman</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> mahu mengakses peranti dalam rangkaian anda:</translation>
 <translation id="822925450938886901">Untuk mendapatkan maklumat tambahan dan dasar yang mungkin terpakai, buka chrome://management dalam penyemak imbas anda.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

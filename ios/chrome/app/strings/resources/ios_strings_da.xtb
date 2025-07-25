@@ -3,9 +3,9 @@
 <translationbundle lang="da">
 <translation id="1005023885865154304">Åbn indstillingerne for Autoudfyld adgangskoder</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
-<translation id="1010225406377140704">Kontakt afsenderen for at bede om et nyt link</translation>
 <translation id="1013952917065545813">Du kan vende tilbage hertil for at åbne dine senest lukkede faner igen</translation>
 <translation id="1016495303386450659">Elementet blev opdateret</translation>
+<translation id="1019990162050689579">Gemini-appaktivitet</translation>
 <translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1030376737535466765">Åbn Adgangskodeadministrator</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, lukkes de fastgjorte faner også.</translation>
@@ -28,6 +28,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åbnes</translation>
 <translation id="1096992026380844478">Dine indstillinger for synkronisering gendannes på baggrund af din seneste sikkerhedskopi. <ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Del sideindhold med Gemini for at få mere relevante svar. Når du deler en side med Gemini, sendes sidens fulde indhold og webadresse til Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1110772719190051587">Lås op med Face ID</translation>
 <translation id="1112015203684611006">Udskrift mislykkedes.</translation>
@@ -282,6 +283,7 @@
 <translation id="2067852168641682340">Gem på denne konto hver gang</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 fane}one{{count} fane}other{{count} faner}}</translation>
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
+<translation id="2074599390896964828">Præcis lokation</translation>
 <translation id="2078437078822043850">Du kan rulle til højre for at browse i inkognito.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2085876078937250610">Gem…</translation>
@@ -310,6 +312,7 @@
 <translation id="219283042927675668">Faner i gruppe</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2196428379625389579">Søg på nettet</translation>
+<translation id="2198001751007276170">Erstat adgangskoder</translation>
 <translation id="2199562093267256223">Dette sletter gruppen fra alle enheder, der er logget ind på <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Ingen mailkonti</translation>
 <translation id="2214453882118345682">Køb, oversæt og identificer det, du ser, ved hjælp af dit kamera.</translation>
@@ -510,6 +513,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="3010025794097054078">Beskyt dig selv mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="301080557829842765">Guide til privatlivsindstillinger</translation>
 <translation id="3012310354105716927">Nogle data er endnu ikke gemt</translation>
+<translation id="3013922155552460252">Se og administrer Gemini-aktivitet som f.eks. dine chatsamtaler, din feedback og dine prompter</translation>
 <translation id="3016518775797983090">Siden kan ikke deles</translation>
 <translation id="3020183492814296499">Genveje</translation>
 <translation id="3021342271734507256">Markér, tegn eller tryk på noget på skærmen for at søge efter det</translation>
@@ -534,6 +538,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3087734570205094154">Bund</translation>
 <translation id="309710370695886264">Du har 1 genbrugt adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
 <translation id="3102790820790869053">Søg på de seneste faner</translation>
+<translation id="3106258548858559536">Deaktiver Læsetilstand</translation>
 <translation id="3106690631878101882">Skjul Oversæt</translation>
 <translation id="310900540163454140">Vil du slette adgangskoden til <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Markér…</translation>
@@ -632,6 +637,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3533860663366814939">Åbn indstillingerne for Autofyld og Adgangskoder</translation>
 <translation id="3546122170015471515">Maps (preview) på Google.com</translation>
 <translation id="3547356470684043247">Med anmeldelser kan du læse kundernes vurderinger af produkter, tjenester eller oplevelser for at gøre det nemmere at træffe beslutninger</translation>
+<translation id="3547933853190131743">Søg med AI-tilstand</translation>
 <translation id="3557336313807607643">Føj til kontakter</translation>
 <translation id="355765753469272474">Fortryd</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
@@ -1216,6 +1222,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5813223718099710537">Når du bruger denne funktion, sendes sideindhold og webadresser til Google. Du kan altid deaktivere dette i indstillingerne.</translation>
 <translation id="5817176759448082654">Adgangskodetjek</translation>
 <translation id="5819208479324046259">Administreres af <ph name="MANAGER" /> <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synkroniserer…</translation>
 <translation id="583923961930319521">Brug adgangskoder på alle dine enheder</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
@@ -1600,6 +1607,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7300448350764260141">Tilføj ekstra beskyttelse mod onlinetrusler.</translation>
 <translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
 <translation id="7313347584264171202">Her finder du dine inkognitofaner</translation>
+<translation id="7334364820047587268">Du har allerede adgangskoder til disse konti i Google Adgangskodeadministrator. Hvis du vælger at importere én af adgangskoderne nedenfor, vil den erstatte den eksisterende adgangskode.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent er downloadet</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
@@ -1816,6 +1824,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8101409298456377967">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Deaktiver</translation>
+<translation id="8106442513853561174">Del præcis lokation</translation>
 <translation id="8114753159095730575">Filer kan downloades. Se valgmulighederne nederst på skærmen.</translation>
 <translation id="8123502380991596210">Skjul Nyheder</translation>
 <translation id="8123953306357309250">Vil du annullere synkroniseringen? Du kan til enhver tid aktivere synkronisering i indstillingerne.</translation>
@@ -1969,7 +1978,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8694281486652655615">Viser dette element</translation>
 <translation id="8696297579102085705">Send til din enhed</translation>
 <translation id="8697136149718343437">Flyt adresselinjen til bunden</translation>
-<translation id="8703372953981978786">Dette link fungerer ikke</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Du kan dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="8709409604518538305">Fanerne er blevet lukket</translation>
@@ -2098,6 +2106,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="913036870884277353">Åbn nemt links i andre apps.</translation>
 <translation id="9137013805542155359">Vis oprindelig</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Aktivér Læsetilstand</translation>
 <translation id="9144230693397287797">Modtag opdateringer om påmindelser, du har indstillet, og faner fra andre enheder</translation>
 <translation id="914781932147356857">Markér alle…</translation>
 <translation id="9148126808321036104">Log ind igen</translation>
@@ -2126,6 +2135,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="94870150074703282">Vil du slette gruppen?</translation>
 <translation id="952704832371081537">Annuller</translation>
 <translation id="954667170699278022">Læseliste</translation>
+<translation id="956218893102219091">Brug din præcise lokation for at få de mest nøjagtige Gemini-resultater i stedet for en estimeret lokation baseret på din IP-adresse. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Slet browserdata</translation>
 <translation id="963102227019621224">Web- og appaktivitet</translation>

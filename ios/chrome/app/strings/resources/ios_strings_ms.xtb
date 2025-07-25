@@ -3,7 +3,6 @@
 <translationbundle lang="ms">
 <translation id="1005023885865154304">Buka tetapan Kata Laluan Autolengkap</translation>
 <translation id="1005230401424685968">YYYY</translation>
-<translation id="1010225406377140704">Hubungi pengirim untuk meminta pautan baharu</translation>
 <translation id="1013952917065545813">Anda boleh kembali ke sini untuk membuka semula tab yang baru anda tutup</translation>
 <translation id="1016495303386450659">Item dikemas kini</translation>
 <translation id="1019990162050689579">Aktiviti Apl Gemini</translation>
@@ -141,6 +140,7 @@
 <translation id="1520027731907768768">Terima makluman penurunan harga untuk produk yang anda jejaki.</translation>
 <translation id="1521366073263497277">Akses grid tab anda</translation>
 <translation id="1521774566618522728">Aktif hari ini</translation>
+<translation id="1523567067736644845">Buka kunci untuk menunjukkan kata laluan</translation>
 <translation id="1524563461097350801">Tidak Perlu</translation>
 <translation id="1531038290222364269">Paparkan tab</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
@@ -1223,6 +1223,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5813223718099710537">Apabila anda menggunakan ciri ini, kandungan halaman dan URL akan dihantar kepada Google. Anda boleh mematikan ciri ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="5817176759448082654">Semakan Kata Laluan</translation>
 <translation id="5819208479324046259">Diurus oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Menyegerak…</translation>
 <translation id="583923961930319521">Gunakan kata laluan pada semua peranti anda</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
@@ -1978,7 +1979,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8694281486652655615">Menunjukkan item ini</translation>
 <translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="8697136149718343437">Alihkan bar alamat kepada bahagian bawah</translation>
-<translation id="8703372953981978786">Pautan ini tidak berfungsi</translation>
 <translation id="8706253136355675497">Suhu</translation>
 <translation id="8706806585855470492">Anda akan dapat berkongsi, menyertai dan bekerjasama dalam kumpulan tab</translation>
 <translation id="8709409604518538305">Tab telah ditutup</translation>

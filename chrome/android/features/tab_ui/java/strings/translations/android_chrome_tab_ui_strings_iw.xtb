@@ -11,7 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{פתיחת <ph name="TITLE_OF_GROUP" /> עם כרטיסייה אחת (<ph name="TAB_COUNT2" />)}one{פתיחת <ph name="TITLE_OF_GROUP" /> עם <ph name="TAB_COUNT2" /> כרטיסיות}two{פתיחת <ph name="TITLE_OF_GROUP" /> עם <ph name="TAB_COUNT2" /> כרטיסיות}other{פתיחת <ph name="TITLE_OF_GROUP" /> עם <ph name="TAB_COUNT2" /> כרטיסיות}}</translation>
 <translation id="1273910660700874265">‫<ph name="TITLE_OF_GROUP" /> אפשרויות לקבוצת כרטיסיות</translation>
 <translation id="1300188005269437765">אפשר לבחור מתי כרטיסיות וקבוצות של כרטיסיות יועברו באופן אוטומטי לקטע הלא פעיל.</translation>
-<translation id="1321004960118052490">פריטים לא פעילים לא יצטברו</translation>
+<translation id="1321004960118052490">פריטים לא פעילים יימחקו</translation>
 <translation id="1329584516321524826">עודכן עכשיו</translation>
 <translation id="1340839264183302272">יציאה מהקבוצה</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}one{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}two{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}other{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}}</translation>
@@ -108,6 +108,7 @@
 <translation id="492284538114688557">זוהתה הנחה במחיר</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}one{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}two{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}other{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, עם התווית <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">עיון</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{העברת כרטיסיות לחלון חדש}one{העברת כרטיסיות לחלון אחר}two{העברת כרטיסיות לחלון אחר}other{העברת כרטיסיות לחלון אחר}}</translation>
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>

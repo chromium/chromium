@@ -842,6 +842,33 @@
 Якщо це правило вимкнути або не налаштувати, перемикач не показуватиметься.
 
 Примітка. Це правило впливає лише на інтерфейс користувача. Коли перемикач приховано, ChromeOS зберігає наявні налаштування.</translation>
+<translation id="1579027593897822029">Список дій, які виконуються, коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+Попередження. Це правило може впливати на локальні персональні дані й назавжди видаляти їх. Щоб запобігти випадковому видаленню персональних даних, рекомендуємо перевірити налаштування, перш ніж вводити їх у дію.
+
+Якщо не налаштувати правило <ph name="IDLE_TIMEOUT_POLICY_NAME" />, це правило не діятиме.
+
+Коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />, вебпереглядач виконує дії, указані в цьому правилі.
+
+Якщо це правило не налаштувати або не вказати для нього значення, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не діятиме.
+
+Підтримуються наведені нижче дії.
+
+<ph name="CLOSE_BROWSERS_ACTION" />: закрити всі вікна вебпереглядача й прогресивні вебдодатки для цього профілю. Не підтримується на пристроях Android та iOS.
+
+<ph name="CLOSE_TABS_ACTION" />: закрити всі вкладки у відкритих вікнах. Підтримується лише на пристроях iOS.
+
+<ph name="SHOW_PROFILE_PICKER_ACTION" />: показати вікно засобу вибору профілю. Не підтримується на пристроях Android та iOS.
+
+<ph name="SIGN_OUT_ACTION" />: вийти з поточного облікового запису користувача. Підтримується лише на пристроях iOS.
+
+<ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: очистити всі відповідні дані вебперегляду. Щоб дізнатися більше, перегляньте правило <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. На пристроях iOS підтримуються такі типи: <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> і <ph name="CLEAR_AUTOFILL_ACTION" />.
+
+<ph name="RELOAD_PAGES_ACTION" />: оновити всі вебсторінки. На деяких сторінках може знадобитися підтвердити дію. Не підтримується на пристроях iOS.
+
+Якщо видалити файли cookie за допомогою правила <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, користувач залишиться в обліковому записі Google.
+
+Якщо налаштувати дії <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> і <ph name="CLEAR_SITE_SETTINGS_ACTION" />, синхронізацію буде деактивовано для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнено за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнено.</translation>
 <translation id="1583248206450240930">Використовувати <ph name="PRODUCT_FRAME_NAME" /> за умовчанням</translation>
 <translation id="1587585749332985896">Заборонити використовувати режим headless</translation>
 <translation id="1588240398285670601">Налаштування веб-переглядача</translation>
@@ -1068,7 +1095,6 @@ API вебсервісу <ph name="REQUEST_FULLSCREEN_API_NAME" />
 
       Примітка: правило RemoteAccessHostDomainList замінює правило <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, якщо воно наявне.</translation>
 <translation id="172374442286684480">Дозволити всім сайтам установлювати локальні дані</translation>
-<translation id="1725541103767528536">Дозволити використовувати автозаповнення за допомогою ШІ без покращення моделей ШІ.</translation>
 <translation id="1729169799290004131">Це правило визначає відсоток яскравості екрана. Функції адаптації яскравості вимикаються. Початкова яскравість екрана коригується відповідно до значення правила, проте користувачі можуть змінити її пізніше.
 
       Якщо це правило не налаштовано, елементи керування екраном і функції адаптації яскравості не змінюються.
@@ -1708,7 +1734,6 @@ API вебсервісу <ph name="REQUEST_FULLSCREEN_API_NAME" />
 Якщо вимкнути це правило, така функція буде недоступна.
 
       Якщо налаштувати це правило, користувачі не зможуть змінювати його в <ph name="PRODUCT_NAME" />. Якщо не налаштувати це правило, перевірку облікових даних буде дозволено, але користувачі зможуть вимкнути цю функцію.</translation>
-<translation id="220834508664708052">Дозволити використовувати автозаповнення за допомогою ШІ й покращувати моделі ШІ.</translation>
 <translation id="2208976000652006649">Параметри URL-адреси пошуку, яка використовує метод POST</translation>
 <translation id="2212011154693551439">Історія Chrome, упорядкована за групами сторінок, за умовчанням відображатиметься за адресою chrome://history/grouped.</translation>
 <translation id="2212207215880394506">Заборонити використовувати функцію "Редагування фотографій за допомогою генеративного ШІ".</translation>
@@ -3340,15 +3365,6 @@ Keychain.
 <translation id="3387999258705169775">Поведінка за умовчанням для обмежених значень для вкладень функції setTimeout().</translation>
 <translation id="3388628790024977864">Заборонити процес <ph name="CLOUD_UPLOAD_NAME" /> для сервісів <ph name="GOOGLE_DRIVE_NAME" /> і <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Увімкнути автентифікацію Gnubby для хосту віддаленого доступу</translation>
-<translation id="3393332712712388726">Список шаблонів URL-адрес. Запити, ініційовані з вебсайтів, які розміщуються джерелами, що відповідають переліченим шаблонам, не підлягають перевіркам <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Якщо джерело відповідає і цьому правилу, і правилу LocalNetworkAccessBlockedForUrls, перевагу має правило LocalNetworkAccessBlockedForUrls.
-
-Для джерел, які не підпадають під указані тут шаблони, використовуються особисті параметри користувача.
-
-Докладніше про дійсні шаблони URL-адрес можна дізнатися на сторінці https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Докладнішу інформацію про обмеження для запитів <ph name="LOCAL_NETWORK_ACCESS" /> наведено на сторінці https://github.com/explainers-by-googlers/local-network-access.</translation>
 <translation id="3395744872155955051">Дозволити вибирати файли безпосередньо із сервісу <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Не показувати рекомендації додатків на панелі запуску <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Поведінка системи за умовчанням (залежить від розміру екрана)</translation>
@@ -5190,6 +5206,19 @@ WebSQL було вилучено у версії M112.</translation>
 <translation id="468822697351680932">Використовувати правило SiteList веб-переглядача Internet Explorer як джерело для правил</translation>
 <translation id="4693190628432874457">Увімкнути надсилання геоданих на пристрої</translation>
 <translation id="4693779768620889402">Принтери на основі розширень</translation>
+<translation id="4693956469331697434">Це правило дає змогу налаштувати період збереження даних вебперегляду для <ph name="PRODUCT_NAME" />. За його допомогою адміністратори можуть указати, коли вебпереглядач має видаляти дані (різних типів). Це корисно для клієнтів, які працюють із чутливою інформацією.
+
+Попередження. Це правило може впливати на локальні персональні дані й назавжди видаляти їх. Щоб запобігти випадковому видаленню персональних даних, рекомендуємо перевірити налаштування, перш ніж вводити їх у дію.
+
+Доступні типи даних: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> і <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> і <ph name="DATA_TYPE_HOSTED_APP_DATA" /> не підтримуються на пристроях Android.
+
+Вебпереглядач автоматично видалятиме вибрані типи даних, які зберігаються довше, ніж указано в параметрі <ph name="TIME_TO_LIVE_IN_HOURS" />. Мінімальне можливе значення – 1 година.
+
+Дані, період збереження яких закінчився, видалятимуться через 15 секунд після запуску вебпереглядача, а потім – кожні 30 хвилин, поки він працює.
+
+Після видалення файлів cookie користувач залишиться в обліковому записі Google.
+
+У Chrome 114 і старіших версіях це правило діє, якщо для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> указано значення "істина". Починаючи з версії Chrome 115, це правило деактивуватиме синхронізацію для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнено за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнено.</translation>
 <translation id="4694138212536142867">Увімкнути звіти про статус апаратного забезпечення пристрою</translation>
 <translation id="4697581738794063407">Керувати функцією фільтрування за параметрами URL-адрес</translation>
 <translation id="4698895924806859508">Не повідомляти про події в мережі</translation>
@@ -5458,6 +5487,19 @@ WebSQL було вилучено у версії M112.</translation>
 <translation id="4918261735182294270">Дати користувачам змогу вибирати, чи вмикати функцію <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Увімкнути інтеграцію із сервісом <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Увімкнути ретельнішу обробку змішаного контенту</translation>
+<translation id="4919341087029582581">Це правило дає змогу налаштувати список типів даних вебперегляду, які потрібно видаляти, коли користувач закриває всі вікна вебпереглядача.
+
+Попередження. Це правило може впливати на локальні персональні дані й назавжди видаляти їх. Щоб запобігти випадковому видаленню персональних даних, рекомендуємо перевірити налаштування, перш ніж вводити їх у дію.
+
+Доступні типи даних: історія вебперегляду (<ph name="DATA_TYPE_BROWSING_HISTORY" />), історія завантажень (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файли cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, дані автозаповнення (<ph name="DATA_TYPE_AUTOFILL" />), паролі (<ph name="DATA_TYPE_PASSWORD" />), налаштування сайтів (<ph name="DATA_TYPE_SITE_SETTINGS" />) і дані розміщених додатків (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Це правило не має пріоритету над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Після видалення файлів cookie користувач залишиться в обліковому записі Google.
+
+У Chrome 114 і старіших версіях це правило діє, якщо для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> указано значення "істина". Починаючи з версії Chrome 115, це правило деактивуватиме синхронізацію для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнено за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнено.
+
+Якщо з якоїсь причини видалення даних не завершилося, дані вебперегляду буде очищено під час наступного завантаження профілю.
+
+Якщо <ph name="PRODUCT_NAME" /> закривається неналежним чином (наприклад, унаслідок помилки чи збою ОС), дані вебперегляду не буде видалено, оскільки вебпереглядач закрився не внаслідок закриття всіх вікон користувачем.</translation>
 <translation id="4921553515199936667">Якщо це правило не налаштувати або вказати для нього значення "правда", за можливості для розкодування відео використовуватиметься апаратне прискорення.
 
 Якщо вказати значення "неправда", апаратне прискорення ніколи не використовуватиметься для розкодування відео.
@@ -6969,17 +7011,6 @@ WebSQL було вилучено у версії M112.</translation>
 <translation id="5860010874344790473">Якщо це правило ввімкнено, системні журнали надсилатимуться на сервер керування, щоб адміністратори могли їх відстежувати.
 
       Якщо це правило вимкнено або не налаштовано, системні журнали не надсилатимуться.</translation>
-<translation id="5860520143792505638">Список шаблонів URL-адрес. Запити, ініційовані з вебсайтів, які розміщуються джерелами, що відповідають переліченим шаблонам, не можуть надсилати запити <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Якщо джерело відповідає і цьому правилу, і правилу LocalNetworkAccessAllowedForUrls, перевагу має це правило.
-
-Залежно від етапу запуску <ph name="LOCAL_NETWORK_ACCESS" /> для блокування запитів <ph name="LOCAL_NETWORK_ACCESS" /> може знадобитися також увімкнути правило LocalNetworkAccessRestrictionsEnabled.
-
-Для джерел, які не підпадають під указані тут шаблони, використовуються особисті параметри користувача.
-
-Докладніше про дійсні шаблони URL-адрес можна дізнатися на сторінці https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Докладнішу інформацію про обмеження для запитів <ph name="LOCAL_NETWORK_ACCESS" /> наведено на сторінці https://github.com/explainers-by-googlers/local-network-access.</translation>
 <translation id="5861856285460256766">Налаштування батьківського коду доступу</translation>
 <translation id="5864898931148094192">Визначає, чи потрібно показувати інформацію про розширення на сторінці нової вкладки</translation>
 <translation id="5868414965372171132">Налаштування мережі на рівні користувача</translation>
@@ -11511,11 +11542,6 @@ API вебсервісу <ph name="REQUEST_FULLSCREEN_API_NAME" />
       Якщо шаблон URL-адреси вказано і в цьому правилі, і в правилі <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, останнє має пріоритет, а доступ до датчиків руху й світла буде заблоковано.
 
       Докладніше про дійсні шаблони <ph name="URL_LABEL" />-адрес можна дізнатися на сторінці https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Дозволяються символи підстановки (<ph name="WILDCARD_VALUE" />).</translation>
-<translation id="9002299469625801504">Якщо ввімкнути це правило, щоразу, коли в інструменті "<ph name="DEV_TOOLS_NAME" />" має з’являтися попередження, пов’язане з непройденими перевірками <ph name="LOCAL_NETWORK_ACCCESS" />, основний запит блокуватиметься.
-
-Якщо це правило вимкнути або не налаштувати, запити <ph name="LOCAL_NETWORK_ACCESS" /> оброблятимуться за умовчанням.
-
-Докладнішу інформацію про обмеження для запитів <ph name="LOCAL_NETWORK_ACCESS" /> наведено на сторінці https://github.com/explainers-by-googlers/local-network-access.</translation>
 <translation id="9003823644527627017">Налаштувати віртуальні машини Bruschetta в <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Якщо ввімкнути це правило, пристрій зможе запускати віртуальні машини в <ph name="PRODUCT_OS_NAME" />. Щоб дозволити використання <ph name="PRODUCT_CROSTINI_NAME" />, потрібно ввімкнути правила <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> і <ph name="CROSTINI_ALLOWED_POLICY_NAME" />. Якщо це правило вимкнути, пристрій не зможе запускати віртуальні машини. У такому разі змінені налаштування стосуватимуться запуску нових машин, а не вже активних.
 
@@ -11548,7 +11574,6 @@ API вебсервісу <ph name="REQUEST_FULLSCREEN_API_NAME" />
       Якщо мову вказано в цьому правилі та в <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" />, останнє має пріоритет і мова перевірки орфографії вмикається.
 
       Наразі підтримуються такі мови: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
-<translation id="900867836818807386">Налаштування автозаповнення за допомогою ШІ</translation>
 <translation id="9009119876570708617">Це правило видалено в M85 і новіших версіях. Щоб дозволяти незахищений контент для окремих сайтів, використовуйте правило <ph name="POLICY_NAME" />.
        Це правило контролює обробку змішаного контенту (HTTP на сайтах HTTPS) у веб-переглядачі.
        Якщо для правила вибрано значення true або його не налаштовано, змішаний аудіо- й відеоконтент автоматично оновлюватиметься до HTTPS (тобто URL-адреса записуватиметься через HTTPS без резервного варіанту, якщо ресурс недоступний через протокол HTTPS), а в рядку URL-адреси змішаного контенту із зображеннями з'являтиметься застереження "Ненадійне".
@@ -11827,7 +11852,6 @@ API вебсервісу <ph name="REQUEST_FULLSCREEN_API_NAME" />
 За умовчанням вибрано значення RollbackDisabled.</translation>
 <translation id="9197740283131855199">Відсоток, за яким масштабують затримку затемнення екрана, якщо користувач стає активним після затемнення</translation>
 <translation id="9200828125069750521">Параметри URL-адреси зображення, яка використовує метод POST</translation>
-<translation id="9202520409249547230">Заборонити використовувати автозаповнення за допомогою ШІ.</translation>
 <translation id="9204520300236345497">Дозволити сайтам використовувати ідентифікатори захищеного контенту, щоб покращити якість його відтворення.</translation>
 <translation id="9204863016826119209">Корпоративні ключі можуть використовуватися встановленими та вказаними в цьому правилі додатками Android.</translation>
 <translation id="9206472508136116830">Заборонити виявлення спільних папок NetBIOS</translation>

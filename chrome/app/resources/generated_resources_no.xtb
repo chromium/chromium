@@ -996,6 +996,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1670399744444387456">Enkle</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ber om å se merket og modellen til sikkerhetsnøkkelen din</translation>
 <translation id="1674073353928166410">Åpne alle (<ph name="URL_COUNT" />) i inkognitovindu</translation>
+<translation id="1674142805528405174">Google Passordlagring kan oppdatere kontoen din med et sterkt passord som lagres for deg i kontoen din <ph name="EMAIL" />.</translation>
 <translation id="1677306805708094828">Kan ikke legge til <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
 <translation id="1678849866171627536">Skanningen mislyktes. Denne filen kan være et virus eller skadelig programvare.</translation>
@@ -2398,6 +2399,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2642111877055905627">Fotball</translation>
 <translation id="2642206811783203764">Alltid på <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Du kan alltid slette målingsdata for annonser ved å slette nettlesingsdataene dine</translation>
+<translation id="2643379881528582459">Hvis Chromium finner et av passordene dine i et offentlig databrudd, kan den tilby å endre passordet for deg hvis du er logget på</translation>
 <translation id="2643698698624765890">Du kan administrere utvidelsene dine ved å klikke på Utvidelser i vindusmenyen.</translation>
 <translation id="2645047101481282803">Enheten administreres av <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Caste denne fanen til <ph name="DEVICE_NAME" /></translation>
@@ -4216,6 +4218,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3903696968689283281">Informasjon om Wifi Direct-eiere:</translation>
 <translation id="3904326018476041253">Stedstjenester</translation>
 <translation id="3905761538810670789">Reparer appen</translation>
+<translation id="3906096710440765802">Logg på Chrome for å hente passordene og bokmerkene dine og mer på alle enheter</translation>
 <translation id="3908288065506437185">Blokker informasjonskapsler fra tredjeparter i Inkognitomodus</translation>
 <translation id="3908501907586732282">Aktiver utvidelsen</translation>
 <translation id="3909456989251621103">Hvis du sletter et tjenersertifikat, slutter Chrome å bruke det til å identifisere tjenere.</translation>
@@ -4697,6 +4700,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="425573743389990240">Batteriets utladningshastighet i watt (negativ verdi indikerer at batteriet lades)</translation>
 <translation id="4255841059940367080">AI-basert sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="4256316378292851214">La&amp;gre video som</translation>
+<translation id="4257175174234042421">Automatisk passordendring</translation>
 <translation id="4258348331913189841">Filsystemer</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Behold gruppen}other{Behold gruppene}}</translation>
 <translation id="4259388776256904261">Dette kan ta en stund</translation>
@@ -5284,7 +5288,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4676616966096505747">Noen data er ikke lagret i kontoen din ennå</translation>
 <translation id="4677772697204437347">GPU-minne</translation>
 <translation id="467809019005607715">Google Presentasjoner</translation>
-<translation id="4678729681411398877">Når et av passordene dine blir funnet i et databrudd, spør Google Passordlagring om du vil endre det til et sterkt passord</translation>
 <translation id="4678848110205818817">Kreditt-/debetkort</translation>
 <translation id="4679018849559620189">Med denne får du tilgang til de lagrede passnøklene dine på alle enheter</translation>
 <translation id="4680105648806843642">Lyden er kuttet på denne siden</translation>
@@ -7865,6 +7868,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> brukere</translation>
 <translation id="6555432686520421228">Fjern alle brukerkontoer og tilbakestill <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten din til fabrikkstandard.</translation>
 <translation id="6555604601707417276">Linux-sikkerhetskopien er gjenopprettet</translation>
+<translation id="6555744145993174510">fra: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Gjør om</translation>
 <translation id="6556903358015358733">Tema og bakgrunn</translation>
 <translation id="6557199166823345360">Legg til flere detaljer eller still et spørsmål om utvalget for å finstemme søket</translation>
@@ -7900,6 +7904,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – skrivebordinnholdet er delt</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % fullført</translation>
 <translation id="6580203076670148210">Skannehastighet</translation>
+<translation id="6581356304040102696">Kan ikke importere passordene. Filstørrelsen må være mindre enn 1 MB.</translation>
 <translation id="6582080224869403177">Tilbakestill <ph name="DEVICE_TYPE" /> for å oppgradere sikkerheten din.</translation>
 <translation id="6582274660680936615">Du surfer som gjest</translation>
 <translation id="6583328141350416497">Fortsett nedlastingen</translation>
@@ -8019,7 +8024,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6667187897999649121">Foreløpig kan du bare dele passord med familiemedlemmer. <ph name="BEGIN_LINK" />Opprett en familiegruppe<ph name="END_LINK" /> med opptil seks medlemmer, og få mer ut av Google-produktene og -abonnementene dine.</translation>
 <translation id="666731172850799929">Åpne i <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Dataene behandles på samme måte som nettstedet du besøker</translation>
-<translation id="6669637573228217624">Last opp en fil</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> er tilgjengelig nå</translation>
 <translation id="6670767097276846646">Noen utvidelser kan legge til søkemotorer i Chrome</translation>
 <translation id="6670983860904543332">Med automatiske oppdateringer får du de nyeste funksjonene. Utforsk høydepunkter fra nylige oppdateringer.</translation>
@@ -9209,6 +9213,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7506242536428928412">For å bruke den nye sikkerhetsnøkkelen, angi en ny PIN-kode</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" />-enheten din er nå registrert for bedriftsadministrering.</translation>
 <translation id="7507207699631365376">Se denne leverandørens <ph name="BEGIN_LINK" />personvernerklæring<ph name="END_LINK" /></translation>
+<translation id="7508127419095425107">Mer om denne funksjonen og relevante data som sendes til Google</translation>
 <translation id="7508707215237589321">Vil du slette «<ph name="CERT_NAME" />»?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du lukke fanen og slette gruppen?}=1{Vil du lukke fanene og slette gruppen?}other{Vil du lukke fanene og slette gruppene?}}</translation>
 <translation id="7509097596023256288">Konfigurerer av administrasjon</translation>
@@ -9291,7 +9296,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7568759527730933493">Bruk en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System). Dette gjøres ved bruk av en administrert tjenesteleverandør på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Sikre tilkoblinger brukes ikke for enkelte domener som er konfigurert av administratoren din.</translation>
 <translation id="756876171895853918">Tilpass brukerbildet</translation>
 <translation id="7568790562536448087">Oppdaterer</translation>
-<translation id="7569113730576914983">Når Chrome finner et av passordene dine i et databrudd, kan den tilby å endre passordet for deg når du logger på</translation>
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7570548610653957960">Hjelp meg å lese</translation>
 <translation id="7571643774869182231">For lite lagringsplass til å oppdatere</translation>
@@ -10941,6 +10945,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="869884720829132584">Programmeny</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699188901396699995">PPD for <ph name="PRINTER_NAME" /></translation>
+<translation id="8699296325072357994">Innhold fra passordsider og relatert informasjon sendes til Google og gjennomgås av mennesker. Passordet ditt er kryptert og blir aldri sett av noen. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Fortell oss hvorfor du tillot informasjonskapsler fra tredjeparter på dette nettstedet</translation>
 <translation id="8700087567921985940">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten din. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene anonymt for å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre. <ph name="BEGIN_LINK1" />Finn ut mer om posisjon<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">Appoversikt-tasten + tilbaketasten</translation>
@@ -11383,6 +11388,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8993059306046735527">Hvis du glemmer passordet ditt for <ph name="DEVICE_TYPE" />, kan du fremdeles gjenopprette de lokale dataene dine. Du må logge på Google-kontoen din eller bruke kontogjenoppretting.</translation>
 <translation id="8993198843374358393">Kopier sertifikathash for <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Gir deg kontroller for å sette lesestemmen på pause og gjøre den raskere eller tregere</translation>
+<translation id="8993787625629280252">Hvis Chrome finner ett av passordene dine i et offentlig databrudd, kan den tilby å endre passordet for deg hvis du er logget på</translation>
 <translation id="899384117894244799">Fjern begrenset bruker</translation>
 <translation id="8993853206419610596">Vis alle forespørsler</translation>
 <translation id="8993945059918628059">Trykk på fingeravtrykkssensoren med fingeren. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>

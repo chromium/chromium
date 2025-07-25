@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> tabı olan <ph name="TITLE_OF_GROUP" /> qrupunu açın}other{<ph name="TAB_COUNT2" /> tabı olan <ph name="TITLE_OF_GROUP" /> qrupunu açın}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab qrupu seçimləri</translation>
 <translation id="1300188005269437765">Tablar və tab qruplarının avtomatik olaraq qeyri-aktiv bölməyə nə vaxt köçürüləcəyini seçin.</translation>
+<translation id="1321004960118052490">Qeyri-aktiv elementlər yığılmayacaq</translation>
 <translation id="1329584516321524826">İndicə yenilənib</translation>
 <translation id="1340839264183302272">Qrupdan çıxın</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>
@@ -107,9 +108,11 @@
 <translation id="492284538114688557">Qiymət endirimi aşkarlandı</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5007392906805964215">Nəzərdən keçirin</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Tabları yeni pəncərəyə köçürün}other{Tabları başqa pəncərəyə köçürün}}</translation>
 <translation id="5073204694187207510">Tam ekran cədvəlini gizlədin</translation>
 <translation id="5076161749301278626">Mağaza rəyləri göstərilsin?</translation>
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome <ph name="AUTO_DELETE_DELAY_ONE" /> aydan sonra qeyri-aktiv tab və tab qruplarını avtomatik bağlayır. Bunu ayarlarda dəyişə bilərsiniz.}other{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> aydan sonra qeyri-aktiv tab və tab qruplarını avtomatik bağlayır. Bunu ayarlarda dəyişə bilərsiniz.}}</translation>
 <translation id="5339733443032484186">Son tab</translation>
 <translation id="5380159289133845234">Dublikat tabları arxivləyin</translation>
 <translation id="5400836586163650660">Boz</translation>

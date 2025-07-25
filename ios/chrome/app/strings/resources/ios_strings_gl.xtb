@@ -3,9 +3,9 @@
 <translationbundle lang="gl">
 <translation id="1005023885865154304">Abre a configuración de AutoFill Password (Autocompletar contrasinal)</translation>
 <translation id="1005230401424685968">AAAA</translation>
-<translation id="1010225406377140704">Ponte en contacto con quen cha enviou para pedirlle que che mande outra</translation>
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
+<translation id="1019990162050689579">Actividade na aplicación Gemini</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030376737535466765">Abrir xestor de contrasinais</translation>
 <translation id="1035980983510608210">Ao pechar todas as pestanas, tamén se cerrarán as fixadas.</translation>
@@ -28,6 +28,7 @@
 <translation id="1085677983426914530">"<ph name="FILENAME" />" non se puido abrir</translation>
 <translation id="1096992026380844478">Restaurarase a configuración de sincronización en función da última copia de seguranza. <ph name="BEGIN_LINK" />Consulta o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Comparte o contido da páxina con Gemini para obter resultados máis relevantes. Cando compartes unha páxina con Gemini, envíanse a Google tanto o contido completo como o URL da páxina. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Sincronización do historial</translation>
 <translation id="1110772719190051587">Desbloquea o dispositivo con Face ID</translation>
 <translation id="1112015203684611006">Erro impresión</translation>
@@ -282,6 +283,7 @@
 <translation id="2067852168641682340">Gardar sempre nesta conta</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 pestana}other{{count} pestanas}}</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
+<translation id="2074599390896964828">Situación precisa</translation>
 <translation id="2078437078822043850">Podes desprazarte cara á dereita para navegar no modo de incógnito.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2085876078937250610">Gardar…</translation>
@@ -310,6 +312,7 @@
 <translation id="219283042927675668">Pestanas no grupo</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2196428379625389579">Busca na Web</translation>
+<translation id="2198001751007276170">Substituír contrasinais</translation>
 <translation id="2199562093267256223">Eliminarase o grupo de todos os dispositivos nos que teñas a sesión iniciada en <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Sen contas de correo</translation>
 <translation id="2214453882118345682">Compra, traduce e identifica o que vexas mediante a cámara.</translation>
@@ -510,6 +513,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="3010025794097054078">Protéxete contra as violacións da seguranza dos datos, os sitios web que non sexan seguros e moito máis.</translation>
 <translation id="301080557829842765">Guía de privacidade</translation>
 <translation id="3012310354105716927">Algúns datos aínda non se gardaron</translation>
+<translation id="3013922155552460252">Consulta e xestiona a actividade de Gemini, como os teus chats, os comentarios e as solicitudes</translation>
 <translation id="3016518775797983090">Non se puido compartir a páxina</translation>
 <translation id="3020183492814296499">Atallos</translation>
 <translation id="3021342271734507256">Marca co dedo, destaca ou toca calquera cousa da pantalla para buscala</translation>
@@ -534,6 +538,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Tes 1 contrasinal reutilizado. Cámbiao xa para non correr riscos.</translation>
 <translation id="3102790820790869053">Fai buscas nas pestanas recentes</translation>
+<translation id="3106258548858559536">Desactivar modo de lectura</translation>
 <translation id="3106690631878101882">Ocultar Traducir</translation>
 <translation id="310900540163454140">Queres eliminar o contrasinal de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marcar como...</translation>
@@ -632,6 +637,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3533860663366814939">Abre a opción de AutoFill &amp; Passwords (Autocompletar e contrasinais)</translation>
 <translation id="3546122170015471515">Vista previa de Maps en google.com</translation>
 <translation id="3547356470684043247">Ler as avaliacións dos clientes sobre produtos, servizos ou experiencias para poder tomar decisións fundadas</translation>
+<translation id="3547933853190131743">Buscar co modo IA</translation>
 <translation id="3557336313807607643">Engadir a contactos</translation>
 <translation id="355765753469272474">Desfacer</translation>
 <translation id="3565930036634619844">Pestana. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -1216,6 +1222,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5813223718099710537">Cando uses esta función, o contido da páxina e os URL enviaranse a Google. Podes desactivala cando queiras na configuración.</translation>
 <translation id="5817176759448082654">Revisión de contrasinais</translation>
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
 <translation id="583923961930319521">Usar contrasinais en todos os dispositivos</translation>
 <translation id="5844284118433003733">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
@@ -1600,6 +1607,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7313347584264171202">Aquí atoparás as túas pestanas do modo de incógnito</translation>
+<translation id="7334364820047587268">Xa tes contrasinais para estas contas no teu xestor de contrasinais de Google. Se decides importar un dos contrasinais que se mostran máis abaixo, substituirá o actual.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento descargado</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
@@ -1816,6 +1824,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8101409298456377967">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Desactivar</translation>
+<translation id="8106442513853561174">Compartir localización precisa</translation>
 <translation id="8114753159095730575">Podes descargar ficheiros. Tes opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="8123502380991596210">Ocultar Novidades</translation>
 <translation id="8123953306357309250">Queres cancelar a sincronización? Podes activar a sincronización en calquera momento na configuración.</translation>
@@ -1969,7 +1978,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8694281486652655615">Mostra este elemento</translation>
 <translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de enderezos á parte inferior</translation>
-<translation id="8703372953981978786">Esta ligazón non funciona</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Poderás compartir grupos de pestanas, unirte a eles e colaborar</translation>
 <translation id="8709409604518538305">Pecháronse as pestanas</translation>
@@ -2098,6 +2106,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="913036870884277353">Abrir as ligazóns noutras aplicacións facilmente</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Activar modo de lectura</translation>
 <translation id="9144230693397287797">Recibe actualizacións dos recordatorios que definises e das pestanas doutros dispositivos</translation>
 <translation id="914781932147356857">Marcar todo…</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
@@ -2126,6 +2135,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="94870150074703282">Queres eliminar o grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
+<translation id="956218893102219091">Usa a túa localización precisa en lugar dunha localización estimada baseada no teu enderezo IP para obter os resultados máis precisos de Gemini. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Segues a <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>
 <translation id="963102227019621224">Actividade web e das aplicacións</translation>

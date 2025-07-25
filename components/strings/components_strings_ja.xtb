@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">ウェブアプリをインストールしますか？</translation>
 <translation id="1791415068765905273">すべての比較表を表示</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
-<translation id="1793473605302304726">後払い</translation>
 <translation id="1793631236004319016">前回の使用: <ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。複数の操作が可能で、Tab キーを押すと操作が切り替わります</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1008,7 +1007,7 @@
 <translation id="2658843814961855121">労働法、雇用法</translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件}other{<ph name="DOMAIN_LIST" /> のパスワード # 件}}</translation>
-<translation id="2666092431469916601">一番上</translation>
+<translation id="2666092431469916601">上部</translation>
 <translation id="2666117266261740852">他のタブやアプリを閉じる</translation>
 <translation id="266935134738038806">サイトを見る</translation>
 <translation id="2672201172023654893">ご使用のブラウザは管理されていません。</translation>
@@ -1234,7 +1233,7 @@
 <translation id="3082007635241601060">カートに入れたアイテムの割引情報の検索を Google に許可する</translation>
 <translation id="3086269988715347183"><ph name="BLOCKED_URL" /> はこれまで承認していません</translation>
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
-<translation id="3087734570205094154">下</translation>
+<translation id="3087734570205094154">下部</translation>
 <translation id="3090667236485488075">ガラス</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">無効リストにポリシーを無効にするのと同じ「*」と同等のパターンが含まれているため、無視されました。</translation>
@@ -1474,6 +1473,7 @@
 <translation id="3467081767799433066">広告の測定では、広告のパフォーマンスを測定するため、サイトにアクセスした後に購入したかどうかなど、限定的な種類のデータがサイト間で共有されます。</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> が現在開いています。Tab キー、Enter キーの順に押すと開いているタブに切り替わります</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、現在開いているすべてのシークレット ウィンドウを閉じます</translation>
+<translation id="3472469028191701821">新しいタブで開く</translation>
 <translation id="3474392552865647225">[Chrome のフォントをカスタマイズ] ボタンです。実行すると、Chrome のフォントサイズと書体をカスタマイズできます</translation>
 <translation id="3478033058537426179">グループ別</translation>
 <translation id="3479552764303398839">後で</translation>
@@ -2963,7 +2963,6 @@
 <translation id="5969199813874624822">保存して価格をトラッキング</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ロール 6</translation>
-<translation id="5974745851230707809">後払いオプション</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
 <translation id="5984570616552610254">チャンバーの湿度</translation>
@@ -3609,7 +3608,6 @@
 <translation id="7042616127917168121">結果を絞り込む</translation>
 <translation id="7043552168914147882">タブストック</translation>
 <translation id="7044081119134178347">一時的にカメラを許可しました</translation>
-<translation id="704738887031336226">購入手続き時に<ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />後払い<ph name="PAY_OVER_TIME_HELP_LINK_END" />オプションを表示する</translation>
 <translation id="7048095965575426564">欧州ファンフォールド</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーに提示された証明書の有効期限が長すぎて信頼性を確認できませんでした。</translation>
 <translation id="7053983685419859001">ブロック</translation>
@@ -4307,7 +4305,6 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> とその関連トピックをブロックしますか？</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />、<ph name="KEYWORD_SUFFIX" /> に聞く</translation>
 <translation id="8228419419708659934">2 ページ表示</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> がご利用のネットワーク上のデバイスへのアクセスを求めています。</translation>
 <translation id="822925450938886901">詳細と適用される可能性のあるポリシーについては、ブラウザで chrome://management を開いてください。</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>

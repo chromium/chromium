@@ -126,7 +126,7 @@
 <translation id="1209206284964581585">Скриј засега</translation>
 <translation id="121201262018556460">Се обидовте да стигнете до <ph name="DOMAIN" />, но серверот прикажа сертификат што содржи слаб клуч. Напаѓач може го расипал приватниот клуч, па серверот може не е серверот што го очекувавте (можеби комуницирате со напаѓач).</translation>
 <translation id="1212527389003717329">Започна преземање. За да го видите, притиснете и задржете |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1215738931000958575">Користете ги податоците зачувани во вашата сметка на Google за да ги пополнувате автоматски лозинките, криптографските клучеви, адресите, начините на плаќање и други податоци.</translation>
+<translation id="1215738931000958575">Користете ги податоците зачувани во вашата сметка на Google за да ги пополнувате автоматски лозинките, криптографските клучеви, адресите, начините на плаќање и други податоци</translation>
 <translation id="1219129156119358924">Безбедност на системот</translation>
 <translation id="1222060260947439312">Десна фиока</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">Да се инсталираат апликации за прелистувач?</translation>
 <translation id="1791415068765905273">Прикажи ги сите табели за споредба</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да управувате со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
-<translation id="1793473605302304726">Плаќање на рати</translation>
 <translation id="1793631236004319016">Последно користење: пред <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, достапни се повеќе дејства, притискајте Tab за да ги менувате</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@
 <translation id="3467081767799433066">со поставката „Мерење реклами“, меѓу сајтовите се споделуваат ограничени типови податоци за мерење на перформансите на нивните реклами, на пр., дали сте купиле нешто по отворањето конкретен сајт</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, отворена во моментов, притиснете Tab, потоа Enter за да се префрлите на отворената картичка</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги затворите сите прозорци „Инкогнито“ што се отворени во моментов</translation>
+<translation id="3472469028191701821">Се отвора во нова картичка</translation>
 <translation id="3474392552865647225">Копче за приспособување фонтови на Chrome, активирајте го за да ги приспособите големините и типовите фонтови на Chrome</translation>
 <translation id="3478033058537426179">Според група</translation>
 <translation id="3479552764303398839">Не сега</translation>
@@ -2963,7 +2963,6 @@
 <translation id="5969199813874624822">Зачувајте и следете ја цената</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шеста ролна</translation>
-<translation id="5974745851230707809">Опции за плаќање на рати</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
 <translation id="5984570616552610254">Влажност на комората</translation>
@@ -3609,7 +3608,6 @@
 <translation id="7042616127917168121">Рафинирајте ги резултатите</translation>
 <translation id="7043552168914147882">Пакет хартија</translation>
 <translation id="7044081119134178347">Камерата е дозволена овој пат</translation>
-<translation id="704738887031336226">Прикажувај ги опциите за <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />плаќање на рати<ph name="PAY_OVER_TIME_HELP_LINK_END" /> при плаќањето</translation>
 <translation id="7048095965575426564">Европски на преклопување</translation>
 <translation id="7050187094878475250">Се обидовте да стигнете до <ph name="DOMAIN" />, но серверот прикажа сертификат со период на важност што е премногу долг за да му се верува.</translation>
 <translation id="7053983685419859001">Блокирај</translation>
@@ -4305,7 +4303,6 @@
 <translation id="8220602974062798186">Да се блокира <ph name="TOPIC" /> и сите поврзани теми?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, побарајте помош од <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Приказ на две страници</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> сака да пристапи до уред на вашата мрежа:</translation>
 <translation id="822925450938886901">За дополнителни информации и правила што можеби важат, отворете chrome://management во вашиот прелистувач.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

@@ -34,7 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以玩 Chrome 恐龍遊戲</translation>
 <translation id="1060136083665017312">遊戲系統及遊戲機</translation>
 <translation id="1060320201901229167">Kaku 5 信封</translation>
-<translation id="1060985736456216896">Google Pay，Zip 標誌</translation>
+<translation id="1060985736456216896">Google Pay、Zip 標誌</translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1063822554756965137">成功刪除檔案</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">要安裝網絡應用程式嗎？</translation>
 <translation id="1791415068765905273">顯示所有比較表格</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 帳戶度管理你嘅資料、私隱權同埋安全設定</translation>
-<translation id="1793473605302304726">分期付款</translation>
 <translation id="1793631236004319016">上次使用時間：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可以進行幾種動作，㩒 Tab 鍵就可以跟次序轉換唔同嘅動作</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@
 <translation id="3467081767799433066">廣告評估功能讓各個應用程式分享特定類型的資料 (例如使用者是否在瀏覽網站後購物)，以瞭解廣告成效。</translation>
 <translation id="3468054117417088249">目前已開啟 <ph name="TAB_SWITCH_SUFFIX" />，按下 Tab 鍵和 Enter 鍵即可切換至開啟的分頁</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以閂晒所有宜家開咗嘅無痕式視窗</translation>
+<translation id="3472469028191701821">喺新分頁度打開</translation>
 <translation id="3474392552865647225">自訂 Chrome 字型按鈕，啟動之後就可以自訂 Chrome 嘅字型大小同字體</translation>
 <translation id="3478033058537426179">按群組分類</translation>
 <translation id="3479552764303398839">略過</translation>
@@ -1789,7 +1789,7 @@
 <translation id="398470910934384994">鳥</translation>
 <translation id="3985750352229496475">管理地址…</translation>
 <translation id="3986506998755860149">前往設定進一步瞭解運用 AI 自動填入的功能</translation>
-<translation id="3986557181852957825">Google Pay，Klarna 標誌</translation>
+<translation id="3986557181852957825">Google Pay、Klarna 標誌</translation>
 <translation id="3986705137476756801">暫時關閉即時字幕</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">小於 1 MB</translation>
@@ -1863,7 +1863,7 @@
 <translation id="4104702906064390950">儲存緊 IBAN 資料</translation>
 <translation id="4106887816571530227">唔批准嵌入嘅內容</translation>
 <translation id="4107047499377819067">VPN 背景服務已開始安裝，可能需時幾分鐘。</translation>
-<translation id="4110642094637545339">Google Pay，AfterPay 標誌</translation>
+<translation id="4110642094637545339">Google Pay、AfterPay 標誌</translation>
 <translation id="4110652170750985508">檢查您的付款</translation>
 <translation id="4111546256784973544">漆彈</translation>
 <translation id="4112140312785995938">向後回轉</translation>
@@ -2282,7 +2282,7 @@
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4811450222531576619">瞭解頁面的來源和主題</translation>
-<translation id="4811918461974803225">Google Pay，Affirm 標誌</translation>
+<translation id="4811918461974803225">Google Pay、Affirm 標誌</translation>
 <translation id="4813512666221746211">網絡錯誤</translation>
 <translation id="4814114628197290459">刪除 IBAN</translation>
 <translation id="4816341377198595747">「搜尋書籤」按鈕，啟用就可以搜尋書籤</translation>
@@ -2962,7 +2962,6 @@
 <translation id="5969199813874624822">儲存並追蹤價格</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">第六卷</translation>
-<translation id="5974745851230707809">分期付款選項</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5984570616552610254">室內濕度</translation>
@@ -3608,7 +3607,6 @@
 <translation id="7042616127917168121">修正搜尋結果</translation>
 <translation id="7043552168914147882">隔頁紙</translation>
 <translation id="7044081119134178347">呢次批准用相機</translation>
-<translation id="704738887031336226">在結帳頁面顯示<ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />分期付款<ph name="PAY_OVER_TIME_HELP_LINK_END" />選項</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">您曾嘗試前往 <ph name="DOMAIN" />，但其伺服器憑證有效期過長，並不值得信任。</translation>
 <translation id="7053983685419859001">封鎖</translation>
@@ -4305,7 +4303,6 @@
 <translation id="8220602974062798186">要封鎖「<ph name="TOPIC" />」和所有相關主題嗎？</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />，問「<ph name="KEYWORD_SUFFIX" />」</translation>
 <translation id="8228419419708659934">雙頁檢視</translation>
-<translation id="8228477714872026922">「<ph name="ORIGIN" />」想存取您網絡上的裝置：</translation>
 <translation id="822925450938886901">如想瞭解詳情和可能適用的政策，請用瀏覽器開啟 chrome://management。</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 毫米</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>

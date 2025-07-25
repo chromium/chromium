@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">வெப் ஆப்ஸை நிறுவ வேண்டுமா?</translation>
 <translation id="1791415068765905273">ஒப்பீட்டு அட்டவணைகள் எல்லாவற்றையும் காட்டு</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, உங்கள் Google கணக்கில் உள்ள தகவல்கள், தனியுரிமை, பாதுகாப்பு ஆகியவற்றை நிர்வகிக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
-<translation id="1793473605302304726">பிறகு பணம் செலுத்துதல்</translation>
 <translation id="1793631236004319016">கடைசியாகப் பயன்படுத்தியது: <ph name="NUM_HOURS_MINUTES_SECONDS" /> முன்பு</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ஒன்றுக்கும் மேற்பட்ட செயல்கள் உள்ளன, அவற்றில் ஒன்றைத் தேர்ந்தெடுக்க Tab விசையை அழுத்துங்கள்</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1471,6 +1470,7 @@
 <translation id="3467081767799433066">விளம்பர அளவீட்டின் மூலம், தளங்களில் காட்டப்படும் விளம்பரங்களின் செயல்திறனை அளவிடுவதற்காக அவற்றுக்கிடையே குறைந்த அளவிலான தரவு வகைகள் பகிரப்படும். உதாரணமாக, ஒரு தளத்தைப் பார்த்த பிறகு நீங்கள் பர்சேஸ் செய்தீர்களா என்பது போன்ற தரவு.</translation>
 <translation id="3468054117417088249">தற்போது திறந்துள்ள <ph name="TAB_SWITCH_SUFFIX" /> தாவலுக்கு மாற, ‘தாவல்’ மாற்ற பட்டனைத் தட்டி, ‘எண்டர்’ பட்டனை அழுத்தவும்</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. தற்போது திறந்துள்ள மறைநிலைச் சாளரங்கள் அனைத்தையும் மூட, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
+<translation id="3472469028191701821">புதிய பக்கத்தில் திறக்கும்</translation>
 <translation id="3474392552865647225">Chromeமில் எழுத்து வடிவங்களைப் பிரத்தியேகமாக்குவதற்கான பட்டன். Chromeமில் எழுத்து வடிவ அளவுகளையும் வகைகளையும் பிரத்தியேகமாக்க இதை இயக்குங்கள்</translation>
 <translation id="3478033058537426179">குழுவின்படி</translation>
 <translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
@@ -2959,7 +2959,6 @@
 <translation id="5969199813874624822">விலை விவரத்தைச் சேமித்துக் கண்காணியுங்கள்</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ரோல் 6</translation>
-<translation id="5974745851230707809">பிறகு பணம் செலுத்துவதற்கான விருப்பங்கள்</translation>
 <translation id="5975083100439434680">சிறிதாக்கு</translation>
 <translation id="5979084224081478209">கடவுச்சொற்களைச் சோதித்துப் பார்க்கவும்</translation>
 <translation id="5984570616552610254">சேம்பர் ஈரப்பதம்</translation>
@@ -3604,7 +3603,6 @@
 <translation id="7042616127917168121">முடிவுகளைத் துல்லியமாக்கு</translation>
 <translation id="7043552168914147882">டேப் ஸ்டாக்</translation>
 <translation id="7044081119134178347">இந்த முறை கேமராவிற்கான அனுமதி வழங்கப்பட்டது</translation>
-<translation id="704738887031336226">செக்-அவுட்டில் <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />பிறகு பணம் செலுத்துவதற்கான<ph name="PAY_OVER_TIME_HELP_LINK_END" /> விருப்பங்களைக் காட்டும்</translation>
 <translation id="7048095965575426564">ஐரோப்பிய ஃபேன்ஃபோல்ட்</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" />ஐ அடைய முயற்சித்துள்ளீர்கள், சேவையகம் வழங்கிய சான்றிதழ் நம்புவதற்கு சாத்தியமற்ற நீண்ட செல்லுபடிக்காலத்தைக் கொண்டுள்ளது.</translation>
 <translation id="7053983685419859001">தடு</translation>
@@ -4301,7 +4299,6 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> மற்றும் அதோடு தொடர்புடைய தலைப்புகளைத் தடுக்க வேண்டுமா?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> ஐக் கேட்கிறீர்கள்</translation>
 <translation id="8228419419708659934">இரண்டு பக்கப்பார்வை</translation>
-<translation id="8228477714872026922">உங்கள் நெட்வொர்க்கில் உள்ள சாதனத்தை அணுக <ph name="ORIGIN" /> விரும்புகிறது:</translation>
 <translation id="822925450938886901">கூடுதல் தகவல்களையும் பொருந்தக்கூடிய கொள்கைகளையும் தெரிந்துகொள்ள, உங்கள் பிரவுசரில் chrome://management என்பதைத் திறக்கவும்.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> மிமீ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

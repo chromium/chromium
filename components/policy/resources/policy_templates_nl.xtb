@@ -1075,7 +1075,6 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
 
       Opmerking: Deze instelling overschrijft <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (indien aanwezig).</translation>
 <translation id="172374442286684480">Alle sites toestaan lokale gegevens in te stellen</translation>
-<translation id="1725541103767528536">Automatisch invullen met AI toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="1729169799290004131">Als je het beleid instelt, wordt de helderheid van het scherm als percentage ingesteld en worden de functies voor automatische helderheid uitgezet. Het scherm heeft aanvankelijk de helderheid van de beleidswaarde, maar gebruikers kunnen deze aanpassen.
 
       Als je het beleid niet instelt, bepaalt de gebruiker de helderheid en heeft dit geen invloed op de functies voor automatische helderheid.
@@ -1713,7 +1712,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze functionaliteit.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitzetten.</translation>
-<translation id="220834508664708052">Automatisch invullen met AI toestaan en AI-modellen verbeteren</translation>
 <translation id="2208976000652006649">Parameters voor zoek-URL die POST gebruikt</translation>
 <translation id="2212011154693551439">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is standaard zichtbaar op chrome://history/grouped.</translation>
 <translation id="2212207215880394506">Fotobewerking met generatieve AI niet toestaan.</translation>
@@ -3325,15 +3323,6 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
 <translation id="3387999258705169775">Standaardgedrag voor genest vastzetten voor de functie setTimeout().</translation>
 <translation id="3388628790024977864">Het <ph name="CLOUD_UPLOAD_NAME" />-proces niet toestaan voor <ph name="GOOGLE_DRIVE_NAME" /> en <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Gnubby-verificatie aanzetten voor de host voor externe toegang</translation>
-<translation id="3393332712712388726">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan <ph name="LOCAL_NETWORK_ACCESS" />-checks.
-
-Als een oorsprong onder zowel dit beleid als LocalNetworkAccessBlockedForUrls valt, heeft LocalNetworkAccessBlockedForUrls voorrang.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://github.com/explainers-by-googlers/local-network-access voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="3395744872155955051">Toestaan dat bestanden rechtstreeks worden gekozen uit <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Geen app-aanbevelingen laten zien in de <ph name="PRODUCT_OS_NAME" />-launcher</translation>
 <translation id="3398051852031115795">Standaard systeemgedrag (afhankelijk van schermgrootte)</translation>
@@ -6933,17 +6922,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="5860010874344790473">Als je het beleid toepast, worden er systeemlogboeken naar de beheerserver gestuurd, zodat beheerders de systeemlogboeken kunnen controleren.
 
       Als je het beleid niet toepast of niet instelt, worden er geen systeemlogboeken gerapporteerd.</translation>
-<translation id="5860520143792505638">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden geblokkeerd voor het indienen van <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
-
-Als een oorsprong zowel door dit beleid als door LocalNetworkAccessAllowedForUrls wordt gedekt, heeft dit beleid voorrang.
-
-Afhankelijk van de fase van de uitrol van <ph name="LOCAL_NETWORK_ACCESS" /> moet LocalNetworkAccessRestrictionsEnabled misschien ook worden aangezet om te voorkomen dat dit beleid <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken blokkeert.
-
-Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
-
-Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
-
-Zie https://github.com/explainers-by-googlers/local-network-access voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="5861856285460256766">Configuratie van toegangscode voor ouders</translation>
 <translation id="5864898931148094192">Bepalen of de toeschrijving van de extensie zichtbaar is op de pagina Nieuw tabblad</translation>
 <translation id="5868414965372171132">Netwerkconfiguratie op gebruikersniveau</translation>
@@ -11409,11 +11387,6 @@ Als je dit beleid niet toepast, staan alle integraties uit.</translation>
       Als hetzelfde URL-patroon zowel in dit beleid als in het beleid <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> bestaat, krijgt het tweede beleid voorrang en wordt de toegang tot bewegings- of lichtsensoren geblokkeerd.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
-<translation id="9002299469625801504">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in de <ph name="DEV_TOOLS_NAME" /> omdat de <ph name="LOCAL_NETWORK_ACCCESS" />-controles mislukken.
-
-Als je dit beleid niet toepast of niet instelt, wordt de standaardafhandeling van deze verzoeken gebruikt voor <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
-
-Zie https://github.com/explainers-by-googlers/local-network-access voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9003823644527627017">Bruschetta-VM's instellen op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Als je dit beleid toepast, kan het apparaat virtuele machines uitvoeren op <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> moeten aanstaan om <ph name="PRODUCT_CROSTINI_NAME" /> te gebruiken. Als je het beleid niet toepast, kan het apparaat geen virtuele machines uitvoeren. Als je het beleid niet toepast, wordt het beleid toegepast op startende nieuwe virtuele machines en niet op virtuele machines die al actief zijn.
 
@@ -11446,7 +11419,6 @@ Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding
       Als een taal is opgenomen in zowel dit beleid als het beleid <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" />, heeft het laatste beleid voorrang en wordt de taal voor spellingcontrole gebruikt.
 
       De volgende talen worden momenteel ondersteund: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
-<translation id="900867836818807386">Instellingen voor Automatisch invullen met AI</translation>
 <translation id="9009119876570708617">Dit beleid is verwijderd in M85. Gebruik <ph name="POLICY_NAME" /> als je in plaats daarvan niet-beveiligde content voor specifieke sites wilt toestaan.
        Dit beleid bepaalt hoe er wordt omgegaan met gecombineerde content (HTTP-content op HTTP-sites) in de browser.
        Als het beleid is ingesteld op True of niet is ingesteld, wordt gecombineerde audio- en videocontent automatisch geüpgraded naar HTTPS (de URL wordt herschreven als HTTPS, zonder fallback als de bron niet beschikbaar is via HTTPS). Er wordt ook een waarschuwing (Niet beveiligd) getoond in de URL-balk voor de gecombineerde afbeeldingscontent.
@@ -11732,7 +11704,6 @@ Dit beleid heeft geen effect als <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME
 De standaardinstelling is RollbackDisabled.</translation>
 <translation id="9197740283131855199">Percentage waarmee de dimvertraging van het scherm wordt geschaald als de gebruiker actief wordt na het dimmen</translation>
 <translation id="9200828125069750521">Parameters voor afbeeldings-URL die POST gebruikt</translation>
-<translation id="9202520409249547230">Automatisch invullen met AI niet toestaan</translation>
 <translation id="9204520300236345497">Sta het gebruik van ID's voor beschermde content met sites toe. Zo kan beschermde content met een hogere kwaliteit worden afgespeeld.</translation>
 <translation id="9204863016826119209">Zakelijke sleutels kunnen worden gebruikt door Android-apps die zijn geïnstalleerd en in dit beleid worden vermeld.</translation>
 <translation id="9206472508136116830">Share-discovery voor NetBIOS niet toestaan</translation>

@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" />개의 탭이 있는 <ph name="TITLE_OF_GROUP" /> 그룹 열기}other{<ph name="TAB_COUNT2" />개의 탭이 있는 <ph name="TITLE_OF_GROUP" /> 그룹 열기}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 탭 그룹 옵션</translation>
 <translation id="1300188005269437765">탭 및 탭 그룹이 비활성 섹션으로 자동 이동되는 시점을 선택합니다.</translation>
+<translation id="1321004960118052490">비활성 항목이 쌓이지 않습니다</translation>
 <translation id="1329584516321524826">조금 전 업데이트됨</translation>
 <translation id="1340839264183302272">그룹 나가기</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> 색상이며 <ph name="CARD_LABEL" /> 라벨이 지정된 탭 <ph name="TABS_COUNT_ONE" />개의 <ph name="TITLE_OF_GROUP" /> 공유 탭 그룹을 펼칩니다.}other{<ph name="COLOR_NAME" /> 색상이며 <ph name="CARD_LABEL" /> 라벨이 지정된 탭 <ph name="TABS_COUNT_MANY" />개의 <ph name="TITLE_OF_GROUP" /> 공유 탭 그룹을 펼칩니다.}}</translation>
@@ -107,9 +108,11 @@
 <translation id="492284538114688557">가격 인하 항목 발견</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> 색상이며 <ph name="CARD_LABEL" /> 라벨이 지정된 탭 <ph name="TABS_COUNT_ONE" />개의 공유 탭 그룹을 펼칩니다.}other{<ph name="COLOR_NAME" /> 색상이며 <ph name="CARD_LABEL" /> 라벨이 지정된 탭 <ph name="TABS_COUNT_MANY" />개의 공유 탭 그룹을 펼칩니다.}}</translation>
 <translation id="5007392906805964215">검토</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{탭을 새 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
 <translation id="5073204694187207510">전체화면 그리드 숨기기</translation>
 <translation id="5076161749301278626">매장 리뷰를 확인하시겠습니까?</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome에서는 <ph name="AUTO_DELETE_DELAY_ONE" />개월이 지난 비활성 탭과 탭 그룹을 자동으로 닫습니다. 설정에서 변경할 수 있습니다.}other{Chrome에서는 <ph name="AUTO_DELETE_DELAY_MANY" />개월이 지난 비활성 탭과 탭 그룹을 자동으로 닫습니다. 설정에서 변경할 수 있습니다.}}</translation>
 <translation id="5339733443032484186">마지막 탭</translation>
 <translation id="5380159289133845234">중복 탭 보관처리</translation>
 <translation id="5400836586163650660">그레이</translation>

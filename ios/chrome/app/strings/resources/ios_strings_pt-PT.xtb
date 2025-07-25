@@ -3,9 +3,9 @@
 <translationbundle lang="pt-PT">
 <translation id="1005023885865154304">Abra as definições do Preenchimento automático de palavras-passe</translation>
 <translation id="1005230401424685968">AAAA</translation>
-<translation id="1010225406377140704">Contacte o remetente para pedir um novo link</translation>
 <translation id="1013952917065545813">Pode voltar aqui para reabrir separadores que tenha fechado recentemente.</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
+<translation id="1019990162050689579">Atividade da app Gemini</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abrir Gestor de Palavras-passe</translation>
 <translation id="1035980983510608210">Se fechar todos os separadores, os separadores fixos também são fechados.</translation>
@@ -28,6 +28,7 @@
 <translation id="1085677983426914530">Não foi possível abrir o ficheiro <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">As definições de sincronização vão ser restauradas com base na última cópia de segurança. <ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Partilhe o conteúdo da página com o Gemini para receber respostas mais relevantes. Quando partilha uma página com o Gemini, o conteúdo completo e o URL da página são enviados para a Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Sincronização do histórico</translation>
 <translation id="1110772719190051587">Desbloqueie com o Face ID</translation>
 <translation id="1112015203684611006">Falha ao imprimir.</translation>
@@ -512,6 +513,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="3010025794097054078">Proteja-se contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="301080557829842765">Guia de privacidade</translation>
 <translation id="3012310354105716927">Alguns dados ainda não foram guardados</translation>
+<translation id="3013922155552460252">Veja e faça a gestão da atividade do Gemini, como os seus chats, feedback e comandos</translation>
 <translation id="3016518775797983090">Impossível partilhar página</translation>
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3021342271734507256">Desenhe, realce ou toque em qualquer coisa no ecrã para pesquisar</translation>
@@ -536,6 +538,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Tem 1 palavra-passe reutilizada. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="3102790820790869053">Pesquise separadores recentes</translation>
+<translation id="3106258548858559536">Desativar Modo de leitura</translation>
 <translation id="3106690631878101882">Ocultar Traduzir</translation>
 <translation id="310900540163454140">Eliminar a palavra-passe de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marcar…</translation>
@@ -634,6 +637,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3533860663366814939">Abra as definições de Preenchimento automático e palavras-passe</translation>
 <translation id="3546122170015471515">Pré-visualizações do Maps em Google.com</translation>
 <translation id="3547356470684043247">Leia as avaliações dos clientes sobre produtos, serviços ou experiências para tomar decisões informadas com críticas</translation>
+<translation id="3547933853190131743">Pesquisar com Modo de IA</translation>
 <translation id="3557336313807607643">Adicionar aos contactos</translation>
 <translation id="355765753469272474">Anular</translation>
 <translation id="3565930036634619844">Separador <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -1218,6 +1222,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5813223718099710537">Quando usa esta funcionalidade, o conteúdo da página e os URLs são enviados para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>
 <translation id="5817176759448082654">Verificação de Palavra-passe</translation>
 <translation id="5819208479324046259">Gerido por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">A sincronizar…</translation>
 <translation id="583923961930319521">Use palavras-passe em todos os dispositivos</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
@@ -1973,7 +1978,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8694281486652655615">Mostra este artigo</translation>
 <translation id="8696297579102085705">Enviar para o dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de endereço para a parte inferior</translation>
-<translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Vai poder partilhar, aderir e colaborar em grupos de separadores</translation>
 <translation id="8709409604518538305">Os separadores foram fechados</translation>
@@ -2102,6 +2106,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="913036870884277353">Abra facilmente links noutras apps.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Ativar Modo de leitura</translation>
 <translation id="9144230693397287797">Receba atualizações para os lembretes que definiu e separadores de outros dispositivos</translation>
 <translation id="914781932147356857">Marcar tudo…</translation>
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
@@ -2130,6 +2135,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="94870150074703282">Eliminar o grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="954667170699278022">Lista de leitura</translation>
+<translation id="956218893102219091">Use a sua localização exata para ver os resultados do Gemini mais precisos, em vez de uma localização estimada com base no seu endereço IP. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Está a seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Eliminar dados de navegação</translation>
 <translation id="963102227019621224">Atividade da Web e de apps</translation>

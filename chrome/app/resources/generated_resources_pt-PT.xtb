@@ -998,6 +998,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1670399744444387456">Básico</translation>
 <translation id="1673137583248014546"><ph name="URL" /> quer ver a marca e o modelo da sua Chave de segurança.</translation>
 <translation id="1674073353928166410">Abrir todos (<ph name="URL_COUNT" />) numa janela de navegação anónima</translation>
+<translation id="1674142805528405174">O Gestor de Palavras-passe da Google pode atualizar a sua conta com uma palavra-passe forte que está guardada para si na sua conta <ph name="EMAIL" />.</translation>
 <translation id="1677306805708094828">Não é possível adicionar <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1678849866171627536">Falha ao analisar. Este ficheiro pode ser um vírus ou software malicioso.</translation>
@@ -2391,6 +2392,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2642111877055905627">Bola de futebol</translation>
 <translation id="2642206811783203764">Sempre em <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Pode sempre eliminar dados de medição de anúncios ao eliminar os seus dados de navegação</translation>
+<translation id="2643379881528582459">Se o Chromium encontrar uma das suas palavras-passe numa violação de dados pública, pode oferecer-se para a alterar por si se tiver sessão iniciada</translation>
 <translation id="2643698698624765890">Faça a gestão das suas extensões clicando em Extensões no menu Janela.</translation>
 <translation id="2645047101481282803">O seu dispositivo é gerido por <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">A transmitir este separador para o dispositivo <ph name="DEVICE_NAME" /></translation>
@@ -4210,6 +4212,7 @@ Quer pará-lo?</translation>
 <translation id="3903696968689283281">Informações dos proprietários do Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Serviços de localização</translation>
 <translation id="3905761538810670789">Reparar aplicação</translation>
+<translation id="3906096710440765802">Inicie sessão no Chrome para ter as suas palavras-passe, marcadores e muito mais em todos os dispositivos</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no Modo de navegação anónima</translation>
 <translation id="3908501907586732282">Ativar extensão</translation>
 <translation id="3909456989251621103">Se eliminar um certificado de servidor, o Chrome deixa de o usar para identificar servidores.</translation>
@@ -4693,6 +4696,7 @@ Quer pará-lo?</translation>
 <translation id="425573743389990240">Taxa de descarga da bateria em Watts (Um valor negativo significa que a bateria está em carregamento)</translation>
 <translation id="4255841059940367080">Proteção com tecnologia de IA em tempo real contra sites, transferências e extensões perigosas, com base no envio dos seus dados de navegação para a Google</translation>
 <translation id="4256316378292851214">Guardar &amp;Vídeo Como...</translation>
+<translation id="4257175174234042421">Alteração automática da palavra-passe</translation>
 <translation id="4258348331913189841">Sistemas de ficheiros</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Manter grupo}other{Manter grupos}}</translation>
 <translation id="4259388776256904261">Esta ação poderá demorar algum tempo.</translation>
@@ -5280,7 +5284,6 @@ Quer pará-lo?</translation>
 <translation id="4676616966096505747">Alguns dados ainda não foram guardados na sua conta</translation>
 <translation id="4677772697204437347">Memória de GPU</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4678729681411398877">Quando uma das suas palavras-passe é encontrada numa violação de dados, o Gestor de Palavras-passe da Google pergunta se quer alterá-la para uma palavra-passe forte</translation>
 <translation id="4678848110205818817">Cartão de crédito/débito</translation>
 <translation id="4679018849559620189">Isto ajuda a aceder às suas chaves de acesso guardadas em qualquer dispositivo</translation>
 <translation id="4680105648806843642">O som foi desativado nesta página.</translation>
@@ -7865,6 +7868,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> utilizadores</translation>
 <translation id="6555432686520421228">Remova todas as contas de utilizador e reponha o seu dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> para que fique como novo.</translation>
 <translation id="6555604601707417276">Cópia de segurança do Linux restaurada</translation>
+<translation id="6555744145993174510">de: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Refazer</translation>
 <translation id="6556903358015358733">Tema e imagem de fundo</translation>
 <translation id="6557199166823345360">Adicione mais detalhes ou faça uma pergunta sobre a sua seleção para refinar a pesquisa</translation>
@@ -7900,6 +7904,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – conteúdo do ambiente de trabalho partilhado.</translation>
 <translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% concluída</translation>
 <translation id="6580203076670148210">Velocidade de análise</translation>
+<translation id="6581356304040102696">Não é possível importar palavras-passe. O tamanho do ficheiro deve ser inferior a 1 MB.</translation>
 <translation id="6582080224869403177">Efetue a reposição do dispositivo <ph name="DEVICE_TYPE" /> para atualizar a sua segurança.</translation>
 <translation id="6582274660680936615">Está a navegar como convidado</translation>
 <translation id="6583328141350416497">Continuar transferência</translation>
@@ -8019,7 +8024,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6667187897999649121">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com um máximo de 6 membros e obtenha mais dos seus produtos e subscrições na rede Google.</translation>
 <translation id="666731172850799929">Abrir no <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Os dados são tratados da mesma forma que o site que está a ver</translation>
-<translation id="6669637573228217624">Carregar ficheiro</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> está agora disponível.</translation>
 <translation id="6670767097276846646">Algumas extensões podem adicionar motores de pesquisa ao Chrome</translation>
 <translation id="6670983860904543332">As atualizações automáticas fornecem-lhe as funcionalidades mais recentes. Explore os destaques de atualizações recentes.</translation>
@@ -9209,6 +9213,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7506242536428928412">Para utilizar a nova chave de segurança, defina um novo PIN.</translation>
 <translation id="7506541170099744506">O seu <ph name="DEVICE_TYPE" /> foi inscrito com êxito para gestão empresarial.</translation>
 <translation id="7507207699631365376">Veja a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste fornecedor.</translation>
+<translation id="7508127419095425107">Mais sobre esta funcionalidade e os dados relevantes enviados para a Google</translation>
 <translation id="7508707215237589321">Eliminar "<ph name="CERT_NAME" />"?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fechar o separador e eliminar o grupo?}=1{Fechar os separadores e eliminar o grupo?}other{Fechar os separadores e eliminar os grupos?}}</translation>
 <translation id="7509097596023256288">Configurar a gestão</translation>
@@ -9291,7 +9296,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7568759527730933493">Use uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio). Esta opção usa um fornecedor de serviços geridos em <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> As ligações seguras não são usadas para alguns domínios configurados pelo seu administrador.</translation>
 <translation id="756876171895853918">Personalizar avatar</translation>
 <translation id="7568790562536448087">A atualizar</translation>
-<translation id="7569113730576914983">Quando o Chrome encontra uma das suas palavras-passe numa violação de dados, pode oferecer-se para a alterar por si quando iniciar sessão</translation>
 <translation id="7569983096843329377">Preto</translation>
 <translation id="7570548610653957960">Ajuda-me a ler</translation>
 <translation id="7571643774869182231">Sem armazenamento suficiente para atualizar</translation>
@@ -10941,6 +10945,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="869884720829132584">Menu Apps</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699188901396699995">PPD para <ph name="PRINTER_NAME" /></translation>
+<translation id="8699296325072357994">O conteúdo das páginas de palavras-passe e as informações relacionadas são enviadas para a Google e revistas por humanos. A sua palavra-passe é encriptada e nunca é visível para ninguém. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Indique-nos o motivo pelo qual permitiu os cookies de terceiros neste site</translation>
 <translation id="8700087567921985940">Use a localização. Permita que as apps e os serviços com a autorização de acesso à localização usem a localização do seu dispositivo. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização. <ph name="BEGIN_LINK1" />Saiba mais sobre a localização<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">Launcher + retrocesso</translation>
@@ -11383,6 +11388,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8993059306046735527">Caso se esqueça da sua palavra-passe do <ph name="DEVICE_TYPE" />, ainda pode restaurar os seus dados locais. Vai ter de iniciar sessão na sua Conta Google ou usar a recuperação de conta.</translation>
 <translation id="8993198843374358393">Copiar hash do certificado <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Fornece controlos para acelerar, abrandar e pausar a voz de leitura.</translation>
+<translation id="8993787625629280252">Se o Chrome encontrar uma das suas palavras-passe numa violação de dados pública, pode oferecer-se para a alterar por si se tiver sessão iniciada</translation>
 <translation id="899384117894244799">Remover utilizador restrito</translation>
 <translation id="8993853206419610596">Expandir todos os pedidos</translation>
 <translation id="8993945059918628059">Toque no sensor de impressões digitais com o dedo. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>

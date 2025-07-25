@@ -3,7 +3,6 @@
 <translationbundle lang="sr">
 <translation id="1005023885865154304">Отворите подешавања за аутоматско попуњавање лозинки</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
-<translation id="1010225406377140704">Затражите нови линк од пошиљаоца</translation>
 <translation id="1013952917065545813">Можете да се вратите овде да бисте поново отворили картице које сте недавно затворили</translation>
 <translation id="1016495303386450659">Ставка је ажурирана</translation>
 <translation id="1019990162050689579">Активности у Gemini апликацијама</translation>
@@ -1223,6 +1222,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5813223718099710537">Када користите ову функцију, садржај и URL-ови страница се шаљу Google-у. To можете да искључите у подешавањима у сваком тренутку.</translation>
 <translation id="5817176759448082654">Провера лозинки</translation>
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронизује се…</translation>
 <translation id="583923961930319521">Користите лозинке на свим уређајима</translation>
 <translation id="5844284118433003733">Кад сте пријављени, ови подаци су повезани са вашим Google налогом да бисмо вас заштитили у свим Google услугама, на пример, повећањем заштите у Gmail-у после безбедносног инцидента.</translation>
@@ -1978,7 +1978,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8694281486652655615">Приказује ову ставку</translation>
 <translation id="8696297579102085705">Пошаљи на уређај</translation>
 <translation id="8697136149718343437">Премести траку за адресу на дно</translation>
-<translation id="8703372953981978786">Овај линк не ради</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8706806585855470492">Моћи ћете да делите групе картица, придружујете им се и сарађујете у њима</translation>
 <translation id="8709409604518538305">Картице су затворене</translation>

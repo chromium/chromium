@@ -5281,7 +5281,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4676616966096505747">Neki podaci još nisu sačuvani na nalogu</translation>
 <translation id="4677772697204437347">GPU memorija</translation>
 <translation id="467809019005607715">Google prezentacije</translation>
-<translation id="4678729681411398877">Kada se neka od vaših lozinki pronađe u povredi podataka, Google menadžer lozinki vas pita da li želite da je zamenite jakom lozinkom</translation>
 <translation id="4678848110205818817">Kreditna ili debitna kartica</translation>
 <translation id="4679018849559620189">To vam pomaže da pristupate sačuvanim pristupnim ključevima na bilo kom uređaju</translation>
 <translation id="4680105648806843642">Zvuk je isključen na ovoj stranici</translation>
@@ -8024,7 +8023,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6667187897999649121">Za sada lozinke možete da delite samo sa članovima porodice. <ph name="BEGIN_LINK" />Napravite grupu za porodicu<ph name="END_LINK" /> sa najviše 6 članova i dobijte više iz proizvoda i pretplata u svim Google uslugama.</translation>
 <translation id="666731172850799929">Otvori u <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Podaci se tretiraju isto kao i sajt koji pregledate</translation>
-<translation id="6669637573228217624">Otpremite fajl</translation>
 <translation id="6670142487971298264">Aplikacija <ph name="APP_NAME" /> je sada dostupna</translation>
 <translation id="6670767097276846646">Neki dodaci mogu da dodaju pretraživače u Chrome</translation>
 <translation id="6670983860904543332">Automatska ažuriranja vam pružaju najnovije funkcije. Istražite istaknute funkcije iz nedavnih ažuriranja.</translation>
@@ -9297,7 +9295,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7568759527730933493">Koristite bezbednu vezu da biste potražili IP adresu sajta u DNS-u (sistem imena domena). Ovim koristite dobavljača usluge kojim se upravlja na <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> Bezbedne veze se ne koriste za neke domene koje je konfigurisao administrator.</translation>
 <translation id="756876171895853918">Prilagodite avatar</translation>
 <translation id="7568790562536448087">Ažuriranje</translation>
-<translation id="7569113730576914983">Kada Chrome pronađe neku od lozinki u povredi podataka, može da vam ponudi da promeni lozinku kada se prijavite</translation>
 <translation id="7569983096843329377">Crna</translation>
 <translation id="7570548610653957960">Pomoć pri čitanju</translation>
 <translation id="7571643774869182231">Nema dovoljno memorijskog prostora za ažuriranje</translation>

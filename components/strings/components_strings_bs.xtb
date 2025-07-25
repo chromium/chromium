@@ -478,7 +478,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1785118555253503473">Instalirati web aplikacije?</translation>
 <translation id="1791415068765905273">Prikaži sve tabele poređenja</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate informacijama, privatnošću i sigurnošću na Google računu</translation>
-<translation id="1793473605302304726">Plaćanje na rate</translation>
 <translation id="1793631236004319016">Posljednji put je korišteno prije <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Dostupno je više radnji. Pritisnite Tab da ih prelistate</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3467081767799433066">Uz mjerenje oglasa se ograničene vrste podataka dijele između web lokacija radi mjerenja performansi njihovih oglasa, npr. jeste li izvršili kupovinu nakon što ste posjetili web lokaciju.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutno otvoreno, pritisnite Tab, a zatim Enter da se prebacite na otvorenu karticu.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da zatvorite sve anonimne prozore koji su trenutno otvoreni</translation>
+<translation id="3472469028191701821">Otvaranje u novoj kartici</translation>
 <translation id="3474392552865647225">Dugme Prilagodi fontove u Chromeu, aktivirajte da prilagodite veličine i stilove fonta u Chromeu</translation>
 <translation id="3478033058537426179">Po grupi</translation>
 <translation id="3479552764303398839">Ne sada</translation>
@@ -2963,7 +2963,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5969199813874624822">Sačuvajte i pratite cijene</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Šesta rolna</translation>
-<translation id="5974745851230707809">Opcije plaćanja na rate</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5979084224081478209">Provjeri lozinke</translation>
 <translation id="5984570616552610254">Vlažnost komore</translation>
@@ -3609,7 +3608,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7042616127917168121">Preciziranje rezultata</translation>
 <translation id="7043552168914147882">Papir s jezičkom</translation>
 <translation id="7044081119134178347">Kamera je dozvoljena ovaj put</translation>
-<translation id="704738887031336226">Prikažite opcije <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />plaćanja na rate<ph name="PAY_OVER_TIME_HELP_LINK_END" /> prilikom nastavka na plaćanje</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je server prikazao potvrdu čiji period važenja je predugačak da bi bio vjerodostojan.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
@@ -4306,7 +4304,6 @@ Dodatni detalji:
 <translation id="8220602974062798186">Blokirati temu <ph name="TOPIC" /> i sve povezane teme?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, postavljanje pitanja asistentu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Prikaži na dvije stranice</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> želi pristupiti uređaju na vašoj mreži:</translation>
 <translation id="822925450938886901">Za dodatne informacije i pravila koja se možda primjenjuju otvorite chrome://management u pregledniku.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

@@ -174,6 +174,7 @@
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3038232873781883849">ထည့်သွင်းရန်စောင့်နေသည်…</translation>
 <translation id="3045032126857188731">ပြန်ဆိုထားသော ဘာသာစကား- <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">အကြံပြုချက် ဒိုင်ယာလော့ ပိတ်ရန်</translation>
 <translation id="306179102415443347">Google Password Manager ကို အမြန်ဖွင့်ရန် ဖြတ်လမ်းလင့်ခ် သုံးပါ။ ကွန်ပျူတာ ပင်မစာမျက်နှာ (သို့) App Launcher သို့ ဖြတ်လမ်းလင့်ခ်ကို ရွှေ့ထားနိုင်သည်။</translation>
 <translation id="3065168410429928842">Chrome တဘ်</translation>
 <translation id="3080151273017101988">Google Chrome ကို ပိတ်လိုက်ချိန်မှာ နောက်ခံအက်ပ်များကို ဆက်ဖွင့် ထားရန်</translation>
@@ -330,7 +331,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">“Google Password Manager” ကို နှိပ်ပါ</translation>
 <translation id="504867494566807945">Chrome တွင် အက်ပ်များရှိ လင့်ခ်များကို ဖွင့်ပါ။ ထို့ပြင် အလွယ်သုံးနိုင်ရန်အတွက် သင်၏ လုပ်ဆောင်စရာဘားတွင် ၎င်းကို ပင်ထိုးပါ။</translation>
-<translation id="5049567194145991071">‘ရပါပြီ’ ကို နှိပ်သောအခါ Chrome သို့ သင်လက်မှတ်ထိုးဝင်ချိန်တိုင်းတွင် သင်၏ Google Account ၌ စကားဝှက်စသည်တို့ကို သိမ်းနိုင်၊ သုံးနိုင်သည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">သင်၏အကောင့် <ph name="USER_EMAIL" /> တွင် Chrome ဒေတာ သုံးရန်နှင့် သိမ်းရန်အတွက် စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="5120334927898581447">အခြား Google ဝန်ဆောင်မှုများသို့ လက်မှတ်ထိုးဝင်သောအခါ Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="5126049312684316860">သင်ဝင်ကြည့်နိုင်ဖွယ်ရှိသည့် စာမျက်နှာများသို့ ဝင်ကြည့်သောအခါ ပိုမိုလျင်မြန်စွာ ပွင့်စေရန် Chrome သည် စာမျက်နှာတစ်ခုထက်ပို၍ ကြိုဖွင့်သည်</translation>
@@ -554,7 +554,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7801699035218095297">Google Chrome သည် စကားဝှက်များ မိတ္တူကူးရန် ကြိုးစားနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ထည့်ပါ။</translation>
 <translation id="7808348361785373670">Chrome ထဲမှ ဖယ်ရှားပစ်ရန်</translation>
 <translation id="7825851276765848807">မသိရသည့် အမှားတစ်ခုကြောင့် တပ်ဆင်မှု မအေင်မြင်ခဲ့ပါ။ ကျေးဇူးပြုပြီး Google Chrome ကို ထပ်ပြီး ဒေါင်းလုဒ် လုပ်ယူပါ။</translation>
-<translation id="7826342993930002256">နေရာအနှံ့ ရနိုင်သည့် သင်၏ Chrome</translation>
 <translation id="7827099906024714326">ဒေတာအချို့ကို သင့် Google Account တွင် မသိမ်းမီ၊ သင့်စက်အားလုံးတွင် မသုံးမီ Chrome သည် သင်ဖြစ်ကြောင်း အတည်ပြုရန်လိုသည်။ ယခု ထွက်သွားပါက ဤဒေတာကို ဖျက်ပါမည်။</translation>
 <translation id="7845233973568007926">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ကွန်ပျူတာကို ပြန်စရမည်။</translation>
 <translation id="7872446069773932638">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="SECONDS" /> စက္ကန့် ကျန်သည်</translation>

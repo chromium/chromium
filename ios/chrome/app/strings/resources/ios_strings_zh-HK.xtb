@@ -3,7 +3,6 @@
 <translationbundle lang="zh-HK">
 <translation id="1005023885865154304">開啟「自動填入密碼」設定</translation>
 <translation id="1005230401424685968">YYYY</translation>
-<translation id="1010225406377140704">聯絡發送者索取新連結</translation>
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">已更新項目</translation>
 <translation id="1019990162050689579">Gemini 應用程式活動</translation>
@@ -1223,6 +1222,7 @@
 <translation id="5813223718099710537">當你使用此功能，頁面內容和網址會傳送到 Google。你可隨時在設定中關閉此功能。</translation>
 <translation id="5817176759448082654">密碼安全檢查</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">同步中…</translation>
 <translation id="583923961930319521">在所有裝置上使用密碼</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
@@ -1978,7 +1978,6 @@
 <translation id="8694281486652655615">顯示呢個項目</translation>
 <translation id="8696297579102085705">傳送至你的裝置</translation>
 <translation id="8697136149718343437">將網址列移至底部</translation>
-<translation id="8703372953981978786">此連結無法運作</translation>
 <translation id="8706253136355675497">溫度</translation>
 <translation id="8706806585855470492">你將可以分享、加入分頁群組和協作</translation>
 <translation id="8709409604518538305">分頁已關閉</translation>

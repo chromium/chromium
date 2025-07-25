@@ -999,6 +999,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1670399744444387456">De base</translation>
 <translation id="1673137583248014546">L'URL <ph name="URL" /> veut voir la marque et le modèle de votre clé de sécurité</translation>
 <translation id="1674073353928166410">Tout ouvrir (<ph name="URL_COUNT" />) dans une fenêtre de navigation privée</translation>
+<translation id="1674142805528405174">Le gestionnaire de mots de passe Google peut mettre à jour votre compte avec un mot de passe fort qui est enregistré pour vous dans votre compte <ph name="EMAIL" />.</translation>
 <translation id="1677306805708094828">Impossible d'ajouter <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
 <translation id="1678849866171627536">Échec de l'analyse. Ce fichier peut être un virus ou un logiciel malveillant.</translation>
@@ -2393,6 +2394,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2642111877055905627">Ballon de soccer</translation>
 <translation id="2642206811783203764">Toujours sur <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Vous pouvez toujours supprimer les données de la mesure des annonces en supprimant vos données de navigation</translation>
+<translation id="2643379881528582459">Si Chromium indique qu'un de vos mots de passe a été découvert dans un cas de violation de données publique, il peut vous proposer de le modifier pour vous si votre compte est connecté</translation>
 <translation id="2643698698624765890">Pour gérer vos extensions, cliquez sur « Extensions » dans le menu « Fenêtre ».</translation>
 <translation id="2645047101481282803">Votre appareil est géré par <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Diffusion de cet onglet sur <ph name="DEVICE_NAME" /></translation>
@@ -2915,6 +2917,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3003967365858406397">Votre <ph name="PHONE_NAME" /> créera une connexion Wi-Fi privée.</translation>
 <translation id="3004385386820284928">Personnaliser les touches du clavier</translation>
 <translation id="3006881078666935414">Aucune donnée d'utilisation</translation>
+<translation id="3007555010975143508">Ces applis seront utilisées pour enregistrer votre écran :</translation>
 <translation id="3007771295016901659">Dupliquer l'onglet</translation>
 <translation id="3008142279736625920">Gâteau au fromage</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
@@ -4211,6 +4214,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3903696968689283281">Informations sur les propriétaires Wi-Fi direct :</translation>
 <translation id="3904326018476041253">Services de localisation</translation>
 <translation id="3905761538810670789">Réparer l'application</translation>
+<translation id="3906096710440765802">Connectez-vous à Chrome pour synchroniser vos mots de passe, vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="3908288065506437185">Bloquer les témoins tiers en mode de navigation privée</translation>
 <translation id="3908501907586732282">Activer l'extension</translation>
 <translation id="3909456989251621103">Si vous supprimez un certificat de serveur, Chrome ne l'utilisera plus pour identifier les serveurs.</translation>
@@ -4380,6 +4384,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4016762287427926315">Les autorisations que vous accordez à <ph name="APP_NAME" /> seront également accordées à cette application. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Créer un code QR pour ce lien</translation>
 <translation id="4019983356493507433">Modifier la liste des favoris</translation>
+<translation id="4020701737692625681">Votre administrateur peut enregistrer votre écran</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">Vous pouvez éviter que votre curseur se déplace brusquement en cas de légers mouvements de la tête, mais cela entraînera un bref décalage.</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -4693,6 +4698,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="425573743389990240">Taux de décharge de la batterie en watts (une valeur négative signifie que la batterie se recharge)</translation>
 <translation id="4255841059940367080">Une protection propulsée par l'IA en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="4256316378292851214">Enregistrer la &amp;vidéo sous...</translation>
+<translation id="4257175174234042421">Modification automatique du mot de passe</translation>
 <translation id="4258348331913189841">Systèmes de fichiers</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Conserver le groupe}one{Conserver le groupe}other{Conserver les groupes}}</translation>
 <translation id="4259388776256904261">Cela peut prendre un certain temps</translation>
@@ -5280,7 +5286,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4676616966096505747">Certaines données ne sont pas encore enregistrées dans votre compte</translation>
 <translation id="4677772697204437347">Mémoire du processeur graphique</translation>
 <translation id="467809019005607715">Google Présentations</translation>
-<translation id="4678729681411398877">Lorsqu'un de vos mots de passe est détecté lors d'une violation de données, le gestionnaire de mots de passe Google vous demande si vous voulez qu'il soit remplacé par un mot de passe fort.</translation>
 <translation id="4678848110205818817">Carte de crédit ou de débit</translation>
 <translation id="4679018849559620189">Cela vous aide à accéder à vos clés d'accès enregistrées sur n'importe quel appareil</translation>
 <translation id="4680105648806843642">Le son a été désactivé sur cette page</translation>
@@ -6058,6 +6063,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5235050375939235066">Désinstaller l'application?</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5235750401727657667">Remplacer la page qui s'affiche lors de l'ouverture d'un nouvel onglet</translation>
+<translation id="5236054983756407518">Retirer votre adresse personnelle de Chrome?</translation>
 <translation id="5237124927415201087">Configurez facilement votre appareil <ph name="DEVICE_TYPE" /> avec votre téléphone. Vous pouvez ajouter votre compte Wi-Fi et Google sans entrer manuellement vos mots de passe.
     <ph name="BR" />
     <ph name="BR" />
@@ -6843,6 +6849,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5817918615728894473">Associer</translation>
 <translation id="5817963443108180228">Bon retour, <ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">Modifier dans le compte Google</translation>
 <translation id="581911254119283028">toutes les applications</translation>
 <translation id="5821565227679781414">Créer un raccourci</translation>
 <translation id="5824976764713185207">Lire automatiquement la page une fois son chargement terminé</translation>
@@ -7042,6 +7049,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Un site Web souhaite ouvrir cette application.</translation>
 <translation id="5955809630138889698">Cet appareil peut uniquement être admissible au mode démo en ligne. Veuillez communiquer avec votre représentant de l'assistance pour obtenir plus de détails.</translation>
+<translation id="59561895884837262">Vous recevrez une notification lorsque l'enregistrement commencera.</translation>
 <translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour énoncer à côté de votre image de profil, puis sélectionnez ce que vous voulez entendre.</translation>
 <translation id="5958836583172610505">La synchronisation est activée</translation>
 <translation id="5959471481388474538">Le réseau n'est pas accessible</translation>
@@ -7186,6 +7194,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="606449270532897041">Gérer les données relatives aux sites</translation>
 <translation id="6064764629679333574">Améliorez la qualité du son du microphone Bluetooth en convertissant l'audio basse résolution en audio haute résolution.</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
+<translation id="6065690209261668796">Retirer votre adresse professionnelle de Chrome?</translation>
 <translation id="6066794465984119824">Le hachage de l'image n'est pas défini</translation>
 <translation id="6069464830445383022">Pour vous connecter à votre Chromebook, servez-vous de votre compte Google</translation>
 <translation id="6071181508177083058">confirmer le mot de passe</translation>
@@ -7858,6 +7867,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> utilisateurs</translation>
 <translation id="6555432686520421228">Supprime tous les comptes utilisateur et réinitialise votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" /> qui devient comme neuf.</translation>
 <translation id="6555604601707417276">Sauvegarde Linux restaurée</translation>
+<translation id="6555744145993174510">à partir de : <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Rétablir</translation>
 <translation id="6556903358015358733">Thème et fond d'écran</translation>
 <translation id="6557199166823345360">Ajoutez plus de détails ou posez une question sur votre sélection pour affiner votre recherche</translation>
@@ -7893,6 +7903,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Contenu du bureau partagé</translation>
 <translation id="6580060371127789208">Terminé à <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6580203076670148210">Vitesse de recherche</translation>
+<translation id="6581356304040102696">Impossible d'importer les mots de passe. La taille du fichier doit être inférieure à 1 Mo.</translation>
 <translation id="6582080224869403177">Réinitialisez votre <ph name="DEVICE_TYPE" /> pour effectuer une mise à niveau de la sécurité.</translation>
 <translation id="6582274660680936615">Vous naviguez en tant qu'invité</translation>
 <translation id="6583328141350416497">Continuer le téléchargement</translation>
@@ -8014,7 +8025,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6667187897999649121">Pour l'instant, vous ne pouvez partager les mots de passe qu'avec les membres de la famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> comptant jusqu'à six membres et tirez le meilleur parti de vos produits et de vos abonnements sur Google.</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Les données sont traitées de la même manière que le site que vous consultez</translation>
-<translation id="6669637573228217624">Téléverser un fichier</translation>
 <translation id="6670142487971298264">L'application <ph name="APP_NAME" /> est maintenant accessible</translation>
 <translation id="6670767097276846646">Certaines extensions peuvent ajouter des moteurs de recherche à Chrome</translation>
 <translation id="6670983860904543332">Les mises à jour automatiques vous fournissent les dernières fonctionnalités. Explorez les faits saillants des mises à jour récentes.</translation>
@@ -8271,6 +8281,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Retirer l'onglet et supprimer le groupe?}=1{Retirer l'onglet et supprimer le groupe?}one{Retirer l'onglet et supprimer le groupe?}other{Retirer les onglets et supprimer les groupes?}}</translation>
 <translation id="6833479554815567477">Onglet retiré du groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Équilibré (recommandé)</translation>
+<translation id="6835624277262316125">Votre adresse professionnelle peut vous aider à accomplir des tâches dans les services Google, comme en améliorant la pertinence des résultats de recherche et des itinéraires dans Google Maps. Vous pouvez modifier ou supprimer votre adresse dans votre <ph name="BEGIN_LINK" />compte Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Veuillez vous connecter à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838992358006915573">La loupe suit la mise en évidence de ChromeVox</translation>
 <translation id="6839916869147598086">La procédure de connexion a changé</translation>
@@ -8404,6 +8415,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6929126689972602640">Les contrôles parentaux ne sont pas pris en charge pour les comptes scolaires. Pour ajouter un compte scolaire afin d'accéder à Google Classroom et à d'autres sites Web permettant de faire des devoirs à la maison, connectez-vous d'abord avec le compte personnel de l'enfant. Vous pouvez ajouter le compte scolaire plus tard dans le menu de configuration.</translation>
 <translation id="6929760895658557216">Hey Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Une extension a été refusée}one{# extension a été refusée}other{# extensions ont été refusées}}</translation>
+<translation id="6930337524857202955">Nouveau téléchargement proposé</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Niveau de pression du clic</translation>
 <translation id="6933321725007230600">Activer la &amp;synchronisation…</translation>
@@ -9201,6 +9213,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7506242536428928412">Pour utiliser votre nouvelle clé de sécurité, définissez un nouveau NIP</translation>
 <translation id="7506541170099744506">Votre <ph name="DEVICE_TYPE" /> est bien enregistré pour la gestion d'entreprise.</translation>
 <translation id="7507207699631365376">Consulter la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de ce fournisseur</translation>
+<translation id="7508127419095425107">En savoir plus sur cette fonctionnalité et sur les données pertinentes envoyées à Google</translation>
 <translation id="7508707215237589321">Supprimer « <ph name="CERT_NAME" /> »?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fermer l'onglet et supprimer le groupe?}=1{Fermer l'onglet et supprimer le groupe?}one{Fermer l'onglet et supprimer le groupe?}other{Fermer les onglets et supprimer les groupes?}}</translation>
 <translation id="7509097596023256288">Configuration de la gestion en cours…</translation>
@@ -9283,7 +9296,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7568759527730933493">Utilisez une connexion sécurisée pour rechercher l'adresse IP d'un site dans le DNS (système de noms de domaine). Cette option utilise un fournisseur de services gérés à <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> Les connexions sécurisées ne sont pas utilisées pour certains domaines configurés par votre administrateur.</translation>
 <translation id="756876171895853918">Personnaliser l'avatar</translation>
 <translation id="7568790562536448087">Mise à jour</translation>
-<translation id="7569113730576914983">Si Chrome détecte l'un de vos mots de passe lors d'une violation de données, il peut vous proposer de le modifier pour vous lorsque vous vous connectez</translation>
 <translation id="7569983096843329377">Noir</translation>
 <translation id="7570548610653957960">Aide à la lecture</translation>
 <translation id="7571643774869182231">Espace insuffisant pour la mise à jour</translation>
@@ -9615,6 +9627,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">Votre adresse personnelle peut vous aider à accomplir des tâches dans les services Google, comme en améliorant la pertinence des résultats de recherche et des itinéraires dans Google Maps. Vous pouvez modifier ou supprimer votre adresse dans votre <ph name="BEGIN_LINK" />compte Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Méthode d'entrée</translation>
 <translation id="7791429245559955092">Cette application sera installée sur le profil Chrome que vous utilisez actuellement</translation>
 <translation id="7791436592012979144">Défilement inversé activé</translation>
@@ -10931,6 +10944,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="869884720829132584">Menu Applications</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699188901396699995">PPD pour <ph name="PRINTER_NAME" /></translation>
+<translation id="8699296325072357994">Le contenu provenant des pages de mots de passe et les informations connexes sont envoyés à Google et examinés par des humains. Votre mot de passe est chiffré et n'est jamais vu par personne. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">Dites-nous pourquoi vous avez autorisé les témoins tiers sur ce site</translation>
 <translation id="8700087567921985940">Utiliser la position. Permettez aux applis et aux services munis de l'autorisation de localisation d'utiliser la position de votre appareil. Google peut régulièrement collecter des données de localisation et les utiliser anonymement afin d'améliorer la précision de la localisation et les services basés sur l'emplacement. <ph name="BEGIN_LINK1" />En savoir plus sur la localisation<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">lanceur+retour arrière</translation>
@@ -11373,6 +11387,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8993059306046735527">Si vous oubliez votre mot de passe <ph name="DEVICE_TYPE" />, vous pouvez toujours restaurer vos données locales. Vous devrez vous connecter à votre compte Google ou utiliser la récupération du compte.</translation>
 <translation id="8993198843374358393">Copier le hachage du certificat pour <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Offre des commandes permettant d'accélérer, de ralentir et d'interrompre la voix de lecture</translation>
+<translation id="8993787625629280252">Si Chrome indique qu'un de vos mots de passe a été découvert dans un cas de violation de données publique, il peut vous proposer de le modifier pour vous si vous êtes connecté</translation>
 <translation id="899384117894244799">Supprimer le profil d'utilisateur restreint</translation>
 <translation id="8993853206419610596">Développer toutes les requêtes</translation>
 <translation id="8993945059918628059">Touchez le capteur d'empreintes digitales avec votre doigt. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>

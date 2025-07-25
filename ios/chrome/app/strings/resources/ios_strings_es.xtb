@@ -3,9 +3,9 @@
 <translationbundle lang="es">
 <translation id="1005023885865154304">Abrir ajustes de Autocompletar contraseñas</translation>
 <translation id="1005230401424685968">AAAA</translation>
-<translation id="1010225406377140704">Ponte en contacto con el remitente para pedirle un enlace nuevo</translation>
 <translation id="1013952917065545813">Puedes volver aquí para abrir de nuevo las últimas pestañas que hayas cerrado recientemente.</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
+<translation id="1019990162050689579">Actividad en la aplicación Gemini</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1030376737535466765">Abrir el Gestor de contraseñas</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
@@ -28,6 +28,7 @@
 <translation id="1085677983426914530">No se ha podido abrir <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Tus ajustes de sincronización se restaurarán en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Comparte el contenido de la página con Gemini para obtener respuestas más relevantes. Cuando compartes una página con Gemini, el contenido completo y la URL de la página se envían a Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1110772719190051587">Desbloquear con Face ID</translation>
 <translation id="1112015203684611006">Error al imprimir.</translation>
@@ -282,6 +283,7 @@
 <translation id="2067852168641682340">Guardar siempre en esta cuenta</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 pestaña}other{{count} pestañas}}</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
+<translation id="2074599390896964828">Ubicación precisa</translation>
 <translation id="2078437078822043850">Puedes deslizar hacia la derecha para navegar en Incógnito.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2085876078937250610">Guardar…</translation>
@@ -310,6 +312,7 @@
 <translation id="219283042927675668">Pestañas en el grupo</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
 <translation id="2196428379625389579">Buscar en la Web</translation>
+<translation id="2198001751007276170">Reemplazar contraseñas</translation>
 <translation id="2199562093267256223">Se eliminará el grupo de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">No hay cuentas de correo</translation>
 <translation id="2214453882118345682">Compra, traduce e identifica lo que ves con tu cámara.</translation>
@@ -510,6 +513,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="3010025794097054078">Protégete frente a brechas de seguridad de datos, sitios web no seguros y más.</translation>
 <translation id="301080557829842765">Guía de privacidad</translation>
 <translation id="3012310354105716927">Aún no se han guardado algunos datos</translation>
+<translation id="3013922155552460252">Consulta y gestiona la actividad en Gemini, como tus conversaciones, comentarios y peticiones</translation>
 <translation id="3016518775797983090">Página no compartida</translation>
 <translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3021342271734507256">Dibuja, resalta o toca cualquier elemento de la pantalla para buscarlo.</translation>
@@ -534,6 +538,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3087734570205094154">Inferior</translation>
 <translation id="309710370695886264">Tienes 1 contraseña reutilizada. Corrige el problema para protegerte.</translation>
 <translation id="3102790820790869053">Buscar en las pestañas recientes</translation>
+<translation id="3106258548858559536">Desactivar modo Lectura</translation>
 <translation id="3106690631878101882">Ocultar Traducir</translation>
 <translation id="310900540163454140">¿Eliminar la contraseña de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marcar…</translation>
@@ -632,6 +637,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3533860663366814939">Abre los ajustes de Autorrelleno y contraseñas</translation>
 <translation id="3546122170015471515">Vistas previas de Maps en Google.com</translation>
 <translation id="3547356470684043247">Lee las evaluaciones de los clientes sobre productos, servicios o experiencias y toma decisiones más fundamentadas con las reseñas</translation>
+<translation id="3547933853190131743">Buscar con el Modo IA</translation>
 <translation id="3557336313807607643">Añadir a contactos</translation>
 <translation id="355765753469272474">Deshacer</translation>
 <translation id="3565930036634619844">Pestaña <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -1216,6 +1222,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5813223718099710537">Cuando usas esta función, el contenido de la página y las URLs se envían a Google. Puedes desactivar esta opción en Configuración cuando quieras.</translation>
 <translation id="5817176759448082654">Revisión de contraseñas</translation>
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
 <translation id="583923961930319521">Usar contraseñas en todos tus dispositivos</translation>
 <translation id="5844284118433003733">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
@@ -1600,6 +1607,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7300448350764260141">Añade una capa adicional de protección frente a las amenazas online.</translation>
 <translation id="7311244614769792472">No se han encontrado resultados</translation>
 <translation id="7313347584264171202">Aquí verás tus pestañas de incógnito</translation>
+<translation id="7334364820047587268">Ya tienes contraseñas para estas cuentas en tu Gestor de contraseñas de Google. Si decides importar una de las contraseñas que se indican a continuación, se sustituirá la contraseña actual.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descargado</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
@@ -1816,6 +1824,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8101409298456377967">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Desactivar</translation>
+<translation id="8106442513853561174">Compartir ubicación precisa</translation>
 <translation id="8114753159095730575">La descarga de archivos está disponible. Hay opciones disponibles en la parte inferior de la pantalla.</translation>
 <translation id="8123502380991596210">Ocultar Novedades</translation>
 <translation id="8123953306357309250">¿Cancelar sincronización? Puedes activar la sincronización en cualquier momento desde la configuración.</translation>
@@ -1969,7 +1978,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8694281486652655615">Muestra este elemento</translation>
 <translation id="8696297579102085705">Enviar a tu dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de direcciones a la parte inferior</translation>
-<translation id="8703372953981978786">Este enlace no funciona</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Podrás compartir, unirte y colaborar en grupos de pestañas</translation>
 <translation id="8709409604518538305">Se han cerrado las pestañas</translation>
@@ -2098,6 +2106,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="913036870884277353">Abre fácilmente los enlaces de otras aplicaciones.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Activar modo Lectura</translation>
 <translation id="9144230693397287797">Recibe actualizaciones de los recordatorios que hayas definido y de las pestañas de otros dispositivos</translation>
 <translation id="914781932147356857">Marcar todas…</translation>
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>
@@ -2126,6 +2135,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="94870150074703282">¿Eliminar grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
+<translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="963102227019621224">Actividad en la Web y en Aplicaciones</translation>

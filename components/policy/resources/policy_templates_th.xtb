@@ -840,6 +840,31 @@ URL ต้องเป็นรูปแบบมาตรฐาน เช่น
 หากไม่ได้ตั้งค่านโยบายหรือปิดใช้ ระบบจะซ่อนปุ่มสลับ
 
 หมายเหตุ: นโยบายนี้จะมีผลกับ UI เท่านั้น และ ChromeOS จะเก็บการตั้งค่าที่มีอยู่ไว้เมื่อซ่อน UI</translation>
+<translation id="1579027593897822029">รายการการดำเนินการที่จะเรียกใช้เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" />
+
+คำเตือน: การตั้งค่านโยบายนี้อาจส่งผลกระทบและนำข้อมูลส่วนตัวในเครื่องออกอย่างถาวร เราขอแนะนำให้ทดสอบการตั้งค่าก่อนติดตั้งใช้งานเพื่อป้องกันการลบข้อมูลส่วนตัวโดยไม่ตั้งใจ
+
+หากไม่ได้ตั้งค่านโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> ไว้ นโยบายนี้จะไม่มีผล
+
+เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> เบราว์เซอร์จะเรียกใช้การดำเนินการที่กำหนดค่าไว้ในนโยบายนี้
+
+หากนโยบายนี้ว่างเปล่าหรือไม่ได้ตั้งค่า นโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> จะไม่มีผล
+
+การดำเนินการที่รองรับ ได้แก่ "<ph name="CLOSE_BROWSERS_ACTION" />": ปิดหน้าต่างเบราว์เซอร์และ PWA ทั้งหมดสำหรับโปรไฟล์นี้ ไม่รองรับใน Android และ iOS
+
+"<ph name="CLOSE_TABS_ACTION" />": ปิดแท็บที่เปิดอยู่ทั้งหมดในหน้าต่างที่เปิดอยู่ รองรับเฉพาะใน iOS
+
+"<ph name="SHOW_PROFILE_PICKER_ACTION" />": แสดงหน้าต่างเครื่องมือเลือกโปรไฟล์ ไม่รองรับใน Android และ iOS
+
+"<ph name="SIGN_OUT_ACTION" />": นำผู้ใช้ที่ลงชื่อเข้าใช้อยู่ออกจากระบบ รองรับเฉพาะใน iOS
+
+"<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": ล้างข้อมูลการท่องเว็บที่เกี่ยวข้อง ดูรายละเอียดเพิ่มเติมจากนโยบาย <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> ประเภทที่รองรับใน iOS คือ "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />" และ "<ph name="CLEAR_AUTOFILL_ACTION" />"
+
+      "<ph name="RELOAD_PAGES_ACTION" />": โหลดหน้าเว็บทั้งหมดซ้ำ ในบางหน้า ผู้ใช้อาจได้รับแจ้งให้ยืนยันก่อน ไม่รองรับใน iOS
+
+ผู้ใช้จะยังคงลงชื่อเข้าใช้บัญชี Google เมื่อลบคุกกี้โดยใช้ "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />"
+
+การตั้งค่า "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" และ "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" จะปิดใช้การซิงค์สำหรับประเภทข้อมูลที่เกี่ยวข้อง หากไม่ได้ปิดใช้ "<ph name="CHROME_SYNC_NAME" />" ไว้โดยการตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> และ <ph name="BROWSER_SIGNIN_POLICY_NAME" /> ปิดใช้อยู่</translation>
 <translation id="1583248206450240930">ใช้ <ph name="PRODUCT_FRAME_NAME" /> โดยค่าเริ่มต้น</translation>
 <translation id="1587585749332985896">ไม่อนุญาตให้ใช้โหมดไม่มีส่วนหัว</translation>
 <translation id="1588240398285670601">การตั้งค่าเบราว์เซอร์</translation>
@@ -1049,7 +1074,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
       หมายเหตุ: การตั้งค่านี้จะลบล้าง <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> หากมี</translation>
 <translation id="172374442286684480">อนุญาตให้ทุกไซต์ตั้งค่าข้อมูลภายในเครื่อง</translation>
-<translation id="1725541103767528536">อนุญาตให้ใช้การป้อนข้อความอัตโนมัติด้วย AI โดยไม่ปรับปรุงโมเดล AI</translation>
 <translation id="1729169799290004131">การตั้งค่านโยบายจะระบุเปอร์เซ็นต์ความสว่างหน้าจอ โดยระบบจะปิดใช้ฟีเจอร์ความสว่างอัตโนมัติ ความสว่างหน้าจอเริ่มต้นจะปรับไปตามค่าของนโยบาย แต่ผู้ใช้จะเปลี่ยนค่านี้ได้ในภายหลัง
 
       การไม่ตั้งค่านโยบายจะไม่ส่งผลต่อการควบคุมหน้าจอของผู้ใช้หรือฟีเจอร์ความสว่างอัตโนมัติ
@@ -1689,7 +1713,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 การตั้งค่านโยบายเป็น "ปิดใช้" จะทำให้ผู้ใช้ไม่สามารถใช้ฟังก์ชันนี้ได้
 
       หากตั้งค่านโยบายไว้ ผู้ใช้จะเปลี่ยนการตั้งค่าดังกล่าวใน <ph name="PRODUCT_NAME" /> ไม่ได้ หากไม่ได้ตั้งค่า ระบบจะอนุญาตให้มีการตรวจสอบการรั่วไหลของข้อมูลเข้าสู่ระบบ แต่ผู้ใช้ปิดการตั้งค่านี้ได้</translation>
-<translation id="220834508664708052">อนุญาตให้ใช้การป้อนข้อความอัตโนมัติด้วย AI และปรับปรุงโมเดล AI</translation>
 <translation id="2208976000652006649">พารามิเตอร์สำหรับ URL ค้นหาที่ใช้ POST</translation>
 <translation id="2212011154693551439">หน้าประวัติการเข้าชมใน Chrome ที่แบ่งออกเป็นกลุ่มๆ จะปรากฏที่ chrome://history/grouped โดยค่าเริ่มต้น</translation>
 <translation id="2212207215880394506">ไม่อนุญาตให้ใช้ฟีเจอร์แต่งภาพของ Photos ด้วย Generative AI</translation>
@@ -3303,15 +3326,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="3387999258705169775">ลักษณะการทํางานเริ่มต้นของการบีบที่ซ้อนอยู่ของฟังก์ชัน setTimeout()</translation>
 <translation id="3388628790024977864">ไม่อนุญาตการทำงานของ <ph name="CLOUD_UPLOAD_NAME" /> สําหรับ <ph name="GOOGLE_DRIVE_NAME" /> และ <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">เปิดใช้การตรวจสอบสิทธิ์ gnubby สำหรับโฮสต์การเข้าถึงระยะไกล</translation>
-<translation id="3393332712712388726">รายการรูปแบบ URL คำขอที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะไม่ต้องมีการตรวจสอบ<ph name="LOCAL_NETWORK_ACCESS" />
-
-หากต้นทางครอบคลุมทั้งนโยบายนี้และ LocalNetworkAccessBlockedForUrls นโยบาย LocalNetworkAccessBlockedForUrls จะมีผลเหนือกว่า
-
-สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://github.com/explainers-by-googlers/local-network-access</translation>
 <translation id="3395744872155955051">อนุญาตให้เลือกไฟล์จาก <ph name="GOOGLE_DRIVE_NAME" />โดยตรง</translation>
 <translation id="3397883909301547525">ไม่ต้องแสดงการแนะนำแอปใน Launcher ของ "<ph name="PRODUCT_OS_NAME" />"</translation>
 <translation id="3398051852031115795">การทำงานของระบบตามค่าเริ่มต้น (ขึ้นอยู่กับขนาดของหน้าจอ)</translation>
@@ -5149,6 +5163,19 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
 <translation id="468822697351680932">ใช้นโยบาย SiteList ของ Internet Explorer เป็นแหล่งที่มาของกฎ</translation>
 <translation id="4693190628432874457">เปิดใช้การรายงานตำแหน่งของอุปกรณ์</translation>
 <translation id="4693779768620889402">ปลายทางตามส่วนขยาย</translation>
+<translation id="4693956469331697434">กำหนดค่าอายุการใช้งานของข้อมูลการท่องเว็บสำหรับ <ph name="PRODUCT_NAME" /> นโยบายนี้อนุญาตให้ผู้ดูแลระบบกำหนดค่า (ตามประเภทข้อมูล) เมื่อเบราว์เซอร์ลบข้อมูล ซึ่งจะเป็นประโยชน์สำหรับลูกค้าที่ทำงานกับข้อมูลลูกค้าที่มีความละเอียดอ่อน
+
+คำเตือน: การตั้งค่านโยบายนี้อาจส่งผลกระทบและนำข้อมูลส่วนตัวในเครื่องออกอย่างถาวร เราขอแนะนำให้ทดสอบการตั้งค่าก่อนติดตั้งใช้งานเพื่อป้องกันการลบข้อมูลส่วนตัวโดยไม่ตั้งใจ
+
+ประเภทข้อมูลที่มี ได้แก่ <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> และ <ph name="DATA_TYPE_HOSTED_APP_DATA" /> ไม่รองรับ <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> และ <ph name="DATA_TYPE_HOSTED_APP_DATA" /> ใน Android
+
+เบราว์เซอร์จะนำข้อมูลประเภทที่เลือกไว้ซึ่งมีอายุนานกว่า <ph name="TIME_TO_LIVE_IN_HOURS" /> ชั่วโมงออกโดยอัตโนมัติ ค่าต่ำสุดที่ตั้งค่าได้คือ 1 ชั่วโมง
+
+การลบข้อมูลที่หมดอายุจะเกิดขึ้นหลังจากที่เบราว์เซอร์เริ่มต้นไปแล้ว 15 วินาที จากนั้นจะเกิดขึ้นทุก 30 นาทีขณะที่เบราว์เซอร์ทำงาน
+
+ผู้ใช้จะยังคงลงชื่อเข้าใช้บัญชี Google เมื่อลบคุกกี้
+
+นโยบายนี้กำหนดให้ตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> เป็น "จริง" จนถึง Chrome 114 ตั้งแต่ Chrome 115 เป็นต้นไป การตั้งค่านโยบายนี้จะปิดใช้การซิงค์สำหรับประเภทข้อมูลที่เกี่ยวข้อง หากไม่ได้ปิดใช้ "<ph name="CHROME_SYNC_NAME" />" ไว้โดยการตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> และ <ph name="BROWSER_SIGNIN_POLICY_NAME" /> ปิดใช้อยู่</translation>
 <translation id="4694138212536142867">เปิดใช้การรายงานสถานะของฮาร์ดแวร์อุปกรณ์</translation>
 <translation id="4697581738794063407">ควบคุมฟีเจอร์ตัวกรองพารามิเตอร์ของ URL</translation>
 <translation id="4698895924806859508">ไม่รายงานเหตุการณ์ในเครือข่าย</translation>
@@ -5417,6 +5444,19 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
 <translation id="4918261735182294270">อนุญาตให้ผู้ใช้เลือกว่าจะเปิดใช้ <ph name="CHROME_SYNC_NAME" /> หรือไม่</translation>
 <translation id="491889618361437456">เปิดใช้การผสานรวม "<ph name="GOOGLE_CALENDAR_NAME" />"</translation>
 <translation id="4919122295221518724">เปิดใช้การดูแลที่เข้มงวดขึ้นสำหรับเนื้อหาผสม</translation>
+<translation id="4919341087029582581">กำหนดค่ารายการประเภทข้อมูลการท่องเว็บที่ควรจะลบออกเมื่อผู้ใช้ปิดหน้าต่างเบราว์เซอร์ทั้งหมด
+
+คำเตือน: การตั้งค่านโยบายนี้อาจส่งผลกระทบและนำข้อมูลส่วนตัวในเครื่องออกอย่างถาวร เราขอแนะนำให้ทดสอบการตั้งค่าก่อนติดตั้งใช้งานเพื่อป้องกันการลบข้อมูลส่วนตัวโดยไม่ตั้งใจ
+
+ประเภทข้อมูลที่มี ได้แก่ ประวัติการท่องเว็บ (<ph name="DATA_TYPE_BROWSING_HISTORY" />) ประวัติการดาวน์โหลด (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />) คุกกี้ (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />) แคช <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" /> ข้อความป้อนอัตโนมัติ (<ph name="DATA_TYPE_AUTOFILL" />) รหัสผ่าน (<ph name="DATA_TYPE_PASSWORD" />) การตั้งค่าเว็บไซต์ (<ph name="DATA_TYPE_SITE_SETTINGS" />) และข้อมูลแอปที่โฮสต์ไว้ (<ph name="DATA_TYPE_HOSTED_APP_DATA" />) นโยบายนี้ไม่มีความสำคัญเหนือ <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />
+
+ผู้ใช้จะยังคงลงชื่อเข้าใช้บัญชี Google เมื่อลบคุกกี้
+
+นโยบายนี้กำหนดให้ตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> เป็น "จริง" จนถึง Chrome 114 ตั้งแต่ Chrome 115 เป็นต้นไป การตั้งค่านโยบายนี้จะปิดใช้การซิงค์สำหรับประเภทข้อมูลที่เกี่ยวข้อง หากไม่ได้ปิดใช้ "<ph name="CHROME_SYNC_NAME" />" ไว้โดยการตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> และ <ph name="BROWSER_SIGNIN_POLICY_NAME" /> ปิดใช้อยู่
+
+หากการลบข้อมูลเริ่มขึ้นแล้วและดำเนินการไม่เสร็จสิ้นด้วยเหตุผลบางประการ ระบบจะล้างข้อมูลการท่องเว็บในครั้งถัดไปที่โหลดโปรไฟล์
+
+หาก <ph name="PRODUCT_NAME" /> ไม่ได้ออกอย่างราบรื่น (เช่น หากเบราว์เซอร์หรือระบบปฏิบัติการขัดข้อง) ระบบจะไม่ล้างข้อมูลการท่องเว็บเนื่องจากการปิดเบราว์เซอร์ไม่ได้เกิดจากการที่ผู้ใช้ปิดหน้าต่างเบราว์เซอร์ทั้งหมด</translation>
 <translation id="4921553515199936667">หากไม่ได้ตั้งค่านโยบายนี้หรือตั้งค่าเป็น "จริง" การถอดรหัสวิดีโอจะเร่งฮาร์ดแวร์เมื่อพร้อมใช้งาน
 
 หากตั้งค่านโยบายนี้เป็น "เท็จ" การถอดรหัสวิดีโอจะไม่เร่งฮาร์ดแวร์
@@ -6890,17 +6930,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="5860010874344790473">การตั้งค่านโยบายเป็น "เปิดใช้" จะส่งบันทึกของระบบไปที่เซิร์ฟเวอร์การจัดการเพื่อให้ผู้ดูแลระบบตรวจสอบได้
 
       การตั้งค่านโยบายเป็น "ปิดใช้" หรือไม่ได้ตั้งค่าจะไม่รายงานบันทึกของระบบ</translation>
-<translation id="5860520143792505638">รายการรูปแบบ URL คำขอที่เริ่มต้นมาจากเว็บไซต์ที่แสดงโดยต้นทางที่ตรงกันจะถูกบล็อกไม่ให้ออกคําขอ<ph name="LOCAL_NETWORK_ACCESS" />
-
-หากต้นทางครอบคลุมทั้งนโยบายนี้และ LocalNetworkAccessAllowedForUrls นโยบายนี้จะมีผลเหนือกว่า
-
-คุณอาจต้องเปิดใช้ LocalNetworkAccessRestrictionsEnabled ด้วยเพื่อให้นโยบายนี้บล็อกคำขอ<ph name="LOCAL_NETWORK_ACCESS" />ได้ ทั้งนี้ขึ้นอยู่กับขั้นตอนของการเปิดตัว<ph name="LOCAL_NETWORK_ACCESS" />
-
-สำหรับต้นทางที่ไม่รวมอยู่ในรูปแบบที่ระบุไว้ที่นี่ ระบบจะใช้การกำหนดค่าส่วนตัวของผู้ใช้
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
-
-ดูข้อจำกัดของ<ph name="LOCAL_NETWORK_ACCESS" />ได้ที่ https://github.com/explainers-by-googlers/local-network-access</translation>
 <translation id="5861856285460256766">การกำหนดค่ารหัสการเข้าถึงของผู้ปกครอง</translation>
 <translation id="5864898931148094192">ควบคุมการแสดงที่มาของส่วนขยายในหน้าแท็บใหม่</translation>
 <translation id="5868414965372171132">การกำหนดค่าเครือข่ายระดับผู้ใช้</translation>
@@ -11371,11 +11400,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
       หากมีรูปแบบ URL เดียวกันอยู่ทั้งในนโยบายนี้และนโยบาย <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> ระบบจะให้ความสำคัญกับนโยบายหลังและสิทธิ์เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือเซ็นเซอร์แสงจะถูกบล็อก
 
       ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns ใช้ไวลด์การ์ด (<ph name="WILDCARD_VALUE" />) ได้</translation>
-<translation id="9002299469625801504">เมื่อตั้งค่านโยบายนี้เป็น "เปิดใช้" เมื่อใดก็ตามที่คำเตือนแสดงขึ้นใน <ph name="DEV_TOOLS_NAME" /> เนื่องจากการตรวจสอบ <ph name="LOCAL_NETWORK_ACCCESS" /> ล้มเหลว ระบบจะบล็อกคำขอหลักแทน
-
-เมื่อตั้งค่านโยบายนี้เป็น "ปิดใช้" หรือไม่ได้ตั้งค่า คำขอ <ph name="LOCAL_NETWORK_ACCESS" /> จะใช้การจัดการเริ่มต้นสำหรับคำขอเหล่านี้
-
-ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://github.com/explainers-by-googlers/</translation>
 <translation id="9003823644527627017">กำหนดค่า Bruschetta VM ใน <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">การตั้งค่านโยบายเป็น "เปิดใช้" จะอนุญาตให้อุปกรณ์เรียกใช้เครื่องเสมือนใน <ph name="PRODUCT_OS_NAME" /> ต้องเปิดใช้ <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> และ <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> เพื่อใช้ <ph name="PRODUCT_CROSTINI_NAME" /> การตั้งค่านโยบายเป็น "ปิดใช้" หมายความว่าอุปกรณ์เรียกใช้เครื่องเสมือนไม่ได้ การเปลี่ยนเป็น "ปิดใช้" จะเริ่มใช้นโยบายเพื่อเริ่มเครื่องเสมือนใหม่ ไม่ใช่เครื่องเสมือนที่ทำงานอยู่แล้ว
 
@@ -11408,7 +11432,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
       หากมีภาษาที่รวมอยู่ทั้งในนโยบายนี้และนโยบาย <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> ระบบจะให้ความสำคัญกับนโยบายหลังและเปิดใช้การตรวจตัวสะกดสำหรับภาษานั้น
 
       ภาษาที่รองรับในขณะนี้ ได้แก่ af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi</translation>
-<translation id="900867836818807386">การตั้งค่าสำหรับการป้อนข้อความอัตโนมัติด้วย AI</translation>
 <translation id="9009119876570708617">เรานำนโยบายนี้ออกไปตั้งแต่รุ่น M85 โปรดใช้ <ph name="POLICY_NAME" /> เพื่ออนุญาตเนื้อหาที่ไม่ปลอดภัยแบบรายเว็บไซต์แทน
        นโยบายนี้ควบคุมการดูแลเนื้อหาผสม (เนื้อหา HTTP ในเว็บไซต์ HTTPS) ในเบราว์เซอร์
        หากตั้งค่านโยบายเป็น "จริง" หรือไม่ได้ตั้งค่า ระบบจะอัปเกรดเนื้อหาผสมประเภทเสียงและวิดีโอเป็น HTTPS โดยอัตโนมัติ (เช่น ระบบจะเขียน URL ใหม่เป็น HTTPS โดยไม่มี URL สำรองหากทรัพยากรไม่พร้อมใช้งานใน HTTPS) และจะแสดงคำเตือน "ไม่ปลอดภัย" ในแถบ URL สำหรับเนื้อหาผสมประเภทรูปภาพ
@@ -11686,7 +11709,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
       ค่าเริ่มต้นคือ RollbackDisabled</translation>
 <translation id="9197740283131855199">เปอร์เซ็นต์ของระดับการปรับการหน่วงเวลาการสลัวหน้าจอ หากผู้ใช้มีการใช้งานหลังจากการสลัวหน้าจอ</translation>
 <translation id="9200828125069750521">พารามิเตอร์สำหรับ URL รูปภาพที่ใช้ POST</translation>
-<translation id="9202520409249547230">ไม่อนุญาตให้ใช้การป้อนข้อความอัตโนมัติด้วย AI</translation>
 <translation id="9204520300236345497">อนุญาตให้ใช้ตัวระบุเนื้อหาที่มีการคุ้มครองกับเว็บไซต์ ซึ่งจะช่วยให้เล่นเนื้อหาที่มีการคุ้มครองได้ในคุณภาพที่สูงขึ้น</translation>
 <translation id="9204863016826119209">แอปพลิเคชัน Android ที่ติดตั้งไว้และระบุอยู่ในนโยบายนี้จะใช้คีย์ขององค์กรได้</translation>
 <translation id="9206472508136116830">ไม่อนุญาตให้ใช้การสำรวจพื้นที่แชร์ไฟล์ NetBIOS</translation>

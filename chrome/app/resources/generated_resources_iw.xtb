@@ -2926,6 +2926,7 @@
 <translation id="3003967365858406397">‏ה-<ph name="PHONE_NAME" /> ייצור חיבור Wi-Fi פרטי.</translation>
 <translation id="3004385386820284928">התאמה אישית של מקשי המקלדת</translation>
 <translation id="3006881078666935414">אין נתוני שימוש</translation>
+<translation id="3007555010975143508">האפליקציות האלה ישמשו להקלטת המסך:</translation>
 <translation id="3007771295016901659">שכפול הכרטיסייה</translation>
 <translation id="3008142279736625920">עוגת גבינה</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
@@ -4392,6 +4393,7 @@
 <translation id="4016762287427926315">ההרשאות שמוענקות לאפליקציה <ph name="APP_NAME" /> יוענקו גם לאפליקציה הזו. <ph name="BEGIN_LINK" />לניהול ההרשאות<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">‏צריך ליצור קוד QR לקישור הזה</translation>
 <translation id="4019983356493507433">עריכה של רשימת הסימניות</translation>
+<translation id="4020701737692625681">האדמין יכול להקליט את המסך שלך</translation>
 <translation id="4021279097213088397">‏–</translation>
 <translation id="4021727050945670219">אפשר למנוע מהסמן לדלג ממקום למקום כשעושים תנועות ראש קלות, אבל צריך לצפות לעיכוב קצר.</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5294,7 +5296,6 @@
 <translation id="4676616966096505747">חלק מהנתונים עדיין לא נשמרו בחשבון שלך</translation>
 <translation id="4677772697204437347">‏זיכרון GPU</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4678729681411398877">‏אם אחת מהסיסמאות שלך נחשפת בפרצה באבטחת המידע, מנהל הסיסמאות של Google מציע לשנות אותה לסיסמה חזקה</translation>
 <translation id="4678848110205818817">כרטיס אשראי או כרטיס חיוב מיידי</translation>
 <translation id="4679018849559620189">הפעולה הזו עוזרת לך לגשת למפתחות הגישה השמורים בכל מכשיר</translation>
 <translation id="4680105648806843642">הצלילים הושתקו בדף הזה</translation>
@@ -6073,6 +6074,7 @@
 <translation id="5235050375939235066">להסיר את התקנת האפליקציה?</translation>
 <translation id="523505283826916779">הגדרות נגישות</translation>
 <translation id="5235750401727657667">החלפת הדף שמוצג בפתיחה של כרטיסייה חדשה</translation>
+<translation id="5236054983756407518">‏להסיר את כתובת המגורים מ-Chrome?</translation>
 <translation id="5237124927415201087">‏אפשר להגדיר בקלות את מכשיר <ph name="DEVICE_TYPE" /> באמצעות הטלפון. ניתן להוסיף את ה-Wi-Fi ואת החשבון שלך ב-Google בלי להזין את הסיסמאות באופן ידני.
     <ph name="BR" />
     <ph name="BR" />
@@ -6859,6 +6861,7 @@
 <translation id="581659025233126501">הפעלת הסנכרון</translation>
 <translation id="5817918615728894473">התאמה</translation>
 <translation id="5817963443108180228">שמחים שחזרת, <ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">‏עריכה בחשבון Google</translation>
 <translation id="581911254119283028">כל האפליקציות</translation>
 <translation id="5821565227679781414">יצירת קיצור דרך</translation>
 <translation id="5824976764713185207">הקראת הדף באופן אוטומטי אחרי שהטעינה שלו מסתיימת</translation>
@@ -7058,6 +7061,7 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">אתר מסוים רוצה לפתוח את האפליקציה הזו.</translation>
 <translation id="5955809630138889698">ייתכן שהמכשיר הזה כשיר רק למצב הדגמה אונליין. אפשר לפנות לנציג התמיכה כדי לקבל פרטים נוספים.</translation>
+<translation id="59561895884837262">נודיע לך כשההקלטה תתחיל.</translation>
 <translation id="5957987129450536192">יש ללחוץ על סמל ההקראה לצד תמונת הפרופיל ואז לבחור בטקסט להקראה.</translation>
 <translation id="5958836583172610505">הסנכרון מופעל</translation>
 <translation id="5959471481388474538">הרשת לא זמינה</translation>
@@ -7202,6 +7206,7 @@
 <translation id="606449270532897041">ניהול הנתונים מאתרים</translation>
 <translation id="6064764629679333574">‏אפשר לשפר את איכות הצליל של מיקרופון ה-Bluetooth באמצעות שינוי הרזולוציה מנמוכה לגבוהה.</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
+<translation id="6065690209261668796">‏להסיר את הכתובת בעבודה שלך מ-Chrome?</translation>
 <translation id="6066794465984119824">‏לא הוגדר גיבוב (hash) של תמונה</translation>
 <translation id="6069464830445383022">‏הכניסה ל-Chromebook תתבצע באמצעות חשבון Google</translation>
 <translation id="6071181508177083058">אישור סיסמה</translation>
@@ -8034,7 +8039,6 @@
 <translation id="6667187897999649121">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. ניתן <ph name="BEGIN_LINK" />ליצור קבוצה משפחתית<ph name="END_LINK" /> של עד 6 אנשים ולהפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
 <translation id="666731172850799929">פתיחה ב-<ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">אופן הטיפול בנתונים זהה לאופן הטיפול באתר הזה</translation>
-<translation id="6669637573228217624">העלאת קובץ</translation>
 <translation id="6670142487971298264">האפליקציה <ph name="APP_NAME" /> זמינה עכשיו</translation>
 <translation id="6670767097276846646">‏חלק מהתוספים יכולים להוסיף מנועי חיפוש ל-Chrome</translation>
 <translation id="6670983860904543332">עדכונים אוטומטיים מספקים את התכונות החדשות ביותר. רוצה לקבל מידע על העדכונים העיקריים האחרונים?</translation>
@@ -8291,6 +8295,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{להסיר את הכרטיסייה ולמחוק את הקבוצה?}=1{להסיר את הכרטיסיות ולמחוק את הקבוצה?}one{להסיר את הכרטיסיות ולמחוק את הקבוצות?}two{להסיר את הכרטיסיות ולמחוק את הקבוצות?}other{להסיר את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
 <translation id="6833479554815567477">הכרטיסייה הוסרה מהקבוצה <ph name="GROUP_NAME" /> ‏– <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">מאוזן (מומלץ)</translation>
+<translation id="6835624277262316125">‏הכתובת בעבודה יכולה לעזור לך לתקתק עניינים בשירותי Google, כמו לקבל תוצאות חיפוש רלוונטיות יותר ומסלולים במפות Google. אפשר לערוך או למחוק את הכתובת ב<ph name="BEGIN_LINK" />חשבון Google,‏ <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">יש להתחבר לאינטרנט כדי לעדכן את ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838992358006915573">‏הזכוכית המגדלת עוקבת אחרי המיקוד ב-ChromeVox</translation>
 <translation id="6839916869147598086">תהליך הכניסה השתנה</translation>
@@ -8424,6 +8429,7 @@
 <translation id="6929126689972602640">‏בחשבונות בית ספריים, אין תמיכה באמצעי בקרת הורים. כדי להוסיף חשבון בית ספרי לצורך גישה אל Google Classroom ואתרים אחרים למטלות לימודיות, תחילה יש להיכנס באמצעות החשבון האישי של הילד או הילדה. ניתן להוסיף את החשבון הבית ספרי בשלב מאוחר יותר בהגדרה.</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{בקשת הארכה נדחתה}one{# בקשות הארכה נדחו}two{# בקשות הארכה נדחו}other{# בקשות הארכה נדחו}}</translation>
+<translation id="6930337524857202955">הורדה חדשה זמינה</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" />‏ • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">עוצמת הלחיצה</translation>
 <translation id="6933321725007230600">הפעלת &amp;הסנכרון…</translation>
@@ -9305,7 +9311,6 @@
 <translation id="7568759527730933493">‏חיפוש כתובות IP של אתרים ב-DNS יתבצע בחיבור מאובטח. ההגדרה הזו פועלת באמצעות ספק שירות מנוהל בכתובת <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. לא נעשה שימוש בחיבורים מאובטחים בחלק מהדומיינים שהוגדרו על ידי האדמין.</translation>
 <translation id="756876171895853918">התאמה אישית של הדמות</translation>
 <translation id="7568790562536448087">העדכון מתבצע</translation>
-<translation id="7569113730576914983">‏אם Chrome מוצא באחת מהסיסמאות שלך פרצה באבטחת המידע, תופיע הצעה לשנות את הסיסמה בזמן הכניסה לחשבון</translation>
 <translation id="7569983096843329377">שחור</translation>
 <translation id="7570548610653957960">עזרה בקריאה</translation>
 <translation id="7571643774869182231">אין מספיק שטח אחסון לעדכון</translation>
@@ -9636,6 +9641,7 @@
 <translation id="7788298548579301890">‏תוכנית אחרת במחשב הוסיפה יישום שעשוי לשנות את אופן הפעולה של Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">‏כתובת המגורים יכולה לעזור לך לתקתק עניינים בשירותי Google, כמו לקבל תוצאות חיפוש רלוונטיות יותר ומסלולים במפות Google. אפשר לערוך או למחוק את הכתובת ב<ph name="BEGIN_LINK" />חשבון Google,‏ <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">שיטת הקלט</translation>
 <translation id="7791429245559955092">‏האפליקציה הזו תותקן בפרופיל ב-Chrome שבשימוש כרגע</translation>
 <translation id="7791436592012979144">הגלילה ההפוכה מופעלת</translation>

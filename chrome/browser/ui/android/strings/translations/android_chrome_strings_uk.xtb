@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
-<translation id="1009406586654360474">Відкрийте Google Менеджер паролів і перейдіть у налаштування. Натисніть "Імпортувати" й додайте файл CSV, який містить експортовані паролі.</translation>
 <translation id="1010283278930414892">На цьому пристрої немає збережених паролів</translation>
 <translation id="1011749477052068769">Перемістити сюди</translation>
 <translation id="1014147525163127655">На цьому пристрої немає ключів доступу для веб-сайту <ph name="ORIGIN" /></translation>
@@ -206,7 +205,6 @@
 <translation id="1925021887439448749">Введіть веб-адресу</translation>
 <translation id="1928618076168182477">Показано візуальний перегляд</translation>
 <translation id="1928696683969751773">Оновлення</translation>
-<translation id="1939549834451474504">Паролі припинять працювати, оскільки сервіси Google Play недоступні. Перш ніж це станеться, ви можете створити копію збережених паролів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1943398124995840148">Відкриті вкладки тепер мають новий вигляд у розширеній реальності</translation>
 <translation id="1943432128510653496">Зберігання паролів</translation>
 <translation id="1944535645109964458">Ключів доступу не знайдено</translation>
@@ -415,13 +413,11 @@
 <translation id="2871733351037274014">Попередньо завантажувати сторінки</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> просить схвалити цей веб-сайт:</translation>
 <translation id="2876628302275096482">Докладніше про те, <ph name="BEGIN_LINK" />як Chrome захищає ваші дані<ph name="END_LINK" /></translation>
-<translation id="2883644600102358131">Паролі більше не працюватимуть на цьому пристрої. Щоб і надалі використовувати їх, оновіть сервіси Google Play.</translation>
 <translation id="2885355868600171871">Перейти в адресний рядок</translation>
 <translation id="2888126860611144412">Про Chrome</translation>
 <translation id="2891154217021530873">Припинити завантаження сторінки</translation>
 <translation id="2894821468041866720">Не сповільнює роботу веб-переглядача або пристрою.</translation>
 <translation id="2895521649038438824">Ви можете прослухати цю сторінку</translation>
-<translation id="2899252057552912621">Паролі припинять працювати, оскільки сервіси Google Play недоступні. Перш ніж це станеться, ви можете створити копію збережених паролів.</translation>
 <translation id="2900528713135656174">Створити подію</translation>
 <translation id="2901411048554510387">Показано пропозиції для сайту <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904300462646366554">Завантажені файли PDF автоматично відкриватимуться за допомогою засобу перегляду PDF на пристрої</translation>
@@ -473,7 +469,6 @@
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Докладніше</translation>
 <translation id="3123734510202723619">Оголошення</translation>
-<translation id="3148237711805373460">Перейти</translation>
 <translation id="314939179385989105">Головна сторінка Chrome</translation>
 <translation id="3158667104057012316">Сортування вручну</translation>
 <translation id="3159335509547415276">Докладніше про заблоковані облікові записи</translation>
@@ -521,7 +516,6 @@
 <translation id="3351165113450806415">Новий спосіб гортати</translation>
 <translation id="3359667936385849800">Використовувати поточного постачальника послуг</translation>
 <translation id="3373701465337594448">Якщо ввімкнути це налаштування, тут показуватиметься список відвіданих сайтів, які можуть визначати ваші інтереси</translation>
-<translation id="3374023511497244703">Закладки, історія, паролі й інші дані Chrome більше не синхронізуватимуться з обліковим записом Google</translation>
 <translation id="3384347053049321195">Поділитися зображенням</translation>
 <translation id="3387650086002190359">Файл <ph name="FILE_NAME" /> не завантажено через помилки файлової системи.</translation>
 <translation id="3414952576877147120">Розмір:</translation>
@@ -592,7 +586,6 @@
 <translation id="3692944402865947621">Не вдалося завантажити файл <ph name="FILE_NAME" />. Місце зберігання недоступне.</translation>
 <translation id="3697705478071004188">Сортувати за сайтом</translation>
 <translation id="3699022356773522638">Завантажити файл?</translation>
-<translation id="3701167022068948696">Виправити зараз</translation>
 <translation id="3701515417135397388">Попереджати, якщо пароль розкрито через порушення безпеки даних</translation>
 <translation id="3703166520839776970">Якщо ця проблема не зникає, натисніть "Докладніше" нижче, щоб отримати докладнішу інформацію від сервісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3708100450779900829">Коли пристрій складено, можна вибрати потрібну опцію або натиснути й утримувати адресний рядок, щоб змінити його розташування</translation>
@@ -611,7 +604,6 @@
 <translation id="3771694256347217732">Загальні положення та умови Google</translation>
 <translation id="3775705724665058594">Надіслати на пристрої</translation>
 <translation id="3777796259512476958">Ви автоматично вийдете з облікових записів на більшості сайтів</translation>
-<translation id="379035798868314833">Google Менеджер паролів більше не працюватиме на цьому пристрої</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="3795154175078851242">Копіювати зображення з посиланням</translation>
 <translation id="3810973564298564668">Керувати</translation>
@@ -621,7 +613,6 @@
 <translation id="38243391581572867">Об’єктив недоступний у цьому обліковому записі.</translation>
 <translation id="38258275871320156">Доступно лише для невеликих вікон</translation>
 <translation id="3830886834687455630">Щоб перевірити паролі, оновіть сервіси Google Play</translation>
-<translation id="3843603704176567761">Незабаром паролі можуть припинити працювати на цьому пристрої. Щоб і надалі використовувати їх, оновіть сервіси Google Play.</translation>
 <translation id="3845098929839618392">Відкрити в анонімній вкладці</translation>
 <translation id="3847319713229060696">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -654,6 +645,7 @@
 <translation id="3985215325736559418">Завантажити файл "<ph name="FILE_NAME" />" повторно?</translation>
 <translation id="3987993985790029246">Копіювати</translation>
 <translation id="4000212216660919741">Дім у режимі офлайн</translation>
+<translation id="4000670338830950598">Налаштовуйте й керуйте Google Chrome за допомогою виділених елементів</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 пароль у вашому обліковому записі Google зламано}one{# пароль у вашому обліковому записі Google зламано}few{# паролі у вашому обліковому записі Google зламано}many{# паролів у вашому обліковому записі Google зламано}other{# пароля у вашому обліковому записі Google зламано}}</translation>
 <translation id="4016425174436051808">Не вдалося підписатися. Сталася помилка.</translation>
 <translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
@@ -1086,7 +1078,6 @@
 <translation id="587735546353481577">Щоб підписатися на сайт, перейдіть на нього, відкрийте меню Chrome і натисніть "Підписатися".</translation>
 <translation id="5883855034004058011">Забагато невдалих спроб автентифікації за допомогою біометричних даних. Щоб повторити спробу, заблокуйте й розблокуйте пристрій.</translation>
 <translation id="5885378508678660271">Сповіщення <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки сайт небезпечний</translation>
-<translation id="5895834791314695851">Незабаром паролі можуть припинити працювати на цьому пристрої. Щоб і надалі використовувати їх, оновіть сервіси Google Play. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Екран "Немає ключів доступу" закрито</translation>
 <translation id="5907542076239273525">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
@@ -1172,14 +1163,13 @@
 <translation id="6254139308321626268">Ви переглядаєте PDF-файл</translation>
 <translation id="6255809143828972562">Безпечно переглядайте вебсторінки й керуйте налаштуваннями завдяки інструментам від Chrome</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
-<translation id="6264485186158353794">Повернутися на безпечну сторінку</translation>
+<translation id="6264485186158353794">Назад на безпечну сторінку</translation>
 <translation id="6267063201726531683">Нижній екран режиму читання</translation>
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6284472661216707937">Екран "Паролі на всіх ваших пристроях" закрито</translation>
 <translation id="6291294824436685757">Видалити дані вебперегляду. Виберіть дані, які потрібно видалити.</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
-<translation id="6296366034485697675">Експортувати й видалити</translation>
 <translation id="629730747756840877">Обліковий запис</translation>
 <translation id="6300697579369314762">Нижній екран режиму читання відкрито на половину висоти</translation>
 <translation id="6301526076346731664">Відкрити Інструменти розробника</translation>
@@ -1212,6 +1202,7 @@
 <translation id="6406506848690869874">Синхронізація</translation>
 <translation id="6410883413783534063">Відкривайте різні вкладки, щоб одночасно переглядати кілька сторінок</translation>
 <translation id="6411219469806822692">Не вдається прокрутити далі вгору. Спробуйте почати вище на сторінці.</translation>
+<translation id="6412931879992742813">Нове анонімне вікно</translation>
 <translation id="641643625718530986">Друк…</translation>
 <translation id="6433501201775827830">Виберіть пошукову систему</translation>
 <translation id="6434309073475700221">Відхилити</translation>
@@ -1282,7 +1273,6 @@
 <translation id="6676927815633975364">Увійдіть в обліковий запис на цьому сайті й у Chrome</translation>
 <translation id="6684809838922667136">Покращте Chrome</translation>
 <translation id="6700279777779583398">Вибрані налаштування збережено</translation>
-<translation id="6704048624334633734">Експортуйте й видаліть паролі</translation>
 <translation id="670498945988402717">Перевірено вчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Вийшов час на таймері веб-сайту <ph name="FQDN" />. Завтра він знову запрацює.</translation>
@@ -1370,9 +1360,9 @@
 <translation id="6976811588313110624">Додати нову комбінацію клавіш.</translation>
 <translation id="6978717888677691380">Сайти, які ви заблокували</translation>
 <translation id="6979737339423435258">Увесь час</translation>
+<translation id="6980258170429555165">Виділено меню "<ph name="MENU_NAME" />".</translation>
 <translation id="6983306615164277634">Щоб змінити положення адресного рядка, натисніть його й утримуйте.</translation>
 <translation id="6987047470128880212">Анонімний режим недоступний на цьому пристрої</translation>
-<translation id="6991701761229081516">Ваші паролі буде завантажено як файл CSV. Усі користувачі й додатки, які мають доступ до файлу, зможуть переглядати їх. Експортовані паролі буде видалено з Chrome.</translation>
 <translation id="6996145122199359148">Завантажити цю сторінку</translation>
 <translation id="7013762323294215682">Цей ключ доступу буде збережено в Менеджері паролів. Усі, хто має доступ до цього ключа, зможуть використовувати його.</translation>
 <translation id="7020741890149022655">Додати в список читання <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
@@ -1510,7 +1500,6 @@
 <translation id="7583262514280211622">Тут відображатиметься ваш список читання</translation>
 <translation id="758603037873046260">Щоб зберегти цю сторінку, увійдіть</translation>
 <translation id="7588219262685291874">Показувати темну тему, коли на пристрої ввімкнено режим енергозбереження</translation>
-<translation id="7592322927044331376">Спершу експортуйте й видаліть паролі з Chrome</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> підтвердить вашу особу для сайту <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Операційна система</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартна вкладка}one{<ph name="TABS_COUNT_MANY" /> стандартна вкладка}few{<ph name="TABS_COUNT_MANY" /> стандартні вкладки}many{<ph name="TABS_COUNT_MANY" /> стандартних вкладок}other{<ph name="TABS_COUNT_MANY" /> стандартної вкладки}}</translation>
@@ -1519,7 +1508,6 @@
 <translation id="7612619742409846846">Ви ввійшли в обліковий запис Google як</translation>
 <translation id="7612989789287281429">Виконується вхід…</translation>
 <translation id="7619072057915878432">Не вдалося завантажити файл <ph name="FILE_NAME" />. Помилка мережі.</translation>
-<translation id="762537095495606755">Паролі більше не працюватимуть на цьому пристрої</translation>
 <translation id="7626032353295482388">Вітаємо у Chrome!</translation>
 <translation id="7628417132421583481">Перейти в Менеджер паролів</translation>
 <translation id="7630202231528827509">URL-адреса постачальника</translation>
@@ -1545,7 +1533,6 @@
 <translation id="7708994397325774423">Отримайте доступ до всіх своїх паролів</translation>
 <translation id="7714077993070342304">Відкрити меню Chrome</translation>
 <translation id="7733878270780732638">На пристрої недостатньо місця.</translation>
-<translation id="7746817319925672889">Незабаром Google Менеджер паролів припинить працювати на цьому пристрої</translation>
 <translation id="774876555279732384">Сервісами автозаповнення також можна керувати в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Необов’язково</translation>
 <translation id="7762668264895820836">Карта SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1612,9 +1599,7 @@
 <translation id="7998918019931843664">Знову відкрити закриту вкладку</translation>
 <translation id="8001245658307297681">Ви переглядаєте локальний файл</translation>
 <translation id="8004582292198964060">Переглядач</translation>
-<translation id="8014210850410408071">Тепер імпортуйте паролі</translation>
 <translation id="8025972204417227828">Додати</translation>
-<translation id="8027395186860110042">Незабаром паролі можуть припинити працювати</translation>
 <translation id="8027863900915310177">Виберіть, куди завантажити файл</translation>
 <translation id="8030852056903932865">Дозволити</translation>
 <translation id="8032569120109842252">У підписках</translation>
@@ -1662,7 +1647,6 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}one{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}few{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачі}many{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачів}other{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувача}}</translation>
 <translation id="8209050860603202033">Відкрити зображення</translation>
 <translation id="8210770465353466621">Тут відображатимуться ваші вкладки</translation>
-<translation id="8211101263765532799">Деякі паролі незабаром припинять працювати</translation>
 <translation id="8215740705341534369">Бічна панель</translation>
 <translation id="8218622182176210845">Керувати обліковим записом</translation>
 <translation id="8221401890884589479">Ви можете блокувати непотрібні вам сайти. Chrome також автоматично видаляє їх зі списку через 30 днів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -1688,8 +1672,6 @@
 <translation id="8281886186245836920">Пропустити</translation>
 <translation id="8282297628636750033">Застосовувати темну тему для сайтів</translation>
 <translation id="8282950411412455249">Перейти до налаштувань безпеки</translation>
-<translation id="8306751933352925837">Паролі більше не працюватимуть на цьому пристрої. Щоб і надалі використовувати їх, оновіть сервіси Google Play. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
-<translation id="8310451567823644042">Незабаром паролі припинять працювати</translation>
 <translation id="831192587911042850">Поточний веб-сайт буде додано до списку тих, на які ви підписалися.</translation>
 <translation id="8317318757008452355">Відкрити параметри друку</translation>
 <translation id="8320212361750431956">Останні дії</translation>
@@ -1773,7 +1755,6 @@
 <translation id="864544049772947936">Керувати вікнами (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8662474268934425487">Увійти на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Файл із такою назвою вже існує</translation>
-<translation id="8672883760227492369">Деякі паролі на цьому пристрої незабаром припинять працювати. Ви можете перемістити їх у Google Менеджер паролів.</translation>
 <translation id="8676276370198826499">Зареєструйтеся на сайті <ph name="SITE_ETLD_PLUS_ONE" />, використовуючи обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Підтвердження входу</translation>
 <translation id="867914734596684889">Показати або сховати панель закладок</translation>
@@ -1835,7 +1816,6 @@
 <translation id="8963117664422609631">Перейти до налаштувань сайту</translation>
 <translation id="8965591936373831584">очікується</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_ONE" /> вкладку буде закрито}one{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладку буде закрито}few{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}many{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладок буде закрито}other{Анонімні (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}}</translation>
-<translation id="897061774231912216">Паролі припинять працювати, оскільки сервіси Google Play недоступні. Щоб використовувати паролі, збережені в обліковому записі Google, увійдіть в обліковий запис на іншому пристрої або перейдіть на сторінку passwords.google.com.</translation>
 <translation id="8970887620466824814">Сталася помилка.</translation>
 <translation id="8972098258593396643">Завантажити в папку за умовчанням?</translation>
 <translation id="8992769679401294069">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
@@ -1845,7 +1825,6 @@
 <translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="8998837250940831980">Не вдалося згорнути вкладку. Повторіть спробу пізніше.</translation>
 <translation id="9001604755921395912">Відкрити анонімно в Chrome</translation>
-<translation id="9007002441981613214">Вирішіть проблему зі збереженими паролями</translation>
 <translation id="9012585441087414258">Захищає від відомих небезпечних веб-сайтів, завантажень і розширень. Якщо сторінка виконує підозрілі дії, URL-адреси й фрагменти контенту надсилаються в Безпечний перегляд Google.</translation>
 <translation id="9019199799064251516">Продовжити без блокування профілю автомобіля?</translation>
 <translation id="9022774213089566801">Часто відвідувані</translation>
@@ -1879,7 +1858,6 @@
 <translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Не використовувалися протягом принаймні 1 дня}one{Не використовувалися протягом принаймні # дня}few{Не використовувалися протягом принаймні # днів}many{Не використовувалися протягом принаймні # днів}other{Не використовувалися протягом принаймні # дня}}</translation>
 <translation id="9106148373857059373">Вікно зберігання закладки закрито</translation>
 <translation id="9108808586816295166">Безпечна система DNS може бути доступна не завжди</translation>
-<translation id="910908805481542201">Допоможіть вирішити цю проблему</translation>
 <translation id="9130135798965366513">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть цьому сайту таку інформацію: <ph name="FIELDS_STRING" />. Перегляньте <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />умови використання<ph name="END_LINK2" /> цього сайту.</translation>
 <translation id="9131209053278896908">Тут відображатимуться заблоковані сайти</translation>
 <translation id="9133397713400217035">Перегляд у режимі офлайн</translation>
@@ -1894,7 +1872,6 @@
 <translation id="9189607089796819144">Усе одно завантажити файл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Історія зберігатиметься на всіх синхронізованих пристроях, щоб ви могли продовжувати робити те, на чому зупинилися</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Перевірено 1 хвилину тому}one{Перевірено # хвилину тому}few{Перевірено # хвилини тому}many{Перевірено # хвилин тому}other{Перевірено # хвилини тому}}</translation>
-<translation id="9204021776105550328">Видалення</translation>
 <translation id="9204836675896933765">Залишився 1 файл</translation>
 <translation id="9205933215779845960">Не вдається знайти цю сторінку. Перевірте написання або спробуйте шукати в <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

@@ -2914,6 +2914,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3003967365858406397">El telèfon <ph name="PHONE_NAME" /> crearà una connexió Wi-Fi privada.</translation>
 <translation id="3004385386820284928">Personalitza les tecles del teclat</translation>
 <translation id="3006881078666935414">No hi ha dades d'ús</translation>
+<translation id="3007555010975143508">Aquestes aplicacions s'utilitzaran per gravar la pantalla:</translation>
 <translation id="3007771295016901659">Pestanya duplicada</translation>
 <translation id="3008142279736625920">Pastís de formatge</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
@@ -4377,6 +4378,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4016762287427926315">Els permisos que concedeixis a <ph name="APP_NAME" /> també es concediran a aquesta aplicació. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crea un codi QR per a aquest enllaç</translation>
 <translation id="4019983356493507433">Edita la llista d'adreces d'interès</translation>
+<translation id="4020701737692625681">L'administrador pot gravar la teva pantalla</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">Pots evitar que el cursor salti d'una posició a una altra quan el cap es mogui lleugerament, però es produirà un retard breu.</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5278,7 +5280,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4676616966096505747">Algunes dades encara no s'han desat al teu compte</translation>
 <translation id="4677772697204437347">Memòria de la GPU</translation>
 <translation id="467809019005607715">Presentacions de Google</translation>
-<translation id="4678729681411398877">Quan es troba una de les teves contrasenyes en una violació de les dades, el gestor de contrasenyes de Google et pregunta si vols que es canviï a una contrasenya segura</translation>
 <translation id="4678848110205818817">Targeta de crèdit/dèbit</translation>
 <translation id="4679018849559620189">Això t'ajuda a accedir, des de qualsevol dispositiu, a les teves claus d'accés desades</translation>
 <translation id="4680105648806843642">El so s'ha silenciat en aquesta pàgina</translation>
@@ -6057,6 +6058,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5235050375939235066">Vols desinstal·lar l'aplicació?</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
 <translation id="5235750401727657667">Substituir la pàgina que veus en obrir una pestanya nova</translation>
+<translation id="5236054983756407518">Vols suprimir de Chrome l'adreça de casa?</translation>
 <translation id="5237124927415201087">Configura fàcilment el teu <ph name="DEVICE_TYPE" /> amb el telèfon. Pots afegir la Wi‐Fi i el Compte de Google sense haver d'introduir les contrasenyes manualment.
     <ph name="BR" />
     <ph name="BR" />
@@ -6841,6 +6843,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="581659025233126501">Activa la sincronització</translation>
 <translation id="5817918615728894473">Vincula</translation>
 <translation id="5817963443108180228">Et donem la benvinguda de nou, <ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">Edita al Compte de Google</translation>
 <translation id="581911254119283028">totes les aplicacions</translation>
 <translation id="5821565227679781414">Crea una drecera</translation>
 <translation id="5824976764713185207">Llegeix la pàgina automàticament quan s'acabi de carregar</translation>
@@ -7039,6 +7042,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5955304353782037793">aplicació</translation>
 <translation id="5955721306465922729">Un lloc web vol obrir aquesta aplicació.</translation>
 <translation id="5955809630138889698">És possible que aquest dispositiu només compleixi els requisits per registrar-lo al mode de demostració en línia. Contacta amb el representant del servei d'assistència per obtenir-ne més detalls.</translation>
+<translation id="59561895884837262">Rebràs una notificació quan la gravació comenci.</translation>
 <translation id="5957987129450536192">Toca la icona d'Escolta la selecció que hi ha a prop de la teva imatge de perfil i, tot seguit, selecciona el que vols escoltar.</translation>
 <translation id="5958836583172610505">La sincronització està activada</translation>
 <translation id="5959471481388474538">Xarxa no disponible</translation>
@@ -7183,6 +7187,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="606449270532897041">Gestiona les dades del lloc web</translation>
 <translation id="6064764629679333574">Millora la qualitat del so del micròfon Bluetooth augmentant a alta resolució l'àudio de baixa resolució.</translation>
 <translation id="6065289257230303064">Atributs del directori del subjecte del certificat</translation>
+<translation id="6065690209261668796">Vols suprimir de Chrome l'adreça de la feina?</translation>
 <translation id="6066794465984119824">La funció resum de la imatge no està definida</translation>
 <translation id="6069464830445383022">El Compte de Google és el teu inici de sessió al Chromebook</translation>
 <translation id="6071181508177083058">confirmeu la contrasenya</translation>
@@ -8011,7 +8016,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6667187897999649121">De moment, només pots compartir les contrasenyes amb membres de la família. <ph name="BEGIN_LINK" />Crea un grup familiar<ph name="END_LINK" /> amb un màxim de 6 membres i treu més profit dels teus productes i subscripcions a Google.</translation>
 <translation id="666731172850799929">Obre a <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Les dades es tracten de la mateixa manera que el lloc web que estàs veient.</translation>
-<translation id="6669637573228217624">Penja un fitxer</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ja està disponible</translation>
 <translation id="6670767097276846646">Algunes extensions poden afegir motors de cerca a Chrome</translation>
 <translation id="6670983860904543332">Les actualitzacions automàtiques et proporcionen les funcions més recents. Explora el més destacat de les actualitzacions recents.</translation>
@@ -8268,6 +8272,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Vols suprimir la pestanya i el grup?}=1{Vols suprimir la pestanya i el grup?}other{Vols suprimir les pestanyes i els grups?}}</translation>
 <translation id="6833479554815567477">La pestanya s'ha suprimit del grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Equilibrat (opció recomanada)</translation>
+<translation id="6835624277262316125">L'adreça de la feina et pot ajudar a enllestir tasques amb els serveis de Google, fent més rellevants els resultats de la Cerca i les indicacions a Google Maps, entre d'altres. Pots editar o suprimir l'adreça al teu <ph name="BEGIN_LINK" />Compte de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Connecteu-vos a Internet per actualitzar el dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838992358006915573">La lupa segueix el focus de ChromeVox</translation>
 <translation id="6839916869147598086">L'inici de sessió ha canviat</translation>
@@ -8401,6 +8406,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6929126689972602640">Els controls parentals no s'admeten als comptes de centres educatius. Si vols afegir un compte de centre educatiu per accedir a Google Classroom i a altres llocs web on fer el treball escolar a casa, inicia primer la sessió amb el compte personal del nen. Pots afegir el compte de centre educatiu més endavant a la configuració.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{S'ha rebutjat una extensió}other{S'han rebutjat # extensions}}</translation>
+<translation id="6930337524857202955">Hi ha una baixada nova disponible</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Intensitat de clic</translation>
 <translation id="6933321725007230600">Activa la &amp;sincronització...</translation>
@@ -9282,7 +9288,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7568759527730933493">Utilitza una connexió segura per cercar l'adreça IP d'un lloc web al DNS (sistema de noms de domini). Aquest sistema utilitza un proveïdor de serveis gestionat a <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. No s'utilitzen connexions segures per a alguns dominis que l'administrador ha configurat.</translation>
 <translation id="756876171895853918">Personalitza l'avatar</translation>
 <translation id="7568790562536448087">Actualització</translation>
-<translation id="7569113730576914983">Si Chrome troba una de les teves contrasenyes en una violació de les dades, et pot oferir canviar-la quan iniciïs la sessió</translation>
 <translation id="7569983096843329377">Negre</translation>
 <translation id="7570548610653957960">Ajuda'm a llegir</translation>
 <translation id="7571643774869182231">No hi ha prou espai d'emmagatzematge per fer l'actualització</translation>
@@ -9614,6 +9619,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">L'adreça de casa et pot ajudar a enllestir tasques amb els serveis de Google, fent més rellevants els resultats de la Cerca i les indicacions a Google Maps, entre d'altres. Pots editar o suprimir l'adreça al teu <ph name="BEGIN_LINK" />Compte de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Mètode d'introducció de text</translation>
 <translation id="7791429245559955092">Aquesta aplicació s'instal·larà al perfil de Chrome que utilitzes actualment</translation>
 <translation id="7791436592012979144">El desplaçament invers està activat</translation>

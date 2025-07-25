@@ -53,6 +53,7 @@
 <translation id="2195025571279539885">Vai vēlaties, lai Chromium nākamreiz piedāvātu šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Šī adrese pašlaik ir saglabāta pārlūkā Chromium. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Tas nozīmē, ka Chromium katru reizi pieprasīs datoriem paredzēto vietni.</translation>
+<translation id="2245694534483711162">Gemini var izmantot precīzu jūsu atrašanās vietu atkarībā no atļaujas, ko jau piešķīrāt pārlūkam Chromium.</translation>
 <translation id="2270466829363945454">Veikals</translation>
 <translation id="2313870531055795960">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chromium. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="2314220608288760290">Pārlūkā Chromium YouTube inkognito saites tiek automātiski atvērtas inkognito režīmā.</translation>

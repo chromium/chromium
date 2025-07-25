@@ -11,7 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}other{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />分頁群組選項</translation>
 <translation id="1300188005269437765">選擇何時將分頁和分頁群組自動移到閒置部分。</translation>
-<translation id="1321004960118052490">閒置的項目不會累積</translation>
+<translation id="1321004960118052490">閒置項目不會累積</translation>
 <translation id="1329584516321524826">上次更新時間：剛才</translation>
 <translation id="1340839264183302272">離開群組</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」共享分頁群組，顏色係<ph name="COLOR_NAME" />，標籤係「<ph name="CARD_LABEL" />」。}other{打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」共享分頁群組，顏色係<ph name="COLOR_NAME" />，標籤係「<ph name="CARD_LABEL" />」。}}</translation>

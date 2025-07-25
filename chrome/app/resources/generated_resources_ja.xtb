@@ -2908,6 +2908,7 @@
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> でプライベート Wi-Fi 接続を確立します。</translation>
 <translation id="3004385386820284928">キーボードのキーをカスタマイズ</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
+<translation id="3007555010975143508">画面の録画に使用されるアプリ:</translation>
 <translation id="3007771295016901659">タブを複製</translation>
 <translation id="3008142279736625920">チーズケーキ</translation>
 <translation id="3008272652534848354">権限をリセット</translation>
@@ -4371,6 +4372,7 @@
 <translation id="4016762287427926315"><ph name="APP_NAME" /> に許可した権限は、このアプリにも適用されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">このリンクの QR コードを作成</translation>
 <translation id="4019983356493507433">ブックマーク リストを編集</translation>
+<translation id="4020701737692625681">管理者は画面を録画できます</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">頭を少し動かしたときにカーソルが飛ばないようにできますが、反応が少し遅くなります。</translation>
 <translation id="402184264550408568">（TCP）</translation>
@@ -5270,7 +5272,6 @@
 <translation id="4676616966096505747">一部のデータはまだアカウントに保存されていません</translation>
 <translation id="4677772697204437347">GPU メモリ</translation>
 <translation id="467809019005607715">Google スライド</translation>
-<translation id="4678729681411398877">データ侵害でパスワードが検出された場合、Google パスワード マネージャーによって、安全なパスワードに変更するかどうかを確認するメッセージが表示されます</translation>
 <translation id="4678848110205818817">クレジット カード / デビットカード</translation>
 <translation id="4679018849559620189">どのデバイスからでも保存済みのパスキーにアクセスできるようになります</translation>
 <translation id="4680105648806843642">このページでは音声がミュートされています</translation>
@@ -6046,6 +6047,7 @@
 <translation id="5235050375939235066">アプリをアンインストールしますか？</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="5235750401727657667">新しいタブを開いたときの表示ページを変更する</translation>
+<translation id="5236054983756407518">Chrome から自宅の住所を削除しますか？</translation>
 <translation id="5237124927415201087">スマートフォンで <ph name="DEVICE_TYPE" /> を簡単に設定できます。パスワードを手動で入力しなくても、Wi-Fi や Google アカウントを追加できます。
     <ph name="BR" />
     <ph name="BR" />
@@ -6830,6 +6832,7 @@
 <translation id="581659025233126501">同期をオンにする</translation>
 <translation id="5817918615728894473">ペア設定</translation>
 <translation id="5817963443108180228">おかえりなさい、<ph name="PROFILE_NAME" /> さん</translation>
+<translation id="5818161931099046557">Google アカウントで編集</translation>
 <translation id="581911254119283028">すべてのアプリケーション</translation>
 <translation id="5821565227679781414">ショートカットを作成</translation>
 <translation id="5824976764713185207">ページの読み込み後、自動的に読み上げを開始する</translation>
@@ -7029,6 +7032,7 @@
 <translation id="5955304353782037793">アプリ</translation>
 <translation id="5955721306465922729">ウェブサイトがこのアプリケーションを開く許可を求めています。</translation>
 <translation id="5955809630138889698">このデバイスの使用はオンライン デモモードのみに限定されている可能性があります。詳しくはサポート担当者にお問い合わせください。</translation>
+<translation id="59561895884837262">録画の開始時には通知されます。</translation>
 <translation id="5957987129450536192">プロフィール画像の近くにある「選択して読み上げ」アイコンをタップして、読み上げる対象を選択します。</translation>
 <translation id="5958836583172610505">同期は有効です</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
@@ -7173,6 +7177,7 @@
 <translation id="606449270532897041">サイトデータを管理</translation>
 <translation id="6064764629679333574">低解像度音声を高解像度にアップスケーリングすることで、Bluetooth マイクの音質を向上させます。</translation>
 <translation id="6065289257230303064">証明書のサブジェクトのディレクトリ属性</translation>
+<translation id="6065690209261668796">Chrome から職場の住所を削除しますか？</translation>
 <translation id="6066794465984119824">画像ハッシュが設定されていません</translation>
 <translation id="6069464830445383022">Google アカウントを使用して Chromebook にログイン</translation>
 <translation id="6071181508177083058">パスワードの確認入力</translation>
@@ -8000,7 +8005,6 @@
 <translation id="6667187897999649121">現在のところ、パスワードはファミリー メンバーとのみ共有できます。最大 6 人のメンバーを招待して<ph name="BEGIN_LINK" />ファミリー グループを作成<ph name="END_LINK" />すると、Google のさまざまなサービスやサブスクリプションをさらに活用できます。</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />で開く</translation>
 <translation id="6669195257625975787">データは表示しているサイトと同じように扱われます</translation>
-<translation id="6669637573228217624">ファイルをアップロード</translation>
 <translation id="6670142487971298264">「<ph name="APP_NAME" />」を利用できます</translation>
 <translation id="6670767097276846646">拡張機能によって Chrome に検索エンジンが追加される場合があります</translation>
 <translation id="6670983860904543332">自動更新により最新機能が提供されます。最近の主な更新内容をご確認ください。</translation>
@@ -8256,6 +8260,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{タブとグループを削除しますか？}=1{タブとグループを削除しますか？}other{タブとグループを削除しますか？}}</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">バランス重視（推奨）</translation>
+<translation id="6835624277262316125">職場の住所は、関連性の高い検索結果や Google マップの経路の表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集、削除できます。</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6838992358006915573">ChromeVox のフォーカスに合わせて拡大鏡を動かす</translation>
 <translation id="6839916869147598086">ログインが変わりました</translation>
@@ -8389,6 +8394,7 @@
 <translation id="6929126689972602640">保護者による使用制限は学校用アカウントではサポートされていません。学校用アカウントを追加し、Google Classroom や他のウェブサイトにアクセスして自宅で学習できるようにするには、まずお子様の個人アカウントでログインしてください。学校用アカウントは設定の後半で追加できます。</translation>
 <translation id="6929760895658557216">OK Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が拒否されました}other{# 個の拡張機能が拒否されました}}</translation>
+<translation id="6930337524857202955">新しいダウンロードがあります</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">クリックの感度</translation>
 <translation id="6933321725007230600">同期を有効にする(&amp;S)...</translation>
@@ -9270,7 +9276,6 @@
 <translation id="7568759527730933493">安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。これには、<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> のマネージド サービス プロバイダを使用します安全な接続は、管理者が構成した一部のドメインでは使用されません。</translation>
 <translation id="756876171895853918">アバターをカスタマイズ</translation>
 <translation id="7568790562536448087">更新中:</translation>
-<translation id="7569113730576914983">データ侵害でパスワードが検出された場合、ログイン時にパスワードの変更を促すメッセージを表示します</translation>
 <translation id="7569983096843329377">黒</translation>
 <translation id="7570548610653957960">文書読解サポート</translation>
 <translation id="7571643774869182231">更新に必要な空き容量がありません</translation>
@@ -9601,6 +9606,7 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">自宅の住所は、関連性の高い検索結果や Google マップの経路の表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集、削除できます。</translation>
 <translation id="7791269138074599214">入力方法</translation>
 <translation id="7791429245559955092">このアプリケーションは、現在使用している Chrome プロフィールにインストールされます</translation>
 <translation id="7791436592012979144">逆スクロールは有効です</translation>

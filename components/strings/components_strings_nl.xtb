@@ -478,7 +478,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1785118555253503473">Web-apps installeren?</translation>
 <translation id="1791415068765905273">Alle vergelijkingstabellen tonen</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je gegevens, privacy en beveiliging te beheren in je Google-account</translation>
-<translation id="1793473605302304726">Gespreid betalen</translation>
 <translation id="1793631236004319016">Laatst gebruikt: <ph name="NUM_HOURS_MINUTES_SECONDS" /> geleden</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, er zijn meerdere acties beschikbaar, druk op 'Tab' om erdoorheen te bladeren</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1471,6 +1470,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3467081767799433066">Bij advertentiemeting worden beperkte typen gegevens gedeeld tussen sites om de prestaties van hun advertenties te meten. Denk bijvoorbeeld aan informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, momenteel geopend. druk op Tab en vervolgens op Enter om naar het geopende tabblad te schakelen</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om alle momenteel geopende incognitovensters te sluiten</translation>
+<translation id="3472469028191701821">Opent in nieuw tabblad</translation>
 <translation id="3474392552865647225">Knop Lettertypen aanpassen in Chrome. Activeer deze om lettertypen en lettergrootten aan te passen in Chrome.</translation>
 <translation id="3478033058537426179">Op groep</translation>
 <translation id="3479552764303398839">Niet nu</translation>
@@ -2957,7 +2957,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5969199813874624822">Opslaan en prijs volgen</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">6e rol</translation>
-<translation id="5974745851230707809">Opties voor gespreid betalen</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5984570616552610254">Luchtvochtigheid van ruimte</translation>
@@ -3602,7 +3601,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7042616127917168121">Resultaten verfijnen</translation>
 <translation id="7043552168914147882">Tabbladen</translation>
 <translation id="7044081119134178347">Camera deze keer toegestaan</translation>
-<translation id="704738887031336226">Opties voor <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />gespreid betalen<ph name="PAY_OVER_TIME_HELP_LINK_END" /> tonen bij het afrekenen</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Je hebt geprobeerd <ph name="DOMAIN" /> te bereiken, maar de server heeft een certificaat gepresenteerd waarvan de geldigheidsperiode te lang is om betrouwbaar te zijn.</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
@@ -4299,7 +4297,6 @@ Aanvullende informatie:
 <translation id="8220602974062798186"><ph name="TOPIC" /> en gerelateerde onderwerpen blokkeren?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Vragen aan <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Weergave met twee pagina's</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> wil toegang tot een apparaat in je netwerk:</translation>
 <translation id="822925450938886901">Open chrome://management in je browser voor meer informatie en beleid dat van toepassing kan zijn.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{開啟內含 <ph name="TAB_COUNT2" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組}other{開啟內含 <ph name="TAB_COUNT2" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組}}</translation>
 <translation id="1273910660700874265">「<ph name="TITLE_OF_GROUP" />」分頁群組選項</translation>
 <translation id="1300188005269437765">選擇分頁和分頁群組自動移到閒置分頁區塊的時機。</translation>
+<translation id="1321004960118052490">閒置項目不會保留</translation>
 <translation id="1329584516321524826">剛才更新</translation>
 <translation id="1340839264183302272">退出群組</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}}</translation>
@@ -107,9 +108,11 @@
 <translation id="492284538114688557">有商品降價了</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}}</translation>
 <translation id="5007392906805964215">查看</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{將分頁移到新視窗}other{將分頁移到其他視窗}}</translation>
 <translation id="5073204694187207510">隱藏全螢幕格狀檢視</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5161254044473106830">請輸入標題</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 會在 <ph name="AUTO_DELETE_DELAY_ONE" /> 個月後自動關閉閒置的分頁和分頁群組。你可以前往設定變更。}other{Chrome 會在 <ph name="AUTO_DELETE_DELAY_MANY" /> 個月後自動關閉閒置的分頁和分頁群組。你可以前往設定變更。}}</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5380159289133845234">封存重複分頁</translation>
 <translation id="5400836586163650660">灰</translation>

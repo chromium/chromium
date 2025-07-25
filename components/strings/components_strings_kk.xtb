@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">Веб-қолданбаларды орнату керек пе?</translation>
 <translation id="1791415068765905273">Барлық салыстыру кестесін көрсету</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google аккаунтыңыздағы ақпаратты, құпиялықты және қауіпсіздікті басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
-<translation id="1793473605302304726">Белгілі бір уақыттан кейін төлеу</translation>
 <translation id="1793631236004319016">Соңғы рет <ph name="NUM_HOURS_MINUTES_SECONDS" /> бұрын пайдаланылған</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бірнеше әрекет қолжетімді, оларды қарап шығу үшін Tab пернесін басыңыз.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1473,6 +1472,7 @@
 <translation id="3467081767799433066">Жарнамаларының өнімділігін (мысалы, сайтқа кіргеннен кейін, тауар сатып алған-алмағаныңызды) өлшеу үшін сайттар бір-бірімен деректердің шектеулі түрін бөліседі.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> қазір ашық, ашық қойындыға ауысу үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Қазір ашық тұрған инкогнито терезелерінің барлығын жабу үшін Tab, сосын Enter пернесін басыңыз.</translation>
+<translation id="3472469028191701821">Жаңа қойындыда ашылады.</translation>
 <translation id="3474392552865647225">"Chrome-дағы қаріптерді реттеу" түймесі, Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу үшін белсендіріңіз</translation>
 <translation id="3478033058537426179">Тобы бойынша</translation>
 <translation id="3479552764303398839">Қазір емес</translation>
@@ -2962,7 +2962,6 @@
 <translation id="5969199813874624822">Бағаны сақтау және бақылау</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Алтыншы орам</translation>
-<translation id="5974745851230707809">Кейін төлеу опциялары</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
 <translation id="5984570616552610254">Камераның ылғалдылығы</translation>
@@ -3300,7 +3299,7 @@
 <translation id="6493924760403974580">Бұл қолданба тек осы өлшемді қолдайды.</translation>
 <translation id="6494750904506170417">қалқымалы терезелер және бағыттаулар</translation>
 <translation id="6495664197699704593">Бұл құпия сөз тек осы құрылғыға сақталады. Оны басқа құрылғыларыңызда пайдалану үшін <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="649611364763911650">Chrome-да басқа автотолтыру қызметін пайдалану үшін автотолтыру провайдерін Android параметрлерінде таңдаңыз.</translation>
+<translation id="649611364763911650">Chrome-да басқа автотолтыру қызметін пайдалану үшін Android параметрлерінде автотолтыру провайдерін таңдаңыз.</translation>
 <translation id="6499038740797743453">Құпия сөз қайта орнатылсын ба?</translation>
 <translation id="6502510275417601303">Жаңа төлем параметрі туралы хабарландыру жабық</translation>
 <translation id="6502991525169604759">Өзгертулеріңізсіз</translation>
@@ -3608,7 +3607,6 @@
 <translation id="7042616127917168121">Нәтижелерді нақтылау</translation>
 <translation id="7043552168914147882">Қойындылар будасы</translation>
 <translation id="7044081119134178347">Бұл жолы камераға рұқсат берілген.</translation>
-<translation id="704738887031336226">Төлейтін кезде, <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />белгілі бір уақыттан кейін төлеу<ph name="PAY_OVER_TIME_HELP_LINK_END" /> опцияларын көрсету</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімді болуы үшін жарамдылық мерзімі тым ұзақ болған сертификатты ұсынды.</translation>
 <translation id="7053983685419859001">Блоктау</translation>
@@ -4304,7 +4302,6 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> тақырыбын және оған қатысты барлық тақырыпты блоктау керек пе?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> сұрау</translation>
 <translation id="8228419419708659934">Екі бетті көру</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> желіңіздегі құрылғыны пайдаланғысы келеді:</translation>
 <translation id="822925450938886901">Қолданылуы мүмкін қосымша ақпарат пен саясаттарды қарау үшін браузеріңізде chrome://management бөлімін ашыңыз.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

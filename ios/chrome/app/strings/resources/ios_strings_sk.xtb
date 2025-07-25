@@ -3,7 +3,6 @@
 <translationbundle lang="sk">
 <translation id="1005023885865154304">Otvorte nastavenia automatického dopĺňania hesiel</translation>
 <translation id="1005230401424685968">RRRR</translation>
-<translation id="1010225406377140704">Požiadajte odosielateľa o nový odkaz</translation>
 <translation id="1013952917065545813">Môžete sa sem vrátiť a znova otvoriť karty, ktoré ste nedávno zatvorili</translation>
 <translation id="1016495303386450659">Položka bola aktualizovaná</translation>
 <translation id="1019990162050689579">Aktivita v aplikáciách Gemini</translation>
@@ -1223,6 +1222,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5813223718099710537">Keď používate túto funkciu, obsah stránok a webové adresy sa odosielajú Googlu. Môžete to kedykoľvek vypnúť v Nastaveniach.</translation>
 <translation id="5817176759448082654">Kontrola hesiel</translation>
 <translation id="5819208479324046259">Spravuje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synchronizuje sa…</translation>
 <translation id="583923961930319521">Používajte heslá vo všetkých svojich zariadeniach</translation>
 <translation id="5844284118433003733">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
@@ -1978,7 +1978,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8694281486652655615">Zobrazí túto položku</translation>
 <translation id="8696297579102085705">Odoslať do zariadenia</translation>
 <translation id="8697136149718343437">Presunúť panel s adresou naspodok</translation>
-<translation id="8703372953981978786">Tento odkaz nefunguje</translation>
 <translation id="8706253136355675497">Teplota</translation>
 <translation id="8706806585855470492">Budete môcť zdieľať skupiny kariet, pripájať sa k nim a spolupracovať na nich</translation>
 <translation id="8709409604518538305">Karty boli zatvorené</translation>

@@ -3,9 +3,9 @@
 <translationbundle lang="ro">
 <translation id="1005023885865154304">Deschide setările pentru completarea automată a parolelor</translation>
 <translation id="1005230401424685968">AAAA</translation>
-<translation id="1010225406377140704">Contactează expeditorul pentru a solicita un link nou</translation>
 <translation id="1013952917065545813">Poți să revii aici mai târziu ca să redeschizi file pe care le-ai închis recent.</translation>
 <translation id="1016495303386450659">Element actualizat</translation>
+<translation id="1019990162050689579">Activitatea din Aplicația Gemini</translation>
 <translation id="102916930470544692">Cheie de acces</translation>
 <translation id="1030376737535466765">Deschide Managerul de parole</translation>
 <translation id="1035980983510608210">Dacă închizi toate filele, se vor închide și filele fixate.</translation>
@@ -28,6 +28,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> nu a putut fi deschis</translation>
 <translation id="1096992026380844478">Setările de sincronizare vor fi restabilite pe baza ultimului backup. <ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Trimite conținutul paginii la Gemini pentru a primi răspunsuri mai relevante. Când trimiți o pagină la Gemini, conținutul complet și adresa URL a paginii sunt trimise la Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1110772719190051587">Deblochează cu Face ID</translation>
 <translation id="1112015203684611006">Printarea nu a reușit.</translation>
@@ -282,6 +283,7 @@
 <translation id="2067852168641682340">Salvează în acest cont de fiecare dată</translation>
 <translation id="2074119687904553223">{count,plural, =1{O filă}few{{count} file}other{{count} de file}}</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
+<translation id="2074599390896964828">Locația exactă</translation>
 <translation id="2078437078822043850">Poți derula spre dreapta pentru a naviga în modul incognito.</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2085876078937250610">Salvează…</translation>
@@ -310,6 +312,7 @@
 <translation id="219283042927675668">File în grup</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2196428379625389579">Caută pe web</translation>
+<translation id="2198001751007276170">Înlocuiește parolele</translation>
 <translation id="2199562093267256223">Astfel, grupul se va șterge de pe toate dispozitivele conectate la <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Niciun cont de e-mail</translation>
 <translation id="2214453882118345682">Cumpără, tradu și identifică ceea ce vezi cu camera foto.</translation>
@@ -510,6 +513,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="3010025794097054078">Protejează-te împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>
 <translation id="301080557829842765">Ghid pentru confidențialitate</translation>
 <translation id="3012310354105716927">Anumite date nu au fost încă salvate</translation>
+<translation id="3013922155552460252">Vezi și gestionează activitatea din Gemini, cum ar fi chaturile, feedbackul și solicitările</translation>
 <translation id="3016518775797983090">Pagină netrimisă</translation>
 <translation id="3020183492814296499">Comenzi rapide</translation>
 <translation id="3021342271734507256">Desenează, evidențiază sau atinge orice element de pe ecran pentru a căuta</translation>
@@ -534,6 +538,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3087734570205094154">Jos</translation>
 <translation id="309710370695886264">Ai o parolă refolosită. Remediază problema acum pentru a rămâne în siguranță.</translation>
 <translation id="3102790820790869053">Caută în filele recente</translation>
+<translation id="3106258548858559536">Dezactivează Modul de lectură</translation>
 <translation id="3106690631878101882">Ascunde Traducere</translation>
 <translation id="310900540163454140">Ștergi parola pentru <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marchează…</translation>
@@ -632,6 +637,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3533860663366814939">Deschide Setările pentru completare automată și parole</translation>
 <translation id="3546122170015471515">Previzualizări Maps pe Google.com</translation>
 <translation id="3547356470684043247">Citește evaluările clienților pentru produse, servicii sau experiențe ca să iei decizii informate cu ajutorul recenziilor</translation>
+<translation id="3547933853190131743">Caută cu Modul AI</translation>
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
 <translation id="355765753469272474">Anulează</translation>
 <translation id="3565930036634619844">Filă. <ph name="TAB_INDEX" /> din <ph name="NUMBER_OF_TABS" />.</translation>
@@ -1216,6 +1222,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5813223718099710537">Când folosești această funcție, conținutul paginilor și adresele URL sunt trimise la Google. Poți dezactiva oricând această opțiune din setări.</translation>
 <translation id="5817176759448082654">Verificarea parolei</translation>
 <translation id="5819208479324046259">Gestionat de <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Se sincronizează…</translation>
 <translation id="583923961930319521">Folosește parole pe toate dispozitivele</translation>
 <translation id="5844284118433003733">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
@@ -1600,6 +1607,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7300448350764260141">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online.</translation>
 <translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7313347584264171202">Aici vei vedea filele incognito</translation>
+<translation id="7334364820047587268">Ai deja parole pentru aceste conturi în Managerul de parole Google. Dacă alegi să imporți una dintre parolele de mai jos, aceasta o va înlocui pe cea existentă.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descărcat</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
@@ -1816,6 +1824,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8101409298456377967">Creează, salvează și gestionează parolele ca să te poți conecta cu ușurință la site-uri și aplicații. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Dezactivează</translation>
+<translation id="8106442513853561174">Afișează locația exactă</translation>
 <translation id="8114753159095730575">Descărcarea fișierelor este disponibilă. Opțiunile sunt disponibile în partea de jos a ecranului.</translation>
 <translation id="8123502380991596210">Ascunde Noutăți</translation>
 <translation id="8123953306357309250">Anulezi sincronizarea? Poți să activezi sincronizarea oricând în setări.</translation>
@@ -1969,7 +1978,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8694281486652655615">Afișează acest element</translation>
 <translation id="8696297579102085705">Trimite pe dispozitivul tău</translation>
 <translation id="8697136149718343437">Mută bara de adrese în partea de jos</translation>
-<translation id="8703372953981978786">Linkul nu funcționează</translation>
 <translation id="8706253136355675497">Temperatură</translation>
 <translation id="8706806585855470492">Vei putea să trimiți, să te alături și să colaborezi în grupuri de file</translation>
 <translation id="8709409604518538305">Filele au fost închise</translation>
@@ -2098,6 +2106,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="913036870884277353">Deschide cu ușurință linkuri în alte aplicații.</translation>
 <translation id="9137013805542155359">Afișează originalul</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Activează modul de lectură</translation>
 <translation id="9144230693397287797">Primește actualizări pentru mementourile pe care le-ai setat și filele de pe alte dispozitive</translation>
 <translation id="914781932147356857">Marchează-le pe toate…</translation>
 <translation id="9148126808321036104">Conectează-te din nou</translation>
@@ -2126,6 +2135,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="94870150074703282">Ștergi grupul?</translation>
 <translation id="952704832371081537">Anulează</translation>
 <translation id="954667170699278022">Listă de lecturi</translation>
+<translation id="956218893102219091">Folosește locația exactă pentru cele mai precise rezultate Gemini, în locul unei locații estimate pe baza adresei IP. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Urmărești <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>
 <translation id="963102227019621224">Activitatea de pe web și din aplicații</translation>

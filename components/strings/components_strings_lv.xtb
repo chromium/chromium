@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai spēlētu dinozaura skriešanas spēli pārlūkā Chrome, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1060136083665017312">Spēļu sistēmas un konsoles</translation>
 <translation id="1060320201901229167">Aploksne Kaku 5</translation>
+<translation id="1060985736456216896">Google Pay, Zip logotips</translation>
 <translation id="1062407476771304334">Aizstāt</translation>
 <translation id="1063822554756965137">Faili ir sekmīgi dzēsti</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1209206284964581585">Pagaidām slēpt</translation>
 <translation id="121201262018556460">Jūs centāties sasniegt <ph name="DOMAIN" />, bet servera uzrādītais sertifikāts satur vāju atslēgu. Iespējams, uzbrucējs ir uzlauzis privāto atslēgu un serveris var nebūt tas, ko centāties sasniegt (iespējams, jūs sazināties ar uzbrucēju).</translation>
 <translation id="1212527389003717329">Lejupielāde ir sākta. Lai to skatītu, nospiediet un turiet taustiņu |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Izmantojiet Google kontā saglabāto informāciju, lai automātiski aizpildītu paroles, piekļuves atslēgas, adreses, maksājumu veidus un citu informāciju.</translation>
 <translation id="1219129156119358924">Sistēmas drošība</translation>
 <translation id="1222060260947439312">Labā paplāte</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -476,7 +478,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1785118555253503473">Vai instalēt tīmekļa lietotnes?</translation>
 <translation id="1791415068765905273">Rādīt visas salīdzinājuma tabulas</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu savu informāciju, konfidencialitāti un drošību savā Google kontā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
-<translation id="1793473605302304726">Maksāt pa daļām</translation>
 <translation id="1793631236004319016">Pēdējoreiz lietota pirms: <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ir pieejamas vairākas darbības. Lai pēc kārtas pārietu starp šīm darbībām, nospiediet tabulēšanas taustiņu.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1472,6 +1473,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3467081767799433066">Izmantojot reklāmu novērtēšanu, vietnēs tiek kopīgoti noteiktu veidu dati, lai novērtētu tajās rādīto reklāmu veiktspēju, piemēram, vai veicāt pirkumu pēc vietnes apmeklēšanas.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, šobrīd atvērta. Nospiediet tabulēšanas taustiņu, pēc tam — ievadīšanas taustiņu, lai atvērtu cilni.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai aizvērtu visus atvērtos inkognito režīma logus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
+<translation id="3472469028191701821">Saite tiks atvērta jaunā cilnē</translation>
 <translation id="3474392552865647225">Chrome poga “Pielāgot fontus”. Aktivizējiet, lai pārlūkā Chrome pielāgotu fontu izmērus un burtveidolus.</translation>
 <translation id="3478033058537426179">Pēc grupas</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
@@ -1539,6 +1541,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3576616784287504635">Vietnē <ph name="SITE" /> iegultā lapā ir rakstīts</translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="3577902790357386792">Vingrošana</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" />, <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome jūs informēs, kad šī lapa būs gatava. &lt;a&gt;Atcelt&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Pievienojiet vārdu.</translation>
 <translation id="3583757800736429874">&amp;Pārvietošanas atsaukuma atcelšana</translation>
@@ -1786,6 +1789,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="398470910934384994">Putni</translation>
 <translation id="3985750352229496475">Pārvaldīt adreses…</translation>
 <translation id="3986506998755860149">uzzināt vairāk par MI nodrošinātu automātisko aizpildi iestatījumos</translation>
+<translation id="3986557181852957825">Google Pay, Klarna logotips</translation>
 <translation id="3986705137476756801">Pagaidām izslēgt subtitrus reāllaikā</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Mazāk nekā 1 MB</translation>
@@ -1858,6 +1862,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4104702906064390950">Notiek IBAN informācijas saglabāšana</translation>
 <translation id="4106887816571530227">Iegultais saturs nav atļauts</translation>
 <translation id="4107047499377819067">Ir sākta VPN fona pakalpojumu instalēšana. Tā var ilgt dažas minūtes.</translation>
+<translation id="4110642094637545339">Google Pay, AfterPay logotips</translation>
 <translation id="4110652170750985508">Maksājuma pārskatīšana</translation>
 <translation id="4111546256784973544">Peintbols</translation>
 <translation id="4112140312785995938">Pārtīt atpakaļ</translation>
@@ -2276,6 +2281,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4807098396393229769">Vārds uz kartes</translation>
 <translation id="4809079943450490359">Ierīces administratora norādījumi</translation>
 <translation id="4811450222531576619">Uzziniet par tās avotu un tēmu.</translation>
+<translation id="4811918461974803225">Google Pay, Affirm logotips</translation>
 <translation id="4813512666221746211">Tīkla kļūda</translation>
 <translation id="4814114628197290459">IBAN dzēšana</translation>
 <translation id="4816341377198595747">Poga “Meklēt grāmatzīmēs”; aktivizējiet, lai meklētu grāmatzīmēs</translation>
@@ -2525,6 +2531,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5222812217790122047">Jānorāda e-pasta adrese.</translation>
 <translation id="5225215474235602477">Vai saglabāt pases informāciju?</translation>
 <translation id="5228269245420405804">Tālmācība</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Piegādes adrese</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2954,7 +2961,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5969199813874624822">Saglabāt un sekot cenai</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sestais rullis</translation>
-<translation id="5974745851230707809">Iespējas maksāt pa daļām</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5979084224081478209">Pārbaudīt paroles</translation>
 <translation id="5984570616552610254">Mitruma līmenis korpusā</translation>
@@ -3292,6 +3298,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6493924760403974580">Šī lietotne atbalsta tikai šo lielumu.</translation>
 <translation id="6494750904506170417">uznirstošie elementi un novirzīšana</translation>
 <translation id="6495664197699704593">Šī parole ir saglabāta tikai šajā ierīcē. Lai varētu to izmantot citās ierīcēs, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Lai pārlūkā Chrome izmantotu citu automātiskās aizpildes pakalpojumu, Android iestatījumos izvēlieties automātiskās aizpildes pakalpojumu sniedzēju.</translation>
 <translation id="6499038740797743453">Vai atiestatīt paroli?</translation>
 <translation id="6502510275417601303">Brīdinājums par jaunu maksājumu iestatījumu ir aizvērts</translation>
 <translation id="6502991525169604759">Bez jūsu veiktajām izmaiņām</translation>
@@ -3599,7 +3606,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7042616127917168121">Uzlabot rezultātus</translation>
 <translation id="7043552168914147882">Izciļņa starpkarte</translation>
 <translation id="7044081119134178347">Ir atļauts šoreiz izmantot kameru</translation>
-<translation id="704738887031336226">Norēķināšanās brīdī rādīt iespējas <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />maksāšanai pa daļām<ph name="PAY_OVER_TIME_HELP_LINK_END" /></translation>
 <translation id="7048095965575426564">Fanfold (Eiropa)</translation>
 <translation id="7050187094878475250">Jūs mēģinājāt sasniegt domēnu <ph name="DOMAIN" />, bet serveris uzrādīja sertifikātu, kura derīguma periods ir pārāk ilgs, lai būtu uzticams.</translation>
 <translation id="7053983685419859001">Bloķēt</translation>
@@ -4296,7 +4302,6 @@ Papildu informācija:
 <translation id="8220602974062798186">Vai bloķēt tēmu <ph name="TOPIC" /> un saistītās tēmas?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, jautāt <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Divu lappušu skats</translation>
-<translation id="8228477714872026922">Vietne <ph name="ORIGIN" /> vēlas piekļūt ierīcei jūsu tīklā:</translation>
 <translation id="822925450938886901">Lai iegūtu papildu informāciju un skatītu piemērojamās politikas, pārlūkprogrammā atveriet vietni chrome://management.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

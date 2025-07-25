@@ -2910,6 +2910,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3003967365858406397">Telefoni yt <ph name="PHONE_NAME" /> do të krijojë një lidhje private Wi-Fi.</translation>
 <translation id="3004385386820284928">Personalizo tastet e tastierës</translation>
 <translation id="3006881078666935414">Nuk ka asnjë të dhënë përdorimi</translation>
+<translation id="3007555010975143508">Këto aplikacione do të përdoren për të regjistruar ekranin tënd:</translation>
 <translation id="3007771295016901659">Dubliko skedën</translation>
 <translation id="3008142279736625920">Qumështor</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
@@ -4373,6 +4374,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4016762287427926315">Lejet që lejon për <ph name="APP_NAME" /> do të lejohen edhe për këtë aplikacion. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Krijo një kod QR për këtë lidhje</translation>
 <translation id="4019983356493507433">Modifiko listën e faqeshënuesve</translation>
+<translation id="4020701737692625681">Administratori yt mund ta regjistrojë ekranin tënd</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">Mund ta ndalosh kursorin që të mos lëvizë nga lëvizjet e lehta të kohës, por do të ketë një vonesë të shkurtër.</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5273,7 +5275,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4676616966096505747">Disa të dhëna nuk janë ruajtur ende në llogarinë tënde</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
 <translation id="467809019005607715">Diapozitivat e Google</translation>
-<translation id="4678729681411398877">Kur një nga fjalëkalimet e tua gjendet në një nxjerrje të paautorizuar të të dhënave, "Menaxheri i fjalëkalimeve i Google" të pyet nëse dëshiron ta ndryshosh me një fjalëkalim të fortë</translation>
 <translation id="4678848110205818817">Kartë krediti/debiti</translation>
 <translation id="4679018849559620189">Kjo të ndihmon që të qasesh te çelësat e ruajtur të kalimit në çdo pajisje</translation>
 <translation id="4680105648806843642">Tingulli u çaktivizua në këtë faqe</translation>
@@ -6051,6 +6052,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5235050375939235066">Të çinstalohet aplikacioni?</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
 <translation id="5235750401727657667">Zëvendëso faqen që shikon kur hap një skedë të re</translation>
+<translation id="5236054983756407518">Të hiqet adresa jote e shtëpisë nga Chrome?</translation>
 <translation id="5237124927415201087">Konfiguro me lehtësi pajisjen tënde <ph name="DEVICE_TYPE" /> me telefonin tënd. Mund të shtosh rrjetin Wi-Fi dhe "Llogarinë tënde të Google" pa futur fjalëkalimet e tua në mënyrë manuale.
     <ph name="BR" />
     <ph name="BR" />
@@ -6836,6 +6838,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="581659025233126501">Aktivizo sinkronizimin</translation>
 <translation id="5817918615728894473">Çifto</translation>
 <translation id="5817963443108180228">Mirë se u ktheve, <ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">Modifiko në "Llogarinë e Google"</translation>
 <translation id="581911254119283028">të gjitha aplikacionet</translation>
 <translation id="5821565227679781414">Krijo shkurtore</translation>
 <translation id="5824976764713185207">Lexoje automatikisht faqen pasi ajo të përfundojë ngarkimin</translation>
@@ -7035,6 +7038,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5955304353782037793">aplikacion</translation>
 <translation id="5955721306465922729">Një uebsajt dëshiron që ta hapë këtë aplikacion.</translation>
 <translation id="5955809630138889698">Kjo pajisje mund të jetë e përshtatshme vetëm për modalitetin e demonstrimit online. Kontakto me përfaqësuesin e ekipit të mbështetjes për më shumë detaje.</translation>
+<translation id="59561895884837262">Do të njoftohesh kur të fillojë regjistrimi.</translation>
 <translation id="5957987129450536192">Trokit ikonën e "Zgjidh që të thuhet" pranë imazhit të profilit tënd, më pas zgjidh atë që dëshiron të dëgjosh.</translation>
 <translation id="5958836583172610505">Sinkronizimi është aktiv</translation>
 <translation id="5959471481388474538">Rrjeti nuk ofrohet</translation>
@@ -7179,6 +7183,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="606449270532897041">Menaxho të dhënat e sajtit</translation>
 <translation id="6064764629679333574">Përmirëso cilësinë e tingullit të mikrofonit me Bluetooth duke e përmirësuar audion me rezolucion të ulët në audio me rezolucion të lartë.</translation>
 <translation id="6065289257230303064">Atributet e direktorisë së subjektit të certifikatës</translation>
+<translation id="6065690209261668796">Të hiqet adresa jote e punës nga Chrome?</translation>
 <translation id="6066794465984119824">Hash-i i imazhit nuk është caktuar</translation>
 <translation id="6069464830445383022">Identifikohu në pajisjen Chromebook me "Llogarinë tënde të Google"</translation>
 <translation id="6071181508177083058">konfirmo fjalëkalimin</translation>
@@ -8005,7 +8010,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6667187897999649121">Për momentin, mund t'i ndash fjalëkalimet vetëm me anëtarët e familjes. <ph name="BEGIN_LINK" />Krijo një grup të familjes<ph name="END_LINK" /> me deri në 6 anëtarë dhe merr më shumë nga produktet dhe abonimet e tua nëpër Google.</translation>
 <translation id="666731172850799929">Hape në <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Të dhënat trajtohen njëlloj si sajti që po shikon</translation>
-<translation id="6669637573228217624">Ngarko një skedar</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ofrohet tani</translation>
 <translation id="6670767097276846646">Disa shtesa mund të shtojnë motorët e kërkimit në Chrome</translation>
 <translation id="6670983860904543332">Përditësimet automatike të ofrojnë veçoritë më të fundit. Eksploro të theksuarat nga përditësimet e fundit.</translation>
@@ -8262,6 +8266,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Të hiqet skeda dhe të fshihet grupi?}=1{Të hiqen skedat dhe të fshihet grupi?}other{Të hiqen skedat dhe të fshihen grupet?}}</translation>
 <translation id="6833479554815567477">Skeda u zhvendos nga grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Balancuar (rekomandohet)</translation>
+<translation id="6835624277262316125">Adresa jote e punës mund të të ndihmojë të realizosh gjërat në shërbimet e Google, si p.sh. rezultate më të përshtatshme të "Kërko" dhe udhëzimet në Google Maps. Mund ta modifikosh ose ta fshish adresën tënde në <ph name="BEGIN_LINK" />"Llogarinë tënde të Google", <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Lidhu në internet për të përditësuar pajisjen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838992358006915573">Zmadhuesi ndjek fokusin e ChromeVox</translation>
 <translation id="6839916869147598086">Identifikimi ka ndryshuar</translation>
@@ -8395,6 +8400,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6929126689972602640">Kontrollet prindërore nuk mbështeten për llogaritë e shkollës. Për të shtuar një llogari shkolle për t'u qasur te "Klasa e Google" dhe sajte të tjera të uebit për detyrat e shkollës në shtëpi, në fillim identifikohu me llogarinë personale të fëmijës. Mund ta shtosh llogarinë e shkollës më vonë te konfigurimi.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Një shtesë është refuzuar}other{# shtesa janë refuzuar}}</translation>
+<translation id="6930337524857202955">Një shkarkim i ri i disponueshëm</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Fortësia e klikimit</translation>
 <translation id="6933321725007230600">Aktivizo &amp;sinkronizimin...</translation>
@@ -9274,7 +9280,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7568759527730933493">Përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS). Kjo përdor një ofrues të menaxhuar të shërbimit në <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Lidhjet e sigurta nuk përdoren për disa domene të konfiguruara nga administratori yt.</translation>
 <translation id="756876171895853918">Personalizo simbolin</translation>
 <translation id="7568790562536448087">Po përditësohet</translation>
-<translation id="7569113730576914983">Kur Chrome gjen një nga fjalëkalimet e tua në një nxjerrje të paautorizuar të të dhënave, ai mund të ofrojë ta ndryshojë fjalëkalimin tënd për ty kur të identifikohesh</translation>
 <translation id="7569983096843329377">E zezë</translation>
 <translation id="7570548610653957960">Më ndihmo të lexoj</translation>
 <translation id="7571643774869182231">Nuk ka hapësirë ruajtëse të mjaftueshme për përditësimin</translation>
@@ -9605,6 +9610,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7788298548579301890">Një program tjetër në kompjuterin tënd shtoi një aplikacion që mund të ndryshojë mënyrën e funksionimit të Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">Adresa jote e shtëpisë mund të të ndihmojë të realizosh gjërat në shërbimet e Google, si p.sh. rezultate më të përshtatshme të "Kërko" dhe udhëzimet në Google Maps. Mund ta modifikosh ose ta fshish adresën tënde në <ph name="BEGIN_LINK" />"Llogarinë tënde të Google", <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Metoda e hyrjes</translation>
 <translation id="7791429245559955092">Ky aplikacion do të instalohet në profilin tënd të Chrome të përdorur aktualisht.</translation>
 <translation id="7791436592012979144">Lëvizja në të kundërt u aktivizua</translation>

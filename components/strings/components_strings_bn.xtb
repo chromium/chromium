@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">ওয়েব অ্যাপ ইনস্টল করতে চান?</translation>
 <translation id="1791415068765905273">সব তুলনামূলক টেবিল দেখুন</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে নিজের সম্পর্কে তথ্য, গোপনীয়তা এবং সুরক্ষা ম্যানেজ করতে প্রথমে Tab তারপরে Enter প্রেস করুন</translation>
-<translation id="1793473605302304726">সময়ে সময়ে পেমেন্ট করুন</translation>
 <translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> আগে শেষবার ব্যবহার করা হয়েছে</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাজ করা যাবে, বিকল্পগুলি এক এক করে দেখতে ট্যাব টিপুন</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1475,6 +1474,7 @@
 <translation id="3467081767799433066">বিজ্ঞাপন পরিমাপের মাধ্যমে, সাইটের বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করার জন্য বিভিন্ন সাইটের মধ্যে সীমিত ধরনের ডেটা শেয়ার করা হয়, যেমন আপনি কোনও সাইট ভিজিট করার পর কেনাকাটা করেছেন কিনা সেই সম্পর্কিত ডেটা।</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, এখন খোলা আছে, খোলা ট্যাবে যেতে ট্যাব প্রেস করে এন্টার প্রেস করুন</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বর্তমানে খোলা আছে এমন সব 'ছদ্মবেশী' উইন্ডো বন্ধ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
+<translation id="3472469028191701821">নতুন ট্যাবে খোলে</translation>
 <translation id="3474392552865647225">'Chrome-এ ফন্ট কাস্টমাইজ করুন' বোতাম, Chrome-এ ফন্ট সাইজ ও টাইপফেস কাস্টমাইজ করতে এটি চালু করুন</translation>
 <translation id="3478033058537426179">গ্রুপ অনুযায়ী</translation>
 <translation id="3479552764303398839">এখনই নয়</translation>
@@ -2964,7 +2964,6 @@
 <translation id="5969199813874624822">দাম সেভ এবং ট্র্যাক করুন</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixth Roll</translation>
-<translation id="5974745851230707809">সময়ে সময়ে পেমেন্ট করার বিকল্প</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
 <translation id="5984570616552610254">চেম্বারের আর্দ্রতা</translation>
@@ -3609,7 +3608,6 @@
 <translation id="7042616127917168121">ফলাফল রিফাইন করুন</translation>
 <translation id="7043552168914147882">ট্যাব স্টক</translation>
 <translation id="7044081119134178347">এই সময় ক্যামেরার অনুমতি দেওয়া হয়েছে</translation>
-<translation id="704738887031336226">চেক-আউটের সময় <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />সময়ে সময়ে পেমেন্ট করুন<ph name="PAY_OVER_TIME_HELP_LINK_END" /> সম্পর্কিত বিকল্প দেখুন</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">আমি <ph name="DOMAIN" />-এ সংযোগ করার চেষ্টা করেছেন, কিন্তু সার্ভার একটি সার্টিফিকেট উপস্থাপন করেছে যার বৈধতার সময়সীমা এত বেশী যে বিশ্বাসযোগ্য নয়।</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
@@ -4306,7 +4304,6 @@
 <translation id="8220602974062798186"><ph name="TOPIC" /> এবং এর সাথে এই ধরনের সম্পর্কিত বিষয় ব্লক করবেন?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> বলুন</translation>
 <translation id="8228419419708659934">দুটি পৃষ্ঠা দেখুন</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> আপনার নেটওয়ার্কে থাকা ডিভাইস অ্যাক্সেস করতে চাইছে:</translation>
 <translation id="822925450938886901">প্রয়োগ করা হতে পারে, এমন অতিরিক্ত তথ্য ও নীতির জন্য, আপনার ব্রাউজারে chrome://management খুলুন।</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> মিমি</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

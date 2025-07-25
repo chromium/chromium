@@ -5290,7 +5290,6 @@
 <translation id="4676616966096505747">部分資料尚未儲存至你的帳戶</translation>
 <translation id="4677772697204437347">GPU 記憶體使用量</translation>
 <translation id="467809019005607715">Google 簡報</translation>
-<translation id="4678729681411398877">當你其中一個密碼出現外洩情況，「Google 密碼管理工具」會詢問你是否要改用安全度高的密碼</translation>
 <translation id="4678848110205818817">信用卡/扣帳卡</translation>
 <translation id="4679018849559620189">這可讓你在任何裝置上存取所儲存的密鑰</translation>
 <translation id="4680105648806843642">此網頁已設為靜音</translation>
@@ -7869,7 +7868,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位使用者</translation>
 <translation id="6555432686520421228">移除所有使用者帳戶，並將您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置重設為原廠狀態。</translation>
 <translation id="6555604601707417276">Linux 備份已還原</translation>
-<translation id="6555744145993174510">來自：<ph name="APP_ORIGIN" /></translation>
+<translation id="6555744145993174510">來源：<ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主題和桌布</translation>
 <translation id="6557199166823345360">就所選項目加入更多資料或提問以修正搜尋</translation>
@@ -8025,7 +8024,6 @@
 <translation id="6667187897999649121">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6669195257625975787">資料的處理方式與處理目前瀏覽網站的方式相同</translation>
-<translation id="6669637573228217624">上載檔案</translation>
 <translation id="6670142487971298264">「<ph name="APP_NAME" />」現已推出</translation>
 <translation id="6670767097276846646">部分擴充程式可以將搜尋引擎新增至 Chrome</translation>
 <translation id="6670983860904543332">自動更新會為你提供所有最新功能。探索最近更新的重點內容。</translation>
@@ -9297,7 +9295,6 @@
 <translation id="7568759527730933493">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商。管理員設定的部分網域不會使用安全連線。</translation>
 <translation id="756876171895853918">自訂顯示圖片</translation>
 <translation id="7568790562536448087">正在更新</translation>
-<translation id="7569113730576914983">如果 Chrome 發現你的密碼曾經外洩，可能會在你登入時提議為你更改密碼</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7570548610653957960">幫我讀</translation>
 <translation id="7571643774869182231">儲存空間不足，因此無法更新</translation>

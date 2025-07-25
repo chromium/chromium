@@ -478,7 +478,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1785118555253503473">Zainstalować aplikacje internetowe?</translation>
 <translation id="1791415068765905273">Pokaż wszystkie tabele porównawcze</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby zarządzać swoimi danymi, prywatnością i bezpieczeństwem na koncie Google</translation>
-<translation id="1793473605302304726">Płatności w ratach</translation>
 <translation id="1793631236004319016">Ostatnio użyto <ph name="NUM_HOURS_MINUTES_SECONDS" /> temu</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Dostępnych jest wiele czynności. Naciskaj Tab, by się między nimi przełączać.</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3467081767799433066">Na potrzeby pomiaru skuteczności reklam między witrynami są udostępniane niektóre dane, np. informacje o tym, czy po wizycie na stronie dokonałeś(-aś) zakupu.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, obecnie otwarta. Naciśnij klawisz Tab, a potem Enter, by przełączyć się na otwartą kartę</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zamknąć wszystkie otwarte okna incognito, naciśnij Tab, a potem Enter.</translation>
+<translation id="3472469028191701821">Otwiera się w nowej karcie</translation>
 <translation id="3474392552865647225">Przycisk Dostosuj czcionki w Chrome; aktywuj, aby dostosować rozmiary i kroje czcionek w Chrome</translation>
 <translation id="3478033058537426179">Według grupy</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
@@ -2963,7 +2963,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5969199813874624822">Zapisz i śledź cenę</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Rolka 6</translation>
-<translation id="5974745851230707809">Opcje płatności w ratach</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
 <translation id="5984570616552610254">Wilgotność w komorze</translation>
@@ -3609,7 +3608,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7042616127917168121">Zawęź wyniki</translation>
 <translation id="7043552168914147882">Woskowany papier z naklejkami</translation>
 <translation id="7044081119134178347">Przyznano jednorazowy dostęp do aparatu</translation>
-<translation id="704738887031336226">Pokaż opcje <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />płatności w ratach<ph name="PAY_OVER_TIME_HELP_LINK_END" /> w momencie płatności</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Próbujesz połączyć się z domeną <ph name="DOMAIN" />, ale serwer przedstawił certyfikat, którego okres ważności jest za długi, by był wiarygodny.</translation>
 <translation id="7053983685419859001">Blokuj</translation>
@@ -4306,7 +4304,6 @@ Dodatkowe informacje:
 <translation id="8220602974062798186">Zablokować: <ph name="TOPIC" /> i wszelkie powiązane tematy?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, zapytaj <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Widok dwóch stron</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> chce uzyskać dostęp do urządzenia w Twojej sieci:</translation>
 <translation id="822925450938886901">Aby uzyskać dodatkowe informacje i znajomić się z zasadami, które mogą obowiązywać, otwórz w przeglądarce stronę chrome://management.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

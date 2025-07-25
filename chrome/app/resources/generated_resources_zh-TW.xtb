@@ -998,6 +998,7 @@
 <translation id="1670399744444387456">基本</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 要求查看安全金鑰的製造商和型號</translation>
 <translation id="1674073353928166410">在無痕視窗中開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
+<translation id="1674142805528405174">Google 密碼管理工具可以提高帳戶密碼的強度，並儲存到帳戶 <ph name="EMAIL" /> 中。</translation>
 <translation id="1677306805708094828">無法新增<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
 <translation id="1678849866171627536">掃描失敗。這個檔案可能是病毒或惡意軟體。</translation>
@@ -2391,6 +2392,7 @@
 <translation id="2642111877055905627">足球</translation>
 <translation id="2642206811783203764">一律在 <ph name="SITE_NAME" /> 上執行</translation>
 <translation id="2643064289437760082">刪除瀏覽資料即可刪除廣告評估資料</translation>
+<translation id="2643379881528582459">如果 Chromium 發現你的密碼曾在公開的資料侵害事件中外洩，可能會在你登入時建議變更密碼</translation>
 <translation id="2643698698624765890">如要管理擴充功能，只要按一下 [視窗] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="2645047101481282803">你的裝置是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在將這個分頁投放到「<ph name="DEVICE_NAME" />」</translation>
@@ -2912,6 +2914,7 @@
 <translation id="3003967365858406397">你的「<ph name="PHONE_NAME" />」將建立私人 Wi-Fi 連線。</translation>
 <translation id="3004385386820284928">自訂鍵盤按鍵</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
+<translation id="3007555010975143508">以下應用程式將用來錄製你的螢幕畫面：</translation>
 <translation id="3007771295016901659">複製分頁</translation>
 <translation id="3008142279736625920">乳酪蛋糕</translation>
 <translation id="3008272652534848354">重設權限</translation>
@@ -4205,6 +4208,7 @@
 <translation id="3903696968689283281">Wi-Fi Direct 擁有者資訊：</translation>
 <translation id="3904326018476041253">定位服務</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
+<translation id="3906096710440765802">只要登入 Chrome，即可在所有裝置上使用你的密碼、書籤和其他資料</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3908501907586732282">啟用擴充功能</translation>
 <translation id="3909456989251621103">刪除伺服器憑證後，Chrome 就不會再用該憑證識別伺服器。</translation>
@@ -4373,6 +4377,7 @@
 <translation id="4016762287427926315">如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">為這個連結建立 QR 圖碼</translation>
 <translation id="4019983356493507433">編輯書籤清單</translation>
+<translation id="4020701737692625681">管理員可以錄製你的螢幕內容</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">你可以避免因頭部輕微移動而造成游標跳動，但系統可能會有短暫的延遲。</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -4686,6 +4691,7 @@
 <translation id="425573743389990240">電池放電速率 (瓦特) (如為負值，表示電池正在充電)</translation>
 <translation id="4255841059940367080">系統會根據你傳送到 Google 的瀏覽資料，運用 AI 技術即時防範危險的網站、下載內容和擴充功能</translation>
 <translation id="4256316378292851214">另存影片(&amp;V)...</translation>
+<translation id="4257175174234042421">自動變更密碼</translation>
 <translation id="4258348331913189841">檔案系統</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{保留群組}other{保留群組}}</translation>
 <translation id="4259388776256904261">請稍待片刻</translation>
@@ -5273,7 +5279,6 @@
 <translation id="4676616966096505747">部分資料尚未儲存到你的帳戶</translation>
 <translation id="4677772697204437347">GPU 記憶體</translation>
 <translation id="467809019005607715">Google 簡報</translation>
-<translation id="4678729681411398877">如果你的密碼在資料侵害事件中外洩，Google 密碼管理工具會詢問你是否要改設為高強度密碼</translation>
 <translation id="4678848110205818817">信用卡/簽帳金融卡</translation>
 <translation id="4679018849559620189">這樣就能在所有裝置上使用復原 PIN 碼存取已儲存的密碼金鑰</translation>
 <translation id="4680105648806843642">已將這個網頁設為靜音</translation>
@@ -6051,6 +6056,7 @@
 <translation id="5235050375939235066">要解除安裝應用程式嗎？</translation>
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5235750401727657667">取代新分頁開啟時顯示的網頁</translation>
+<translation id="5236054983756407518">要從 Chrome 中移除住家地址嗎？</translation>
 <translation id="5237124927415201087">使用手機就能輕鬆設定 <ph name="DEVICE_TYPE" />，不必手動輸入密碼即可新增 Wi-Fi 和 Google 帳戶。
     <ph name="BR" />
     <ph name="BR" />
@@ -6834,6 +6840,7 @@
 <translation id="581659025233126501">開啟同步功能</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="5817963443108180228">歡迎回來，<ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">前往 Google 帳戶編輯</translation>
 <translation id="581911254119283028">所有應用程式</translation>
 <translation id="5821565227679781414">建立捷徑</translation>
 <translation id="5824976764713185207">網頁載入完成後自動朗讀網頁內容</translation>
@@ -7032,6 +7039,7 @@
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5955721306465922729">有個網站想要開啟這個應用程式。</translation>
 <translation id="5955809630138889698">這個裝置可能只能使用線上展示模式。如需詳情，請與你的產品支援代表聯絡。</translation>
+<translation id="59561895884837262">開始錄製時，你會收到通知。</translation>
 <translation id="5957987129450536192">輕觸靠近設定檔圖片的「隨選朗讀」圖示，然後選取你要聆聽的內容。</translation>
 <translation id="5958836583172610505">同步功能已開啟</translation>
 <translation id="5959471481388474538">網路無法使用</translation>
@@ -7175,6 +7183,7 @@
 <translation id="606449270532897041">管理網站資料</translation>
 <translation id="6064764629679333574">將低解析度音訊提升至高解析度，來改善藍牙麥克風音質。</translation>
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
+<translation id="6065690209261668796">要從 Chrome 中移除公司地址嗎？</translation>
 <translation id="6066794465984119824">未設定映像檔雜湊</translation>
 <translation id="6069464830445383022">你的 Google 帳戶就是你用來登入 Chromebook 的帳戶</translation>
 <translation id="6071181508177083058">確認密碼</translation>
@@ -7847,6 +7856,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位使用者</translation>
 <translation id="6555432686520421228">移除所有使用者帳戶，並將你的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置重設為原廠狀態。</translation>
 <translation id="6555604601707417276">Linux 備份已還原</translation>
+<translation id="6555744145993174510">來源：<ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主題與桌布</translation>
 <translation id="6557199166823345360">加入更多資訊或針對選取範圍提問，得到更精確的搜尋結果</translation>
@@ -7882,6 +7892,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已分享桌面內容</translation>
 <translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">掃描速度</translation>
+<translation id="6581356304040102696">無法匯入密碼，檔案大小必須小於 1 MB。</translation>
 <translation id="6582080224869403177">請重設 <ph name="DEVICE_TYPE" />，以便進行安全性更新。</translation>
 <translation id="6582274660680936615">你目前是以訪客身分瀏覽</translation>
 <translation id="6583328141350416497">繼續下載</translation>
@@ -8001,7 +8012,6 @@
 <translation id="6667187897999649121">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6669195257625975787">資料的處理方式與目前瀏覽的網站相同</translation>
-<translation id="6669637573228217624">上傳檔案</translation>
 <translation id="6670142487971298264">現在可以使用「<ph name="APP_NAME" />」了</translation>
 <translation id="6670767097276846646">部分擴充功能可以將搜尋引擎新增至 Chrome</translation>
 <translation id="6670983860904543332">你可透過自動更新取得最新功能。歡迎瀏覽近期更新的重點內容。</translation>
@@ -8258,6 +8268,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除分頁並刪除群組嗎？}=1{要移除分頁並刪除群組嗎？}other{要移除分頁並刪除群組嗎？}}</translation>
 <translation id="6833479554815567477">分頁已從包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組中移除</translation>
 <translation id="6833753236242482566">平衡 (建議選項)</translation>
+<translation id="6835624277262316125">設定公司地址後，就能在各項 Google 服務中享有更便利的體驗，例如取得更貼近需求的 Google 搜尋結果，Google 地圖的路線規劃也會更準確。你可以前往 <ph name="BEGIN_LINK" />Google 帳戶 (<ph name="USERNAME" />)<ph name="END_LINK" /> 編輯或刪除地址。</translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838992358006915573">放大鏡隨著 ChromeVox 焦點移動</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
@@ -8391,6 +8402,7 @@
 <translation id="6929126689972602640">學校帳戶不支援家長監護功能。如要新增學校帳戶，以便從家裡存取 Google Classroom 和其他學校作業用的網站，請先使用孩子的個人帳戶登入。你稍後可在設定過程中新增學校帳戶。</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{已拒絕擴充功能}other{已拒絕 # 個擴充功能}}</translation>
+<translation id="6930337524857202955">有剛下載好的檔案</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">點按強度</translation>
 <translation id="6933321725007230600">開啟同步功能(&amp;S)...</translation>
@@ -9188,6 +9200,7 @@
 <translation id="7506242536428928412">如要使用新的安全金鑰，請設定新的 PIN 碼</translation>
 <translation id="7506541170099744506">你的 <ph name="DEVICE_TYPE" /> 已成功註冊企業管理服務。</translation>
 <translation id="7507207699631365376">查看這個供應商的<ph name="BEGIN_LINK" />隱私權政策<ph name="END_LINK" /></translation>
+<translation id="7508127419095425107">進一步瞭解這項功能和傳送給 Google 的相關資料</translation>
 <translation id="7508707215237589321">要刪除「<ph name="CERT_NAME" />」嗎？</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要關閉分頁並刪除群組嗎？}=1{要關閉分頁並刪除群組嗎？}other{要關閉分頁並刪除群組嗎？}}</translation>
 <translation id="7509097596023256288">正在設定管理服務</translation>
@@ -9270,7 +9283,6 @@
 <translation id="7568759527730933493">在 DNS (網域名稱系統) 中，透過安全連線查詢網站 IP 位址。DNS 會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商。管理員設定的某些網域不會使用安全連線。</translation>
 <translation id="756876171895853918">自訂顯示圖片</translation>
 <translation id="7568790562536448087">更新</translation>
-<translation id="7569113730576914983">如果 Chrome 發現你的密碼曾在資料侵害事件中外洩，可能會在登入時提議為你變更密碼</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7570548610653957960">幫我閱讀</translation>
 <translation id="7571643774869182231">空間不足，無法進行更新</translation>
@@ -9602,6 +9614,7 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">設定住家地址後，就能在各項 Google 服務中享有更便利的體驗，例如取得更貼近需求的 Google 搜尋結果，Google 地圖的路線規劃也會更準確。你可以前往 <ph name="BEGIN_LINK" />Google 帳戶 (<ph name="USERNAME" />)<ph name="END_LINK" /> 編輯或刪除地址。</translation>
 <translation id="7791269138074599214">輸入法</translation>
 <translation id="7791429245559955092">這個應用程式將安裝在目前使用的 Chrome 設定檔</translation>
 <translation id="7791436592012979144">已啟用反向捲動功能</translation>
@@ -10919,6 +10932,7 @@
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699188901396699995">「<ph name="PRINTER_NAME" />」的 PPD</translation>
+<translation id="8699296325072357994">系統會將密碼頁面的內容和相關資訊傳送給 Google，並交由專人審查。你的密碼會加密處理，任何人都無法看到。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">請說明你允許在這個網站上使用第三方 Cookie 的原因</translation>
 <translation id="8700087567921985940">使用位置資訊。允許具有位置存取權的應用程式和服務使用裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用，改進定位精確度和適地性服務品質。<ph name="BEGIN_LINK1" />進一步瞭解位置資訊<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8700416429250425628">啟動鍵 + Backspace 鍵</translation>
@@ -11361,6 +11375,7 @@
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，還是可以還原本機資料。你必須登入 Google 帳戶或使用帳戶救援功能。</translation>
 <translation id="8993198843374358393">複製「<ph name="CERT_NAME" />」的憑證雜湊</translation>
 <translation id="8993737615451556423">提供可調整朗讀速度以及暫停語音朗讀的控制項</translation>
+<translation id="8993787625629280252">如果 Chrome 發現你的密碼曾在公開的資料侵害事件中外洩，可能會在你登入時建議變更密碼</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="8993853206419610596">展開所有要求</translation>
 <translation id="8993945059918628059">請以手指輕觸指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>

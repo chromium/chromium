@@ -3,7 +3,6 @@
 <translationbundle lang="bn">
 <translation id="1005023885865154304">অটোফিল পাসওয়ার্ড সেটিংস খুলুন</translation>
 <translation id="1005230401424685968">YYYY</translation>
-<translation id="1010225406377140704">প্রেরকের সাথে যোগাযোগ করে নতুন একটি লিঙ্ক পাঠানোর অনুরোধ করুন</translation>
 <translation id="1013952917065545813">আপনি যেসব ট্যাবগুলি সম্প্রতি বন্ধ করেছন, সেগুলি আবার খুলতে আপনি এখানে ফিরে আসতে পারেন</translation>
 <translation id="1016495303386450659">আইটেম আপডেট হয়েছে</translation>
 <translation id="1019990162050689579">Gemini অ্যাপ অ্যাক্টিভিটি</translation>
@@ -141,6 +140,7 @@
 <translation id="1520027731907768768">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমা সংক্রান্ত অ্যালার্ট পান।</translation>
 <translation id="1521366073263497277">আপনার ট্যাব গ্রিডে যান</translation>
 <translation id="1521774566618522728">আজ ব্যবহার করা হয়েছে</translation>
+<translation id="1523567067736644845">পাসওয়ার্ড দেখার জন্য আনলক করুন</translation>
 <translation id="1524563461097350801">না থাক</translation>
 <translation id="1531038290222364269">ট্যাব দেখুন</translation>
 <translation id="1536390784834419204">পৃষ্ঠাটি অনুবাদ করুন</translation>
@@ -284,6 +284,7 @@
 <translation id="2067852168641682340">প্রতিবার এই অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="2074119687904553223">{count,plural, =1{১টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
+<translation id="2074599390896964828">সুনির্দিষ্ট লোকেশন</translation>
 <translation id="2078437078822043850">আপনি 'ছদ্মবেশী' মোডে স্ক্রল করার জন্য বাঁদিকে সোয়াইপ করতে পারবেন।</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2085876078937250610">সেভ করুন…</translation>
@@ -312,6 +313,7 @@
 <translation id="219283042927675668">গ্রুপে থাকা ট্যাব</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2196428379625389579">ওয়েবে সার্চ করুন</translation>
+<translation id="2198001751007276170">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="2199562093267256223">এর ফলে, <ph name="USER_EMAIL" /> দিয়ে সাইন-ইন করা হয়েছে এমন সব ডিভাইস থেকে গ্রুপ মুছে যাবে।</translation>
 <translation id="2202084845446535117">কোনও ইমেল অ্যাকাউন্ট নেই</translation>
 <translation id="2214453882118345682">আপনার ক্যামেরা ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
@@ -1222,6 +1224,7 @@
 <translation id="5813223718099710537">আপনি যখন এই ফিচার ব্যবহার করেন, পৃষ্ঠার কন্টেন্ট ও URL, Google-কে পাঠানো হয়। যেকোনও সময়ে সেটিংস থেকে এটি বন্ধ করে দিতে পারবেন।</translation>
 <translation id="5817176759448082654">পাসওয়ার্ড চেক-আপ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> এটি ম্যানেজ করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">সিঙ্ক হচ্ছে…</translation>
 <translation id="583923961930319521">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="5844284118433003733">আপনি সাইন-ইন করলে, এই ডেটা আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
@@ -1606,6 +1609,7 @@
 <translation id="7300448350764260141">অনলাইন ঝুঁকির বিরুদ্ধে অতিরিক্ত সুরক্ষার স্তর যোগ করুন।</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7313347584264171202">আপনি এখানে নিজের ছদ্মবেশী ট্যাবগুলি খুঁজে পাবেন</translation>
+<translation id="7334364820047587268">আপনার Google Password Manager-এ আগে থেকেই এইসব অ্যাকাউন্টের পাসওয়ার্ড আছে। ইমপোর্ট করার জন্য আপনি নিচের যেকোনও একটি পাসওয়ার্ড বেছে নিলে, সেটি আগে থাকা পাসওয়ার্ড পরিবর্তন করে দেবে।</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনলোড হয়েছে</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
@@ -1822,6 +1826,7 @@
 <translation id="8101409298456377967">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">বন্ধ করুন</translation>
+<translation id="8106442513853561174">সুনির্দিষ্ট লোকেশন শেয়ার করুন</translation>
 <translation id="8114753159095730575">ফাইল ডাউনলোড করা যাবে। স্ক্রিনের নিচের দিকে বিকল্পগুলি উপলভ্য।</translation>
 <translation id="8123502380991596210">'নতুন কী আছে' আইটেম লুকান</translation>
 <translation id="8123953306357309250">সিঙ্ক বাতিল করতে চান? আপনি সেটিংস থেকে যেকোনও সময় সিঙ্ক চালু করতে পারবেন।</translation>
@@ -1975,7 +1980,6 @@
 <translation id="8694281486652655615">এর ফলে এই আইটেম দেখানো হবে</translation>
 <translation id="8696297579102085705">আপনার ডিভাইসে পাঠান</translation>
 <translation id="8697136149718343437">অ্যাড্রেস বার একেবারে নিচে সরান</translation>
-<translation id="8703372953981978786">এই লিঙ্ক কাজ করছে না</translation>
 <translation id="8706253136355675497">তাপমাত্রা</translation>
 <translation id="8706806585855470492">ট্যাব গ্রুপে আপনি শেয়ার করতে, যোগ দিতে ও কোলাবরেট করতে পারবেন</translation>
 <translation id="8709409604518538305">ট্যাব বন্ধ করে দেওয়া হয়েছে</translation>

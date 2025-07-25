@@ -478,7 +478,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1785118555253503473">Instalirati web-aplikacije?</translation>
 <translation id="1791415068765905273">Prikaži sve tablice za usporedbu</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali podacima, privatnošću i sigurnošću na svojem Google računu</translation>
-<translation id="1793473605302304726">Obročno plaćanje</translation>
 <translation id="1793631236004319016">Posljednji put korišteno prije <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, dostupno je više radnji, pritišćite Tab da biste prelazili s jedne na drugu</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3467081767799433066">Mjerenjem oglasa ograničene vrste podataka dijele se između web-lokacija radi mjerenja izvedbe oglasa, primjerice jeste li izvršili kupnju nakon posjeta web-lokaciji.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutačno otvoreno, pritisnite karticu pa Enter za prebacivanje na otvorenu karticu</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste zatvorili sve anonimne prozore koji su trenutačno otvoreni</translation>
+<translation id="3472469028191701821">Otvara se u novoj kartici</translation>
 <translation id="3474392552865647225">Gumb Prilagodi fontove u Chromeu, aktivirajte ga da biste u Chromeu prilagodili veličine i vrste fontova</translation>
 <translation id="3478033058537426179">Prema grupi</translation>
 <translation id="3479552764303398839">Ne sada</translation>
@@ -2962,7 +2962,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5969199813874624822">Spremi i prati cijenu</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Šesti kolut</translation>
-<translation id="5974745851230707809">Opcije plaćanja na rate</translation>
 <translation id="5975083100439434680">Smanji</translation>
 <translation id="5979084224081478209">Provjeri zaporke</translation>
 <translation id="5984570616552610254">Vlažnost komore</translation>
@@ -3608,7 +3607,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7042616127917168121">Filtriranje rezultata</translation>
 <translation id="7043552168914147882">Zaliha za kartice</translation>
 <translation id="7044081119134178347">Kamera je dopuštena ovaj put</translation>
-<translation id="704738887031336226">Prikaži opcije <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />obročnog plaćanja<ph name="PAY_OVER_TIME_HELP_LINK_END" /> pri naplati</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je poslužitelj pružio certifikat koji nije pouzdan zbog predugog razdoblja valjanosti.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
@@ -4305,7 +4303,6 @@ Dodatne pojedinosti:
 <translation id="8220602974062798186">Želite li blokirati temu <ph name="TOPIC" /> i sve povezane teme?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Pitajte <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Prikaz dviju stranica</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> želi pristupiti uređaju na vašoj mreži:</translation>
 <translation id="822925450938886901">Za dodatne informacije i pravila koja bi se mogla primjenjivati otvorite chrome://management u pregledniku.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

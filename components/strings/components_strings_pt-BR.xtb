@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para iniciar o jogo do Dinossauro no Chrome</translation>
 <translation id="1060136083665017312">Sistemas e consoles de jogos</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
+<translation id="1060985736456216896">Logotipo do Google Pay e do Zip</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1063822554756965137">Os arquivos foram excluídos</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1209206284964581585">Ocultar por enquanto</translation>
 <translation id="121201262018556460">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado que contém uma chave fraca. Um invasor pode ter violado a chave privada, e o servidor pode não ser o servidor que você esperava (você pode estar se comunicando com um invasor).</translation>
 <translation id="1212527389003717329">O download foi iniciado. Para conferir, toque na tecla |<ph name="ACCELERATOR" />| e pressione.</translation>
+<translation id="1215738931000958575">Use as informações salvas na sua Conta do Google para preencher automaticamente senhas, chaves de acesso, endereços, formas de pagamento e outras informações</translation>
 <translation id="1219129156119358924">Sistema de segurança</translation>
 <translation id="1222060260947439312">Bandeja direita</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -476,7 +478,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1785118555253503473">Instalar apps da Web?</translation>
 <translation id="1791415068765905273">Mostrar todas as tabelas de comparação</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar suas informações, sua privacidade e sua segurança na Conta do Google</translation>
-<translation id="1793473605302304726">Pague em parcelas</translation>
 <translation id="1793631236004319016">Última utilização: há <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Várias ações disponíveis. Pressione "Tab" para alternar entre elas</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -609,7 +610,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2025186561304664664">O proxy está configurado em configuração automática.</translation>
 <translation id="2025891858974379949">Conteúdo não seguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
-<translation id="2027707238798802149">Card indisponível</translation>
+<translation id="2027707238798802149">Cartão indisponível</translation>
 <translation id="2029735183873159415">Ancestralidade e genealogia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e o firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do provedor de pesquisa padrão definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -923,7 +924,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2514548229949738417">Casa e jardim</translation>
 <translation id="2515629240566999685">Verificar o sinal na sua área</translation>
 <translation id="2515761554693942801">Você escolheu fazer a verificação com o Touch ID em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Esse provedor pode ter armazenado informações sobre sua forma de pagamento, mas você pode <ph name="LINK_TEXT" />.</translation>
-<translation id="2518584823165598232">Este card não está disponível. Entre em contato com o emissor dele.</translation>
+<translation id="2518584823165598232">Entre em contato com o emissor do cartão.</translation>
 <translation id="2519250377986324805">Saiba como</translation>
 <translation id="2521385132275182522">Grampo na parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
@@ -1472,6 +1473,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3467081767799433066">Com a medição de anúncios, tipos limitados de dados são compartilhados entre sites para avaliar a performance dos anúncios deles, por exemplo, se você fez uma compra depois de visitar um site.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> está aberta. Pressione Tab e depois Enter para mudar para a guia aberta</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para fechar todas as janelas anônimas abertas</translation>
+<translation id="3472469028191701821">Abre em uma nova guia</translation>
 <translation id="3474392552865647225">Botão "Personalizar fontes no Chrome". Ative para personalizar tamanhos e tipos de fontes no Chrome</translation>
 <translation id="3478033058537426179">Por grupo</translation>
 <translation id="3479552764303398839">Não agora</translation>
@@ -1539,6 +1541,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3576616784287504635">Uma página incorporada em <ph name="SITE" /> diz</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3577902790357386792">Ginástica</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">O Chrome avisará quando esta página estiver pronta. &lt;a&gt;Cancelar&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Adicionar nome</translation>
 <translation id="3583757800736429874">&amp;Refazer mover</translation>
@@ -1787,6 +1790,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="398470910934384994">Pássaros</translation>
 <translation id="3985750352229496475">Gerenciar endereços…</translation>
 <translation id="3986506998755860149">saiba mais sobre o preenchimento automático com IA nas configurações</translation>
+<translation id="3986557181852957825">Logotipo do Google Pay e da Klarna</translation>
 <translation id="3986705137476756801">Desativar "Legenda instantânea" por enquanto</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
@@ -1860,6 +1864,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4104702906064390950">Salvando informações do IBAN</translation>
 <translation id="4106887816571530227">Não é permitido incorporar conteúdo</translation>
 <translation id="4107047499377819067">A instalação dos serviços em segundo plano da VPN foi iniciada. Ela pode levar alguns minutos.</translation>
+<translation id="4110642094637545339">Logotipo do Google Pay e do AfterPay</translation>
 <translation id="4110652170750985508">Analisar seu pagamento</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Voltar</translation>
@@ -2278,6 +2283,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4807098396393229769">Nome no cartão</translation>
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4811450222531576619">Saiba mais sobre a fonte e o tema</translation>
+<translation id="4811918461974803225">Logotipo do Google Pay e da Affirm</translation>
 <translation id="4813512666221746211">Erro na rede</translation>
 <translation id="4814114628197290459">Excluir IBAN</translation>
 <translation id="4816341377198595747">Botão "Pesquisar favoritos". Ative para pesquisar</translation>
@@ -2411,7 +2417,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5021500396464456616">Entre em contato com a pessoa que enviou o link</translation>
 <translation id="5021557570875267742">Monitore preços com o Chrome</translation>
 <translation id="5023310440958281426">Verifique as políticas do administrador</translation>
-<translation id="5024171724744627792">Salve seu cartão para pagar mais rápido. Os detalhes do cartão são criptografados na sua Conta do Google.</translation>
+<translation id="5024171724744627792">Salve seu cartão para pagar mais rápido. Os detalhes dele são criptografados na sua Conta do Google.</translation>
 <translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Enter para pesquisar no histórico</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Um certificado raiz para "<ph name="SOFTWARE_NAME" />" é necessário, mas não está instalado. O administrador de TI deve revisar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir esse problema. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -2527,6 +2533,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5222812217790122047">E-mail obrigatório</translation>
 <translation id="5225215474235602477">Salvar passaporte?</translation>
 <translation id="5228269245420405804">Ensino à distância</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Endereço de entrega</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2548,7 +2555,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5254043433801397071">Otimizar o conteúdo da impressão</translation>
 <translation id="5255583962255635076">Políticas do navegador aplicadas ao seu perfil de trabalho</translation>
 <translation id="5255690596502591079">Capturar mesmo assim</translation>
-<translation id="5255771248404149177">O emissor do cartão precisa confirmar sua identidade</translation>
+<translation id="5255771248404149177">O emissor do cartão precisa confirmar que é realmente você</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar os arquivos para: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">O grupo de guias "<ph name="GROUP_NAME" />" não está mais disponível</translation>
@@ -2704,7 +2711,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5518352028556756716">A maioria dos sites não pode usar cookies de terceiros para rastrear você durante a navegação, e nenhum site pode usar esses cookies no modo de navegação anônima.</translation>
 <translation id="5519516356611866228">Com suas modificações</translation>
 <translation id="5519696598216267194">Papel (perfurado)</translation>
-<translation id="5520105693415771152">Suas informações atuais não são mostradas? Entre em contato com seu emissor para atualizar esses dados.</translation>
+<translation id="5520105693415771152">As informações acima não estão corretas? Entre em contato com o emissor do cartão para atualizar os dados.</translation>
 <translation id="5521782189689806907">Fabricação de armários</translation>
 <translation id="5523118979700054094">Nome da política</translation>
 <translation id="5523588073846127669">O comerciante não aceita este cartão virtual</translation>
@@ -2956,7 +2963,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5969199813874624822">Salvar e monitorar preço</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rolo</translation>
-<translation id="5974745851230707809">Opções de pagamento parcelado</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="5984570616552610254">Umidade da câmara</translation>
@@ -3294,6 +3300,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6493924760403974580">O app só é compatível com este tamanho.</translation>
 <translation id="6494750904506170417">pop-ups e redirecionamentos</translation>
 <translation id="6495664197699704593">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">Para usar outro serviço de preenchimento automático no Chrome, escolha seu provedor nas configurações do Android</translation>
 <translation id="6499038740797743453">Redefinir senha?</translation>
 <translation id="6502510275417601303">O alerta sobre a nova configuração de pagamento está fechado</translation>
 <translation id="6502991525169604759">Sem suas modificações</translation>
@@ -3601,7 +3608,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7042616127917168121">Refinar resultados</translation>
 <translation id="7043552168914147882">Separador com aba</translation>
 <translation id="7044081119134178347">Câmera permitida apenas desta vez</translation>
-<translation id="704738887031336226">Mostrar opções de <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />pagamento parcelado<ph name="PAY_OVER_TIME_HELP_LINK_END" /> na finalização da compra</translation>
 <translation id="7048095965575426564">Fanfold (Europa)</translation>
 <translation id="7050187094878475250">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado cujo período de validade é extremamente longo, o que não é confiável.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
@@ -4298,7 +4304,6 @@ Mais detalhes:
 <translation id="8220602974062798186">Bloquear <ph name="TOPIC" /> e todos os temas relacionados?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, perguntar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Visualização de duas páginas</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> quer acessar um dispositivo na sua rede:</translation>
 <translation id="822925450938886901">Para ver mais informações e políticas que podem ser aplicadas, abra chrome://management no navegador.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

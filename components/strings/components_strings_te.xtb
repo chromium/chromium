@@ -473,7 +473,6 @@
 <translation id="1785118555253503473">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="1791415068765905273">కంపారిజన్ టేబుల్స్ అన్నింటినీ చూడండి</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాలో మీ సమాచారం, గోప్యత, ఇంకా భద్రతను మేనేజ్ చేయడం కోసం Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
-<translation id="1793473605302304726">కాలక్రమేణా పేమెంట్ చేయండి</translation>
 <translation id="1793631236004319016">చివరిగా <ph name="NUM_HOURS_MINUTES_SECONDS" /> క్రితం ఉపయోగించడం జరిగింది</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, పలు చర్యలు అందుబాటులో ఉన్నాయి, వాటిలో దేనిని అయినా ఎంచుకోవడానికి 'Tab'ను నొక్కండి</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1469,6 +1468,7 @@
 <translation id="3467081767799433066">యాడ్ మెజర్‌మెంట్‌తో, మీరు సైట్‌ను సందర్శించిన తర్వాత కొనుగోలు చేశారా లేదా వంటి వాటి యాడ్‌ల పనితీరును కొలవడానికి సైట్‌ల మధ్య పరిమిత రకాల డేటా షేర్ చేయబడుతుంది.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, ప్రస్తుతం తెరవబడి ఉంది, తెరిచియున్న ట్యాబ్‌కు మారడానికి ట్యాబ్‌ని నొక్కి, ఎంటర్ నొక్కండి</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ప్రస్తుతం తెరిచి ఉన్న అన్ని అజ్ఞాత విండోలను మూసివేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
+<translation id="3472469028191701821">కొత్త ట్యాబ్‌లో తెరవబడుతుంది</translation>
 <translation id="3474392552865647225">'Chromeలో ఫాంట్‌లను అనుకూలంగా మార్చండి' బటన్, Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="3478033058537426179">గ్రూప్ ద్వారా</translation>
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
@@ -2958,7 +2958,6 @@
 <translation id="5969199813874624822">ధరను సేవ్ చేసి, ట్రాక్ చేయండి</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">సిక్స్త్ రోల్</translation>
-<translation id="5974745851230707809">కాలక్రమేణా పేమెంట్ చేసే ఆప్షన్‌లు</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
 <translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="5984570616552610254">చాంబర్‌లోని తేమ</translation>
@@ -3604,7 +3603,6 @@
 <translation id="7042616127917168121">ఫలితాలను మెరుగుపరుస్తుంది</translation>
 <translation id="7043552168914147882">ట్యాబ్ స్టాక్</translation>
 <translation id="7044081119134178347">ఈసారి కెమెరాకు అనుమతి ఉంది</translation>
-<translation id="704738887031336226">చెక్ అవుట్ సమయంలో <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />కాలక్రమేణా పేమెంట్ చేయండి<ph name="PAY_OVER_TIME_HELP_LINK_END" /> ఆప్షన్‌లను చూపండి</translation>
 <translation id="7048095965575426564">యూరోపియన్ ఫ్యాన్‌ఫోల్డ్</translation>
 <translation id="7050187094878475250">మీరు <ph name="DOMAIN" />ను చేరుకోవడానికి ప్రయత్నించారు, కానీ సర్వర్ అందించిన ప్రమాణపత్రం విశ్వసించలేనంత ఎక్కువ చెల్లుబాటు వ్యవధిని కలిగి ఉంది.</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
@@ -4301,7 +4299,6 @@
 <translation id="8220602974062798186"><ph name="TOPIC" />, ఏవైనా సంబంధిత టాపిక్‌లను బ్లాక్ చేయాలా?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" />‌ను అడగండి</translation>
 <translation id="8228419419708659934">రెండు పేజీల వీక్షణ</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> మీ నెట్‌వర్క్‌లో ఒక పరికరాన్ని యాక్సెస్ చేయాలనుకుంటోంది:</translation>
 <translation id="822925450938886901">అదనపు సమాచారం, వర్తించే పాలసీల కోసం, మీ బ్రౌజర్‌లో chrome://management లింక్‌ను తెరవండి.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> మి.మీ.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

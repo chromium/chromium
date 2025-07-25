@@ -2912,6 +2912,7 @@
 <translation id="3003967365858406397">તમારો <ph name="PHONE_NAME" /> ફોન એક ખાનગી વાઇ-ફાઇ કનેક્શન બનાવશે.</translation>
 <translation id="3004385386820284928">કીબોર્ડની કીને કસ્ટમાઇઝ કરો</translation>
 <translation id="3006881078666935414">કોઈ વપરાશ ડેટા નથી</translation>
+<translation id="3007555010975143508">આ ઍપનો ઉપયોગ તમારી સ્ક્રીન રેકોર્ડ કરવા માટે થશે:</translation>
 <translation id="3007771295016901659">ડુપ્લિકેટ ટૅબ</translation>
 <translation id="3008142279736625920">ચીઝકેક</translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
@@ -4378,6 +4379,7 @@
 <translation id="4016762287427926315">તમે <ph name="APP_NAME" /> માટે જે પરવાનગીઓ મંજૂર કરો છો, તે આ ઍપ માટે પણ મંજૂર કરવામાં આવશે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">આ લિંક માટે QR કોડ બનાવો</translation>
 <translation id="4019983356493507433">બુકમાર્કની સૂચિમાં ફેરફાર કરો</translation>
+<translation id="4020701737692625681">તમારા ઍડમિનિસ્ટ્રેટર તમારી સ્ક્રીન રેકોર્ડ કરી શકે છે</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">તમે તમારા કર્સરને માથાના સહેજ હલનચલનને કારણે આસપાસ ફરતું અટકાવી શકો છો, પરંતુ થોડો વિલંબ રહેશે.</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5279,7 +5281,6 @@
 <translation id="4676616966096505747">અમુક ડેટા હજી સુધી તમારા એકાઉન્ટમાં સાચવવામાં આવ્યો નથી</translation>
 <translation id="4677772697204437347">GPU મેમરી</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4678729681411398877">જ્યારે તમારો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળે, ત્યારે Google Password Manager તમે તેને સશક્ત પાસવર્ડમાં બદલવા માગો છો કે કેમ તે પૂછે છે</translation>
 <translation id="4678848110205818817">ક્રેડિટ/ડેબિટ કાર્ડ</translation>
 <translation id="4679018849559620189">આમ કરવાથી તમને કોઈપણ ડિવાઇસ પર તમારી સાચવેલી પાસકીને ઍક્સેસ કરવામાં સહાય મળે છે</translation>
 <translation id="4680105648806843642">આ પેજ પર સાઉન્ડ મ્યૂટ કરવામાં આવ્યો હતો</translation>
@@ -6058,6 +6059,7 @@
 <translation id="5235050375939235066">ઍપ્લિકેશનને અનઇન્સ્ટૉલ કરીએ?</translation>
 <translation id="523505283826916779">ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="5235750401727657667">નવું ટૅબ ખોલતી વખતે તમને દેખાય છે તે પેજને બદલો</translation>
+<translation id="5236054983756407518">Chromeમાંથી તમારા ઘરનું સરનામું કાઢી નાખીએ?</translation>
 <translation id="5237124927415201087">તમારા ફોન વડે સરળતાથી તમારા <ph name="DEVICE_TYPE" />નું સેટઅપ કરો. તમે તમારા પાસવર્ડ મેન્યુઅલી દાખલ કર્યા વિના તમારું વાઇ-ફાઇ અને Google એકાઉન્ટ ઉમેરી શકો છો.
     <ph name="BR" />
     <ph name="BR" />
@@ -6845,6 +6847,7 @@
 <translation id="581659025233126501">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="5817918615728894473">જોડી કરો</translation>
 <translation id="5817963443108180228">આપનું ફરી સ્વાગત છે, <ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">Google એકાઉન્ટમાં ફેરફાર કરો</translation>
 <translation id="581911254119283028">બધી ઍપ્લિકેશનો</translation>
 <translation id="5821565227679781414">શૉર્ટકટ બનાવો</translation>
 <translation id="5824976764713185207">પેજ લોડ થવાનું પૂર્ણ થાય એ પછી તેને ઑટોમૅટિક રીતે વાંચો</translation>
@@ -7045,6 +7048,7 @@ USB ડિવાઇસ</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">કોઈ વેબસાઇટ આ ઍપ્લિકેશન ખોલવા માગે છે.</translation>
 <translation id="5955809630138889698">આ ડિવાઇસ ઑનલાઇન ડેમો મોડ માટે જ પાત્ર હોઈ શકે છે. વધુ વિગતો માટે કૃપા કરીને તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
+<translation id="59561895884837262">રેકોર્ડિંગ શરૂ થશે ત્યારે તમને સૂચિત કરવામાં આવશે.</translation>
 <translation id="5957987129450536192">તમારી પ્રોફાઇલ છબીની પાસેના બોલવા માટે પસંદ કરો આઇકનને દબાવો, પછી જે ભાગને સાંભળવો હોય તેને પસંદ કરો.</translation>
 <translation id="5958836583172610505">સિંક કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="5959471481388474538">નેટવર્ક ઉપલબ્ધ નથી</translation>
@@ -7189,6 +7193,7 @@ USB ડિવાઇસ</translation>
 <translation id="606449270532897041">સાઇટનો ડેટા મેનેજ કરો</translation>
 <translation id="6064764629679333574">ઑડિયોના રિઝોલ્યુશનને ઓછામાંથી વધારે કરીને બ્લૂટૂથ માઇક સાઉન્ડની ક્વૉલિટીને બહેતર બનાવો.</translation>
 <translation id="6065289257230303064">પ્રમાણપત્ર વિષય ડિરેક્ટરીનાં લક્ષણો</translation>
+<translation id="6065690209261668796">Chromeમાંથી તમારી ઑફિસનું સરનામું કાઢી નાખીએ?</translation>
 <translation id="6066794465984119824">છબીના હૅશની માહિતી સેટ કરવામાં આવી નથી</translation>
 <translation id="6069464830445383022">તમારું Google એકાઉન્ટ જ તમારા Chromebookમાં સાઇન ઇન કરવાની રીત છે</translation>
 <translation id="6071181508177083058">પાસવર્ડની પુષ્ટિ કરો</translation>
@@ -8019,7 +8024,6 @@ USB ડિવાઇસ</translation>
 <translation id="6667187897999649121">હાલમાં, તમે કુટુંબના સભ્યો સાથે માત્ર પાસવર્ડ શેર કરી શકશો. વધુમાં વધુ 6 સભ્ય ધરાવતું <ph name="BEGIN_LINK" />એક ફૅમિલી ગ્રૂપ બનાવો<ph name="END_LINK" /> અને સમગ્ર Google પર તમારી પ્રોડક્ટ અને સબ્સ્ક્રિપ્શનથી વધુ લાભ મેળવો.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> માં ખોલો</translation>
 <translation id="6669195257625975787">ડેટા પર તમે જોઈ રહ્યા હો તે સાઇટને સમાન જ પ્રક્રિયા કરવામાં આવે છે</translation>
-<translation id="6669637573228217624">કોઈ ફાઇલ અપલોડ કરો</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> હવે ઉપલબ્ધ છે</translation>
 <translation id="6670767097276846646">કેટલાક એક્સ્ટેન્શન Chromeમાં શોધ એન્જિન ઉમેરી શકે છે</translation>
 <translation id="6670983860904543332">ઑટોમૅટિક અપડેટ થવાની સુવિધા, તમને નવી સુવિધાઓનો ઍક્સેસ આપે છે. નવી અપડેટની હાઇલાઇટ વિશે શોધખોળ કરો.</translation>
@@ -8276,6 +8280,7 @@ USB ડિવાઇસ</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}=1{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}one{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}other{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}}</translation>
 <translation id="6833479554815567477">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" />માંથી ટૅબને કાઢી નાખવામાં આવી</translation>
 <translation id="6833753236242482566">સંતુલિત (સુઝાવ આપવામાં આવે છે)</translation>
+<translation id="6835624277262316125">તમારી ઑફિસનું સરનામું તમને Googleની સેવાઓ પર કાર્યો કરવામાં મદદ કરી શકે છે, જેમ કે વધુ સુસંગત શોધ પરિણામો અને Google Mapsમાં દિશાનિર્દેશો. તમે તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ <ph name="USERNAME" /><ph name="END_LINK" />માં તમારા સરનામામાં ફેરફાર કરી શકો છો કે તેને ડિલીટ કરી શકો છો.</translation>
 <translation id="6835762382653651563">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> ને અપડેટ કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="6838992358006915573">Magnifier ChromeVox ફોકસને ફૉલો કરે છે</translation>
 <translation id="6839916869147598086">સાઇન-ઇન બદલાઈ ગયું છે</translation>
@@ -8409,6 +8414,7 @@ USB ડિવાઇસ</translation>
 <translation id="6929126689972602640">માતાપિતાના યોગ્ય નિયંત્રણોને સ્કૂલના એકાઉન્ટ માટે સપોર્ટ આપવામાં આવતો નથી. ઘરેથી સ્કૂલનો અભ્યાસ કરવા Google Classroom અને અન્ય વેબસાઇટને ઍક્સેસ કરવા સ્કૂલનું એકાઉન્ટ ઉમેરવા માટે, પહેલા બાળકના વ્યક્તિગત એકાઉન્ટ વડે સાઇન ઇન કરો. તમે પછીથી સેટઅપમાં સ્કૂલનું એકાઉન્ટ ઉમેરી શકો છો.</translation>
 <translation id="6929760895658557216">ઓકે Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{એક્સ્ટેંશન નકારવામાં આવ્યું છે}one{# એક્સ્ટેંશન નકારવામાં આવ્યું છે}other{# એક્સ્ટેંશન નકારવામાં આવ્યા છે}}</translation>
+<translation id="6930337524857202955">નવું ડાઉનલોડ ઉપલબ્ધ છે</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">ક્લિકની ક્ષમતા</translation>
 <translation id="6933321725007230600">&amp;સિંક કરો સુવિધા ચાલુ કરો...</translation>
@@ -9290,7 +9296,6 @@ USB ડિવાઇસ</translation>
 <translation id="7568759527730933493">DNS (ડોમેન નેમ સિસ્ટમ)માં કોઈ સાઇટનું IP ઍડ્રેસ શોધવા માટે, સુરક્ષિત કનેક્શનનો ઉપયોગ કરો. આ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> પર મેનેજ કરેલા સેવા પ્રદાતાનો ઉપયોગ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ગોઠવવામાં આવેલા અમુક ડોમેન માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવતો નથી.</translation>
 <translation id="756876171895853918">અવતારને કસ્ટમાઇઝ કરો</translation>
 <translation id="7568790562536448087">અપડેટ થઈ રહ્યું છે</translation>
-<translation id="7569113730576914983">જ્યારે ડેટા ઉલ્લંઘનમાં Chromeને તમારા પાસવર્ડમાંનો કોઈ એક મળે, ત્યારે તે તમે સાઇન ઇન કરો ત્યારે તમારા માટે તમારો પાસવર્ડ બદલવાની ઑફર કરી શકે છે</translation>
 <translation id="7569983096843329377">શ્યામ</translation>
 <translation id="7570548610653957960">વાંચવામાં મારી સહાય કરો</translation>
 <translation id="7571643774869182231">અપડેટ માટે પર્યાપ્ત સ્ટોરેજ નથી</translation>
@@ -9621,6 +9626,7 @@ USB ડિવાઇસ</translation>
 <translation id="7788298548579301890">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે કોઈ ઍપ્લિકેશન ઉમેરી છે જે Chrome ની કાર્યપદ્ધતિમાં ફેરફાર કરી શકે છે.
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">તમારી ઘરનું સરનામું તમને Googleની સેવાઓ પર કાર્યો કરવામાં મદદ કરી શકે છે, જેમ કે વધુ સુસંગત શોધ પરિણામો અને Google Mapsમાં દિશાનિર્દેશો. તમે તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ <ph name="USERNAME" /><ph name="END_LINK" />માં તમારા સરનામામાં ફેરફાર કરી શકો છો કે તેને ડિલીટ કરી શકો છો.</translation>
 <translation id="7791269138074599214">ઇનપુટ પદ્ધતિ</translation>
 <translation id="7791429245559955092">આ ઍપ્લિકેશન તમારી હાલમાં ઉપયોગમાં લેવાતી Chrome પ્રોફાઇલ પર ઇન્સ્ટૉલ કરવામાં આવશે</translation>
 <translation id="7791436592012979144">રિવર્સ સ્ક્રોલિંગ ચાલુ કર્યું</translation>

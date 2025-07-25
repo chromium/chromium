@@ -478,7 +478,6 @@
 <translation id="1785118555253503473">Желите да инсталирате веб-апликације?</translation>
 <translation id="1791415068765905273">Прикажи све табеле за поређење</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали информацијама, приватношћу и безбедношћу на Google налогу</translation>
-<translation id="1793473605302304726">Плаћање на рате</translation>
 <translation id="1793631236004319016">Последњи пут коришћена пре <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, доступно је више радњи, притисните Tab да бисте их прегледали</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@
 <translation id="3467081767799433066">Помоћу функције мерења огласа ограничени типови података се деле између сајтова ради мерења учинка огласа, на пример, да ли сте обавили куповину после посете сајту.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, тренутно је отворена, притисните картицу, па Enter да бисте прешли на отворену картицу</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте затворили све прозоре без архивирања који су тренутно отворени</translation>
+<translation id="3472469028191701821">Отвара се на новој картици</translation>
 <translation id="3474392552865647225">Дугме Прилагоди фонтове у Chrome-у, активирајте га да бисте прилагодили величине и изглед фонтова у Chrome-у</translation>
 <translation id="3478033058537426179">Према групи</translation>
 <translation id="3479552764303398839">Не сада</translation>
@@ -2963,7 +2963,6 @@
 <translation id="5969199813874624822">Сачувај и прати цену</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шести котур</translation>
-<translation id="5974745851230707809">Опције отплате</translation>
 <translation id="5975083100439434680">Умањивање</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
 <translation id="5984570616552610254">Влажност коморе</translation>
@@ -3608,7 +3607,6 @@
 <translation id="7042616127917168121">Прецизирајте резултате</translation>
 <translation id="7043552168914147882">Залиха папира</translation>
 <translation id="7044081119134178347">Камера је дозвољена овај пут</translation>
-<translation id="704738887031336226">Прикажи опције <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />плаћања на рате<ph name="PAY_OVER_TIME_HELP_LINK_END" /> приликом плаћања</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Покушали сте да посетите <ph name="DOMAIN" />, али је сервер представио сертификат са периодом важења који је предугачак да би био поуздан.</translation>
 <translation id="7053983685419859001">Блокирај</translation>
@@ -4305,7 +4303,6 @@
 <translation id="8220602974062798186">Желите да блокирате <ph name="TOPIC" /> и све сродне теме?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, упитајте <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Приказ на две странице</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> жели да приступа уређају на вашој мрежи:</translation>
 <translation id="822925450938886901">Додатне информације и смернице које могу да важе потражите на chrome://management у прегледачу.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

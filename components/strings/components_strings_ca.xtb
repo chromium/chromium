@@ -478,7 +478,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1785118555253503473">Vols instal·lar aplicacions web?</translation>
 <translation id="1791415068765905273">Mostra totes les taules de comparació</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la teva informació, privadesa i seguretat al teu Compte de Google</translation>
-<translation id="1793473605302304726">Paga a terminis</translation>
 <translation id="1793631236004319016">Utilitzada per última vegada fa <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hi ha diverses accions disponibles, prem el tabulador per moure't d'una acció a una altra</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3467081767799433066">Amb el mesurament d'anuncis, es comparteixen tipus de dades limitats entre llocs web per mesurar el rendiment dels anuncis, com ara si has fet una compra després de visitar un lloc web.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, oberta actualment; prem Tab i després Retorn per canviar a la pestanya oberta</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per tancar totes les finestres d'incògnit que estan obertes en aquests moments</translation>
+<translation id="3472469028191701821">S'obre en una pestanya nova</translation>
 <translation id="3474392552865647225">Botó Personalitza els tipus de lletra a Chrome: activa'l per personalitzar les fonts i els cossos de les fonts a Chrome</translation>
 <translation id="3478033058537426179">Per grup</translation>
 <translation id="3479552764303398839">Ara no</translation>
@@ -2963,7 +2963,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5969199813874624822">Desa el preu i fes-ne un seguiment</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sisè corró</translation>
-<translation id="5974745851230707809">Opcions de pagament a terminis</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
 <translation id="5984570616552610254">Humitat de la sala</translation>
@@ -3609,7 +3608,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7042616127917168121">Refina els resultats</translation>
 <translation id="7043552168914147882">Inventari d'etiquetes</translation>
 <translation id="7044081119134178347">S'ha permès l'ús de la càmera aquesta vegada</translation>
-<translation id="704738887031336226">Mostra les opcions de <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />pagament a terminis<ph name="PAY_OVER_TIME_HELP_LINK_END" /> en tramitar la compra</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Has provat de connectar-te a <ph name="DOMAIN" />, però el servidor ha presentat un certificat amb un període de validesa massa llarg per poder confiar-hi.</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
@@ -4306,7 +4304,6 @@ Detalls addicionals:
 <translation id="8220602974062798186">Vols bloquejar <ph name="TOPIC" /> i tots els temes relacionats?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, pregunta <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Visualització de dues pàgines</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> vol accedir a un dispositiu de la teva xarxa:</translation>
 <translation id="822925450938886901">Per obtenir més informació i veure les polítiques que s'hi podrien aplicar, obre chrome://management al navegador.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

@@ -34,6 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å spille Dino Run-spillet i Chrome</translation>
 <translation id="1060136083665017312">Spillsystemer og -konsoller</translation>
 <translation id="1060320201901229167">Kaku 5-konvolutt</translation>
+<translation id="1060985736456216896">Google Pay, Zip-logo</translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1063822554756965137">Filene er slettet</translation>
 <translation id="1064054731605354900">A3x5</translation>
@@ -125,6 +126,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
 <translation id="121201262018556460">Du forsøkte å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som inneholder en svak nøkkel. En angriper kan ha løst den private nøkkelen, og tjeneren er kanskje ikke den tjeneren du forventet (det kan hende at du kommuniserer med en angriper).</translation>
 <translation id="1212527389003717329">Nedlastingen er startet. For å se den, trykk på og hold inne |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1215738931000958575">Bruk informasjon som er lagret i Google-kontoen din, til å autofylle passord, passnøkler, adresser, betalingsmåter og annen informasjon</translation>
 <translation id="1219129156119358924">Systemsikkerhet</translation>
 <translation id="1222060260947439312">Høyre skuff</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -476,7 +478,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1785118555253503473">Vil du installere nettapper?</translation>
 <translation id="1791415068765905273">Vis alle sammenligningstabeller</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
-<translation id="1793473605302304726">Kjøp på avbetaling</translation>
 <translation id="1793631236004319016">Sist brukt for <ph name="NUM_HOURS_MINUTES_SECONDS" /> siden.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – flere handlinger er tilgjengelige. Trykk på Tab for å bla gjennom dem</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1472,6 +1473,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3467081767799433066">Med annonsemålinger deler nettsteder begrensede typer data mellom seg for å måle annonseresultatene sine, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> – for øyeblikket åpen. Trykk på Tab og deretter Enter for å bytte til den åpne fanen</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å lukke alle åpne inkognitovinduer</translation>
+<translation id="3472469028191701821">Åpnes i en ny fane</translation>
 <translation id="3474392552865647225">Knappen «Tilpass skrifttyper i Chrome» – aktiver for å tilpasse skriftstørrelser og -typer i Chrome</translation>
 <translation id="3478033058537426179">Etter gruppe</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
@@ -1539,6 +1541,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3576616784287504635">På en innebygd side på <ph name="SITE" /> står det</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3577902790357386792">Turn</translation>
+<translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome gir deg beskjed når denne siden er klar. &lt;a&gt;Avbryt&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Legg til navn</translation>
 <translation id="3583757800736429874">&amp;Flytt likevel</translation>
@@ -1787,6 +1790,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="398470910934384994">Fugler</translation>
 <translation id="3985750352229496475">Administrer adresser…</translation>
 <translation id="3986506998755860149">finne ut mer om autofyll med AI i innstillingene</translation>
+<translation id="3986557181852957825">Google Pay- og Klarna-logo</translation>
 <translation id="3986705137476756801">Slå av Direkteteksting inntil videre</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Under 1 MB</translation>
@@ -1860,6 +1864,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4104702906064390950">Lagrer IBAN-informasjonen</translation>
 <translation id="4106887816571530227">Innebygd innhold er ikke tillatt</translation>
 <translation id="4107047499377819067">Installasjonen av VPN-bakgrunnstjenester er påbegynt. Dette kan ta noen minutter.</translation>
+<translation id="4110642094637545339">Google Pay-, AfterPay-logo</translation>
 <translation id="4110652170750985508">Gjennomgå betalingen</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
@@ -2278,6 +2283,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4807098396393229769">Navn som er oppført på kortet</translation>
 <translation id="4809079943450490359">Veiledning fra enhetsadministratoren din:</translation>
 <translation id="4811450222531576619">Finn ut mer om kilden og emnet</translation>
+<translation id="4811918461974803225">Google Pay, Affirm-logo</translation>
 <translation id="4813512666221746211">Nettverksfeil</translation>
 <translation id="4814114628197290459">Slett IBAN</translation>
 <translation id="4816341377198595747">Søk-bokmerker-knappen – aktiver for å søke i bokmerker</translation>
@@ -2527,6 +2533,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5222812217790122047">E-post er obligatorisk</translation>
 <translation id="5225215474235602477">Vil du lagre passet?</translation>
 <translation id="5228269245420405804">Fjernundervisning</translation>
+<translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Leveringsadresse</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
@@ -2956,7 +2963,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5969199813874624822">Lagre og spor prisen</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjette rull</translation>
-<translation id="5974745851230707809">Alternativer for betaling over tid</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5979084224081478209">Kontroller passordene</translation>
 <translation id="5984570616552610254">Kammerfuktighet</translation>
@@ -3294,6 +3300,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6493924760403974580">Denne appen støtter kun denne størrelsen.</translation>
 <translation id="6494750904506170417">forgrunnsvinduer og viderekoblinger</translation>
 <translation id="6495664197699704593">Dette passordet er bare lagret på denne enheten. For å bruke det på andre enheter, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="649611364763911650">For å bruke en annen autofylltjeneste i Chrome, velg en autofyllleverandør i Android-innstillingene</translation>
 <translation id="6499038740797743453">Vil du tilbakestille passordet?</translation>
 <translation id="6502510275417601303">Varsel om ny betalingsinnstilling er lukket</translation>
 <translation id="6502991525169604759">Uten endringene dine</translation>
@@ -3601,7 +3608,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7042616127917168121">Avgrens resultatene</translation>
 <translation id="7043552168914147882">Fanepapir</translation>
 <translation id="7044081119134178347">Kamera er tillatt denne gangen</translation>
-<translation id="704738887031336226">Vis alternativer for <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />kjøp på avbetaling<ph name="PAY_OVER_TIME_HELP_LINK_END" /> i kassen</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Du prøvde å nå <ph name="DOMAIN" />. Tjeneren presenterte et sertifikat som har en gyldighetsperiode som er for lang til å være pålitelig.</translation>
 <translation id="7053983685419859001">Blokkér</translation>
@@ -4297,7 +4303,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8220602974062798186">Vil du blokkere <ph name="TOPIC" /> og eventuelle relaterte emner?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, spør <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Visning med to sider</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> vil ha tilgang til en enhet på nettverket ditt:</translation>
 <translation id="822925450938886901">For å finne ut mer og se regler som kan gjelde, åpne chrome://management i nettleseren.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

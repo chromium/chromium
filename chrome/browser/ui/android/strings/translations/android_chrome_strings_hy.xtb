@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="1009406586654360474">Բացեք Google գաղտնաբառերի կառավարիչը և անցեք կարգավորումներ։ Ընտրեք «Ներմուծել» և ավելացրեք ձեր արտահանված գաղտնաբառերով CSV ֆայլը։</translation>
 <translation id="1010283278930414892">Այս սարքում պահված գաղտնաբառեր չկան</translation>
 <translation id="1011749477052068769">Տեղափոխել այստեղ</translation>
 <translation id="1014147525163127655">Այս սարքում <ph name="ORIGIN" />-ի համար մուտքի բանալիներ չկան</translation>
@@ -206,7 +205,6 @@
 <translation id="1925021887439448749">Մուտքագրեք այլ հասցե</translation>
 <translation id="1928618076168182477">Ցուցադրված է վիզուալ տեսքը</translation>
 <translation id="1928696683969751773">Թարմացումներ</translation>
-<translation id="1939549834451474504">Գաղտնաբառերը շուտով այլևս չեն աշխատի, քանի որ Google Play ծառայություններն անհասանելի են։ Դուք կարող եք պատճենել ձեր պահված գաղտնաբառերը, նախքան դրանք կդադարեն աշխատել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1943398124995840148">Ձեր բացված ներդիրներն այժմ նոր տեսք ունեն XR-ում</translation>
 <translation id="1943432128510653496">Պահել գաղտնաբառերը</translation>
 <translation id="1944535645109964458">Հասանելի մուտքի բանալիներ չկան</translation>
@@ -415,13 +413,11 @@
 <translation id="2871733351037274014">Էջերի նախաբեռնում</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />-ն ուզում է, որ հաստատեք այս կայքը՝</translation>
 <translation id="2876628302275096482">Իմացեք ավելին, թե <ph name="BEGIN_LINK" />ինչպես է Chrome-ը պահպանում ձեր տվյալների գաղտնիությունը<ph name="END_LINK" /></translation>
-<translation id="2883644600102358131">Գաղտնաբառերը շուտով այլևս չեն աշխատի այս սարքում։ Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերն օգտագործելու համար։</translation>
 <translation id="2885355868600171871">Անցնել հասցեագոտի</translation>
 <translation id="2888126860611144412">Chrome-ի մասին</translation>
 <translation id="2891154217021530873">Կանգնեցնել էջի բեռնումը</translation>
 <translation id="2894821468041866720">Չի հանգեցնում դիտարկիչի կամ սարքի աշխատանքի զգալի դանդաղեցմանը։</translation>
 <translation id="2895521649038438824">Դուք կարող եք լսել այս էջի բովանդակությունը</translation>
-<translation id="2899252057552912621">Գաղտնաբառերը շուտով այլևս չեն աշխատի, քանի որ Google Play ծառայություններն անհասանելի են։ Դուք կարող եք պատճենել ձեր պահված գաղտնաբառերը, նախքան դրանք կդադարեն աշխատել։</translation>
 <translation id="2900528713135656174">Ստեղծել միջոցառում</translation>
 <translation id="2901411048554510387">Ցուցադրվում են առաջարկներ «<ph name="WEBSITE_TITLE" />» կայքի համար</translation>
 <translation id="2904300462646366554">Ներբեռնված PDF ֆայլերն ավտոմատ բացվում են ձեր սարքում PDF ֆայլերի դիտման համար հավելվածներից մեկի միջոցով</translation>
@@ -473,7 +469,6 @@
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Այլ մանրամասներ</translation>
 <translation id="3123734510202723619">Հայտարարություններ</translation>
-<translation id="3148237711805373460">Անցնել</translation>
 <translation id="314939179385989105">Chrome-ի գլխավոր էջ</translation>
 <translation id="3158667104057012316">Ձեռքով տեսակավորում</translation>
 <translation id="3159335509547415276">Իմանալ ավելին արգելափակված հաշիվների մասին</translation>
@@ -521,7 +516,6 @@
 <translation id="3351165113450806415">Թերթելու նոր եղանակ</translation>
 <translation id="3359667936385849800">Օգտագործել իմ ընթացիկ մատակարարը</translation>
 <translation id="3373701465337594448">Եթե գործառույթը միացված է, այստեղ կցուցադրվի ձեզ հետաքրքրող կայքերի ցանկը</translation>
-<translation id="3374023511497244703">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու Chrome-ի մյուս տվյալները այլևս չեն համաժամացվի ձեր Google հաշվի հետ:</translation>
 <translation id="3384347053049321195">Կիսվել պատկերով</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ ֆայլային համակարգի սխալի պատճառով:</translation>
 <translation id="3414952576877147120">Չափսը՝</translation>
@@ -592,7 +586,6 @@
 <translation id="3692944402865947621">Չհաջողվեց ներբեռնել «<ph name="FILE_NAME" />» ֆայլը, քանի որ պահեստն անհասանելի է։</translation>
 <translation id="3697705478071004188">Տեսակավորել ըստ կայքի</translation>
 <translation id="3699022356773522638">Ներբեռնե՞լ ֆայլը</translation>
-<translation id="3701167022068948696">Ուղղել</translation>
 <translation id="3701515417135397388">Զգուշացնել ձեզ, եթե գաղտնաբառը տվյալների արտահոսքի պատճառով բացահայտվել է</translation>
 <translation id="3703166520839776970">Եթե խնդիրը չվերանա, ընտրեք «Այլ մանրամասներ» ստորև՝ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից լրացուցիչ տեղեկություններ ստանալու համար։</translation>
 <translation id="3708100450779900829">Երբ ձեր սարքը ծալված է, դուք կարող եք ընտրել տարբերակ կամ հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար</translation>
@@ -611,7 +604,6 @@
 <translation id="3771694256347217732">Google-ի օգտագործման պայմաններ</translation>
 <translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3777796259512476958">Դուք դուրս կգրվեք կայքերի մեծ մասից</translation>
-<translation id="379035798868314833">Google գաղտնաբառերի կառավարիչն այլևս չի աշխատի այս սարքում</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
 <translation id="3795154175078851242">Պատճենել պատկերը հղման հետ միասին</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
@@ -621,7 +613,6 @@
 <translation id="38243391581572867">Տեսապակին հասանելի չէ այս հաշվում։</translation>
 <translation id="38258275871320156">Հասանելի է միայն փոքր պատուհանների համար</translation>
 <translation id="3830886834687455630">Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերը ստուգելու համար</translation>
-<translation id="3843603704176567761">Գաղտնաբառերը շուտով հնարավոր է, որ այլևս չաշխատեն այս սարքում։ Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերն օգտագործելու համար։</translation>
 <translation id="3845098929839618392">Բացել ինկոգնիտո ներդիրում</translation>
 <translation id="3847319713229060696">Օգնեք բարելավել համացանցից օգտվողների անվտանգությունը</translation>
 <translation id="385051799172605136">Հետ</translation>
@@ -654,6 +645,7 @@
 <translation id="3985215325736559418">Ուզո՞ւմ եք նորից ներբեռնել <ph name="FILE_NAME" /> ֆայլը:</translation>
 <translation id="3987993985790029246">Պատճենել հղումը</translation>
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
+<translation id="4000670338830950598">Կարգավորեք Google Chrome-ը և կառավարեք այն՝ ընդգծելով տարրերն էկրանին</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ ձեր Google հաշվում}one{# կոտրված գաղտնաբառ ձեր Google հաշվում}other{# կոտրված գաղտնաբառ ձեր Google հաշվում}}</translation>
 <translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="4024768890073681126">Ձեր դիտարկիչը կառավարում է ձեր ծնողը</translation>
@@ -1086,7 +1078,6 @@
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
 <translation id="5883855034004058011">Կենսաչափական տվյալները հաստատելու չափազանց շատ անհաջող փորձեր են արվել։ Նորից փորձելու համար կողպեք և ապակողպեք ձեր սարքը։</translation>
 <translation id="5885378508678660271">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ այս կայքը վտանգավոր է</translation>
-<translation id="5895834791314695851">Գաղտնաբառերը շուտով հնարավոր է, որ այլևս չաշխատեն այս սարքում։ Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերն օգտագործելու համար։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">«Հասանելի մուտքի բանալիներ չկան» թերթը փակվեց</translation>
 <translation id="5907542076239273525">Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="5916664084637901428">Միացնել</translation>
@@ -1179,7 +1170,6 @@
 <translation id="6284472661216707937">«Գաղտնաբառերը ձեր բոլոր սարքերում» պատուհանը փակված է</translation>
 <translation id="6291294824436685757">Ջնջել այցելությունների պատմությունը․ ընտրել՝ ինչ տվյալներ ջնջել</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
-<translation id="6296366034485697675">Արտահանել և ջնջել</translation>
 <translation id="629730747756840877">Հաշիվ</translation>
 <translation id="6300697579369314762">Ընթերցման ռեժիմի ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="6301526076346731664">Բացել ծրագրավորողի գործիքները</translation>
@@ -1212,6 +1202,7 @@
 <translation id="6406506848690869874">Համաժամացում</translation>
 <translation id="6410883413783534063">Միաժամանակ մի քանի էջեր այցելելու համար ներդիրներ բացեք</translation>
 <translation id="6411219469806822692">Հնարավոր չէ ավելի վերևից նշել։ Փորձեք նշել էջի վերևից։</translation>
+<translation id="6412931879992742813">Նոր ինկոգնիտո պատուհան</translation>
 <translation id="641643625718530986">Տպել…</translation>
 <translation id="6433501201775827830">Ընտրեք որոնիչը</translation>
 <translation id="6434309073475700221">Հրաժարվել</translation>
@@ -1282,7 +1273,6 @@
 <translation id="6676927815633975364">Մուտք գործեք այս կայք և Chrome</translation>
 <translation id="6684809838922667136">Օգնեք բարելավել Chrome-ի աշխատանքը</translation>
 <translation id="6700279777779583398">Ընտրված կարգավորումները պահվել են</translation>
-<translation id="6704048624334633734">Գաղտնաբառերի արտահանում և ջնջում</translation>
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
@@ -1370,9 +1360,9 @@
 <translation id="6976811588313110624">Ավելացնել նոր դյուրանցում։</translation>
 <translation id="6978717888677691380">Ձեր արգելափակած կայքերը</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
+<translation id="6980258170429555165"><ph name="MENU_NAME" /> ընտրացանկն ընդգծված է։</translation>
 <translation id="6983306615164277634">Կարող եք նաև հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար։</translation>
 <translation id="6987047470128880212">Ինկոգնիտո ռեժիմը հասանելի չէ այս սարքում</translation>
-<translation id="6991701761229081516">Ձեր գաղտնաբառերով ֆայլը կներբեռնվի CSV ձևաչափով։ Դրանք տեսանելի կլինեն բոլոր նրանց, ովքեր կարող են բացել ֆայլը և հավելվածները։ Արտահանված գաղտնաբառերը կջնջվեն Chrome-ից։</translation>
 <translation id="6996145122199359148">Ներբեռնել այս էջը</translation>
 <translation id="7013762323294215682">Այս մուտքի բանալին կպահվի ձեր գաղտնաբառի կառավարիչում։ Բոլորը, ովքեր թույլտվություն ունեն, կկարողանան օգտագործել այն։</translation>
 <translation id="7020741890149022655">Ավելացնել ընթերցանության ցանկում <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
@@ -1510,7 +1500,6 @@
 <translation id="7583262514280211622">Ձեր ընթերցանության ցանկը կգտնեք այստեղ</translation>
 <translation id="758603037873046260">Մուտք գործեք՝ այս էջը պահելու համար</translation>
 <translation id="7588219262685291874">Միացնել մուգ թեման, երբ սարքի մարտկոցի տնտեսման ռեժիմը միացված է</translation>
-<translation id="7592322927044331376">Նախ արտահանեք և ջնջեք գաղտնաբառերը Chrome-ից</translation>
 <translation id="7594687499944811403">Թույլ տվեք, որ <ph name="EMBEDDED_ORIGIN" /> կայքը ստուգի ձեր ինքնությունը <ph name="TOP_ORIGIN" /> կայքի համար</translation>
 <translation id="7596558890252710462">Օպերացիոն համակարգ</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ստանդարտ ներդիր}one{<ph name="TABS_COUNT_MANY" /> ստանդարտ ներդիր}other{<ph name="TABS_COUNT_MANY" /> ստանդարտ ներդիր}}</translation>
@@ -1519,7 +1508,6 @@
 <translation id="7612619742409846846">Մուտք եք գործել Google որպես՝</translation>
 <translation id="7612989789287281429">Մուտք…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ ցանցային սխալների պատճառով:</translation>
-<translation id="762537095495606755">Գաղտնաբառերը կդադարեն աշխատել այս սարքում</translation>
 <translation id="7626032353295482388">Բարի գալուստ Chrome</translation>
 <translation id="7628417132421583481">Անցնել Գաղտնաբառերի կառավարիչ</translation>
 <translation id="7630202231528827509">Մատակարարի URL-ը</translation>
@@ -1545,7 +1533,6 @@
 <translation id="7708994397325774423">Ստացեք ձեր բոլոր գաղտնաբառերը</translation>
 <translation id="7714077993070342304">Բացել Chrome-ի ընտրացանկը</translation>
 <translation id="7733878270780732638">Սարքում բավականաչափ տարածք չկա։</translation>
-<translation id="7746817319925672889">Google գաղտնաբառերի կառավարիչը շուտով այլևս չի աշխատի այս սարքում</translation>
 <translation id="774876555279732384">Ինքնալրացման ծառայությունները նաև կարելի է կառավարել <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="7759809451544302770">Կամընտիր</translation>
 <translation id="7762668264895820836">SD քարտ <ph name="SD_CARD_NUMBER" /></translation>
@@ -1612,9 +1599,7 @@
 <translation id="7998918019931843664">Նորից բացել փակված ներդիրը</translation>
 <translation id="8001245658307297681">Դուք լոկալ ֆայլ եք դիտում</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
-<translation id="8014210850410408071">Այժմ ներմուծեք գաղտնաբառերը</translation>
 <translation id="8025972204417227828">Ավելացնել նորը</translation>
-<translation id="8027395186860110042">Հնարավոր է, որ գաղտնաբառերը շուտով դադարեն աշխատել</translation>
 <translation id="8027863900915310177">Ընտրեք, թե որտեղ է պետք ներբեռնել</translation>
 <translation id="8030852056903932865">Հաստատել</translation>
 <translation id="8032569120109842252">Հետևում եք</translation>
@@ -1662,7 +1647,6 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUMBER_OF_OTHER_MEMBERS" /> օգտատեր}one{Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUMBER_OF_OTHER_MEMBERS" /> օգտատեր}other{Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUMBER_OF_OTHER_MEMBERS" /> օգտատեր}}</translation>
 <translation id="8209050860603202033">Բացել պատկերը</translation>
 <translation id="8210770465353466621">Ձեր ներդիրները կգտնեք այստեղ</translation>
-<translation id="8211101263765532799">Որոշ գաղտնաբառեր շուտով այլևս չեն աշխատի</translation>
 <translation id="8215740705341534369">Կողային էկրան</translation>
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8221401890884589479">Դուք կարող եք արգելափակել անցանկալի կայքերը։ Chrome-ը նաև ցանկից ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -1688,8 +1672,6 @@
 <translation id="8281886186245836920">Բաց թողնել</translation>
 <translation id="8282297628636750033">Կայքերում հնարավորինս կիրառել մուգ թեման</translation>
 <translation id="8282950411412455249">Բացել անվտանգության կարգավորումները</translation>
-<translation id="8306751933352925837">Գաղտնաբառերը շուտով կդադարեն աշխատել այս սարքում։ Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերն օգտագործելու համար։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="8310451567823644042">Գաղտնաբառերը շուտով կդադարեն աշխատել</translation>
 <translation id="831192587911042850">Ավելացնում է ընթացիկ կայքը վեբ կայքերի ցանկում, որոնց հետևում եք։</translation>
 <translation id="8317318757008452355">Բացել տպելու ընտրանքները</translation>
 <translation id="8320212361750431956">Վերջին գործողությունները</translation>
@@ -1773,7 +1755,6 @@
 <translation id="864544049772947936">Կառավարել պատուհանները (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8662474268934425487">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
-<translation id="8672883760227492369">Այս սարքում պահված որոշ գաղտնաբառեր շուտով այլևս չեն աշխատի։ Դուք կարող եք տեղափոխել այս գաղտնաբառերը Google գաղտնաբառերի կառավարիչ։</translation>
 <translation id="8676276370198826499">Գրանցվեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքում <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="8676789164135894283">Ծանուցումներ մուտքի մասին</translation>
 <translation id="867914734596684889">Ցուցադրել կամ թաքցնել էջանիշների գոտին</translation>
@@ -1835,7 +1816,6 @@
 <translation id="8963117664422609631">Անցնել կայքի կարգավորումներ</translation>
 <translation id="8965591936373831584">սպասում է</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>
-<translation id="897061774231912216">Գաղտնաբառերը շուտով այլևս չեն աշխատի, քանի որ Google Play ծառայություններն անհասանելի են։ Google հաշվում պահված գաղտնաբառերն օգտագործելու համար մուտք գործեք այլ սարքի միջոցով կամ անցեք passwords.google.com էջ։</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8972098258593396643">Ներբեռնե՞լ կանխադրված պանակ</translation>
 <translation id="8992769679401294069">Ձեր տվյալները գաղտնագրված են անցաբառով։ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար մուտքագրեք ձեր անցաբառը։</translation>
@@ -1845,7 +1825,6 @@
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
 <translation id="8998837250940831980">Չհաջողվեց ծալել ներդիրը։ Փորձեք ավելի ուշ։</translation>
 <translation id="9001604755921395912">Բացել ինկոգնիտո ներդիրում</translation>
-<translation id="9007002441981613214">Շտկեք խնդիրը պահված գաղտնաբառերի միջոցով</translation>
 <translation id="9012585441087414258">Պաշտպանում է վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Եթե որևէ էջում որևէ կասկածելի բան է նկատվում, URL-ները և էջի բովանդակության հատվածներ ուղարկվում են «Google Ապահով դիտարկում» ծառայությանը։</translation>
 <translation id="9019199799064251516">Շարունակե՞լ առանց մեքենայի պրոֆիլի կողպման</translation>
 <translation id="9022774213089566801">Հաճախ այցելած</translation>
@@ -1879,7 +1858,6 @@
 <translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Չի օգտագործվել 1 կամ ավելի օր}one{Չի օգտագործվել # կամ ավելի օր}other{Չեն օգտագործվել # կամ ավելի օր}}</translation>
 <translation id="9106148373857059373">Էջանիշի պահման էջը փակված է</translation>
 <translation id="9108808586816295166">Ապահով DNS-ը կարող է ամբողջ ընթացքում հասանելի չլինել</translation>
-<translation id="910908805481542201">Օգնեք լուծել այս խնդիրը</translation>
 <translation id="9130135798965366513">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />օգտագործման պայմաններին<ph name="END_LINK2" />։</translation>
 <translation id="9131209053278896908">Արգելափակված կայքերը կհայտնվեն այստեղ</translation>
 <translation id="9133397713400217035">Դիտել անցանց ռեժիմում</translation>
@@ -1894,7 +1872,6 @@
 <translation id="9189607089796819144">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը (<ph name="FILE_SIZE" />)</translation>
 <translation id="9190276265094487094">Ձեր գործողությունների պատմությունը հասանելի կլինի բոլոր համաժամացված սարքերում, և դուք կկարողանաք շարունակել այն, ինչ անում էիք</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ստուգվել է 1 րոպե առաջ}one{Ստուգվել է # րոպե առաջ}other{Ստուգվել է # րոպե առաջ}}</translation>
-<translation id="9204021776105550328">Ջնջում</translation>
 <translation id="9204836675896933765">Մնաց 1 ֆայլ</translation>
 <translation id="9205933215779845960">Չի հաջողվում գտնել էջը։ Եթե վստահ եք, որ հարցումը ճիշտ եք մուտքագրել, փորձեք որոնել <ph name="SEARCH_ENGINE" />-ում։</translation>
 <translation id="9206873250291191720">Ա</translation>

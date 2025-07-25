@@ -3,9 +3,9 @@
 <translationbundle lang="no">
 <translation id="1005023885865154304">Åpne innstillingene for autofylling av passord</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
-<translation id="1010225406377140704">Kontakt avsenderen for å be om en ny link</translation>
 <translation id="1013952917065545813">Du kan komme tilbake hit for å gjenåpne faner du nylig har lukket</translation>
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
+<translation id="1019990162050689579">Aktivitet i Gemini-apper</translation>
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1030376737535466765">Åpne Passordlagring</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, blir også festede faner lukket.</translation>
@@ -28,6 +28,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åpnes</translation>
 <translation id="1096992026380844478">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. <ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">Del sideinnhold med Gemini for å få mer relevante svar. Når du deler en side med Gemini, sendes hele sideinnholdet og nettadressen til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Loggsynkronisering</translation>
 <translation id="1110772719190051587">Lås opp med Face ID</translation>
 <translation id="1112015203684611006">Utskriften mislyktes.</translation>
@@ -512,6 +513,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="3010025794097054078">Beskytt deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="301080557829842765">Personvernveiledning</translation>
 <translation id="3012310354105716927">Noen data er ikke lagret ennå</translation>
+<translation id="3013922155552460252">Se og administrer Gemini-aktivitet, for eksempel chatter, tilbakemeldinger og forespørsler</translation>
 <translation id="3016518775797983090">Kan ikke dele siden</translation>
 <translation id="3020183492814296499">Snarveier</translation>
 <translation id="3021342271734507256">Tegn, marker eller trykk på noe på skjermen for å søke</translation>
@@ -536,6 +538,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3087734570205094154">Bunn</translation>
 <translation id="309710370695886264">Du har ett gjenbrukt passord. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="3102790820790869053">Søk i nylige faner</translation>
+<translation id="3106258548858559536">Slå av lesemodus</translation>
 <translation id="3106690631878101882">Skjul Oversetter</translation>
 <translation id="310900540163454140">Vil du slette passordet for <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Merk…</translation>
@@ -634,6 +637,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3533860663366814939">Åpne innstillingene for autofyll og passord</translation>
 <translation id="3546122170015471515">Forhåndsvisninger i Maps på Google.com</translation>
 <translation id="3547356470684043247">Med anmeldelser kan du lese kundevurderinger av produkter, tjenester eller erfaringer for å gjøre det lettere å ta beslutninger</translation>
+<translation id="3547933853190131743">Søk med AI-modus</translation>
 <translation id="3557336313807607643">Legg til i kontakter</translation>
 <translation id="355765753469272474">Angre</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
@@ -1218,6 +1222,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5813223718099710537">Når du bruker denne funksjonen, sendes sideinnhold og nettadresser til Google. Du kan når som helst slå av dette av i innstillingene.</translation>
 <translation id="5817176759448082654">Passordsjekk</translation>
 <translation id="5819208479324046259">Administreres av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synkroniserer …</translation>
 <translation id="583923961930319521">Bruk passord på alle enhetene dine</translation>
 <translation id="5844284118433003733">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
@@ -1973,7 +1978,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8694281486652655615">Viser dette elementet</translation>
 <translation id="8696297579102085705">Send til enheten din</translation>
 <translation id="8697136149718343437">Flytt adressefeltet til bunnen</translation>
-<translation id="8703372953981978786">Denne linken fungerer ikke</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Du kan dele, bli med i og samarbeide i fanegrupper</translation>
 <translation id="8709409604518538305">Faner ble lukket</translation>
@@ -2102,6 +2106,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="913036870884277353">Åpne linker i andre apper enkelt.</translation>
 <translation id="9137013805542155359">Vis original</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">Slå på lesemodus</translation>
 <translation id="9144230693397287797">Motta oppdateringer om påminnelser du har stilt inn, og faner fra andre enheter</translation>
 <translation id="914781932147356857">Merk alle…</translation>
 <translation id="9148126808321036104">Logg på igjen</translation>
@@ -2130,6 +2135,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="94870150074703282">Vil du slette gruppen?</translation>
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="954667170699278022">Leseliste</translation>
+<translation id="956218893102219091">Bruk den nøyaktige posisjonen din for å få de mest nøyaktige Gemini-resultatene, i stedet for en anslått posisjon basert på IP-adressen din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="963102227019621224">Nett- og appaktivitet</translation>

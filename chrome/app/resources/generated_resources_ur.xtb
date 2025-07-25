@@ -2916,6 +2916,7 @@
 <translation id="3003967365858406397">‏آپ کا <ph name="PHONE_NAME" /> ایک نجی Wi-Fi کنکشن بنائے گا۔</translation>
 <translation id="3004385386820284928">کی بورڈ کی کلیدوں کو حسب ضرورت بنائیں</translation>
 <translation id="3006881078666935414">ڈیٹا کا کوئی استعمال نہیں</translation>
+<translation id="3007555010975143508">یہ ایپس آپ کی اسکرین کو ریکارڈ کرنے کے لیے استعمال ہوں گی:</translation>
 <translation id="3007771295016901659">ڈپلیکیٹ ٹیب</translation>
 <translation id="3008142279736625920">چیز کیک</translation>
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
@@ -4380,6 +4381,7 @@
 <translation id="4016762287427926315"><ph name="APP_NAME" /> کے لیے آپ کی دی گئی اجازتیں اس ایپ کے لیے بھی قابل اطلاق ہوں گی۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">‏اس لنک کے لیے QR کوڈ تخلیق کریں</translation>
 <translation id="4019983356493507433">بُک مارک کی فہرست میں ترمیم کریں</translation>
+<translation id="4020701737692625681">آپ کا منتظم آپ کی اسکرین کو ریکارڈ کر سکتا ہے</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">آپ سر کی ہلکی حرکتوں کے ساتھ اپنے کرسر کو اچانک حرکت کرنے سے روک سکتے ہیں، لیکن اس میں تھوڑی تاخیر ہوگی۔</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5281,7 +5283,6 @@
 <translation id="4676616966096505747">کچھ ڈیٹا ابھی تک آپ کے اکاؤنٹ میں محفوظ نہیں ہوا ہے</translation>
 <translation id="4677772697204437347">‏GPU میموری</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4678729681411398877">‏جب آپ کے پاس ورڈز میں سے کوئی ڈیٹا کی خلاف ورزی میں پایا جاتا ہے تو Google پاس ورڈ مینیجر پوچھتا ہے کہ کیا آپ اسے مضبوط پاس ورڈ میں تبدیل کرنا چاہتے ہیں</translation>
 <translation id="4678848110205818817">کریڈٹ/ڈیبٹ کارڈ</translation>
 <translation id="4679018849559620189">یہ کسی بھی آلے پر آپ کی محفوظ کردہ پاس کیز تک رسائی حاصل کرنے میں آپ کی مدد کرتا ہے</translation>
 <translation id="4680105648806843642">آواز اس صفحہ پر بند تھی</translation>
@@ -6059,6 +6060,7 @@
 <translation id="5235050375939235066">ایپ کو اَن انسٹال کریں؟</translation>
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="5235750401727657667">نیا ٹیب کھولنے کے دوران دکھائي دینے والا صفحہ تبدیل کریں</translation>
+<translation id="5236054983756407518">‏‫Chrome سے اپنے گھر کا پتہ ہٹائیں؟</translation>
 <translation id="5237124927415201087">‏آسانی سے اپنے فون سے اپنے <ph name="DEVICE_TYPE" /> کا سیٹ اپ کریں۔ آپ اپنے پاس ورڈز کو دستی طور پر درج کیے بغیر اپنا Wi-Fi اور Google اکاؤنٹ شامل کر سکتے ہیں۔
     <ph name="BR" />
     <ph name="BR" />
@@ -6843,6 +6845,7 @@
 <translation id="581659025233126501">مطابقت پذیری آن کریں</translation>
 <translation id="5817918615728894473">جوڑا بنائيں</translation>
 <translation id="5817963443108180228">واپسی پر خوش آمدید، <ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">‏‫Google اکاؤنٹ میں ترمیم کریں</translation>
 <translation id="581911254119283028">سبھی ایپلیکیشنز</translation>
 <translation id="5821565227679781414">شارٹ کٹ تخلیق کریں</translation>
 <translation id="5824976764713185207">صفحہ لوڈ ہو جانے کے بعد اسے خودکار طور پر پڑھیں</translation>
@@ -7042,6 +7045,7 @@
 <translation id="5955304353782037793">ایپ</translation>
 <translation id="5955721306465922729">ایک ویب سائٹ یہ ایپلیکیشن کھولنا چاہتی ہے۔</translation>
 <translation id="5955809630138889698">ہو سکتا ہے کہ یہ آلہ صرف آن لائن ڈیمو موڈ کیلئے ہی اہل ہو۔ براہ کرم مزید تفصیلات کیلئے اپنے معاون نمائندے سے رابطہ کریں۔</translation>
+<translation id="59561895884837262">ریکارڈنگ شروع ہونے پر، آپ کو مطلع کیا جائے گا۔</translation>
 <translation id="5957987129450536192">اپنی پروفائل تصویر کے قریب موجود "سننے کیلئے منتخب کریں" آئیکن کو تھپتھپائیں، پھر جو آپ سننا چاہتے ہیں اسے منتخب کریں۔</translation>
 <translation id="5958836583172610505">مطابقت پذیری آن ہے</translation>
 <translation id="5959471481388474538">نیٹ ورک دستیاب نہیں ہے</translation>
@@ -7186,6 +7190,7 @@
 <translation id="606449270532897041">سائٹ کے ڈیٹا کا نظم کریں</translation>
 <translation id="6064764629679333574">کم ریزولیوشن آڈیو کو ہائی ریزولوشن آڈیو میں تبدیل کر کے بلوٹوتھ مائیک کی آواز کے معیار کو بہتر بنائیں۔</translation>
 <translation id="6065289257230303064">سرٹیفیکیٹ موضوع ڈائریکٹری انتسابات</translation>
+<translation id="6065690209261668796">‏‫Chrome سے اپنے دفتر کا پتہ ہٹائیں؟</translation>
 <translation id="6066794465984119824">تصویری ہیش سیٹ نہیں ہے</translation>
 <translation id="6069464830445383022">‏آپ کا Google اکاؤنٹ آپ کا Chromebook سائن ان ہے</translation>
 <translation id="6071181508177083058">پاس ورڈ کی توثیق کریں</translation>
@@ -8014,7 +8019,6 @@
 <translation id="6667187897999649121">‏ابھی کے لیے، آپ صرف فیملی ممبرز کے ساتھ پاس ورڈز کا اشتراک کر سکتے ہیں۔ 6 اراکین تک کا <ph name="BEGIN_LINK" />ایک فیملی گروپ بنائیں<ph name="END_LINK" /> اور Google پر اپنے پروڈکٹس اور سبسکرپشنز سے مزید حاصل کریں۔</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> میں کھولیں</translation>
 <translation id="6669195257625975787">ڈیٹا کے ساتھ اس سائٹ کی طرح سلوک کیا جاتا ہے جسے آپ دیکھ رہے ہیں</translation>
-<translation id="6669637573228217624">ایک فائل اپ لوڈ کریں</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ابھی دستیاب ہے</translation>
 <translation id="6670767097276846646">‏کچھ ایکسٹینشنز سرچ انجنز کو Chrome میں شامل کر سکتی ہیں</translation>
 <translation id="6670983860904543332">خودکار اپ ڈیٹس آپ کو تازہ ترین خصوصیات فراہم کرتی ہیں۔ حالیہ اپ ڈیٹس سے ہائی لائٹس دریافت کریں۔</translation>
@@ -8271,6 +8275,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ٹیب کو ہٹائیں اور گروپ کو حذف کریں؟}=1{ٹیبز کو ہٹائیں اور گروپ کو حذف کریں؟}other{ٹیبز کو ہٹائیں اور گروپس کو حذف کریں؟}}</translation>
 <translation id="6833479554815567477">ٹیب گروپ سے ہٹا دیا گیا <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">متوازن (تجویز کردہ)</translation>
+<translation id="6835624277262316125">‏آپ کے دفتر کا پتہ Google Maps میں تلاش کے مزید متعلقہ نتائج اور ڈائریکشنز جیسی تمام Google سروسز پر کام کرنے میں آپ کی مدد کر سکتا ہے۔ آپ اپنے Google اکاؤنٹ <ph name="BEGIN_LINK" /><ph name="USERNAME" /><ph name="END_LINK" /> میں اپنے پتے میں ترمیم یا حذف کر سکتے ہیں۔</translation>
 <translation id="6835762382653651563">براہ کرم اپنا <ph name="DEVICE_TYPE" /> اپ ڈیٹ کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="6838992358006915573">‏میگنیفائر ChromeVox فوکس کی پیروی کرتا ہے</translation>
 <translation id="6839916869147598086">سائن ان تبدیل ہو چکا ہے</translation>
@@ -8404,6 +8409,7 @@
 <translation id="6929126689972602640">‏اسکول کے اکاؤنٹس کیلئے پیرنٹل کنٹرولز تعاون یافتہ نہیں ہیں۔ گھر میں اسکول کے کام کے لئے Google کلاس روم اور دیگر ویب سائٹس تک رسائی حاصل کرنے کے لئے اسکول اکاؤنٹ شامل کرنے کے لئے، پہلے بچے کے ذاتی اکاؤنٹ میں سائن ان کریں۔ آپ بعد میں سیٹ اپ میں اسکول اکاؤنٹ شامل کر سکتے ہیں۔</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{ایک ایکسٹینشن مسترد کر دی گئی ہے}other{# ایکسٹینشنز مسترد کر دی گئی ہیں}}</translation>
+<translation id="6930337524857202955">نیا ڈاؤن لوڈ دستیاب ہے</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">قوت پر کلک کریں</translation>
 <translation id="6933321725007230600">&amp;مطابقت پذیری آن کریں...</translation>
@@ -9284,7 +9290,6 @@
 <translation id="7568759527730933493">‏‫DNS (ڈومین ناموں کا نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے محفوظ کنکشن استعمال کریں۔ یہ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> پر نظم کردہ سروس فراہم کنندہ کا استعمال کرتا ہے۔ آپ کے منتظم کے ذریعے کنفیگر کیے گئے کچھ ڈومینز کے لیے محفوظ کنکشنز استعمال نہیں کیے جاتے ہیں۔</translation>
 <translation id="756876171895853918">اوتار کو حسب ضرورت بنائیں</translation>
 <translation id="7568790562536448087">اپ ڈیٹنگ</translation>
-<translation id="7569113730576914983">‏جب Chrome کو ڈیٹا کی خلاف ورزی میں آپ کے پاس ورڈز میں سے ایک کا پتہ چلتا ہے تو یہ آپ کے سائن ان کرنے پر آپ کے لیے آپ کا پاس ورڈ تبدیل کرنے کی پیشکش کر سکتا ہے</translation>
 <translation id="7569983096843329377">سیاہ</translation>
 <translation id="7570548610653957960">پڑھنے میں میری مدد کریں</translation>
 <translation id="7571643774869182231">اپ ڈیٹ کے لیے کافی اسٹوریج نہیں ہے</translation>
@@ -9616,6 +9621,7 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">‏آپ کے گھر کا پتہ Google Maps میں تلاش کے مزید متعلقہ نتائج اور ڈائریکشنز جیسی تمام Google سروسز پر کام کرنے میں آپ کی مدد کر سکتا ہے۔ آپ اپنے Google اکاؤنٹ <ph name="BEGIN_LINK" /><ph name="USERNAME" /><ph name="END_LINK" /> میں اپنے پتے میں ترمیم یا حذف کر سکتے ہیں۔</translation>
 <translation id="7791269138074599214">اندراج کا طریقہ</translation>
 <translation id="7791429245559955092">‏یہ ایپلیکیشن آپ کی فی الحال استعمال کردہ Chrome پروفائل پر انسٹال ہو جائے گی</translation>
 <translation id="7791436592012979144">معکوس اسکرولنگ فعال ہے</translation>

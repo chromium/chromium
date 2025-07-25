@@ -478,7 +478,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1785118555253503473">Cài đặt ứng dụng web?</translation>
 <translation id="1791415068765905273">Hiện tất cả các bảng so sánh</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để quản lý thông tin, quyền riêng tư và chế độ bảo mật cho Tài khoản Google của bạn</translation>
-<translation id="1793473605302304726">Thanh toán dần</translation>
 <translation id="1793631236004319016">Sử dụng lần gần đây nhất vào <ph name="NUM_HOURS_MINUTES_SECONDS" /> trước</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, có nhiều thao tác, nhấn phím Tab để chuyển giữa các thao tác đó</translation>
 <translation id="1800473098294731951">B9</translation>
@@ -1474,6 +1473,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3467081767799433066">Ở chế độ đo lường quảng cáo, chỉ có một số loại dữ liệu được chia sẻ giữa các trang web để đo lường hiệu suất của quảng cáo mà các trang web đó hiển thị, chẳng hạn như dữ liệu cho biết bạn có mua hàng sau khi truy cập một trang web hay không.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> hiện đang mở, nhấn phím Tab rồi nhấn phím Enter để chuyển sang thẻ đang mở</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để đóng tất cả cửa sổ ẩn danh đang mở</translation>
+<translation id="3472469028191701821">Mở trong thẻ mới</translation>
 <translation id="3474392552865647225">Nút Tuỳ chỉnh phông chữ trong Chrome, hãy nhấn nút này để tuỳ chỉnh cỡ chữ và kiểu chữ trong Chrome</translation>
 <translation id="3478033058537426179">Theo nhóm</translation>
 <translation id="3479552764303398839">Để sau</translation>
@@ -2963,7 +2963,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5969199813874624822">Lưu và theo dõi giá</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Cuộn thứ sáu</translation>
-<translation id="5974745851230707809">Các lựa chọn thanh toán dần</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
 <translation id="5984570616552610254">Độ ẩm buồng</translation>
@@ -3609,7 +3608,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7042616127917168121">Tinh chỉnh kết quả</translation>
 <translation id="7043552168914147882">Giấy có nhãn ở rìa</translation>
 <translation id="7044081119134178347">Đã cho phép sử dụng máy ảnh cho lần này</translation>
-<translation id="704738887031336226">Hiện các lựa chọn <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />thanh toán dần<ph name="PAY_OVER_TIME_HELP_LINK_END" /> khi thanh toán</translation>
 <translation id="7048095965575426564">Fanfold châu Âu</translation>
 <translation id="7050187094878475250">Bạn đã cố gắng truy cập <ph name="DOMAIN" /> nhưng máy chủ đã hiển thị chứng chỉ có thời gian hiệu lực quá dài để có thể tin cậy.</translation>
 <translation id="7053983685419859001">Chặn</translation>
@@ -4306,7 +4304,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8220602974062798186">Chặn <ph name="TOPIC" /> và mọi chủ đề có liên quan?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Yêu cầu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Chế độ xem hai trang</translation>
-<translation id="8228477714872026922"><ph name="ORIGIN" /> muốn truy cập vào một thiết bị trong mạng của bạn:</translation>
 <translation id="822925450938886901">Để biết thêm thông tin và các chính sách có thể áp dụng, hãy mở chrome://management trong trình duyệt của bạn.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

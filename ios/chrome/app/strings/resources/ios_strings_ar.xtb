@@ -3,7 +3,6 @@
 <translationbundle lang="ar">
 <translation id="1005023885865154304">فتح إعدادات "الملء التلقائي لكلمات المرور"</translation>
 <translation id="1005230401424685968">السنة</translation>
-<translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
 <translation id="1019990162050689579">‏نشاطك على تطبيقات Gemini</translation>
@@ -1221,6 +1220,7 @@
 <translation id="5813223718099710537">‏عند استخدام هذه الميزة، يتم إرسال محتوى الصفحة وعناوين URL إلى Google. ويمكنك إيقاف هذا من خلال الإعدادات في أي وقت.</translation>
 <translation id="5817176759448082654">التحقّق من كلمات المرور</translation>
 <translation id="5819208479324046259">تتم إدارة المتصفِّح من خلال <ph name="MANAGER" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">جارٍ المزامنة…</translation>
 <translation id="583923961930319521">استخدام كلمات المرور على جميع أجهزتك</translation>
 <translation id="5844284118433003733">‏عند تسجيل الدخول، يتم ربط هذه البيانات بحسابك على Google لحمايتك على خدمات Google، مثلاً تتم زيادة مستوى الحماية في Gmail بعد وقوع محاولة اختراق أمني.</translation>
@@ -1977,7 +1977,6 @@
 <translation id="8694281486652655615">يؤدي هذا الإجراء إلى عرض هذا العنصر</translation>
 <translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8697136149718343437">نقل شريط العناوين إلى أسفل الشاشة</translation>
-<translation id="8703372953981978786">هذا الرابط لا يعمل</translation>
 <translation id="8706253136355675497">درجة الحرارة</translation>
 <translation id="8706806585855470492">سيكون بإمكانك مشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها</translation>
 <translation id="8709409604518538305">تم إغلاق علامات التبويب</translation>

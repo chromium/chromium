@@ -3,7 +3,6 @@
 <translationbundle lang="fil">
 <translation id="1005023885865154304">Buksan ang mga setting ng Pag-autofill ng Mga Password</translation>
 <translation id="1005230401424685968">YYYY</translation>
-<translation id="1010225406377140704">Makipag-ugnayan sa sender para humingi ng bagong link</translation>
 <translation id="1013952917065545813">Puwede kang bumalik dito para buksan ulit ang mga tab na isinara mo kamakailan</translation>
 <translation id="1016495303386450659">Na-update ang item</translation>
 <translation id="1019990162050689579">Aktibidad sa Gemini App</translation>
@@ -284,6 +283,7 @@
 <translation id="2067852168641682340">Palaging i-save sa account na ito</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 tab}one{{count} tab}other{{count} na tab}}</translation>
 <translation id="2074131957428911366">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
+<translation id="2074599390896964828">Eksaktong Lokasyon</translation>
 <translation id="2078437078822043850">Puwede kang mag-scroll pakanan para mag-browse sa Incognito.</translation>
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2085876078937250610">I-save…</translation>
@@ -312,6 +312,7 @@
 <translation id="219283042927675668">Mga tab sa grupo</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
 <translation id="2196428379625389579">Maghanap sa web</translation>
+<translation id="2198001751007276170">Palitan ang Mga Password</translation>
 <translation id="2199562093267256223">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Walang email account</translation>
 <translation id="2214453882118345682">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera.</translation>
@@ -1221,6 +1222,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5813223718099710537">Kapag ginamit mo ang feature na ito, ipapadala ang content ng page at mga URL sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="5817176759448082654">Password Checkup</translation>
 <translation id="5819208479324046259">Pinapamahalaan ng <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Nagsi-sync…</translation>
 <translation id="583923961930319521">Gamitin ang mga password sa lahat ng iyong device</translation>
 <translation id="5844284118433003733">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
@@ -1605,6 +1607,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7300448350764260141">Magdagdag pa ng proteksyon laban sa mga banta online.</translation>
 <translation id="7311244614769792472">Walang nakitang resulta</translation>
 <translation id="7313347584264171202">Makikita mo rito ang iyong mga tab na Incognito</translation>
+<translation id="7334364820047587268">Mayroon ka nang mga password para sa mga account na ito sa iyong Google Password Manager. Kung pipiliin mong i-import ang isa sa mga password sa ibaba, papalitan nito ang kasalukuyang password.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> (na) porsyento ang na-download na</translation>
 <translation id="7346909386216857016">Ok, nakuha ko</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
@@ -1821,6 +1824,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8101409298456377967">Gawin, i-save, at pamahalaan ang iyong mga password para madali kang makapag-sign in sa mga site at app. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">I-off</translation>
+<translation id="8106442513853561174">I-share ang eksaktong lokasyon</translation>
 <translation id="8114753159095730575">Available ang pag-download ng file. Available ang mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="8123502380991596210">I-hide ang Ano'ng Bago</translation>
 <translation id="8123953306357309250">Kanselahin ang pag-sync? Puwede mong i-on ang pag-sync anumang oras sa mga setting.</translation>
@@ -1974,7 +1978,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8694281486652655615">Ipapakita ang item na ito</translation>
 <translation id="8696297579102085705">Ipadala sa iyong device</translation>
 <translation id="8697136149718343437">Ilipat ang address bar sa ibaba</translation>
-<translation id="8703372953981978786">Hindi gumagana ang link na ito</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Magagawa mong mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab</translation>
 <translation id="8709409604518538305">Isinara ang mga tab</translation>

@@ -331,7 +331,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Кликните на Google менаџер лозинки</translation>
 <translation id="504867494566807945">Отварајте линкове у Chrome-у из било које апликације. Ради лакшег приступа закачите га на траку задатака.</translation>
-<translation id="5049567194145991071">Када кликнете на Разумем, можете да чувате и користите лозинке и друго на Google налогу сваки пут када сте пријављени у Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Унесите приступну фразу да бисте користили и сачували Chrome податке на налогу, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Пријавите се у Chrome када се пријавите у друге Google услуге</translation>
 <translation id="5126049312684316860">Chrome предучитава још више страница које ћете вероватно посетити, како би се брже учитавале када их посетите</translation>
@@ -555,7 +554,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7801699035218095297">Google Chrome покушава да копира лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="7808348361785373670">Уклони из Chrome-а...</translation>
 <translation id="7825851276765848807">Инсталација није успела услед неутврђене грешке. Преузмите Google Chrome поново.</translation>
-<translation id="7826342993930002256">Ваш Chrome, свуда</translation>
 <translation id="7827099906024714326">Chrome мора да верификује да сте то ви да би неки подаци могли да се чувају на Google налогу и користе на свим уређајима. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
 <translation id="7845233973568007926">Хвала вам на инсталацији. Морате да рестартујете рачунар пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Преузима се... Још <ph name="SECONDS" /> сек</translation>

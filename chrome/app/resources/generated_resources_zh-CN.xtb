@@ -993,7 +993,7 @@
 <translation id="1670399744444387456">基本</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 想查看您的安全密钥的品牌和型号</translation>
 <translation id="1674073353928166410">在无痕式窗口中打开全部（<ph name="URL_COUNT" /> 个）网址</translation>
-<translation id="1674142805528405174">Google 密码管理工具可以为账号生成安全系数高的密码，并将其保存在账号 <ph name="EMAIL" /> 中。</translation>
+<translation id="1674142805528405174">Google 密码管理工具可以为账号改用安全系数高的密码，并将其保存在账号 <ph name="EMAIL" /> 中。</translation>
 <translation id="1677306805708094828">无法添加<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1678849866171627536">扫描失败。此文件可能是病毒或恶意软件。</translation>
@@ -2384,7 +2384,7 @@
 <translation id="2642111877055905627">足球</translation>
 <translation id="2642206811783203764">始终允许在 <ph name="SITE_NAME" /> 上运行</translation>
 <translation id="2643064289437760082">您可随时通过删除浏览数据来删除广告衡量数据</translation>
-<translation id="2643379881528582459">如果 Chromium 发现您的某个密码遭遇公开数据泄露，当您登录时，Chromium 可能会提议为您更改密码</translation>
+<translation id="2643379881528582459">如果 Chromium 发现您的密码在公开数据泄露事件中外泄，可能会在您登录时建议更改密码</translation>
 <translation id="2643698698624765890">您可以通过点击“窗口”菜单中的“扩展程序”，管理您的扩展程序。</translation>
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在将此标签页投放到“<ph name="DEVICE_NAME" />”</translation>
@@ -2906,6 +2906,7 @@
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
 <translation id="3004385386820284928">自定义键盘按键</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
+<translation id="3007555010975143508">系统将使用以下应用录制屏幕：</translation>
 <translation id="3007771295016901659">复制标签</translation>
 <translation id="3008142279736625920">奶酪蛋糕</translation>
 <translation id="3008272652534848354">重置权限</translation>
@@ -4369,6 +4370,7 @@
 <translation id="4016762287427926315">您向“<ph name="APP_NAME" />”授予的权限也会授给此应用。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">为此链接创建二维码</translation>
 <translation id="4019983356493507433">修改书签列表</translation>
+<translation id="4020701737692625681">管理员可以录制您的屏幕</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">您可以防止光标因轻微的头部移动而跳动，但会出现短暂的延迟。</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5270,7 +5272,6 @@
 <translation id="4676616966096505747">部分数据尚未保存到您的账号</translation>
 <translation id="4677772697204437347">GPU内存</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
-<translation id="4678729681411398877">如果您的某个密码遭遇了数据泄露，Google 密码管理工具会询问您是否要将其更改为安全系数高的密码</translation>
 <translation id="4678848110205818817">信用卡/借记卡</translation>
 <translation id="4679018849559620189">这样有助于您在任意设备上访问已保存的通行密钥</translation>
 <translation id="4680105648806843642">此网页已设为静音</translation>
@@ -6048,6 +6049,7 @@
 <translation id="5235050375939235066">要卸载该应用吗？</translation>
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5235750401727657667">替换您在打开新标签页时看到的页面</translation>
+<translation id="5236054983756407518">要从 Chrome 中移除住址吗？</translation>
 <translation id="5237124927415201087">使用手机轻松设置 <ph name="DEVICE_TYPE" />。您无需手动输入密码便能添加 Wi-Fi 和 Google 账号。
     <ph name="BR" />
     <ph name="BR" />
@@ -6831,6 +6833,7 @@
 <translation id="581659025233126501">开启同步功能</translation>
 <translation id="5817918615728894473">配对</translation>
 <translation id="5817963443108180228">欢迎回来，<ph name="PROFILE_NAME" /></translation>
+<translation id="5818161931099046557">在 Google 账号中修改</translation>
 <translation id="581911254119283028">所有应用</translation>
 <translation id="5821565227679781414">创建快捷方式</translation>
 <translation id="5824976764713185207">在网页加载完毕后自动朗读网页内容</translation>
@@ -7029,6 +7032,7 @@
 <translation id="5955304353782037793">应用</translation>
 <translation id="5955721306465922729">有个网站想打开此应用。</translation>
 <translation id="5955809630138889698">此设备可能只能使用在线演示模式。要了解更多信息，请与您的支持代表联系。</translation>
+<translation id="59561895884837262">录制开始时，您会收到通知。</translation>
 <translation id="5957987129450536192">点按您的个人资料图片附近的“随选朗读”图标，然后选择您想听到的内容。</translation>
 <translation id="5958836583172610505">同步功能已开启</translation>
 <translation id="5959471481388474538">网络不可用</translation>
@@ -7173,6 +7177,7 @@
 <translation id="606449270532897041">管理网站数据</translation>
 <translation id="6064764629679333574">通过将低分辨率音频提升为高分辨率，改善蓝牙麦克风的音质。</translation>
 <translation id="6065289257230303064">证书主题背景目录属性</translation>
+<translation id="6065690209261668796">要从 Chrome 中移除工作地址吗？</translation>
 <translation id="6066794465984119824">图片哈希未设置</translation>
 <translation id="6069464830445383022">您将使用 Google 账号登录 Chromebook</translation>
 <translation id="6071181508177083058">确认密码</translation>
@@ -7845,7 +7850,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位用户</translation>
 <translation id="6555432686520421228">删除所有用户账号并重置您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设备，使其焕然一新。</translation>
 <translation id="6555604601707417276">已恢复 Linux 备份</translation>
-<translation id="6555744145993174510">来自：<ph name="APP_ORIGIN" /></translation>
+<translation id="6555744145993174510">来源：<ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主题背景和壁纸</translation>
 <translation id="6557199166823345360">添加更多详情或提出与您的选择相关的问题，以优化搜索结果</translation>
@@ -8001,7 +8006,6 @@
 <translation id="6667187897999649121">目前，您只能向家庭成员分享密码。不妨<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="666731172850799929">在 <ph name="APP_NAME" />中打开</translation>
 <translation id="6669195257625975787">在数据处理方面，与您正在查看的网站相同</translation>
-<translation id="6669637573228217624">上传文件</translation>
 <translation id="6670142487971298264">现在可以使用“<ph name="APP_NAME" />”了</translation>
 <translation id="6670767097276846646">某些扩展程序可以向 Chrome 添加搜索引擎</translation>
 <translation id="6670983860904543332">自动更新可为您提供最新功能。探索近期更新中的亮点。</translation>
@@ -8258,6 +8262,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除该标签页并删除该分组吗？}=1{要移除这些标签页并删除该分组吗？}other{要移除这些标签页并删除这些分组吗？}}</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">均衡（推荐）</translation>
+<translation id="6835624277262316125">保留工作地址有助于您在各项 Google 服务中畅享更便利的服务，例如在 Google 地图中获得更相关的搜索结果和更精确的路线。您可以在 <ph name="BEGIN_LINK" />Google 账号 <ph name="USERNAME" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838992358006915573">放大镜跟随 ChromeVox 焦点移动</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
@@ -8391,6 +8396,7 @@
 <translation id="6929126689972602640">学校账号不支持家长控制功能。如果您想添加学校账号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人账号登录。您可于需要时再在设置中添加学校账号。</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{有 1 个扩展程序已被拒}other{有 # 个扩展程序已被拒}}</translation>
+<translation id="6930337524857202955">有新的下载任务完成</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">点击力度</translation>
 <translation id="6933321725007230600">开启同步功能(&amp;S)…</translation>
@@ -9105,7 +9111,7 @@
 <translation id="7453008956351770337">选择此打印机即表示您允许以下扩展程序访问您的打印机：</translation>
 <translation id="7453032093368223821">管理其他数据</translation>
 <translation id="7454548535253569100">门户网站：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="7454744349230173024">贵组织已关闭密码保存功能</translation>
+<translation id="7454744349230173024">您的组织已关闭保存密码的功能</translation>
 <translation id="7455730275746867420">管理额外容器</translation>
 <translation id="7455988709578031708">根据您的浏览记录推测得出。此设置已开启。</translation>
 <translation id="7456142309650173560">开发者版本</translation>
@@ -9272,7 +9278,6 @@
 <translation id="7568759527730933493">使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。此操作需要使用 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 上的托管式服务提供商。由您的管理员配置的某些网域不会使用安全连接。</translation>
 <translation id="756876171895853918">自定义头像</translation>
 <translation id="7568790562536448087">更新</translation>
-<translation id="7569113730576914983">如果 Chrome 发现您的某个密码遭遇数据泄露，当您登录时，Chrome 可能会提议为您更改密码</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7570548610653957960">帮我读</translation>
 <translation id="7571643774869182231">存储空间不足，无法更新</translation>
@@ -9604,6 +9609,7 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7789895198197042595">保留住址有助于您在各项 Google 服务中畅享更便利的服务，例如在 Google 地图中获得更相关的搜索结果和更精确的路线。您可以在 <ph name="BEGIN_LINK" />Google 账号 <ph name="USERNAME" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="7791269138074599214">输入法</translation>
 <translation id="7791429245559955092">系统会将此应用安装到您当前使用的 Chrome 个人资料中</translation>
 <translation id="7791436592012979144">已启用反向滚动</translation>
@@ -9647,7 +9653,7 @@
 <translation id="7820400255539998692">请删除“<ph name="FILENAME" />”，以免使用此设备的他人看到您的密码</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
 <translation id="782057141565633384">复制视频地址(&amp;O)</translation>
-<translation id="7824665136384946951">贵组织已关闭安全浏览功能</translation>
+<translation id="7824665136384946951">您的组织已关闭“安全浏览”功能</translation>
 <translation id="7824864914877854148">发生错误，因此无法完成备份</translation>
 <translation id="7825289983414309119">高山</translation>
 <translation id="782590969421016895">使用当前网页</translation>
@@ -11364,7 +11370,7 @@
 <translation id="8993059306046735527">如果您忘记了 <ph name="DEVICE_TYPE" /> 密码，您仍然可以恢复本地数据。您需要登录自己的 Google 账号或使用账号恢复功能。</translation>
 <translation id="8993198843374358393">复制 <ph name="CERT_NAME" /> 的证书哈希值</translation>
 <translation id="8993737615451556423">提供用于加快语速、减慢语速和暂停朗读的控件</translation>
-<translation id="8993787625629280252">如果 Chrome 发现您的某个密码遭遇公开数据泄露，当您登录时，Chrome 可能会提议为您更改密码</translation>
+<translation id="8993787625629280252">如果 Chrome 发现您的密码在公开数据泄露事件中外泄，可能会在您登录时建议更改密码</translation>
 <translation id="899384117894244799">移除受限用户</translation>
 <translation id="8993853206419610596">展开所有请求</translation>
 <translation id="8993945059918628059">用手指轻触指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
