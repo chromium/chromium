@@ -98,27 +98,28 @@ const CGFloat kDamping = 0.85;
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
   __weak BWGFREWrapperViewController* weakSelf = self;
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        [weakSelf.sheetPresentationController invalidateDetents];
-      }
-      completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        if ([weakSelf isShowingConsentView]) {
+        [weakSelf updateContentHeightConstraint];
+        [weakSelf.view layoutIfNeeded];
+        if ([weakSelf isShowingConsentViewAfterPromo]) {
           CGFloat newWidth = weakSelf.contentScrollView.frame.size.width;
           weakSelf.contentScrollView.contentOffset = CGPointMake(newWidth, 0);
         }
-        [weakSelf updateContentHeightConstraint];
-      }];
+        [weakSelf.sheetPresentationController invalidateDetents];
+      }
+                      completion:nil];
 }
 
 #pragma mark - Private
 
-// Returns YES if the `_currentChildViewController` is the Consent View
-// Controller.
-- (BOOL)isShowingConsentView {
-  return _currentChildViewController == _consentViewController;
+// Returns YES if the consent view is currently displayed as the second step
+// after the promo.
+- (BOOL)isShowingConsentViewAfterPromo {
+  return _showPromo && (_currentChildViewController == _consentViewController);
 }
 
 // Updates the content height constraint.
