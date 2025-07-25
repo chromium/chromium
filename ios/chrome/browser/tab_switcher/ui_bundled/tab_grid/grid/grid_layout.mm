@@ -33,7 +33,7 @@ constexpr CGFloat kSearchHeaderEstimatedHeight = 50;
 constexpr CGFloat kSuggestedActionsEstimatedHeight = 100;
 constexpr CGFloat kLegacySuggestedActionsEstimatedHeight = 150;
 // Estimated size of the activity summary item.
-constexpr CGFloat kActivitySummaryCellEstimatedHeight = 58;
+constexpr CGFloat kActivitySummaryCellEstimatedHeight = 48;
 // Different width thresholds for determining the columns count.
 constexpr CGFloat kSmallWidthThreshold = 500;
 constexpr CGFloat kLargeWidthThreshold = 1000;

@@ -16,7 +16,7 @@ namespace {
 const CGFloat kCornerRadius = 16;
 const CGFloat kSymbolSize = 20;
 const CGFloat kHorizontalPadding = 16;
-const CGFloat kVerticalPadding = 16;
+const CGFloat kVerticalPadding = 8;
 const CGFloat kTextLabelWidthMultiplier = 0.7;
 const CGFloat kActivityButtonWidthMultiplier = 0.4;
 
