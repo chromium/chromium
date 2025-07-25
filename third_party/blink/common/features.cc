@@ -408,7 +408,7 @@ BASE_FEATURE_PARAM(std::string,
 // Enables camera preview in permission bubble and site settings.
 BASE_FEATURE(kCameraMicPreview,
              "CameraMicPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Temporarily disabled due to issues:
@@ -1147,7 +1147,7 @@ BASE_FEATURE(kGetDisplayMediaIgnoreAudioPermissionFailures,
 // Defers device selection until after permission is granted.
 BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
              "GetUserMediaDeferredDeviceSettingsSelection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE_PARAM(std::string,
