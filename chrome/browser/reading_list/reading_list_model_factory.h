@@ -5,15 +5,27 @@
 #ifndef CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
 #define CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
 
-#include "build/build_config.h"
+#include <memory>
+
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/reading_list/core/dual_reading_list_model.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "content/public/browser/browser_context.h"
+
+class ReadingListModel;
 
 namespace base {
 template <typename T>
 class NoDestructor;
+}
+
+namespace content {
+class BrowserContext;
+}
+
+namespace reading_list {
+class DualReadingListModel;
+}
+
+namespace user_prefs {
+class PrefRegistrySyncable;
 }
 
 // Singleton that owns all ReadingListModels and associates them with
