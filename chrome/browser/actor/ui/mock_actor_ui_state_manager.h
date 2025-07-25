@@ -39,7 +39,8 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
 #if BUILDFLAG(ENABLE_GLIC)
   MOCK_METHOD(void,
               OnGlicUpdateFloatyState,
-              (glic::GlicWindowController::State floaty_state),
+              (glic::GlicWindowController::State floaty_state,
+               BrowserWindowInterface* interface),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterFloatyTaskStateChange,

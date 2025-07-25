@@ -33,8 +33,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 // TODO(crbug.com/424495020): Post-task icon refactor, look into removing these
 // functions from AUSM.
 #if BUILDFLAG(ENABLE_GLIC)
-  void OnGlicUpdateFloatyState(
-      glic::GlicWindowController::State floaty_state) override;
+  void OnGlicUpdateFloatyState(glic::GlicWindowController::State floaty_state,
+                               BrowserWindowInterface* bwi) override;
 
   base::CallbackListSubscription RegisterFloatyTaskStateChange(
       FloatyTaskStateChangeCallback callback) override;
@@ -59,8 +59,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
   // Shows toast that notifies user the agent is working in the background.
   // Shows a maximum of kToastShownMax per profile.
-  // TODO(crbug.com/428014205): Define kToastShownMax.
-  void MaybeShowToast();
+  void MaybeShowToast(BrowserWindowInterface* bwi);
 
   base::OneShotTimer update_profile_scoped_ui_debounce_timer_;
   base::OneShotTimer completed_tasks_expiry_timer_;
