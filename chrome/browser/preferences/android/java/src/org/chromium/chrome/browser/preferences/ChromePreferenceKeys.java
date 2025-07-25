@@ -342,7 +342,7 @@ public final class ChromePreferenceKeys {
     /**
      * Stores the state of the ShowHomeButton policy.
      *
-     * @see org.chromium.chrome.browser.homepage.HomepagePolicyManager.HomepageButtonPolicyState
+     * @see org.chromium.components.browser_ui.settings.ManagedPreferencesUtils.BooleanPolicyState
      */
     public static final String SHOW_HOME_BUTTON_POLICY_STATE = "Chrome.Policy.ShowHomeButtonState";
 
