@@ -36,7 +36,6 @@ It is recommended to test with optimized builds of Chromium e.g. these GN args:
   is_component_build = false
   is_official_build = true # optimization similar to official builds
   use_remoteexec = true
-  enable_nacl = false
   proprietary_codecs = true
   ffmpeg_branding = "Chrome"
 
