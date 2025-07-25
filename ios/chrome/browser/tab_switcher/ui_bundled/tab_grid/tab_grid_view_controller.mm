@@ -2137,7 +2137,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   if (command.action == @selector(keyCommand_select3)) {
     newTitle =
-        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_GO_TO_REMOTE_TAB_GRID);
+        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_GO_TO_TAB_GROUPS_GRID);
   }
   // If a new title was determined, set it on the command.
   if (newTitle.length > 0) {

@@ -3254,13 +3254,13 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_GO_TO_REGULAR_TAB_GRID" desc="The title of the keyboard shortcut to go to the regular tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
         Regular tab grid
       </message>
-      <message name="IDS_IOS_KEYBOARD_GO_TO_REMOTE_TAB_GRID" desc="The title of the keyboard shortcut to go to the remote tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
-        Remote tab grid
-      </message>
-    <message name="IDS_IOS_KEYBOARD_GO_TO_TAB_GRID" desc="The title of the keyboard shortcut to open the Tab Switcher." meaning="Used as a command title in the iPad command menu.">
+      <message name="IDS_IOS_KEYBOARD_GO_TO_TAB_GRID" desc="The title of the keyboard shortcut to open the Tab Switcher." meaning="Used as a command title in the iPad command menu.">
         Go to tab switcher
       </message>
-      <message name="IDS_IOS_KEYBOARD_HISTORY" desc="Title of the menu listing history-related keyboard shortcuts." meaning="Used as a menu title in the iPad command menu.">
+      <message name="IDS_IOS_KEYBOARD_GO_TO_TAB_GROUPS_GRID" desc="The title of the keyboard shortcut to go to the tab groups grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
+        Tab groups grid
+      </message>
+    <message name="IDS_IOS_KEYBOARD_HISTORY" desc="Title of the menu listing history-related keyboard shortcuts." meaning="Used as a menu title in the iPad command menu.">
         History
       </message>
       <message name="IDS_IOS_KEYBOARD_HISTORY_BACK" desc="Title of the keyboard shortcut to go back in the history menu." meaning="Used as a command title in the iPad command menu.">
