@@ -385,6 +385,74 @@ TEST_F(ModelQualityLogsUploaderTest, SubmitFormFlowInterrupted) {
       FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
 }
 
+TEST_F(ModelQualityLogsUploaderTest, OpenFormOtpDetected) {
+  const base::Time fake_start_time = base::Time::Now();
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  // Set initial open form data for ACTION_SUCCESS status.
+  optimization_guide::proto::PasswordChangeResponse open_form_response;
+  open_form_response.mutable_open_form_data()->set_page_type(
+      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
+  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
+  logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
+                                   fake_start_time);
+  const optimization_guide::proto::LogAiDataRequest initial_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      initial_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+
+  logs_uploader.SetOtpDetected();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  CheckSubmitFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, SubmitFormOtpDetected) {
+  const base::Time fake_start_time = base::Time::Now();
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  // Set open form data.
+  optimization_guide::proto::PasswordChangeResponse open_form_response;
+  open_form_response.mutable_open_form_data()->set_page_type(
+      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
+  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
+  logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
+                                   fake_start_time);
+
+  // Set submit form data.
+  optimization_guide::proto::PasswordChangeResponse submit_form_response;
+  submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(
+      123);
+  logs_uploader.SetSubmitFormQuality(submit_form_response, CreateLoggingData(),
+                                     fake_start_time);
+
+  // This should override the most recent log, which is for SUBMIT_FORM.
+  logs_uploader.SetOtpDetected();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  CheckSubmitFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  CheckVerifySubmissionStatus(
+      logs_uploader.GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED,
+      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
+}
+
 TEST_F(ModelQualityLogsUploaderTest, SubmitFormTargetElementNotFound) {
   const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents());

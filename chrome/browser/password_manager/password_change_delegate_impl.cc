@@ -355,6 +355,10 @@ void PasswordChangeDelegateImpl::OnOtpFieldDetected(
     return;
   }
 
+  if (logs_uploader_) {
+    logs_uploader_->SetOtpDetected();
+  }
+
   form_finder_.reset();
   submission_verifier_.reset();
 

@@ -52,6 +52,10 @@ class ModelQualityLogsUploader {
   // (e.g., if the tab or dialog are closed).
   void SetFlowInterrupted();
 
+  // To be called if the flow is halted
+  // because an OTP was detected.
+  void SetOtpDetected();
+
   // To be called if element to click was not found
   // in Step=OPEN_FORM_STEP.
   void OpenFormTargetElementNotFound();

@@ -56,6 +56,7 @@ class PasswordChangeUIController {
 #if defined(UNIT_TEST)
   const views::Widget* dialog_widget() const { return dialog_widget_.get(); }
   PasswordChangeToast* toast_view() const { return toast_view_; }
+  void CallOnDialogCanceledForTesting() { OnDialogCanceled(); }
 #endif
 
  private:

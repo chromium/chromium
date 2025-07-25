@@ -96,19 +96,21 @@ ModelQualityLogsUploader::QualityStatus GetVerifySubmissionQualityStatus(
 }
 
 optimization_guide::proto::PasswordChangeQuality_StepQuality* GetNextStep(
-    optimization_guide::proto::PasswordChangeQuality& quality) {
-  if (quality.submit_form().status() !=
+    optimization_guide::proto::LogAiDataRequest& log) {
+  optimization_guide::proto::PasswordChangeQuality* quality =
+      log.mutable_password_change_submission()->mutable_quality();
+  if (quality->submit_form().status() !=
       ModelQualityLogsUploader::QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS) {
-    return quality.mutable_verify_submission();
+    return quality->mutable_verify_submission();
   }
 
-  if (quality.open_form().status() !=
+  if (quality->open_form().status() !=
       ModelQualityLogsUploader::QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS) {
-    return quality.mutable_submit_form();
+    return quality->mutable_submit_form();
   }
-  return quality.mutable_open_form();
+  return quality->mutable_open_form();
 }
 
 }  // namespace
@@ -197,14 +199,17 @@ void ModelQualityLogsUploader::SetOpenFormUnexpectedFailure() {
 }
 
 void ModelQualityLogsUploader::SetFlowInterrupted() {
-  const QualityStatus flow_interrupted_status = QualityStatus::
-      PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED;
+  GetNextStep(final_log_data_)
+      ->set_status(
+          QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
+}
 
-  optimization_guide::proto::PasswordChangeQuality* quality =
-      final_log_data_.mutable_password_change_submission()->mutable_quality();
-
-  // The interruption status is set to the next step in the flow.
-  GetNextStep(*quality)->set_status(flow_interrupted_status);
+void ModelQualityLogsUploader::SetOtpDetected() {
+  GetNextStep(final_log_data_)
+      ->set_status(
+          QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
 }
 
 void ModelQualityLogsUploader::OpenFormTargetElementNotFound() {
