@@ -158,7 +158,9 @@ there are any splits, which causes a duplicate classloader to be created when
 a renderer actually starts up; this results in a crash (as it tries to load the
 native library twice, which is forbidden). We work around this in the WebView
 code by
-[using reflection early in initialization](/android_webview/glue/java/src/com/android/webview/chromium/SplitApkWorkaround.java).
+[using reflection early in initialization](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/glue/java/src/com/android/webview/chromium/SplitApkWorkaround.java;l=24;drc=4d56a5dd051beb6486d789f50597e66d4267b2e6)
+(this class has since been deleted from the chromium repo because the code is no
+longer needed).
 
 ## Loading native code with RELRO sharing
 

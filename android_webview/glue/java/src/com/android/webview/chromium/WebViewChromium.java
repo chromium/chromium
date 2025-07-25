@@ -57,7 +57,6 @@ import android.webkit.WebViewRenderProcessClient;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
@@ -2249,7 +2248,6 @@ class WebViewChromium
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcess getWebViewRenderProcess() {
         try (TraceEvent event =
@@ -2260,7 +2258,6 @@ class WebViewChromium
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public void setWebViewRenderProcessClient(
             Executor executor, WebViewRenderProcessClient webViewRenderProcessClient) {
@@ -2280,7 +2277,6 @@ class WebViewChromium
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcessClient getWebViewRenderProcessClient() {
         SharedWebViewRendererClientAdapter adapter =
@@ -2566,7 +2562,6 @@ class WebViewChromium
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ZOOM_BY")) {
             recordWebViewApiCall(ApiCall.ZOOM_BY);
             mFactory.startYourEngines(true);
-            // This is an L API and therefore we can enforce stricter threading constraints.
             checkThread();
             mAwContents.zoomBy(factor);
             return true;
@@ -3398,7 +3393,6 @@ class WebViewChromium
     }
 
     // Overrides method added to WebViewProvider.ViewDelegate interface
-    // (not called in M and below)
     @Override
     public Handler getHandler(Handler originalHandler) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_HANDLER")) {
@@ -3408,7 +3402,6 @@ class WebViewChromium
     }
 
     // Overrides method added to WebViewProvider.ViewDelegate interface
-    // (not called in M and below)
     @Override
     public View findFocus(View originalFocusedView) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.FIND_FOCUS")) {

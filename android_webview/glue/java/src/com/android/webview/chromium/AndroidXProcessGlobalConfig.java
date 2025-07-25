@@ -23,12 +23,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * Class that contains the process global configuration information if it was set by the embedding
  * app using androidx.webkit.ProcessGlobalConfig.
  *
- * It is extracted once when WebView first loads and is used for global process configurations (
+ * <p>It is extracted once when WebView first loads and is used for global process configurations (
  * hence the name).
  */
 @Lifetime.Singleton
 public final class AndroidXProcessGlobalConfig {
-    private String mDataDirectorySuffix;
     private String mDataDirectoryBasePath;
     private String mCacheDirectoryBasePath;
     private Boolean mPartitionedCookiesEnabled;
@@ -39,22 +38,12 @@ public final class AndroidXProcessGlobalConfig {
             Object configValue = entry.getValue();
             switch (entry.getKey()) {
                 case ProcessGlobalConfigConstants.DATA_DIRECTORY_SUFFIX:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        throw new RuntimeException(
-                                "AndroidXProcessGlobalConfig map should not have value set for "
-                                        + "key: "
-                                        + entry.getKey()
-                                        + " in SDK version >= "
-                                        + Build.VERSION_CODES.P);
-                    }
-                    if (!(configValue instanceof String)) {
-                        throw new RuntimeException(
-                                "AndroidXProcessGlobalConfig map does not have "
-                                        + "right type of value for key: "
-                                        + entry.getKey());
-                    }
-                    mDataDirectorySuffix = (String) configValue;
-                    break;
+                    throw new RuntimeException(
+                            "AndroidXProcessGlobalConfig map should not have value set for "
+                                    + "key: "
+                                    + entry.getKey()
+                                    + " in SDK version >= "
+                                    + Build.VERSION_CODES.P);
                 case ProcessGlobalConfigConstants.DATA_DIRECTORY_BASE_PATH:
                     if (!(configValue instanceof String)) {
                         throw new RuntimeException(
@@ -127,10 +116,6 @@ public final class AndroidXProcessGlobalConfig {
     public static @NonNull AndroidXProcessGlobalConfig getConfig() {
         assert sGlobalConfig != null;
         return sGlobalConfig;
-    }
-
-    public @Nullable String getDataDirectorySuffixOrNull() {
-        return mDataDirectorySuffix;
     }
 
     public @Nullable String getDataDirectoryBasePathOrNull() {
