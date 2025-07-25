@@ -4823,6 +4823,8 @@ if (!is_android) {
 
         deps += [
           "//build/config/chromebox_for_meetings:buildflags",
+          "//chrome/browser/ash/scanning",
+          "//chrome/browser/ash/scanning:test_support",
           "//chrome/browser/chromeos/extensions/smart_card_provider_private:browser_tests",
           "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/chromeos/extensions/vpn_provider",
@@ -8878,6 +8880,8 @@ test("unit_tests") {
       "//chrome/browser/ash/release_notes",
       "//chrome/browser/ash/scalable_iph",
       "//chrome/browser/ash/scalable_iph:test_support",
+      "//chrome/browser/ash/scanning",
+      "//chrome/browser/ash/scanning:test_support",
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/settings:test_support",
       "//chrome/browser/ash/smb_client:test_support",

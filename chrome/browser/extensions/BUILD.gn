@@ -1654,7 +1654,10 @@ static_library("test_support") {
         "api/document_scan/document_scan_test_utils.h",
       ]
 
-      deps += [ "//components/user_manager:test_support" ]
+      deps += [
+        "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
+        "//components/user_manager:test_support",
+      ]
     }
   }
 }

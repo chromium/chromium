@@ -27,35 +27,6 @@ FakeDocumentScanAsh::OpenScannerState::OpenScannerState(
       connection_string(connection_string),
       cancelled(false) {}
 
-void FakeDocumentScanAsh::GetScannerNames(GetScannerNamesCallback callback) {
-  // Implementation removed because it isn't used by the extension API.
-  NOTIMPLEMENTED();
-}
-
-void FakeDocumentScanAsh::GetScannerList(
-    const std::string& client_id,
-    crosapi::mojom::ScannerEnumFilterPtr filter,
-    GetScannerListCallback callback) {
-  auto response = crosapi::mojom::GetScannerListResponse::New();
-  response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
-  for (const auto& scanner : scanners_) {
-    response->scanners.emplace_back(scanner.Clone());
-
-    // Since this scanner will be listed, also create an entry that allows
-    // callers to open it.
-    if (!base::Contains(open_responses_, scanner->id)) {
-      auto open_response = crosapi::mojom::OpenScannerResponse::New();
-      open_response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
-      open_response->scanner_id = scanner->id;
-      open_response->scanner_handle = scanner->id + "-handle-" + client_id;
-      open_response->options.emplace();
-      open_response->options.value()["option1"] =
-          CreateTestScannerOption("option1", 5);
-      SetOpenScannerResponse(scanner->id, std::move(open_response));
-    }
-  }
-  std::move(callback).Run(std::move(response));
-}
 
 void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
                                       const std::string& scanner_id,
@@ -365,10 +336,6 @@ void FakeDocumentScanAsh::SetReadScanDataResponses(
     crosapi::mojom::ScannerOperationResult final_result) {
   scan_data_ = scan_data;
   scan_data_result_ = final_result;
-}
-
-void FakeDocumentScanAsh::AddScanner(crosapi::mojom::ScannerInfoPtr scanner) {
-  scanners_.emplace_back(std::move(scanner));
 }
 
 void FakeDocumentScanAsh::SetOpenScannerResponse(

@@ -8,6 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/pref_names.h"
@@ -54,9 +56,13 @@ constexpr char kMopriaProtocolName[] = "Mopria";
 
 }  // namespace
 
-SimpleScanRunner::SimpleScanRunner(scoped_refptr<const Extension> extension,
+SimpleScanRunner::SimpleScanRunner(content::BrowserContext* browser_context,
+                                   scoped_refptr<const Extension> extension,
                                    crosapi::mojom::DocumentScan* document_scan)
-    : extension_(std::move(extension)), document_scan_(document_scan) {
+    : browser_context_(browser_context),
+      extension_(std::move(extension)),
+      document_scan_(document_scan) {
+  CHECK(browser_context_);
   CHECK(extension_);
 }
 
@@ -83,12 +89,16 @@ void SimpleScanRunner::Start(std::vector<std::string> mime_types,
     return;
   }
 
-  auto filter = crosapi::mojom::ScannerEnumFilter::New();
-  document_scan_->GetScannerList(
-      extension_id(), std::move(filter),
-      base::BindOnce(&SimpleScanRunner::OnSimpleScanListReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     should_use_virtual_usb_printer));
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->GetScannerInfoList(
+          extension_id(),
+          ash::LorgnetteScannerManager::LocalScannerFilter::
+              kIncludeNetworkScanners,
+          ash::LorgnetteScannerManager::SecureScannerFilter::
+              kIncludeUnsecureScanners,
+          base::BindOnce(&SimpleScanRunner::OnSimpleScanListReceived,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         should_use_virtual_usb_printer));
 }
 
 const ExtensionId& SimpleScanRunner::extension_id() const {
@@ -97,10 +107,16 @@ const ExtensionId& SimpleScanRunner::extension_id() const {
 
 void SimpleScanRunner::OnSimpleScanListReceived(
     bool force_virtual_usb_printer,
-    crosapi::mojom::GetScannerListResponsePtr response) {
-  if (response->scanners.empty()) {
+    const std::optional<lorgnette::ListScannersResponse>& response) {
+  if (!response.has_value() || response->scanners().empty()) {
     std::move(callback_).Run(std::nullopt, kNoScannersAvailableError);
     return;
+  }
+
+  std::vector<const lorgnette::ScannerInfo*> scanners;
+  scanners.reserve(response->scanners().size());
+  for (const auto& scanner : response->scanners()) {
+    scanners.push_back(&scanner);
   }
 
   // A scanner source needs to be chosen.  Since the choice is unspecified, sort
@@ -113,73 +129,43 @@ void SimpleScanRunner::OnSimpleScanListReceived(
   //   4.  Insecure network scanners come last.
   // Within each grouping, prefer Mopria eSCL to legacy protocols, since the
   // backend is known to work consistently.
-  std::stable_sort(
-      response->scanners.begin(), response->scanners.end(),
-      [](const crosapi::mojom::ScannerInfoPtr& a,
-         const crosapi::mojom::ScannerInfoPtr& b) {
-        // a < a returns false by std::sort requirement.
-        if (a->id == b->id) {
-          return false;
-        }
+  std::ranges::stable_sort(
+      scanners, std::less<>{}, [](const lorgnette::ScannerInfo* info) {
+        return std::tuple(
+            // Virtual USB printer always comes first.
+            info->display_name() != kVirtualUSBPrinter,
 
-        // Virtual USB printer always comes first.
-        if (a->display_name == kVirtualUSBPrinter) {
-          return true;
-        } else if (b->display_name == kVirtualUSBPrinter) {
-          return false;
-        }
+            // USB devices come first.
+            info->connection_type() !=
+                lorgnette::ConnectionType::CONNECTION_USB,
 
-        // USB devices come first.
-        if (a->connection_type != b->connection_type) {
-          if (a->connection_type ==
-              crosapi::mojom::ScannerInfo::ConnectionType::kUsb) {
-            return true;
-          } else if (b->connection_type ==
-                     crosapi::mojom::ScannerInfo::ConnectionType::kUsb) {
-            return false;
-          }
-        }
+            // Secure devices come before insecure.
+            !info->secure(),
 
-        // Secure devices come before insecure.
-        if (a->secure != b->secure) {
-          if (a->secure) {
-            return true;
-          } else if (b->secure) {
-            return false;
-          }
-        }
+            // Mopria/eSCL devices come before legacy devices.
+            info->protocol_type() != kMopriaProtocolName,
 
-        // Mopria/eSCL devices come before legacy devices.
-        if (a->protocol_type != b->protocol_type) {
-          if (a->protocol_type.has_value() &&
-              a->protocol_type.value() == kMopriaProtocolName) {
-            return true;
-          } else if (b->protocol_type.has_value() &&
-                     b->protocol_type.value() == kMopriaProtocolName) {
-            return false;
-          }
-        }
-
-        // Sort by display name if all else is equal.
-        return a->display_name < b->display_name;
+            // Sort by display name if all else is equal.
+            info->display_name());
       });
 
   if (force_virtual_usb_printer &&
-      response->scanners[0]->display_name != kVirtualUSBPrinter) {
+      scanners[0]->display_name() != kVirtualUSBPrinter) {
     std::move(callback_).Run(std::nullopt, kVirtualPrinterUnavailableError);
     return;
   }
 
   // Store the list of IDs in reverse so it can be processed more efficiently in
   // the callbacks.  The rest of the ScannerInfo fields aren't needed.
-  scanner_ids_.reserve(response->scanners.size());
-  for (ssize_t i = response->scanners.size() - 1; i >= 0; i--) {
+  scanner_ids_.reserve(scanners.size());
+  for (const lorgnette::ScannerInfo* info : scanners) {
     if (force_virtual_usb_printer &&
-        response->scanners[i]->display_name != kVirtualUSBPrinter) {
+        info->display_name() != kVirtualUSBPrinter) {
       continue;
     }
-    scanner_ids_.push_back(std::move(response->scanners[i]->id));
+    scanner_ids_.push_back(std::move(info->name()));
   }
+  std::ranges::reverse(scanner_ids_);
 
   OpenFirstScanner();
 }

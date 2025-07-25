@@ -30,10 +30,6 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace gfx {
-class Image;
-}  // namespace gfx
-
 namespace extensions {
 
 class Extension;
@@ -240,15 +236,10 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
       std::optional<api::document_scan::ScanResults> scan_results,
       std::optional<std::string> error);
 
-  void SendGetScannerListRequest(const api::document_scan::DeviceFilter& filter,
-                                 GetScannerListCallback callback);
-  void ShowScanDiscoveryDialog(const api::document_scan::DeviceFilter& filter,
-                               GetScannerListCallback callback,
-                               const gfx::Image& icon);
   void OnScannerListReceived(
       std::unique_ptr<ScannerDiscoveryRunner> discovery_runner,
       GetScannerListCallback callback,
-      crosapi::mojom::GetScannerListResponsePtr response);
+      api::document_scan::GetScannerListResponse response);
   void OnOpenScannerResponse(const ExtensionId& extension_id,
                              const std::string& scanner_id,
                              OpenScannerCallback callback,

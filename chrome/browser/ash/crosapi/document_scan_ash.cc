@@ -31,11 +31,6 @@ Profile* GetProfile() {
   return ProfileManager::GetPrimaryUserProfile();
 }
 
-void GetScannerNamesAdapter(DocumentScanAsh::GetScannerNamesCallback callback,
-                            std::vector<std::string> scanner_names) {
-  std::move(callback).Run(scanner_names);
-}
-
 // Supports the static_cast() in ProtobufResultToMojoResult() below.
 static_assert(lorgnette::SCAN_FAILURE_MODE_NO_FAILURE ==
               static_cast<int>(mojom::ScanFailureMode::kNoFailure));
@@ -51,19 +46,6 @@ static_assert(lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN ==
               static_cast<int>(mojom::ScanFailureMode::kFlatbedOpen));
 static_assert(lorgnette::SCAN_FAILURE_MODE_IO_ERROR ==
               static_cast<int>(mojom::ScanFailureMode::kIoError));
-
-void GetScannerListAdapter(
-    DocumentScanAsh::GetScannerListCallback callback,
-    const std::optional<lorgnette::ListScannersResponse>& response_in) {
-  if (!response_in) {
-    auto response_out = mojom::GetScannerListResponse::New();
-    response_out->result = mojom::ScannerOperationResult::kInternalError;
-    std::move(callback).Run(std::move(response_out));
-    return;
-  }
-  std::move(callback).Run(
-      mojom::GetScannerListResponse::From(response_in.value()));
-}
 
 void OpenScannerAdapter(
     const std::string& scanner_id,
@@ -189,28 +171,6 @@ DocumentScanAsh::~DocumentScanAsh() = default;
 void DocumentScanAsh::BindReceiver(
     mojo::PendingReceiver<mojom::DocumentScan> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
-}
-
-void DocumentScanAsh::GetScannerNames(GetScannerNamesCallback callback) {
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
-      ->GetScannerNames(
-          base::BindOnce(GetScannerNamesAdapter, std::move(callback)));
-}
-
-void DocumentScanAsh::GetScannerList(const std::string& client_id,
-                                     mojom::ScannerEnumFilterPtr filter,
-                                     GetScannerListCallback callback) {
-  using LocalScannerFilter = ash::LorgnetteScannerManager::LocalScannerFilter;
-  using SecureScannerFilter = ash::LorgnetteScannerManager::SecureScannerFilter;
-
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
-      ->GetScannerInfoList(
-          client_id,
-          filter->local ? LocalScannerFilter::kLocalScannersOnly
-                        : LocalScannerFilter::kIncludeNetworkScanners,
-          filter->secure ? SecureScannerFilter::kSecureScannersOnly
-                         : SecureScannerFilter::kIncludeUnsecureScanners,
-          base::BindOnce(&GetScannerListAdapter, std::move(callback)));
 }
 
 void DocumentScanAsh::OpenScanner(const std::string& client_id,

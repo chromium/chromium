@@ -9,11 +9,12 @@
 #include <vector>
 
 #include "chrome/common/extensions/api/document_scan.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 
 namespace extensions {
 
-crosapi::mojom::ScannerInfoPtr CreateTestScannerInfo();
+lorgnette::ScannerInfo CreateTestScannerInfo();
 crosapi::mojom::ScannerOptionPtr CreateTestScannerOption(
     const std::string& name,
     int32_t val);

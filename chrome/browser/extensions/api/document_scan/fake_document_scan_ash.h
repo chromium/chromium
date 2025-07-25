@@ -24,10 +24,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   ~FakeDocumentScanAsh() override;
 
   // crosapi::mojom::DocumentScan overrides:
-  void GetScannerNames(GetScannerNamesCallback callback) override;
-  void GetScannerList(const std::string& client_id,
-                      crosapi::mojom::ScannerEnumFilterPtr filter,
-                      GetScannerListCallback callback) override;
   void OpenScanner(const std::string& client_id,
                    const std::string& scanner_id,
                    OpenScannerCallback callback) override;
@@ -46,7 +42,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   void CancelScan(const std::string& job_handle,
                   CancelScanCallback callback) override;
 
-  void AddScanner(crosapi::mojom::ScannerInfoPtr scanner);
   void SetOpenScannerResponse(const std::string& connection_string,
                               crosapi::mojom::OpenScannerResponsePtr response);
   void SetSmallestMaxReadSize(size_t max_size);
@@ -74,7 +69,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   std::optional<std::vector<std::string>> scan_data_;
   crosapi::mojom::ScannerOperationResult scan_data_result_ =
       crosapi::mojom::ScannerOperationResult::kUnknown;
-  std::vector<crosapi::mojom::ScannerInfoPtr> scanners_;
   size_t smallest_max_read_ = 0;
 
   // Map from connection strings to the OpenScannerResponsePtr that should be

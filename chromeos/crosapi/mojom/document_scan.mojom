@@ -469,16 +469,9 @@ struct CancelScanResponse {
 // Next method id: 10
 [Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
 interface DocumentScan {
-  // Returns the names of all available, de-duplicated scanners.
-  GetScannerNames@0() => (array<string> scanner_names);
-
   // Deprecated@1 (crbug.com/317056194)
-
-  // Returns a list of `ScannerInfo` structs from all available scanners that
-  // match the criteria provided in `filter`.
-  [MinVersion=1]
-  GetScannerList@2(string client_id, ScannerEnumFilter? filter)
-      => (GetScannerListResponse response);
+  // GetScannerNames@0 was removed.
+  // GetScannerList@2 was removed.
 
   // Open an exclusive handle to a scanner returned from `GetScannerList()`.
   [MinVersion=2]
