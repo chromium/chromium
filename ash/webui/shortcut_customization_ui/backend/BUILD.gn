@@ -29,7 +29,7 @@ static_library("backend") {
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//ash/webui/shortcut_customization_ui/mojom",
     "//base",
-    "//chromeos/ash/components/local_search_service:local_search_service",
+    "//chromeos/ash/components/local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/strings",

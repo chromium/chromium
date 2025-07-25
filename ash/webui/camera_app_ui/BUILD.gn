@@ -41,7 +41,7 @@ static_library("camera_app_ui") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/web_applications",
-    "//chromeos/ash/components/dbus/session_manager:session_manager",
+    "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/utils",
     "//components/media_device_salt",

@@ -22,7 +22,7 @@ source_set("companion_app") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository",
     "//base",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//url",
   ]
 }

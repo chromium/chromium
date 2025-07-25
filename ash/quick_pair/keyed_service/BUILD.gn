@@ -35,7 +35,7 @@ static_library("keyed_service") {
     "//chromeos/ash/services/bluetooth_config/public/cpp",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/quick_pair",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/user_manager",
@@ -83,7 +83,7 @@ source_set("unit_tests") {
   deps = [
     ":keyed_service",
     "//ash:test_support",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/companion_app",

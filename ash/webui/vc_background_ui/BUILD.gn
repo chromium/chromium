@@ -12,7 +12,7 @@ static_library("vc_background_ui") {
   ]
 
   deps = [
-    "resources:resources",
+    "resources",
     "//ash/constants",
     "//ash/webui/common:sea_pen",
     "//ash/webui/common:trusted_types_util",

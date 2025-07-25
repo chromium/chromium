@@ -58,7 +58,7 @@ source_set("test_support") {
 
   public_deps = [
     ":projector_app",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/public/cpp:test_support",
     "//ash/webui/annotator",
     "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",

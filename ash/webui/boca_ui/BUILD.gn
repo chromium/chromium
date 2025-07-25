@@ -33,9 +33,9 @@ static_library("boca_ui") {
 
   deps = [
     ":constants",
-    "resources:resources",
+    "resources",
     "//ash",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/boca_ui/mojom",
     "//ash/webui/common:chrome_os_webui_config",
@@ -59,7 +59,7 @@ static_library("boca_ui") {
     "//components/app_restore",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
-    "//components/permissions:permissions",
+    "//components/permissions",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/user_manager",

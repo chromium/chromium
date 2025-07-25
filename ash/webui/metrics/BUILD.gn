@@ -13,8 +13,8 @@ source_set("structured_metrics_service_wrapper") {
   deps = [
     "//base",
     "//chromeos/crosapi/mojom",
+    "//components/metrics/structured",
     "//components/metrics/structured:events",
-    "//components/metrics/structured:structured",
   ]
 }
 

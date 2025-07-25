@@ -31,7 +31,7 @@ static_library("shortcut_input_key_strings") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
-    "//ui/events/ash:ash",
+    "//ui/events/ash",
   ]
 }
 
