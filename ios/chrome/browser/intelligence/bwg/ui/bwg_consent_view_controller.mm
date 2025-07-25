@@ -490,7 +490,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   [primaryButton addTarget:self
                     action:@selector(didTapPrimaryButton:)
           forControlEvents:UIControlEventTouchUpInside];
-  primaryButton.accessibilityLabel = @"Consent Primary Action";
+  primaryButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
   return primaryButton;
 }
 
@@ -502,7 +503,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   [secondaryButton addTarget:self
                       action:@selector(didTapSecondaryButton:)
             forControlEvents:UIControlEventTouchUpInside];
-  // TODO(crbug.com/420643840): Add a11y labels.
+  secondaryButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
   return secondaryButton;
 }
 
