@@ -86,5 +86,13 @@ TEST(VarIntCoding, SingleByteCases) {
   }
 }
 
+TEST(VarIntCoding, EmbeddedZeroByte) {
+  auto arr = std::array<char, 3>{'\x81', '\x00', '\x07'};
+  std::string_view input(arr.data(), arr.size());
+  EXPECT_EQ(input.size(), 3U);
+  int64_t ignored;
+  EXPECT_FALSE(DecodeVarInt(&input, &ignored));
+}
+
 }  // namespace
 }  // namespace content::indexed_db

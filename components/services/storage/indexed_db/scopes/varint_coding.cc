@@ -40,6 +40,15 @@ bool DecodeVarInt(std::string_view* from, int64_t* into) {
       return false;
 
     unsigned char c = *it;
+
+    if ((shift != 0) && (c == 0)) {
+      // On the first iteration, the entire byte can be 0, which represents the
+      // value 0. On every other iteration (input byte), this is not a valid
+      // input, as EncodeVarInt() would have marked the top bit of the previous
+      // byte as 0, and iteration would have stopped.
+      return false;
+    }
+
     ret |= static_cast<uint64_t>(c & 0x7f) << shift;
     shift += 7;
   } while (*it++ & 0x80);
