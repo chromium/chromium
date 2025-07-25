@@ -61,7 +61,6 @@ child_pool-1.profraw
 child_pool-2.profraw
 child_pool-3.profraw
 default.profraw
-GEMINI.md
 GPATH
 GRTAGS
 GSYMS
@@ -224,6 +223,7 @@ vs-chromium-project.txt
 /data
 /delegate_execute
 /device/serial/device_serial_mojo.xml
+/GEMINI.md
 /google_apis/gcm/gcm.xml
 /googleurl
 /gpu/gles2_conform_test
