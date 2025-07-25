@@ -10634,9 +10634,9 @@ WebContentsImpl::GetFaviconURLs() {
   return GetPrimaryMainFrame()->FaviconURLs();
 }
 
-// The Mac implementation  of the next two methods is in
-// web_contents_impl_mac.mm
-#if !BUILDFLAG(IS_MAC)
+// The Mac and iOS implementations of the next two methods are in
+// web_contents_impl_mac.mm and web_contents_impl_ios.mm.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
 
 void WebContentsImpl::Resize(const gfx::Rect& new_bounds) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Resize");
@@ -10658,13 +10658,10 @@ gfx::Size WebContentsImpl::GetSize() {
 #elif BUILDFLAG(IS_ANDROID)
   ui::ViewAndroid* view_android = GetNativeView();
   return view_android->GetSizeDIPs();
-#elif BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/40254930): Implement me.
-  NOTREACHED();
 #endif
 }
 
-#endif  // !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
 
 gfx::Rect WebContentsImpl::GetWindowsControlsOverlayRect() const {
   return window_controls_overlay_rect_;
