@@ -74,6 +74,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
@@ -99,6 +100,7 @@ class ManualFillingMediator
     private static final int MINIMAL_AVAILABLE_HORIZONTAL_SPACE = 180; // in DP.
     private static final int MIN_WINDOW_HEIGHT_FOR_UNDOCKED_BAR_DP = 480;
     private static final int MIN_WINDOW_WIDTH_FOR_UNDOCKED_BAR_DP = 600;
+    private static final int EXPANDED_WINDOW_WIDTH_FOR_UNDOCKED_BAR_DP = 840;
 
     private final SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
     private final PropertyModel mModel = ManualFillingProperties.createFillingModel();
@@ -586,13 +588,21 @@ class ManualFillingMediator
                 && !mModel.get(IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS);
     }
 
-    // TODO(crbug.com/430304112): update the conditions once we have confirmed mocks.
     private boolean isLargeFormFactor() {
-        int windowHeightDp = mActivity.getResources().getConfiguration().screenWidthDp;
-        int windowWidthDp = mActivity.getResources().getConfiguration().screenHeightDp;
+        int windowWidthDp = mActivity.getResources().getConfiguration().screenWidthDp;
+        int windowHeightDp = mActivity.getResources().getConfiguration().screenHeightDp;
+        boolean isPhysicalKeyboardConnected =
+                DeviceInput.supportsAlphabeticKeyboard()
+                        && !isSoftKeyboardShowing(getContentView());
 
-        return windowHeightDp > MIN_WINDOW_HEIGHT_FOR_UNDOCKED_BAR_DP
-                && windowWidthDp > MIN_WINDOW_WIDTH_FOR_UNDOCKED_BAR_DP;
+        if (windowWidthDp > EXPANDED_WINDOW_WIDTH_FOR_UNDOCKED_BAR_DP) {
+            return windowHeightDp > MIN_WINDOW_HEIGHT_FOR_UNDOCKED_BAR_DP
+                    || isPhysicalKeyboardConnected;
+        }
+
+        return windowWidthDp > MIN_WINDOW_WIDTH_FOR_UNDOCKED_BAR_DP
+                && windowHeightDp > MIN_WINDOW_HEIGHT_FOR_UNDOCKED_BAR_DP
+                && isPhysicalKeyboardConnected;
     }
 
     private void enforceStateProperties(@KeyboardExtensionState int extensionState) {
