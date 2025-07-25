@@ -9,6 +9,8 @@ import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -25,6 +27,7 @@ suite('NewTabPageComposeboxTest', () => {
   let composeboxElement: ComposeboxElement;
   let handler: TestMock<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
+  let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -34,6 +37,7 @@ suite('NewTabPageComposeboxTest', () => {
             new ComposeboxProxyImpl(mock, new PageCallbackRouter())));
     callbackRouterRemote = ComposeboxProxyImpl.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    metrics = fakeMetricsPrivate();
   });
 
   function createComposeboxElement() {
@@ -209,6 +213,11 @@ suite('NewTabPageComposeboxTest', () => {
               // Cleanup event listener.
               document.body.removeEventListener(
                   'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
+              assertEquals(
+                  1,
+                  metrics.count(
+                      'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
+                      0));
             });
       });
 
@@ -228,6 +237,10 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(handler.getCallCount('addFile'), 0);
     const files = composeboxElement.$.carousel.files;
     assertEquals(files.length, 0);
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure', 2));
   });
 
   test('upload large file fails', async () => {
@@ -251,6 +264,10 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(handler.getCallCount('addFile'), 0);
     const files = composeboxElement.$.carousel.files;
     assertEquals(files.length, 0);
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure', 3));
   });
 
   [[
