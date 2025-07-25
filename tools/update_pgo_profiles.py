@@ -60,7 +60,7 @@ def _remove_unused_profiles(current_profile_name):
       continue
 
     p = os.path.join(_PGO_PROFILE_DIR, f)
-    age = time.time() - os.path.getmtime(p)
+    age = time.time() - os.path.getatime(p)
     if age > expiration_duration:
       print('Removing profile %s as it hasn\'t been used in the past %d days' %
             (p, days))
@@ -122,9 +122,11 @@ def _get_profile_path(args):
         'your GN arguments.'%
         profile_path)
 
-  os.utime(profile_path, None)
-  profile_path.rstrip(os.sep)
-  print(gn_helpers.ToGNString(profile_path))
+  # Reset the access time to delay this profile from being cleaned up, but
+  # avoid changing the modified time as that is used by siso.
+  stat_result = os.stat(profile_path)
+  os.utime(profile_path, ns=(time.time_ns(), stat_result.st_mtime_ns))
+  print(gn_helpers.ToGNString(profile_path.rstrip(os.sep)))
 
 
 def main():
