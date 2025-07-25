@@ -29,6 +29,7 @@
 #include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
@@ -173,11 +174,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         &pref_service_, ModelBasedCapabilityKey::kCompose);
   }
 
-  void TearDown() override {
-    access_controller_ = nullptr;
-    test_controller_ = nullptr;
-  }
-
   struct InitializeParams {
     raw_ptr<FakeBaseModelAsset> base_model;
     raw_ptr<FakeSafetyModelAsset> safety;
@@ -186,22 +182,25 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   };
 
   void Initialize(const InitializeParams& params) {
+    CHECK(!model_broker_state_);
+    model_broker_state_.emplace(&pref_service_,
+                                component_state_.CreateDelegate(),
+                                fake_launcher_.LaunchFn());
+    model_broker_state_->Init();
+    task_environment_.FastForwardBy(base::Seconds(1));
     if (params.base_model) {
-      on_device_component_state_manager_.get()->OnStartup();
-      task_environment_.FastForwardBy(base::Seconds(1));
-      on_device_component_state_manager_.SetReady(*params.base_model);
+      params.base_model->SetReadyIn(
+          model_broker_state_->component_state_manager());
     }
-    RecreateServiceController();
     if (params.safety) {
-      test_controller_->MaybeUpdateSafetyModel(params.safety->model_info());
+      controller().MaybeUpdateSafetyModel(params.safety->model_info());
     }
     if (params.language) {
-      test_controller_->SetLanguageDetectionModel(
-          params.language->model_info());
+      controller().SetLanguageDetectionModel(params.language->model_info());
     }
     for (auto* adaptation : params.adaptations) {
-      test_controller_->MaybeUpdateModelAdaptation(adaptation->feature(),
-                                                   adaptation->metadata());
+      controller().MaybeUpdateModelAdaptation(adaptation->feature(),
+                                              adaptation->metadata());
     }
     // Wait until the OnDeviceModelExecutionConfig has been read.
     task_environment_.RunUntilIdle();
@@ -216,28 +215,16 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     });
   }
 
-  void RecreateServiceController() {
-    access_controller_ = nullptr;
-    test_controller_ = nullptr;
-
-    // Turn down the service, to simulate restart.
+  void SimulateShutdown() {
+    model_broker_state_.reset();
     fake_launcher_.CrashService();
-
-    auto access_controller =
-        std::make_unique<OnDeviceModelAccessController>(pref_service_);
-    access_controller_ = access_controller.get();
-    test_controller_ = std::make_unique<OnDeviceModelServiceController>(
-        std::move(access_controller),
-        on_device_component_state_manager_.get()->GetWeakPtr(),
-        fake_launcher_.LaunchFn());
-
-    test_controller_->Init();
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       const std::optional<SessionConfigParams>& params = std::nullopt) {
-    return test_controller_->CreateSession(kFeature, FailOnRemoteFallback(),
-                                           logger_.GetWeakPtr(), params);
+    return controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                      logger_.GetWeakPtr(), params);
   }
 
   void ExpectFailedSession(OnDeviceModelEligibilityReason reason) {
@@ -258,6 +245,13 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     return *response.value();
   }
 
+  OnDeviceModelServiceController& controller() {
+    return model_broker_state_->service_controller();
+  }
+  OnDeviceModelComponentStateManager& component_state_manager() {
+    return model_broker_state_->component_state_manager();
+  }
+
  protected:
   StandardAssets standard_assets_;
   base::test::TaskEnvironment task_environment_{
@@ -265,11 +259,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
   on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
-  TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
-      &pref_service_};
-  std::unique_ptr<OnDeviceModelServiceController> test_controller_;
-  // Owned by OnDeviceModelServiceController.
-  raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
+  TestComponentState component_state_;
+  std::optional<ModelBrokerState> model_broker_state_;
   ResponseHolder response_;
   base::test::ScopedFeatureList feature_list_;
   OptimizationGuideLogger logger_;
@@ -517,11 +508,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
   });
 
   auto session_compose =
-      test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
-                                      base::DoNothing(), logger_.GetWeakPtr(),
-                                      /*config_params=*/std::nullopt);
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 base::DoNothing(), logger_.GetWeakPtr(),
+                                 /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_compose);
-  auto session_test = test_controller_->CreateSession(
+  auto session_test = controller().CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_test);
@@ -576,11 +567,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   });
 
   auto session_compose =
-      test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
-                                      base::DoNothing(), logger_.GetWeakPtr(),
-                                      /*config_params=*/std::nullopt);
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 base::DoNothing(), logger_.GetWeakPtr(),
+                                 /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_compose);
-  auto session_test = test_controller_->CreateSession(
+  auto session_test = controller().CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_test);
@@ -622,9 +613,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   base::HistogramTester histogram_tester;
   auto session =
-      test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
-                                      base::DoNothing(), logger_.GetWeakPtr(),
-                                      /*config_params=*/std::nullopt);
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 base::DoNothing(), logger_.GetWeakPtr(),
+                                 /*config_params=*/std::nullopt);
   EXPECT_FALSE(session);
 
   histogram_tester.ExpectUniqueSample(
@@ -634,8 +625,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 // Without a base model available, sessions should fail to be created.
 TEST_F(OnDeviceModelServiceControllerTest, BaseModelToBeInstalled) {
-  on_device_component_state_manager_.get()->OnStartup();
-  task_environment_.FastForwardBy(base::Seconds(1));
   Initialize(InitializeParams{
       .base_model = nullptr,
       .safety = &standard_assets_.safety,
@@ -653,8 +642,6 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelToBeInstalled) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
-  on_device_component_state_manager_.get()->OnStartup();
-  task_environment_.FastForwardBy(base::Seconds(1));
   Initialize(InitializeParams{
       .base_model = nullptr,
       .safety = &standard_assets_.safety,
@@ -665,8 +652,7 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
   // Model not yet available.
   auto session = CreateSession();
   EXPECT_FALSE(session);
-
-  on_device_component_state_manager_.SetReady(standard_assets_.base_model);
+  standard_assets_.base_model.SetReadyIn(component_state_manager());
   task_environment_.RunUntilIdle();
 
   // Model now available.
@@ -679,7 +665,7 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
 TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   Initialize(standard_assets_);
 
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, CreateNoOpExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
 
@@ -687,7 +673,7 @@ TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   FakeBaseModelAsset next_model({
       .weight = 2,
   });
-  on_device_component_state_manager_.SetReady(next_model);
+  next_model.SetReadyIn(component_state_manager());
   task_environment_.RunUntilIdle();
 
   // Existing session will fail / fallback to remote.
@@ -708,7 +694,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   FakeBaseModelAsset next_model({
       .weight = 2,
   });
-  on_device_component_state_manager_.SetReady(next_model);
+  next_model.SetReadyIn(component_state_manager());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0ull, fake_launcher_.on_device_model_receiver_count());
 
@@ -730,7 +716,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
   Initialize(standard_assets_);
   base::HistogramTester histogram_tester;
 
-  EXPECT_FALSE(test_controller_->CreateSession(
+  EXPECT_FALSE(controller().CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt));
 
@@ -754,7 +740,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
             .SetVersion(10)
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .Build();
-    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    controller().MaybeUpdateSafetyModel(*model_info);
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -774,7 +760,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(any)
             .Build();
-    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    controller().MaybeUpdateSafetyModel(*model_info);
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -793,7 +779,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    controller().MaybeUpdateSafetyModel(*model_info);
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -814,7 +800,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    controller().MaybeUpdateSafetyModel(*model_info);
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -835,7 +821,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
             .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
-    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    controller().MaybeUpdateSafetyModel(*model_info);
 
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecution."
@@ -866,16 +852,16 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   });
 
   // Compose capability can't start because it's missing safety model.
-  EXPECT_FALSE(test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, FailOnRemoteFallback(),
-      logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt));
+  EXPECT_FALSE(controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                          FailOnRemoteFallback(),
+                                          logger_.GetWeakPtr(),
+                                          /*config_params=*/std::nullopt));
 
   // Test capability starts because it doesn't require a safety model.
-  auto test_session = test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kTest, FailOnRemoteFallback(),
-      logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto test_session =
+      controller().CreateSession(ModelBasedCapabilityKey::kTest,
+                                 FailOnRemoteFallback(), logger_.GetWeakPtr(),
+                                 /*config_params=*/std::nullopt);
   EXPECT_TRUE(test_session);
 
   // Executing with test_session should force model to be loaded.
@@ -892,11 +878,11 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     return safety_config;
   }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  auto compose_session = test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, FailOnRemoteFallback(),
-      logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+  auto compose_session =
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 FailOnRemoteFallback(), logger_.GetWeakPtr(),
+                                 /*config_params=*/std::nullopt);
   ASSERT_TRUE(compose_session);
 
   ResponseHolder compose_response;
@@ -943,7 +929,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         }()}),
         .model_info_version = 10,
     });
-    test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
     EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -964,7 +950,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         .metadata = SafetyMetadata({ComposeSafetyConfig()}),
         .model_info_version = 20,
     });
-    test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
     EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -982,7 +968,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   {
     base::HistogramTester histogram_tester;
 
-    test_controller_->MaybeUpdateSafetyModel(std::nullopt);
+    controller().MaybeUpdateSafetyModel(std::nullopt);
     EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -1001,7 +987,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     base::HistogramTester histogram_tester;
 
     std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder().Build();
-    test_controller_->MaybeUpdateSafetyModel(*model_info);
+    controller().MaybeUpdateSafetyModel(*model_info);
     EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -1028,7 +1014,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         }()}),
         .model_info_version = 30,
     });
-    test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
 
     EXPECT_FALSE(CreateSession());
 
@@ -1055,8 +1041,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         }()}),
         .model_info_version = 40,
     });
-    test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-    test_controller_->SetLanguageDetectionModel(
+    controller().MaybeUpdateSafetyModel(safety_asset.model_info());
+    controller().SetLanguageDetectionModel(
         standard_assets_.language.model_info());
 
     EXPECT_TRUE(CreateSession());
@@ -1077,7 +1063,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     feature_list.InitAndDisableFeature(features::kTextSafetyClassifier);
     base::HistogramTester histogram_tester;
 
-    test_controller_->MaybeUpdateSafetyModel(std::nullopt);
+    controller().MaybeUpdateSafetyModel(std::nullopt);
     EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -1116,9 +1102,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1166,9 +1152,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1221,7 +1207,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   });
 
   ExpectedRemoteFallback fallback;
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -1277,9 +1263,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"unsafe_output"});
@@ -1331,7 +1317,7 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
   });
 
   ExpectedRemoteFallback fallback;
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -1389,9 +1375,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1438,9 +1424,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1491,7 +1477,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   });
 
   ExpectedRemoteFallback fallback;
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -1620,9 +1606,9 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
   Initialize(standard_assets_);
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   ResponseHolder resp1;
@@ -1798,24 +1784,19 @@ TEST_F(OnDeviceModelServiceControllerTest,
     task_environment_.RunUntilIdle();
   }
   EXPECT_FALSE(CreateSession());
-  EXPECT_EQ(test_controller_->CanCreateSession(kFeature),
+  EXPECT_EQ(controller().CanCreateSession(kFeature),
             OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
 
   // Change the pref to a different value and recreate the service.
-  access_controller_ = nullptr;
-  test_controller_.reset();
+  SimulateShutdown();
   pref_service_.SetString(
       model_execution::prefs::localstate::kOnDeviceModelChromeVersion,
       "BOGUS VERSION");
-  RecreateServiceController();
-  test_controller_->MaybeUpdateModelAdaptation(
-      standard_assets_.compose.feature(), standard_assets_.compose.metadata());
-  test_controller_->MaybeUpdateSafetyModel(
-      standard_assets_.safety.model_info());
+  Initialize(standard_assets_);
   // Wait until configuration is read.
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(test_controller_->CanCreateSession(kFeature),
+  EXPECT_EQ(controller().CanCreateSession(kFeature),
             OnDeviceModelEligibilityReason::kSuccess);
 
   // A new session should be started because the version changed.
@@ -1849,7 +1830,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   Initialize(standard_assets_);
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, CreateNoOpExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -1899,7 +1880,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   fake_settings_.service_disconnect_reason =
       on_device_model::ServiceDisconnectReason::kGpuBlocked;
   ExpectedRemoteFallback fallback;
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -1932,11 +1913,11 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   config.set_can_skip_text_safety(true);
   config.set_feature(ToModelExecutionFeatureProto(kFeature));
   FakeAdaptationAsset bad_compose_asset({.config = config});
-  test_controller_->MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
-                                               bad_compose_asset.metadata());
+  controller().MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
+                                          bad_compose_asset.metadata());
 
   ExpectedRemoteFallback fallback;
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -1970,11 +1951,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   config.set_can_skip_text_safety(true);
   config.set_feature(ToModelExecutionFeatureProto(kFeature));
   FakeAdaptationAsset bad_compose_asset({.config = config});
-  test_controller_->MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
-                                               bad_compose_asset.metadata());
+  controller().MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
+                                          bad_compose_asset.metadata());
 
   ExpectedRemoteFallback fallback;
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -1991,7 +1972,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
        FallbackToServerOnDisconnectWhileWaitingForExecute) {
   Initialize(standard_assets_);
   ExpectedRemoteFallback fallback;
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -2059,7 +2040,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize(standard_assets_);
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
-  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  controller().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
   run_loop.Run();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
@@ -2078,8 +2059,8 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
       .base_model = &standard_assets_.base_model,
       .adaptations = {&compose_asset},
   });
-  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
-                                               compose_asset.metadata());
+  controller().MaybeUpdateModelAdaptation(compose_asset.feature(),
+                                          compose_asset.metadata());
 
   // `foo` doesn't match the redaction, so should be returned.
   auto session1 = CreateSession();
@@ -2116,7 +2097,6 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
-  Initialize(standard_assets_);
   auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
   *config.mutable_output_config()->mutable_redact_rules() =
@@ -2404,24 +2384,6 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       false, 1);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest,
-       InitWithNoOnDeviceComponentStateManager) {
-  access_controller_ = nullptr;
-  test_controller_ = nullptr;
-
-  auto access_controller =
-      std::make_unique<OnDeviceModelAccessController>(pref_service_);
-  access_controller_ = access_controller.get();
-  test_controller_ = std::make_unique<OnDeviceModelServiceController>(
-      std::move(access_controller),
-      on_device_component_state_manager_.get()->GetWeakPtr(),
-      fake_launcher_.LaunchFn());
-
-  on_device_component_state_manager_.Reset();
-  // Init should not crash.
-  test_controller_->Init();
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   // Session sampling params should have precedence over feature ones.
   auto config = SimpleComposeConfig();
@@ -2440,7 +2402,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
       .temperature = 2,
   };
 
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(),
       SessionConfigParams{.sampling_params = expected_sampling_params});
   ASSERT_TRUE(session);
@@ -2642,14 +2604,12 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
   FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
       ModelBasedCapabilityKey::kCompose),
       availability_observer_test(ModelBasedCapabilityKey::kTest);
-  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+  controller().AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
-  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+  controller().AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey::kTest, &availability_observer_test);
 
-  on_device_component_state_manager_.get()->OnStartup();
-  task_environment_.RunUntilIdle();
-  on_device_component_state_manager_.SetReady(standard_assets_.base_model);
+  standard_assets_.base_model.SetReadyIn(component_state_manager());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
@@ -2658,8 +2618,8 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
       .config = UnsafeComposeConfig(),
       .weight = 1015,
   });
-  test_controller_->MaybeUpdateModelAdaptation(adaptation_asset.feature(),
-                                               adaptation_asset.metadata());
+  controller().MaybeUpdateModelAdaptation(adaptation_asset.feature(),
+                                          adaptation_asset.metadata());
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
@@ -2689,7 +2649,7 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
         GetParam());
     return safety_config;
   }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+  controller().MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = CreateSession();
   ASSERT_TRUE(session);
@@ -2791,7 +2751,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
   FakeBaseModelAsset next_model(WillPassValidationConfig());
   {
     base::HistogramTester histogram_tester;
-    on_device_component_state_manager_.SetReady(next_model);
+    next_model.SetReadyIn(component_state_manager());
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -2875,7 +2835,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   });
   {
     base::HistogramTester histogram_tester;
-    on_device_component_state_manager_.SetReady(next_model);
+    next_model.SetReadyIn(component_state_manager());
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -2895,7 +2855,7 @@ TEST_F(OnDeviceModelServiceControllerTest, GetCapabilities) {
   Initialize({.base_model = &base_model});
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(test_controller_->GetCapabilities(),
+  EXPECT_EQ(controller().GetCapabilities(),
             on_device_model::Capabilities(
                 {on_device_model::CapabilityFlags::kImageInput}));
 
@@ -2904,10 +2864,10 @@ TEST_F(OnDeviceModelServiceControllerTest, GetCapabilities) {
           {proto::OnDeviceModelCapability::
                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT}),
   });
-  on_device_component_state_manager_.SetReady(next_model);
+  next_model.SetReadyIn(component_state_manager());
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(test_controller_->GetCapabilities(),
+  EXPECT_EQ(controller().GetCapabilities(),
             on_device_model::Capabilities(
                 {on_device_model::CapabilityFlags::kAudioInput}));
 }
@@ -2934,7 +2894,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .weight = 2,
       .version = "0.0.2",
   });
-  on_device_component_state_manager_.SetReady(next_model);
+  next_model.SetReadyIn(component_state_manager());
   task_environment_.RunUntilIdle();
 
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
@@ -2962,11 +2922,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDoesNotRepeat) {
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
         OnDeviceModelValidationResult::kSuccess, 1);
+    SimulateShutdown();
+    ;
   }
 
   {
     base::HistogramTester histogram_tester;
-    RecreateServiceController();
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectTotalCount(
@@ -2992,22 +2954,26 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationRepeatsOnFailure) {
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
         OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+    SimulateShutdown();
+    ;
   }
 
   {
     base::HistogramTester histogram_tester;
-    RecreateServiceController();
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
         OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+    SimulateShutdown();
+    ;
   }
 
   {
     fake_settings_.set_execute_result({"goodbye"});
     base::HistogramTester histogram_tester;
-    RecreateServiceController();
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3040,25 +3006,31 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationMaximumRetry) {
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
         OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+    SimulateShutdown();
+    ;
   }
 
   {
     base::HistogramTester histogram_tester;
-    RecreateServiceController();
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
         OnDeviceModelValidationResult::kNonMatchingOutput, 1);
+    SimulateShutdown();
+    ;
   }
 
   {
     base::HistogramTester histogram_tester;
-    RecreateServiceController();
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+    SimulateShutdown();
+    ;
   }
 
   // After a new version, we should re-check.
@@ -3067,7 +3039,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationMaximumRetry) {
       "OLD_VERSION");
   {
     base::HistogramTester histogram_tester;
-    RecreateServiceController();
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3200,7 +3172,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
 
   base::RunLoop run_loop;
-  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  controller().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
   run_loop.Run();
   task_environment_.RunUntilIdle();
 
@@ -3231,7 +3203,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
 
   base::RunLoop run_loop;
-  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  controller().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
 
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
@@ -3522,7 +3494,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneUsesSessionTopKAndTemperature) {
       .temperature = 2,
   };
 
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(),
       SessionConfigParams{.sampling_params = expected_sampling_params});
   ASSERT_TRUE(session);
@@ -3575,9 +3547,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   auto clone = session->Clone();
   EXPECT_TRUE(clone);
@@ -3727,7 +3699,7 @@ TEST_F(OnDeviceModelServiceControllerTest, Broker) {
                               std::nullopt, session_future.GetCallback());
 
   Initialize(standard_assets_);
-  test_controller_->BindBroker(std::move(pending_broker));
+  controller().BindBroker(std::move(pending_broker));
 
   auto session = session_future.Take();
   ASSERT_TRUE(session);
@@ -3753,7 +3725,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
                               std::nullopt, session_future.GetCallback());
 
   Initialize(standard_assets_);
-  test_controller_->BindBroker(std::move(pending_broker));
+  controller().BindBroker(std::move(pending_broker));
 
   ASSERT_TRUE(session_future.Take());
   histogram_tester.ExpectUniqueSample(
@@ -3881,9 +3853,9 @@ TEST_F(OnDeviceModelServiceControllerTest, TokenCounts) {
 
 TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintOnExecute) {
   Initialize(standard_assets_);
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   session->ExecuteModelWithResponseConstraint(
       PageUrlRequest("input"),
@@ -3914,9 +3886,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigJson) {
       .adaptations = {&test_asset},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   session->ExecuteModel(PageUrlRequest("input"),
@@ -3946,9 +3918,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigRegex) {
       .adaptations = {&test_asset},
   });
 
-  auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
-      /*config_params=*/std::nullopt);
+  auto session = controller().CreateSession(kFeature, FailOnRemoteFallback(),
+                                            logger_.GetWeakPtr(),
+                                            /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
   session->ExecuteModel(PageUrlRequest("input"),
@@ -4017,7 +3989,7 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
       .adaptations = {&rank1_asset},
   });
 
-  auto session = test_controller_->CreateSession(
+  auto session = controller().CreateSession(
       rank1_asset.feature(), FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
@@ -4033,8 +4005,8 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
       "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate", 0);
 
   // The rank2 feature "download" finishing should evict the model.
-  test_controller_->MaybeUpdateModelAdaptation(rank2_asset.feature(),
-                                               rank2_asset.metadata());
+  controller().MaybeUpdateModelAdaptation(rank2_asset.feature(),
+                                          rank2_asset.metadata());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate", true,
       1);

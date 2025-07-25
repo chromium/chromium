@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -65,12 +66,10 @@ class ModelExecutionManagerTest : public testing::Test {
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    service_controller_ = std::make_unique<OnDeviceModelServiceController>(
-        nullptr, nullptr, base::DoNothing());
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, identity_test_env_.identity_manager(),
-        service_controller_->GetWeakPtr(), &optimization_guide_logger_,
-        nullptr);
+        fake_model_broker_.controller().GetWeakPtr(),
+        &optimization_guide_logger_, nullptr);
   }
 
   bool SimulateResponse(const std::string& content,
@@ -103,7 +102,7 @@ class ModelExecutionManagerTest : public testing::Test {
   }
 
   OnDeviceModelServiceController* service_controller() {
-    return service_controller_.get();
+    return &fake_model_broker_.controller();
   }
 
   void CheckPendingRequestMessage(const std::string& message) {
@@ -123,13 +122,15 @@ class ModelExecutionManagerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<OnDeviceModelServiceController> service_controller_;
+  FakeAdaptationAsset fake_adaptation_asset_{{
+      .config = SimpleComposeConfig(),
+  }};
+  FakeModelBroker fake_model_broker_{fake_adaptation_asset_};
   OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<ModelExecutionManager> model_execution_manager_;
 };
