@@ -550,6 +550,48 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="V8.GC.Cycle{Priority}.Consumed.{Scope}.Current.Full"
+    units="KB" expires_after="M144">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of {Scope} consumed memory right before a {Priority} full garbage
+    collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+  <token key="Scope">
+    <variant name="Global" summary="global"/>
+    <variant name="OldGeneration" summary="old generation"/>
+  </token>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Consumed.{Scope}.Limit.Full" units="KB"
+    expires_after="M144">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Allocation limit on {Scope} consumed memory used before a {Priority} full
+    garbage collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+  <token key="Scope">
+    <variant name="Global" summary="global"/>
+    <variant name="OldGeneration" summary="old generation"/>
+  </token>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
 <histogram name="V8.GC.Cycle{Priority}.Efficiency.Full{Heap}" units="KB/ms"
     expires_after="M144">
   <owner>omerkatz@chromium.org</owner>
@@ -1120,6 +1162,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Reason a {Priority} young generation garbage collection was started in V8.
     Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.TimeSinceLastCycle.Full" units="ms"
+    expires_after="M144">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time between the start of a {Priority} full garbage collection and the end
+    of previous full cycle. Reported at the end of the garbage collection cycle.
   </summary>
   <token key="Priority">
     <variant name="" summary="(aggregated across all priorities)"/>
