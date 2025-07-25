@@ -27,7 +27,7 @@ const CGFloat kExtraSpacingTitleContent = 8.0;
 
 // Transitions.
 const CGFloat kAnimationDuration = 1.0;
-const CGFloat kDamping = 1.0;
+const CGFloat kDamping = 0.85;
 
 }  // namespace
 
@@ -60,6 +60,8 @@ const CGFloat kDamping = 1.0;
   UIStackView* _logosStackView;
   // The Lottie animation for the logo.
   id<LottieAnimation> _logoAnimation;
+  // Content height constraint for the current view.
+  NSLayoutConstraint* _contentHeightConstraint;
 }
 
 - (instancetype)initWithPromo:(BOOL)showPromo
@@ -84,9 +86,12 @@ const CGFloat kDamping = 1.0;
 
   if (_showPromo) {
     _currentChildViewController = _promoViewController;
-    return;
+  } else {
+    _currentChildViewController = _consentViewController;
   }
-  _currentChildViewController = _consentViewController;
+  _contentHeightConstraint = [self.contentScrollView.heightAnchor
+      constraintEqualToConstant:[_currentChildViewController contentHeight]];
+  _contentHeightConstraint.active = YES;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -104,6 +109,7 @@ const CGFloat kDamping = 1.0;
           CGFloat newWidth = weakSelf.contentScrollView.frame.size.width;
           weakSelf.contentScrollView.contentOffset = CGPointMake(newWidth, 0);
         }
+        [weakSelf updateContentHeightConstraint];
       }];
 }
 
@@ -113,6 +119,12 @@ const CGFloat kDamping = 1.0;
 // Controller.
 - (BOOL)isShowingConsentView {
   return _currentChildViewController == _consentViewController;
+}
+
+// Updates the content height constraint.
+- (void)updateContentHeightConstraint {
+  _contentHeightConstraint.constant =
+      [_currentChildViewController contentHeight];
 }
 
 // Creates and returns the stack view containing the animated logos.
@@ -233,19 +245,11 @@ const CGFloat kDamping = 1.0;
     // Center the logos stack view within the main stack view.
     [_logosStackView.centerXAnchor
         constraintEqualToAnchor:_mainStackView.centerXAnchor],
-
-    [self.contentScrollView.heightAnchor
-        constraintEqualToAnchor:_contentHorizontalStackView.heightAnchor],
-    [self.contentScrollView.bottomAnchor
-        constraintEqualToAnchor:_contentHorizontalStackView.bottomAnchor],
-
     [_contentHorizontalStackView.widthAnchor
         constraintEqualToAnchor:self.contentScrollView.frameLayoutGuide
                                     .widthAnchor
                      multiplier:[self contentStackViewWidthMultiplier]]
   ]];
-  AddSameConstraints(_contentHorizontalStackView,
-                     self.contentScrollView.contentLayoutGuide);
 }
 
 // Returns the width multiplier for the content stack view based on the number
@@ -305,6 +309,7 @@ const CGFloat kDamping = 1.0;
 // to the consent screen and animates the content scroll view horizontally.
 - (void)didAcceptPromo {
   _currentChildViewController = _consentViewController;
+  [self updateContentHeightConstraint];
 
   __weak __typeof(self) weakSelf = self;
   [self.sheetPresentationController animateChanges:^{
