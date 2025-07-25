@@ -63,7 +63,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -1234,8 +1233,8 @@ class PasswordControllerTestSimple : public PlatformTest {
  public:
   PasswordControllerTestSimple()
       : web_client_(std::make_unique<web::FakeWebClient>()),
-        browser_state_(std::make_unique<web::FakeBrowserState>()) {
-    web_state_.SetBrowserState(browser_state_.get());
+        profile_(TestProfileIOS::Builder().Build()) {
+    web_state_.SetBrowserState(profile_.get());
   }
 
   ~PasswordControllerTestSimple() override {
@@ -1256,7 +1255,7 @@ class PasswordControllerTestSimple : public PlatformTest {
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
     web::test::OverrideJavaScriptFeatures(
-        browser_state_.get(),
+        profile_.get(),
         {autofill::FormUtilJavaScriptFeature::GetInstance(),
          password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
 
@@ -1289,7 +1288,7 @@ class PasswordControllerTestSimple : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<web::FakeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   PasswordController* passwordController_;
@@ -1305,7 +1304,7 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
       passwordController_.sharedPasswordController;
 
   auto web_frame = web::FakeWebFrame::CreateMainWebFrame();
-  web_frame->set_browser_state(browser_state_.get());
+  web_frame->set_browser_state(profile_.get());
   web::WebFrame* main_web_frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
