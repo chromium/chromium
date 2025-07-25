@@ -7411,6 +7411,11 @@
     "expiry_milestone": 145
   },
   {
+      "name": "omnibox-site-search",
+      "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+      "expiry_milestone": 155
+  },
+  {
     "name": "omnibox-starter-pack-expansion",
     "owners": [
       "yoangela@chromium.org",

@@ -143,6 +143,9 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2,
                     FeatureState.ENABLED_IN_TEST);
 
+    public static final CachedFlag sOmniboxSiteSearch =
+            newFlag(OmniboxFeatureList.OMNIBOX_SITE_SEARCH, FeatureState.ENABLED_IN_TEST);
+
     public static final CachedFlag sMultilineEditField =
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.DISABLED);
 

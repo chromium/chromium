@@ -279,6 +279,9 @@ BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
              enable_if(IS_ANDROID));
 
+// Enables keyword-based site search functionality on Android devices.
+BASE_FEATURE(kOmniboxSiteSearch, "OmniboxSiteSearch", DISABLED);
+
 // Enables additional site search providers for the Site search Starter Pack.
 BASE_FEATURE(kStarterPackExpansion,
              "StarterPackExpansion",
@@ -438,6 +441,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdate,
       &kOmniboxMobileParityUpdateV2,
+      &kOmniboxSiteSearch,
       &kOmniboxAimShortcutTypedState,
       &kMultilineEditField};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(

@@ -2954,6 +2954,10 @@ const char kOmniboxSearchAggregatorName[] = "Omnibox search aggregator";
 const char kOmniboxSearchAggregatorDescription[] =
     "Enables omnibox suggestions from the search aggregator provider";
 
+const char kOmniboxSiteSearchName[] = "Omnibox Site Search";
+const char kOmniboxSiteSearchDescription[] =
+    "Enables keyword-based site search functionality on Android devices";
+
 const char kContextualSearchBoxUsesContextualSearchProviderName[] =
     "Contextual search box uses contextual search provider";
 const char kContextualSearchBoxUsesContextualSearchProviderDescription[] =

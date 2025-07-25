@@ -16171,6 +16171,21 @@
             ]
         }
     ],
+    "OmniboxSiteSearchAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxSiteSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxStarterPackIPH": [
         {
             "platforms": [

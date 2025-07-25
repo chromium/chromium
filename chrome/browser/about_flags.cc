@@ -6887,6 +6887,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxShowPopupOnMouseReleasedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kShowPopupOnMouseReleased)},
 
+    {"omnibox-site-search", flag_descriptions::kOmniboxSiteSearchName,
+     flag_descriptions::kOmniboxSiteSearchDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxSiteSearch)},
+
     {"omnibox-hide-suggestion-group-headers",
      flag_descriptions::kOmniboxHideSuggestionGroupHeadersName,
      flag_descriptions::kOmniboxHideSuggestionGroupHeadersDescription,

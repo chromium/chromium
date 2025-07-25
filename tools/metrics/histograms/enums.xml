@@ -11802,6 +11802,7 @@ from previous Chrome versions.
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
   <int value="-846670837" label="QuickAppAccessTestUI:enabled"/>
+  <int value="-846321831" label="OmniboxSiteSearch:enabled"/>
   <int value="-844786349" label="ClipboardHistoryNudgeSessionReset:enabled"/>
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
@@ -12721,6 +12722,7 @@ from previous Chrome versions.
   <int value="-506706655" label="respect-autocomplete-off-autofill"/>
   <int value="-506366023" label="VizHitTest:enabled"/>
   <int value="-506064880" label="EnableIPH:disabled"/>
+  <int value="-505751088" label="OmniboxSiteSearch:disabled"/>
   <int value="-505679399" label="FontCacheScaling:enabled"/>
   <int value="-505264501" label="BackForwardTransitions:enabled"/>
   <int value="-504952236" label="AutocorrectParamsTuning:disabled"/>
