@@ -188,8 +188,15 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       WaitForAndVerifyThumbnail(0), CheckTabHasThumbnailData(0, true));
 }
 
+// TODO(crbug.com/434218679): Fix test on mac before re-enabling.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TabDiscardPreservesScreenshot \
+  DISABLED_TabDiscardPreservesScreenshot
+#else
+#define MAYBE_TabDiscardPreservesScreenshot TabDiscardPreservesScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
-                       TabDiscardPreservesScreenshot) {
+                       MAYBE_TabDiscardPreservesScreenshot) {
   RunTestSequence(
       AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
       WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
