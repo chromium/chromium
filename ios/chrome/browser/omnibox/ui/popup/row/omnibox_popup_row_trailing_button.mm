@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -15,13 +16,10 @@
 
 namespace {
 /// Size of the trailing button.
-const CGFloat kTrailingButtonIconPointSize = 17.0f;
+const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
 
-/// Size of the aim button icon.
-const CGFloat kAimButtonIconPointSize = 18.0f;
-
-/// The animation view size.
-const CGSize kAimAnimationViewSize = {40.0f, 40.0f};
+/// The animation view size for Medium content size.
+const CGFloat kAimAnimationViewSizeMedium = 33.33f;
 
 // The name of the animation for the AIM button.
 NSString* const kAIMCircleAnimationLightMode = @"mia_circle_animation_no_glow";
@@ -34,6 +32,10 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
   UIView* _aimAnimationView;
   /// The aim lottie animation.
   id<LottieAnimation> _aimAnimation;
+  /// Width constraint for the aim animation view.
+  NSLayoutConstraint* _aimAnimationWidthConstraint;
+  /// Height constraint for the aim animation view.
+  NSLayoutConstraint* _aimAnimationHeightConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -45,6 +47,11 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
            selector:@selector(didReceiveMemoryWarning)
                name:UIApplicationDidReceiveMemoryWarningNotification
              object:nil];
+    if (@available(iOS 17, *)) {
+      [self
+          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+                       withAction:@selector(traitCollectionDidChangeAction)];
+    }
   }
   return self;
 }
@@ -60,45 +67,7 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
 
   _trailingIconType = trailingIconType;
   [self removeSearchWithAimAnimationViewIfNeeded];
-
-  self.hidden = NO;
-  UIImage* icon;
-
-  switch (trailingIconType) {
-    case TrailingIconType::kNone:
-      self.accessibilityIdentifier = nil;
-      self.hidden = YES;
-      return;
-    case TrailingIconType::kSearchWithAim:
-      icon = MakeSymbolMonochrome(CustomSymbolWithPointSize(
-          kMagnifyingglassSparkSymbol, kAimButtonIconPointSize));
-      self.accessibilityIdentifier =
-          kOmniboxPopupRowSearchWithAimAccessibilityIdentifier;
-      [self setupSearchWithAimAnimationView];
-      break;
-    case TrailingIconType::kRefineQuery:
-      icon = DefaultSymbolWithPointSize(kRefineQuerySymbol,
-                                        kTrailingButtonIconPointSize);
-      self.accessibilityIdentifier =
-          kOmniboxPopupRowAppendAccessibilityIdentifier;
-      break;
-    case TrailingIconType::kOpenExistingTab:
-      icon = DefaultSymbolWithPointSize(kNavigateToTabSymbol,
-                                        kTrailingButtonIconPointSize);
-      self.accessibilityIdentifier =
-          kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
-      break;
-  }
-
-  if (trailingIconType != TrailingIconType::kSearchWithAim) {
-    // `imageWithHorizontallyFlippedOrientation` is flipping the icon
-    // automatically when the UI is RTL/LTR.
-    icon = [icon imageWithHorizontallyFlippedOrientation];
-    icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
-
-  [self setImage:icon forState:UIControlStateNormal];
-  [self updateTintColor];
+  [self updateButtonImageForCurrentState];
 }
 
 - (void)setIsHighlighted:(BOOL)isHighlighted {
@@ -109,6 +78,37 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
   _isHighlighted = isHighlighted;
   [self updateTintColor];
 }
+
+- (CGSize)intrinsicContentSize {
+  if (self.trailingIconType == TrailingIconType::kNone) {
+    return CGSizeZero;
+  }
+
+  CGFloat multiplier = OmniboxPopupRowContentSizeMultiplierForCategory(
+      self.traitCollection.preferredContentSizeCategory);
+  if (multiplier == 0) {
+    multiplier = 1.0;
+  }
+
+  // Override intrinsicContentSize to match the animation size, ensuring
+  // all trailing buttons are aligned.
+  CGFloat size = kAimAnimationViewSizeMedium * multiplier;
+  return CGSizeMake(size, size);
+}
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self traitCollectionDidChangeAction];
+  }
+}
+#endif
 
 #pragma mark - Low memory warning
 
@@ -121,6 +121,64 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
 }
 
 #pragma mark - private
+
+- (void)traitCollectionDidChangeAction {
+  if (_aimAnimationView) {
+    [self updateAimAnimationViewSize];
+  }
+  [self updateButtonImageForCurrentState];
+  [self invalidateIntrinsicContentSize];
+}
+
+- (void)updateButtonImageForCurrentState {
+  CGFloat multiplier = OmniboxPopupRowContentSizeMultiplierForCategory(
+      self.traitCollection.preferredContentSizeCategory);
+
+  if (multiplier) {
+    UIImage* icon;
+    self.hidden = NO;
+    switch (self.trailingIconType) {
+      case TrailingIconType::kNone:
+        self.accessibilityIdentifier = nil;
+        self.hidden = YES;
+        return;
+      case TrailingIconType::kSearchWithAim:
+        icon = MakeSymbolMonochrome(CustomSymbolWithPointSize(
+            kMagnifyingglassSparkSymbol,
+            kTrailingButtonIconPointSizeMedium * multiplier));
+        self.accessibilityIdentifier =
+            kOmniboxPopupRowSearchWithAimAccessibilityIdentifier;
+        if (!_aimAnimationView) {
+          [self setupSearchWithAimAnimationView];
+        }
+        break;
+      case TrailingIconType::kRefineQuery:
+        icon = DefaultSymbolWithPointSize(
+            kRefineQuerySymbol,
+            kTrailingButtonIconPointSizeMedium * multiplier);
+        self.accessibilityIdentifier =
+            kOmniboxPopupRowAppendAccessibilityIdentifier;
+        break;
+      case TrailingIconType::kOpenExistingTab:
+        icon = DefaultSymbolWithPointSize(
+            kNavigateToTabSymbol,
+            kTrailingButtonIconPointSizeMedium * multiplier);
+        self.accessibilityIdentifier =
+            kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
+        break;
+    }
+
+    if (self.trailingIconType != TrailingIconType::kSearchWithAim) {
+      // `imageWithHorizontallyFlippedOrientation` is flipping the icon
+      // automatically when the UI is RTL/LTR.
+      icon = [icon imageWithHorizontallyFlippedOrientation];
+      icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
+
+    [self setImage:icon forState:UIControlStateNormal];
+    [self updateTintColor];
+  }
+}
 
 - (void)updateTintColor {
   if (self.isHighlighted) {
@@ -136,6 +194,21 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
   self.tintColor = [UIColor colorNamed:kBlueColor];
 }
 
+// Updates the aim animation view size based on the content size category.
+- (void)updateAimAnimationViewSize {
+  if (!_aimAnimationWidthConstraint) {
+    return;
+  }
+
+  CGFloat multiplier = OmniboxPopupRowContentSizeMultiplierForCategory(
+      self.traitCollection.preferredContentSizeCategory);
+  if (multiplier > 0) {
+    CGFloat size = kAimAnimationViewSizeMedium * multiplier;
+    _aimAnimationWidthConstraint.constant = size;
+    _aimAnimationHeightConstraint.constant = size;
+  }
+}
+
 // Setups the search with Aim animation.
 - (void)setupSearchWithAimAnimationView {
   self.pointerInteractionEnabled = YES;
@@ -144,7 +217,17 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
   [self addSubview:self.aimAnimationView];
   self.aimAnimationView.userInteractionEnabled = NO;
   AddSameCenterConstraints(self.aimAnimationView, self);
-  AddSizeConstraints(self.aimAnimationView, kAimAnimationViewSize);
+
+  _aimAnimationWidthConstraint = [self.aimAnimationView.widthAnchor
+      constraintEqualToConstant:kAimAnimationViewSizeMedium];
+  _aimAnimationHeightConstraint = [self.aimAnimationView.heightAnchor
+      constraintEqualToConstant:kAimAnimationViewSizeMedium];
+  [NSLayoutConstraint activateConstraints:@[
+    _aimAnimationWidthConstraint,
+    _aimAnimationHeightConstraint,
+  ]];
+
+  [self updateAimAnimationViewSize];
   [self.aimLottieAnimation play];
 }
 
