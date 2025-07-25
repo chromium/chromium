@@ -7292,7 +7292,8 @@ def CheckDeprecationOfPreferences(input_api, output_api):
                 'Migrate*Prefs() in chrome/browser/prefs/browser_prefs.cc and\n'
                 'chrome/browser/prefs/README.md for examples.\n'
                 'This may be a false positive warning (e.g. if you move preference\n'
-                'registrations to a different place).\n', potential_problems)
+                'registrations to a different place or if the preference was only\n'
+                'written to by the policy stack).\n', potential_problems)
         ]
     return []
 
