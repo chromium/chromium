@@ -48,7 +48,7 @@ source_set("muxers") {
 
   deps = [
     "//base",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//media/base",
     "//media/formats",
     "//third_party/libwebm",

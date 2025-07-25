@@ -27,7 +27,7 @@ mojom("video_capture_buffer") {
   public_deps = [
     ":video_capture_types",
     "//gpu/ipc/common:interfaces",
-    "//media//mojo/mojom:mojom",
+    "//media//mojo/mojom",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:shared_image_format",
     "//ui/gfx/geometry/mojom",

@@ -223,7 +223,7 @@ test("v4l2_unittest") {
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//media:test_support",
-    "//media/gpu/chromeos:chromeos",
+    "//media/gpu/chromeos",
     "//testing/gtest",
     "//ui/gfx/linux:gbm",
   ]
@@ -241,7 +241,7 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
       "mt21/mt21_util_unittest.cc",
     ]
     deps = [
-      "//base:base",
+      "//base",
       "//base/test:test_support",
       "//testing/gtest",
     ]
@@ -256,7 +256,7 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
       "mt21/mt21_util.h",
     ]
     deps = [
-      "//base:base",
+      "//base",
       "//base/test:test_support",
       "//testing/gtest",
       "//testing/perf",

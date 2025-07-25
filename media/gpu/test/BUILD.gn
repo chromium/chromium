@@ -129,7 +129,7 @@ source_set("helpers") {
     "video_frame_helpers.h",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//base/test:test_config",
     "//base/test:test_support",
     "//gpu:test_support",
@@ -175,7 +175,7 @@ source_set("frame_file_writer") {
   deps = [
     ":helpers",
     "//media/gpu",
-    "//ui/gfx/codec:codec",
+    "//ui/gfx/codec",
   ]
 }
 
@@ -216,7 +216,7 @@ static_library("video_player") {
     "//gpu:test_support",
     "//media/gpu",
     "//testing/gmock",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 
   if (use_vaapi || use_v4l2_codec) {
@@ -237,11 +237,11 @@ static_library("video_test_environment") {
 
   deps = [
     ":helpers",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//media:test_support",
     "//media/gpu",
-    "//mojo/core/embedder:embedder",
+    "//mojo/core/embedder",
   ]
 
   public_deps = [
@@ -288,7 +288,7 @@ static_library("video_encoder") {
     "//gpu:test_support",
     "//media/gpu",
     "//testing/gmock",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 

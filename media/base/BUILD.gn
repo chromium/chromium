@@ -402,7 +402,7 @@ source_set("base") {
   defines = []
   public_deps = [
     ":video_facing",
-    "//gpu/command_buffer/client:client",
+    "//gpu/command_buffer/client",
     "//media:media_buildflags",
     "//media/gpu:buildflags",
     "//media/mojo:buildflags",
@@ -416,17 +416,17 @@ source_set("base") {
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//media/cdm:clear_key_cdm_common",
     "//net",
     "//skia",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
-    "//ui/display:display",
-    "//ui/events:events",
+    "//ui/display",
+    "//ui/events",
     "//ui/events:events_base",
     "//ui/events:keyboard_hook",
-    "//url:url",
+    "//url",
   ]
 
   libs = []

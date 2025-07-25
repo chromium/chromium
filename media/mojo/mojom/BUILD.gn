@@ -933,7 +933,7 @@ source_set("shared_mojom_traits") {
     ":mojom_shared",
     "//gpu/ipc/common",
     "//media",
-    "//media/base/ipc:ipc",
+    "//media/base/ipc",
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom:mojom_traits",
   ]

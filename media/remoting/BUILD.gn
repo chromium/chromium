@@ -68,7 +68,7 @@ source_set("remoting_renderer") {
   ]
 
   deps = [
-    "//media/mojo/common:common",
+    "//media/mojo/common",
     "//media/mojo/mojom:remoting",
     "//third_party/openscreen/src/cast/streaming:common",
   ]
@@ -123,7 +123,7 @@ source_set("media_remoting_tests") {
 
     deps += [
       "//media/test:pipeline_integration_test_base",
-      "//services/service_manager/public/cpp:cpp",
+      "//services/service_manager/public/cpp",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
     ]

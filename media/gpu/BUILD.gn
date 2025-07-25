@@ -188,11 +188,11 @@ component("gpu") {
       # TODO(crbug.com/40552063): This can be removed once CdmManager is removed.
       "//gpu/ipc/common",
       "//media/mojo:buildflags",
-      "//services/service_manager/public/cpp:cpp",
+      "//services/service_manager/public/cpp",
       "//third_party/libgav1:libgav1_parser",
     ]
     if (enable_vulkan) {
-      deps += [ "//gpu/vulkan:vulkan" ]
+      deps += [ "//gpu/vulkan" ]
     }
   }
 
@@ -306,7 +306,7 @@ component("gpu") {
       ]
     }
     deps += [
-      "//gpu/ipc/common:common",
+      "//gpu/ipc/common",
       "//media/base/win:color_space_util_win",
       "//third_party/angle:includes",
       "//third_party/libaom:libaomrc",
@@ -604,7 +604,7 @@ source_set("android_video_decode_accelerator_unittests") {
       "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/libyuv:libyuv",
+      "//third_party/libyuv",
       "//ui/gl",
       "//ui/gl/init",
     ]

@@ -145,7 +145,7 @@ source_set("audio") {
     "//build:chromecast_buildflags",
     "//media/base",
     "//third_party/flac",
-    "//third_party/opus:opus",
+    "//third_party/opus",
     "//url",
   ]
   libs = []
@@ -462,7 +462,7 @@ source_set("unit_tests") {
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/opus:opus",
+    "//third_party/opus",
     "//url",
   ]
 
@@ -479,7 +479,7 @@ source_set("unit_tests") {
       "android/audio_device_unittest.cc",
     ]
     deps += [
-      "//media/gpu:gpu",
+      "//media/gpu",
       "//ui/gl",
     ]
   }
@@ -540,7 +540,7 @@ source_set("unit_tests") {
       "win/test_support/wasapi_test_error_code.h",
     ]
 
-    deps += [ "//media/gpu:gpu" ]
+    deps += [ "//media/gpu" ]
   }
 
   if (is_fuchsia) {

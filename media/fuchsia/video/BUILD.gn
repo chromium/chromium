@@ -41,7 +41,7 @@ source_set("video") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//third_party/libyuv:libyuv",
+    "//third_party/libyuv",
     "//ui/ozone",
   ]
 }

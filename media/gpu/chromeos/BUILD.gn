@@ -35,7 +35,7 @@ source_set("chromeos") {
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
-    "//media/mojo/common:common",
+    "//media/mojo/common",
   ]
 
   if (use_vaapi) {
@@ -104,7 +104,7 @@ source_set("common") {
     ":video_frame_resource",
     ":video_frame_utils",
     "//gpu/ipc/service",
-    "//media/mojo/mojom:mojom",
+    "//media/mojo/mojom",
     "//ui/ozone",
   ]
 
@@ -112,7 +112,7 @@ source_set("common") {
     ":fourcc",
     "//base",
     "//build/config/linux/libdrm",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//media",
     "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
@@ -135,7 +135,7 @@ source_set("common") {
     ]
     deps += [
       "//gpu/command_buffer/service:gles2",
-      "//gpu/vulkan/init:init",
+      "//gpu/vulkan/init",
     ]
   }
 
@@ -196,7 +196,7 @@ source_set("video_frame_utils") {
     "//base",
     "//build/config/linux/libdrm",
     "//components/viz/common:shared_image_format",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//media",
     "//media/gpu:buffer_validation",
     "//media/gpu:common",
@@ -244,7 +244,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//gpu:test_support",
-    "//gpu/ipc/service:service",
+    "//gpu/ipc/service",
     "//media",
     "//media:test_support",
     "//media/gpu:buildflags",
@@ -317,7 +317,7 @@ test("image_processor_test") {
     "//ui/gl:test_support",
   ]
   if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi:vaapi" ]
+    deps += [ "//media/gpu/vaapi" ]
   }
   if (use_v4l2_codec) {
     deps += [ "//media/gpu/v4l2" ]
