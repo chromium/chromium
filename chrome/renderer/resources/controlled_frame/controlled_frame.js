@@ -28,8 +28,9 @@ var WebViewInternal = getInternalApi('webViewInternal');
 // the snake case convention.
 function convertRunAt(webRunAt) {
   if (['document_start', 'document_end', 'document_idle'].includes(webRunAt)) {
-    throw 'ERROR: Encountered incorrect naming, please see specification ' +
-        'text for correct naming.';
+    throw new Error(
+        'Encountered incorrect naming, please see specification ' +
+        'text for correct naming.');
   }
 
   if (webRunAt === 'document-start') {
@@ -50,16 +51,17 @@ function convertRunAt(webRunAt) {
 function convertContentScriptDetailsKeys(webViewRule, keyMappings) {
   for (const mapping of keyMappings) {
     if (!('from' in mapping)) {
-      throw 'ERROR: \'from\' is required';
+      throw new Error('\'from\' is required');
     }
 
     if (!('to' in mapping)) {
-      throw 'ERROR: \'to\' is required';
+      throw new Error('\'to\' is required');
     }
 
     if (mapping.to in webViewRule) {
-      throw 'ERROR: Encountered incorrect naming, please see specification ' +
-          'text for correct naming.';
+      throw new Error(
+          'Encountered incorrect naming, please see specification ' +
+          'text for correct naming.');
     }
 
     if (mapping.from in webViewRule) {
