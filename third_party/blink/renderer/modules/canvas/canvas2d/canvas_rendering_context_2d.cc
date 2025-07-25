@@ -647,12 +647,8 @@ int CanvasRenderingContext2D::Height() const {
   return Host()->Size().height();
 }
 
-bool CanvasRenderingContext2D::IsCanvas2DResourceValid() {
-  if (IsHibernating()) {
-    return true;
-  }
-
-  return !!GetOrCreateCanvas2DResourceProvider();
+bool CanvasRenderingContext2D::IsCanvas2DResourceProviderValid() {
+  return resource_provider_ && resource_provider_->IsValid();
 }
 
 const std::optional<cc::PaintRecord>&

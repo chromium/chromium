@@ -282,7 +282,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void LangAttributeChanged() {}
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual int LayerCount() const { return 0; }
-  virtual bool IsCanvas2DResourceValid() { NOTREACHED(); }
+  virtual bool IsCanvas2DResourceProviderValid() { NOTREACHED(); }
   virtual CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() {
     NOTREACHED();
   }

@@ -859,8 +859,7 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     }
   } else if (IsRenderingContext2D() && LowLatencyEnabled() &&
              frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
-             RenderingContext()->GetResourceProviderForCanvas2D() &&
-             RenderingContext()->GetResourceProviderForCanvas2D()->IsValid()) {
+             RenderingContext()->IsCanvas2DResourceProviderValid()) {
     if (scoped_refptr<CanvasResource> canvas_resource =
             RenderingContext()
                 ->GetResourceProviderForCanvas2D()
