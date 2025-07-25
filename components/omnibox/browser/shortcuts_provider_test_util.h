@@ -54,8 +54,7 @@ struct TestShortcutData {
 // Fills test data into the shortcuts backend.
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,
-    base::span<TestShortcutData> db,
-    size_t spanification_suspected_redundant_db_size);
+    base::span<TestShortcutData> db);
 
 // Runs an autocomplete query on |text| with the provided
 // |prevent_inline_autocomplete| setting and checks to see that the returned

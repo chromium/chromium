@@ -118,8 +118,7 @@ class ShortcutsBackend : public RefcountedKeyedService,
   friend class FakeShortcutsBackend;
   friend void PopulateShortcutsBackendWithTestData(
       scoped_refptr<ShortcutsBackend> backend,
-      base::span<TestShortcutData> db,
-      size_t spanification_suspected_redundant_db_size);
+      base::span<TestShortcutData> db);
 
   enum CurrentState {
     NOT_INITIALIZED,  // Backend created but not initialized.

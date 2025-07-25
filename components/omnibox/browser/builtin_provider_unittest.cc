@@ -108,14 +108,9 @@ class BuiltinProviderTest : public testing::Test {
   }
   void TearDown() override { provider_ = nullptr; }
 
-  void RunTest(base::span<const TestData> cases,
-               size_t spanification_suspected_redundant_num_cases) {
-    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-    // redundant in M143.
-    CHECK(spanification_suspected_redundant_num_cases == cases.size(),
-          base::NotFatalUntil::M143);
+  void RunTest(base::span<const TestData> cases) {
     ACMatches matches;
-    for (size_t i = 0; i < spanification_suspected_redundant_num_cases; ++i) {
+    for (size_t i = 0; i < cases.size(); ++i) {
       SCOPED_TRACE(base::StringPrintf(
           "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));
       AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,
@@ -179,7 +174,7 @@ TEST_F(BuiltinProviderTest, TypingScheme) {
       {u"ChRoMe://", {kURL1, kURL2, kURL3}},
   };
 
-  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
+  RunTest(typing_scheme_cases);
 }
 
 TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
@@ -197,7 +192,7 @@ TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
       {u"scheme://host/path?query#ref", {}},
   };
 
-  RunTest(test_cases, std::size(test_cases));
+  RunTest(test_cases);
 }
 
 TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
@@ -246,7 +241,7 @@ TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
       {kEmbedder + kSep2 + kHostM3, {kURLM2, kURLM3}},
   };
 
-  RunTest(test_cases, std::size(test_cases));
+  RunTest(test_cases);
 }
 
 TEST_F(BuiltinProviderTest, AboutBlank) {
@@ -304,7 +299,7 @@ TEST_F(BuiltinProviderTest, AboutBlank) {
       {kAboutBlank.substr(0, 9) + u"#r", {}},
   };
 
-  RunTest(about_blank_cases, std::size(about_blank_cases));
+  RunTest(about_blank_cases);
 }
 
 TEST_F(BuiltinProviderTest, DoesNotSupportMatchesOnFocus) {
@@ -337,7 +332,7 @@ TEST_F(BuiltinProviderTest, Subpages) {
       {kSubpage + kPageTwo, {kURLTwo}},
   };
 
-  RunTest(settings_subpage_cases, std::size(settings_subpage_cases));
+  RunTest(settings_subpage_cases);
 }
 
 TEST_F(BuiltinProviderTest, Inlining) {

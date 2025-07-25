@@ -106,7 +106,6 @@ class KeywordProviderTest : public testing::Test {
 
   template <class ResultType>
   void RunTest(base::span<TestData<ResultType>> keyword_cases,
-               int num_cases,
                ResultType AutocompleteMatch::* member);
 
  protected:
@@ -127,15 +126,9 @@ void KeywordProviderTest::SetUp() {
 template <class ResultType>
 void KeywordProviderTest::RunTest(
     base::span<TestData<ResultType>> keyword_cases,
-    int spanification_suspected_redundant_num_cases,
     ResultType AutocompleteMatch::* member) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_num_cases ==
-            static_cast<int>(keyword_cases.size()),
-        base::NotFatalUntil::M143);
   ACMatches matches;
-  for (int i = 0; i < spanification_suspected_redundant_num_cases; ++i) {
+  for (size_t i = 0; i < keyword_cases.size(); ++i) {
     SCOPED_TRACE(keyword_cases[i].input);
     AutocompleteInput input(keyword_cases[i].input,
                             metrics::OmniboxEventProto::OTHER,
@@ -226,8 +219,7 @@ TEST_F(KeywordProviderTest, Edit) {
       {u"nonsub", 1, {{u"nonsub", true}, kEmptyMatch, kEmptyMatch}},
   };
 
-  RunTest<std::u16string>(edit_cases, std::size(edit_cases),
-                          &AutocompleteMatch::fill_into_edit);
+  RunTest<std::u16string>(edit_cases, &AutocompleteMatch::fill_into_edit);
 }
 
 TEST_F(KeywordProviderTest, URL) {
@@ -263,8 +255,7 @@ TEST_F(KeywordProviderTest, URL) {
         {GURL("http://www.cleantestv2.com/?q=w"), false}}},
   };
 
-  RunTest<GURL>(url_cases, std::size(url_cases),
-                &AutocompleteMatch::destination_url);
+  RunTest<GURL>(url_cases, &AutocompleteMatch::destination_url);
 }
 
 TEST_F(KeywordProviderTest, Contents) {
@@ -303,8 +294,7 @@ TEST_F(KeywordProviderTest, Contents) {
        {{u"1 2+ 3", false}, {u"1 2+ 3", false}, {u"1 2+ 3", false}}},
   };
 
-  RunTest<std::u16string>(contents_cases, std::size(contents_cases),
-                          &AutocompleteMatch::contents);
+  RunTest<std::u16string>(contents_cases, &AutocompleteMatch::contents);
 }
 
 TEST_F(KeywordProviderTest, AddKeyword) {
@@ -457,8 +447,7 @@ TEST_F(KeywordProviderTest, ExtraQueryParams) {
         {GURL("http://aaaa/?aaaa=1&b=1+2+3&c"), false}}},
   };
 
-  RunTest<GURL>(url_cases, std::size(url_cases),
-                &AutocompleteMatch::destination_url);
+  RunTest<GURL>(url_cases, &AutocompleteMatch::destination_url);
 }
 
 TEST_F(KeywordProviderTest, DoesNotProvideMatchesOnFocus) {
@@ -484,5 +473,5 @@ TEST_F(KeywordProviderTest, TemplateSchemeKeyword) {
       {u"я я", 0, {}},
       {u"я://я", 0, {}},
   };
-  RunTest<void*>(url_cases, std::size(url_cases), nullptr);
+  RunTest<void*>(url_cases, nullptr);
 }
