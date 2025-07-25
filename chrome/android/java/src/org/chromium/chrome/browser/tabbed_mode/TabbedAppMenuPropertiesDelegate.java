@@ -350,6 +350,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildGetImageDescriptionsItem(currentTab));
         }
 
+        // Listen to the Feed
+        if (shouldShowListenToFeedItem(currentTab)) {
+            modelList.add(buildListenToFeedItem());
+        }
+
         // Divider Line
         maybeAddDividerLine(modelList, R.id.divider_line_id);
 
@@ -786,6 +791,33 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.preferences_id,
                         R.string.menu_settings,
                         shouldShowIconBeforeItem() ? R.drawable.settings_cog : 0));
+    }
+
+    private boolean shouldShowListenToFeedItem(@Nullable Tab currentTab) {
+        if (currentTab == null
+                || isIncognitoShowing()
+                || !UrlUtilities.isNtpUrl(currentTab.getUrl())
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_AUDIO_OVERVIEWS)) {
+            return false;
+        }
+
+        Profile profile = currentTab.getProfile();
+        if (!FeedFeatures.isFeedEnabled(profile)
+                || !UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
+            return false;
+        }
+
+        ReadAloudController readAloudController = mReadAloudControllerSupplier.get();
+        return readAloudController != null && readAloudController.isAvailable();
+    }
+
+    private MVCListAdapter.ListItem buildListenToFeedItem() {
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.listen_to_feed_id,
+                        R.string.menu_listen_to_feed,
+                        R.drawable.ic_play_circle));
     }
 
     /**

@@ -24864,6 +24864,13 @@ should be able to be added at any place in this file.
   <description>User opened lens overlay from the app overflow menu</description>
 </action>
 
+<action name="MobileMenuListenToFeed">
+  <owner>jianli@chromium.org</owner>
+  <description>
+    User opened 'Listen to the feed' from the app overflow menu
+  </description>
+</action>
+
 <action name="MobileMenuMoveToOtherWindow">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>

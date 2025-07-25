@@ -102,10 +102,10 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected final TabModelSelector mTabModelSelector;
     protected final ToolbarManager mToolbarManager;
     protected final View mDecorView;
+    protected final Supplier<ReadAloudController> mReadAloudControllerSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
     private @Nullable ModelList mModelList;
     private int mReadAloudPos;
     @Nullable protected Runnable mReadAloudAppMenuResetter;

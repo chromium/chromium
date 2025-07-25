@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
@@ -1188,6 +1189,8 @@ public class NewTabPage
         return !(mTab != null && DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroidChecked()))
                 && (mOmniboxStub != null && mOmniboxStub.isUrlBarFocused());
     }
+
+    public void listenToFeed(Supplier<ReadAloudController> readAloudControllerSupplier) {}
 
     public FeedSurfaceCoordinator getCoordinatorForTesting() {
         return (FeedSurfaceCoordinator) mFeedSurfaceProvider;

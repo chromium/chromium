@@ -172,6 +172,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocati
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
@@ -3680,6 +3681,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
         } else if (id == R.id.unpin_tab_menu_id) {
             TabModel tabModel = mTabModelSelector.getCurrentModel();
             tabModel.unpinTab(currentTab.getId());
+        } else if (id == R.id.listen_to_feed_id) {
+            if (currentTab.getNativePage() instanceof NewTabPage newTabPage) {
+                newTabPage.listenToFeed(mRootUiCoordinator.getReadAloudControllerSupplier());
+                RecordUserAction.record("MobileMenuListenToFeed");
+            }
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
         }

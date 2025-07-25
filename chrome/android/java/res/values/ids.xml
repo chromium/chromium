@@ -168,6 +168,7 @@ found in the LICENSE file.
     <item type="id" name="reader_mode_prefs_id" />
     <item type="id" name="preferences_id" />
     <item type="id" name="ntp_customization_id" />
+    <item type="id" name="listen_to_feed_id" />
     <item type="id" name="help_id" />
     <item type="id" name="managed_by_divider_line_id" />
     <item type="id" name="managed_by_menu_id" />
