@@ -3022,7 +3022,7 @@ crbug.com/431040244 [ Mac14 ] external/wpt/urlpattern/urlpattern.https.any.servi
 crbug.com/431039950 [ Mac14 ] external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Crash ]
 crbug.com/431039950 [ Mac14 ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Crash ]
 crbug.com/431040248 external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/user_contexts.py [ Failure ]
-crbug.com/431040244 [ Mac14 ] external/wpt/webrtc-identity/idlharness.https.window.html [ Timeout ]
+crbug.com/431040244 [ Mac14 ] external/wpt/webrtc-identity/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/431038531 [ Mac14 ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wss [ Skip Timeout ]
 crbug.com/431039951 [ Mac14 ] external/wpt/webxr/navigator_xr_sameObject.https.html [ Timeout ]
 crbug.com/431039951 [ Mac14 ] external/wpt/webxr/xrViewerPose_secondaryViews.https.html [ Timeout ]
