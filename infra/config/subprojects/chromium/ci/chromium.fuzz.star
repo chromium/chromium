@@ -37,6 +37,26 @@ ci.defaults.set(
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
+_DEFAULT_CONSOLE_ORDERING = consoles.ordering(short_names = ["dbg", "rel"])
+
+_LIBFUZZER_CONSOLE_ORDERING = consoles.ordering(short_names = [
+    "linux",
+    "linux-dbg",
+    "linux high dbg",
+    "linux high end",
+    "linux32",
+    "linux-msan",
+    "linux-ubsan",
+    "chromeos-asan",
+    "mac-asan",
+    "win-asan",
+    "arm",
+    "arm-dbg",
+    "arm64",
+    "arm64-dbg",
+    "ios",
+])
+
 consoles.console_view(
     name = "chromium.fuzz",
     branch_selector = [
@@ -50,26 +70,15 @@ consoles.console_view(
             "mac asan",
             "cros asan",
             "linux asan",
-            "libfuzz",
+            "libfuzzer",
             "linux msan",
             "linux tsan",
         ],
-        "*config*": consoles.ordering(short_names = ["dbg", "rel"]),
-        "win asan": "*config*",
-        "mac asan": "*config*",
-        "linux asan": "*config*",
-        "linux asan|x64 v8-ARM": "*config*",
-        "libfuzz": consoles.ordering(short_names = [
-            "chromeos-asan",
-            "linux32",
-            "linux32-dbg",
-            "linux",
-            "linux-dbg",
-            "linux-msan",
-            "linux-ubsan",
-            "mac-asan",
-            "win-asan",
-        ]),
+        "win asan": _DEFAULT_CONSOLE_ORDERING,
+        "mac asan": _DEFAULT_CONSOLE_ORDERING,
+        "linux asan": _DEFAULT_CONSOLE_ORDERING,
+        "linux asan|x64 v8-ARM": _DEFAULT_CONSOLE_ORDERING,
+        "libfuzzer": _LIBFUZZER_CONSOLE_ORDERING,
     },
 )
 
@@ -237,7 +246,7 @@ def libfuzzer_builder(
         gn_extra_configs = gn_configs,
         use_component_build = use_component_build,
         properties = properties,
-        console_category = "libfuzz",
+        console_category = "libfuzzer",
         contact_team_email = contact_team_email,
         **kwargs
     )
