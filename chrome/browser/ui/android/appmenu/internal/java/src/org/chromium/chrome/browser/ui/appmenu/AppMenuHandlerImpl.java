@@ -223,8 +223,7 @@ class AppMenuHandlerImpl
 
     @Override
     public void setContentDescription(@Nullable String desc) {
-        assert mAppMenu != null;
-        mAppMenu.setContentDescription(desc);
+        if (mAppMenu != null) mAppMenu.setContentDescription(desc);
     }
 
     /**
