@@ -162,9 +162,16 @@ class CORE_EXPORT MessageEvent final : public Event {
                         EventTarget* source,
                         GCedMessagePortArray*);
 
+  // To evaluate the viability of shipping anything remotely resembling
+  // https://github.com/mikewest/incentivize-origin-checks/, this method should
+  // be called when `MessageEvent` objects are sent to `Window` via
+  // `postMessage()`.
+  void SetShouldMeasureDataAccessBeforeOrigin() {
+    should_measure_data_access_before_origin_ = true;
+  }
+  const String& origin();
   ScriptValue data(ScriptState*);
   bool IsDataDirty() const { return is_data_dirty_; }
-  const String& origin() const { return origin_; }
   const String& lastEventId() const { return last_event_id_; }
   EventTarget* source() const { return source_.Get(); }
   MessagePortArray ports();
@@ -227,6 +234,7 @@ class CORE_EXPORT MessageEvent final : public Event {
   Member<DOMArrayBuffer> data_as_array_buffer_;
   bool is_data_dirty_ = true;
   String origin_;
+  bool should_measure_data_access_before_origin_ = false;
   String last_event_id_;
   Member<EventTarget> source_;
   // ports_ are the MessagePorts in an entangled state, and channels_ are

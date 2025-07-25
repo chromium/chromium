@@ -29,12 +29,16 @@
 
 #include <memory>
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -291,7 +295,37 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
                                              SizeOfExternalMemoryInBytes());
 }
 
+const String& MessageEvent::origin() {
+  should_measure_data_access_before_origin_ = false;
+  return origin_;
+}
+
 ScriptValue MessageEvent::data(ScriptState* script_state) {
+  // Measure how often developers access `data` prior to accessing (and
+  // hopefully evaluating!) `origin` as a way of evaluating the viability of
+  // https://github.com/mikewest/incentivize-origin-checks/.
+  if (should_measure_data_access_before_origin_) {
+    if (ExecutionContext* context = ExecutionContext::From(script_state)) {
+      scoped_refptr<SecurityOrigin> sending_origin =
+          SecurityOrigin::CreateFromString(origin_);
+      const SecurityOrigin* receiving_origin = context->GetSecurityOrigin();
+      if (sending_origin->IsSameOriginWith(receiving_origin)) {
+        UseCounter::Count(context,
+                          WebFeature::kMessageEventDataBeforeSameOrigin);
+      } else if (sending_origin->IsSameSiteWith(receiving_origin)) {
+        UseCounter::Count(context,
+                          WebFeature::kMessageEventDataBeforeSameSiteOrigin);
+      } else if (sending_origin->IsOpaque()) {
+        UseCounter::Count(context,
+                          WebFeature::kMessageEventDataBeforeOpaqueOrigin);
+      } else {
+        UseCounter::Count(context,
+                          WebFeature::kMessageEventDataBeforeCrossSiteOrigin);
+      }
+    }
+    should_measure_data_access_before_origin_ = false;
+  }
+
   is_data_dirty_ = false;
 
   v8::Isolate* isolate = script_state->GetIsolate();

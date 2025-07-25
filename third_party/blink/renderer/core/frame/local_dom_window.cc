@@ -1404,6 +1404,8 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     display_capture_request_token_.Activate();
   }
 
+  event->SetShouldMeasureDataAccessBeforeOrigin();
+
   if (GetFrame() &&
       GetFrame()->GetPage()->GetPageScheduler()->IsInBackForwardCache()) {
     // Enqueue the event when the page is in back/forward cache, so that it

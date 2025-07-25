@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body>
+<script type="module">
+  import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+  let make_test = which => {
+    let useCounter, origin;
+    switch (which) {
+      case "same-origin":
+        useCounter = WebFeature.kMessageEventDataBeforeSameOrigin;
+        origin = get_host_info().ORIGIN;
+        break;
+
+      case "same-site":
+        useCounter = WebFeature.kMessageEventDataBeforeSameSiteOrigin;
+        origin = get_host_info().OTHER_ORIGIN;
+        break;
+
+      case "cross-site":
+        useCounter = WebFeature.kMessageEventDataBeforeCrossSiteOrigin;
+        origin = get_host_info().HTTP_NOTSAMESITE_ORIGIN;
+        break;
+    }
+
+    promise_test(async t => {
+      internals.clearUseCounter(document, useCounter);
+      return new Promise((resolve, reject) => {
+        let w = window.open(`${origin}/wpt_internal/webmessaging/resources/post-to-opener.html`);
+        window.addEventListener('message', e => {
+          if (e.source !== w)
+            return;
+          resolve(e);
+        });
+      }).then(e => {
+        const data = e.data;
+        assert_true(internals.isUseCounted(document, useCounter), which);
+      });
+    }, `MessageEvent.data accessed before MessageEvent.origin increments a UseCounter: ${which}.`);
+  };
+
+  make_test("same-origin");
+  make_test("same-site");
+  make_test("cross-site");
+
+  promise_test(async t => {
+    internals.clearUseCounter(document, WebFeature.kMessageEventDataBeforeOpaqueOrigin);
+    return new Promise((resolve, reject) => {
+      let i = document.createElement('iframe');
+      i.src = `${get_host_info().ORIGIN}/wpt_internal/webmessaging/resources/post-to-opener.html`;
+      i.sandbox = "allow-scripts";
+      window.addEventListener('message', e => {
+        console.log(e);
+        if (e.source !== i.contentWindow)
+          return;
+        resolve(e);
+      });
+      document.body.appendChild(i);
+    }).then(e => {
+      const data = e.data;
+      assert_true(internals.isUseCounted(document, WebFeature.kMessageEventDataBeforeOpaqueOrigin), "Opaque origin");
+    });
+  }, `MessageEvent.data accessed before MessageEvent.origin increments a UseCounter: Opaque origin.`);
+
+</script>

@@ -4921,6 +4921,10 @@ enum WebFeature {
   kAutofillMaybeSyntheticSelect = 5610,
   kAutofillSyntheticSelect = 5611,
   kFetchRetry = 5612,
+  kMessageEventDataBeforeSameOrigin = 5613,
+  kMessageEventDataBeforeSameSiteOrigin = 5614,
+  kMessageEventDataBeforeCrossSiteOrigin = 5615,
+  kMessageEventDataBeforeOpaqueOrigin = 5616,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

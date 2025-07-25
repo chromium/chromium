@@ -6243,6 +6243,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5610" label="AutofillMaybeSyntheticSelect"/>
   <int value="5611" label="AutofillSyntheticSelect"/>
   <int value="5612" label="FetchRetry"/>
+  <int value="5613" label="MessageEventDataBeforeSameOrigin"/>
+  <int value="5614" label="MessageEventDataBeforeSameSiteOrigin"/>
+  <int value="5615" label="MessageEventDataBeforeCrossSiteOrigin"/>
+  <int value="5616" label="MessageEventDataBeforeOpaqueOrigin"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

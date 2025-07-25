@@ -70,8 +70,8 @@ WebDOMMessageEvent::WebDOMMessageEvent(
       mojom::blink::DelegatedCapability::kNone);
 }
 
-WebString WebDOMMessageEvent::Origin() const {
-  return WebString(ConstUnwrap<MessageEvent>()->origin());
+WebString WebDOMMessageEvent::Origin() {
+  return WebString(Unwrap<MessageEvent>()->origin());
 }
 
 }  // namespace blink
