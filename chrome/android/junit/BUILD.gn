@@ -441,6 +441,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//base:flagged_apis_java",
+      "//chrome/browser/tabpersistence:java",
     ]
   }
 
@@ -1082,7 +1083,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tabmodel/UndoTabModelUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/tabpersistence:java",
+    ]
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.tasks") {

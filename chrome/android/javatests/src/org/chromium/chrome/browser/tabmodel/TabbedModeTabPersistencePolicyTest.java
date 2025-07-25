@@ -55,8 +55,8 @@ import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -69,7 +69,7 @@ import org.chromium.url.GURL;
 import java.nio.ByteBuffer;
 
 /**
- * Tests for the tabbed-mode persisitence policy. TODO: Consider turning this into a unit test after
+ * Tests for the tabbed-mode persistence policy. TODO: Consider turning this into a unit test after
  * resolving the task involving disk I/O.
  */
 @Batch(UNIT_TESTS)
@@ -88,7 +88,6 @@ public class TabbedModeTabPersistencePolicyTest {
     @Mock MismatchedIndicesHandler mMismatchedIndicesHandler;
 
     private TestTabModelDirectory mMockDirectory;
-    private AdvancedMockContext mAppContext;
     private CipherFactory mCipherFactory;
 
     @Before
@@ -111,16 +110,16 @@ public class TabbedModeTabPersistencePolicyTest {
                         return Pair.create(null, null);
                     }
                 });
-        mAppContext =
+        AdvancedMockContext appContext =
                 new AdvancedMockContext(
                         InstrumentationRegistry.getInstrumentation()
                                 .getTargetContext()
                                 .getApplicationContext());
-        ContextUtils.initApplicationContextForTests(mAppContext);
+        ContextUtils.initApplicationContextForTests(appContext);
 
         mMockDirectory =
                 new TestTabModelDirectory(
-                        mAppContext,
+                        appContext,
                         "TabbedModeTabPersistencePolicyTest",
                         TabStateDirectory.TABBED_MODE_DIRECTORY);
         TabStateDirectory.setBaseStateDirectoryForTests(mMockDirectory.getBaseDirectory());

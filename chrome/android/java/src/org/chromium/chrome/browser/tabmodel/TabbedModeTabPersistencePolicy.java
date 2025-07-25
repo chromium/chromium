@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -430,7 +431,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                 stream =
                         new DataInputStream(
                                 new BufferedInputStream(new FileInputStream(metadataFile)));
-                TabPersistentStore.readSavedMetadataFile(stream, null, tabIds);
+                TabMetadataFileManager.readSavedMetadataFile(stream, /* callback= */ null, tabIds);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
             } finally {

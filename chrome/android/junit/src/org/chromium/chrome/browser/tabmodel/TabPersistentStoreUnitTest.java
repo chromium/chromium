@@ -47,14 +47,13 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -87,8 +86,6 @@ public class TabPersistentStoreUnitTest {
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabUngrouper mTabUngrouper;
 
-    private TabGroupModelFilter mNormalTabGroupModelFilter;
-    private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     private TabPersistentStore mPersistentStore;
     private CipherFactory mCipherFactory;
 
@@ -108,13 +105,14 @@ public class TabPersistentStoreUnitTest {
 
         when(mTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mTabGroupModelFilterProvider);
-        mNormalTabGroupModelFilter = new TabGroupModelFilterImpl(mNormalTabModel, mTabUngrouper);
-        mIncognitoTabGroupModelFilter =
+        TabGroupModelFilter normalTabGroupModelFilter =
+                new TabGroupModelFilterImpl(mNormalTabModel, mTabUngrouper);
+        TabGroupModelFilter incognitoTabGroupModelFilter =
                 new TabGroupModelFilterImpl(mIncognitoTabModel, mTabUngrouper);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
-                .thenReturn(mNormalTabGroupModelFilter);
+                .thenReturn(normalTabGroupModelFilter);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
-                .thenReturn(mIncognitoTabGroupModelFilter);
+                .thenReturn(incognitoTabGroupModelFilter);
 
         mCipherFactory = new CipherFactory();
     }
@@ -125,7 +123,7 @@ public class TabPersistentStoreUnitTest {
         final AtomicBoolean flushed = new AtomicBoolean(false);
         if (mPersistentStore != null) {
             mPersistentStore.getTaskRunnerForTests().execute(() -> flushed.set(true));
-            CriteriaHelper.pollUiThreadForJUnit(() -> flushed.get());
+            CriteriaHelper.pollUiThreadForJUnit(flushed::get);
         }
     }
 
@@ -425,7 +423,7 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    public void testSerializeTabModelSelector() throws IOException {
+    public void testSerializeTabModelSelector() {
         setupSerializationTestMocks();
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null);
@@ -457,7 +455,7 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    public void testSkipNonActiveNtpsWithSkippedNtpComeBeforeActiveTab() throws IOException {
+    public void testSkipNonActiveNtpsWithSkippedNtpComeBeforeActiveTab() {
         setupSerializationTestMocksWithSkippedNtpComeBeforeActiveTab();
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null);
@@ -474,7 +472,7 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    public void testSkipNonActiveNtpsWithSkippedNtpComeAfterActiveTab() throws IOException {
+    public void testSkipNonActiveNtpsWithSkippedNtpComeAfterActiveTab() {
         setupSerializationTestMocks();
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null);
@@ -491,8 +489,7 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsEnabled()
-            throws IOException {
+    public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsEnabled() {
         setupSerializationTestMocksWithGroupedAndNavigableNtps();
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null);
@@ -517,7 +514,7 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    public void testSerializeTabModelSelector_tabsBeingRestored() throws IOException {
+    public void testSerializeTabModelSelector_tabsBeingRestored() {
         setupSerializationTestMocks();
         TabRestoreDetails regularTabRestoreDetails =
                 new TabRestoreDetails(RESTORE_TAB_ID_1, 2, false, RESTORE_TAB_STRING_1, false);
@@ -572,7 +569,7 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    public void testSerializeTabModelSelector_closingTabsSkipped() throws IOException {
+    public void testSerializeTabModelSelector_closingTabsSkipped() {
         when(mNormalTabModel.getCount()).thenReturn(2);
         when(mNormalTabModel.index()).thenReturn(1);
         Tab regularTab1 = mock(Tab.class);

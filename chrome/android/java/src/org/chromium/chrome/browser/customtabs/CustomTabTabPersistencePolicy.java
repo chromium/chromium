@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
@@ -346,7 +347,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                 stream =
                         new DataInputStream(
                                 new BufferedInputStream(new FileInputStream(metadataFile)));
-                TabPersistentStore.readSavedMetadataFile(stream, null, tabIds);
+                TabMetadataFileManager.readSavedMetadataFile(stream, /* callback= */ null, tabIds);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
             } finally {
