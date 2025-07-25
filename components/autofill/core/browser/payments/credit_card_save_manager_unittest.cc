@@ -4115,6 +4115,16 @@ TEST_F(CreditCardSaveManagerTest,
       "Autofill.SaveCreditCardPromptOffer.Server",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
 
+// TODO(crbug.com/430588721): Verify android and ios specific metrics
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Desktop.Server",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Desktop.Server."
+      "WithSameLastFourButDifferentExpiration",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+#endif
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);

@@ -5812,6 +5812,72 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.SaveCreditCardPromptOffer.Desktop.Server.{ServerSaveSituation}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt on desktop is shown or not shown
+    for a card to be saved as a server card, which {ServerSaveSituation}. Is
+    emitted whenever card save is offered or decision to not offer is made. Not
+    logged for prompt re-shows (e.g., prompt reshown from the omnibox icon on
+    desktop).
+  </summary>
+  <token key="ServerSaveSituation">
+    <variant name="WithMultipleLegalLines"
+        summary="has a legal message with multiple lines"/>
+    <variant name="WithSameLastFourButDifferentExpiration"
+        summary="has the same last four digits as an existing server card but
+                 different expiratation date"/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.SaveCreditCardPromptOffer.Desktop.{SaveDestination}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt on desktop is shown or not shown
+    for a card to be saved as a {SaveDestination} card. Is emitted whenever card
+    save is offered or decision to not offer is made. Not logged for prompt
+    re-shows (e.g., prompt reshown from the omnibox icon on desktop).
+  </summary>
+  <token key="SaveDestination">
+    <variant name="Local" summary="local"/>
+    <variant name="Server" summary="server"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptOffer.Desktop.{SaveDestination}.{SaveSituation}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt on desktop is shown or not shown
+    for a card to be saved as a {SaveDestination} card, when {SaveSituation}. Is
+    emitted whenever card save is offered or decision to not offer is made. Not
+    logged for prompt re-shows (e.g., prompt reshown from the omnibox icon on
+    desktop).
+  </summary>
+  <token key="SaveDestination">
+    <variant name="Local" summary="local"/>
+    <variant name="Server" summary="server"/>
+  </token>
+  <token key="SaveSituation">
+    <variant name="RequestingCardHolderName"
+        summary="explicitly requesting cardholder name"/>
+    <variant name="RequestingExpirationDate"
+        summary="explicitly requesting expiration date"/>
+    <variant name="SavingWithCvc"
+        summary="saving security code at the same time"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SaveCreditCardPromptOffer.{SaveDestination}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
   <owner>kavitasoni@google.com</owner>

@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_desktop.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -742,6 +743,11 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::LOCAL_SAVE:
+      if (!is_reshow_) {
+        autofill_metrics::LogSaveCreditCardPromptOfferMetricDesktop(
+            autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
+            /*save_credit_card_options=*/options_);
+      }
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
           is_reshow_, options_,
@@ -805,6 +811,11 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::LOCAL_SAVE:
+      if (!is_reshow_) {
+        autofill_metrics::LogSaveCreditCardPromptOfferMetricDesktop(
+            autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+            is_upload_save_, /*save_credit_card_options=*/options_);
+      }
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save_, is_reshow_, options_,

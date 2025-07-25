@@ -771,6 +771,13 @@ static_library("browser") {
   sources += get_target_outputs(":regex_patterns_inl_h")
   sources += get_target_outputs(":entity_schema_enums_and_functions")
 
+  if (!is_android && !is_ios) {
+    sources += [
+      "metrics/payments/credit_card_save_metrics_desktop.cc",
+      "metrics/payments/credit_card_save_metrics_desktop.h",
+    ]
+  }
+
   if (is_ios) {
     sources += [
       "form_import/addresses/autofill_save_update_address_profile_delegate_ios.cc",

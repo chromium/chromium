@@ -2001,7 +2001,15 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
       AutofillMetrics::SaveTypeMetric::LOCAL, 1);
 
-  // UMA should have recorded bubble rejection.
+  // UMA should have recorded platform-agnostic and desktop-specific bubble
+  // rejection metric.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Local",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Desktop.Local",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Local.FirstShow",
       autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
@@ -2073,7 +2081,15 @@ IN_PROC_BROWSER_TEST_P(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
       AutofillMetrics::SaveTypeMetric::SERVER, 1);
 
-  // UMA should have recorded bubble rejection.
+  // UMA should have recorded platform-agnostic and desktop-specific bubble
+  // rejection metric.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Server",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Desktop.Server",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
       autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);

@@ -62,12 +62,17 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_desktop.h"
+#endif
+
 namespace autofill {
 namespace {
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using SaveCardOfferUserDecision =
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
+using SaveCardPromptOffer = autofill_metrics::SaveCardPromptOffer;
 
 // If |name| consists of three whitespace-separated parts and the second of the
 // three parts is a single character or a single character followed by a period,
@@ -123,6 +128,41 @@ PrepareForVirtualCardEnroll(
   return std::nullopt;
 }
 
+// Logs metrics for whether the save card prompt is shown or not. When the
+// prompt is not shown, it also logs platform-specific metrics since the save
+// card flow does not proceed further.
+void LogPromptOfferMetricForCreditCardSave(
+    SaveCardPromptOffer metric,
+    bool is_upload_save,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions& options =
+        {}) {
+  autofill_metrics::LogSaveCreditCardPromptOfferMetric(metric, is_upload_save);
+
+  switch (metric) {
+    case SaveCardPromptOffer::kNotShownMaxStrikesReached:
+    case SaveCardPromptOffer::kCvcMissingForPotentialUpdate: {
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/430588721): Log android-specific metric.
+#elif BUILDFLAG(IS_IOS)
+// TODO(crbug.com/430588721): Log ios-specific metric.
+#else
+      if (metric == SaveCardPromptOffer::kNotShownMaxStrikesReached) {
+        // On desktop, save will be offered in the omnibox without popping-up
+        // the bubble. Detailed metric will be logged by
+        // SaveCardBubbleController when decision to show omnibox icon will be
+        // taken.
+        return;
+      }
+      autofill_metrics::LogSaveCreditCardPromptOfferMetricDesktop(
+          metric, is_upload_save, /*save_credit_card_options=*/options);
+#endif
+      break;
+    }
+    case SaveCardPromptOffer::kShown:
+    case SaveCardPromptOffer::kNotShownRequiredDelay:
+      break;
+  }
+}
 }  // namespace
 
 CreditCardSaveManager::CreditCardSaveManager(AutofillClient* client)
@@ -410,12 +450,21 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       upload_request_.cvc.empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillRequireCvcForPossibleCardUpdate)) {
-    autofill_metrics::LogSaveCreditCardPromptOfferMetric(
-        autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
-        /*is_upload_save=*/true);
+    LogPromptOfferMetricForCreditCardSave(
+        SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
+        /*is_upload_save=*/true,
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
+            .with_should_request_name_from_user(should_request_name_from_user_)
+            .with_should_request_expiration_date_from_user(false)
+            .with_same_last_four_as_server_card_but_different_expiration_date(
+                true)
+            .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
+                base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
+            .with_card_save_type(
+                payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly));
 
     autofill_metrics::LogSaveCardPromptOfferMetric(
-        autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
+        SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
         /*is_upload_save=*/true, /*is_reshow=*/false,
         payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_should_request_name_from_user(should_request_name_from_user_)
@@ -651,14 +700,12 @@ bool CreditCardSaveManager::
       return false;
     case CvcStorageStrikeDatabase::kMaxStrikeLimitReached:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
-          is_upload_save,
+          SaveCardPromptOffer::kNotShownMaxStrikesReached, is_upload_save,
           /*is_reshow=*/false);
       return true;
     case CvcStorageStrikeDatabase::kRequiredDelayNotPassed:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kNotShownRequiredDelay,
-          is_upload_save,
+          SaveCardPromptOffer::kNotShownRequiredDelay, is_upload_save,
           /*is_reshow=*/false);
       return true;
   }
@@ -773,14 +820,13 @@ void CreditCardSaveManager::OfferCardLocalSave() {
   }
   if (show_save_prompt_.has_value()) {
     if (show_save_prompt_.value()) {
-      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kShown,
-          /*is_upload_save=*/false);
+      LogPromptOfferMetricForCreditCardSave(SaveCardPromptOffer::kShown,
+                                            /*is_upload_save=*/false);
     } else if (!show_save_prompt_.value()) {
       autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
           AutofillMetrics::SaveTypeMetric::LOCAL);
-      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+      LogPromptOfferMetricForCreditCardSave(
+          SaveCardPromptOffer::kNotShownMaxStrikesReached,
           /*is_upload_save=*/false);
     }
   }
@@ -865,14 +911,13 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
   LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
   if (show_save_prompt_.has_value()) {
     if (show_save_prompt_.value()) {
-      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kShown,
-          /*is_upload_save=*/true);
+      LogPromptOfferMetricForCreditCardSave(SaveCardPromptOffer::kShown,
+                                            /*is_upload_save=*/true);
     } else if (!show_save_prompt_.value()) {
       autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
           AutofillMetrics::SaveTypeMetric::SERVER);
-      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+      LogPromptOfferMetricForCreditCardSave(
+          SaveCardPromptOffer::kNotShownMaxStrikesReached,
           /*is_upload_save=*/true);
     }
   }
