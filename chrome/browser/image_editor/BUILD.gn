@@ -24,7 +24,7 @@ static_library("image_editor") {
 
   deps = [
     "//base",
-    "//components/lens:lens",
+    "//components/lens",
     "//content/public/browser",
     "//ui/base/cursor",
     "//ui/snapshot",

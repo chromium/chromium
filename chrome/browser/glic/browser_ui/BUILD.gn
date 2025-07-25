@@ -19,10 +19,10 @@ source_set("browser_ui") {
     "theme_util.h",
   ]
   deps = [
-    "//chrome/browser/themes:themes",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/user_education:user_education",
-    "//components/feature_engagement/public:public",
+    "//chrome/browser/ui/user_education",
+    "//components/feature_engagement/public",
   ]
   public_deps = [ "//chrome/browser/glic" ]
 }
@@ -33,7 +33,7 @@ source_set("unit_tests") {
   deps = [
     ":browser_ui",
     "//base/test:test_support",
-    "//chrome/browser:browser",
+    "//chrome/browser",
     "//chrome/browser:global_features",
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
@@ -74,7 +74,7 @@ source_set("interactive_ui_tests") {
     "//testing/gtest",
     "//ui/base:ozone_buildflags",
     "//ui/base:test_support",
-    "//ui/compositor:compositor",
+    "//ui/compositor",
     "//ui/gfx",
     "//ui/gfx:gfx_switches",
     "//ui/views",

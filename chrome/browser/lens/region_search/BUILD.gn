@@ -25,7 +25,7 @@ static_library("region_search") {
     "//components/lens:buildflags",
     "//components/lens:lens_mojo",
     "//components/prefs",
-    "//components/search_engines:search_engines",
+    "//components/search_engines",
     "//content/public/browser",
     "//ui/views",
 

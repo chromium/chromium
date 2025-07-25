@@ -17,7 +17,7 @@ source_set("google") {
   deps = [
     "//base",
     "//chrome/common:constants",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//content/public/browser",
   ]
 
@@ -32,7 +32,7 @@ source_set("google") {
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/policy/core",
-      "//chromeos/ash/components/system:system",
+      "//chromeos/ash/components/system",
       "//components/policy/core/common:common_constants",
     ]
   }
@@ -96,7 +96,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/installer/util:with_no_strings",
     "//content/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 
   if (is_chromeos) {

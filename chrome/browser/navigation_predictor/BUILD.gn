@@ -12,7 +12,7 @@ source_set("navigation_predictor") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//components/keyed_service/core:core",
+    "//components/keyed_service/core",
     "//url",
   ]
 }

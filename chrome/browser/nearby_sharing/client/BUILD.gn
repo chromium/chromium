@@ -17,7 +17,7 @@ source_set("client") {
     "//base",
     "//chrome/browser/nearby_sharing/common",
     "//chromeos/ash/components/nearby/common/client",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/signin/public/identity_manager",
     "//net",
     "//net/traffic_annotation",
