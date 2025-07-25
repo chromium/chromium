@@ -77,6 +77,7 @@ void LogDialogAction(PasswordChangeDelegate::State state,
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kCanceled:
+    case PasswordChangeDelegate::State::kNoState:
       NOTREACHED();
   }
 }
@@ -103,6 +104,7 @@ void LogToastEvent(PasswordChangeDelegate::State state,
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kOtpDetected:
+    case PasswordChangeDelegate::State::kNoState:
       NOTREACHED();
   }
 }
@@ -348,6 +350,9 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
       return ToastOptions(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORD_UNCHANGED),
           vector_icons::kPasswordManagerIcon, std::nullopt);
+
+    case PasswordChangeDelegate::State::kNoState:
+      NOTREACHED();
   }
 }
 

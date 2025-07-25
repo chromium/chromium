@@ -49,7 +49,12 @@ class PasswordChangeDelegate {
     // Password change was canceled by the user.
     kCanceled = 8,
 
-    kMaxValue = kCanceled,
+    // The initial state before any UI is displayed. Transitions automatically
+    // into kOfferingPasswordChange or kWaitingForAgreement after no OTP is
+    // present on a main page.
+    kNoState = 9,
+
+    kMaxValue = kNoState,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowState)
 

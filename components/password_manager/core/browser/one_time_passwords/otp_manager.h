@@ -7,6 +7,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
@@ -24,6 +26,13 @@ class PasswordManagerClient;
 // A class in charge of handling one time passwords, one per tab.
 class OtpManager : public autofill::OtpSuggestionDelegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnOtpFieldDetected(OtpFormManager* form_manager) = 0;
+  };
+
   explicit OtpManager(PasswordManagerClient* client);
 
   ~OtpManager() override;
@@ -50,12 +59,15 @@ class OtpManager : public autofill::OtpSuggestionDelegate {
                          base::OnceCallback<void(std::vector<std::string>)>
                              callback) const override;
 
-#if defined(UNIT_TEST)
   const base::flat_map<autofill::FormGlobalId, std::unique_ptr<OtpFormManager>>&
   form_managers() const {
     return form_managers_;
   }
-#endif  // defined(UNIT_TEST)
+
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
+  }
 
  private:
   // Returns a manager for a form, if it exists, or nullptr otherwise.
@@ -70,6 +82,8 @@ class OtpManager : public autofill::OtpSuggestionDelegate {
   // without invalidating weak_ptrs to form managers.
   base::flat_map<autofill::FormGlobalId, std::unique_ptr<OtpFormManager>>
       form_managers_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace password_manager

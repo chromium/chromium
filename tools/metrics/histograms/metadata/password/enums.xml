@@ -765,6 +765,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Password change failed"/>
   <int value="7" label="OTP detected"/>
   <int value="8" label="Canceled by the user"/>
+  <int value="9" label="No state. The feature wasn't offered"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->

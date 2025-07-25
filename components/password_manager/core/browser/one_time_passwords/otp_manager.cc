@@ -72,6 +72,7 @@ void OtpManager::ProcessClassificationModelPredictions(
   autofill::FormGlobalId form_id(form.global_id());
   if (fillable_otp_fields.empty()) {
     form_managers_.erase(form_id);
+
     return;
   }
 
@@ -79,6 +80,9 @@ void OtpManager::ProcessClassificationModelPredictions(
   if (!form_manager) {
     form_managers_.emplace(form_id, std::make_unique<OtpFormManager>(
                                         form_id, fillable_otp_fields, client_));
+    for (Observer& observer : observers_) {
+      observer.OnOtpFieldDetected(GetManagerForForm(form_id));
+    }
     client_->InformPasswordChangeServiceOfOtpPresent();
 
   } else {
@@ -108,6 +112,9 @@ void OtpManager::ProcessServerPredictions(
     form_managers_.emplace(form.global_id(),
                            std::make_unique<OtpFormManager>(
                                form.global_id(), otp_overrides, client_));
+    for (Observer& observer : observers_) {
+      observer.OnOtpFieldDetected(GetManagerForForm(form.global_id()));
+    }
     client_->InformPasswordChangeServiceOfOtpPresent();
     return;
   }
