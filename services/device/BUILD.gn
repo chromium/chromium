@@ -220,7 +220,7 @@ source_set("tests") {
       "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
     ]
     deps += [
-      "//chromeos/components/sensors:sensors",
+      "//chromeos/components/sensors",
       "//chromeos/components/sensors:test_support",
     ]
   } else if (is_linux && use_udev) {
@@ -324,7 +324,7 @@ source_set("tests") {
 
     deps += [
       "//device/bluetooth:mocks",
-      "//services/device/public/cpp/bluetooth:bluetooth",
+      "//services/device/public/cpp/bluetooth",
       "//services/device/serial",
       "//services/device/serial:test_support",
     ]

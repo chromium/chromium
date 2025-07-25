@@ -9,7 +9,7 @@ source_set("tests") {
 
   deps = [
     "//base/test:test_support",
-    "//components/viz/common:common",
+    "//components/viz/common",
     "//components/viz/test:test_support",
     "//gpu/ipc/common",
     "//ipc",

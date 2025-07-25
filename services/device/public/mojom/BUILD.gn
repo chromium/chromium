@@ -219,7 +219,7 @@ mojom("usb_test") {
 mojom("geoposition") {
   generate_java = true
   sources = [ "geoposition.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base:base" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 
   if (use_blink) {
     # The blink variant of the geoposition mojom is depended on by the blink

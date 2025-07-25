@@ -420,9 +420,9 @@ if (is_linux || is_chromeos) {
       "network_sandbox_hook_linux.h",
     ]
     deps = [
-      "//base:base",
+      "//base",
       "//sandbox/linux:sandbox_services",
-      "//sandbox/policy:policy",
+      "//sandbox/policy",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
@@ -708,13 +708,13 @@ source_set("test_support") {
     "//services/network/public/cpp",
     "//services/network/public/cpp:buildflags",
     "//services/network/public/mojom",
+    "//services/network/trust_tokens",
     "//services/network/trust_tokens:test_support",
-    "//services/network/trust_tokens:trust_tokens",
   ]
 
   deps = [
     "//base",
-    "//components/cbor:cbor",
+    "//components/cbor",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",

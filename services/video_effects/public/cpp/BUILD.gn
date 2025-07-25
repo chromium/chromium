@@ -11,7 +11,7 @@ if (enable_video_effects) {
       "video_effects_service_host.h",
     ]
 
-    public_deps = [ "//services/video_effects/public/mojom:mojom" ]
+    public_deps = [ "//services/video_effects/public/mojom" ]
 
     deps = [
       "//content/public/browser",

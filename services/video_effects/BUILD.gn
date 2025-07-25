@@ -25,13 +25,13 @@ if (enable_video_effects) {
     ]
 
     visibility = [
-      "//content/utility:utility",
+      "//content/utility",
       "//services/video_effects:tests",
     ]
 
     public_deps = [
-      "//services/video_effects/public/mojom:mojom",
-      "//services/viz/public/cpp/gpu:gpu",
+      "//services/video_effects/public/mojom",
+      "//services/viz/public/cpp/gpu",
     ]
 
     deps = [

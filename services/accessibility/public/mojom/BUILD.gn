@@ -60,10 +60,10 @@ if (supports_os_accessibility_service) {
     public_deps = [
       ":assistive_technology_type",
       "//mojo/public/mojom/base",
-      "//skia/public/mojom:mojom",
-      "//ui/events/mojom:mojom",
+      "//skia/public/mojom",
+      "//ui/events/mojom",
       "//ui/gfx/geometry/mojom",
-      "//ui/latency/mojom:mojom",
+      "//ui/latency/mojom",
     ]
   }
 

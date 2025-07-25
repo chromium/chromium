@@ -73,7 +73,7 @@ source_set("lib") {
     public_deps += [
       "public/mojom:os_service_mojom",
       "//gin",
-      "//ui/accessibility:accessibility",
+      "//ui/accessibility",
     ]
     deps = [
       "public/mojom:os_service_mojom_js__generator",

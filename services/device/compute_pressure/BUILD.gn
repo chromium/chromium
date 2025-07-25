@@ -29,7 +29,7 @@ source_set("compute_pressure") {
 
   deps = [
     "//base",
-    "//components/system_cpu:system_cpu",
+    "//components/system_cpu",
     "//mojo/public/cpp/bindings",
     "//services/device/public/cpp:device_features",
   ]

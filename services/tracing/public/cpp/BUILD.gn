@@ -134,9 +134,9 @@ target(tracing_lib_type, "cpp") {
     deps += [
       ":buildflags",
       "//build:chromecast_buildflags",
-      "//components/system_cpu:system_cpu",
+      "//components/system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
-      "//third_party/snappy:snappy",
+      "//third_party/snappy",
     ]
 
     if (is_win) {
@@ -149,7 +149,7 @@ target(tracing_lib_type, "cpp") {
 
     # Add the SystemProducer implementations.
     if (is_posix || is_fuchsia) {
-      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc:ipc" ]
+      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc" ]
 
       if (is_fuchsia) {
         sources += [

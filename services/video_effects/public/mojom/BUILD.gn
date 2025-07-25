@@ -14,7 +14,7 @@ mojom("mojom") {
   deps = [
     "//media/capture/mojom:video_capture",
     "//media/capture/mojom:video_effects_manager",
-    "//services/viz/public/mojom:mojom",
+    "//services/viz/public/mojom",
   ]
 
   enabled_features = []

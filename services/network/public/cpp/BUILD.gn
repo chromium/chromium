@@ -851,7 +851,7 @@ source_set("perftests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//testing/gtest",
-    "//testing/perf:perf",
+    "//testing/perf",
     "//third_party/google_benchmark",
   ]
 }

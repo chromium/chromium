@@ -18,7 +18,7 @@ component("background_tracing") {
   public_deps = [ "//services/tracing/public/mojom" ]
   deps = [
     "//base",
-    "//services/tracing/public/cpp:cpp",
+    "//services/tracing/public/cpp",
   ]
 }
 
