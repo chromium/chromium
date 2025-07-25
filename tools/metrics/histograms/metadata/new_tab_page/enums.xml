@@ -323,6 +323,12 @@ chromium-metrics-reviews@google.com.
   <int value="1967788069" label="solidcolors_for_NTP">Colors for NTP</int>
 </enum>
 
+<enum name="NtpComposeboxMultimodalState">
+  <int value="1" label="Text Only"/>
+  <int value="2" label="File Only"/>
+  <int value="3" label="Text and File"/>
+</enum>
+
 <enum name="NTPCustomizeChromeBackgroundAction">
   <int value="0"
       label="Collection selected in the 'Chrome backgrounds' dialog."/>

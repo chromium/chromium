@@ -53,6 +53,8 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
   OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time), disposition);
   metrics_recorder_->NotifySessionStateChanged(
       SessionState::kNavigationOccurred);
+  metrics_recorder_->RecordQueryMetrics(
+      query_text.size(), query_controller_->num_files_in_request());
 }
 
 void ComposeboxHandler::OpenUrl(GURL url,

@@ -22,6 +22,16 @@ enum class SessionState {
   kNavigationOccurred = 4,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Describes the query submission details.
+enum class NtpComposeboxMultimodalState {
+  kTextOnly = 0,
+  kFileOnly = 1,
+  kTextAndFile = 2,
+  kMaxValue = kTextAndFile,
+};
+
 using FileUploadStatus = composebox_query::mojom::FileUploadStatus;
 
 struct SessionMetrics {
@@ -29,11 +39,6 @@ struct SessionMetrics {
   ~SessionMetrics();
   // Timer to keep track of the session durations.
   std::unique_ptr<base::ElapsedTimer> session_elapsed_timer;
-  // `time_to_query_submissions` will only hold one value, except in the case
-  // where a user navigates to the AIM page on a new window or tab and the
-  // composebox remains open. In that edge case the user can continue to submit
-  // queries, leading to multiple completion sessions recorded.
-  std::vector<base::TimeDelta> time_to_query_submissions;
   // Number of file upload attempts per file type.
   std::map<lens::MimeType, int> file_upload_attempt_count_per_type;
   // Number of successful file uploads per file type.
@@ -43,6 +48,10 @@ struct SessionMetrics {
   // Number of file validation errors per file type.
   std::map<lens::MimeType, std::map<FileUploadErrorType, int>>
       file_validation_failure_count_per_type;
+  // In most cases `num_query_submissions` will equal 1 except in the case
+  // where a user navigates to the AIM page on a new window or tab and the
+  // composebox remains open.
+  int num_query_submissions = 0;
 };
 
 class ComposeboxMetricsRecorder {
@@ -63,6 +72,10 @@ class ComposeboxMetricsRecorder {
   std::string FileErrorToString(FileUploadErrorType error);
   // Maps mime types to its string version for histogram naming.
   std::string MimeTypeToString(lens::MimeType mime_type);
+
+  // Records several metrics about the query, such the number of characters
+  // found in the query.
+  void RecordQueryMetrics(int text_length, int file_count);
 
  private:
   // Called when the session starts to correctly track session

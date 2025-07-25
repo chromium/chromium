@@ -209,6 +209,8 @@ class ComposeboxQueryController {
   // Clear entire file cache.
   virtual void ClearFiles();
 
+  int num_files_in_request() { return num_files_in_request_; }
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
@@ -369,6 +371,9 @@ class ComposeboxQueryController {
   // to determine if the session is active when handling cluster info
   // expiration.
   int session_id_ = 0;
+
+  // The number of files that are sent in the AIM request.
+  int num_files_in_request_ = 0;
 
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};
 };

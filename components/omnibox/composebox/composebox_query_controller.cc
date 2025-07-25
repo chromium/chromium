@@ -201,11 +201,15 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
 
 GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
                                              base::Time query_start_time) {
+  num_files_in_request_ = 0;
   if (!active_files_.empty() && cluster_info_.has_value()) {
     // Since multiple file upload isn't supported right now, use the last file
     // uploaded to determine `vit` param.
     // TODO(crbug.com/428967670): Support multiple file upload.
     const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
+    // TODO(crbug.com/428967670): Update `num_files_in_request_` when more than
+    // 1 file is supported.
+    num_files_in_request_ = 1;
     if (IsValidFileUploadStatusForMultimodalRequest(
             last_file->upload_status_)) {
       std::unique_ptr<lens::LensOverlayRequestId> request_id =
@@ -372,6 +376,7 @@ void ComposeboxQueryController::ClearClusterInfo() {
   cluster_info_endpoint_fetcher_.reset();
   cluster_info_.reset();
   request_id_generator_.ResetRequestId();
+  num_files_in_request_ = 0;
 }
 
 void ComposeboxQueryController::ResetRequestClusterInfoState(int session_id) {

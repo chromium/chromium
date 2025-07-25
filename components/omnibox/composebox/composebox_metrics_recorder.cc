@@ -8,8 +8,8 @@
 
 namespace {
 const char kComposeboxSessionDuration[] = "Composebox.Session.Duration.Total";
-const char kComposeboxSessionCompletionDuration[] =
-    "Composebox.Session.Duration.Completed";
+const char kComposeboxSessionDurationQuerySubmitted[] =
+    "Composebox.Session.Duration.QuerySubmitted";
 const char kComposeboxSessionAbandonedDuration[] =
     "Composebox.Session.Duration.Abandoned";
 const char kComposeboxQuerySubmissionTime[] =
@@ -22,6 +22,10 @@ const char kComposeboxFileUploadFailure[] =
     "Composebox.Session.File.Browser.UploadFailureCount.";
 const char kComposeboxFileValidationErrorTypes[] =
     "Composebox.Session.File.Browser.ValidationFailureCount.";
+const char kComposeboxQueryTextLength[] = "Composebox.Query.TextLength";
+const char kComposeboxQueryFileCount[] = "Composebox.Query.FileCount";
+const char kComposeboxQueryModality[] = "Composebox.Query.Modality";
+const char kComposeboxQueryCount[] = "Composebox.Session.QueryCount";
 }  // namespace
 
 SessionMetrics::SessionMetrics() = default;
@@ -95,6 +99,23 @@ void ComposeboxMetricsRecorder::OnFileUploadStatusChanged(
       break;
   }
 }
+void ComposeboxMetricsRecorder::RecordQueryMetrics(int text_length,
+                                                   int file_count) {
+  base::UmaHistogramCounts1M(metric_category_name_ + kComposeboxQueryTextLength,
+                             text_length);
+  bool has_text = text_length != 0;
+  bool has_files = file_count != 0;
+  // Submission requests will always have either 1) both text and files 2) text
+  // only or 3) files only.
+  NtpComposeboxMultimodalState multimodal_state =
+      has_text ? (has_files ? NtpComposeboxMultimodalState::kTextAndFile
+                            : NtpComposeboxMultimodalState::kTextOnly)
+               : NtpComposeboxMultimodalState::kFileOnly;
+  base::UmaHistogramEnumeration(
+      metric_category_name_ + kComposeboxQueryModality, multimodal_state);
+  base::UmaHistogramCounts100(metric_category_name_ + kComposeboxQueryFileCount,
+                              file_count);
+}
 
 void ComposeboxMetricsRecorder::NotifySessionStarted() {
   session_metrics_->session_elapsed_timer =
@@ -104,11 +125,19 @@ void ComposeboxMetricsRecorder::NotifySessionStarted() {
 void ComposeboxMetricsRecorder::NotifyQuerySubmitted() {
   base::TimeDelta time_to_query_submission =
       session_metrics_->session_elapsed_timer->Elapsed();
-  session_metrics_->time_to_query_submissions.push_back(
+  base::UmaHistogramMediumTimes(
+      metric_category_name_ + kComposeboxQuerySubmissionTime,
       time_to_query_submission);
+  session_metrics_->num_query_submissions++;
 }
 
 void ComposeboxMetricsRecorder::RecordSessionAbandonedMetrics() {
+  // In the case that the user has submitted a query in a new tab and abandons
+  // the composebox session record the session as completed.
+  if (session_metrics_->num_query_submissions > 0) {
+    RecordSessionCompletedMetrics();
+    return;
+  }
   base::TimeDelta session_duration =
       session_metrics_->session_elapsed_timer->Elapsed();
   base::UmaHistogramMediumTimes(
@@ -121,16 +150,12 @@ void ComposeboxMetricsRecorder::RecordSessionAbandonedMetrics() {
 void ComposeboxMetricsRecorder::RecordSessionCompletedMetrics() {
   base::TimeDelta session_duration =
       session_metrics_->session_elapsed_timer->Elapsed();
-  for (const auto time_to_query_submission :
-       session_metrics_->time_to_query_submissions) {
-    base::UmaHistogramMediumTimes(
-        metric_category_name_ + kComposeboxQuerySubmissionTime,
-        time_to_query_submission);
-    base::UmaHistogramMediumTimes(
-        metric_category_name_ + kComposeboxSessionCompletionDuration,
-        session_duration);
-    RecordTotalSessionDuration(session_duration);
-  }
+  base::UmaHistogramMediumTimes(
+      metric_category_name_ + kComposeboxSessionDurationQuerySubmitted,
+      session_duration);
+  base::UmaHistogramCounts100(metric_category_name_ + kComposeboxQueryCount,
+                              session_metrics_->num_query_submissions);
+  RecordTotalSessionDuration(session_duration);
   FinalizeSessionMetrics();
 }
 
@@ -187,11 +212,11 @@ void ComposeboxMetricsRecorder::FinalizeSessionMetrics() {
 
 void ComposeboxMetricsRecorder::ResetSessionMetrics() {
   session_metrics_->session_elapsed_timer.reset();
-  session_metrics_->time_to_query_submissions.clear();
   session_metrics_->file_upload_attempt_count_per_type.clear();
   session_metrics_->file_upload_success_count_per_type.clear();
   session_metrics_->file_upload_failure_count_per_type.clear();
   session_metrics_->file_validation_failure_count_per_type.clear();
+  session_metrics_->num_query_submissions = 0;
 }
 
 std::string ComposeboxMetricsRecorder::FileErrorToString(
