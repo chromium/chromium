@@ -251,7 +251,8 @@ public class CustomTabTabPersistencePolicyTest {
                                     selectorImpl, null);
                         });
         FileOutputStream fos = null;
-        File metadataFile = new File(stateDirectory, TabPersistentStore.getMetadataFileName("3"));
+        File metadataFile =
+                new File(stateDirectory, TabMetadataFileManager.getMetadataFileName("3"));
         try {
             TabMetadataFileManager.saveListToFile(metadataFile, data);
         } finally {
@@ -364,7 +365,7 @@ public class CustomTabTabPersistencePolicyTest {
 
             @Override
             public @NonNull String getMetadataFileName() {
-                return TabPersistentStore.getMetadataFileName("cct_testing0");
+                return TabMetadataFileManager.getMetadataFileName("cct_testing0");
             }
 
             @Override

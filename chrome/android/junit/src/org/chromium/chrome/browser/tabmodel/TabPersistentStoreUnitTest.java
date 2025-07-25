@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -99,7 +100,7 @@ public class TabPersistentStoreUnitTest {
         when(mTabCreatorManager.getTabCreator(true)).thenReturn(mIncognitoTabCreator);
 
         when(mPersistencePolicy.getMetadataFileName())
-                .thenReturn(TabPersistentStore.SAVED_METADATA_FILE_PREFIX + "state_files_yay");
+                .thenReturn(TabMetadataFileManager.SAVED_METADATA_FILE_PREFIX + "state_files_yay");
         when(mPersistencePolicy.isMergeInProgress()).thenReturn(false);
         when(mPersistencePolicy.performInitialization(any(TaskRunner.class))).thenReturn(false);
 

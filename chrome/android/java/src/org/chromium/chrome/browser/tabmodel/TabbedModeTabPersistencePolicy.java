@@ -159,7 +159,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      * @return The name of the state file.
      */
     public static String getMetadataFileNameForIndex(int selectorIndex) {
-        return TabPersistentStore.getMetadataFileName(Integer.toString(selectorIndex));
+        return TabMetadataFileManager.getMetadataFileName(Integer.toString(selectorIndex));
     }
 
     @Override

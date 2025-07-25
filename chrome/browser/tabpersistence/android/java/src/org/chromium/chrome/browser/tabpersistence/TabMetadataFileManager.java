@@ -35,6 +35,12 @@ public class TabMetadataFileManager {
      */
     private static final int SAVED_STATE_VERSION = 5;
 
+    /**
+     * The prefix of the name of the file where the metadata is saved. Values returned by {@link
+     * #getMetadataFileName(String)} must begin with this prefix.
+     */
+    @VisibleForTesting public static final String SAVED_METADATA_FILE_PREFIX = "tab_state";
+
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
 
@@ -223,5 +229,40 @@ public class TabMetadataFileManager {
                 if (output != null) file.failWrite(output);
             }
         }
+    }
+
+    /**
+     * @param uniqueTag The tag that uniquely identifies this state file. Typically this is an index
+     *     or ID.
+     * @return The name of the state file.
+     */
+    public static String getMetadataFileName(String uniqueTag) {
+        return SAVED_METADATA_FILE_PREFIX + uniqueTag;
+    }
+
+    /**
+     * Parses the metadata file name and returns the unique tag encoded into it.
+     *
+     * @param metadataFileName The state file name to be parsed.
+     * @return The unique tag used when generating the file name.
+     */
+    public static String getMetadataFileUniqueTag(String metadataFileName) {
+        assert isMetadataFile(metadataFileName);
+        return metadataFileName.substring(SAVED_METADATA_FILE_PREFIX.length());
+    }
+
+    /**
+     * Returns whether the specified filename matches the expected pattern of the tab metadata
+     * files.
+     *
+     * @param fileName The name of a file.
+     * @return If the file name is a valid metadata file.
+     */
+    public static boolean isMetadataFile(String fileName) {
+        // The .new/.bak suffixes may be added internally by AtomicFile before the file finishes
+        // writing. Ignore files in this transitory state.
+        return fileName.startsWith(SAVED_METADATA_FILE_PREFIX)
+                && !fileName.endsWith(".new")
+                && !fileName.endsWith(".bak");
     }
 }

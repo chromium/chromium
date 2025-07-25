@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
@@ -87,7 +86,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     public String getMetadataFileName() {
-        return TabPersistentStore.getMetadataFileName(Integer.toString(mTaskId));
+        return TabMetadataFileManager.getMetadataFileName(Integer.toString(mTaskId));
     }
 
     @Override
@@ -257,7 +256,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             Set<Integer> allReferencedTabIds = new HashSet<>();
             List<File> metadataFiles = new ArrayList<>();
             for (File file : stateFiles) {
-                if (TabPersistentStore.isMetadataFile(file.getName())) {
+                if (TabMetadataFileManager.isMetadataFile(file.getName())) {
                     metadataFiles.add(file);
 
                     SparseBooleanArray tabIds = new SparseBooleanArray();
@@ -313,7 +312,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
             for (int i = 0; i < mDeletableMetadataFiles.size(); i++) {
                 File metadataFile = mDeletableMetadataFiles.get(i);
-                String id = TabPersistentStore.getMetadataFileUniqueTag(metadataFile.getName());
+                String id = TabMetadataFileManager.getMetadataFileUniqueTag(metadataFile.getName());
                 try {
                     int taskId = Integer.parseInt(id);
 

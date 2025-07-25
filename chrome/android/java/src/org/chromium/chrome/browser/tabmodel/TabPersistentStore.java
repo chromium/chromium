@@ -92,12 +92,6 @@ public class TabPersistentStore {
     private static final String TAG_MIGRATION = "fb_migration";
     private static final long INVALID_TIME = -1;
 
-    /**
-     * The prefix of the name of the file where the metadata is saved. Values returned by {@link
-     * #getMetadataFileName(String)} must begin with this prefix.
-     */
-    @VisibleForTesting /* package */ static final String SAVED_METADATA_FILE_PREFIX = "tab_state";
-
     @VisibleForTesting /* package */ static final int MAX_MIGRATIONS_PER_SAVE = 5;
 
     private static boolean sDeferredStartupComplete;
@@ -283,7 +277,8 @@ public class TabPersistentStore {
         mPrefetchTabListToMergeTasks = new ArrayList<>();
         mMergedFileNames = new HashSet<>();
 
-        assert isMetadataFile(policy.getMetadataFileName()) : "Metadata file name is not valid";
+        assert TabMetadataFileManager.isMetadataFile(policy.getMetadataFileName())
+                : "Metadata file name is not valid";
         boolean needsInitialization =
                 mPersistencePolicy.performInitialization(mSequencedTaskRunner);
 
@@ -1198,7 +1193,7 @@ public class TabPersistentStore {
                                 TabStateFileManager.parseInfoFromFilename(file.getName());
                         if (tabStateInfo != null) {
                             maxId = Math.max(maxId, tabStateInfo.first);
-                        } else if (isMetadataFile(file.getName())) {
+                        } else if (TabMetadataFileManager.isMetadataFile(file.getName())) {
                             DataInputStream stream = null;
                             try {
                                 stream =
@@ -2076,40 +2071,8 @@ public class TabPersistentStore {
     }
 
     /**
-     * @param uniqueTag The tag that uniquely identifies this state file. Typically this is an index
-     *     or ID.
-     * @return The name of the state file.
-     */
-    public static String getMetadataFileName(String uniqueTag) {
-        return SAVED_METADATA_FILE_PREFIX + uniqueTag;
-    }
-
-    /**
-     * Parses the metadata file name and returns the unique tag encoded into it.
-     *
-     * @param metadataFileName The state file name to be parsed.
-     * @return The unique tag used when generating the file name.
-     */
-    public static String getMetadataFileUniqueTag(String metadataFileName) {
-        assert isMetadataFile(metadataFileName);
-        return metadataFileName.substring(SAVED_METADATA_FILE_PREFIX.length());
-    }
-
-    /**
-     * Returns whether the specified filename matches the expected pattern of the tab metadata
-     * files.
-     */
-    public static boolean isMetadataFile(String fileName) {
-        // The .new/.bak suffixes may be added internally by AtomicFile before the file finishes
-        // writing. Ignore files in this transitory state.
-        return fileName.startsWith(SAVED_METADATA_FILE_PREFIX)
-                && !fileName.endsWith(".new")
-                && !fileName.endsWith(".bak");
-    }
-
-    /**
      * @return The shared pref APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE. This is used when we need to
-     *         know the last known tab state before the active tab from the tab state is read.
+     *     know the last known tab state before the active tab from the tab state is read.
      */
     public static @ActiveTabState int readLastKnownActiveTabStatePref() {
         return ChromeSharedPreferences.getInstance()
