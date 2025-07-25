@@ -475,7 +475,7 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
         }
 
         decoder_->SetStream(current_decode_request_->bitstream_id,
-                            *current_decode_request_->buffer);
+                            current_decode_request_->buffer);
         break;
 
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:

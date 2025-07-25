@@ -198,7 +198,7 @@ void AV1DecoderTest::SetUp() {
 std::vector<AcceleratedVideoDecoder::DecodeResult> AV1DecoderTest::Decode(
     scoped_refptr<DecoderBuffer> buffer) {
   if (buffer)
-    decoder_->SetStream(bitstream_id_++, *buffer);
+    decoder_->SetStream(bitstream_id_++, buffer);
 
   std::vector<DecodeResult> results;
   DecodeResult res;
@@ -229,7 +229,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
   EXPECT_NE(decoder_->stream_id_, 0);
-  EXPECT_FALSE(decoder_->stream_.empty());
+  EXPECT_FALSE(decoder_->decoder_buffer_->empty());
 
   decoder_->Reset();
   EXPECT_EQ(decoder_->state_->current_frame_id, -1);
@@ -241,7 +241,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
   EXPECT_EQ(decoder_->stream_id_, 0);
-  EXPECT_TRUE(decoder_->stream_.empty());
+  EXPECT_FALSE(!!decoder_->decoder_buffer_);
 }
 
 scoped_refptr<DecoderBuffer> AV1DecoderTest::ReadDecoderBuffer(

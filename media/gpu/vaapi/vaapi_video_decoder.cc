@@ -373,7 +373,7 @@ void VaapiVideoDecoder::ScheduleNextDecodeTask() {
   decode_task_queue_.pop();
   if (!current_decode_task_->buffer_->end_of_stream()) {
     decoder_->SetStream(current_decode_task_->buffer_id_,
-                        *current_decode_task_->buffer_);
+                        current_decode_task_->buffer_);
   }
 
   decoder_task_runner_->PostTask(

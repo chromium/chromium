@@ -133,7 +133,10 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
   MockAcceleratedVideoDecoder() = default;
   ~MockAcceleratedVideoDecoder() override = default;
 
-  MOCK_METHOD(void, SetStream, (int32_t, const DecoderBuffer&), (override));
+  MOCK_METHOD(void,
+              SetStream,
+              (int32_t, scoped_refptr<DecoderBuffer>),
+              (override));
   MOCK_METHOD(bool, Flush, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
   MOCK_METHOD(DecodeResult, Decode, (), (override));

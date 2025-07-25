@@ -250,7 +250,7 @@ AcceleratedVideoDecoder::DecodeResult H264DecoderTest::Decode(
                               bitstream.size() - kOffsetToSliceHeader)}));
     }
     EXPECT_NE(decoder_buffers_.back().get(), nullptr);
-    decoder_->SetStream(bitstream_id++, *decoder_buffers_.back());
+    decoder_->SetStream(bitstream_id++, decoder_buffers_.back());
   }
 }
 
@@ -619,7 +619,7 @@ TEST_F(H264DecoderTest, SetEncryptedStream) {
       DecoderBuffer::CopyFrom(base::as_byte_span(bitstream)));
   ASSERT_NE(decoder_buffers_.back().get(), nullptr);
   decoder_buffers_.back()->set_decrypt_config(std::move(decrypt_config));
-  decoder_->SetStream(0, *decoder_buffers_.back());
+  decoder_->SetStream(0, decoder_buffers_.back());
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
   EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
   EXPECT_EQ(8u, decoder_->GetBitDepth());

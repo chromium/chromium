@@ -200,7 +200,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   ~H264Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
-  void SetStream(int32_t id, const DecoderBuffer& decoder) override;
+  void SetStream(int32_t id, scoped_refptr<DecoderBuffer> decoder) override;
   [[nodiscard]] bool Flush() override;
   void Reset() override;
   [[nodiscard]] DecodeResult Decode() override;
@@ -351,9 +351,6 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // Parser in use.
   H264Parser parser_;
 
-  // Most recent call to SetStream().
-  base::raw_span<const uint8_t, DanglingUntriaged> current_stream_;
-
   // Decrypting config for the most recent data passed to SetStream().
   std::unique_ptr<DecryptConfig> current_decrypt_config_;
 
@@ -363,7 +360,10 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
 
   // Keep track of when SetStream() is called so that
   // H264Accelerator::SetStream() can be called.
-  bool current_stream_has_been_changed_ = false;
+  bool decoder_buffer_has_been_changed_ = false;
+
+  // Most recent call to SetStream().
+  scoped_refptr<media::DecoderBuffer> decoder_buffer_;
 
   // DPB in use.
   H264DPB dpb_;
@@ -414,8 +414,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // Encrypted NALUs preceding a fully encrypted (CENCv1) slice NALU. We need to
   // save these that are part of a single sample so they can all be decrypted
   // together.
-  std::vector<base::raw_span<const uint8_t, DanglingUntriaged>>
-      prior_cencv1_nalus_;
+  std::vector<base::raw_span<const uint8_t>> prior_cencv1_nalus_;
   std::vector<SubsampleEntry> prior_cencv1_subsamples_;
 
   // These are std::nullopt unless get recovery point SEI message after Reset.

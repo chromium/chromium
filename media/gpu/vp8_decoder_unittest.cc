@@ -110,7 +110,7 @@ AcceleratedVideoDecoder::DecodeResult VP8DecoderTest::Decode(
     EXPECT_TRUE(base::ReadFileToString(input_file, &bitstream));
     buffer = DecoderBuffer::CopyFrom(base::as_byte_span(bitstream));
     EXPECT_NE(buffer.get(), nullptr);
-    decoder_->SetStream(bitstream_id_++, *buffer);
+    decoder_->SetStream(bitstream_id_++, buffer);
   }
 
   AcceleratedVideoDecoder::DecodeResult result = decoder_->Decode();

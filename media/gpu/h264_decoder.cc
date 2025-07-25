@@ -169,6 +169,7 @@ void H264Decoder::Reset() {
   recovery_frame_num_.reset();
   recovery_frame_cnt_.reset();
 
+  decoder_buffer_.reset();
   secure_handle_ = 0;
 
   // If we are in kDecoding, we can resume without processing an SPS.
@@ -1466,30 +1467,29 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
     }                                              \
   } while (0)
 
-void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
-  auto decoder_buffer_span = base::span(decoder_buffer);
-  const uint8_t* ptr = decoder_buffer_span.data();
-  const size_t size = decoder_buffer_span.size();
-  const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
-
-  DCHECK(ptr);
-  DCHECK(size);
-  DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
-           << " size: " << size;
-  stream_id_ = id;
-  current_stream_ = decoder_buffer_span;
-  current_stream_has_been_changed_ = true;
+void H264Decoder::SetStream(int32_t id,
+                            scoped_refptr<DecoderBuffer> decoder_buffer) {
+  CHECK(decoder_buffer);
   prior_cencv1_nalus_.clear();
   prior_cencv1_subsamples_.clear();
+  decoder_buffer_ = std::move(decoder_buffer);
+  const DecryptConfig* decrypt_config = decoder_buffer_->decrypt_config();
+
+  DVLOG(4) << "New input stream id: " << id
+           << ", buffer: " << decoder_buffer_->AsHumanReadableString();
+  stream_id_ = id;
+  decoder_buffer_has_been_changed_ = true;
   if (decrypt_config) {
-    parser_.SetEncryptedStream(ptr, size, decrypt_config->subsamples());
+    parser_.SetEncryptedStream(decoder_buffer_->data(), decoder_buffer_->size(),
+                               decrypt_config->subsamples());
     current_decrypt_config_ = decrypt_config->Clone();
   } else {
-    parser_.SetStream(ptr, size);
+    parser_.SetStream(decoder_buffer_->data(), decoder_buffer_->size());
     current_decrypt_config_ = nullptr;
   }
-  if (decoder_buffer.side_data() && decoder_buffer.side_data()->secure_handle) {
-    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  if (decoder_buffer_->side_data() &&
+      decoder_buffer_->side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer_->side_data()->secure_handle;
   } else {
     secure_handle_ = 0;
   }
@@ -1501,11 +1501,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
     return kDecodeError;
   }
 
-  if (current_stream_has_been_changed_) {
+  if (decoder_buffer_has_been_changed_) {
     // Calling H264Accelerator::SetStream() here instead of when the stream is
     // originally set in case the accelerator needs to return kTryAgain.
-    H264Accelerator::Status result =
-        accelerator_->SetStream(current_stream_, current_decrypt_config_.get());
+    H264Accelerator::Status result = accelerator_->SetStream(
+        *decoder_buffer_, current_decrypt_config_.get());
     switch (result) {
       case H264Accelerator::Status::kOk:
       case H264Accelerator::Status::kNotSupported:
@@ -1521,7 +1521,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
 
     // Reset the flag so that this is only called again next time SetStream()
     // is called.
-    current_stream_has_been_changed_ = false;
+    decoder_buffer_has_been_changed_ = false;
   }
 
   while (true) {

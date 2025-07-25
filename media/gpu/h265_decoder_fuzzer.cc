@@ -91,7 +91,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           base::span(data, size));
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
       media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
-  decoder.SetStream(1, *decoder_buffer);
+  decoder.SetStream(1, decoder_buffer);
 
   size_t retry_count = 0;
   while (true) {

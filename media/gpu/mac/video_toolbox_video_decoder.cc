@@ -256,7 +256,7 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   decode_cbs_.push(std::move(decode_cb));
-  accelerator_->SetStream(-1, *buffer);
+  accelerator_->SetStream(-1, buffer);
   while (true) {
     // `active_decode_` is used in OnAcceleratorDecode() callbacks to look up
     // decode metadata.

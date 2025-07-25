@@ -207,7 +207,7 @@ AcceleratedVideoDecoder::DecodeResult H265DecoderTest::Decode(
     EXPECT_NE(decoder_buffer_.get(), nullptr);
     if (set_stream_expect)
       EXPECT_CALL(*accelerator_, SetStream(_, _));
-    decoder_->SetStream(bitstream_id++, *decoder_buffer_);
+    decoder_->SetStream(bitstream_id++, decoder_buffer_);
   }
 }
 
@@ -388,7 +388,7 @@ TEST_F(H265DecoderTest, SetEncryptedStream) {
   auto buffer = DecoderBuffer::CopyFrom(bitstream);
   ASSERT_NE(buffer.get(), nullptr);
   buffer->set_decrypt_config(std::move(decrypt_config));
-  decoder_->SetStream(0, *buffer);
+  decoder_->SetStream(0, buffer);
   EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
   EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
   EXPECT_EQ(8u, decoder_->GetBitDepth());
