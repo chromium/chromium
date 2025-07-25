@@ -31,7 +31,7 @@ struct FileChooserParams {
     kOpenDirectory,
 
     // Allows picking a nonexistent file, and prompts to overwrite if the file
-    // already exists. This is not for Blink but for PPAPI.
+    // already exists.
     kSave,
   };
   Mode mode = kOpen;
@@ -40,7 +40,8 @@ struct FileChooserParams {
   // which will be either "Open" or "Save" depending on the mode.
   mojo_base.mojom.String16 title;
 
-  // Default file name to select in the dialog with kSave mode.
+  // Default file name to select in the dialog with kSave mode. This value
+  // is cleared if mode is not kSave.
   mojo_base.mojom.FilePath default_file_name;
 
   // |selected_files| has filenames which a file upload control already
