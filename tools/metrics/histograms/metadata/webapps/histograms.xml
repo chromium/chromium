@@ -1315,6 +1315,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.CopyBundleToCacheAfterUpdateError"
+    enum="IsolatedWebAppCopyBundleToCacheError" expires_after="2026-07-30">
+  <owner>irfedorova@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records the exact error that occurred during the copying the bundle to cache
+    after the update of Isolated Web App. The error is logged together with
+    WebApp.Isolated.CopyBundleToCacheAfterUpdateSuccess in case an error occurs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.CopyBundleToCacheAfterUpdateSuccess"
+    enum="BooleanSuccess" expires_after="2026-07-30">
+  <owner>irfedorova@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records whether the the copying bundle to cache after the update of an
+    Isolated Web App was successful or resulted in an error.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.FirstPolicyProcessingDelay" units="ms"
     expires_after="2026-01-01">
   <owner>greengrape@google.com</owner>
