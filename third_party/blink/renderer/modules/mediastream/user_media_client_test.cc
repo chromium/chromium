@@ -43,6 +43,7 @@
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -705,6 +706,23 @@ class UserMediaChromeClient : public EmptyChromeClient {
  private:
   display::ScreenInfo screen_info_;
 };
+
+std::optional<EchoCancellationMode> ToEchoCancellationMode(
+    V8UnionBooleanOrString* value) {
+  if (value->IsBoolean()) {
+    return value->GetAsBoolean() ? EchoCancellationMode::kBrowserDecides
+                                 : EchoCancellationMode::kDisabled;
+  }
+  CHECK(value->IsString());
+  const String& string_value = value->GetAsString();
+  if (string_value == "all") {
+    return EchoCancellationMode::kAll;
+  }
+  if (string_value == "remote-only") {
+    return EchoCancellationMode::kRemoteOnly;
+  }
+  return std::nullopt;
+}
 
 }  // namespace
 
@@ -2077,5 +2095,63 @@ TEST_F(UserMediaClientTest, CreateWithEchoCancellationModeRemoteOnly) {
   EXPECT_EQ(echo_cancellation->GetAsString(), "remote-only");
 }
 #endif
+
+TEST_F(UserMediaClientTest,
+       EchoCancellationModeTrackCapabilitiesWithSystemWideSupport) {
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::PlatformEffectsMask::ECHO_CANCELLER);
+  MediaStreamTrack* track = RequestLocalAudioTrackWithEchoCancellationMode(
+      EchoCancellationMode::kBrowserDecides);
+  ASSERT_TRUE(track->getCapabilities()->hasEchoCancellation());
+  const auto& echo_cancellation_capabilities =
+      track->getCapabilities()->echoCancellation();
+  Vector<EchoCancellationMode> echo_cancellation_modes;
+  for (auto& mode : echo_cancellation_capabilities) {
+    std::optional<EchoCancellationMode> ec_mode = ToEchoCancellationMode(mode);
+    ASSERT_TRUE(ec_mode.has_value());
+    echo_cancellation_modes.push_back(*ec_mode);
+  }
+  EXPECT_THAT(
+      echo_cancellation_modes,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      testing::UnorderedElementsAre(EchoCancellationMode::kDisabled,
+                                    EchoCancellationMode::kBrowserDecides,
+                                    EchoCancellationMode::kAll)
+#else
+      testing::UnorderedElementsAre(EchoCancellationMode::kDisabled,
+                                    EchoCancellationMode::kBrowserDecides,
+                                    EchoCancellationMode::kRemoteOnly,
+                                    EchoCancellationMode::kAll)
+#endif
+  );
+}
+
+TEST_F(UserMediaClientTest,
+       EchoCancellationModeTrackCapabilitiesWithoutSystemWideSupportd) {
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::PlatformEffectsMask::NO_EFFECTS);
+  MediaStreamTrack* track = RequestLocalAudioTrackWithEchoCancellationMode(
+      EchoCancellationMode::kBrowserDecides);
+  ASSERT_TRUE(track->getCapabilities()->hasEchoCancellation());
+  const auto& echo_cancellation_capabilities =
+      track->getCapabilities()->echoCancellation();
+  Vector<EchoCancellationMode> echo_cancellation_modes;
+  for (auto& mode : echo_cancellation_capabilities) {
+    std::optional<EchoCancellationMode> ec_mode = ToEchoCancellationMode(mode);
+    ASSERT_TRUE(ec_mode.has_value());
+    echo_cancellation_modes.push_back(*ec_mode);
+  }
+  EXPECT_THAT(
+      echo_cancellation_modes,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      testing::UnorderedElementsAre(EchoCancellationMode::kDisabled,
+                                    EchoCancellationMode::kBrowserDecides)
+#else
+      testing::UnorderedElementsAre(EchoCancellationMode::kDisabled,
+                                    EchoCancellationMode::kBrowserDecides,
+                                    EchoCancellationMode::kRemoteOnly)
+#endif
+  );
+}
 
 }  // namespace blink

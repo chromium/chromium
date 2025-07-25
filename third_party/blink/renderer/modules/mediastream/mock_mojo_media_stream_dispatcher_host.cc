@@ -43,6 +43,9 @@ void MockMojoMediaStreamDispatcherHost::GenerateStreams(
     stream_devices_.audio_device->set_session_id(session_id_);
     stream_devices_.audio_device->matched_output_device_id =
         MaybeAppendSessionId("associated_output_device_id");
+    if (audio_device_effects_.has_value()) {
+      stream_devices_.audio_device->input.set_effects(*audio_device_effects_);
+    }
   }
 
   if (controls.video.requested()) {

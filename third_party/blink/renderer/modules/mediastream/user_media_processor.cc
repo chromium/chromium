@@ -1806,10 +1806,19 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 #endif  // DCHECK_IS_ON()
 
   MediaStreamSource::Capabilities capabilities;
-  // TODO(crbug.com/428856440): Support new echo cancellation modes for
-  // getCapabilities().
+  media::AudioParameters device_parameters = audio_source->device().input;
+
   capabilities.echo_cancellation = {EchoCancellationMode::kDisabled,
                                     EchoCancellationMode::kBrowserDecides};
+  if (RuntimeEnabledFeatures::GetUserMediaEchoCancellationModesEnabled() &&
+      device.type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    capabilities.echo_cancellation.push_back(EchoCancellationMode::kRemoteOnly);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    if (EchoCanceller::IsSystemWideAecAvailable(device_parameters.effects())) {
+      capabilities.echo_cancellation.push_back(EchoCancellationMode::kAll);
+    }
+  }
   capabilities.auto_gain_control = {true, false};
   capabilities.noise_suppression = {true, false};
   capabilities.voice_isolation = {true, false};
@@ -1824,7 +1833,6 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16),  // min
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16)   // max
   };
-  auto device_parameters = audio_source->device().input;
   if (device_parameters.IsValid()) {
     capabilities.channel_count = {1, device_parameters.channels()};
     capabilities.sample_rate = {

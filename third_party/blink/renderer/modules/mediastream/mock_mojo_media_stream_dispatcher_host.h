@@ -104,6 +104,10 @@ class MockMojoMediaStreamDispatcherHost
   // `append_session_id_to_device_ids_` is true.
   std::string MaybeAppendSessionId(std::string device_id);
 
+  void SetAudioDeviceEffects(std::optional<int> effects) {
+    audio_device_effects_ = effects;
+  }
+
  private:
   int request_id_ = -1;
   int request_stream_counter_ = 0;
@@ -116,6 +120,7 @@ class MockMojoMediaStreamDispatcherHost
   GetOpenDeviceCallback get_open_device_cb_;
   mojo::Receiver<mojom::blink::MediaStreamDispatcherHost> receiver_{this};
   bool append_session_id_to_device_ids_ = false;
+  std::optional<int> audio_device_effects_;
 };
 
 }  // namespace blink
