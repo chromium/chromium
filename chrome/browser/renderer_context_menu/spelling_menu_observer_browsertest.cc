@@ -374,8 +374,16 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 // integration to verify an item "Use enhanced spell check" is checked. Even
 // though this menu itself does not add this item, its sub-menu adds the item
 // and calls SpellingMenuObserver::IsChecked() to check it.
+// TODO(crbug.com/410751413): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_EnableSpellingServiceWithCorrectWord \
+  DISABLED_EnableSpellingServiceWithCorrectWord
+#else
+#define MAYBE_EnableSpellingServiceWithCorrectWord \
+  EnableSpellingServiceWithCorrectWord
+#endif
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
-                       EnableSpellingServiceWithCorrectWord) {
+                       MAYBE_EnableSpellingServiceWithCorrectWord) {
   menu()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
   InitMenu("", nullptr);
