@@ -39,7 +39,33 @@ class GlicTabUnderlineView : public views::View,
   METADATA_HEADER(GlicTabUnderlineView, views::View)
 
  public:
-  explicit GlicTabUnderlineView(Browser* browser, Tab* tab);
+  // Note: We should avoid add test-only code in production as it is an
+  // anti-pattern. There is a planned effort to remove these codes and migrate
+  // to unittests + pixel tests. See https://crbug.com/433828219
+  class Tester;
+  // Allows the test to inject the tester at the border's creation.
+  class Factory {
+   public:
+    static std::unique_ptr<GlicTabUnderlineView> Create(Browser* browser,
+                                                        Tab* tab);
+    static void set_factory(Factory* factory) { factory_ = factory; }
+
+   protected:
+    Factory() = default;
+    virtual ~Factory() = default;
+
+    // For tests to override.
+    virtual std::unique_ptr<GlicTabUnderlineView> CreateUnderlineView(
+        Browser* browser,
+        Tab* tab) = 0;
+
+   private:
+    static Factory* factory_;
+  };
+
+  explicit GlicTabUnderlineView(Browser* browser,
+                                Tab* tab,
+                                std::unique_ptr<Tester> tester);
   GlicTabUnderlineView(const GlicTabUnderlineView&) = delete;
   GlicTabUnderlineView& operator=(const GlicTabUnderlineView&) = delete;
   ~GlicTabUnderlineView() override;
@@ -57,6 +83,31 @@ class GlicTabUnderlineView : public views::View,
   void OnGpuInfoUpdate() override;
 
   bool IsShowing() const;
+
+  // TODO(crbug.com/433828219): Ideally we shouldn't expose these internals for
+  // testing.
+  float opacity_for_testing() const { return opacity_; }
+  float emphasis_for_testing() const { return emphasis_; }
+  float progress_for_testing() const { return progress_; }
+  float GetEffectTimeForTesting() const;
+
+  // Allows tests to alternate some animation APIs, for the deterministic
+  // testing.
+  class Tester {
+   public:
+    virtual ~Tester() = default;
+    virtual base::TimeTicks GetTestTimestamp() = 0;
+    virtual base::TimeTicks GetTestCreationTime() = 0;
+    virtual void AnimationStarted() = 0;
+    virtual void EmphasisRestarted() = 0;
+    virtual void RampDownStarted() = 0;
+  };
+  Tester* tester() const { return tester_.get(); }
+
+ protected:
+  friend class Factory;
+  explicit GlicTabUnderlineView(Browser* browser,
+                                std::unique_ptr<Tester> tester);
 
  private:
   void Show();
@@ -80,11 +131,20 @@ class GlicTabUnderlineView : public views::View,
   // Returns a value from 0 to 1 indicating progress through the effect.
   float GetEffectProgress(base::TimeTicks timestamp) const;
 
+  // Returns the timestamp when the instance was created (but permits being
+  // adjusted by the Tester).
+  base::TimeTicks GetCreationTime() const;
+
   bool ForceSimplifiedShader() const;
 
   GlicKeyedService* GetGlicService() const;
 
   void UpdateShader();
+
+  // A utility class that subscribes to `GlicKeyedService` for various browser
+  // UI status changes that affect showing and animating of the tab underlines.
+  class UnderlineViewUpdater;
+  const std::unique_ptr<UnderlineViewUpdater> updater_;
 
   std::string shader_;
 
@@ -121,6 +181,9 @@ class GlicTabUnderlineView : public views::View,
       compositor_observation_{this};
   base::ScopedObservation<ui::Compositor, ui::CompositorAnimationObserver>
       compositor_animation_observation_{this};
+
+  // Empty in production environment.
+  const std::unique_ptr<Tester> tester_;
 
   sk_sp<cc::PaintShader> cached_paint_shader_;
 

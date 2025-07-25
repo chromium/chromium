@@ -212,6 +212,12 @@ class Tab : public gfx::AnimationDelegate,
 
   void UpdateInsets();
 
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicTabUnderlineView* glic_underline() const {
+    return glic_tab_underline_view_;
+  }
+#endif
+
  private:
   class TabCloseButtonObserver;
   friend class TabContentsTest;

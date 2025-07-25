@@ -258,7 +258,7 @@ Tab::Tab(TabSlotController* controller)
   if (base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines)) {
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::GlicTabUnderlineView>(
-            std::make_unique<glic::GlicTabUnderlineView>(
+            glic::GlicTabUnderlineView::Factory::Create(
                 controller->GetBrowser(), this))
             // Needed so that expectations of visibility that
             // inform underline updates are correct on first show.
