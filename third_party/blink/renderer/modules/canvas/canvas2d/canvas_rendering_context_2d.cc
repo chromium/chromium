@@ -273,7 +273,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            size_t row_bytes,
                                            int x,
                                            int y) {
-  if (!resource_provider_ || !IsCanvas2DResourceValid()) {
+  if (!resource_provider_ || !GetOrCreateCanvas2DResourceProvider()) {
     return false;
   }
 
@@ -683,9 +683,6 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
         GetHibernationHandler()->GetImage());
   }
 
-  if (!IsCanvas2DResourceValid()) {
-    return nullptr;
-  }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account.
   auto* provider = GetOrCreateCanvas2DResourceProvider();
