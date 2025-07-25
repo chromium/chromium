@@ -1063,6 +1063,12 @@ if (build_with_chromium) {
       # value from the TLS which won't be pkey-tagged, hence disabling it for
       # the test.
       configs += [ ":no_stack_protector" ]
+
+      if (is_debug) {
+        # Debug build uses -fstack-protector for libc++ modules and the flag is
+        # not compatible with "no_stack_protector" config.
+        use_libcxx_modules = false
+      }
     }
 
     frameworks = []
