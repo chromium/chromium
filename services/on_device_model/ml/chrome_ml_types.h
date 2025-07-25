@@ -18,6 +18,7 @@ namespace ml {
 inline constexpr uint32_t kMinTopK = 1;
 inline constexpr float kMinTemperature = 0.0f;
 
+// LINT.IfChange(Token)
 enum class Token {
   // Prefix for system text.
   kSystem,
@@ -28,12 +29,15 @@ enum class Token {
   // End a system/model/user section.
   kEnd,
 };
+// LINT.ThenChange(//services/on_device_model/android/java/src/org/chromium/on_device_model/InputPiece.java:Token)
 
 // If an InputPiece holds a `bool`, then the operation should fail. This means
 // the input came from a future client version and can't be handled in the
 // current library version.
+// LINT.IfChange(InputPiece)
 using InputPiece =
     std::variant<Token, std::string, SkBitmap, AudioBuffer, bool>;
+// LINT.ThenChange(//services/on_device_model/android/java/src/org/chromium/on_device_model/InputPiece.java:InputPiece)
 
 // Options for specifying the performance characteristics of the model to load.
 enum class ModelPerformanceHint {

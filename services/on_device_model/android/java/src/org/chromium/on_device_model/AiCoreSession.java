@@ -20,10 +20,10 @@ interface AiCoreSession {
      *
      * @param nativeBackendSession The pointer to the native BackendSession. Used to deliver the
      *     result back to the native side.
-     * @param input The input text.
+     * @param inputPieces The input pieces to generate the response.
      */
     @CalledByNative
-    void generate(long nativeBackendSession, String input);
+    void generate(long nativeBackendSession, InputPiece[] inputPieces);
 
     @NativeMethods
     interface Natives {

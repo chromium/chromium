@@ -10,7 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 class AiCoreSessionUpstreamImpl implements AiCoreSession {
     @Override
-    public void generate(long nativeBackendSession, String input) {
+    public void generate(long nativeBackendSession, InputPiece[] inputPieces) {
         // TODO(crbug.com/425408635): Return an error instead.
         AiCoreSessionJni.get().onResponse(nativeBackendSession, "AiCore response");
         AiCoreSessionJni.get().onComplete(nativeBackendSession);

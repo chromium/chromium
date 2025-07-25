@@ -13,12 +13,34 @@ import org.chromium.base.ServiceLoaderUtil;
  */
 public class OnDeviceModelBridgeNativeUnitTestHelper {
     /**
-     * A mock implementation of AiCoreSession. Echoes the input back as the response.
+     * A mock implementation of AiCoreSession. Parses the input to a string and echoes the input
+     * back as the response.
      */
     public static class MockAiCoreSession implements AiCoreSession {
         @Override
-        public void generate(long nativeBackendSession, String input) {
-            AiCoreSessionJni.get().onResponse(nativeBackendSession, input);
+        public void generate(long nativeBackendSession, InputPiece[] inputPieces) {
+            StringBuilder sb = new StringBuilder();
+            for (InputPiece piece : inputPieces) {
+                if (piece.isText()) {
+                    sb.append(piece.getText());
+                } else if (piece.isToken()) {
+                    switch (piece.getTokenId()) {
+                        case InputPiece.Token.SYSTEM:
+                            sb.append("<system>");
+                            break;
+                        case InputPiece.Token.MODEL:
+                            sb.append("<model>");
+                            break;
+                        case InputPiece.Token.USER:
+                            sb.append("<user>");
+                            break;
+                        case InputPiece.Token.END:
+                            sb.append("<end>");
+                            break;
+                    }
+                }
+            }
+            AiCoreSessionJni.get().onResponse(nativeBackendSession, sb.toString());
             AiCoreSessionJni.get().onComplete(nativeBackendSession);
         }
     }

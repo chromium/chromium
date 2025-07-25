@@ -52,9 +52,7 @@ class BackendSessionImplAndroid : public BackendSession {
   // completes.
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
   // The accumulated context of the current session.
-  // TODO(crbug.com/425408635): We should hold std::vector<ml::InputPiece>
-  // instead and pass it directly to Java.
-  std::string context_;
+  std::vector<ml::InputPiece> context_input_pieces_;
 };
 
 }  // namespace on_device_model
