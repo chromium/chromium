@@ -4215,6 +4215,9 @@
     "bases": [
       "external/wpt/soft-navigation-heuristics/"
     ],
+    "exclusive_tests": [
+      "external/wpt/soft-navigation-heuristics/smoke/tentative/late-url-change.html"
+    ],
     "args": [
       "--enable-features=SoftNavigationDetectionPrePaintBasedAttribution"
     ],

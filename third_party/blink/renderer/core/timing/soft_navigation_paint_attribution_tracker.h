@@ -83,6 +83,12 @@ class CORE_EXPORT SoftNavigationPaintAttributionTracker
   // are not considered.
   void MarkNodeAsDirectlyModified(Node*, SoftNavigationContext*);
 
+  // Returns the `SoftNavigationContext` associated with `node`, if any.
+  SoftNavigationContext* GetSoftNavigationContextForNode(Node* node) {
+    auto* state = GetNodeState(node);
+    return state ? state->GetSoftNavigationContext() : nullptr;
+  }
+
   // Returns true if the node is attributable to the given context, and false
   // otherwise. The node must be an image, text aggregation node, or something
   // explicitly modified, otherwise this returns false.

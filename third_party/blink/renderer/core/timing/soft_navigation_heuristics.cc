@@ -460,15 +460,21 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntry(
 
 SoftNavigationContext*
 SoftNavigationHeuristics::MaybeGetSoftNavigationContextForTiming(Node* node) {
-  if (!context_for_current_url_ ||
-      !context_for_current_url_->IsRecordingLargestContentfulPaint()) {
+  // In modes other than pre-paint-based attribution, this is constrained to
+  // `context_for_current_url_` for efficiency.
+  SoftNavigationContext* context =
+      IsPrePaintBasedAttributionEnabled()
+          ? paint_attribution_tracker_->GetSoftNavigationContextForNode(node)
+          : context_for_current_url_.Get();
+  if (!context || !context->IsRecordingLargestContentfulPaint()) {
     return nullptr;
   }
-  bool attributable = IsPrePaintBasedAttributionEnabled()
-                          ? paint_attribution_tracker_->IsAttributable(
-                                node, context_for_current_url_)
-                          : context_for_current_url_->IsNeededForTiming(node);
-  return attributable ? context_for_current_url_ : nullptr;
+  // For pre-paint-based attribution, `context` being non-null implies paints
+  // for `node` are attributable to `context`.
+  if (IsPrePaintBasedAttributionEnabled()) {
+    return context;
+  }
+  return context->IsNeededForTiming(node) ? context : nullptr;
 }
 
 void SoftNavigationHeuristics::OnPaintFinished() {
