@@ -563,6 +563,10 @@ test("components_unittests") {
     deps += [ "//components/named_system_lock:unit_tests" ]
   }
 
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:unit_tests" ]
+  }
+
   if (is_ios) {
     bundle_deps = [ ":components_tests_pak_bundle_data" ]
     if (use_blink) {
@@ -1103,8 +1107,8 @@ if (use_blink) {
       "//components/input:browser_tests",
       "//components/js_injection/browser:browser_tests",
       "//components/metrics:content",
-      "//components/network_session_configurator/common:common",
-      "//components/optimization_guide/content/browser:browser",
+      "//components/network_session_configurator/common",
+      "//components/optimization_guide/content/browser",
       "//components/optimization_guide/content/renderer",
       "//components/paint_preview/renderer",
       "//components/password_manager/content/browser",
@@ -1134,7 +1138,7 @@ if (use_blink) {
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",
-      "//ui/native_theme:native_theme",
+      "//ui/native_theme",
       "//url",
     ]
 
@@ -1320,7 +1324,7 @@ if (use_blink) {
       "//components/test:test_support",
       "//components/visitedlink/browser",
       "//testing/perf",
-      "//third_party/google_benchmark:google_benchmark",
+      "//third_party/google_benchmark",
       "//url",
     ]
 
