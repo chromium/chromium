@@ -788,6 +788,11 @@ void OnDeviceModelServiceController::Solution::ReportHealthyCompletion() {
 
 void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
     base::OnceClosure complete) {
+  if (!features::CanLaunchOnDeviceModelService()) {
+    std::move(complete).Run();
+    return;
+  }
+
   if (ListenForPerformanceClassAvailable(std::move(complete))) {
     return;
   }
