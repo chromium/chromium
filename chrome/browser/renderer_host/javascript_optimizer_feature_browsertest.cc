@@ -15,7 +15,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_host_resolver.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -263,10 +262,6 @@ IN_PROC_BROWSER_TEST_F(
       ContentSettingsPattern::FromString("*"),
       ContentSettingsType::JAVASCRIPT_OPTIMIZER,
       ContentSetting::CONTENT_SETTING_DEFAULT);
-
-  // Navigate to about:blank so that the subsequent navigation to a.com occurs
-  // in a different BrowsingInstanceId.
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
@@ -578,68 +573,4 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest, ProcessLimitWorks) {
     EXPECT_NE(c_com_frame->GetProcess(), b_com_frame->GetProcess());
     EXPECT_EQ(a_com_frame->GetProcess(), c_com_frame->GetProcess());
   }
-}
-
-namespace {
-
-void NavigateChangeV8OptPriorToWindowOpen(content::WebContents* web_contents,
-                                          const GURL& navigate_url,
-                                          const GURL& window_open_url) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
-  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                ContentSetting::CONTENT_SETTING_ALLOW);
-  ASSERT_TRUE(content::NavigateToURL(web_contents, navigate_url));
-
-  // Simulate changing the default v8-optimization preference via
-  // chrome://settings in a different tab.
-  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                ContentSetting::CONTENT_SETTING_BLOCK);
-
-  content::TestNavigationObserver popup_observer(nullptr);
-  popup_observer.StartWatchingNewWebContents();
-  content::EvalJsResult result =
-      content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                      "window.open(\"" + window_open_url.spec() + "\");");
-  popup_observer.Wait();
-}
-
-}  // anonymous namespace
-
-// Test that a same-origin window.open() call uses the same process regardless
-// of whether the user changed the v8-optimization state.
-IN_PROC_BROWSER_TEST_F(
-    JavascriptOptimizerBrowserTest,
-    ChangeJavascriptOptimizerStatePriorToSameOriginWindowOpen) {
-  GURL url = embedded_https_test_server().GetURL("a.com", "/simple.html");
-  NavigateChangeV8OptPriorToWindowOpen(web_contents(), url, url);
-
-  std::vector<content::WebContents*> all_web_contents =
-      content::GetAllWebContents();
-  ASSERT_EQ(2u, all_web_contents.size());
-  content::RenderFrameHost* frame0 = all_web_contents[0]->GetPrimaryMainFrame();
-  content::RenderFrameHost* frame1 = all_web_contents[1]->GetPrimaryMainFrame();
-  EXPECT_EQ(frame0->GetProcess(), frame1->GetProcess());
-  EXPECT_EQ(frame0->GetSiteInstance(), frame1->GetSiteInstance());
-}
-
-// Test that when the features::kOriginKeyedProcessesByDefault feature is
-// disabled that a same-site window.open() call uses the same process regardless
-// of whether the user changed the v8-optimization state.
-IN_PROC_BROWSER_TEST_F(
-    JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
-    ChangeJavascriptOptimizerStatePriorToSameSiteWindowOpen) {
-  GURL url = embedded_https_test_server().GetURL("a.com", "/simple.html");
-  GURL same_site_url =
-      embedded_https_test_server().GetURL("foo.a.com", "/simple.html");
-  NavigateChangeV8OptPriorToWindowOpen(web_contents(), url, same_site_url);
-
-  std::vector<content::WebContents*> all_web_contents =
-      content::GetAllWebContents();
-  ASSERT_EQ(2u, all_web_contents.size());
-  content::RenderFrameHost* frame0 = all_web_contents[0]->GetPrimaryMainFrame();
-  content::RenderFrameHost* frame1 = all_web_contents[1]->GetPrimaryMainFrame();
-  EXPECT_EQ(frame0->GetProcess(), frame1->GetProcess());
-  EXPECT_EQ(frame0->GetSiteInstance(), frame1->GetSiteInstance());
 }

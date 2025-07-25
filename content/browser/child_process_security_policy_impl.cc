@@ -5,7 +5,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 
 #include <algorithm>
-#include <optional>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -3073,8 +3072,9 @@ void ChildProcessSecurityPolicyImpl::AddDefaultIsolatedOriginIfNeeded(
       isolation_context.default_isolation_state(), origin);
 }
 
-void ChildProcessSecurityPolicyImpl::RemoveAllStateForBrowsingInstance(
-    const BrowsingInstanceId& browsing_instance_id) {
+void ChildProcessSecurityPolicyImpl::
+    RemoveOptInIsolatedOriginsForBrowsingInstance(
+        const BrowsingInstanceId& browsing_instance_id) {
   // After a suitable delay, remove this BrowsingInstance's info from any
   // SecurityStates that are using it.
   // TODO(wjmaclean): Monitor the CanAccessDataForOrigin crash key in renderer
@@ -3083,7 +3083,7 @@ void ChildProcessSecurityPolicyImpl::RemoveAllStateForBrowsingInstance(
   auto task_closure = [](const BrowsingInstanceId id) {
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
-    policy->RemoveAllStateForBrowsingInstanceInternal(id);
+    policy->RemoveOptInIsolatedOriginsForBrowsingInstanceInternal(id);
   };
   if (browsing_instance_cleanup_delay_.is_positive()) {
     // Do the actual state cleanup after posting a task to the IO thread, to
@@ -3099,8 +3099,9 @@ void ChildProcessSecurityPolicyImpl::RemoveAllStateForBrowsingInstance(
   }
 }
 
-void ChildProcessSecurityPolicyImpl::RemoveAllStateForBrowsingInstanceInternal(
-    const BrowsingInstanceId browsing_instance_id) {
+void ChildProcessSecurityPolicyImpl::
+    RemoveOptInIsolatedOriginsForBrowsingInstanceInternal(
+        const BrowsingInstanceId browsing_instance_id) {
   // If a BrowsingInstance is destructing, we should always have an id for it.
   CHECK(!browsing_instance_id.is_null());
 
@@ -3134,12 +3135,6 @@ void ChildProcessSecurityPolicyImpl::RemoveAllStateForBrowsingInstanceInternal(
                 !entry.applies_to_future_browsing_instances());
       });
     }
-  }
-
-  {
-    base::AutoLock are_v8_optimizations_disabled_lock(
-        are_v8_optimizations_disabled_lock_);
-    are_v8_optimizations_disabled_map_.erase(browsing_instance_id);
   }
 }
 
@@ -3272,38 +3267,6 @@ void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginForTesting(
 void ChildProcessSecurityPolicyImpl::ClearIsolatedOriginsForTesting() {
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
   isolated_origins_.clear();
-}
-
-void ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOrigin(
-    const BrowsingInstanceId& browsing_instance_id,
-    const url::Origin& process_lock_origin,
-    bool are_v8_optimizations_disabled) {
-  if (!IsolatedOriginUtil::IsValidIsolatedOrigin(process_lock_origin)) {
-    return;
-  }
-
-  base::AutoLock are_v8_optimizations_disabled_lock(
-      are_v8_optimizations_disabled_lock_);
-  are_v8_optimizations_disabled_map_[browsing_instance_id].insert_or_assign(
-      process_lock_origin, are_v8_optimizations_disabled);
-}
-
-std::optional<bool>
-ChildProcessSecurityPolicyImpl::LookupAreV8OptimizationsDisabled(
-    const BrowsingInstanceId& browsing_instance_id,
-    const url::Origin& process_lock_origin) {
-  base::AutoLock are_v8_optimizations_disabled_lock(
-      are_v8_optimizations_disabled_lock_);
-  auto it = are_v8_optimizations_disabled_map_.find(browsing_instance_id);
-  if (it == are_v8_optimizations_disabled_map_.end()) {
-    return std::nullopt;
-  }
-  base::flat_map<url::Origin, bool>& origin_map = it->second;
-  auto origin_it = origin_map.find(process_lock_origin);
-  if (origin_it == origin_map.end()) {
-    return std::nullopt;
-  }
-  return origin_it->second;
 }
 
 ChildProcessSecurityPolicyImpl::SecurityState*
