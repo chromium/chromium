@@ -493,7 +493,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // autonomous custom elements and customized built-in elements.
   Element* CreateElement(const QualifiedName&,
                          const CreateElementFlags,
-                         const AtomicString& is);
+                         const AtomicString& is,
+                         CustomElementRegistry* custom_element_registry);
 
   Element* createElementNS(const AtomicString& namespace_uri,
                            const AtomicString& qualified_name,

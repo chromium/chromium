@@ -2994,21 +2994,23 @@
     ]
   },
   {
-    "prefix": "scoped-custom-element-registry-disabled",
+    "prefix": "scoped-custom-element-registry",
     "owners": [
       "masonf@chromium.org",
-      "tgivens@microsoft.com"
+      "tgivens@microsoft.com",
+      "jaysonchen@microsoft.com"
     ],
     "platforms": [
       "Linux",
-      "Mac",
       "Win"
     ],
     "bases": [
-      "external/wpt/custom-elements/registries/"
+      "external/wpt/custom-elements/registries/Document-createElement.html",
+      "external/wpt/custom-elements/registries/Document-createElementNS.html",
+      "external/wpt/custom-elements/registries/Document-customElementRegistry.html"
     ],
     "args": [
-      "--disable-blink-features=ScopedCustomElementRegistry"
+      "--enable-blink-features=ScopedCustomElementRegistry"
     ],
     "expires": "Jun 1, 2026"
   },

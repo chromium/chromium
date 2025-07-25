@@ -396,7 +396,8 @@ Element& HTMLScriptElement::CloneWithoutAttributesAndChildren(
   CreateElementFlags flags =
       CreateElementFlags::ByCloneNode().SetAlreadyStarted(
           loader_->AlreadyStarted());
-  return *factory.CreateElement(TagQName(), flags, IsValue());
+  return *factory.CreateElement(TagQName(), flags, IsValue(),
+                                /*registry*/ nullptr);
 }
 
 bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {

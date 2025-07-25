@@ -112,7 +112,8 @@ class CORE_EXPORT CustomElement {
       Document&,
       const QualifiedName&,
       const CreateElementFlags,
-      const AtomicString& is_value);
+      const AtomicString& is_value,
+      CustomElementRegistry* registry);
   static HTMLElement* CreateFailedElement(Document&, const QualifiedName&);
 
   static void Enqueue(Element&, CustomElementReaction&);
@@ -158,7 +159,8 @@ class CORE_EXPORT CustomElement {
       Document&,
       const QualifiedName&,
       const CreateElementFlags,
-      const AtomicString& is_value);
+      const AtomicString& is_value,
+      CustomElementRegistry* registry);
 };
 
 }  // namespace blink

@@ -961,7 +961,7 @@ Element& Element::CloneWithoutChildren(NodeCloningData& data,
 
 Element& Element::CloneWithoutAttributesAndChildren(Document& factory) const {
   return *factory.CreateElement(TagQName(), CreateElementFlags::ByCloneNode(),
-                                IsValue());
+                                IsValue(), /*registry*/ nullptr);
 }
 
 Attr* Element::DetachAttribute(wtf_size_t index) {
@@ -6421,6 +6421,10 @@ CustomElementRegistry* Element::customElementRegistry() const {
   }
 
   return GetTreeScope().customElementRegistry();
+}
+
+void Element::SetCustomElementRegistry(CustomElementRegistry* registry) {
+  EnsureElementRareData().SetCustomElementRegistry(registry);
 }
 
 void Element::SetIsValue(const AtomicString& is_value) {

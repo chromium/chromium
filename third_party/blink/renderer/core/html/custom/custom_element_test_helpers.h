@@ -103,7 +103,8 @@ class TestCustomElementDefinition : public CustomElementDefinition {
 
   HTMLElement* CreateAutonomousCustomElementSync(
       Document& document,
-      const QualifiedName&) override {
+      const QualifiedName&,
+      CustomElementRegistry* = nullptr) override {
     return CreateElementForConstructor(document);
   }
 
@@ -200,7 +201,7 @@ class CreateElement {
     NonThrowableExceptionState no_exceptions;
     Element* element = document->CreateElement(
         QualifiedName(g_null_atom, local_name_, namespace_uri_),
-        CreateElementFlags::ByCreateElement(), is_value_);
+        CreateElementFlags::ByCreateElement(), is_value_, /*registry*/ nullptr);
     for (const auto& attribute : attributes_)
       element->setAttribute(attribute.first, attribute.second);
     return element;

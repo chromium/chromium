@@ -571,8 +571,9 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
   DCHECK(document_);
   HTMLHtmlElement* element;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
-    element = To<HTMLHtmlElement>(document_->CreateElement(
-        html_names::kHTMLTag, GetCreateElementFlags(), is_attribute->Value()));
+    element = To<HTMLHtmlElement>(
+        document_->CreateElement(html_names::kHTMLTag, GetCreateElementFlags(),
+                                 is_attribute->Value(), /*registry*/ nullptr));
   } else {
     element = MakeGarbageCollected<HTMLHtmlElement>(*document_);
   }
@@ -1046,7 +1047,8 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   HTMLScriptElement* element = nullptr;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
     element = To<HTMLScriptElement>(OwnerDocumentForCurrentNode().CreateElement(
-        html_names::kScriptTag, flags, is_attribute->Value()));
+        html_names::kScriptTag, flags, is_attribute->Value(),
+        /*registry*/ nullptr));
   } else {
     element = MakeGarbageCollected<HTMLScriptElement>(
         OwnerDocumentForCurrentNode(), flags);
@@ -1267,7 +1269,8 @@ Element* HTMLConstructionSite::CreateElement(
                                           GetCreateElementFlags());
     } else {
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
-          document, tag_name, GetCreateElementFlags(), is);
+          document, tag_name, GetCreateElementFlags(), is,
+          /*registry*/ nullptr);
     }
     // Definition for the created element does not exist here and it cannot be
     // custom, precustomized, or failed.

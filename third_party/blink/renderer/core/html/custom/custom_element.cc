@@ -133,28 +133,29 @@ HTMLElement* CustomElement::CreateCustomElement(Document& document,
   // 7. Otherwise:
   return To<HTMLElement>(
       CreateUncustomizedOrUndefinedElementTemplate<kQNameIsValid>(
-          document, tag_name, flags, g_null_atom));
+          document, tag_name, flags, g_null_atom, /*registry*/ nullptr));
 }
 
-// Step 7 of https://dom.spec.whatwg.org/#concept-create-element
+// Step 6 of https://dom.spec.whatwg.org/#concept-create-element
 template <CustomElement::CreateUUCheckLevel level>
 Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
     Document& document,
     const QualifiedName& tag_name,
     const CreateElementFlags flags,
-    const AtomicString& is_value) {
+    const AtomicString& is_value,
+    CustomElementRegistry* registry) {
   if (level == kQNameIsValid) {
     DCHECK(is_value.IsNull());
     DCHECK(ShouldCreateCustomElement(tag_name)) << tag_name;
   }
 
-  // 7.1. Let interface be the element interface for localName and namespace.
-  // 7.2. Set result to a new element that implements interface, with ...
+  // 6.1. Let interface be the element interface for localName and namespace.
+  // 6.2. Set result to a new element that implements interface, with ...
   Element* element = document.CreateRawElement(tag_name, flags);
   if (level == kCheckAll && !is_value.IsNull())
     element->SetIsValue(is_value);
 
-  // 7.3. If namespace is the HTML namespace, and either localName is a
+  // 6.3. If namespace is the HTML namespace, and either localName is a
   // valid custom element name or is is non-null, then set result’s
   // custom element state to "undefined".
   if (level == kQNameIsValid)
@@ -163,6 +164,10 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
            (CustomElement::IsValidName(tag_name.LocalName()) ||
             !is_value.IsNull()))
     element->SetCustomElementState(CustomElementState::kUndefined);
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      registry) {
+    element->SetCustomElementRegistry(registry);
+  }
 
   return element;
 }
@@ -171,9 +176,10 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElement(
     Document& document,
     const QualifiedName& tag_name,
     const CreateElementFlags flags,
-    const AtomicString& is_value) {
+    const AtomicString& is_value,
+    CustomElementRegistry* registry) {
   return CreateUncustomizedOrUndefinedElementTemplate<kCheckAll>(
-      document, tag_name, flags, is_value);
+      document, tag_name, flags, is_value, registry);
 }
 
 HTMLElement* CustomElement::CreateFailedElement(Document& document,

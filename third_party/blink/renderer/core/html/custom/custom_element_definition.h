@@ -63,10 +63,12 @@ class CORE_EXPORT CustomElementDefinition
   HTMLElement* CreateElementForConstructor(Document&);
   virtual HTMLElement* CreateAutonomousCustomElementSync(
       Document&,
-      const QualifiedName&) = 0;
+      const QualifiedName&,
+      CustomElementRegistry*) = 0;
   HTMLElement* CreateElement(Document&,
                              const QualifiedName&,
-                             const CreateElementFlags);
+                             const CreateElementFlags,
+                             CustomElementRegistry* = nullptr);
 
   void Upgrade(Element&);
 

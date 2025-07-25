@@ -534,6 +534,8 @@ CustomElementRegistry* ElementRareDataVector::GetCustomElementRegistry() const {
 }
 
 void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* registry) {
+  // An element's custom element registry should only be set once.
+  CHECK_EQ(GetField(FieldId::kCustomElementRegistry), nullptr);
   SetField(FieldId::kCustomElementRegistry, registry);
 }
 

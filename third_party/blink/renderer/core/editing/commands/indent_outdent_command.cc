@@ -99,8 +99,8 @@ bool IndentOutdentCommand::TryIndentingAsListItem(
   // list element will change visibility of list item, e.g. :first-child
   // CSS selector.
   auto* new_list = To<HTMLElement>(GetDocument().CreateElement(
-      list_element->TagQName(), CreateElementFlags::ByCloneNode(),
-      g_null_atom));
+      list_element->TagQName(), CreateElementFlags::ByCloneNode(), g_null_atom,
+      /*registry*/ nullptr));
   InsertNodeBefore(new_list, selected_list_item, editing_state);
   if (editing_state->IsAborted())
     return false;
