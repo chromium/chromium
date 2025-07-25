@@ -142,11 +142,15 @@ BASE_FEATURE(kOnDeviceModelAllowGpuForTesting,
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 bool IsGpuBlocked(const ChromeMLAPI& api, bool log_histogram) {
-  auto reason = IsGpuBlockedInternal(api);
-  if (log_histogram) {
-    LogGpuBlocked(reason);
+  // Cache the blocked reason to avoid recomputing.
+  static std::optional<GpuBlockedReason> reason;
+  if (!reason) {
+    reason = IsGpuBlockedInternal(api);
   }
-  return reason != GpuBlockedReason::kNotBlocked;
+  if (log_histogram) {
+    LogGpuBlocked(*reason);
+  }
+  return *reason != GpuBlockedReason::kNotBlocked;
 }
 
 }  // namespace ml
