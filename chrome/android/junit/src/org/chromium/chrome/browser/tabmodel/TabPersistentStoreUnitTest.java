@@ -19,8 +19,6 @@ import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,6 +42,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -63,9 +62,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class TabPersistentStoreUnitTest {
-    private static final Integer RESTORE_TAB_ID_1 = 31;
-    private static final Integer RESTORE_TAB_ID_2 = 32;
-    private static final Integer RESTORE_TAB_ID_3 = 33;
+    private static final @TabId int RESTORE_TAB_ID_1 = 31;
+    private static final @TabId int RESTORE_TAB_ID_2 = 32;
+    private static final @TabId int RESTORE_TAB_ID_3 = 33;
 
     private static final String REGULAR_TAB_STRING_1 = "https://foo.com/";
     private static final String INCOGNITO_TAB_STRING_1 = "https://bar.com/";
@@ -85,7 +84,8 @@ public class TabPersistentStoreUnitTest {
     @Mock private TabCreator mNormalTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
     @Mock private TabWindowManager mTabWindowManager;
-    @Mock private TabUngrouper mTabUngrouper;
+    @Mock private TabGroupModelFilter mNormalTabGroupModelFilter;
+    @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
 
     private TabPersistentStore mPersistentStore;
     private CipherFactory mCipherFactory;
@@ -106,14 +106,10 @@ public class TabPersistentStoreUnitTest {
 
         when(mTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mTabGroupModelFilterProvider);
-        TabGroupModelFilter normalTabGroupModelFilter =
-                new TabGroupModelFilterImpl(mNormalTabModel, mTabUngrouper);
-        TabGroupModelFilter incognitoTabGroupModelFilter =
-                new TabGroupModelFilterImpl(mIncognitoTabModel, mTabUngrouper);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
-                .thenReturn(normalTabGroupModelFilter);
+                .thenReturn(mNormalTabGroupModelFilter);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
-                .thenReturn(incognitoTabGroupModelFilter);
+                .thenReturn(mIncognitoTabGroupModelFilter);
 
         mCipherFactory = new CipherFactory();
     }
@@ -129,7 +125,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testNtpSaveBehavior() {
         when(mNormalTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
@@ -162,7 +157,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testNotActiveEmptyNtpNotIgnoredDuringRestore() {
         mPersistentStore =
@@ -188,7 +182,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testActiveEmptyNtpNotIgnoredDuringRestore() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
@@ -223,7 +216,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testNtpFromMergeWithNoStateNotIgnoredDuringMerge() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
@@ -267,7 +259,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testNtpWithStateNotIgnoredDuringRestore() {
         mPersistentStore =
@@ -289,7 +280,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testActiveEmptyIncognitoNtpNotIgnoredDuringRestore() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
@@ -324,7 +314,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testReparentedTabNotIgnoredDuringRestore() {
         String url = "https://test.com";
@@ -353,7 +342,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testNotActiveIncognitoNtpIgnoredDuringRestore() {
         mPersistentStore =
@@ -374,7 +362,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testActiveEmptyIncognitoNtpIgnoredDuringRestoreIfIncognitoLoadingIsDisabled() {
         mPersistentStore =
@@ -395,7 +382,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH)
     public void testDuplicateTabIds() {
@@ -422,7 +408,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testSerializeTabModelSelector() {
         setupSerializationTestMocks();
@@ -454,7 +439,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testSkipNonActiveNtpsWithSkippedNtpComeBeforeActiveTab() {
         setupSerializationTestMocksWithSkippedNtpComeBeforeActiveTab();
@@ -471,7 +455,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testSkipNonActiveNtpsWithSkippedNtpComeAfterActiveTab() {
         setupSerializationTestMocks();
@@ -488,7 +471,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsEnabled() {
         setupSerializationTestMocksWithGroupedAndNavigableNtps();
@@ -513,7 +495,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testSerializeTabModelSelector_tabsBeingRestored() {
         setupSerializationTestMocks();
@@ -568,7 +549,6 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("TabPersistentStore")
     public void testSerializeTabModelSelector_closingTabsSkipped() {
         when(mNormalTabModel.getCount()).thenReturn(2);
