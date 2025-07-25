@@ -23,6 +23,10 @@
     #play-pause {
     --cr-icon-button-fill-color: CanvasText;
   }
+
+  cr-icon-button#color {
+    display: none;
+  }
 }
 
 .audio-background-when-active-false {

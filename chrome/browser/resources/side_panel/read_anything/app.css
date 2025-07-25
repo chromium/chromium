@@ -131,6 +131,13 @@
   background-color: var(--current-highlight-bg-color);
 }
 
+@media (forced-colors: active) {
+  #appFlexParent .current-read-highlight {
+    background-color: SelectedItem;
+    color: SelectedItemText;
+  }
+}
+
 #appFlexParent .previous-read-highlight {
   background-color: transparent;
   color: var(--previous-highlight-color);
