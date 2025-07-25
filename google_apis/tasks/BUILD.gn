@@ -22,8 +22,8 @@ static_library("tasks") {
 
   deps = [
     "//base",
-    "//google_apis:google_apis",
-    "//google_apis/common:common",
+    "//google_apis",
+    "//google_apis/common",
     "//net",
     "//services/network/public/cpp",
   ]

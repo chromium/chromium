@@ -28,7 +28,7 @@ static_library("common") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -44,7 +44,7 @@ static_library("request_util") {
 
   deps = [
     "//base",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
   ]

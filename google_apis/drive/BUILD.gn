@@ -24,8 +24,8 @@ source_set("drive") {
 
   deps = [
     "//base",
-    "//google_apis:google_apis",
-    "//google_apis/common:common",
+    "//google_apis",
+    "//google_apis/common",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -50,7 +50,7 @@ source_set("drive_unittests") {
     ":drive",
     "//base",
     "//base/test:test_support",
-    "//google_apis/common:common",
+    "//google_apis/common",
     "//google_apis/common:test_support",
     "//services/network:test_support",
     "//testing/gmock",
