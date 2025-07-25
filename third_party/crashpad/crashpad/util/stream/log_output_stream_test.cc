@@ -36,11 +36,11 @@ class LogOutputStreamTestDelegate final : public LogOutputStream::Delegate {
       : logging_destination_(logging_destination) {}
   ~LogOutputStreamTestDelegate() override = default;
 
-  int Log(const char* buf) override {
+  bool Log(const char* buf) override {
     size_t len = strnlen(buf, kLineBufferSize + 1);
     EXPECT_LE(len, kLineBufferSize);
     logging_destination_->append(buf, len);
-    return static_cast<int>(len);
+    return true;
   }
 
   size_t OutputCap() override { return kOutputCap; }

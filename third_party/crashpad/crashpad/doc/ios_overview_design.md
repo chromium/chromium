@@ -175,3 +175,17 @@ pending reports, such as when ideal network conditions exist. By default,
 clients start with uploading disabled. Applications should call this API when
 it is determined that it is appropriate to do so (such as on a few seconds after
 startup, or when network connectivity is appropriate).
+
+## tvOS considerations
+
+tvOS, an operating system based on iOS, shares the constraints described above
+and uses the same architecture. Additionally, tvOS does not allow the use of
+the `mach_msg()` APIs so using Mach exceptions is impossible.
+
+Consequently, the Mach exception handler is _not_ installed once the in-process
+handler is initialized; the tvOS handler only uses the POSIX signals and
+Objective-C exception preprocessors. Furthermore, the POSIX signal handler is
+unable to handle all crashes that the Mach exception handler can (e.g. stack
+overflows, as `sigaltstack()` cannot be used either). In other words, the tvOS
+in-process handler can only handle a subset of all exceptions that the iOS
+in-process handler does.
