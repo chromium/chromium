@@ -307,7 +307,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   UIImageView* firstIconImageView = [[UIImageView alloc]
       initWithImage:CustomSymbolWithConfiguration(kPhoneSparkleSymbol, config)];
-  firstIconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  firstIconImageView.contentMode = UIViewContentModeScaleAspectFill;
 
   UIView* firstBox = [self
       createHorizontalBoxWithIcon:firstIconImageView
@@ -326,7 +326,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
       [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
                                              [self secondSymbolName], config)];
 
-  secondIconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  secondIconImageView.contentMode = UIViewContentModeScaleAspectFill;
 
   NSAttributedString* secondBodyAttributed =
       [self createSecondBoxBodyAttributedText];
