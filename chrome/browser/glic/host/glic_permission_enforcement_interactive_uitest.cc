@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
           test::kGlicContentsElementId,
           "() => document.querySelector('#getPageContextStatus').innerText",
           "Error getting page context: Error: tabContext failed: permission "
-          "denied"));
+          "denied: context permission not enabled"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,

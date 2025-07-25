@@ -484,8 +484,19 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
-    Recorded when a page context gets screenshot (post-encoding and scaling).
-    Measure the time from start.
+    Recorded when a page context successfully gets a screenshot (post-encoding
+    and scaling). Measure the time from start.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.GetEncodedScreenshot.Failure"
+    units="ms" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a page context fails to get a screenshot. This includes any
+    kind of error, including timeout. Measure the time from start.
   </summary>
 </histogram>
 

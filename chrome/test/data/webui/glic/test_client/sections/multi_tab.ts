@@ -81,8 +81,10 @@ async function fetchPinnedTabState(
   if (!tabState.tabData.isObservable && observableTabOnly) {
     return update;
   }
+
   try {
-    const viewportScreenshot = observableTabOnly;
+    const viewportScreenshot =
+        observableTabOnly || $.multiTabFetchScreenshot.checked;
     const annotatedPageContent = true;
     const pdfData = true;
     const pdfSizeLimit = DEFAULT_PDF_SIZE_LIMIT;

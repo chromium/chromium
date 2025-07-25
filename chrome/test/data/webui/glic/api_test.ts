@@ -33,13 +33,17 @@ class SequencedSubscriber<T> {
   private writeIndex = 0;
   private subscriber: Subscriber;
 
+  // The last value read from `next()`, or undefined if none was read.
+  current: T|undefined;
+
   constructor(observable: Observable<T>) {
     this.subscriber = observable.subscribe(this.change.bind(this));
   }
-  next(): Promise<T> {
+  async next(): Promise<T> {
     // Wrapping the returned value with `waitFor` improves failure logs
     // on timeout.
-    return waitFor(this.getSignal(this.readIndex++).promise);
+    this.current = await waitFor(this.getSignal(this.readIndex++).promise);
+    return this.current;
   }
   isEmpty(): boolean {
     return this.readIndex === this.writeIndex;
@@ -50,11 +54,11 @@ class SequencedSubscriber<T> {
   waitForValue(targetValue: T) {
     return this.waitFor(v => v === targetValue);
   }
-  async waitFor(condition: (v: T) => boolean) {
+  async waitFor(condition: (v: T) => boolean): Promise<T> {
     while (true) {
       const val = await this.next();
       if (condition(val)) {
-        return;
+        return val;
       }
       console.info(`waitFor saw and ignored ${JSON.stringify(val)}`);
     }
@@ -559,7 +563,9 @@ class ApiTests extends ApiTestFixtureBase {
       await this.host.getContextFromFocusedTab?.({});
     } catch (e) {
       assertEquals(
-          'tabContext failed: permission denied', (e as Error).message);
+          'tabContext failed: permission denied:' +
+              ' context permission not enabled',
+          (e as Error).message);
     }
   }
 
@@ -747,7 +753,8 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('', profileInfo.givenName);
     assertEquals(false, profileInfo.isManaged!);
     assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
-    assertEquals('Your Chromium', profileInfo.localProfileName);
+    // Can be 'Your Chrome' or 'Your Chromium'.
+    assertEquals('Your C', profileInfo.localProfileName?.substring(0, 6));
   }
 
   async testGetUserProfileInfoDoesNotDeferWhenInactive() {
@@ -756,7 +763,8 @@ class ApiTests extends ApiTestFixtureBase {
     await this.closePanelAndWaitUntilInactive();
     const profileInfo: UserProfileInfo = await this.host.getUserProfileInfo();
     assertEquals('glic-test@example.com', profileInfo.email);
-    assertEquals('Your Chromium', profileInfo.localProfileName);
+    // Can be 'Your Chrome' or 'Your Chromium'.
+    assertEquals('Your C', profileInfo.localProfileName?.substring(0, 6));
   }
 
   async testRefreshSignInCookies() {
@@ -1023,6 +1031,72 @@ class ApiTests extends ApiTestFixtureBase {
     } catch {
     }
   }
+
+  async testPinTabs() {
+    // Pin the focused tab and verify it's sent.
+    assertTrue(!!this.host.pinTabs);
+    assertTrue(!!this.host.getPinnedTabs);
+    const focus = this.host.getFocusedTabStateV2?.().getCurrentValue();
+    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
+    await this.host.pinTabs([tabId]);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.length === 1 && tabs[0]?.tabId === tabId);
+  }
+
+  // Helper for `testFetchInactiveTabScreenshot` and
+  // `testFetchInactiveTabScreenshotWhileMinimized`.
+  async fetchInactiveTabScreenshot() {
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertTrue(!!this.host.getContextFromTab);
+    assertTrue(!!this.host.pinTabs);
+    assertTrue(!!this.host.getPinnedTabs);
+
+    // Pin the focused tab.
+    const focusSequence = observeSequence(this.host.getFocusedTabStateV2());
+    let focus = await focusSequence.next();
+    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
+    await this.host.pinTabs([tabId]);
+
+    // Select the other tab.
+    await this.advanceToNextStep();
+    focus = await focusSequence.waitFor(
+        (f) => !!f.hasFocus && f.hasFocus.tabData.tabId !== tabId);
+
+    // Get context and verify we have a screenshot.
+    const context = await this.host.getContextFromTab(tabId, {
+      viewportScreenshot: true,
+    });
+    return context;
+  }
+
+  async testFetchInactiveTabScreenshot() {
+    const context = await this.fetchInactiveTabScreenshot();
+    const screenshot = checkDefined(context.viewportScreenshot);
+    assertEquals(screenshot.mimeType, 'image/jpeg');
+    assertTrue(screenshot.data.byteLength > 0);
+    assertTrue(screenshot.widthPixels > 0);
+    assertTrue(screenshot.heightPixels > 0);
+  }
+
+  async testFetchInactiveTabScreenshotWhileMinimized() {
+    const shouldGetScreenshot = this.testParams;
+    // Tests fetching the screenshot of a tab while the browser is minimized.
+    // Ideally this would work, but it currently times out and provides no
+    // screenshot on some platforms.
+    const context = await this.fetchInactiveTabScreenshot();
+
+    if (shouldGetScreenshot) {
+      assertTrue(!!context.viewportScreenshot);
+    } else {
+      // For platforms where screenshotting fails while minimized, it fails
+      // randomly, so we don't assert anything here. This test at least confirms
+      // screenshotting does not hang forever.
+      // Note: I've tried adding a sleep between minimizing the window and
+      // capturing the screenshot, but it still succeeds randomly.
+    }
+  }
+
 
   async testReloadWebUi() {}
 
@@ -1490,6 +1564,13 @@ function assertEquals(
   if (a !== b) {
     throw new Error(`assertEquals('${a}', '${b}') failed. ${message ?? ''}`);
   }
+}
+
+function checkDefined<T>(v: T|undefined): T {
+  if (v === undefined) {
+    throw new Error('checkDefined: value is undefined');
+  }
+  return v;
 }
 
 function sleep(timeoutMs: number): Promise<void> {

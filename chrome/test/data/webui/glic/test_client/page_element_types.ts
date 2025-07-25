@@ -137,6 +137,7 @@ export interface PageElementTypes {
   viewChangedCurrentView: HTMLSelectElement;
   viewChangedAutomaticallyAccept: HTMLInputElement;
   mqlsClientIdBtn: HTMLButtonElement;
+  multiTabFetchScreenshot: HTMLInputElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

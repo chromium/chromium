@@ -112,26 +112,30 @@ void GlicSharingManagerImpl::GetContextFromTab(
   auto* tab = tab_handle.Get();
   if (!tab) {
     std::move(callback).Run(
-        mojom::GetContextResult::NewErrorReason(std::string("tab not found")));
+        mojom::GetContextResult::NewErrorReason("tab not found"));
     return;
   }
 
   const bool is_pinned = pinned_tab_manager_.IsTabPinned(tab_handle);
 
-  if ((!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
-      !window_controller_->IsShowing()) && !is_pinned) {
-    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        std::string("permission denied")));
-    return;
+  if (!is_pinned) {
+    if (!window_controller_->IsShowing()) {
+      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+          "permission denied: window not showing"));
+      return;
+    }
+    if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
+      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+          "permission denied: context permission not enabled"));
+      return;
+    }
   }
-
-
 
   const bool is_focused = focused_tab_manager_.IsTabFocused(tab_handle);
   const bool is_shared = is_focused || is_pinned;
   if (!is_shared || !IsValidCandidateForSharing(tab->GetContents())) {
-    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        std::string("permission denied")));
+    std::move(callback).Run(
+        mojom::GetContextResult::NewErrorReason("permission denied"));
     return;
   }
   if (is_focused) {

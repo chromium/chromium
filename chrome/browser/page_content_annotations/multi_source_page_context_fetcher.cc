@@ -15,10 +15,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/common/constants.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,6 +28,7 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/base_window.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/origin.h"
@@ -47,6 +50,9 @@ const base::FeatureParam<int> kMaxScreenshotHeightParam{
 
 const base::FeatureParam<int> kScreenshotJpegQuality{
     &kGlicTabScreenshotExperiment, "screenshot_jpeg_quality", 40};
+
+const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
+    &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(1)};
 
 gfx::Size GetScreenshotSize(content::RenderWidgetHostView* view) {
   // By default, no scaling.
@@ -215,16 +221,25 @@ class PageContextFetcher : public content::WebContentsObserver {
   }
 
   void GetTabScreenshot(content::WebContents& web_contents) {
-    // TODO(crbug.com/378937313): Finish this provisional implementation.
     auto* view = web_contents.GetRenderWidgetHostView();
-    auto callback = base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
-                                   GetWeakPtr());
+    auto finish_error_callback =
+        base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
+                       GetWeakPtr(), std::nullopt);
 
     if (!view || !view->IsSurfaceAvailableForCopy()) {
-      std::move(callback).Run({});
       DLOG(WARNING) << "Could not retrieve RenderWidgetHostView.";
+      std::move(finish_error_callback).Run();
       return;
     }
+
+    capture_count_lock_ = web_contents.IncrementCapturerCount(
+        gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
+        /*is_activity=*/false);
+
+    // Fetching the screenshot sometimes hangs. Quit early if it's taking too
+    // long. b/431837630.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(finish_error_callback), kScreenshotTimeout.Get());
 
     view->CopyFromSurface(
         gfx::Rect(),  // Copy entire surface area.
@@ -234,6 +249,10 @@ class PageContextFetcher : public content::WebContentsObserver {
   }
 
   void ReceivedViewportBitmap(const SkBitmap& bitmap) {
+    // Early exit if the timeout has fired.
+    if (screenshot_done_) {
+      return;
+    }
     pending_result_->screenshot_result.emplace(
         gfx::SkISizeToSize(bitmap.dimensions()));
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetScreenshot",
@@ -244,7 +263,7 @@ class PageContextFetcher : public content::WebContentsObserver {
             [](const SkBitmap& bitmap) {
               return gfx::JPEGCodec::Encode(bitmap, GetScreenshotJpegQuality());
             },
-            std::move(bitmap)),
+            bitmap),
         base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
                        GetWeakPtr()));
   }
@@ -257,13 +276,23 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void RecievedJpegScreenshot(
       std::optional<std::vector<uint8_t>> screenshot_jpeg_data) {
+    // This function can be called multiple times, for timeout behavior. Early
+    // exit if it's already been called.
+    if (screenshot_done_) {
+      return;
+    }
+    auto elapsed = base::TimeTicks::Now() - start_time_;
+    screenshot_done_ = true;
+    capture_count_lock_ = {};
     if (screenshot_jpeg_data) {
       pending_result_->screenshot_result.value().jpeg_data =
           std::move(*screenshot_jpeg_data);
+      base::UmaHistogramTimes("Glic.PageContextFetcher.GetEncodedScreenshot",
+                              elapsed);
+    } else {
+      base::UmaHistogramTimes(
+          "Glic.PageContextFetcher.GetEncodedScreenshot.Failure", elapsed);
     }
-    screenshot_done_ = true;
-    base::UmaHistogramTimes("Glic.PageContextFetcher.GetEncodedScreenshot",
-                            base::TimeTicks::Now() - start_time_);
     RunCallbackIfComplete();
   }
 
@@ -343,6 +372,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   bool primary_page_changed_ = false;
   std::unique_ptr<FetchPageContextResult> pending_result_;
   base::TimeTicks start_time_;
+  base::ScopedClosureRunner capture_count_lock_;
 
   base::WeakPtrFactory<PageContextFetcher> weak_ptr_factory_{this};
 };

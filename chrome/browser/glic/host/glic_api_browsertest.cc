@@ -189,6 +189,7 @@ class GlicApiTest : public NonInteractiveGlicTest {
             {features::kGlicScrollTo, {}},
             {features::kGlicClosedCaptioning, {}},
             {features::kGlicApiActivationGating, {}},
+            {mojom::features::kGlicMultiTab, {}},
             {features::kGlicUserStatusCheck,
              {{features::kGlicUserStatusRefreshApi.name, "true"},
               {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
@@ -1519,6 +1520,49 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   histogram_tester.ExpectBucketCount(
       "Glic.Api.RequestCounts.CreateTab",
       GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPinTabs) {
+  ExecuteJsTest();
+}
+
+// TODO(b/431837630): Make this work on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testFetchInactiveTabScreenshot \
+  DISABLED_testFetchInactiveTabScreenshot
+#else
+#define MAYBE_testFetchInactiveTabScreenshot testFetchInactiveTabScreenshot
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       MAYBE_testFetchInactiveTabScreenshot) {
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest();
+
+  browser()->tab_strip_model()->SelectPreviousTab();
+
+  ContinueJsTest();
+}
+
+// TODO(b/431837630): Make this work on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
+  DISABLED_testFetchInactiveTabScreenshotWhileMinimized
+#else
+#define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
+  testFetchInactiveTabScreenshotWhileMinimized
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       MAYBE_testFetchInactiveTabScreenshotWhileMinimized) {
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+  bool can_fetch_screenshot = BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC);
+
+  ExecuteJsTest({.params = base::Value(can_fetch_screenshot)});
+
+  browser()->tab_strip_model()->SelectPreviousTab();
+  browser()->window()->Minimize();
+
+  ContinueJsTest();
 }
 
 class GlicApiTestUserStatusCheckTest : public GlicApiTestWithOneTab {
