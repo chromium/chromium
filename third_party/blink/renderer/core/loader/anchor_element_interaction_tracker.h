@@ -9,6 +9,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -87,6 +88,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
 
   static constexpr base::TimeDelta kModerateHoverDwellTime{
       base::Milliseconds(200)};
+  static base::TimeDelta EagerHoverDwellTime();
 
   void OnMouseMoveEvent(const WebMouseEvent& mouse_event);
   void OnPointerEvent(EventTarget& target, const PointerEvent& pointer_event);
@@ -122,7 +124,12 @@ class BLINK_EXPORT AnchorElementInteractionTracker
     uint32_t anchor_id;
     base::TimeTicks timestamp;
   };
-  HashMap<KURL, HoverEventCandidate> hover_event_candidates_;
+
+  // Key is (url, is_eager)
+  HashMap<std::pair<KURL, blink::mojom::SpeculationEagerness>,
+          HoverEventCandidate>
+      hover_event_candidates_;
+
   HeapTaskRunnerTimer<AnchorElementInteractionTracker> hover_timer_;
   const base::TickClock* clock_;
   Member<Document> document_;

@@ -144,7 +144,13 @@ void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url) {
   MaybeWarmUpServiceWorkerOnPointerDown(url, render_frame_host());
 }
 
-void AnchorElementInteractionHostImpl::OnPointerHover(
+void AnchorElementInteractionHostImpl::OnPointerHoverEager(
+    const GURL& url,
+    blink::mojom::AnchorElementPointerDataPtr mouse_data) {
+  // TODO(https://crbug.com/40287486): pipe this to PreloadingDecider.
+}
+
+void AnchorElementInteractionHostImpl::OnPointerHoverModerate(
     const GURL& url,
     blink::mojom::AnchorElementPointerDataPtr mouse_data) {
   auto* preloading_decider =

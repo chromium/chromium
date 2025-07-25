@@ -30,7 +30,10 @@ class CONTENT_EXPORT AnchorElementInteractionHostImpl
           receiver);
   // blink::mojom::AnchorElementInteractionHost:
   void OnPointerDown(const GURL& target) override;
-  void OnPointerHover(
+  void OnPointerHoverEager(
+      const GURL& target,
+      blink::mojom::AnchorElementPointerDataPtr mouse_data) override;
+  void OnPointerHoverModerate(
       const GURL& target,
       blink::mojom::AnchorElementPointerDataPtr mouse_data) override;
   void OnViewportHeuristicTriggered(const GURL& target) override;

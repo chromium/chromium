@@ -71,7 +71,7 @@ TEST_F(AnchorElementInteractionHostImplTest, OnPointerEvents) {
   observer.on_pointer_down_url_.reset();
   observer.on_pointer_hover_url_.reset();
   const auto pointer_hover_url = GURL("www.example.com/page2.html");
-  remote->OnPointerHover(
+  remote->OnPointerHoverModerate(
       pointer_hover_url,
       blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0));
   remote.FlushForTesting();

@@ -2110,6 +2110,15 @@ BASE_FEATURE(kPrefetchFontLookupTables,
 );
 #endif
 
+BASE_FEATURE(kPreloadingEagerHeuristics,
+             "PreloadingEagerHeuristics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPreloadingEagerHeuristicsHoverDwellTime,
+                   &kPreloadingEagerHeuristics,
+                   "hover_dwell_time",
+                   base::Milliseconds(5));
+
 BASE_FEATURE(kPreloadingHeuristicsMLModel,
              "PreloadingHeuristicsMLModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
