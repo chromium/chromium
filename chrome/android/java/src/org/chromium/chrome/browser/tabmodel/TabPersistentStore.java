@@ -1539,7 +1539,7 @@ public class TabPersistentStore {
                             }
                         });
                 for (String mergedFileName : new HashSet<>(mMergedFileNames)) {
-                    deleteFileAsync(mergedFileName, true);
+                    deleteFileAsync(mergedFileName);
                 }
                 for (TabPersistentStoreObserver observer : mObservers) observer.onStateMerged();
             }
@@ -1706,7 +1706,7 @@ public class TabPersistentStore {
                 result -> {
                     if (result == null) return;
                     for (String metadataFile : result.getMetadataFiles()) {
-                        deleteFileAsync(metadataFile, true);
+                        deleteFileAsync(metadataFile);
                     }
                     for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
                         TabStateFileManager.deleteAsync(
@@ -1748,13 +1748,12 @@ public class TabPersistentStore {
                 (TabPersistenceFileInfo result) -> {
                     // Delete the instance state file (tab_stateX) as well.
                     deleteFileAsync(
-                            TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(instanceId),
-                            true);
+                            TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(instanceId));
 
                     // |result| can be null if the task gets cancelled.
                     if (result == null) return;
                     for (String metadataFile : result.getMetadataFiles()) {
-                        deleteFileAsync(metadataFile, true);
+                        deleteFileAsync(metadataFile);
                     }
                     for (TabStateFileInfo tabStateFileInfo : result.getTabStateFileInfos()) {
                         TabStateFileManager.deleteAsync(
@@ -1770,20 +1769,15 @@ public class TabPersistentStore {
      * in the correct order.
      *
      * @param file Name of file under the state directory to be deleted.
-     * @param useSerialExecution true if serial executor will be used
      */
-    private void deleteFileAsync(final String file, boolean useSerialExecution) {
-        if (useSerialExecution) {
-            new BackgroundOnlyAsyncTask<>() {
-                @Override
-                protected Void doInBackground() {
-                    deleteStateFile(file);
-                    return null;
-                }
-            }.executeOnTaskRunner(mSequencedTaskRunner);
-        } else {
-            PostTask.runOrPostTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> deleteStateFile(file));
-        }
+    private void deleteFileAsync(final String file) {
+        new BackgroundOnlyAsyncTask<>() {
+            @Override
+            protected Void doInBackground() {
+                deleteStateFile(file);
+                return null;
+            }
+        }.executeOnTaskRunner(mSequencedTaskRunner);
     }
 
     private void deleteStateFile(String file) {
