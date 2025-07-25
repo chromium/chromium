@@ -9,6 +9,7 @@
 
 #include "chromecast/media/audio/cast_audio_bus.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "base/memory/ptr_util.h"
