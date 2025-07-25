@@ -21,7 +21,6 @@ group("unit_tests") {
     "//chrome/browser/chromeos/extensions/component_extension_content_settings:unit_tests",
     "//chrome/browser/chromeos/extensions/contact_center_insights:unit_tests",
     "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
-    "//chrome/browser/chromeos/extensions/file_system_provider:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:unit_tests",

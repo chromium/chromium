@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_SERVICE_WORKER_LIFETIME_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_SERVICE_WORKER_LIFETIME_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_WORKER_LIFETIME_MANAGER_H_
+#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_WORKER_LIFETIME_MANAGER_H_
 
 #include <map>
 #include <set>
@@ -21,14 +21,14 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace extensions {
-
 class ProcessManager;
 struct EventTarget;
+}  // namespace extensions
 
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Identifies a unique fileSystemProvider request: request ID sequence of
 // integers tracked per a filesystem instance, or per provider (extension) for
@@ -66,18 +66,18 @@ class ServiceWorkerLifetimeManager : public KeyedService {
   // Signals that a request has been dispatched to a service worker with
   // registered fileSystemProvider listeners. Called for each service worker the
   // request has been dispatched to.
-  void RequestDispatched(const RequestKey&, const EventTarget&);
+  void RequestDispatched(const RequestKey&, const extensions::EventTarget&);
   // KeyedService:
   void Shutdown() override;
 
   // Helper to create a callback for when an event is dispatched. The callback
   // is safe as it handles this object's lifetime.
-  Event::DidDispatchCallback CreateDispatchCallbackForRequest(
+  extensions::Event::DidDispatchCallback CreateDispatchCallbackForRequest(
       const RequestKey&);
 
  protected:
   struct KeepaliveKey {
-    WorkerId worker_id;
+    extensions::WorkerId worker_id;
     std::string request_uuid;
 
     bool operator==(const KeepaliveKey& other) const;
@@ -85,7 +85,7 @@ class ServiceWorkerLifetimeManager : public KeyedService {
   };
 
   // Virtual for tests.
-  virtual std::string IncrementKeepalive(const WorkerId&);
+  virtual std::string IncrementKeepalive(const extensions::WorkerId&);
   virtual void DecrementKeepalive(const KeepaliveKey&);
 
  private:
@@ -93,7 +93,7 @@ class ServiceWorkerLifetimeManager : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerLifetimeManagerTest,
                            TestDispatchMultipleEvents);
 
-  raw_ptr<ProcessManager> process_manager_;
+  raw_ptr<extensions::ProcessManager> process_manager_;
   std::map<RequestKey, std::set<KeepaliveKey>> requests_;
 
   base::WeakPtrFactory<ServiceWorkerLifetimeManager> weak_ptr_factory_{this};
@@ -123,7 +123,6 @@ class ServiceWorkerLifetimeManagerFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace file_system_provider
-}  // namespace extensions
+}  // namespace ash::file_system_provider
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_SERVICE_WORKER_LIFETIME_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_WORKER_LIFETIME_MANAGER_H_

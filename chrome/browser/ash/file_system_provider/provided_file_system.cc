@@ -39,7 +39,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
+#include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -63,13 +63,12 @@ constexpr base::TimeDelta kDefaultOperationTimeout = base::Seconds(10);
 // Operation timeout for the ODFS extension.
 constexpr base::TimeDelta kODFSOperationTimeout = base::Seconds(30);
 
-extensions::file_system_provider::ServiceWorkerLifetimeManager*
-GetServiceWorkerLifetimeManager(Profile* profile) {
+ServiceWorkerLifetimeManager* GetServiceWorkerLifetimeManager(
+    Profile* profile) {
   if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
-  return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
-      profile);
+  return ServiceWorkerLifetimeManager::Get(profile);
 }
 
 class ScopedUserInteractionImpl : public ScopedUserInteraction {

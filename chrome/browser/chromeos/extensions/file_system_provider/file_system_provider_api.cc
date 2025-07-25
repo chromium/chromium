@@ -16,9 +16,9 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
+#include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
@@ -303,8 +303,7 @@ bool FileSystemProviderInternal::ForwardMountResult(int64_t request_id,
                                                     base::Value::List& args) {
   auto* profile = Profile::FromBrowserContext(browser_context());
   auto* sw_lifetime_manager =
-      extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
-          profile);
+      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(profile);
   sw_lifetime_manager->FinishRequest({
       extension_id(),
       /*file_system_id=*/"",
@@ -340,8 +339,7 @@ bool FileSystemProviderInternal::ForwardOperationResultImpl(
     base::Value::List args) {
   auto* profile = Profile::FromBrowserContext(browser_context());
   auto* sw_lifetime_manager =
-      extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
-          profile);
+      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(profile);
   sw_lifetime_manager->FinishRequest({
       file_system_id->provider,
       file_system_id->id,
@@ -455,8 +453,7 @@ bool FileSystemProviderInternal::ForwardOpenFileFinishedSuccessullyResult(
   GetOperationMetadata(params, &file_system_id, &request_id);
   auto* profile = Profile::FromBrowserContext(browser_context());
   auto* sw_lifetime_manager =
-      extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
-          profile);
+      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(profile);
   sw_lifetime_manager->FinishRequest({
       file_system_id->provider,
       file_system_id->id,

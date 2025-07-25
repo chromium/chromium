@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
+
 #include <tuple>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions::file_system_provider {
+namespace ash::file_system_provider {
 
 namespace {
 
 using UuidSet = std::set<std::string>;
-using KeepaliveMap = std::map<WorkerId, UuidSet>;
+using KeepaliveMap = std::map<extensions::WorkerId, UuidSet>;
 
 // Implementation of ServiceWorkerLifetimeManager that stubs out the calls to
 // the non-existing ProcessManager in IncrementKeepalive/DecrementKeepalive.
@@ -29,7 +30,8 @@ class TestServiceWorkerLifetimeManager : public ServiceWorkerLifetimeManager {
   void Reset() { next_keepalive_id_ = 1; }
 
  private:
-  std::string IncrementKeepalive(const WorkerId& worker_id) override {
+  std::string IncrementKeepalive(
+      const extensions::WorkerId& worker_id) override {
     std::string id = base::StringPrintf("uuid-%d", next_keepalive_id_++);
     (*keepalive_map_)[worker_id].insert(id);
     return id;
@@ -82,15 +84,16 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchOneTarget) {
       .file_system_id = "fs1",
       .request_id = 1,
   };
-  const EventTarget kTarget{
+  const extensions::EventTarget kTarget{
       .extension_id = "ext1",
       .render_process_id = 1,
       .service_worker_version_id = 2,
       .worker_thread_id = 3,
   };
-  const WorkerId kWorkerId(/*extension_id=*/"ext1", /*render_process_id=*/1,
-                           /*version_id=*/2,
-                           /*thread_id=*/3);
+  const extensions::WorkerId kWorkerId(/*extension_id=*/"ext1",
+                                       /*render_process_id=*/1,
+                                       /*version_id=*/2,
+                                       /*thread_id=*/3);
 
   // Simple case: a single request is dispatched and completed.
 
@@ -112,7 +115,7 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleTargets) {
       .request_id = 1,
   };
   auto target = [](int version_id) {
-    return EventTarget{
+    return extensions::EventTarget{
         .extension_id = "ext1",
         .render_process_id = 1000,
         .service_worker_version_id = version_id,
@@ -120,7 +123,7 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleTargets) {
     };
   };
   auto worker = [](int version_id) {
-    return WorkerId(
+    return extensions::WorkerId(
         /*extension_id=*/"ext1",
         /*render_process_id=*/1000, version_id,
         /*thread_id=*/3);
@@ -161,7 +164,7 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchLate) {
   EXPECT_EQ(keepalive_map_.size(), 0u);
 
   sw_lifetime_manager_.RequestDispatched(kRequest,
-                                         EventTarget{
+                                         extensions::EventTarget{
                                              .extension_id = "ext1",
                                              .render_process_id = 1,
                                              .service_worker_version_id = 2,
@@ -171,24 +174,24 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchLate) {
 }
 
 TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleEvents) {
-  const EventTarget kTarget1{
+  const extensions::EventTarget kTarget1{
       .extension_id = "ext1",
       .render_process_id = 1000,
       .service_worker_version_id = 2,
       .worker_thread_id = 3,
   };
-  const EventTarget kTarget2{
+  const extensions::EventTarget kTarget2{
       .extension_id = "ext2",
       .render_process_id = 1001,
       .service_worker_version_id = 4,
       .worker_thread_id = 5,
   };
-  const WorkerId kWorkerId1(
+  const extensions::WorkerId kWorkerId1(
       /*extension_id=*/"ext1",
       /*render_process_id=*/1000,
       /*version_id=*/2,
       /*thread_id=*/3);
-  const WorkerId kWorkerId2(
+  const extensions::WorkerId kWorkerId2(
       /*extension_id=*/"ext2",
       /*render_process_id=*/1001,
       /*version_id=*/4,
@@ -246,4 +249,4 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleEvents) {
   ASSERT_EQ(keepalive_map_.size(), 0u);
 }
 
-}  // namespace extensions::file_system_provider
+}  // namespace ash::file_system_provider
