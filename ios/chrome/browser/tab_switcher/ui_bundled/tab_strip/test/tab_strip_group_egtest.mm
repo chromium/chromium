@@ -41,7 +41,7 @@ id<GREYMatcher> HalfVisibleTabGroupCreationView() {
                     grey_minimumVisiblePercent(0.5), nil);
 }
 
-// Returns the matcher for the Tab Groups view as third panel of Tab Grid.
+// Returns the matcher for the tab groups page of the tab grid.
 id<GREYMatcher> TabGroupsPanel() {
   return grey_allOf(grey_accessibilityID(kTabGroupsPanelIdentifier),
                     grey_sufficientlyVisible(), nil);
@@ -990,7 +990,7 @@ void LongPressTabWithTitle(NSString* title) {
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
       performAction:grey_tap()];
 
-  // Check that the Tab Groups Panel is shown.
+  // Check that the tab groups page is shown.
   [[EarlGrey selectElementWithMatcher:TabGroupsPanel()]
       assertWithMatcher:grey_notNil()];
 }

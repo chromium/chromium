@@ -58,7 +58,7 @@ UIControlEvents TabGridPageChangeByDragEvent = 1 << 25;
 // Given that, it's generally simpler to used fixed (frame-based) layout for
 // most of the content of this control. However, in order to accommodate RTL
 // layout, three layout guides are used to define the position of the
-// incognito, regular, and third panel sections. The layout frames of these
+// incognito, regular, and tab groups sections. The layout frames of these
 // guides are used to map points in the view to specific TabGridPage values.
 // This means that the initial view layout for this control happens in two
 // phases. -setupViews creates all of the subviews and the layout guides, but
@@ -146,10 +146,10 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
 // Layout guides used to position segment-specific content.
 @property(nonatomic, weak) UILayoutGuide* incognitoGuide;
 @property(nonatomic, weak) UILayoutGuide* regularGuide;
-@property(nonatomic, weak) UILayoutGuide* thirdPanelGuide;
+@property(nonatomic, weak) UILayoutGuide* tabGroupsGuide;
 // The separator between incognito and regular tabs.
 @property(nonatomic, weak) UIView* firstSeparator;
-// The separator between the regular and third panels.
+// The separator between the regular and tab groups pages.
 @property(nonatomic, weak) UIView* secondSeparator;
 // The view for the slider.
 @property(nonatomic, weak) UIView* sliderView;
@@ -173,7 +173,7 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
 // pointer.
 @property(nonatomic, weak) UIView* incognitoHoverView;
 @property(nonatomic, weak) UIView* regularHoverView;
-@property(nonatomic, weak) UIView* thirdPanelHoverView;
+@property(nonatomic, weak) UIView* tabGroupsHoverView;
 
 // The center point for the slider corresponding to a `sliderPosition` of 0.
 @property(nonatomic) CGFloat sliderOrigin;
@@ -392,7 +392,7 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
       ]];
       break;
     case TabGridPageTabGroups:
-      pageGuide = self.thirdPanelGuide;
+      pageGuide = self.tabGroupsGuide;
       _highlightedIcon = self.tabGroupsNotSelectedIcon;
       [NSLayoutConstraint activateConstraints:@[
         [highlightBackground.leadingAnchor
@@ -432,8 +432,8 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
 }
 
 - (CGRect)lastSegmentFrame {
-  return [self.thirdPanelGuide.owningView
-      convertRect:self.thirdPanelGuide.layoutFrame
+  return [self.tabGroupsGuide.owningView
+      convertRect:self.tabGroupsGuide.layoutFrame
            toView:nil];
 }
 
@@ -530,13 +530,13 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   self.incognitoHoverView.center =
       [self centerOfSegment:TabGridPageIncognitoTabs];
   self.regularHoverView.center = [self centerOfSegment:TabGridPageRegularTabs];
-  self.thirdPanelHoverView.center = [self centerOfSegment:TabGridPageTabGroups];
+  self.tabGroupsHoverView.center = [self centerOfSegment:TabGridPageTabGroups];
 
   // Determine the slider origin and range; this is based on the layout guides
   // and can't be computed until they are determined.
   self.sliderOrigin = CGRectGetMidX(self.incognitoGuide.layoutFrame);
   self.sliderRange =
-      CGRectGetMidX(self.thirdPanelGuide.layoutFrame) - self.sliderOrigin;
+      CGRectGetMidX(self.tabGroupsGuide.layoutFrame) - self.sliderOrigin;
 
   // Set the slider position using the new slider origin and range.
   self.sliderPosition = _sliderPosition;
@@ -578,7 +578,7 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   _regularAccessibilityElement.accessibilityFrameInContainerSpace =
       self.regularGuide.layoutFrame;
   _tabGroupsAccessibilityElement.accessibilityFrameInContainerSpace =
-      self.thirdPanelGuide.layoutFrame;
+      self.tabGroupsGuide.layoutFrame;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -681,17 +681,17 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   UILayoutGuide* regularGuide = [[UILayoutGuide alloc] init];
   [self addLayoutGuide:regularGuide];
   self.regularGuide = regularGuide;
-  UILayoutGuide* thirdPanelGuide = [[UILayoutGuide alloc] init];
-  [self addLayoutGuide:thirdPanelGuide];
-  self.thirdPanelGuide = thirdPanelGuide;
+  UILayoutGuide* tabGroupsGuide = [[UILayoutGuide alloc] init];
+  [self addLayoutGuide:tabGroupsGuide];
+  self.tabGroupsGuide = tabGroupsGuide;
 
   // All of the guides are of the same height, and vertically centered in the
   // control.
   for (UILayoutGuide* guide in
-       @[ incognitoGuide, regularGuide, thirdPanelGuide ]) {
+       @[ incognitoGuide, regularGuide, tabGroupsGuide ]) {
     [guide.heightAnchor constraintEqualToConstant:kOverallHeight].active = YES;
     // Guides are all the same width. The regular guide is centered in the
-    // control, and the incognito and third panel guides are on the leading and
+    // control, and the incognito and tab groups guides are on the leading and
     // trailing sides of it, with separators in between.
     [guide.widthAnchor constraintEqualToConstant:kSegmentWidth].active = YES;
     [guide.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active =
@@ -714,7 +714,7 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
     [regularGuide.trailingAnchor
         constraintEqualToAnchor:secondSeparator.leadingAnchor],
     [secondSeparator.trailingAnchor
-        constraintEqualToAnchor:thirdPanelGuide.leadingAnchor],
+        constraintEqualToAnchor:tabGroupsGuide.leadingAnchor],
 
     [firstSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
     [secondSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
@@ -769,9 +769,9 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   [center referenceView:self.incognitoHoverView
               underName:kTabGridPageControlIncognitoGuide];
   self.regularHoverView = [self configureHoverView];
-  self.thirdPanelHoverView = [self configureHoverView];
-  [center referenceView:self.thirdPanelHoverView
-              underName:kTabGridPageControlThirdPanelGuide];
+  self.tabGroupsHoverView = [self configureHoverView];
+  [center referenceView:self.tabGroupsHoverView
+              underName:kTabGridPageControlTabGroupsGuide];
 
   [self.sliderView
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
@@ -824,7 +824,7 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   TabGridPage page;
   if (CGRectContainsPoint(self.incognitoGuide.layoutFrame, point)) {
     page = TabGridPageIncognitoTabs;
-  } else if (CGRectContainsPoint(self.thirdPanelGuide.layoutFrame, point)) {
+  } else if (CGRectContainsPoint(self.tabGroupsGuide.layoutFrame, point)) {
     page = TabGridPageTabGroups;
   } else {
     // bug: taps in the left- or rightmost `kSliderOverhang` points of the
@@ -846,7 +846,7 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
     case TabGridPageRegularTabs:
       return RectCenter(self.regularGuide.layoutFrame);
     case TabGridPageTabGroups:
-      return RectCenter(self.thirdPanelGuide.layoutFrame);
+      return RectCenter(self.tabGroupsGuide.layoutFrame);
   }
 }
 

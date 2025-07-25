@@ -439,8 +439,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 }
 
 // Tests exiting the tab switcher after switch back and forth between the normal
-// page and the third page.
-- (void)testLeaveSwitcherAfterVisitingThirdPanel {
+// page and the tab groups page.
+- (void)testLeaveSwitcherAfterVisitingTabGroups {
   [self setUpTestServer];
 
   NSString* tab1_title = @"NormalTab1";
@@ -453,7 +453,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
   [ChromeEarlGrey showTabSwitcher];
 
-  // Switch to the third panel.
+  // Switch to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 

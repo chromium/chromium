@@ -106,7 +106,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
   [ChromeEarlGreyUI openTabGrid];
 
-  // Switch over to the third panel and delete existing saved groups.
+  // Switch over to the tab groups page and delete existing saved groups.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
   DeleteAllSavedGroups();
@@ -190,7 +190,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 - (void)testSignOutKeepsPreviousGroupDeletesNewGroup {
   [ChromeEarlGreyUI openTabGrid];
 
-  // Switch over to the third panel and delete existing saved groups.
+  // Switch over to the tab groups page and delete existing saved groups.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
   DeleteAllSavedGroups();
@@ -223,7 +223,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
   // Sign out.
   [SigninEarlGrey signOut];
 
-  // Switch over to the third panel of the Tab Grid.
+  // Switch over to the tab groups page of the tab grid.
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseTabGroupButton()]
       performAction:grey_tap()];
@@ -258,7 +258,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 - (void)MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup {
   [ChromeEarlGreyUI openTabGrid];
 
-  // Switch over to the third panel and delete existing saved groups.
+  // Switch over to the tab groups page and delete existing saved groups.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
   DeleteAllSavedGroups();
@@ -291,7 +291,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
   // Stop syncing tabs.
   [SigninEarlGrey setSelectedType:syncer::UserSelectableType::kTabs enabled:NO];
 
-  // Switch over to the third panel of the Tab Grid.
+  // Switch over to the tab groups page of the tab grid.
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseTabGroupButton()]
       performAction:grey_tap()];

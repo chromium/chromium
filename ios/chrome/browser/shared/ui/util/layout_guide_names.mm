@@ -22,8 +22,8 @@ GuideName* const kTabGridBottomToolbarGuide = @"kTabGridBottomToolbarGuide";
 GuideName* const kTabGridPageControlGuide = @"kTabGridPageControlGuide";
 GuideName* const kTabGridPageControlIncognitoGuide =
     @"kTabGridPageControlIncognitoGuide";
-GuideName* const kTabGridPageControlThirdPanelGuide =
-    @"kTabGridPageControlThirdPanelGuide";
+GuideName* const kTabGridPageControlTabGroupsGuide =
+    @"kTabGridPageControlTabGroupsGuide";
 GuideName* const kAutofillFirstSuggestionGuide =
     @"kAutofillFirstSuggestionGuide";
 GuideName* const kLensKeyboardButtonGuide = @"kLensKeyboardButtonGuide";

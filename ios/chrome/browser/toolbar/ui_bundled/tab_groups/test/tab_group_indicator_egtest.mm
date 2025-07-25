@@ -332,7 +332,7 @@ void CreateSharedGroupAndOpenMenu() {
       selectElementWithMatcher:chrome_test_util::TabGroupSnackBarAction()]
       performAction:grey_tap()];
 
-  // Check that the Tab Groups Panel is shown.
+  // Check that the tab groups page is shown.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGroupsPanel()]
       assertWithMatcher:grey_notNil()];
 }

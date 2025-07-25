@@ -136,7 +136,7 @@ TEST_F(TabGroupsPanelCoordinatorTest, NilPropertiesBeforeStart) {
   EXPECT_EQ(nil, coordinator_.gridContainerViewController);
 }
 
-// Tests that with no Incognito mode policy, the third panel is Tab Groups.
+// Tests that with no Incognito mode policy, the tab groups page is shown.
 TEST_F(TabGroupsPanelCoordinatorTest, NoIncognitoPolicy_TabGroupsShown) {
   [coordinator_ start];
 
@@ -149,8 +149,8 @@ TEST_F(TabGroupsPanelCoordinatorTest, NoIncognitoPolicy_TabGroupsShown) {
             coordinator_.gridContainerViewController.containedViewController);
 }
 
-// Tests that with Incognito mode disabled by policy, the third panel is Tab
-// Groups.
+// Tests that with Incognito mode disabled by policy, the tab groups page is
+// shown.
 TEST_F(TabGroupsPanelCoordinatorTest, IncognitoDisabled_TabGroupsShown) {
   // Disable Incognito with policy.
   profile_->GetTestingPrefService()->SetManagedPref(
@@ -169,8 +169,8 @@ TEST_F(TabGroupsPanelCoordinatorTest, IncognitoDisabled_TabGroupsShown) {
             coordinator_.gridContainerViewController.containedViewController);
 }
 
-// Tests that with Incognito mode forced by policy, the third panel is the
-// disabled Tab Groups view.
+// Tests that with Incognito mode forced by policy, the tab groups page is not
+// shown. Instead, it's the disabled tab groups view.
 TEST_F(TabGroupsPanelCoordinatorTest, IncognitoForced_TabGroupsDisabled) {
   // Force Incognito with policy.
   profile_->GetTestingPrefService()->SetManagedPref(

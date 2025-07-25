@@ -135,11 +135,11 @@ void CloseGroupAtIndex(int group_cell_index) {
   return config;
 }
 
-// Tests that the third panel is Tab Groups panel.
-- (void)testThirdPanelIsTabGroups {
+// Tests that the third page is the tab groups page.
+- (void)testThirdPageIsTabGroups {
   [ChromeEarlGreyUI openTabGrid];
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGroupsPanel()]
@@ -190,14 +190,14 @@ void CloseGroupAtIndex(int group_cell_index) {
   GREYAssertTrue(groupsDeleted, @"Failed to clean up groups");
 }
 
-// Tests that a group is deleted in the Tab Groups panel.
-- (void)testDeleteTabGroupInThirdPanel {
+// Tests that a group is deleted in the tab groups page.
+- (void)testDeleteTabGroupInTabGroupsPage {
   [ChromeEarlGreyUI openTabGrid];
 
   // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -248,7 +248,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -268,7 +268,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Edit the group name from `kGroup1Name` to `kGroup2Name`.
   RenameGroupAtIndex(0, kGroup1Name, kGroup2Name);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -290,7 +290,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -308,7 +308,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Ungroup a group.
   UngroupGroupAtIndex(0);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -330,7 +330,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -350,7 +350,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_nil()];
 
-  // Switch over to the third panel by tapping the snackbar action.
+  // Switch over to the tab groups page by tapping the snackbar action.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupSnackBar(1)];
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
       performAction:grey_tap()];
@@ -442,7 +442,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
       performAction:grey_tap()];
 
-  // Check that the Tab Groups Panel is shown.
+  // Check that the tab groups page is shown.
   [[EarlGrey selectElementWithMatcher:TabGroupsPanel()]
       assertWithMatcher:grey_notNil()];
 
@@ -460,7 +460,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -522,15 +522,15 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 0.");
 }
 
-// Tests that the cancellation of deleting in the Tab Groups panel doesn't
+// Tests that the cancellation of deleting in the tab groups page doesn't
 // delete a group and deleting a group again after the cancellation works well.
-- (void)testConfirmationCancelledForDeleteGroupInThirdPanel {
+- (void)testConfirmationCancelledForDeleteGroupInTabGroupsPage {
   [ChromeEarlGreyUI openTabGrid];
 
   // Create a tab group with an item at 0.
   CreateTabGroupAtIndex(0, kGroup1Name);
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 
@@ -623,7 +623,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_nil()];
 
-  // Switch over to the third panel by tapping the snackbar action.
+  // Switch over to the tab groups page by tapping the snackbar action.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupSnackBar(1)];
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
       performAction:grey_tap()];

@@ -617,12 +617,12 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests simulating a swipe with Voice Over from the third panel, making sure
-// that the new tab button is working as expected.
+// Tests simulating a swipe with Voice Over from the tab groups page, making
+// sure that the new tab button is working as expected.
 - (void)testSwipeUsingVoiceOver {
   [ChromeEarlGreyUI openTabGrid];
 
-  // Switch over to the third panel.
+  // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
 

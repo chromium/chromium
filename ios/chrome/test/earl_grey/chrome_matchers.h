@@ -963,7 +963,7 @@ id<GREYMatcher> FakeJoinFlowView();
 
 #pragma mark - Tab Groups Panel
 
-// Returns the matcher for the tab groups panel view.
+// Returns the matcher for the tab groups page of the tab grid.
 id<GREYMatcher> TabGroupsPanel();
 
 }  // namespace chrome_test_util
