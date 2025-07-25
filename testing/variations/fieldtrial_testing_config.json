@@ -17903,18 +17903,18 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithOTRtrue_20250319",
+                    "name": "EnabledWithOTRfalse_20250319",
                     "params": {
-                        "run_on_otr": "true"
+                        "run_on_otPreconnectFromKeyedServicer": "false"
                     },
                     "enable_features": [
                         "PreconnectFromKeyedService"
                     ]
                 },
                 {
-                    "name": "EnabledWithOTRfalse_20250319",
+                    "name": "EnabledWithOTRtrue_20250319",
                     "params": {
-                        "run_on_otr": "false"
+                        "run_on_otr": "true"
                     },
                     "enable_features": [
                         "PreconnectFromKeyedService"
