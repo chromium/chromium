@@ -29,6 +29,10 @@ function onMessageListener(message) {
       return new Promise((unusedResolve, reject) => {
         reject();
       });
+    case 'return promise reject with undefined':
+      return new Promise((unusedResolve, reject) => {
+        reject(undefined);
+      });
     default:
       chrome.test.fail('Unexpected test message: ' + message);
   }
