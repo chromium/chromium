@@ -31,7 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"

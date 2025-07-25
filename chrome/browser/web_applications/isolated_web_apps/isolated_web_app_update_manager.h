@@ -34,7 +34,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "net/base/backoff_entry.h"
 
 class GURL;

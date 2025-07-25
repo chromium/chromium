@@ -78,7 +78,7 @@
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"

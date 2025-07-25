@@ -8,6 +8,8 @@ source_set("types") {
     "source.h",
     "storage_location.cc",
     "storage_location.h",
+    "update_channel.cc",
+    "update_channel.h",
     "url_loading_types.h",
   ]
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_UPDATE_CHANNEL_H_
-#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_UPDATE_CHANNEL_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_UPDATE_CHANNEL_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_UPDATE_CHANNEL_H_
 
 #include <string>
 #include <variant>
@@ -44,4 +44,4 @@ class UpdateChannel {
 
 }  // namespace web_app
 
-#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_UPDATE_CHANNEL_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_UPDATE_CHANNEL_H_

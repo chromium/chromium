@@ -26,7 +26,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
 namespace {

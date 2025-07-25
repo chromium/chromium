@@ -36,7 +36,7 @@
 #include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

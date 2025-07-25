@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {

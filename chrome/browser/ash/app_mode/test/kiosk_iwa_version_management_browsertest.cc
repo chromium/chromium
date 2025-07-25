@@ -41,7 +41,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/webapps/common/web_app_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"

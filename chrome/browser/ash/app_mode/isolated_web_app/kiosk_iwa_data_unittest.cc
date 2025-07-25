@@ -18,7 +18,7 @@
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"

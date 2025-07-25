@@ -23,7 +23,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace web_app {

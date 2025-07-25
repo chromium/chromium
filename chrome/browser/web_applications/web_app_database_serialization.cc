@@ -46,7 +46,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"

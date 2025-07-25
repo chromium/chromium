@@ -24,7 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/origin.h"

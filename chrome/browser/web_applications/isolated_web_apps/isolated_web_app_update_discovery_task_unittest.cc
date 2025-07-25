@@ -41,7 +41,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"

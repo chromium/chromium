@@ -83,7 +83,7 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"

@@ -2,12 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/431980377): Should this be a group()?
 source_set("isolated_web_apps") {
-  sources = [
-    # TODO(crbug.com/431980377): Move update_channel to types/.
-    "update_channel.cc",
-    "update_channel.h",
-  ]
+  sources = []
 
   public_deps = [
     ":features",

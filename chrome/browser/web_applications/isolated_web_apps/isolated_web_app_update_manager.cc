@@ -55,7 +55,7 @@
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -7,7 +7,7 @@
 #include "base/containers/to_value_list.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 
 namespace web_app {
 

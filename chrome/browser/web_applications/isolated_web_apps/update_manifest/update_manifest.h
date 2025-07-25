@@ -18,7 +18,7 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
 namespace web_app {
