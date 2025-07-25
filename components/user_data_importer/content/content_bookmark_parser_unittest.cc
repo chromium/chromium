@@ -9,6 +9,7 @@
 #include <array>
 #include <string>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -121,12 +122,7 @@ class ContentBookmarkParserWithData : public testing::Test {
   void ExpectSecondEmptyFolderBookmark(
       const user_data_importer::ImportedBookmarkEntry& entry);
 
-  user_data_importer::BookmarkParser* bookmark_parser() {
-    return bookmark_parser_.get();
-  }
-
   base::FilePath test_data_path_;
-  std::unique_ptr<BookmarkParser> bookmark_parser_ = MakeBookmarkParser();
   base::ScopedMockClockOverride clock;
 };
 
@@ -276,6 +272,24 @@ TEST_F(ContentBookmarkParserWithData, BookmarkFileWithHrTagImport) {
       bookmarks_parsed_future;
   user_data_importer::MakeBookmarkParser()->Parse(
       path, bookmarks_parsed_future.GetCallback());
+  BookmarkParser::BookmarkParsingResult result = bookmarks_parsed_future.Take();
+
+  ASSERT_EQ(3U, result->bookmarks.size());
+  ExpectFirstFirefox23Bookmark(result->bookmarks[0]);
+  ExpectSecondFirefox23Bookmark(result->bookmarks[1]);
+  ExpectThirdFirefox23Bookmark(result->bookmarks[2]);
+}
+
+TEST_F(ContentBookmarkParserWithData, ReadFromFile) {
+  base::FilePath path = test_data_path_.AppendASCII("firefox23.html");
+
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  base::test::TestFuture<BookmarkParser::BookmarkParsingResult>
+      bookmarks_parsed_future;
+  ContentBookmarkParser().Parse(std::move(file),
+                                bookmarks_parsed_future.GetCallback());
   BookmarkParser::BookmarkParsingResult result = bookmarks_parsed_future.Take();
 
   ASSERT_EQ(3U, result->bookmarks.size());

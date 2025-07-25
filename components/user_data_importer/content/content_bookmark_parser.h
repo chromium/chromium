@@ -10,6 +10,7 @@
 #include "components/user_data_importer/utility/bookmark_parser.h"
 
 namespace base {
+class File;
 class FilePath;
 }
 
@@ -22,7 +23,13 @@ class ContentBookmarkParser : public BookmarkParser {
   ~ContentBookmarkParser() override;
 
   void Parse(const base::FilePath& file,
-             BookmarkParser::BookmarkParsingCallback callback) override;
+             BookmarkParsingCallback callback) override;
+
+  // Same as the Parse() above, but reads from a base::File.
+  void Parse(base::File file, BookmarkParsingCallback callback);
+
+ private:
+  void ParseImpl(std::string content, BookmarkParsingCallback callback);
 };
 
 // Returns true if |url| should be imported as a search engine, i.e. because it
