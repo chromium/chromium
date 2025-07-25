@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
 
@@ -81,7 +82,7 @@ class VIEWS_EXPORT NativeMenuWin {
   void ResetNativeMenu();
 
   // Our attached model and delegate.
-  raw_ptr<ui::MenuModel> model_;
+  base::WeakPtr<ui::MenuModel> model_;
 
   HMENU menu_ = nullptr;
 
