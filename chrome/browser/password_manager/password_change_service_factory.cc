@@ -42,7 +42,7 @@ PasswordChangeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ChromePasswordChangeService>(
-      AffiliationServiceFactory::GetForProfile(profile),
+      profile->GetPrefs(), AffiliationServiceFactory::GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       PasswordManagerSettingsServiceFactory::GetForProfile(profile),
       std::make_unique<password_manager::PasswordFeatureManagerImpl>(

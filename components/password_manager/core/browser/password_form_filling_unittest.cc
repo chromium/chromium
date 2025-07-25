@@ -89,11 +89,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
 class MockPasswordChangeService : public PasswordChangeServiceInterface {
  public:
-  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (override));
+  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const override));
   MOCK_METHOD(bool,
               IsPasswordChangeSupported,
               (const GURL&, const autofill::LanguageCode&),
-              (override));
+              (const override));
 };
 
 PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(

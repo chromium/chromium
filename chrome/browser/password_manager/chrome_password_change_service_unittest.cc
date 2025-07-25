@@ -22,7 +22,8 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -60,11 +61,16 @@ struct TestCase {
 class ChromePasswordChangeServiceBase {
  public:
   ChromePasswordChangeServiceBase() {
+    prefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::GetSettingEnabledPrefName(
+            optimization_guide::UserVisibleFeatureKey::
+                kPasswordChangeSubmission),
+        /*default_value=*/0);
     auto feature_manager = std::make_unique<
         testing::StrictMock<password_manager::MockPasswordFeatureManager>>();
     feature_manager_ = feature_manager.get();
     change_service_ = std::make_unique<ChromePasswordChangeService>(
-        &mock_affiliation_service_, &mock_optimization_service_,
+        &prefs_, &mock_affiliation_service_, &mock_optimization_service_,
         &settings_service_, std::move(feature_manager));
   }
 
@@ -88,10 +94,13 @@ class ChromePasswordChangeServiceBase {
     return feature_manager_;
   }
 
+  TestingPrefServiceSimple* prefs() { return &prefs_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_{
       password_manager::features::kImprovedPasswordChangeService};
+  TestingPrefServiceSimple prefs_;
   testing::StrictMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
   testing::StrictMock<MockOptimizationGuideKeyedService>
@@ -106,11 +115,11 @@ class ChromePasswordChangeServiceTest : public testing::Test,
                                         public ChromePasswordChangeServiceBase {
  public:
   ChromePasswordChangeServiceTest() {
-    variations::TestVariationsService::RegisterPrefs(prefs_.registry());
+    variations::TestVariationsService::RegisterPrefs(prefs()->registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, std::wstring(), base::FilePath());
+        prefs(), &enabled_state_provider_, std::wstring(), base::FilePath());
     variations_service_ = std::make_unique<variations::TestVariationsService>(
-        &prefs_, metrics_state_manager_.get());
+        prefs(), metrics_state_manager_.get());
   }
 
   void SetUp() override {
@@ -123,7 +132,6 @@ class ChromePasswordChangeServiceTest : public testing::Test,
   }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
   metrics::TestEnabledStateProvider enabled_state_provider_{/*consent=*/false,
                                                             /*enabled=*/false};
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
@@ -290,6 +298,44 @@ TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithChangePwdUrlArg) {
 #else
   EXPECT_FALSE(change_service()->IsPasswordChangeAvailable());
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+TEST_P(ChromePasswordChangeServiceAvailabilityTest,
+       SettingVisibilityWithPrefOff) {
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled).Times(0);
+  EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
+      .Times(0);
+  EXPECT_CALL(settings_service(), IsSettingEnabled).Times(0);
+  // Always false because pref is not set.
+  EXPECT_FALSE(static_cast<ChromePasswordChangeService*>(change_service())
+                   ->ShouldShowEntryInSettings());
+}
+
+TEST_P(ChromePasswordChangeServiceAvailabilityTest,
+       SettingVisibilityWithPrefOn) {
+  prefs()->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission),
+      1);
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
+      .WillOnce(testing::Return(GetParam().is_generation_available));
+  if (GetParam().is_generation_available) {
+    EXPECT_CALL(mock_optimization_service(),
+                ShouldModelExecutionBeAllowedForUser)
+        .WillOnce(testing::Return(GetParam().is_model_execution_allowed));
+    if (GetParam().is_model_execution_allowed) {
+      EXPECT_CALL(
+          settings_service(),
+          IsSettingEnabled(
+              password_manager::PasswordManagerSetting::kOfferToSavePasswords))
+          .WillOnce(testing::Return(GetParam().is_saving_allowed));
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(static_cast<ChromePasswordChangeService*>(change_service())
+                ->ShouldShowEntryInSettings(),
+            GetParam().expected_outcome());
 }
 
 INSTANTIATE_TEST_SUITE_P(

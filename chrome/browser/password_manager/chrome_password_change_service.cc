@@ -14,9 +14,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -54,14 +56,25 @@ std::string GetVariationConfigCountryCode() {
                            : std::string();
 }
 
+optimization_guide::prefs::FeatureOptInState GetFeatureState(
+    PrefService* pref_service) {
+  return static_cast<optimization_guide::prefs::FeatureOptInState>(
+      pref_service->GetInteger(
+          optimization_guide::prefs::GetSettingEnabledPrefName(
+              optimization_guide::UserVisibleFeatureKey::
+                  kPasswordChangeSubmission)));
+}
+
 }  // namespace
 
 ChromePasswordChangeService::ChromePasswordChangeService(
+    PrefService* pref_service,
     affiliations::AffiliationService* affiliation_service,
     OptimizationGuideKeyedService* optimization_keyed_service,
     password_manager::PasswordManagerSettingsService* settings_service,
     std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager)
-    : affiliation_service_(affiliation_service),
+    : pref_service_(pref_service),
+      affiliation_service_(affiliation_service),
       optimization_keyed_service_(optimization_keyed_service),
       settings_service_(settings_service),
       feature_manager_(std::move(feature_manager)) {}
@@ -70,7 +83,7 @@ ChromePasswordChangeService::~ChromePasswordChangeService() {
   CHECK(password_change_delegates_.empty());
 }
 
-bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
+bool ChromePasswordChangeService::IsPasswordChangeAvailable() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
@@ -100,7 +113,7 @@ bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
 
 bool ChromePasswordChangeService::IsPasswordChangeSupported(
     const GURL& url,
-    const autofill::LanguageCode& page_language) {
+    const autofill::LanguageCode& page_language) const {
   if (!IsPasswordChangeAvailable()) {
     return false;
   }
@@ -122,6 +135,16 @@ bool ChromePasswordChangeService::IsPasswordChangeSupported(
       affiliation_service_->GetChangePasswordURL(url).is_valid();
   base::UmaHistogramBoolean(kHasPasswordChangeUrlHistogram, has_change_url);
   return has_change_url;
+}
+
+bool ChromePasswordChangeService::ShouldShowEntryInSettings() const {
+  // The feature becomes enabled when user accepts to change a compromised
+  // password.
+  if (GetFeatureState(pref_service_) !=
+      optimization_guide::prefs::FeatureOptInState::kEnabled) {
+    return false;
+  }
+  return IsPasswordChangeAvailable();
 }
 
 void ChromePasswordChangeService::OfferPasswordChangeUi(

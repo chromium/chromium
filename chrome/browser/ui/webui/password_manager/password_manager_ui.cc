@@ -637,7 +637,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddBoolean("passwordChangeAvailable",
                      PasswordChangeServiceFactory::GetForProfile(profile)
-                         ->IsPasswordChangeAvailable());
+                         ->ShouldShowEntryInSettings());
 
   source->AddBoolean(
       "enablePasswordManagerMojoApi",

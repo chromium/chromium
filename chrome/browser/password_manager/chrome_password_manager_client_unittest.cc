@@ -370,7 +370,8 @@ class MockPasswordAccessoryControllerImpl
 class MockPasswordChangeService : public ChromePasswordChangeService {
  public:
   MockPasswordChangeService()
-      : ChromePasswordChangeService(/*affiliation_service=*/nullptr,
+      : ChromePasswordChangeService(/*pref_service*/ nullptr,
+                                    /*affiliation_service=*/nullptr,
                                     /*optimization_keyed_service=*/nullptr,
                                     /*settings_service=*/nullptr,
                                     /*feature_manager=*/nullptr) {}

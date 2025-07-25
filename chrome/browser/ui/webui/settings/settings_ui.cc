@@ -594,11 +594,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               : commerce::CanFetchProductSpecificationsData(
                                     shopping_service->GetAccountChecker())},
       {"showPasswordChangeControl",
-       // TODO(crbug.com/391131625): Update accordingly to enterprise
-       // requirements.
        PasswordChangeServiceFactory::GetForProfile(profile) &&
            PasswordChangeServiceFactory::GetForProfile(profile)
-               ->IsPasswordChangeAvailable()},
+               ->ShouldShowEntryInSettings()},
   };
 
   const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(

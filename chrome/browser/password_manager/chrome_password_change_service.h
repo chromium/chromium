@@ -31,6 +31,8 @@ class PasswordFeatureManager;
 class PasswordManagerSettingsService;
 }
 
+class PrefService;
+
 class ChromePasswordChangeService
     : public KeyedService,
       public password_manager::PasswordChangeServiceInterface,
@@ -45,6 +47,7 @@ class ChromePasswordChangeService
       "PasswordManager.HasPasswordChangeUrl";
 
   ChromePasswordChangeService(
+      PrefService* pref_service,
       affiliations::AffiliationService* affiliation_service,
       OptimizationGuideKeyedService* optimization_keyed_service,
       password_manager::PasswordManagerSettingsService* settings_service,
@@ -68,10 +71,14 @@ class ChromePasswordChangeService
       content::WebContents* web_contents);
 
   // PasswordChangeServiceInterface implementation.
-  bool IsPasswordChangeAvailable() override;
+  bool IsPasswordChangeAvailable() const override;
   bool IsPasswordChangeSupported(
       const GURL& url,
-      const autofill::LanguageCode& page_language) override;
+      const autofill::LanguageCode& page_language) const override;
+
+  // Checks if user has interacted with the feature and only then general
+  // availability.
+  bool ShouldShowEntryInSettings() const;
 
  private:
   // PasswordChangeDelegate::Observer impl.
@@ -80,6 +87,7 @@ class ChromePasswordChangeService
   // KeyedService impl.
   void Shutdown() override;
 
+  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
   const raw_ptr<OptimizationGuideKeyedService> optimization_keyed_service_;
   const raw_ptr<password_manager::PasswordManagerSettingsService>

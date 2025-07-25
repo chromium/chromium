@@ -14,13 +14,13 @@ namespace password_manager {
 class PasswordChangeServiceInterface {
  public:
   // Checks whether current user is eligible to use password change.
-  virtual bool IsPasswordChangeAvailable() = 0;
+  virtual bool IsPasswordChangeAvailable() const = 0;
 
   // Checks whether password change is eligible for a given `url` and
   // `page_language`.
   virtual bool IsPasswordChangeSupported(
       const GURL& url,
-      const autofill::LanguageCode& page_language) = 0;
+      const autofill::LanguageCode& page_language) const = 0;
 };
 
 // Return overridden change password URL passed to chrome switch.
