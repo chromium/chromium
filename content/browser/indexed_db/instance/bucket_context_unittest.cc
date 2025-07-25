@@ -315,4 +315,27 @@ TEST_F(BucketContextTest, MetadataRecordingStateHistory) {
   EXPECT_EQ(tx->state_history[4]->duration, 0);
 }
 
+TEST_F(BucketContextTest, OverrideShouldUseSqliteForTesting) {
+  auto is_sqlite_used_by_new_bucket = [this]() {
+    return BucketContext(storage::BucketInfo(), base::FilePath(),
+                         BucketContext::Delegate(),
+                         scoped_refptr<base::UpdateableSequencedTaskRunner>(),
+                         quota_manager_proxy_,
+                         /*blob_storage_context=*/mojo::NullRemote(),
+                         /*file_system_access_context=*/mojo::NullRemote())
+        .ShouldUseSqlite();
+  };
+  {
+    base::AutoReset<std::optional<bool>> scoped_override =
+        BucketContext::OverrideShouldUseSqliteForTesting(false);
+    EXPECT_FALSE(is_sqlite_used_by_new_bucket());
+  }
+  EXPECT_EQ(bucket_context_->ShouldUseSqlite(), is_sqlite_used_by_new_bucket());
+  {
+    base::AutoReset<std::optional<bool>> scoped_override =
+        BucketContext::OverrideShouldUseSqliteForTesting(true);
+    EXPECT_TRUE(is_sqlite_used_by_new_bucket());
+  }
+}
+
 }  // namespace content::indexed_db

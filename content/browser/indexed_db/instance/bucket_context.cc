@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -84,6 +85,8 @@ namespace {
 // Time after the last connection to a database is closed and when we destroy
 // the backing store.
 const int64_t kBackingStoreGracePeriodSeconds = 2;
+
+std::optional<bool> g_should_use_sqlite_for_testing;
 
 // This struct facilitates requesting bucket space usage from the quota manager.
 // There have been reports of the callback being passed to the quota manager
@@ -205,6 +208,8 @@ BucketContext::BucketContext(
           base::trace_event::MemoryDumpProvider::Options());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
+  should_use_sqlite_ = g_should_use_sqlite_for_testing.value_or(
+      base::FeatureList::IsEnabled(kSqliteBackingStore));
 }
 
 BucketContext::~BucketContext() {
@@ -863,9 +868,12 @@ std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
   return sanitized_message;
 }
 
-bool BucketContext::ShouldUseSqlite() const {
-  // Additional checks may be added subsequently.
-  return base::FeatureList::IsEnabled(kSqliteBackingStore);
+// static
+base::AutoReset<std::optional<bool>>
+BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
+  base::AutoReset<std::optional<bool>> scoped_override(
+      &g_should_use_sqlite_for_testing, use_sqlite);
+  return scoped_override;
 }
 
 void BucketContext::HandleBackingStoreCorruption(
