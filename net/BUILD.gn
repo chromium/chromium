@@ -1158,7 +1158,7 @@ component("net") {
     "//components/miracle_parameter/common",
     "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
-    "//third_party/simdutf:simdutf",
+    "//third_party/simdutf",
   ]
 
   public_deps = [
@@ -1269,8 +1269,8 @@ component("net") {
     deps += [
       ":device_bound_sessions_storage_proto",
       "//components/sqlite_proto",
-      "//components/unexportable_keys:unexportable_keys",
-      "//sql:sql",
+      "//components/unexportable_keys",
+      "//sql",
     ]
   }
 
@@ -1808,7 +1808,7 @@ component("net") {
       "disk_cache/sql/sql_persistent_store.h",
       "disk_cache/sql/sql_persistent_store_queries.h",
     ]
-    deps += [ "//sql:sql" ]
+    deps += [ "//sql" ]
   }
 }
 
@@ -1971,7 +1971,7 @@ component("extras") {
     ":net",
     "//base",
     "//crypto",
-    "//sql:sql",
+    "//sql",
   ]
   public_deps = [ ":shared_dictionary_info" ]
 
@@ -3137,7 +3137,7 @@ target(_test_target_type, "net_unittests") {
     "//third_party/anonymous_tokens:anonymous_tokens_tests",
     "//third_party/perfetto:perfetto_test_support",
     "//third_party/protobuf:protobuf_lite",
-    "//third_party/simdutf:simdutf",
+    "//third_party/simdutf",
     "//third_party/zlib",
     "//url",
     "//url:buildflags",
@@ -3468,8 +3468,8 @@ target(_test_target_type, "net_unittests") {
     ]
     deps += [
       ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys",
       "//components/unexportable_keys:test_support",
-      "//components/unexportable_keys:unexportable_keys",
     ]
   }
 
@@ -3520,7 +3520,7 @@ if (!is_ios) {
       "//base/test:test_support_perf",
       "//testing/gtest",
       "//testing/perf",
-      "//third_party/google_benchmark:google_benchmark",
+      "//third_party/google_benchmark",
       "//url",
     ]
     data_deps = [
@@ -3532,7 +3532,7 @@ if (!is_ios) {
       sources += [ "device_bound_sessions/session_store_impl_perftest.cc" ]
       deps += [
         ":device_bound_sessions_storage_proto",
-        "//components/unexportable_keys:unexportable_keys",
+        "//components/unexportable_keys",
         "//crypto:test_support",
       ]
     }
