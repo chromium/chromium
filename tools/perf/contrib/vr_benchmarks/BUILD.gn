@@ -41,7 +41,7 @@ if (!is_android) {
     testonly = true
     data_deps = [
       ":vr_perf_tests_base",
-      "//tools/perf:perf",
+      "//tools/perf",
     ]
   }
 } else {

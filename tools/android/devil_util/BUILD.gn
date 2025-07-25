@@ -46,7 +46,7 @@ executable("devil_util_bin") {
   ]
   deps = [
     "//base",
-    "//third_party/zlib:zlib",
+    "//third_party/zlib",
     "//third_party/zstd:compress",
     "//third_party/zstd:decompress",
   ]

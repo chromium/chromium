@@ -4,5 +4,5 @@
 
 group("privacy_budget_tools") {
   testonly = true
-  deps = [ "font_indexer:font_indexer" ]
+  deps = [ "font_indexer" ]
 }

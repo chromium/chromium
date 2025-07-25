@@ -8,9 +8,9 @@ static_library("tools_lib") {
     "font_indexer.h",
   ]
   deps = [
-    "//base:base",
-    "//content/public/browser:browser",
-    "//third_party/blink/renderer/platform:platform",
+    "//base",
+    "//content/public/browser",
+    "//third_party/blink/renderer/platform",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -23,9 +23,9 @@ executable("font_indexer") {
   sources = [ "font_indexer_main.cc" ]
   deps = [
     ":tools_lib",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//mojo/core/embedder",
     "//third_party/blink/renderer/platform:test_support",
   ]

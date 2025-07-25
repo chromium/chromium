@@ -13,7 +13,7 @@ group("android_tools") {
     "//tools/android/adb_reboot",
     "//tools/android/forwarder2",
     "//tools/android/md5sum",
-    "//tools/android/memtrack_helper:memtrack_helper",
+    "//tools/android/memtrack_helper",
     "//tools/perf:run_benchmark_wrapper",
     "//tools/perf/clear_system_cache",
   ]
