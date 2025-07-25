@@ -479,6 +479,10 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT},
       {"searchboxComposeButtonTitle", IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL}};
   source->AddLocalizedStrings(kStrings);
+  source->AddString("searchboxComposePlaceholder",
+                    ntp_composebox::FeatureConfig::Get()
+                        .config.composebox()
+                        .input_placeholder_text());
 
   source->AddBoolean(
       "searchboxMatchSearchboxTheme",

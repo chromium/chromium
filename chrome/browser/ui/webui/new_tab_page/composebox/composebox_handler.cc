@@ -82,12 +82,14 @@ void ComposeboxHandler::AddFile(
     file_info_metadata->mime_type_ = lens::MimeType::kPdf;
   } else if ((file_info_mojom->mime_type).find("image") != std::string::npos) {
     file_info_metadata->mime_type_ = lens::MimeType::kImage;
-    auto field_config = ntp_composebox::FeatureConfig::Get();
+    auto image_upload_config =
+        ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
     image_options = composebox::ImageEncodingOptions{
-        .max_size = field_config.downscale_max_image_size,
-        .max_height = field_config.downscale_max_image_height,
-        .max_width = field_config.downscale_max_image_width,
-        .compression_quality = field_config.image_compression_quality};
+        .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
+        .max_size = image_upload_config.downscale_max_image_size(),
+        .max_height = image_upload_config.downscale_max_image_height(),
+        .max_width = image_upload_config.downscale_max_image_width(),
+        .compression_quality = image_upload_config.image_compression_quality()};
   } else {
     NOTREACHED();
   }

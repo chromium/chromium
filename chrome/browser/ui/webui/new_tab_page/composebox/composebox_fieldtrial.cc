@@ -12,8 +12,10 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/variations/service/variations_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ntp_composebox {
 
@@ -46,8 +48,26 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   // Initialize the default config.
   omnibox::NTPComposeboxConfig default_config;
   default_config.mutable_entry_point()->set_num_page_load_animations(3);
-  default_config.mutable_composebox()->set_close_by_escape(true);
-  default_config.mutable_composebox()->set_close_by_click_outside(true);
+
+  auto* composebox = default_config.mutable_composebox();
+  composebox->set_close_by_escape(true);
+  composebox->set_close_by_click_outside(true);
+
+  auto* image_upload = composebox->mutable_image_upload();
+  image_upload->set_enable_webp_encoding(false);
+  image_upload->set_downscale_max_image_size(1500000);
+  image_upload->set_downscale_max_image_width(1600);
+  image_upload->set_downscale_max_image_height(1600);
+  image_upload->set_image_compression_quality(40);
+  image_upload->set_mime_types_allowed("image/*");
+
+  auto* attachment_upload = composebox->mutable_attachment_upload();
+  attachment_upload->set_max_size_bytes(2000000);
+  attachment_upload->set_mime_types_allowed(".pdf,application/pdf");
+
+  composebox->set_max_num_files(1);
+  composebox->set_input_placeholder_text(
+      l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
 
   // Attempt to parse the config proto from the feature parameter if it is set.
   omnibox::NTPComposeboxConfig fieldtrial_config;
@@ -57,6 +77,18 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
     base::UmaHistogramBoolean(kConfigParamParseSuccessHistogram, parsed);
     if (!parsed) {
       return default_config;
+    }
+    // A present `MimeTypesAllowed` message will clear the image and attachment
+    // `mime_types` value.
+    if (fieldtrial_config.composebox()
+            .image_upload()
+            .has_mime_types_allowed()) {
+      image_upload->clear_mime_types_allowed();
+    }
+    if (fieldtrial_config.composebox()
+            .attachment_upload()
+            .has_mime_types_allowed()) {
+      attachment_upload->clear_mime_types_allowed();
     }
   }
 
@@ -130,42 +162,12 @@ const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
                                                    "ConfigParam",
                                                    "");
 
-const base::FeatureParam<bool> kEnableWebpEncodingParam(
-    &kNtpComposebox,
-    "EnableWebpEncodingParam",
-    false);
-
-const base::FeatureParam<size_t> kDownscaleMaxImageSizeParam(
-    &kNtpComposebox,
-    "DownscaleMaxImageSizeParam",
-    1500000);
-
-const base::FeatureParam<size_t> kDownscaleMaxImageWidthParam(
-    &kNtpComposebox,
-    "DownscaleMaxImageWidthParam",
-    1600);
-
-const base::FeatureParam<size_t> kDownscaleMaxImageHeightParam(
-    &kNtpComposebox,
-    "DownscaleMaxImageHeightParam",
-    1600);
-
-const base::FeatureParam<size_t> ImageCompressionQualityParam(
-    &kNtpComposebox,
-    "NtpComposeboxImageCompressionQualityParam",
-    40);
-
 const base::FeatureParam<bool> kSendLnsSurfaceParam(&kNtpComposebox,
                                                     "SendLnsSurfaceParam",
                                                     false);
 
 FeatureConfig::FeatureConfig()
     : enabled(base::FeatureList::IsEnabled(kNtpComposebox)),
-      config(GetNTPComposeboxConfig()),
-      enable_webp_encoding(kEnableWebpEncodingParam.Get()),
-      downscale_max_image_size(kDownscaleMaxImageSizeParam.Get()),
-      downscale_max_image_width(kDownscaleMaxImageWidthParam.Get()),
-      downscale_max_image_height(kDownscaleMaxImageHeightParam.Get()),
-      image_compression_quality(ImageCompressionQualityParam.Get()) {}
+      config(GetNTPComposeboxConfig()) {}
 
 }  // namespace ntp_composebox

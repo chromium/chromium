@@ -90,6 +90,10 @@ export class ComposeboxElement extends I18nMixinLit
       errorMessage_: {
         type: String,
       },
+      inputPlaceholder_: {
+        type: String,
+        reflect: true,
+      },
     };
   }
 
@@ -104,6 +108,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor submitting_: boolean = false;
   protected accessor showErrorScrim_: boolean = false;
   protected accessor errorMessage_: string = '';
+  protected accessor inputPlaceholder_: string =
+      loadTimeData.getString('searchboxComposePlaceholder');
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
