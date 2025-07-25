@@ -33,7 +33,11 @@ rust_static_library("zip_ffi_glue") {
   crate_root = "zip_ffi_glue.rs"
   sources = [ "zip_ffi_glue.rs" ]
   cxx_bindings = [ "zip_ffi_glue.rs" ]
-  visibility = [ ":safari_data_importer" ]
+  visibility = [
+    ":safari_data_importer",
+    "//components/user_data_importer/content",
+    "//components/user_data_importer/content:unit_tests",
+  ]
   deps = [
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/serde/v1:lib",

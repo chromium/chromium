@@ -24,6 +24,7 @@ class ReadingListModel;
 namespace user_data_importer {
 
 struct ImportedBookmarkEntry;
+struct StablePortabilityHistoryEntry;
 
 // Main model-layer object for extracting the data exported by browsers in the
 // stable portability data format. The data is received through a system API in
@@ -55,10 +56,17 @@ class StablePortabilityDataImporter {
   // the end of the import process to notify the caller with the number of
   // successful items imported.
   void ImportHistory(const base::FilePath& history_filename,
-                     ImportCallback history_callback);
+                     ImportCallback history_callback,
+                     const size_t import_batch_size);
 
  private:
   friend class StablePortabilityDataImporterTest;
+
+  // Transfers the history entries to the importer. This is used by the Rust
+  // History import pipeline to communicate results back to this importer.
+  void TransferHistoryEntries(
+      const std::vector<user_data_importer::StablePortabilityHistoryEntry>&
+          history_entries);
 
   // Receives the result of parsing bookmarks, stores them for later use, and
   // invokes `bookmarks_callback` with the number of parsed bookmarks.
@@ -93,6 +101,11 @@ class StablePortabilityDataImporter {
   // Reading List items which have been parsed, but not yet committed to
   // permanent storage.
   std::vector<ImportedBookmarkEntry> pending_reading_list_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // History entries which have been parsed, but not yet committed to permanent
+  // storage.
+  std::vector<StablePortabilityHistoryEntry> pending_history_entries_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The task runner from which the import task was launched. The purpose of

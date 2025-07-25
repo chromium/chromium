@@ -19,6 +19,7 @@
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,12 +60,18 @@ class StablePortabilityDataImporterTest : public testing::Test {
     return number_reading_list_imported_;
   }
 
+  int GetNumberOfHistoryImported() const { return number_history_imported_; }
+
   const std::vector<ImportedBookmarkEntry>& GetPendingBookmarks() const {
     return importer_->pending_bookmarks_;
   }
 
   const std::vector<ImportedBookmarkEntry>& GetPendingReadingList() const {
     return importer_->pending_reading_list_;
+  }
+
+  const std::vector<StablePortabilityHistoryEntry>& GetPendingHistory() const {
+    return importer_->pending_history_entries_;
   }
 
   void ImportBookmarks(const std::string& html_data) {
@@ -83,6 +90,15 @@ class StablePortabilityDataImporterTest : public testing::Test {
     base::FilePath path = dir.GetPath().AppendASCII("reading_list.html");
     ASSERT_TRUE(base::WriteFile(path, html_data));
     ImportReadingListFile(path);
+  }
+
+  void ImportHistory(const std::string& json_data) {
+    history_callback_called_ = false;
+    base::ScopedTempDir dir;
+    ASSERT_TRUE(dir.CreateUniqueTempDir());
+    base::FilePath path = dir.GetPath().AppendASCII("history.json");
+    ASSERT_TRUE(base::WriteFile(path, json_data));
+    ImportHistoryFile(path);
   }
 
   void ImportBookmarksFile(const base::FilePath& bookmarks_file) {
@@ -114,6 +130,21 @@ class StablePortabilityDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return reading_list_callback_called_; }));
   }
 
+  void ImportHistoryFile(const base::FilePath& history_file) {
+    PrepareCallbacks();
+
+    importer_->ImportHistory(
+        history_file,
+        // Use of Unretained below is safe because the RunUntil loop below
+        // guarantees this outlives the tasks.
+        base::BindOnce(&StablePortabilityDataImporterTest::OnHistoryConsumed,
+                       base::Unretained(this)),
+        10);
+
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return history_callback_called_; }));
+  }
+
   base::ScopedMockClockOverride clock_;
 
  private:
@@ -127,9 +158,15 @@ class StablePortabilityDataImporterTest : public testing::Test {
     number_reading_list_imported_ = number_imported;
   }
 
+  void OnHistoryConsumed(int number_imported) {
+    history_callback_called_ = true;
+    number_history_imported_ = number_imported;
+  }
+
   void PrepareCallbacks() {
     bookmarks_callback_called_ = false;
     reading_list_callback_called_ = false;
+    history_callback_called_ = false;
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -139,8 +176,10 @@ class StablePortabilityDataImporterTest : public testing::Test {
   std::unique_ptr<ReadingListModel> reading_list_model_;
   bool bookmarks_callback_called_ = false;
   bool reading_list_callback_called_ = false;
+  bool history_callback_called_ = false;
   int number_bookmarks_imported_ = -1;
   int number_reading_list_imported_ = -1;
+  int number_history_imported_ = -1;
   std::unique_ptr<StablePortabilityDataImporter> importer_;
 };
 
@@ -363,6 +402,50 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
 
   // <A>Google Reader</A> was skipped for lack of URL.
 }
+
+// Tests parsing a simple JSON file with two history entries.
+TEST_F(StablePortabilityDataImporterTest, History_Basic) {
+  const char kHistoryJson[] = R"({
+    "metadata": {
+      "data_type": "history_visits"
+    },
+    "history_visits": [
+      {
+        "url": "https://www.google.com/",
+        "title": "Google",
+        "visit_time_unix_epoch_usec": 1674205200000000,
+        "visit_count": 5,
+        "typed_count": 2,
+        "synced": true
+      },
+      {
+        "url": "https://www.chromium.org/",
+        "title": "Chromium",
+        "visit_time_unix_epoch_usec": 1674205260000000
+      }
+    ]
+  })";
+  ImportHistory(kHistoryJson);
+  EXPECT_EQ(GetNumberOfHistoryImported(), 2);
+
+  ASSERT_EQ(GetPendingHistory().size(), 2u);
+  const auto& entry1 = GetPendingHistory()[0];
+  EXPECT_TRUE(entry1.synced);
+  EXPECT_EQ(entry1.title, "Google");
+  EXPECT_EQ(entry1.url, "https://www.google.com/");
+  EXPECT_EQ(entry1.visit_time_unix_epoch_usec, 1674205200000000u);
+  EXPECT_EQ(entry1.visit_count, 5u);
+  EXPECT_EQ(entry1.typed_count, 2u);
+
+  const auto& entry2 = GetPendingHistory()[1];
+  EXPECT_FALSE(entry2.synced);
+  EXPECT_EQ(entry2.title, "Chromium");
+  EXPECT_EQ(entry2.url, "https://www.chromium.org/");
+  EXPECT_EQ(entry2.visit_time_unix_epoch_usec, 1674205260000000u);
+  EXPECT_EQ(entry2.visit_count, 1u);
+  EXPECT_EQ(entry2.typed_count, 0u);
+}
+// TODO(crbug.com/431493493) Cover all the other cases in the test plan.
 
 // Tests importing invalid files that do not exist.
 TEST_F(StablePortabilityDataImporterTest, CallbacksAreCalled) {

@@ -17,6 +17,7 @@ source_set("content") {
     "//components/search_engines",
     "//components/user_data_importer/common",
     "//components/user_data_importer/utility:safari_data_importer",
+    "//components/user_data_importer/utility:zip_ffi_glue",
     "//content/public/browser",
     "//content/public/child",
     "//net",
@@ -41,6 +42,7 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
     "//components/user_data_importer/common",
+    "//components/user_data_importer/utility:zip_ffi_glue",
     "//content/test:test_support",
     "//testing/gtest",
   ]
