@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Drag and drop reorder - drag external view onto / out-of strip and reorder within strip. */
@@ -156,17 +157,18 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     @Override
     public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
         List<Animator> animatorList = new ArrayList<>();
-        handleStopReorderMode(stripViews, groupTitles, mInteractingView, animatorList);
         mInteractingViewDuringStop = mInteractingView;
-        // Start animations.
-        mAnimationHost.startAnimations(
+        Runnable onAnimationEnd =
+                () -> {
+                    mInteractingView = null;
+                };
+        handleStopReorderMode(
+                stripViews,
+                groupTitles,
+                Collections.singletonList(mInteractingView),
+                null,
                 animatorList,
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mInteractingView = null;
-                    }
-                });
+                onAnimationEnd);
     }
 
     @Override

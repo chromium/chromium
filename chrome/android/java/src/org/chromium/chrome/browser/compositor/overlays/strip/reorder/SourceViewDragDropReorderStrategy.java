@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -313,10 +314,10 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             // return if so.
             boolean draggedLastTabInGroupWithPrompt = shouldShowUserPrompt(draggedTab);
             if (draggedLastTabInGroupWithPrompt) {
-                moveInteractingTabOutOfGroup(
+                moveInteractingTabsOutOfGroup(
                         stripViews,
                         groupTitles,
-                        draggedTab,
+                        Collections.singletonList(draggedTab),
                         /* groupTitleToAnimate= */ null,
                         /* towardEnd= */ false,
                         ActionType.DRAG_OFF_STRIP);

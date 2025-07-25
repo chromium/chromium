@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_MOVE_MS;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
-
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.graphics.PointF;
 import android.view.View;
 
@@ -24,7 +20,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
-import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -144,46 +139,34 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
 
     @Override
     public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
-        // 1. Animate any offsets back to 0 and reattach the selected tab container if needed.
-        mAnimationHost.finishAnimationsAndPushTabUpdates();
         ArrayList<Animator> animationList = new ArrayList<>();
-        for (StripLayoutView view : mInteractingViews) {
-            animationList.add(
-                    CompositorAnimator.ofFloatProperty(
-                            mAnimationHost.getAnimationHandler(),
-                            view,
-                            StripLayoutView.X_OFFSET,
-                            view.getOffsetX(),
-                            0f,
-                            ANIM_TAB_MOVE_MS));
-        }
-        if (mSelectedTab != null) {
-            updateTabAttachState(mSelectedTab, /* attached= */ true, animationList);
-        }
-        mAnimationHost.startAnimations(
-                animationList,
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        // Clear after the tabs have slid back to their ideal positions, so the
-                        // z-indexing is retained during the animation.
-                        for (StripLayoutView view : mInteractingViews) {
-                            if (view != null) {
-                                view.setIsForegrounded(/* isForegrounded= */ false);
-                            }
-                        }
-                        mInteractingViews.clear();
-
-                        if (mLastTabInGroup != null) {
-                            mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ false);
-                            mLastTabInGroup = null;
+        Runnable onAnimationEnd =
+                () -> {
+                    // Clear after the tabs have slid back to their ideal positions, so the
+                    // z-indexing is retained during the animation.
+                    for (StripLayoutView view : mInteractingViews) {
+                        if (view != null) {
+                            view.setIsForegrounded(/* isForegrounded= */ false);
                         }
                     }
-                });
+                    mInteractingViews.clear();
 
-        // 2. Clear the interacting views now that the animations have been kicked off.
-        mInteractingGroupTitle = null;
-        mSelectedTab = null;
+                    if (mLastTabInGroup != null) {
+                        mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ false);
+                        mLastTabInGroup = null;
+                    }
+
+                    // Clear the interacting views now that the animations have been kicked off.
+                    mInteractingGroupTitle = null;
+                    mSelectedTab = null;
+                };
+        handleStopReorderMode(
+                stripViews,
+                groupTitles,
+                mInteractingViews,
+                mSelectedTab,
+                animationList,
+                onAnimationEnd);
     }
 
     @Override
@@ -275,17 +258,5 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         }
         animators.add(getViewSlidingAnimator(adjTitle));
         mAnimationHost.startAnimations(animators, /* listener= */ null);
-    }
-
-    /**
-     * @param adjTitle The {@link StripLayoutGroupTitle} of the group we're dragging past.
-     * @return The threshold needed to trigger a reorder.
-     */
-    private float getGroupSwapThreshold(StripLayoutGroupTitle adjTitle) {
-        if (adjTitle.isCollapsed()) {
-            return adjTitle.getWidth() * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
-        }
-        return (adjTitle.getBottomIndicatorWidth() + TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET)
-                * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
     }
 }

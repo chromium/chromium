@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.graphics.PointF;
 import android.view.View;
 
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Tab reorder - drag tab past other tabs or into/out of groups within the tab strip. */
@@ -160,20 +160,20 @@ public class TabReorderStrategy extends ReorderStrategyBase {
     @Override
     public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
         List<Animator> animatorList = new ArrayList<>();
-        handleStopReorderMode(stripViews, groupTitles, mInteractingTab, animatorList);
-        // Start animations. Reset foregrounded state after the tabs have slid back to their
-        // ideal positions, so the z-indexing is retained during the animation.
-        mAnimationHost.startAnimations(
-                animatorList,
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (mInteractingTab != null) {
-                            mInteractingTab.setIsForegrounded(/* isForegrounded= */ false);
-                            mInteractingTab = null;
-                        }
+        Runnable onAnimationEnd =
+                () -> {
+                    if (mInteractingTab != null) {
+                        mInteractingTab.setIsForegrounded(/* isForegrounded= */ false);
+                        mInteractingTab = null;
                     }
-                });
+                };
+        handleStopReorderMode(
+                stripViews,
+                groupTitles,
+                Collections.singletonList(mInteractingTab),
+                mInteractingTab,
+                animatorList,
+                onAnimationEnd);
     }
 
     @Override
@@ -236,10 +236,10 @@ public class TabReorderStrategy extends ReorderStrategyBase {
             float threshold = getDragOutThreshold(interactingGroupTitle, towardEnd);
             if (Math.abs(offset) <= threshold) return false;
 
-            moveInteractingTabOutOfGroup(
+            moveInteractingTabsOutOfGroup(
                     stripViews,
                     groupTitles,
-                    interactingTab,
+                    Collections.singletonList(interactingTab),
                     interactingGroupTitle,
                     towardEnd,
                     ActionType.REORDER);
@@ -306,23 +306,5 @@ public class TabReorderStrategy extends ReorderStrategyBase {
 
         // Animate the group indicator after updating the tab model.
         animateGroupIndicatorForTabReorder(groupTitle, /* isMovingOutOfGroup= */ false, towardEnd);
-    }
-
-    /** Returns the threshold to drag into a group. */
-    private float getDragInThreshold() {
-        return StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
-                * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
-    }
-
-    /**
-     * @param groupTitle The group title for the desired group. Must not be null.
-     * @param towardEnd True if dragging towards the end of the strip.
-     * @return The threshold to drag out of a group.
-     */
-    private float getDragOutThreshold(StripLayoutGroupTitle groupTitle, boolean towardEnd) {
-        float dragOutThreshold =
-                StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
-                        * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
-        return dragOutThreshold + (towardEnd ? 0 : groupTitle.getWidth());
     }
 }
