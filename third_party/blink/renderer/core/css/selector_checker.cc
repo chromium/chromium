@@ -1012,10 +1012,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         // parent scope of the rule but somehow ignoring everything that isn't
         // :host.
         const TreeScope& host_tree_scope =
-            next_context.selector->IsDeeplyHostPseudoClass()
+            next_context.selector->IsDeeplyHostPseudoClass() &&
+                    context.element->GetTreeScope() == context.tree_scope
                 ? *context.tree_scope->ParentTreeScope()
                 : *context.tree_scope;
-
         if (next_context.element->GetTreeScope() == host_tree_scope) {
           return MatchSelector(next_context, result);
         }
