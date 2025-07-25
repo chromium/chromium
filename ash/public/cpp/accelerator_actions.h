@@ -163,7 +163,7 @@ enum AcceleratorAction {
   kWindowMinimize,
   kMinimizeTopWindowOnBack,
   kVolumeMuteToggle,
-  kTogglePicker,
+  kToggleQuickInsert,
   kAccessibilityAction,
   kEnableSelectToSpeak,
   kTilingWindowResizeLeft,

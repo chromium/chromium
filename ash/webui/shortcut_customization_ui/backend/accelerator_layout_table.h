@@ -430,7 +430,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     // Text > Text editing
     AcceleratorAction::kToggleCapsLock,
     AcceleratorAction::kShowEmojiPicker,
-    AcceleratorAction::kTogglePicker,
+    AcceleratorAction::kToggleQuickInsert,
     NonConfigurableActions::kAmbientCopy,
     NonConfigurableActions::kAmbientCut,
     NonConfigurableActions::kAmbientPaste,

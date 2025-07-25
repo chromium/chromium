@@ -151,7 +151,7 @@ constexpr static auto kAcceleratorActionToName = base::MakeFixedFlatMap<
     {AcceleratorAction::kWindowMinimize, "WindowMinimize"},
     {AcceleratorAction::kMinimizeTopWindowOnBack, "MinimizeTopWindowOnBack"},
     {AcceleratorAction::kVolumeMuteToggle, "VolumeMuteToggle"},
-    {AcceleratorAction::kTogglePicker, "TogglePicker"},
+    {AcceleratorAction::kToggleQuickInsert, "TogglePicker"},
     {AcceleratorAction::kAccessibilityAction, "AccessibilityAction"},
     {AcceleratorAction::kEnableSelectToSpeak, "EnableSelectToSpeak"},
     {AcceleratorAction::kTilingWindowResizeLeft, "TilingWindowResizeLeft"},
