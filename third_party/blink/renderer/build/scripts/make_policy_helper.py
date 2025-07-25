@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import json5_generator
+import os
 import template_expander
 from collections import defaultdict
 from make_runtime_features_utilities import origin_trials
@@ -14,6 +15,13 @@ class PermissionsPolicyFeatureWriter(json5_generator.Writer):
     def __init__(self, json5_file_path, output_dir):
         super(PermissionsPolicyFeatureWriter,
               self).__init__(json5_file_path, output_dir)
+
+        for path in json5_file_path:
+            file_root, file_ext = os.path.splitext(path)
+            override_file_path = f"{file_root}.override{file_ext}"
+            if os.path.exists(override_file_path):
+                self.json5_file.load_override_file(override_file_path)
+
         runtime_features = []
         permissions_policy_features = []
         # Note: there can be feature with same 'name' attribute in
