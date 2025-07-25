@@ -256,37 +256,54 @@ TEST_F(KeystoneInstallTest, RunScript) {
 
 TEST_F(KeystoneInstallTest, CBCMBrandSubstitution) {
   SetEnrolled(true);
+
   ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("GCEA"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCCA\n");
+
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPAF"));
+  ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
+  ASSERT_EQ(ReadLibraryBrand(), "FPJF\n");
 }
 
 TEST_F(KeystoneInstallTest, CBCMReverseBrandSubstitution) {
   SetEnrolled(false);
+
   ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("GCCA"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCEA\n");
-}
 
-TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpGGLS) {
-  SetEnrolled(true);
-  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("GGLS"));
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPJF"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
-  ASSERT_EQ(ReadLibraryBrand(), "GGLS\n");
+  ASSERT_EQ(ReadLibraryBrand(), "FPAF\n");
 }
 
-TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpGCEA) {
+TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpUnenrolled) {
   SetEnrolled(false);
+
   ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("GCEA"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCEA\n");
+
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPAF"));
+  ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
+  ASSERT_EQ(ReadLibraryBrand(), "FPAF\n");
 }
 
-TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpGCCA) {
+TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpEnrolled) {
   SetEnrolled(true);
+
   ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("GCCA"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCCA\n");
+
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPJF"));
+  ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
+  ASSERT_EQ(ReadLibraryBrand(), "FPJF\n");
+
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("GGLS"));
+  ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
+  ASSERT_EQ(ReadLibraryBrand(), "GGLS\n");
 }
 
 // keystone_install_test.sh contains a number of tests for keystone_install.sh.

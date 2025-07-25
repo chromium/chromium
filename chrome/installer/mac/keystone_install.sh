@@ -1293,25 +1293,19 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   fi
 
   # Rewrite the brand code according to CBCM enrollment.
-  local new_brand
-  if [[ "${old_brand}" == "GCEA" && -e "${cbcm_path}" ]]; then
-    new_brand="GCCA"
-  elif [[ "${old_brand}" == "GCCA" && ! -e "${cbcm_path}" ]]; then
-    new_brand="GCEA"
-  elif [[ "${old_brand}" == "GCEM" && -e "${cbcm_path}" ]]; then
-    new_brand="GCCM"
-  elif [[ "${old_brand}" == "GCCM" && ! -e "${cbcm_path}" ]]; then
-    new_brand="GCEM"
-  elif [[ "${old_brand}" == "FPAB" && -e "${cbcm_path}" ]]; then
-    new_brand="FPJB"
-  elif [[ "${old_brand}" == "FPJB" && ! -e "${cbcm_path}" ]]; then
-    new_brand="FPAB"
-  elif [[ "${old_brand}" == "FPAC" && -e "${cbcm_path}" ]]; then
-    new_brand="FPJC"
-  elif [[ "${old_brand}" == "FPJC" && ! -e "${cbcm_path}" ]]; then
-    new_brand="FPAC"
+  local new_brand="${old_brand}"
+  if [[ -e "$cbcm_path" ]]; then
+    if [[ "${old_brand}" == GCE? ]]; then
+      new_brand="GCC${old_brand:3}"
+    elif [[ "${old_brand}" == FPA? ]]; then
+      new_brand="FPJ${old_brand:3}"
+    fi
   else
-    new_brand="${old_brand}"
+    if [[ "${old_brand}" == GCC? ]]; then
+      new_brand="GCE${old_brand:3}"
+    elif [[ "${old_brand}" == FPJ? ]]; then
+      new_brand="FPA${old_brand:3}"
+    fi
   fi
   note "new_brand = ${new_brand}"
 
