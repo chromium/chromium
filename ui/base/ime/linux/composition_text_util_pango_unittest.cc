@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/composition_text.h"
@@ -121,17 +121,17 @@ void CompareImeTextSpan(const ImeTextSpan& a, const ui::ImeTextSpan& b) {
 TEST(CompositionTextUtilPangoTest, ExtractCompositionText) {
   for (size_t i = 0; i < std::size(kTestData); ++i) {
     const char* text = kTestData[i].text;
-    const AttributeInfo* attrs = kTestData[i].attrs;
+    base::span<const AttributeInfo> attrs = kTestData[i].attrs;
     SCOPED_TRACE(testing::Message() << "Testing:" << i
                  << " text:" << text);
 
     PangoAttrList* pango_attrs = pango_attr_list_new();
-    for (size_t a = 0; UNSAFE_TODO(attrs[a]).type; ++a) {
+    for (size_t a = 0; attrs[a].type; ++a) {
       PangoAttribute* pango_attr = NULL;
-      switch (UNSAFE_TODO(attrs[a]).type) {
+      switch (attrs[a].type) {
         case PANGO_ATTR_UNDERLINE:
           pango_attr = pango_attr_underline_new(
-              static_cast<PangoUnderline>(UNSAFE_TODO(attrs[a]).value));
+              static_cast<PangoUnderline>(attrs[a].value));
           break;
         case PANGO_ATTR_BACKGROUND:
           pango_attr = pango_attr_background_new(0, 0, 0);
@@ -140,24 +140,21 @@ TEST(CompositionTextUtilPangoTest, ExtractCompositionText) {
           NOTREACHED();
       }
       pango_attr->start_index =
-          g_utf8_offset_to_pointer(text, UNSAFE_TODO(attrs[a]).start_offset) -
-          text;
+          g_utf8_offset_to_pointer(text, attrs[a].start_offset) - text;
       pango_attr->end_index =
-          g_utf8_offset_to_pointer(text, UNSAFE_TODO(attrs[a]).end_offset) -
-          text;
+          g_utf8_offset_to_pointer(text, attrs[a].end_offset) - text;
       pango_attr_list_insert(pango_attrs, pango_attr);
     }
 
     ui::CompositionText result;
     ui::ExtractCompositionTextFromGtkPreedit(text, pango_attrs, 0, &result);
 
-    const ImeTextSpan* ime_text_spans = kTestData[i].ime_text_spans;
-    for (size_t u = 0; UNSAFE_TODO(ime_text_spans[u]).underline_color &&
-                       u < result.ime_text_spans.size();
+    base::span<const ImeTextSpan> ime_text_spans = kTestData[i].ime_text_spans;
+    for (size_t u = 0;
+         ime_text_spans[u].underline_color && u < result.ime_text_spans.size();
          ++u) {
       SCOPED_TRACE(testing::Message() << "ImeTextSpan:" << u);
-      CompareImeTextSpan(UNSAFE_TODO(ime_text_spans[u]),
-                         result.ime_text_spans[u]);
+      CompareImeTextSpan(ime_text_spans[u], result.ime_text_spans[u]);
     }
 
     pango_attr_list_unref(pango_attrs);

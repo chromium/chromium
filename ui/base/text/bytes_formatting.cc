@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/i18n/number_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -41,7 +42,7 @@ const int kSpeedStrings[] = {
 std::u16string FormatBytesInternal(int64_t bytes,
                                    DataUnits units,
                                    bool show_units,
-                                   const int* const suffix) {
+                                   const base::span<const int> suffix) {
   DCHECK(units >= DATA_UNITS_BYTE && units <= DATA_UNITS_PEBIBYTE);
   CHECK_GE(bytes, 0);
 
@@ -57,7 +58,7 @@ std::u16string FormatBytesInternal(int64_t bytes,
   std::u16string result = base::FormatDouble(unit_amount, fractional_digits);
 
   if (show_units)
-    result = l10n_util::GetStringFUTF16(UNSAFE_TODO(suffix[units]), result);
+    result = l10n_util::GetStringFUTF16(suffix[units], result);
 
   return result;
 }

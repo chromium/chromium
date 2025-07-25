@@ -365,7 +365,7 @@ void ApplyCrtcColorSpaceConversion(DrmWrapper* drm,
   if (degamma_blob) {
     display::GammaCurve curve;
     if (ParseLutBlob(degamma_blob->data, degamma_blob->length, curve)) {
-      curve.Evaluate(rgb);
+      curve.Evaluate(UNSAFE_TODO(base::span<float, 3>(rgb, rgb + 3u)));
     }
   }
 
@@ -391,7 +391,7 @@ void ApplyCrtcColorSpaceConversion(DrmWrapper* drm,
   if (gamma_blob) {
     display::GammaCurve curve;
     if (ParseLutBlob(gamma_blob->data, gamma_blob->length, curve)) {
-      curve.Evaluate(rgb);
+      curve.Evaluate(UNSAFE_TODO(base::span<float, 3>(rgb, rgb + 3u)));
     }
   }
 }

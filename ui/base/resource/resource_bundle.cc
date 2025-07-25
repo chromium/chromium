@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -122,26 +123,27 @@ SkBitmap CreateEmptyBitmap() {
 bool HasBrotliHeader(std::string_view data) {
   // Check that the data is brotli decoded by checking for kBrotliConst in
   // header. Header added during compression at tools/grit/grit/node/base.py.
-  const uint8_t* data_bytes = reinterpret_cast<const uint8_t*>(data.data());
+  base::span<const uint8_t> data_bytes = base::as_byte_span(data);
   static_assert(std::size(ResourceBundle::kBrotliConst) == 2,
                 "Magic number should be 2 bytes long");
   return data.size() >= ResourceBundle::kBrotliHeaderSize &&
-         *data_bytes == ResourceBundle::kBrotliConst[0] &&
-         *(data_bytes + 1) == ResourceBundle::kBrotliConst[1];
+         data_bytes[0] == ResourceBundle::kBrotliConst[0] &&
+         (data_bytes.subspan(1u)[0]) == ResourceBundle::kBrotliConst[1];
 }
 
 // Returns the uncompressed size of Brotli compressed |input| from header.
 size_t GetBrotliDecompressSize(std::string_view input) {
   CHECK(input.data());
   CHECK(HasBrotliHeader(input));
-  const uint8_t* raw_input = reinterpret_cast<const uint8_t*>(input.data());
-  raw_input = raw_input + std::size(ResourceBundle::kBrotliConst);
+  base::span<const uint8_t> raw_input = base::as_byte_span(input);
+  raw_input = raw_input.subspan(std::size(ResourceBundle::kBrotliConst));
   // Get size of uncompressed resource from header.
   uint64_t uncompress_size = 0;
-  int bytes_size = static_cast<int>(ResourceBundle::kBrotliHeaderSize -
-                                    std::size(ResourceBundle::kBrotliConst));
-  for (int i = 0; i < bytes_size; i++) {
-    uncompress_size |= static_cast<uint64_t>(*(raw_input + i)) << (i * 8);
+  size_t bytes_size = ResourceBundle::kBrotliHeaderSize -
+                      std::size(ResourceBundle::kBrotliConst);
+  for (size_t i = 0; i < bytes_size; i++) {
+    uncompress_size |= static_cast<uint64_t>((raw_input.subspan(i)[0]))
+                       << (i * 8);
   }
   return static_cast<size_t>(uncompress_size);
 }
@@ -166,11 +168,11 @@ base::span<uint8_t> GetBufferForWriting(OutputBufferType out_buf, size_t len) {
 // success. To be used for grit compressed resources only.
 bool BrotliDecompress(std::string_view input, OutputBufferType output) {
   size_t decompress_size = GetBrotliDecompressSize(input);
-  const uint8_t* raw_input = reinterpret_cast<const uint8_t*>(input.data());
-  raw_input = raw_input + ResourceBundle::kBrotliHeaderSize;
+  base::span<const uint8_t> raw_input = base::as_byte_span(input);
+  raw_input = raw_input.subspan(ResourceBundle::kBrotliHeaderSize);
 
   return BrotliDecoderDecompress(
-             input.size() - ResourceBundle::kBrotliHeaderSize, raw_input,
+             input.size() - ResourceBundle::kBrotliHeaderSize, raw_input.data(),
              &decompress_size,
              GetBufferForWriting(output, decompress_size).data()) ==
          BROTLI_DECODER_RESULT_SUCCESS;

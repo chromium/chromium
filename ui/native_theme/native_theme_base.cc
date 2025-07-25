@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -93,7 +94,7 @@ const double kAccentLuminanceAdjust = 0.11;
 // Get a color constant based on color-scheme
 // TODO(crbug.com/40242489): Move colors defined above to the color pipeline and
 // remove this function.
-SkColor GetColor(const SkColor colors[2],
+SkColor GetColor(base::span<const SkColor, 2> colors,
                  ui::NativeTheme::ColorScheme color_scheme) {
   return colors[color_scheme == ui::NativeTheme::ColorScheme::kDark ? 1 : 0];
 }
