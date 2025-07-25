@@ -121,11 +121,11 @@
 }
 
 #input {
-  animation: color-change 3s infinite;
+  animation: color-change 5s infinite;
   background-color: inherit;
   border: none;
   box-sizing: border-box;
-  caret-color: var(--caret-color);
+  caret-color: var(--google-blue-500);
   color: var(--color-new-tab-page-composebox-font);
   display: block;
   field-sizing: content;
@@ -144,10 +144,10 @@
 }
 
 @keyframes color-change {
-  0% { --caret-color: blue; }
-  33% { --caret-color: red; }
-  67% { --caret-color: orange; }
-  100% { --caret-color: green; }
+  0%, 100%   { caret-color: var(--google-blue-500); }
+  25% { caret-color: var(--google-red-500); }
+  50%  { caret-color: var(--google-yellow-500); }
+  75% { caret-color: var(--google-green-500); }
 }
 
 #input::-webkit-search-decoration,
