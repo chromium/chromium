@@ -99,8 +99,16 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   int icon_type = omnibox::SuggestTemplateInfo::IconType::
       SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED;
 
+  ScopedJavaLocalRef<jbyteArray> j_suggest_template;
+
   if (suggest_template.has_value()) {
     icon_type = suggest_template.value().type_icon();
+
+    std::string str_suggest_template;
+    if (suggest_template->SerializeToString(&str_suggest_template)) {
+      j_suggest_template =
+          base::android::ToJavaByteArray(env, str_suggest_template);
+    }
   }
 
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
@@ -124,7 +132,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           ConvertUTF16ToJavaString(env, inline_autocompletion),
           ConvertUTF16ToJavaString(env, additional_text),
           tab_groups::UuidToJavaString(
-              env, matching_tab_group_uuid.value_or(base::Uuid()))));
+              env, matching_tab_group_uuid.value_or(base::Uuid())),
+          j_suggest_template));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }

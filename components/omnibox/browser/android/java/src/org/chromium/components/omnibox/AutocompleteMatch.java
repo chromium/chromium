@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 
@@ -93,6 +94,7 @@ public class AutocompleteMatch {
     private final String mInlineAutocompletion;
     private final String mAdditionalText;
     private final @Nullable String mTabGroupUuid;
+    private @Nullable SuggestTemplateInfo mSuggestTemplate;
 
     public AutocompleteMatch(
             int nativeType,
@@ -120,7 +122,8 @@ public class AutocompleteMatch {
             boolean allowedToBeDefaultMatch,
             String inlineAutocompletion,
             String additionalText,
-            @Nullable String tabGroupUuid) {
+            @Nullable String tabGroupUuid,
+            byte @Nullable [] serializedSuggestTemplate) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -158,6 +161,13 @@ public class AutocompleteMatch {
         mInlineAutocompletion = inlineAutocompletion;
         mAdditionalText = additionalText;
         mTabGroupUuid = tabGroupUuid;
+        if (serializedSuggestTemplate != null) {
+            try {
+                mSuggestTemplate = SuggestTemplateInfo.parseFrom(serializedSuggestTemplate);
+            } catch (InvalidProtocolBufferException e) {
+                assert false : "Parsing error for SuggestTemplateInfo";
+            }
+        }
     }
 
     @CalledByNative
@@ -190,7 +200,8 @@ public class AutocompleteMatch {
             boolean allowedToBeDefaultMatch,
             String inlineAutocompletion,
             String additionalText,
-            String localTabGroupId) {
+            String localTabGroupId,
+            byte[] serializedSuggestTemplate) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -231,7 +242,8 @@ public class AutocompleteMatch {
                         allowedToBeDefaultMatch,
                         inlineAutocompletion,
                         additionalText,
-                        TextUtils.isEmpty(localTabGroupId) ? null : localTabGroupId);
+                        TextUtils.isEmpty(localTabGroupId) ? null : localTabGroupId,
+                        serializedSuggestTemplate);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -449,6 +461,10 @@ public class AutocompleteMatch {
                 (mAnswerTemplate != null && suggestion.mAnswerTemplate != null)
                         ? mAnswerTemplate.equals(suggestion.mAnswerTemplate)
                         : mAnswerTemplate == null && suggestion.mAnswerTemplate == null;
+        boolean suggest_template_is_equal =
+                (mSuggestTemplate != null && suggestion.mSuggestTemplate != null)
+                        ? mSuggestTemplate.equals(suggestion.mSuggestTemplate)
+                        : mSuggestTemplate == null && suggestion.mSuggestTemplate == null;
         return mType == suggestion.mType
                 && mNativeMatch == suggestion.mNativeMatch
                 && ObjectsCompat.equals(mSubtypes, suggestion.mSubtypes)
@@ -465,6 +481,7 @@ public class AutocompleteMatch {
                 && mGroupId == suggestion.mGroupId
                 && mAnswerType == suggestion.mAnswerType
                 && answer_template_is_equal
+                && suggest_template_is_equal
                 && ObjectsCompat.equals(mTabGroupUuid, suggestion.mTabGroupUuid);
     }
 
@@ -589,7 +606,8 @@ public class AutocompleteMatch {
                 input.getAllowedToBeDefaultMatch(),
                 input.getInlineAutocompletion(),
                 input.getAdditionalText(),
-                /* tabGroupUuid= */ null);
+                /* tabGroupUuid= */ null,
+                /* serializedSuggestTemplate= */ null);
     }
 
     @Override
@@ -613,7 +631,8 @@ public class AutocompleteMatch {
                         "mGroupId=" + mGroupId,
                         "mDisplayTextClassifications=" + mDisplayTextClassifications,
                         "mDescriptionClassifications=" + mDescriptionClassifications,
-                        "mAnswerTemplate=" + mAnswerTemplate);
+                        "mAnswerTemplate=" + mAnswerTemplate,
+                        "mSuggestTemplate=" + mSuggestTemplate);
         return pieces.toString();
     }
 
