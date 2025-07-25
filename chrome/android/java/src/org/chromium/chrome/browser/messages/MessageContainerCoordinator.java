@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.messages;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -19,23 +19,25 @@ import org.chromium.components.messages.MessageContainer;
 import org.chromium.ui.base.ViewUtils;
 
 /**
- * Coordinator of {@link MessageContainer}, which can adjust margins of the message container
- * and control the visibility of browser control when message is being shown.
+ * Coordinator of {@link MessageContainer}, which can adjust margins of the message container and
+ * control the visibility of browser control when message is being shown.
  */
+@NullMarked
 public class MessageContainerCoordinator implements BrowserControlsStateProvider.Observer {
-    @Nullable private MessageContainer mContainer;
+    private @Nullable MessageContainer mContainer;
     private BrowserControlsManager mControlsManager;
 
     /** The list of observers for the message container. */
     private final ObserverList<MessageContainerObserver> mObservers = new ObserverList<>();
 
     public MessageContainerCoordinator(
-            @NonNull MessageContainer container, @NonNull BrowserControlsManager controlsManager) {
+            MessageContainer container, BrowserControlsManager controlsManager) {
         mContainer = container;
         mControlsManager = controlsManager;
         mControlsManager.addObserver(this);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mControlsManager.removeObserver(this);
         mContainer = null;
@@ -54,6 +56,7 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     }
 
     private void updateMargins() {
+        assert mContainer != null;
         if (mContainer.getVisibility() != View.VISIBLE) {
             return;
         }
@@ -64,12 +67,14 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     }
 
     protected void showMessageContainer() {
+        assert mContainer != null;
         mContainer.setVisibility(View.VISIBLE);
         updateMargins();
         for (MessageContainerObserver o : mObservers) o.onShowMessageContainer();
     }
 
     protected void hideMessageContainer() {
+        assert mContainer != null;
         mContainer.setVisibility(View.GONE);
         for (MessageContainerObserver o : mObservers) o.onHideMessageContainer();
     }
@@ -83,6 +88,7 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
      *     of the MessagesContainer.
      */
     public int getMessageMaxTranslation() {
+        assert mContainer != null;
         // The max translation is message height + controls height (adjusted for
         // Message container offsets)
         return mContainer.getMessageBannerHeight() + getContainerTopOffset();
@@ -130,8 +136,12 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         mObservers.removeObserver(observer);
     }
 
-    /** @return Offset of the message container from the top of the screen. */
+    /**
+     * @return Offset of the message container from the top of the screen.
+     */
     private int getContainerTopOffset() {
+        assert mContainer != null;
+
         if (mControlsManager.getContentOffset() == 0) return 0;
         final Resources res = mContainer.getResources();
         return mControlsManager.getContentOffset()

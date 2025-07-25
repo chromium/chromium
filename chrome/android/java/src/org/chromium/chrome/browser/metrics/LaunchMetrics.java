@@ -9,6 +9,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
@@ -22,19 +24,21 @@ import java.util.List;
 
 /**
  * Used for recording metrics about Chrome launches that need to be recorded before the native
- * library may have been loaded.  Metrics are cached until the library is known to be loaded, then
+ * library may have been loaded. Metrics are cached until the library is known to be loaded, then
  * committed to the MetricsService all at once.
  */
 @JNINamespace("metrics")
+@NullMarked
 public class LaunchMetrics {
     private static class HomeScreenLaunch {
         public final String mUrl;
         public final boolean mIsShortcut;
         // Corresponds to C++ ShortcutInfo::Source
         public final int mSource;
-        public final WebappInfo mWebappInfo;
+        public final @Nullable WebappInfo mWebappInfo;
 
-        public HomeScreenLaunch(String url, boolean isShortcut, int source, WebappInfo webappInfo) {
+        public HomeScreenLaunch(
+                String url, boolean isShortcut, int source, @Nullable WebappInfo webappInfo) {
             mUrl = url;
             mIsShortcut = isShortcut;
             mSource = source;

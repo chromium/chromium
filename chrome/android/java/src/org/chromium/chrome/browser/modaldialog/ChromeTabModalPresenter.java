@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.view.ViewStub;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -43,6 +47,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This presenter creates tab modality by blocking interaction with select UI elements while a
  * dialog is visible.
  */
+@NullMarked
 public class ChromeTabModalPresenter extends TabModalPresenter
         implements BrowserControlsStateProvider.Observer {
     /** The activity displaying the dialogs. */
@@ -59,10 +64,10 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     /** The active tab of which the dialog will be shown on top. */
-    private Tab mActiveTab;
+    private @Nullable Tab mActiveTab;
 
     /** The parent view that contains the dialog container. */
-    private ViewGroup mContainerParent;
+    private @Nullable ViewGroup mContainerParent;
 
     /** Whether the dialog container is brought to the front in its parent. */
     private boolean mContainerIsAtFront;
@@ -78,16 +83,16 @@ public class ChromeTabModalPresenter extends TabModalPresenter
      * browser controls. If BottomSheet is opened or UrlBar is focused, the dialog container should
      * be behind the browser controls and the URL suggestions.
      */
-    private View mDefaultNextSiblingView;
+    private @Nullable View mDefaultNextSiblingView;
 
     private int mBottomControlsHeight;
     private boolean mShouldUpdateContainerLayoutParams;
 
     /** A token held while the dialog manager is obscuring all tabs. */
-    private TabObscuringHandler.Token mTabObscuringToken;
+    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
-    private ScrimManager mScrimManager;
-    private PropertyModel mScrimModel;
+    private @Nullable ScrimManager mScrimManager;
+    private @Nullable PropertyModel mScrimModel;
 
     /**
      * Constructor for initializing dialog container.
@@ -253,6 +258,8 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
             if (menuButton != null) menuButton.setEnabled(false);
         } else {
+            assumeNonNull(mActiveTab);
+
             // Show the action bar back if it was dismissed when the dialogs were showing.
             WebContents webContents = mActiveTab.getWebContents();
             if (webContents != null) {
@@ -266,7 +273,9 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     }
 
     @Override
-    protected void removeDialogView(PropertyModel model) {
+    protected void removeDialogView(@Nullable PropertyModel model) {
+        assumeNonNull(mTabObscuringToken);
+
         mRunEnterAnimationOnCallback = false;
         mTabObscuringHandlerSupplier.get().unobscure(mTabObscuringToken);
         mTabObscuringToken = null;
@@ -319,11 +328,16 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
         if (toFront == mContainerIsAtFront) return;
         mContainerIsAtFront = toFront;
+        ViewGroup dialogContainer = getDialogContainer();
+        if (dialogContainer == null) return;
+
         if (toFront) {
-            getDialogContainer().bringToFront();
+            dialogContainer.bringToFront();
         } else {
-            UiUtils.removeViewFromParent(getDialogContainer());
-            UiUtils.insertBefore(mContainerParent, getDialogContainer(), mDefaultNextSiblingView);
+            assumeNonNull(mContainerParent);
+            assumeNonNull(mDefaultNextSiblingView);
+            UiUtils.removeViewFromParent(dialogContainer);
+            UiUtils.insertBefore(mContainerParent, dialogContainer, mDefaultNextSiblingView);
         }
     }
 
@@ -351,10 +365,13 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     }
 
     public static boolean isDialogShowing(Tab tab) {
-        return TabAttributes.from(tab).get(TabAttributeKeys.MODAL_DIALOG_SHOWING, false);
+        Boolean isShowing =
+                TabAttributes.from(tab).get(TabAttributeKeys.MODAL_DIALOG_SHOWING, false);
+        return isShowing != null && isShowing;
     }
 
     private void onTabModalDialogStateChanged(boolean isShowing) {
+        assumeNonNull(mActiveTab);
         TabAttributes.from(mActiveTab).set(TabAttributeKeys.MODAL_DIALOG_SHOWING, isShowing);
         mVisibilityDelegate.updateConstraintsForTab(mActiveTab);
 
@@ -385,7 +402,11 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     }
 
     private boolean areRendererInputEventsIgnored() {
-        return mActiveTab.getWebContents().getMainFrame().areInputEventsIgnored();
+        assumeNonNull(mActiveTab);
+        WebContents webContents = mActiveTab.getWebContents();
+        assumeNonNull(webContents);
+
+        return webContents.getMainFrame().areInputEventsIgnored();
     }
 
     private void maybeUpdateDialogLayout() {
@@ -400,7 +421,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         }
     }
 
-    ViewGroup getContainerParentForTest() {
+    @Nullable ViewGroup getContainerParentForTest() {
         return mContainerParent;
     }
 
