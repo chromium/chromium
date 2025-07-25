@@ -31,19 +31,6 @@ function isRunningInServiceWorker() {
 }
 
 /**
- * Helper to keep the service worker alive by calling an extension API.
- * Caller should use `await` on the returned promise to yield control to
- * allow the service worker to respond to pings.
- */
-function keepServiceWorkerAlive() {
-  if (!isRunningInServiceWorker()) {
-    return Promise.resovle();
-  }
-
-  return chrome.runtime.getPlatformInfo();
-}
-
-/**
  * Helper to import a module, and expose it onto window.
  * @param {string|!Array<string>} toImport Names of the module exports to
  *     expose.
