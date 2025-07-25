@@ -5127,6 +5127,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_READER_MODE_OPTIONS_TITLE" desc="Title of the Reading mode options UI which gives user control over the Reading mode font family, font size, color scheme.">
         Reading Mode
       </message>
+      <message name="IDS_IOS_READER_MODE_SNACKBAR_FAILURE_MESSAGE" desc="Message displayed in a snackbar when Reading mode failed to activate on the current page.">
+        Reading mode failed
+      </message>
       <message name="IDS_IOS_READING_LIST_ACCESSIBILITY_STATE_DOWNLOADED" desc="Accessibility label for the offline status of the reading list entry. Read by Text To Speech.">
         Available offline
       </message>

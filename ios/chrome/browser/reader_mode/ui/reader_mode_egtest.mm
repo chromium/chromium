@@ -775,9 +775,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
-// Tests that the contextual panel entrypoint disappears when distillation
-// fails.
-- (void)testContextualPanelEntrypointDisappearsOnDistillationFailure {
+// Tests that the contextual panel entrypoint disappears and a failure snackbar
+// is presented when distillation fails.
+- (void)testReaderModeDistillationFailure {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -795,6 +795,14 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
   // The entrypoint should disappear.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint];
+
+  // A snackbar should be displayed with a failure message.
+  NSString* failureMessage =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_SNACKBAR_FAILURE_MESSAGE);
+  id<GREYMatcher> snackbarMatcher = grey_allOf(
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
+      grey_accessibilityLabel(failureMessage), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 }
 
 @end

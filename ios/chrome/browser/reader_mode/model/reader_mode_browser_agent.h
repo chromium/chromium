@@ -29,10 +29,12 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
 
   ~ReaderModeBrowserAgent() override;
 
-  // Sets the Reader mode UI handler.
+  // Sets the Reader mode UI handlers.
   void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
   void SetReaderModeChipHandler(
       id<ReaderModeChipCommands> reader_mode_chip_handler);
+  // Sets the snackbar handler.
+  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
  private:
   friend class BrowserUserData<ReaderModeBrowserAgent>;
@@ -67,6 +69,7 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
 
   __weak id<ReaderModeCommands> reader_mode_handler_ = nil;
   __weak id<ReaderModeChipCommands> reader_mode_chip_handler_ = nil;
+  __weak id<SnackbarCommands> snackbar_handler_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_

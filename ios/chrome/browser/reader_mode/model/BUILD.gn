@@ -38,6 +38,7 @@ source_set("model") {
     "//components/dom_distiller/ios",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/strings",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/browser_container/model",

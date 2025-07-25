@@ -261,6 +261,7 @@
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
@@ -3328,8 +3329,9 @@ enum class ToolbarKind {
   AccountConsistencyBrowserAgent::CreateForBrowser(self.browser,
                                                    self.viewController);
 
+  CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
+
   if (FollowBrowserAgent::FromBrowser(self.browser)) {
-    CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
     FollowBrowserAgent::FromBrowser(self.browser)
         ->SetUIProviders(
             HandlerForProtocol(commandDispatcher, NewTabPageCommands),
@@ -3344,6 +3346,8 @@ enum class ToolbarKind {
         self.browser->GetCommandDispatcher(), ReaderModeCommands));
     readerModeBrowserAgent->SetReaderModeChipHandler(HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ReaderModeChipCommands));
+    readerModeBrowserAgent->SetSnackbarHandler(
+        static_cast<id<SnackbarCommands>>(commandDispatcher));
   }
 }
 
@@ -3386,6 +3390,7 @@ enum class ToolbarKind {
   if (readerModeBrowserAgent) {
     readerModeBrowserAgent->SetReaderModeHandler(nil);
     readerModeBrowserAgent->SetReaderModeChipHandler(nil);
+    readerModeBrowserAgent->SetSnackbarHandler(nil);
   }
 }
 
