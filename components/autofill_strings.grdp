@@ -300,10 +300,10 @@
     You can now use addresses from your Google Account
   </message>
   <message name="IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION" desc="IPH bubble for a suggestion item suggesting that home and work account profiles are available to use.">
-    Your home and work addresses are now available in Chrome
+    Autofill your home and work addresses from your Google Account
   </message>
   <message name="IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH bubble for a suggestion item suggesting that home and work account profiles are available to use.">
-    Your home and work addresses are now available in Chrome
+    Autofill your home and work addresses from your Google Account
   </message>
 
   <!-- Autofill suggestion label separator -->
