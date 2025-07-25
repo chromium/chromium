@@ -1421,12 +1421,6 @@ class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
 
   def __init__(self, options):
     super().__init__(options)
-    if 'webview' in options.apk.lower():
-      # Trichrome APKs targets were introduced in crrev.com/c/5719255
-      if int(options.good) < 1334017 or int(options.bad) < 1334017:
-        raise BisectException(
-            "Bisecting WebView only supports version >= 1334017")
-
 
   def _get_apk_mapping(self, prefer_64bit=True):
     return {
