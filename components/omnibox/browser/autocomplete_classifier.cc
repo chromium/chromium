@@ -76,6 +76,10 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       (base::FeatureList::IsEnabled(omnibox::kAndroidHubSearchTabGroups)
            ? AutocompleteProvider::TYPE_TAB_GROUP
            : 0) |
+      // Keyword search for Android.
+      (base::FeatureList::IsEnabled(omnibox::kOmniboxSiteSearch)
+           ? AutocompleteProvider::TYPE_KEYWORD
+           : 0) |
 #endif
 #if !BUILDFLAG(IS_IOS)
       (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
