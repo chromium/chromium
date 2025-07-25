@@ -101,6 +101,7 @@ source_set("impl") {
       "//ui/gfx/geometry",
       "//url",
     ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 
