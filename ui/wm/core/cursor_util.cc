@@ -35,6 +35,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/lottie/animation.h"
+#include "ui/resources/grit/ui_lottie_resources.h"
 #include "ui/resources/grit/ui_resources.h"
 
 namespace wm {
@@ -245,6 +246,8 @@ struct CursorResourceData {
   CursorType type;
   int id;
   gfx::Point hotspot_1x;
+  // TODO(crbug.com/416095366): Remove hotspot_2x when
+  // all cursor assets become lottie format.
   gfx::Point hotspot_2x;
   bool is_animated = false;
 };
@@ -253,7 +256,7 @@ struct CursorResourceData {
 // defined at ui/base/cursor/mojom/cursor_type.mojom.
 constexpr auto kNormalCursorResourceData = std::to_array<
     std::optional<CursorResourceData>>({
-    {{CursorType::kPointer, IDR_AURA_CURSOR_PTR, {4, 4}, {7, 7}}},
+    {{CursorType::kPointer, IDR_AURA_CURSOR_PTR_LOTTIE, {6, 4}, {6, 4}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_CROSSHAIR, {12, 12}, {24, 24}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_HAND, {9, 4}, {19, 8}}},
     {{CursorType::kIBeam, IDR_AURA_CURSOR_IBEAM, {12, 12}, {24, 25}}},
@@ -374,9 +377,11 @@ constexpr auto kNormalCursorResourceData = std::to_array<
 static_assert(std::size(kNormalCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);
 
+// TODO(crbug.com/416095366): Remove kLargeCursorResourceData when
+// all cursor assets become lottie format.
 constexpr auto kLargeCursorResourceData = std::to_array<
     std::optional<CursorResourceData>>({
-    {{CursorType::kPointer, IDR_AURA_CURSOR_BIG_PTR, {10, 10}, {20, 20}}},
+    {{CursorType::kPointer, IDR_AURA_CURSOR_PTR_LOTTIE, {6, 4}, {6, 4}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_BIG_CROSSHAIR, {30, 32}, {60, 64}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_BIG_HAND, {25, 7}, {50, 14}}},
     {{CursorType::kIBeam, IDR_AURA_CURSOR_BIG_IBEAM, {30, 32}, {60, 64}}},
@@ -534,7 +539,7 @@ std::optional<ui::CursorData> GetCursorData(
   const float resource_scale = ui::GetScaleForResourceScaleFactor(
       ui::GetSupportedResourceScaleFactorForRescale(scale));
   const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(resource_scale);
-  CHECK_EQ(image_rep.scale(), resource_scale);
+  CHECK(image_rep.unscaled() || (image_rep.scale() == resource_scale));
 
   if (target_cursor_size_in_px) {
     // If `target_cursor_size_in_px` presents, use it to calculate scale.

@@ -152,7 +152,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   EXPECT_EQ(primary_display_id, GetCursorDisplayId());
   EXPECT_EQ(CursorType::kNull, GetCursorType());
   gfx::Point hot_point = GetCursorHotPoint();
-  EXPECT_EQ(gfx::Point(4, 4), hot_point);
+  EXPECT_EQ(gfx::Point(6, 4), hot_point);
   gfx::Rect cursor_bounds = GetCursorBounds();
   EXPECT_EQ(20, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
@@ -176,7 +176,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   EXPECT_EQ(secondary_display_id, GetCursorDisplayId());
   EXPECT_EQ(CursorType::kNull, GetCursorType());
   hot_point = GetCursorHotPoint();
-  EXPECT_EQ(gfx::Point(3, 3), hot_point);
+  EXPECT_EQ(gfx::Point(6, 4), hot_point);
   cursor_bounds = GetCursorBounds();
   EXPECT_EQ(320, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());

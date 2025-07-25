@@ -7,6 +7,7 @@ import("//tools/grit/repack.gni")
 
 group("resources") {
   public_deps = [
+    ":ui_lottie_resources_grd",
     ":ui_resources_grd",
     ":ui_unscaled_resources_grd",
   ]
@@ -29,6 +30,14 @@ grit("ui_unscaled_resources_grd") {
   outputs = [
     "grit/ui_unscaled_resources.h",
     "ui_unscaled_resources.rc",
+  ]
+}
+
+grit("ui_lottie_resources_grd") {
+  source = "ui_lottie_resources.grd"
+  outputs = [
+    "grit/ui_lottie_resources.h",
+    "ui_lottie_resources.pak",
   ]
 }
 
@@ -113,6 +122,7 @@ repack("repack_ui_test_pak_100_percent") {
 
   sources = [
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
+    "$root_gen_dir/ui/resources/ui_lottie_resources.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ax_strings_en-US.pak",

@@ -1479,6 +1479,9 @@
   "ui/resources/ui_resources.grd": {
     "structures": [9820],
   },
+  "ui/resources/ui_lottie_resources.grd": {
+    "structures": [9830],
+  },
   "ui/resources/ui_unscaled_resources.grd": {
     "includes": [9840],
   },
