@@ -1948,8 +1948,9 @@
   },
   {
     "name": "crostini-multi-container",
-    "owners": [ "sidereal@chromium.org", "davidmunro@google.com", "nverne@chromium.org", "clumptini@google.com" ],
-    "expiry_milestone": 150
+    "owners": [ "drmasquatch@google.com", "clumptini@google.com" ],
+    // NOTE: multi-container will be infeasible upon baguette launch, do not unexpire.
+    "expiry_milestone": 140
   },
   {
     "name": "crostini-qt-ime-support",
