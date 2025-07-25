@@ -4,6 +4,8 @@
 
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -297,6 +299,62 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAi) {
             signin::Tribool::kFalse);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInFeminineGrammaticalGender) {
+  base::test::ScopedFeatureList feature{
+      switches::kGrammaticalGenderCapabilities};
+
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_feminine_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_feminine_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInMasculineGrammaticalGender) {
+  base::test::ScopedFeatureList feature{
+      switches::kGrammaticalGenderCapabilities};
+
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_masculine_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_masculine_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInNeuterGrammaticalGender) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({switches::kGrammaticalGenderCapabilities,
+                             switches::kNeuterGrammaticalGenderCapability},
+                            {});
+
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_neuter_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_neuter_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_neuter_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_neuter_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_neuter_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
 
 TEST_F(AccountCapabilitiesTest,
        IsSubjectToPrivacySandboxRestrictedMeasurementApiNotice) {

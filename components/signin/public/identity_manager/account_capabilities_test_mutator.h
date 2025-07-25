@@ -47,6 +47,9 @@ class AccountCapabilitiesTestMutator {
       bool value);
   void set_is_subject_to_enterprise_policies(bool value);
   void set_is_subject_to_parental_controls(bool value);
+  void set_should_be_addressed_in_feminine_grammatical_gender(bool value);
+  void set_should_be_addressed_in_masculine_grammatical_gender(bool value);
+  void set_should_be_addressed_in_neuter_grammatical_gender(bool value);
   // keep-sorted end
 
   // Modifies all supported capabilities at once.

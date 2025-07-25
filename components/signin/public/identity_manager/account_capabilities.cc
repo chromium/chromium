@@ -11,8 +11,10 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -73,7 +75,7 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
 }
 
 // clang-format off
-// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif,can,has,is,must block=yes
+// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif,can,has,is,must,AccountCapabilities:: block=yes
 // clang-format on
 signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
   return GetCapabilityByName(kCanFetchFamilyMemberInfoCapabilityName);
@@ -165,6 +167,34 @@ signin::Tribool AccountCapabilities::is_subject_to_enterprise_policies() const {
 
 signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
   return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
+}
+
+signin::Tribool
+AccountCapabilities::should_be_addressed_in_feminine_grammatical_gender()
+    const {
+  return base::FeatureList::IsEnabled(switches::kGrammaticalGenderCapabilities)
+             ? GetCapabilityByName(
+                   kShouldBeAddressedInFeminineGrammaticalGender)
+             : signin::Tribool::kUnknown;
+}
+
+signin::Tribool
+AccountCapabilities::should_be_addressed_in_masculine_grammatical_gender()
+    const {
+  return base::FeatureList::IsEnabled(switches::kGrammaticalGenderCapabilities)
+             ? GetCapabilityByName(
+                   kShouldBeAddressedInMasculineGrammaticalGender)
+             : signin::Tribool::kUnknown;
+}
+
+signin::Tribool
+AccountCapabilities::should_be_addressed_in_neuter_grammatical_gender() const {
+  return base::FeatureList::IsEnabled(
+             switches::kGrammaticalGenderCapabilities) &&
+                 base::FeatureList::IsEnabled(
+                     switches::kNeuterGrammaticalGenderCapability)
+             ? GetCapabilityByName(kShouldBeAddressedInNeuterGrammaticalGender)
+             : signin::Tribool::kUnknown;
 }
 
 // keep-sorted end

@@ -221,9 +221,22 @@ BASE_FEATURE(kFullscreenSignInPromoUseDate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Enables access to the Grammatical Gender account capabilities. Note that the
+// Neuter gender is also behind the additional flag,
+// kNeuterGrammaticalGenderCapability.
+BASE_FEATURE(kGrammaticalGenderCapabilities,
+             "GrammaticalGenderCapabilities",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
              "InterceptBubblesDismissibleByAvatarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables access to the Neuter grammatical gender account capability. Note that
+// this is also behind the additional flag, kGrammaticalGenderCapabilities.
+BASE_FEATURE(kNeuterGrammaticalGenderCapability,
+             "NeuterGrammaticalGenderCapability",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOfferMigrationToDiceUsers,
              "OfferMigrationToDiceUsers",
