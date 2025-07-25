@@ -180,6 +180,10 @@ public class MiniOriginBarControllerTest {
 
         mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
         Assert.assertEquals(
+                MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mKeyboardVisibilityDelegate.setVisibilityForTests(false);
+        Assert.assertEquals(
                 MiniOriginState.NOT_READY, mMiniOriginBarController.getCurrentStateForTesting());
     }
 
