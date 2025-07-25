@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -25,7 +26,9 @@ const CGFloat kMenuCornerRadius = 20;
 
 }
 
-@interface PageActionMenuCoordinator () <UINavigationControllerDelegate>
+@interface PageActionMenuCoordinator () <
+    UINavigationControllerDelegate,
+    UIAdaptivePresentationControllerDelegate>
 @end
 
 @implementation PageActionMenuCoordinator {
@@ -62,6 +65,7 @@ const CGFloat kMenuCornerRadius = 20;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
   _navigationController.delegate = self;
+  _navigationController.presentationController.delegate = self;
   _navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
   // Configure presentation sheet.
   __weak __typeof(self) weakSelf = self;
@@ -104,6 +108,14 @@ const CGFloat kMenuCornerRadius = 20;
   _viewController = nil;
   _mediator = nil;
   [super stop];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  RecordAIHubAction(IOSAIHubAction::kDismiss);
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 
 #pragma mark - UINavigationControllerDelegate

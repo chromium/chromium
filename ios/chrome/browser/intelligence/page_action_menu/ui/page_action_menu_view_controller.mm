@@ -55,8 +55,7 @@ const CGFloat kLargeButtonImagePadding = 8;
 
 }  // namespace
 
-@interface PageActionMenuViewController () <
-    UIAdaptivePresentationControllerDelegate>
+@interface PageActionMenuViewController ()
 
 // Whether reader mode is currently active.
 @property(nonatomic, assign) BOOL readerModeActive;
@@ -78,8 +77,6 @@ const CGFloat kLargeButtonImagePadding = 8;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
-  self.presentationController.delegate = self;
 
   // Add blurred background.
   UIBlurEffect* blurEffect =
@@ -140,13 +137,6 @@ const CGFloat kLargeButtonImagePadding = 8;
   [weakSelf.sheetPresentationController animateChanges:^{
     [weakSelf.sheetPresentationController invalidateDetents];
   }];
-}
-
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self dismissPageActionMenu];
 }
 
 #pragma mark - Public
