@@ -1063,7 +1063,7 @@ void LayoutText::TextDidChangeWithoutInvalidation() {
       GetDocument().GetSettings()->GetPasswordEchoEnabled();
   String original_text =
       (RuntimeEnabledFeatures::UseOriginalDomOffsetsForOffsetMapEnabled() &&
-       OriginalText() && is_password_echo_enabled)
+       !OriginalText().empty() && is_password_echo_enabled)
           ? OriginalText()
           : text_;
   wtf_size_t original_length = original_text.length();
