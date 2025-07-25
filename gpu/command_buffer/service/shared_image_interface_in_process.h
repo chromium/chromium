@@ -67,10 +67,10 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   ~SharedImageInterfaceInProcess() override;
 
   // SharedImageInterfaceBase:
-  SharedImageFactory* GetSharedImageFactory() override;
-  bool MakeContextCurrent(bool needs_gl) override;
-  using SharedImageInterfaceInProcessBase::MakeContextCurrent;
-  void MarkContextLost() override;
+  SharedImageFactory* GetSharedImageFactoryOnGpuThread() override;
+  bool MakeContextCurrentOnGpuThread(bool needs_gl) override;
+  using SharedImageInterfaceInProcessBase::MakeContextCurrentOnGpuThread;
+  void MarkContextLostOnGpuThread() override;
   void ScheduleGpuTask(base::OnceClosure task,
                        std::vector<SyncToken> sync_token_fences,
                        const SyncToken& release) override;

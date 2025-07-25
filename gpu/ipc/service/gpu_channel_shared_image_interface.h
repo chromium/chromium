@@ -72,9 +72,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   void ScheduleGpuTask(base::OnceClosure task,
                        std::vector<SyncToken> sync_token_fences,
                        const SyncToken& release) override;
-  SharedImageFactory* GetSharedImageFactory() override;
-  bool MakeContextCurrent(bool needs_gl) override;
-  void MarkContextLost() override;
+  SharedImageFactory* GetSharedImageFactoryOnGpuThread() override;
+  bool MakeContextCurrentOnGpuThread(bool needs_gl) override;
+  void MarkContextLostOnGpuThread() override;
 
  private:
   base::WeakPtr<SharedImageStub> shared_image_stub_;

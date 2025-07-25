@@ -101,12 +101,12 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageOnGpuThread(
     SharedImageInfo si_info,
     gpu::SurfaceHandle surface_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (!shared_image_factory) {
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  if (!MakeContextCurrentOnGpuThread()) {
     return;
   }
 
@@ -115,7 +115,7 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageOnGpuThread(
           si_info.meta.color_space, si_info.meta.surface_origin,
           si_info.meta.alpha_type, surface_handle, si_info.meta.usage,
           std::string(si_info.debug_label))) {
-    MarkContextLost();
+    MarkContextLostOnGpuThread();
   }
 }
 
@@ -145,12 +145,12 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageWithDataOnGpuThread(
     SharedImageInfo si_info,
     std::vector<uint8_t> pixel_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (!shared_image_factory) {
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  if (!MakeContextCurrentOnGpuThread()) {
     return;
   }
 
@@ -159,7 +159,7 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageWithDataOnGpuThread(
           si_info.meta.color_space, si_info.meta.surface_origin,
           si_info.meta.alpha_type, si_info.meta.usage,
           std::move(si_info.debug_label), pixel_data)) {
-    MarkContextLost();
+    MarkContextLostOnGpuThread();
   }
 }
 
@@ -207,12 +207,12 @@ void SharedImageInterfaceInProcessBase::
                                                 SurfaceHandle surface_handle,
                                                 gfx::BufferUsage buffer_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (!shared_image_factory) {
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  if (!MakeContextCurrentOnGpuThread()) {
     return;
   }
 
@@ -227,7 +227,7 @@ void SharedImageInterfaceInProcessBase::
           si_info.meta.color_space, si_info.meta.surface_origin,
           si_info.meta.alpha_type, surface_handle, si_info.meta.usage,
           std::move(si_info.debug_label), buffer_usage)) {
-    MarkContextLost();
+    MarkContextLostOnGpuThread();
   }
 }
 
@@ -258,7 +258,7 @@ void SharedImageInterfaceInProcessBase::GetGpuMemoryBufferHandleInfoOnGpuThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   absl::Cleanup completion_runner = [completion] { completion->Signal(); };
 
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   DCHECK(shared_image_factory);
 
   // Note that we are not calling `MakeContextCurrent()` here as of now since
@@ -368,12 +368,12 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageWithBufferOnGpuThread(
     SharedImageInfo si_info,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (!shared_image_factory) {
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  if (!MakeContextCurrentOnGpuThread()) {
     return;
   }
 
@@ -382,7 +382,7 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageWithBufferOnGpuThread(
           si_info.meta.color_space, si_info.meta.surface_origin,
           si_info.meta.alpha_type, si_info.meta.usage,
           std::move(si_info.debug_label), std::move(buffer_handle))) {
-    MarkContextLost();
+    MarkContextLostOnGpuThread();
   }
 }
 
@@ -440,14 +440,14 @@ void SharedImageInterfaceInProcessBase::UpdateSharedImageOnGpuThread(
     const Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  if (!MakeContextCurrent()) {
+  if (!MakeContextCurrentOnGpuThread()) {
     return;
   }
 
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (!shared_image_factory ||
       !shared_image_factory->UpdateSharedImage(mailbox)) {
-    MarkContextLost();
+    MarkContextLostOnGpuThread();
   }
 }
 
@@ -474,14 +474,14 @@ void SharedImageInterfaceInProcessBase::DestroySharedImageOnGpuThread(
     const Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  if (!MakeContextCurrent()) {
+  if (!MakeContextCurrentOnGpuThread()) {
     return;
   }
 
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (!shared_image_factory ||
       !shared_image_factory->DestroySharedImage(mailbox)) {
-    MarkContextLost();
+    MarkContextLostOnGpuThread();
   }
 }
 
@@ -549,7 +549,7 @@ void SharedImageInterfaceInProcessBase::GetCapabilitiesOnGpuThread() {
     return;
   }
 
-  SharedImageFactory* shared_image_factory = GetSharedImageFactory();
+  SharedImageFactory* shared_image_factory = GetSharedImageFactoryOnGpuThread();
   if (shared_image_factory) {
     shared_image_capabilities_ = shared_image_factory->MakeCapabilities();
   }

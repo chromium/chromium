@@ -152,7 +152,7 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
 
 void SharedImageInterfaceInProcess::DestroyOnGpu(
     base::WaitableEvent* completion) {
-  bool have_context = MakeContextCurrent();
+  bool have_context = MakeContextCurrentOnGpuThread();
   if (shared_image_factory_) {
     shared_image_factory_->DestroyAllSharedImages(have_context);
     shared_image_factory_ = nullptr;
@@ -164,14 +164,15 @@ void SharedImageInterfaceInProcess::DestroyOnGpu(
   completion->Signal();
 }
 
-SharedImageFactory* SharedImageInterfaceInProcess::GetSharedImageFactory() {
+SharedImageFactory*
+SharedImageInterfaceInProcess::GetSharedImageFactoryOnGpuThread() {
   if (shared_image_factory_) {
     return shared_image_factory_.get();
   }
 
   // Some shared image backing factories will use GL in ctor, so we need GL even
   // if chrome is using non-GL backing.
-  if (!MakeContextCurrent(/*needs_gl=*/true)) {
+  if (!MakeContextCurrentOnGpuThread(/*needs_gl=*/true)) {
     return nullptr;
   }
 
@@ -179,7 +180,8 @@ SharedImageFactory* SharedImageInterfaceInProcess::GetSharedImageFactory() {
   return shared_image_factory_.get();
 }
 
-bool SharedImageInterfaceInProcess::MakeContextCurrent(bool needs_gl) {
+bool SharedImageInterfaceInProcess::MakeContextCurrentOnGpuThread(
+    bool needs_gl) {
   if (gl::GetGLImplementation() == gl::kGLImplementationDisabled) {
     return true;
   }
@@ -198,7 +200,7 @@ bool SharedImageInterfaceInProcess::MakeContextCurrent(bool needs_gl) {
   return context_state_->MakeCurrent(/*surface=*/nullptr, needs_gl);
 }
 
-void SharedImageInterfaceInProcess::MarkContextLost() {
+void SharedImageInterfaceInProcess::MarkContextLostOnGpuThread() {
   context_state_->MarkContextLost();
 }
 
