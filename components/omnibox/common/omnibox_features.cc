@@ -246,9 +246,7 @@ BASE_FEATURE(kMlUrlPiecewiseMappedSearchBlending,
 
 // If enabled, the ML scoring service will make use of an in-memory ML score
 // cache in order to speed up the overall scoring process.
-BASE_FEATURE(kMlUrlScoreCaching,
-             "MlUrlScoreCaching",
-             enable_if(!IS_ANDROID && !IS_IOS));
+BASE_FEATURE(kMlUrlScoreCaching, "MlUrlScoreCaching", enable_if(!IS_ANDROID));
 
 // If enabled, runs the ML scoring model to assign new relevance scores to the
 // URL suggestions and reranks them.
