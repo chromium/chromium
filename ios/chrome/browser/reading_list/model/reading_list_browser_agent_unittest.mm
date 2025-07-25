@@ -35,10 +35,9 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::move(initial_entries)));
+    builder.AddTestingFactory(ReadingListModelFactory::GetInstance(),
+                              ReadingListModelTestingFactoryWithFakeStorage(
+                                  std::move(initial_entries)));
 
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

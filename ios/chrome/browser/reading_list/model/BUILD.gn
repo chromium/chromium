@@ -117,6 +117,8 @@ source_set("test_support") {
     "//components/reading_list/core:test_support",
     "//components/sync/base",
     "//components/sync/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
   public_deps = [
     "//components/reading_list/core",

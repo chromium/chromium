@@ -45,10 +45,9 @@ class OfflinePageTabHelperTest : public PlatformTest {
         GURL(kTestURL), kTestTitle, base::Time::Now()));
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::move(initial_entries)));
+    builder.AddTestingFactory(ReadingListModelFactory::GetInstance(),
+                              ReadingListModelTestingFactoryWithFakeStorage(
+                                  std::move(initial_entries)));
     profile_ = std::move(builder).Build();
 
     fake_web_state_.SetBrowserState(profile_.get());
