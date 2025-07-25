@@ -172,11 +172,10 @@ std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
     return result;
   }
 
-  auto proxy_layer =
-      chain_index == 0 ? ProxyLayer::kProxyA : ProxyLayer::kProxyB;
-  if (ipp_token_managers_.count(proxy_layer) > 0) {
-    result = ipp_token_managers_[proxy_layer]->GetAuthToken(
-        ipp_proxy_config_manager_->CurrentGeo());
+  auto it = ipp_token_managers_.find(chain_index == 0 ? ProxyLayer::kProxyA
+                                                      : ProxyLayer::kProxyB);
+  if (it != ipp_token_managers_.end()) {
+    result = it->second->GetAuthToken(ipp_proxy_config_manager_->CurrentGeo());
   }
   return result;
 }
