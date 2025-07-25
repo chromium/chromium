@@ -78,8 +78,8 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
-            policies = res;
+          [&policies](policy::ProfileSeparationPolicies res) {
+            policies = std::move(res);
           }));
 
   base::RunLoop().RunUntilIdle();
@@ -111,8 +111,8 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsNewValueFromBody) {
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
-            policies = res;
+          [&policies](policy::ProfileSeparationPolicies res) {
+            policies = std::move(res);
           }));
 
   base::RunLoop().RunUntilIdle();
@@ -144,7 +144,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }));
 
@@ -177,7 +177,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }));
 
@@ -212,7 +212,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }));
 
@@ -246,7 +246,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }));
 
@@ -271,7 +271,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }));
 
@@ -295,7 +295,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }));
 
@@ -318,7 +318,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueForTesting) {
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }),
       R"(
@@ -357,7 +357,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   policy_fetcher()->GetManagedAccountsSigninRestriction(
       identity_test_env()->identity_manager(), account_info.account_id,
       base::BindLambdaForTesting(
-          [&policies](const policy::ProfileSeparationPolicies& res) {
+          [&policies](policy::ProfileSeparationPolicies res) {
             policies = res;
           }),
       std::string());

@@ -73,7 +73,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
     GetManagedAccountsSigninRestriction(
         signin::IdentityManager* identity_manager,
         const CoreAccountId& account_id,
-        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+        base::OnceCallback<void(ProfileSeparationPolicies)> callback,
         const std::string& response_for_testing) {
   if (!response_for_testing.empty()) {
     OnManagedAccountsSigninRestrictionResult(
@@ -130,7 +130,7 @@ void UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult(
 
 void UserCloudSigninRestrictionPolicyFetcher::
     GetManagedAccountsSigninRestrictionInternal(
-        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+        base::OnceCallback<void(ProfileSeparationPolicies)> callback,
         const std::string& access_token) {
   net::NetworkTrafficAnnotationTag annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -175,7 +175,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
 
 void UserCloudSigninRestrictionPolicyFetcher::
     OnManagedAccountsSigninRestrictionResult(
-        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+        base::OnceCallback<void(ProfileSeparationPolicies)> callback,
         std::unique_ptr<std::string> response_body) {
   std::string restriction;
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();

@@ -1485,8 +1485,7 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
 void DiceWebSigninInterceptor::
     EnsureAccountLevelSigninRestrictionFetchInProgress(
         const AccountInfo& account_info,
-        base::OnceCallback<void(const policy::ProfileSeparationPolicies&)>
-            callback) {
+        base::OnceCallback<void(policy::ProfileSeparationPolicies)> callback) {
   if (state_->account_level_signin_restriction_policy_fetcher_ != nullptr) {
     // A fetch is already in progress, don't start a new one.
     DCHECK_EQ(account_info.account_id, state_->account_id_);
@@ -1495,9 +1494,12 @@ void DiceWebSigninInterceptor::
 
   if (intercepted_account_profile_separation_policies_response_for_testing_
           .has_value()) {
-    std::move(callback).Run(
-        intercepted_account_profile_separation_policies_response_for_testing_
-            .value());
+    policy::ProfileSeparationPolicies profile_separation_policies =
+        std::exchange(
+            intercepted_account_profile_separation_policies_response_for_testing_,
+            std::nullopt)
+            .value();
+    std::move(callback).Run(std::move(profile_separation_policies));
     return;
   }
 
@@ -1523,7 +1525,7 @@ void DiceWebSigninInterceptor::
 void DiceWebSigninInterceptor::
     OnAccountLevelManagedAccountsSigninRestrictionReceived(
         const AccountInfo& account_info,
-        const policy::ProfileSeparationPolicies& profile_separation_policies) {
+        policy::ProfileSeparationPolicies profile_separation_policies) {
   state_->intercepted_account_profile_separation_policies_ =
       profile_separation_policies;
   ProcessInterceptionOrWait(account_info, /*timed_out=*/false);

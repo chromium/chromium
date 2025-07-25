@@ -216,7 +216,7 @@ void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
 void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback,
-    const policy::ProfileSeparationPolicies& profile_separation_policies) {
+    policy::ProfileSeparationPolicies profile_separation_policies) {
   if (!browser_) {
     std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
     return;

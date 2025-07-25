@@ -149,8 +149,11 @@ void ManagedProfileCreationController::FetchProfileSeparationPolicies() {
 
   if (profile_separation_policies_for_testing_.has_value()) {
     CHECK_IS_TEST();
+    policy::ProfileSeparationPolicies profile_separation_policies =
+        std::exchange(profile_separation_policies_for_testing_, std::nullopt)
+            .value();
     std::move(policy_fetch_callback)
-        .Run(profile_separation_policies_for_testing_.value());
+        .Run(std::move(profile_separation_policies));
     return;
   }
 
@@ -188,7 +191,7 @@ void ManagedProfileCreationController::FetchProfileSeparationPolicies() {
 }
 
 void ManagedProfileCreationController::OnProfileSeparationPoliciesReceived(
-    const policy::ProfileSeparationPolicies& policies) {
+    policy::ProfileSeparationPolicies policies) {
   policy_fetch_timeout_.Stop();
   // If the profile was deleted in the meantime, we should not proceed.
   if (!source_profile_) {

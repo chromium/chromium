@@ -361,14 +361,13 @@ class DiceWebSigninInterceptor : public KeyedService,
   // timeout.
   void EnsureAccountLevelSigninRestrictionFetchInProgress(
       const AccountInfo& account_info,
-      base::OnceCallback<void(const policy::ProfileSeparationPolicies&)>
-          callback);
+      base::OnceCallback<void(policy::ProfileSeparationPolicies)> callback);
 
   // Called when the the value of the cloud user level value of the
   // ManagedAccountsSigninRestriction is received.
   void OnAccountLevelManagedAccountsSigninRestrictionReceived(
       const AccountInfo& account_info,
-      const policy::ProfileSeparationPolicies& profile_separation_policies);
+      policy::ProfileSeparationPolicies profile_separation_policies);
 
   // Records the heuristic outcome and latency metrics.
   void RecordSigninInterceptionHeuristicOutcome(

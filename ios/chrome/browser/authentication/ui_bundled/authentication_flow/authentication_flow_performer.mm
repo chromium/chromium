@@ -207,11 +207,11 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
           GetApplicationContext()->GetSharedURLLoaderFactory());
 
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(const policy::ProfileSeparationPolicies&)> callback =
+  base::OnceCallback<void(policy::ProfileSeparationPolicies)> callback =
       base::BindOnce(
           [](__typeof(self) strongSelf,
-             const policy::ProfileSeparationPolicies& policies) {
-            [strongSelf didFetchProfileSeparationPolicies:policies];
+             policy::ProfileSeparationPolicies policies) {
+            [strongSelf didFetchProfileSeparationPolicies:std::move(policies)];
           },
           weakSelf);
 
@@ -400,7 +400,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 // Called when separation policies have been fetched, and calls the delegate.
 - (void)didFetchProfileSeparationPolicies:
-    (const policy::ProfileSeparationPolicies&)policies {
+    (policy::ProfileSeparationPolicies)policies {
   CHECK(_accountLevelSigninRestrictionPolicyFetcher);
   _accountLevelSigninRestrictionPolicyFetcher.reset();
   auto profile_separation_data_migration_settings =
