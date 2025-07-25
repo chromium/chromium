@@ -3176,6 +3176,7 @@ static_library("browser") {
       "optimization_guide/android/optimization_guide_bridge.h",
       "optimization_guide/android/optimization_guide_tab_url_provider_android.cc",
       "optimization_guide/android/optimization_guide_tab_url_provider_android.h",
+      "optimization_guide/android/page_content_proto_provider_bridge.cc",
       "page_image_service/android/image_service_bridge.cc",
       "page_image_service/android/image_service_bridge.h",
       "page_info/about_this_site_controller_android.cc",

@@ -91,6 +91,7 @@ if (is_android) {
     proto_path = "//"
     sources = [
       "common_types.proto",
+      "features/common_quality_data.proto",
       "hints.proto",
       "loading_predictor_metadata.proto",
       "models.proto",
