@@ -987,7 +987,7 @@
 <translation id="2658843814961855121">근로 및 고용법</translation>
 <translation id="2660779039299703961">이벤트</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{없음}=1{비밀번호 1개(도메인: <ph name="DOMAIN_LIST" />)}=2{비밀번호 2개(도메인: <ph name="DOMAIN_LIST" />)}other{비밀번호 #개(도메인: <ph name="DOMAIN_LIST" />)}}</translation>
-<translation id="2666092431469916601">맨 위</translation>
+<translation id="2666092431469916601">상단</translation>
 <translation id="2666117266261740852">다른 탭 또는 앱 닫기</translation>
 <translation id="266935134738038806">사이트 방문</translation>
 <translation id="2672201172023654893">관리 대상 브라우저가 아닙니다.</translation>

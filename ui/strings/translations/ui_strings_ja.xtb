@@ -66,7 +66,7 @@
 <translation id="2583543531130364912">タッチスクリーンのキャリブレーション</translation>
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2653844658857826081">新規</translation>
-<translation id="2666092431469916601">一番上</translation>
+<translation id="2666092431469916601">上部</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> から共有されました</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">すべて削除</translation>
@@ -75,7 +75,7 @@
 <translation id="293972288692056847">{COUNT,plural, =1{拡張機能が見つかりません}other{拡張機能が見つかりません}}</translation>
 <translation id="3036649622769666520">ファイルを開く</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3087734570205094154">下</translation>
+<translation id="3087734570205094154">下部</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3183922693828471536">ここまでスクロール</translation>

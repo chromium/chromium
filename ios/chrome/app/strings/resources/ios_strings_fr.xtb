@@ -759,7 +759,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="417138788035229076">Gérer le groupe</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="417273154673973994">{count,plural, =1{1 groupe d'onglets fermé et enregistré}one{{count} groupe d'onglets fermé et enregistré}other{{count} groupes d'onglets fermés et enregistrés}}</translation>
-<translation id="417612446554534067">Envoyer sur vos appareils</translation>
+<translation id="417612446554534067">Envoyer à vos appareils</translation>
 <translation id="4180726336228139707">Uniquement sur cet appareil</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4183350924949589798">Renforcer la sécurité ?</translation>
@@ -1990,7 +1990,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8975015774710126284">Les données de navigation ont été supprimées</translation>
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes sont enregistrées dans votre compte Google.</translation>
-<translation id="8981454092730389528">Commandes Google relatives à l'activité</translation>
+<translation id="8981454092730389528">Commandes relatives à l'activité Google</translation>
 <translation id="8984627322964256190">Masquer "Suivre <ph name="DOMAIN_NAME" />"</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>

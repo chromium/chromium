@@ -4,7 +4,7 @@
 <translation id="1005023885865154304">Abrir as configurações do preenchimento automático de senhas</translation>
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1010225406377140704">Entre em contato com o remetente para pedir um novo link</translation>
-<translation id="1013952917065545813">Você pode voltar aqui para abrir guias fechadas recentemente</translation>
+<translation id="1013952917065545813">Você pode voltar aqui para abrir guias que acabou de fechar</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abra o Gerenciador de senhas</translation>
@@ -252,7 +252,7 @@
 <translation id="1989404831625305000">Ocultar o Gerenciador de senhas</translation>
 <translation id="1989858546814009832">{count,plural, =1{Salvar 1 favorito na sua Conta do Google}one{Salvar {count} favorito na sua Conta do Google}other{Salvar {count} favoritos na sua Conta do Google}}</translation>
 <translation id="1990820278544963435">Localizar</translation>
-<translation id="1992055602764528852">Faça login para conferir suas guias em outros dispositivos.</translation>
+<translation id="1992055602764528852">Faça login para ver as guias em outros dispositivos.</translation>
 <translation id="1993126639825654370">Copiar URL do link</translation>
 <translation id="199425419756152024">Ver senha</translation>
 <translation id="1996318269856535896">Você ainda pode usar os dados de navegação neste dispositivo. Para isso, saia da conta gerenciada.</translation>
@@ -766,7 +766,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4184063163998877398">{count,plural, =1{{count} senha fraca}one{{count} senha fraca}other{{count} senhas fracas}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
 <translation id="4207873326995387292">Informações do navegador</translation>
-<translation id="421070604241073551">Quando essa opção está ativada, os dados são salvos na sua Conta do Google. Quando desativada, os dados são salvos apenas neste dispositivo.</translation>
+<translation id="421070604241073551">Ao ativar essa opção, os dados serão salvos na sua Conta do Google. Ao desativá-la, os dados serão salvos apenas neste dispositivo.</translation>
 <translation id="4224534474590365556">Fechar mais de 99 guias inativas?</translation>
 <translation id="422474357428465195">Você tem vários problemas de senha que podem colocar sua segurança em risco.</translation>
 <translation id="422477017457571619">Proteção com tecnologia de IA em tempo real contra sites, extensões e downloads perigosos com base nos seus dados de navegação enviados ao Google</translation>
@@ -1354,7 +1354,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6506996418997555004">Compartilhar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Faça login para ter sua Lista de leitura em todos os seus dispositivos.</translation>
 <translation id="6518133107902771759">Confirmar</translation>
-<translation id="6518861084553706202">As guias serão fechadas, e os dados excluídos podem incluir senhas, histórico de navegação, cookies e muito mais.</translation>
+<translation id="6518861084553706202">As guias serão fechadas, e os dados excluídos podem incluir senhas, histórico de navegação, cookies, entre outros.</translation>
 <translation id="6523575793810663688">Me ajude a fazer isso</translation>
 <translation id="6524082013156754186">Salvar na conta</translation>
 <translation id="6524918542306337007">O modo de navegação anônima está indisponível</translation>
@@ -1736,7 +1736,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8040407350301524547">Para conferir opções de trajeto, toque em "Conferir rotas".</translation>
 <translation id="804225253087497565">O <ph name="BEGIN_LINK" />histórico de pesquisa<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser salvos na sua Conta do Google quando ela está conectada. É possível excluí-los a qualquer momento.</translation>
-<translation id="804427445359061970">Você encontrará as guias de outros dispositivos aqui</translation>
+<translation id="804427445359061970">Suas guias de outros dispositivos vão aparecer aqui</translation>
 <translation id="8049767396294520796">App de navegação padrão</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8059533439631660104">Recolhe a seção.</translation>
@@ -2059,7 +2059,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="94870150074703282">Excluir grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
-<translation id="954667170699278022">Lista de Leitura</translation>
+<translation id="954667170699278022">Lista de leitura</translation>
 <translation id="959066944189734975">Você está seguindo este canal: <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963102227019621224">Atividade na Web e de apps</translation>

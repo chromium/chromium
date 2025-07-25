@@ -22,7 +22,7 @@
 <translation id="1087176310396019910">Подозрение на спам</translation>
 <translation id="1087799850623149508">Чтобы переместить адресную строку вниз, нажмите на нее и удерживайте</translation>
 <translation id="1089606299949659462">Проверка выполнена</translation>
-<translation id="1094555143448724771">Синхронизируйте вкладки и историю. Тогда вам станут доступны вкладки, открытые на других ваших устройствах.</translation>
+<translation id="1094555143448724771">Синхронизируйте вкладки и историю, и вы сможете видеть здесь вкладки, открытые на других ваших устройствах.</translation>
 <translation id="1095761715416917775">Не теряйте доступ к синхронизированным данным</translation>
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
 <translation id="1103142993930332957">Помогите улучшить Chrome</translation>
@@ -390,7 +390,7 @@
 <translation id="2800066122460699237">Вкладка "<ph name="TAB_TITLE" />" будет закрыта.</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="281504910091592009">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
-<translation id="2819849308549746319">Отписаться от всех</translation>
+<translation id="2819849308549746319">Запретить все</translation>
 <translation id="2826576843404243001">Получать предупреждения о сайтах, которые не поддерживают защищенное подключение, до их открытия. Этот параметр нельзя изменить, поскольку включена Дополнительная защита.</translation>
 <translation id="2827278682606527653">Меню карточки из ленты открыто наполовину</translation>
 <translation id="2830783625999891985">Содержимое буфера обмена скрыто</translation>
@@ -1212,7 +1212,7 @@
 <translation id="6482749332252372425">Не удалось скачать файл <ph name="FILE_NAME" />, так как места для хранения данных недостаточно.</translation>
 <translation id="6486420406192123355">Этот PDF-файл расположен на сайте, подключение к которому не защищено.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Скачан 1 файл.}one{Скачан # файл.}few{Скачано # файла.}many{Скачано # файлов.}other{Скачано # файла.}}</translation>
-<translation id="6508722015517270189">Перезапустите Google Chrome.</translation>
+<translation id="6508722015517270189">Перезапустить Chrome</translation>
 <translation id="6513924416597632811">Скопировать ссылку на страницу результатов поиска по запросу: <ph name="SEARCH_QUERY" />. Источник: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
 <translation id="6527303717912515753">Поделиться</translation>
@@ -1524,10 +1524,10 @@
 <translation id="7774125747223422443">В соответствии с законами вашей страны вам необходимо выбрать браузер и поисковую систему по умолчанию.</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
 <translation id="777637629667389858">Если вы вошли в аккаунт, защищает вас во всех сервисах Google.</translation>
-<translation id="7778840695157240389">Новый контент появится позже.</translation>
+<translation id="7778840695157240389">Загляните сюда позже – здесь появятся интересные статьи.</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7792388396321542707">Закрыть доступ</translation>
-<translation id="780287761701992588">Синхронизируйте закладки, пароли и другую информацию на всех устройствах.</translation>
+<translation id="780287761701992588">Синхронизируйте закладки, пароли и другую информацию на всех своих устройствах.</translation>
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7808889146555843082">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />. Чтобы защитить от злоумышленников свои данные на сайте <ph name="SITE" />, удалите аккаунт или измените пароль.</translation>
 <translation id="7810647596859435254">Открыть с помощью...</translation>
@@ -1693,7 +1693,7 @@
 <translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Разрешения отозваны у 1 сайта}one{Разрешения отозваны у # сайта}few{Разрешения отозваны у # сайтов}many{Разрешения отозваны у # сайтов}other{Разрешения отозваны у # сайта}}</translation>
 <translation id="8453310803815879010">Запустить игру Dino</translation>
-<translation id="8455675988389029454">Синхронизируйте закладки, пароли и другую информацию на своих устройствах</translation>
+<translation id="8455675988389029454">Синхронизируйте закладки, пароли и другую информацию на всех своих устройствах.</translation>
 <translation id="8458413889418591446">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию истории и вкладок.</translation>
 <translation id="84594714173170813">Продолжайте использовать данные Chrome в аккаунте Google.</translation>
 <translation id="8460448946170646641">Проверка основных настроек конфиденциальности и безопасности</translation>

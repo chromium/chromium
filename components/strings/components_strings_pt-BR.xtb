@@ -603,7 +603,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2025186561304664664">O proxy está configurado em configuração automática.</translation>
 <translation id="2025891858974379949">Conteúdo não seguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
-<translation id="2027707238798802149">Card indisponível</translation>
+<translation id="2027707238798802149">Cartão indisponível</translation>
 <translation id="2029735183873159415">Ancestralidade e genealogia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e o firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do provedor de pesquisa padrão definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -907,7 +907,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2514548229949738417">Casa e jardim</translation>
 <translation id="2515629240566999685">Verificar o sinal na sua área</translation>
 <translation id="2515761554693942801">Você escolheu fazer a verificação com o Touch ID em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Esse provedor pode ter armazenado informações sobre sua forma de pagamento, mas você pode <ph name="LINK_TEXT" />.</translation>
-<translation id="2518584823165598232">Este card não está disponível. Entre em contato com o emissor dele.</translation>
+<translation id="2518584823165598232">Entre em contato com o emissor do cartão.</translation>
 <translation id="2519250377986324805">Saiba como</translation>
 <translation id="2521385132275182522">Grampo na parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
@@ -2366,7 +2366,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5021500396464456616">Entre em contato com a pessoa que enviou o link</translation>
 <translation id="5021557570875267742">Monitore preços com o Chrome</translation>
 <translation id="5023310440958281426">Verifique as políticas do administrador</translation>
-<translation id="5024171724744627792">Salve seu cartão para pagar mais rápido. Os detalhes do cartão são criptografados na sua Conta do Google.</translation>
+<translation id="5024171724744627792">Salve seu cartão para pagar mais rápido. Os detalhes dele são criptografados na sua Conta do Google.</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Um certificado raiz para "<ph name="SOFTWARE_NAME" />" é necessário, mas não está instalado. O administrador de TI deve revisar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir esse problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">Adicionar para comparação?</translation>
@@ -2500,7 +2500,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5254043433801397071">Otimizar o conteúdo da impressão</translation>
 <translation id="5255583962255635076">Políticas do navegador aplicadas ao seu perfil de trabalho</translation>
 <translation id="5255690596502591079">Capturar mesmo assim</translation>
-<translation id="5255771248404149177">O emissor do cartão precisa confirmar sua identidade</translation>
+<translation id="5255771248404149177">O emissor do cartão precisa confirmar que é realmente você</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar os arquivos para: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">O grupo de guias "<ph name="GROUP_NAME" />" não está mais disponível</translation>
@@ -2655,7 +2655,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5518352028556756716">A maioria dos sites não pode usar cookies de terceiros para rastrear você durante a navegação, e nenhum site pode usar esses cookies no modo de navegação anônima.</translation>
 <translation id="5519516356611866228">Com suas modificações</translation>
 <translation id="5519696598216267194">Papel (perfurado)</translation>
-<translation id="5520105693415771152">Suas informações atuais não são mostradas? Entre em contato com seu emissor para atualizar esses dados.</translation>
+<translation id="5520105693415771152">As informações acima não estão corretas? Entre em contato com o emissor do cartão para atualizar os dados.</translation>
 <translation id="5521782189689806907">Fabricação de armários</translation>
 <translation id="5523118979700054094">Nome da política</translation>
 <translation id="5523588073846127669">O comerciante não aceita este cartão virtual</translation>

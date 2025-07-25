@@ -33,7 +33,7 @@
 <translation id="1118569444314402022">Tekrar hoş geldiniz <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotoğraflar ve Görüntüler</translation>
 <translation id="1122068467107743258">İş</translation>
-<translation id="1126696498560056882">Bu cihazdaki hesapları yönetin</translation>
+<translation id="1126696498560056882">Bu cihazdaki hesapları yönet</translation>
 <translation id="1126809382673880764">Sizi tehlikeli web siteleri, indirmeler ve uzantılara karşı korumaz. Gmail ve Arama gibi diğer Google hizmetlerinde, mümkün olduğunda Güvenli Tarama korumasından yararlanmaya devam edersiniz.</translation>
 <translation id="1136104150802877429">Ürün yorumlarını gösterir</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> bildirimlerini kapat</translation>
@@ -2048,7 +2048,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9205189991633470489">Gizli mod kilidi</translation>
 <translation id="9206887540681440657">Hız</translation>
 <translation id="9223358826628549784">Kilitlenme raporu gönderildi.</translation>
-<translation id="926455622548529175">Geçiş Yap ve Sil</translation>
+<translation id="926455622548529175">Hesap Değiştir ve Sil</translation>
 <translation id="929748059769569925">Vurgulanan metin</translation>
 <translation id="932305336591073205">{count,plural, =1{Sekmeyi kapat}other{Sekmeleri kapat}}</translation>
 <translation id="932327136139879170">Ana Sayfa</translation>
