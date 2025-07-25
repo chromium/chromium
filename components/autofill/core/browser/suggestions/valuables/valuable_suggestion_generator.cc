@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 #include "components/autofill/core/browser/suggestions/valuables/valuable_suggestion_generator.h"
 
+#include <algorithm>
+#include <iterator>
 #include <vector>
 
+#include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -12,7 +15,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/origin.h"
+#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
