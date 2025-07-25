@@ -112,25 +112,9 @@ void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
         options);
   }
 
-  // Note: In tests this can synchronously call FirstRunServiceCompleted and
-  // self-destruct. So take the weak pointer first.
-  base::WeakPtr<LaunchWebAppCommand> weak_ptr = weak_factory_.GetWeakPtr();
-  provider_->ui_manager().WaitForFirstRunService(
-      *profile_, base::BindOnce(&LaunchWebAppCommand::FirstRunServiceCompleted,
-                                weak_factory_.GetWeakPtr())
-                     .Then(completion.CreateClosure()));
-
   std::move(completion)
-      .Done(base::BindOnce(&LaunchWebAppCommand::DoLaunch, weak_ptr));
-}
-
-void LaunchWebAppCommand::FirstRunServiceCompleted(bool success) {
-  GetMutableDebugValue().Set("first_run_success", success);
-  if (!success) {
-    CompleteAndSelfDestruct(CommandResult::kFailure, nullptr, nullptr,
-                            apps::LaunchContainer::kLaunchContainerNone);
-    return;
-  }
+      .Done(base::BindOnce(&LaunchWebAppCommand::DoLaunch,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void LaunchWebAppCommand::OnOsIntegrationSynchronized() {

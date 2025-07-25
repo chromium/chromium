@@ -368,12 +368,6 @@ void WebAppUiManagerImpl::LaunchWebApp(apps::AppLaunchParams params,
                           std::move(callback));
 }
 
-void WebAppUiManagerImpl::WaitForFirstRunService(
-    Profile& profile,
-    FirstRunServiceCompletedCallback callback) {
-  std::move(callback).Run(/*success=*/true);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void WebAppUiManagerImpl::MigrateLauncherState(
     const webapps::AppId& from_app_id,

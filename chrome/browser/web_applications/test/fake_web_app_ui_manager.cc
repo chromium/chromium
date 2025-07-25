@@ -160,12 +160,6 @@ void FakeWebAppUiManager::LaunchWebApp(apps::AppLaunchParams params,
   }
 }
 
-void FakeWebAppUiManager::WaitForFirstRunService(
-    Profile& profile,
-    FirstRunServiceCompletedCallback callback) {
-  std::move(callback).Run(/*success=*/true);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void FakeWebAppUiManager::MigrateLauncherState(
     const webapps::AppId& from_app_id,

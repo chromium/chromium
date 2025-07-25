@@ -116,9 +116,6 @@ class WebAppUiManagerImpl : public BrowserListObserver,
                     Profile& profile,
                     LaunchWebAppDebugValueCallback callback,
                     WithAppResources& lock) override;
-  void WaitForFirstRunService(
-      Profile& profile,
-      FirstRunServiceCompletedCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void MigrateLauncherState(const webapps::AppId& from_app_id,
                             const webapps::AppId& to_app_id,
