@@ -22,6 +22,10 @@ using content::BrowserThread;
 
 namespace android_webview {
 
+BASE_FEATURE(kWebViewPrefetchDisableBlockUntilHeadTimeout,
+             "WebViewPrefetchDisableBlockUntilHeadTimeout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 class AwPrefetchRequestStatusListener
     : public content::PrefetchRequestStatusListener {
  public:
@@ -153,7 +157,8 @@ int AwPrefetchManager::StartPrefetchRequest(
             additional_headers, std::move(request_status_listener),
             base::Seconds(ttl_in_sec_),
             /*should_append_variations_header=*/false,
-            /*should_disable_block_until_head_timeout=*/true);
+            base::FeatureList::IsEnabled(
+                kWebViewPrefetchDisableBlockUntilHeadTimeout));
 
     if (prefetch_handle) {
       return AddPrefetchHandle(std::move(prefetch_handle));
