@@ -102,6 +102,10 @@ class PasswordsPrivateDelegate
       int id,
       api::passwords_private::PasswordStoreSet from_stores) = 0;
 
+  // Removes the credential entry corresponding to the |id|. Any invalid id will
+  // be ignored.
+  virtual void RemoveBackupPassword(int id) = 0;
+
   // Removes the password exception entry corresponding to |id|. Any invalid id
   // will be ignored.
   virtual void RemovePasswordException(int id) = 0;

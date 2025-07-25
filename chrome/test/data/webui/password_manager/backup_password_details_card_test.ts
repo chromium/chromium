@@ -71,7 +71,6 @@ suite('BackupPasswordDetailsCardTest', function() {
     assertTrue(isVisible(card.$.deleteButton));
   });
 
-
   test('Copy password', async function() {
     const password = createPasswordEntry({
       url: 'test.com',
@@ -95,6 +94,24 @@ suite('BackupPasswordDetailsCardTest', function() {
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
 
     await flushTasks();
+  });
+
+  test('Delete password', async function() {
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      password: 'password',
+      backupPassword: {value: 'backup', creationDate: 'Mar 17'},
+    });
+
+    const card = await createCardElement(password);
+
+    assertTrue(isVisible(card.$.deleteButton));
+
+    card.$.deleteButton.click();
+
+    const params = await passwordManager.whenCalled('removeBackupPassword');
+    assertEquals(params.id, password.id);
   });
 
   test('Links properly displayed', async function() {

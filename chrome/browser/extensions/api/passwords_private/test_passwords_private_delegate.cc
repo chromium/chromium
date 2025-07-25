@@ -139,6 +139,10 @@ void TestPasswordsPrivateDelegate::RemoveCredential(
   SendSavedPasswordsList();
 }
 
+void TestPasswordsPrivateDelegate::RemoveBackupPassword(int id) {
+  remove_backup_password_ = true;
+}
+
 void TestPasswordsPrivateDelegate::RemovePasswordException(int id) {
   if (current_exceptions_.empty())
     return;

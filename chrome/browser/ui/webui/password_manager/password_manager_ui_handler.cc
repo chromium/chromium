@@ -36,3 +36,7 @@ void PasswordManagerUIHandler::CopyPlaintextBackupPassword(
   passwords_private_delegate_->CopyPlaintextBackupPassword(id, web_contents_,
                                                            std::move(callback));
 }
+
+void PasswordManagerUIHandler::RemoveBackupPassword(int id) {
+  passwords_private_delegate_->RemoveBackupPassword(id);
+}

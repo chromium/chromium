@@ -561,6 +561,15 @@ void PasswordsPrivateDelegateImpl::RemoveCredential(
   }
 }
 
+void PasswordsPrivateDelegateImpl::RemoveBackupPassword(int id) {
+  const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
+  if (!entry || !entry->backup_password) {
+    return;
+  }
+
+  saved_passwords_presenter_.RemoveBackupPassword(*entry);
+}
+
 void PasswordsPrivateDelegateImpl::RemovePasswordException(int id) {
   RemoveCredential(id,
                    api::passwords_private::PasswordStoreSet::kDeviceAndAccount);

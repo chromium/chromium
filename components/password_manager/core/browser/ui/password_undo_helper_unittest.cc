@@ -94,6 +94,35 @@ TEST_F(PasswordUndoHelperTest, UndoSingleForm) {
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
 }
 
+TEST_F(PasswordUndoHelperTest, UndoSingleBackupPasswordForm) {
+  PasswordForm form_without_backup = CreatePasswordForm();
+  PasswordForm form_with_backup(form_without_backup);
+  ProfileStore()->AddLogin(form_with_backup);
+
+  RunUntilIdle();
+
+  ASSERT_THAT(ProfileStore()->stored_passwords(),
+              ElementsAre(Pair(form_with_backup.signon_realm,
+                               ElementsAre(form_with_backup))));
+
+  // Remove backup
+  UndoHelper().StartGroupingActions();
+  ProfileStore()->UpdateLogin(form_without_backup);
+  UndoHelper().BackupPasswordRemoved(form_without_backup);
+  UndoHelper().EndGroupingActions();
+  RunUntilIdle();
+
+  EXPECT_THAT(ProfileStore()->stored_passwords(),
+              ElementsAre(Pair(form_with_backup.signon_realm,
+                               ElementsAre(form_without_backup))));
+
+  UndoHelper().Undo();
+  RunUntilIdle();
+  EXPECT_THAT(ProfileStore()->stored_passwords(),
+              ElementsAre(Pair(form_with_backup.signon_realm,
+                               ElementsAre(form_with_backup))));
+}
+
 // Tests that all removed forms are back after undo.
 TEST_F(PasswordUndoHelperTest, UndoMultipleForms) {
   PasswordForm form_1 = CreatePasswordForm();

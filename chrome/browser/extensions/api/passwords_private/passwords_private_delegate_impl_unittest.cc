@@ -1665,6 +1665,32 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                     PasswordManagerCredentialRemovalReason::kSettings));
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, RemoveBackupPassword) {
+  auto delegate = CreateDelegate();
+
+  PasswordForm password =
+      CreateSampleForm(PasswordForm::Store::kProfileStore, u"username");
+  password.signon_realm = "https://facebook.com";
+  password.url = GURL("https://facebook.com");
+  password.SetPasswordBackupNote(u"backup");
+
+  SetUpPasswordStores({password});
+
+  auto groups = delegate->GetCredentialGroups();
+  PasswordUiEntry& password_entry = groups.at(0).entries.at(0);
+
+  delegate->RemoveBackupPassword(password_entry.id);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(0));
+  ASSERT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
+  EXPECT_FALSE(profile_store_->stored_passwords()
+                   .begin()
+                   ->second.begin()
+                   ->GetPasswordBackup()
+                   .has_value());
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {
   auto delegate = CreateDelegate();
   PasswordForm password = CreateSampleForm();

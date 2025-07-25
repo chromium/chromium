@@ -1107,6 +1107,30 @@ TEST_F(SavedPasswordsPresenterTest, UndoRemoval) {
   EXPECT_THAT(presenter().GetSavedCredentials(), ElementsAre(credential));
 }
 
+TEST_F(SavedPasswordsPresenterTest, UndoBackupRemoval) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  CredentialUIEntry credential_without_backup = CredentialUIEntry(form);
+  form.SetPasswordBackupNote(u"backup");
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  CredentialUIEntry credential_with_backup = CredentialUIEntry(form);
+
+  ASSERT_THAT(presenter().GetSavedCredentials(),
+              ElementsAre(credential_with_backup));
+
+  presenter().RemoveBackupPassword(credential_with_backup);
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              ElementsAre(credential_without_backup));
+
+  presenter().UndoLastRemoval();
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              ElementsAre(credential_with_backup));
+}
+
 TEST_F(SavedPasswordsPresenterTest, DeleteAllData) {
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);

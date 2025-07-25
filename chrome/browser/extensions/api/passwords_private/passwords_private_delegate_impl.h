@@ -84,6 +84,7 @@ class PasswordsPrivateDelegateImpl
   void RemoveCredential(
       int id,
       api::passwords_private::PasswordStoreSet from_stores) override;
+  void RemoveBackupPassword(int id) override;
   void RemovePasswordException(int id) override;
   void UndoRemoveSavedPasswordOrException() override;
   void RequestPlaintextPassword(int id,

@@ -44,6 +44,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void RemoveCredential(
       int id,
       api::passwords_private::PasswordStoreSet from_store) override;
+  void RemoveBackupPassword(int id) override;
   void RemovePasswordException(int id) override;
   // Simplified version of undo logic, only use for testing.
   void UndoRemoveSavedPasswordOrException() override;
@@ -171,6 +172,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
     return copy_plaintext_backup_password_;
   }
 
+  bool remove_backup_password() const { return remove_backup_password_; }
+
  protected:
   ~TestPasswordsPrivateDelegate() override;
 
@@ -243,6 +246,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Used to track whether `CopyPlaintextBackupPassword` was called.
   bool copy_plaintext_backup_password_ = false;
+
+  // Used to track whether `RemoveBackupPassword` was called.
+  bool remove_backup_password_ = false;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

@@ -246,6 +246,14 @@ export interface PasswordManagerProxy {
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet): void;
 
   /**
+   * Should remove the backup password of a credential and notify that the list
+   * has changed.
+   * @param id The id for the credential being updated. No-op if |id| is not in
+   *     the list.
+   */
+  removeBackupPassword(id: number): void;
+
+  /**
    * Should remove the blocked site and notify that the list has changed.
    * @param id The id for the blocked url entry being removed. No-op if |id|
    *     is not in the list.
@@ -554,6 +562,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     chrome.passwordsPrivate.removeCredential(id, fromStores);
+  }
+
+  removeBackupPassword(id: number) {
+    this.handler.removeBackupPassword(id);
   }
 
   removeBlockedSite(id: number) {

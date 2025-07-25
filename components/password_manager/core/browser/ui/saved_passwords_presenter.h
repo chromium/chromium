@@ -129,6 +129,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Removes the credential and all its duplicates from the store.
   bool RemoveCredential(const CredentialUIEntry& credential);
 
+  // Removes the backup credential from the store.
+  bool RemoveBackupPassword(const CredentialUIEntry& credential);
+
   // Cancels the last removal operation.
   void UndoLastRemoval();
 

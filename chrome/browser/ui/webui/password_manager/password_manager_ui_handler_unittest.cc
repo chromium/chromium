@@ -101,4 +101,12 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   EXPECT_TRUE(test_delegate().copy_plaintext_backup_password());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest, RemoveBackupPassword_CallsDelegate) {
+  EXPECT_FALSE(test_delegate().remove_backup_password());
+
+  handler().RemoveBackupPassword(0);
+
+  EXPECT_TRUE(test_delegate().remove_backup_password());
+}
+
 }  // namespace password_manager
