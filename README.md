@@ -1,21 +1,74 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium Testing
+# Malabr
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+## How to install
 
-The project's web site is https://www.chromium.org.
+Currently on linux is supported.
 
-To check out the source code locally, don't use `git clone`! Instead,
-follow [the instructions on how to get the code](docs/get_the_code.md).
+### Install `depot_tools`
 
-Documentation in the source is rooted in [docs/README.md](docs/README.md).
+Clone the `depot_tools` repository:
 
-Learn how to [Get Around the Chromium Source Code Directory
-Structure](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
+```shell
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+```
 
-For historical reasons, there are some small top level directories. Now the
-guidance is that new top level directories are for product (e.g. Chrome,
-Android WebView, Ash). Even if these products have multiple executables, the
-code should be in subdirectories of the product.
+Add `depot_tools` to the beginning of your `PATH` (you will probably want to put
+this in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
+`/path/to/depot_tools`:
 
-If you found a bug, please file it at https://crbug.com/new.
+```shell
+export PATH="/path/to/depot_tools:$PATH"
+```
+
+When cloning `depot_tools` to your home directory **do not** use `~` on PATH,
+otherwise `gclient runhooks` will fail to run. Rather, you should use either
+`$HOME` or the absolute path:
+
+```shell
+export PATH="${HOME}/depot_tools:$PATH"
+```
+
+
+
+### Fetch the Repo
+
+```bash 
+mkdir malabr
+gclient config --name=src https://github.com/bivas-biswas/malabr.git
+gclient sync --no-history
+```
+
+### Install additional build dependencies
+
+Once you have checked out the code, and assuming you're using Ubuntu, run
+[build/install-build-deps.sh](/build/install-build-deps.sh)
+
+```shell
+./build/install-build-deps.sh
+```
+
+### Build setup 
+
+```bash
+cd src
+gclient runhooks
+```
+
+###  Configure build using gn
+
+```bash
+gn gen out/Default
+```
+
+### Build Chromium
+
+```bash
+autoninja -C out/Default chrome
+```
+
+### Run Chromium
+
+```bash
+out/Default/chrome --enable-logging=stderr --v=1
+```
+

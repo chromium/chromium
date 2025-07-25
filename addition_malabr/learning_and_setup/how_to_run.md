@@ -15,13 +15,7 @@ gn gen out/Default
 ### 3. Build the Chromium
 
 ```bash
-ninja -C out/Default chrome
-```
-
-You can also build only your target if you're testing an extension:
-
-```bash
-ninja -C out/Default extensions
+autoninja -C out/Default chrome
 ```
 
 ### 4. Run Chrome with:
