@@ -84,14 +84,13 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
   auto mailbox = Mailbox::Generate();
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
     // the release ids as seen by the service.
     ScheduleGpuTask(
         base::BindOnce(
             &SharedImageInterfaceInProcessBase::CreateSharedImageOnGpuThread,
             this, mailbox, si_info, surface_handle),
-        /*sync_token_fences=*/{}, sync_token);
+        /*sync_token_fences=*/{}, GenNextSyncTokenLocked());
   }
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info, GenCreationSyncToken(), holder_, gfx::EMPTY_BUFFER);
@@ -129,14 +128,13 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
   std::vector<uint8_t> pixel_data_copy(pixel_data.begin(), pixel_data.end());
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
     // the release ids as seen by the service.
     ScheduleGpuTask(
         base::BindOnce(&SharedImageInterfaceInProcessBase::
                            CreateSharedImageWithDataOnGpuThread,
                        this, mailbox, si_info, std::move(pixel_data_copy)),
-        /*sync_token_fences=*/{}, sync_token);
+        /*sync_token_fences=*/{}, GenNextSyncTokenLocked());
   }
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info, GenCreationSyncToken(), holder_, gfx::EMPTY_BUFFER);
@@ -179,7 +177,6 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
     // the release ids as seen by the service.
     ScheduleGpuTask(
@@ -187,7 +184,7 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
                            CreateSharedImageWithBufferUsageOnGpuThread,
                        this, mailbox, si_info_copy, surface_handle,
                        buffer_usage),
-        /*sync_token_fences=*/{}, sync_token);
+        /*sync_token_fences=*/{}, GenNextSyncTokenLocked());
   }
 
   auto handle_info = GetGpuMemoryBufferHandleInfo(mailbox);
@@ -294,14 +291,13 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
     // the release ids as seen by the service.
     ScheduleGpuTask(
         base::BindOnce(&SharedImageInterfaceInProcessBase::
                            CreateSharedImageWithBufferOnGpuThread,
                        this, mailbox, si_info_copy, std::move(buffer_handle)),
-        /*sync_token_fences=*/{}, sync_token);
+        /*sync_token_fences=*/{}, GenNextSyncTokenLocked());
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
@@ -324,14 +320,13 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
   auto gmb_type = buffer_handle.type;
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
     // the release ids as seen by the service.
     ScheduleGpuTask(
         base::BindOnce(&SharedImageInterfaceInProcessBase::
                            CreateSharedImageWithBufferOnGpuThread,
                        this, mailbox, si_info, std::move(buffer_handle)),
-        /*sync_token_fences=*/{}, sync_token);
+        /*sync_token_fences=*/{}, GenNextSyncTokenLocked());
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
@@ -357,13 +352,12 @@ SharedImageInterfaceInProcessBase::CreateSharedImageForSoftwareCompositor(
   auto mailbox = Mailbox::Generate();
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
     // the release ids as seen by the service.
     ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcessBase::
                                        CreateSharedImageWithBufferOnGpuThread,
                                    this, mailbox, si_info, std::move(handle)),
-                    /*sync_token_fences=*/{}, sync_token);
+                    /*sync_token_fences=*/{}, GenNextSyncTokenLocked());
   }
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info, GenCreationSyncToken(), holder_, std::move(mapping));
@@ -439,8 +433,7 @@ void SharedImageInterfaceInProcessBase::UpdateSharedImage(
       base::BindOnce(
           &SharedImageInterfaceInProcessBase::UpdateSharedImageOnGpuThread,
           this, mailbox),
-      /*sync_token_fences=*/{sync_token},
-      MakeSyncToken(next_fence_sync_release_++));
+      /*sync_token_fences=*/{sync_token}, GenNextSyncTokenLocked());
 }
 
 void SharedImageInterfaceInProcessBase::UpdateSharedImageOnGpuThread(
@@ -492,6 +485,15 @@ void SharedImageInterfaceInProcessBase::DestroySharedImageOnGpuThread(
   }
 }
 
+SyncToken SharedImageInterfaceInProcessBase::GenNextSyncToken() {
+  base::AutoLock lock(lock_);
+  return GenNextSyncTokenLocked();
+}
+
+SyncToken SharedImageInterfaceInProcessBase::GenNextSyncTokenLocked() {
+  return MakeSyncToken(next_fence_sync_release_++);
+}
+
 SyncToken SharedImageInterfaceInProcessBase::GenUnverifiedSyncToken() {
   base::AutoLock lock(lock_);
   return MakeSyncToken(next_fence_sync_release_ - 1);
@@ -513,8 +515,7 @@ void SharedImageInterfaceInProcessBase::WaitSyncToken(
   base::AutoLock lock(lock_);
 
   ScheduleGpuTask(base::DoNothing(),
-                  /*sync_token_fences=*/{sync_token},
-                  MakeSyncToken(next_fence_sync_release_++));
+                  /*sync_token_fences=*/{sync_token}, GenNextSyncTokenLocked());
 }
 
 scoped_refptr<ClientSharedImage>

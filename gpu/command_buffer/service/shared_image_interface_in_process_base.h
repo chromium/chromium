@@ -26,6 +26,12 @@ class SharedImageFactory;
 class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
     : public SharedImageInterface {
  public:
+  // Generate the next sequence token in the process's sequence
+  SyncToken GenNextSyncToken();
+
+  // Include default-args overloads from superclass.
+  using SharedImageInterface::CreateSharedImage;
+
   // SharedImageInterface:
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
@@ -175,6 +181,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
   SyncToken MakeSyncToken(uint64_t release_id) {
     return {namespace_id_, command_buffer_id_, release_id};
   }
+
+  // Internal version of `GenNextSyncToken()` for when `lock_` is already held
+  SyncToken GenNextSyncTokenLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Generate a sync token for `CreateSharedImage()`, with verification
   // dependent on `verify_creation_sync_token_`
