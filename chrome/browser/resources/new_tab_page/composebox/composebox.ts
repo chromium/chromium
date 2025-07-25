@@ -206,6 +206,8 @@ export class ComposeboxElement extends I18nMixinLit
     if ((changedProperties as Map<PropertyKey, unknown>)
             .has('showErrorScrim_') &&
         this.showErrorScrim_) {
+      const announcer = getAnnouncerInstance();
+      announcer.announce(this.errorMessage_);
       const dismissErrorButton =
           this.shadowRoot.querySelector<HTMLElement>('#dismissErrorButton');
       if (dismissErrorButton) {
@@ -306,6 +308,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected onCancelClick_() {
     if (this.$.input.value.trim().length > 0 || this.files_.size > 0) {
       this.$.input.value = '';
+      this.input_ = '';
       this.files_ = new Map();
       this.submitEnabled_ = false;
       this.pageHandler_.clearFiles();
