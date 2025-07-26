@@ -19,7 +19,7 @@ source_set("interactive_ui_tests") {
     "//chrome/test/base/ash/interactive/vpn:interactive_ui_tests",
     "//chrome/test/base/ash/interactive/wifi:interactive_ui_tests",
     "//content/test:test_support",
-    "//url:url",
+    "//url",
   ]
 }
 

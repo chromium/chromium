@@ -35,7 +35,7 @@ static_library("child_accounts") {
   public_deps = [
     "//base",
     "//net:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 }
 
