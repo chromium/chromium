@@ -1068,4 +1068,9 @@ BASE_DECLARE_FEATURE(kDiamondPrototype);
 // Whether the diamond prototype is enabled.
 bool IsDiamondPrototypeEnabled();
 
+// Feature flag for the Default Browser off-cycle promo.
+BASE_DECLARE_FEATURE(kIOSDefaultBrowserOffCyclePromo);
+
+bool IsDefaultBrowserOffCyclePromoEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

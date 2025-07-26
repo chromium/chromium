@@ -1296,3 +1296,11 @@ bool IsDiamondPrototypeEnabled() {
   }
   return base::FeatureList::IsEnabled(kDiamondPrototype);
 }
+
+BASE_FEATURE(kIOSDefaultBrowserOffCyclePromo,
+             "IOSDefaultBrowserOffCyclePromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDefaultBrowserOffCyclePromoEnabled() {
+  return base::FeatureList::IsEnabled(kIOSDefaultBrowserOffCyclePromo);
+}

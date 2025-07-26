@@ -437,6 +437,11 @@ const char kDefaultBrowserBannerPromoDescription[] =
     "When enabled, the default browser banner promo will show when conditions "
     "are met.";
 
+const char kDefaultBrowserOffCyclePromoName[] =
+    "Default Browser off-cycle promo";
+const char kDefaultBrowserOffCyclePromoDescription[] =
+    "When enabled, an off-cycle default browser promo will be shown.";
+
 const char kDefaultBrowserPromoPropensityModelName[] =
     "Default Browser promo propensity model";
 const char kDefaultBrowserPromoPropensityModelDescription[] =
