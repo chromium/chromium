@@ -30,16 +30,6 @@
       Customize Keyboard Shortcut...
     </message>
   </if>
-  <if expr="is_macosx">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the Gemini status icon from the menu bar.">
-      Don't show Gemini in menu bar
-    </message>
-  </if>
-  <if expr="is_win or is_linux">
-    <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the Gemini status icon from the notifications area.">
-      Don't show Gemini in notifications area
-    </message>
-  </if>
   <if expr="is_win or is_linux">
     <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" translateable="false" desc="This is the menu item for exiting Chrome.">
       Exit
