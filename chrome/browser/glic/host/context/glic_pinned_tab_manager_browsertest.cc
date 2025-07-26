@@ -119,7 +119,7 @@ class GlicPinnedTabManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_handle_);
 
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
-        browser()->profile(), nullptr);
+        browser()->profile());
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
   }

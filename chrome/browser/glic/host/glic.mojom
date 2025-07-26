@@ -247,6 +247,7 @@ struct WebClientInitialState {
   // Whether the panel is active. See `NotifyPanelActiveChange`.
   bool panel_is_active;
   bool browser_is_open;
+  bool browser_is_active;
   // Reflects the enabling state of always-detached mode.
   bool always_detached_mode;
   bool enable_zero_state_suggestions;
@@ -922,6 +923,12 @@ interface WebClient {
 
   // True if the browser has at least one open window.
   NotifyBrowserIsOpenChanged(bool browser_is_open);
+
+  // The browser (or at least, some browser window which is potentially
+  // relevant to this glic panel) has become active or inactive (in the sense
+  // of visibility and focus). Some activity, such as responsiveness checks,
+  // may be paused or resumed accordingly.
+  NotifyBrowserIsActiveChanged(bool browser_active);
 
   // Notify that the closed captioning setting has changed.
   NotifyClosedCaptioningSettingChanged(bool enabled);

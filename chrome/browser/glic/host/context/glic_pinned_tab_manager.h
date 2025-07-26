@@ -21,12 +21,10 @@ class BrowserTabStripTracker;
 
 namespace glic {
 
-class GlicSharingManager;
-
 // Manages a collection of tabs that have been selected to be shared.
 class GlicPinnedTabManager : public TabStripModelObserver {
  public:
-  GlicPinnedTabManager(Profile* profile, GlicSharingManager* sharing_manager);
+  explicit GlicPinnedTabManager(Profile* profile);
   ~GlicPinnedTabManager() override;
 
   // Registers a callback to be invoked when the collection of pinned tabs
@@ -157,10 +155,6 @@ class GlicPinnedTabManager : public TabStripModelObserver {
 
   // Enables searching for pin_candidates.
   raw_ptr<Profile> profile_;
-
-  // Enables access to information about other sharing modes and common sharing
-  // functionality.
-  raw_ptr<GlicSharingManager> sharing_manager_;
 
   // Using a vector lets us store the pinned tabs in the order that they are
   // pinned. Searching for a pinned tab is currently linear.

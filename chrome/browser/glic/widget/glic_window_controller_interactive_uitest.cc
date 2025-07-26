@@ -332,6 +332,67 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                                      1);
 }
 
+// ASAN builds are slow enough that the responsiveness check actually sometimes
+// triggers just while setting this up, before we deactivate the window.
+// Rather than adjust the timeouts to make this test even slower, just disable
+// it for those builds (as well as similarly slow sanitizer builds).
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+#define MAYBE_ClientUnresponsiveWhileBrowserNotActive \
+  DISABLED_ClientUnresponsiveWhileBrowserNotActive
+#else
+#define MAYBE_ClientUnresponsiveWhileBrowserNotActive \
+  ClientUnresponsiveWhileBrowserNotActive
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       MAYBE_ClientUnresponsiveWhileBrowserNotActive) {
+  const base::TimeDelta kTimeToWait = base::Seconds(7);
+  ASSERT_GT(kTimeToWait,
+            base::Milliseconds(
+                features::kGlicClientResponsivenessCheckTimeoutMs.Get() +
+                features::kGlicClientResponsivenessCheckIntervalMs.Get()));
+
+  // This is another window to which we can give focus. It's not otherwise
+  // guaranteed that we can reliably make all relevant windows inactive
+  // (this is subtle and platform-specific, unfortunately).
+  auto other_widget = std::make_unique<views::Widget>();
+
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      ObserveState(test::internal::kGlicAppState, &host()),
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady),
+      ObserveState(views::test::kCurrentWidgetFocus),
+      WithView(kBrowserViewElementId,
+               [&](BrowserView* browser_view) {
+                 views::Widget::InitParams params{
+                     views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW};
+                 params.bounds = gfx::Rect(0, 0, 200, 200);
+                 params.context = browser_view->GetWidget()->GetNativeWindow();
+                 other_widget->Init(std::move(params));
+                 other_widget->Show();
+                 browser_view->GetWidget()->Deactivate();
+                 other_widget->Activate();
+               }),
+      WaitForState(views::test::kCurrentWidgetFocus, other_widget.get()),
+      // This click dispatches via JavaScript and doesn't change focus.
+      ClickMockGlicElement(kMockGlicClientHangButton, true), Wait(kTimeToWait),
+      CheckState(test::internal::kGlicAppState, mojom::WebUiState::kReady),
+      Do([&] {
+        histogram_tester.ExpectTotalCount(
+            "Glic.Host.WebClientUnresponsiveState", 0);
+      }),
+      Do([&] { browser()->window()->Activate(); }),
+      WaitForState(test::internal::kGlicAppState,
+                   mojom::WebUiState::kUnresponsive),
+      Do([&] {
+        // ENTERED_FROM_CUSTOM_HEARTBEAT (1)
+        histogram_tester.ExpectBucketCount(
+            "Glic.Host.WebClientUnresponsiveState", 1, 1);
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        InvalidatedAccountWhileLoadingGlic) {
   RunTestSequence(

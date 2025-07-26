@@ -16,8 +16,8 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_pin_candidate_comparator.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -210,11 +210,8 @@ class GlicPinnedTabManager::UpdateThrottler {
   base::TimeDelta current_delay_ = kInitialDelay;
 };
 
-GlicPinnedTabManager::GlicPinnedTabManager(Profile* profile,
-                                           GlicSharingManager* sharing_manager)
-    : profile_(profile),
-      sharing_manager_(sharing_manager),
-      max_pinned_tabs_(kDefaultMaxPinnedTabs) {
+GlicPinnedTabManager::GlicPinnedTabManager(Profile* profile)
+    : profile_(profile), max_pinned_tabs_(kDefaultMaxPinnedTabs) {
   pin_candidate_updater_ = std::make_unique<UpdateThrottler>(
       base::BindRepeating(&GlicPinnedTabManager::SendPinCandidatesUpdate,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -458,7 +455,7 @@ void GlicPinnedTabManager::OnTabWillClose(tabs::TabHandle tab_handle) {
 
 bool GlicPinnedTabManager::IsBrowserValidForSharing(
     BrowserWindowInterface* browser_window) {
-  return sharing_manager_->IsBrowserValidForSharing(browser_window);
+  return IsBrowserValidForSharingInProfile(browser_window, profile_);
 }
 
 }  // namespace glic

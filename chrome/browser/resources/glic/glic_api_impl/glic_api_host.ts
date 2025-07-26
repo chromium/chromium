@@ -204,6 +204,12 @@ class WebClientImpl implements WebClientInterface {
         'glicWebClientBrowserIsOpenChanged', {browserIsOpen});
   }
 
+  notifyBrowserIsActiveChanged(browserIsActive: boolean): void {
+    // This isn't forwarded to the actual web client yet, as it's currently
+    // only needed for the responsiveness logic, which is here.
+    this.host.setBrowserIsActive(browserIsActive);
+  }
+
   notifyOsHotkeyStateChanged(hotkey: string): void {
     this.sender.requestNoResponse(
         'glicWebClientNotifyOsHotkeyStateChanged', {hotkey});
@@ -301,6 +307,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         this.receiver.$.bindNewPipeAndPassRemote());
     const chromeVersion = initialState.chromeVersion.components;
     const hostCapabilities = initialState.hostCapabilities;
+    this.host.setBrowserIsActive(initialState.browserIsActive);
 
     return {
       initialState: replaceProperties(initialState, {
@@ -927,6 +934,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private waitingOnPanelWillOpenValue = false;
   private clientActiveObs = ObservableValue.withValue(false);
   private panelOpenState = PanelOpenState.CLOSED;
+  private browserIsActive = true;
   private hasShownDebuggerAttachedWarning = false;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
 
@@ -987,10 +995,18 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
   }
 
-  isClientActive() {
-    // TODO - crbug.com/416530284: Add check for Chrome window in focus.
+  setBrowserIsActive(browserIsActive: boolean) {
+    this.browserIsActive = browserIsActive;
+    this.clientActiveObs.assignAndSignal(this.isClientActive());
+  }
+
+  // Returns true if the user might be interacting with the client.
+  // That is, the panel is open, not in an error state, and either the panel
+  // itself is focused or a browser window it could be accessing is.
+  private isClientActive() {
     return this.panelOpenState === PanelOpenState.OPEN &&
-        this.webClientState.getCurrentValue() !== WebClientState.ERROR;
+        this.webClientState.getCurrentValue() !== WebClientState.ERROR &&
+        this.browserIsActive;
   }
 
   // Called when the web client is initialized.
@@ -1001,6 +1017,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   webClientInitializeFailed() {
+    console.warn('GlicApiHost: web client initialize failed');
     this.detailedWebClientState =
         DetailedWebClientState.WEB_CLIENT_INITIALIZE_FAILED;
     this.setWebClientState(WebClientState.ERROR);
@@ -1100,6 +1117,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
         const ignoreUnresponsiveClient =
             await this.shouldAllowUnresponsiveClient();
         if (!ignoreUnresponsiveClient) {
+          console.warn('GlicApiHost: web client is unresponsive');
           this.detailedWebClientState =
               DetailedWebClientState.TEMPORARY_UNRESPONSIVE;
           this.setWebClientState(WebClientState.UNRESPONSIVE);
@@ -1137,6 +1155,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   startWebClientErrorTimer() {
     this.webClientErrorTimer.start(() => {
+      console.warn('GlicApiHost: web client is permanently unresponsive');
       this.detailedWebClientState =
           DetailedWebClientState.PERMANENT_UNRESPONSIVE;
       this.setWebClientState(WebClientState.ERROR);

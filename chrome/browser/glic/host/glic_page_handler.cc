@@ -534,6 +534,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
+    focused_browser_changed_subscription_ =
+        glic_sharing_manager_->AddFocusedBrowserChangedCallback(
+            base::BindRepeating(&GlicWebClientHandler::OnFocusedBrowserChanged,
+                                base::Unretained(this)));
+
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
     system_permission_settings_observation_ =
@@ -585,6 +590,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
+    browser_active_ = glic_sharing_manager_->GetFocusedBrowser();
+    state->browser_is_active = browser_active_;
 
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
@@ -1380,6 +1387,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         glic::mojom::FocusedTabData::NewFocusedTab(tab_data->Clone()));
   }
 
+  void OnFocusedBrowserChanged(BrowserWindowInterface* browser_interface) {
+    const bool is_browser_active = browser_interface != nullptr;
+    if (browser_active_ == is_browser_active) {
+      return;
+    }
+    browser_active_ = is_browser_active;
+    web_client_->NotifyBrowserIsActiveChanged(is_browser_active);
+  }
+
   bool ShouldDoApiActivationGating() const {
     return base::FeatureList::IsEnabled(features::kGlicApiActivationGating) &&
            !active_state_calculator_.IsActive();
@@ -1416,6 +1432,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   glic::mojom::FocusedTabDataPtr cached_focused_tab_data_ = nullptr;
+  bool browser_active_ = false;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
@@ -1429,6 +1446,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription pinned_tab_data_changed_subscription_;
   base::CallbackListSubscription focus_data_changed_subscription_;
+  base::CallbackListSubscription focused_browser_changed_subscription_;
   base::CallbackListSubscription actor_task_state_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
