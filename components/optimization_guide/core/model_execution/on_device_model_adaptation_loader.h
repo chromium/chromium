@@ -52,9 +52,13 @@ enum class OnDeviceModelAdaptationAvailability {
   // The model execution feature was not recently used.
   kFeatureNotRecentlyUsed = 7,
 
+  // The received adaptation model was incompatible with the base model's
+  // performance hints.
+  kAdaptationModelHintsIncompatible = 8,
+
   // This must be kept in sync with OnDeviceModelAdaptationAvailability in
   // optimization/enums.xml.
-  kMaxValue = kFeatureNotRecentlyUsed,
+  kMaxValue = kAdaptationModelHintsIncompatible,
 };
 
 // Indication of why a feature adaptation is not available.

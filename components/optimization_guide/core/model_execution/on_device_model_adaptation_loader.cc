@@ -79,9 +79,26 @@ MaybeAdaptationMetadata OnDeviceModelAdaptationMetadataCreated(
   return std::move(metadata.value());
 }
 
+bool ArePerformanceHintsCompatible(
+    const proto::OnDeviceBaseModelMetadata& adaptation_metadata,
+    const OnDeviceBaseModelSpec& base_spec) {
+  // If the adaptation model has no specific hints, it supports all.
+  if (adaptation_metadata.supported_performance_hints_size() == 0) {
+    return true;
+  }
+
+  // Check if the adaptation model supports any of the base model's hints.
+  for (const auto hint : adaptation_metadata.supported_performance_hints()) {
+    if (base::Contains(base_spec.supported_performance_hints, hint)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::optional<OnDeviceModelAdaptationAvailability>
 DetectBaseModelIncompatibility(const optimization_guide::ModelInfo& model_info,
-                               const OnDeviceBaseModelSpec registered_spec) {
+                               const OnDeviceBaseModelSpec& registered_spec) {
   const std::optional<proto::Any>& metadata = model_info.GetModelMetadata();
   if (!metadata.has_value()) {
     return OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid;
@@ -97,6 +114,11 @@ DetectBaseModelIncompatibility(const optimization_guide::ModelInfo& model_info,
         supported_model_spec->base_model_version() !=
             registered_spec.model_version) {
       return OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible;
+    }
+    if (!ArePerformanceHintsCompatible(*supported_model_spec,
+                                       registered_spec)) {
+      return OnDeviceModelAdaptationAvailability::
+          kAdaptationModelHintsIncompatible;
     }
   }
   return std::nullopt;
