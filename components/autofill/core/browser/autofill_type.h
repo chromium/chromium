@@ -77,10 +77,11 @@ class AutofillType {
   std::string_view ToStringView() const;
 
  private:
-  // The server-native field type, or UNKNOWN_TYPE if unset.
+  // The default values indicate that the respective value is not set.
+  // At most one of them must be set at any time. That is, the following
+  // invariant must hold at all times:
+  //   server_type_ == UNKNOWN_TYPE || html_type_ == HtmlFieldType::kUnspecified
   FieldType server_type_ = UNKNOWN_TYPE;
-
-  // The HTML autocomplete field type, if set.
   HtmlFieldType html_type_ = HtmlFieldType::kUnspecified;
 };
 

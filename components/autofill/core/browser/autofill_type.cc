@@ -64,12 +64,9 @@ FieldType AutofillType::GetStorableType() const {
 }
 
 std::string_view AutofillType::ToStringView() const {
-  const bool is_unknown = server_type_ == UNKNOWN_TYPE &&
-                          (html_type_ == HtmlFieldType::kUnspecified ||
-                           html_type_ == HtmlFieldType::kUnrecognized);
-  return is_unknown                     ? "UNKNOWN_TYPE"
-         : server_type_ != UNKNOWN_TYPE ? FieldTypeToStringView(server_type_)
-                                        : FieldTypeToStringView(html_type_);
+  return html_type_ != HtmlFieldType::kUnspecified
+             ? FieldTypeToStringView(html_type_)
+             : FieldTypeToStringView(server_type_);
 }
 
 }  // namespace autofill
