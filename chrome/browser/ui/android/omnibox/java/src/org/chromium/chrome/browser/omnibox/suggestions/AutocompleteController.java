@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -120,8 +121,8 @@ public class AutocompleteController {
                         url.getSpec(),
                         pageClassification,
                         preventInlineAutocomplete,
-                        false,
-                        false,
+                        OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
+                        OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
                         true);
     }
 
