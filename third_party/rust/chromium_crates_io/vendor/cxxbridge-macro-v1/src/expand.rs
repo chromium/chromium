@@ -360,7 +360,6 @@ fn expand_enum(enm: &Enum) -> TokenStream {
         #[repr(transparent)]
         #enum_def
 
-        #[automatically_derived]
         #[allow(non_upper_case_globals)]
         impl #ident {
             #(#variants)*
@@ -777,7 +776,6 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
                 &elided_generics
             };
             quote_spanned! {ident.span()=>
-                #[automatically_derived]
                 impl #generics #receiver_ident #receiver_generics {
                     #doc
                     #attrs

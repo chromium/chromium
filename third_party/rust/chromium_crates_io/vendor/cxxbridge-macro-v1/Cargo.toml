@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxxbridge-macro"
-version = "1.0.160"
+version = "1.0.161"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
@@ -34,6 +34,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
 
 [package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
@@ -41,7 +42,6 @@ rustdoc-args = [
     "--extern-html-root-url=std=https://doc.rust-lang.org",
     "--extern-html-root-url=proc_macro=https://doc.rust-lang.org",
 ]
-targets = ["x86_64-unknown-linux-gnu"]
 
 [features]
 experimental-async-fn = []

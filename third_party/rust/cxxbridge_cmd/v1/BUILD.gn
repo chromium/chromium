@@ -73,7 +73,7 @@ cargo_crate("cxxbridge") {
   cargo_pkg_description =
       "C++ code generator for integrating `cxx` crate into a non-Cargo build."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.160"
+  cargo_pkg_version = "1.0.161"
 
   allow_unsafe = false
 

@@ -1,3 +1,4 @@
+/.buckconfig.local
 /.buckd
 /bazel-bin
 /bazel-cxx
