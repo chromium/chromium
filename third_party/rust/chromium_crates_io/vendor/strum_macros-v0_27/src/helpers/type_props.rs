@@ -24,8 +24,10 @@ pub struct StrumTypeProperties {
     pub discriminant_vis: Option<Visibility>,
     pub use_phf: bool,
     pub prefix: Option<LitStr>,
+    pub suffix: Option<LitStr>,
     pub enum_repr: Option<TokenStream>,
     pub const_into_str: bool,
+    pub discriminant_docs: Vec<LitStr>,
 }
 
 impl HasTypeProperties for DeriveInput {
@@ -42,6 +44,7 @@ impl HasTypeProperties for DeriveInput {
         let mut use_phf_kw = None;
         let mut crate_module_path_kw = None;
         let mut prefix_kw = None;
+        let mut suffix_kw = None;
         let mut const_into_str = None;
 
         for meta in strum_meta {
@@ -88,6 +91,14 @@ impl HasTypeProperties for DeriveInput {
 
                     prefix_kw = Some(kw);
                     output.prefix = Some(prefix);
+                }
+                EnumMeta::Suffix { suffix, kw } => {
+                    if let Some(fst_kw) = suffix_kw {
+                        return Err(occurrence_error(fst_kw, kw, "suffix"));
+                    }
+
+                    suffix_kw = Some(kw);
+                    output.suffix = Some(suffix);
                 }
                 EnumMeta::ParseErrTy { path, kw } => {
                     if let Some(fst_kw) = parse_err_ty_kw {
@@ -138,6 +149,9 @@ impl HasTypeProperties for DeriveInput {
 
                     vis_kw = Some(kw);
                     output.discriminant_vis = Some(vis);
+                }
+                EnumDiscriminantsMeta::Doc { doc, .. } => {
+                    output.discriminant_docs.push(doc);
                 }
                 EnumDiscriminantsMeta::Other { path, nested } => {
                     output.discriminant_others.push(quote! { #path(#nested) });

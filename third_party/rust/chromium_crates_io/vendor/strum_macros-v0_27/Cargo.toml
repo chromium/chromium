@@ -13,8 +13,14 @@
 edition = "2021"
 rust-version = "1.66.1"
 name = "strum_macros"
-version = "0.27.1"
+version = "0.27.2"
 authors = ["Peter Glotfelty <peter.glotfelty@microsoft.com>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Helpful macros for working with enums and strings"
 homepage = "https://github.com/Peternator7/strum"
 documentation = "https://docs.rs/strum"
@@ -34,6 +40,7 @@ repository = "https://github.com/Peternator7/strum"
 
 [lib]
 name = "strum_macros"
+path = "src/lib.rs"
 proc-macro = true
 
 [dependencies.heck]
@@ -43,9 +50,6 @@ version = "0.5.0"
 version = "1.0"
 
 [dependencies.quote]
-version = "1.0"
-
-[dependencies.rustversion]
 version = "1.0"
 
 [dependencies.syn]

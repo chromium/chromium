@@ -144,7 +144,7 @@ pub fn enum_table_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
 
             #[doc = #doc_closure]
             #[inline]
-            #vis fn from_closure<F: Fn(#name)->T>(func: F) -> #table_name<T> {
+            #vis fn from_closure<F: FnMut(#name)->T>(mut func: F) -> #table_name<T> {
               #table_name {
                 #(#closure_fields)*
               }
@@ -152,7 +152,7 @@ pub fn enum_table_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
 
             #[doc = #doc_transform]
             #[inline]
-            #vis fn transform<U, F: Fn(#name, &T)->U>(&self, func: F) -> #table_name<U> {
+            #vis fn transform<U, F: FnMut(#name, &T)->U>(&self, mut func: F) -> #table_name<U> {
               #table_name {
                 #(#transform_fields)*
               }

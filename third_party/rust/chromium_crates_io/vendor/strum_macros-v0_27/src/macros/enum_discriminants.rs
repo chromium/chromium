@@ -30,6 +30,13 @@ pub fn enum_discriminants_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, #(#derives),*)]
     };
 
+    // Create #[doc] attrs for new generated type.
+    let docs = type_properties.discriminant_docs;
+
+    let docs = quote! {
+        #(#[doc = #docs])*
+    };
+
     // Work out the name
     let default_name = syn::Ident::new(&format!("{}Discriminants", name), Span::call_site());
 
@@ -129,10 +136,16 @@ pub fn enum_discriminants_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         })
         .collect::<Vec<_>>();
 
-    let from_fn_body = quote! { match val { #(#arms),* } };
+    let from_fn_body = if variants.is_empty() {
+        //this method on empty enum is impossible to be called. it is therefor left empty
+        quote! { unreachable!()}
+    } else {
+        quote! { match val { #(#arms),* } }
+    };
 
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
     let impl_from = quote! {
+        #[automatically_derived]
         impl #impl_generics ::core::convert::From< #name #ty_generics > for #discriminants_name #where_clause {
             #[inline]
             fn from(val: #name #ty_generics) -> #discriminants_name {
@@ -151,6 +164,7 @@ pub fn enum_discriminants_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         let (impl_generics, _, _) = generics.split_for_impl();
 
         quote! {
+            #[automatically_derived]
             impl #impl_generics ::core::convert::From< #enum_life #name #ty_generics > for #discriminants_name #where_clause {
                 #[inline]
                 fn from(val: #enum_life #name #ty_generics) -> #discriminants_name {
@@ -164,6 +178,7 @@ pub fn enum_discriminants_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
     let impl_into_discriminant = match type_properties.discriminant_vis {
         // If the visibilty is unspecified or `pub` then we implement IntoDiscriminant
         None | Some(syn::Visibility::Public(..)) => quote! {
+            #[automatically_derived]
             impl #impl_generics #strum_module_path::IntoDiscriminant for #name #ty_generics #where_clause {
                 type Discriminant = #discriminants_name;
 
@@ -181,7 +196,7 @@ pub fn enum_discriminants_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
     };
 
     Ok(quote! {
-        /// Auto-generated discriminant enum variants
+        #docs
         #derives
         #repr
         #(#[ #pass_though_attributes ])*

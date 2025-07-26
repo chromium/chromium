@@ -112,6 +112,7 @@ pub fn enum_message_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
     }
 
     Ok(quote! {
+        #[automatically_derived]
         impl #impl_generics #strum_module_path::EnumMessage for #name #ty_generics #where_clause {
             #[inline]
             fn get_message(&self) -> ::core::option::Option<&'static str> {

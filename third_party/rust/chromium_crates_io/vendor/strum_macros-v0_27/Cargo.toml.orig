@@ -1,6 +1,6 @@
 [package]
 name = "strum_macros"
-version = "0.27.1"
+version = "0.27.2"
 edition = "2021"
 authors = ["Peter Glotfelty <peter.glotfelty@microsoft.com>"]
 license = "MIT"
@@ -23,7 +23,6 @@ name = "strum_macros"
 heck = "0.5.0"
 proc-macro2 = "1.0"
 quote = "1.0"
-rustversion = "1.0"
 syn = { version = "2.0", features = ["parsing"] }
 
 [dev-dependencies]

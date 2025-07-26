@@ -27,6 +27,7 @@ pub(crate) fn enum_count_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
 
     Ok(quote! {
         // Implementation
+        #[automatically_derived]
         impl #impl_generics #strum_module_path::EnumCount for #name #ty_generics #where_clause {
             const COUNT: usize = #n;
         }

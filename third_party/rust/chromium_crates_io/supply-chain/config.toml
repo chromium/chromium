@@ -377,7 +377,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."strum:0.27.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."strum_macros:0.27.1"]
+[policy."strum_macros:0.27.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."subtle:2.6.1"]

@@ -35,6 +35,7 @@ impl StrumVariantProperties {
         &self,
         case_style: Option<CaseStyle>,
         prefix: Option<&LitStr>,
+        suffix: Option<&LitStr>,
     ) -> LitStr {
         let mut output = self.to_string.as_ref().cloned().unwrap_or_else(|| {
             self.serialize
@@ -46,6 +47,10 @@ impl StrumVariantProperties {
 
         if let Some(prefix) = prefix {
             output = LitStr::new(&(prefix.value() + &output.value()), output.span());
+        }
+
+        if let Some(suffix) = suffix {
+            output = LitStr::new(&(output.value() + &suffix.value()), output.span());
         }
 
         output

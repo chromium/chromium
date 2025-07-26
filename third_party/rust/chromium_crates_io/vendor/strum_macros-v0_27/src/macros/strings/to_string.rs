@@ -39,8 +39,11 @@ pub fn to_string_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         }
 
         // Look at all the serialize attributes.
-        let output = variant_properties
-            .get_preferred_name(type_properties.case_style, type_properties.prefix.as_ref());
+        let output = variant_properties.get_preferred_name(
+            type_properties.case_style,
+            type_properties.prefix.as_ref(),
+            type_properties.suffix.as_ref(),
+        );
 
         let params = match variant.fields {
             Fields::Unit => quote! {},
@@ -57,6 +60,7 @@ pub fn to_string_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
 
     Ok(quote! {
         #[allow(clippy::use_self)]
+        #[automatically_derived]
         impl #impl_generics ::std::string::ToString for #name #ty_generics #where_clause {
             fn to_string(&self) -> ::std::string::String {
                 match *self {
