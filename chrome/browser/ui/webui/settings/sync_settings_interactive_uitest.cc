@@ -140,18 +140,18 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
   const DeepQuery kTurnHistorySyncOn = {"settings-ui",
                                         "settings-main",
                                         "settings-people-page-index",
-                                        "settings-account-page",
+                                        "settings-people-page",
                                         "settings-sync-account-control",
                                         "cr-button#sync-button"};
   const DeepQuery kHistoryOptinAcceptButton = {"history-sync-optin-app",
                                                "#acceptButton"};
   const DeepQuery kHistoryOptinRejectButton = {"history-sync-optin-app",
                                                "#rejectButton"};
-  const GURL kAccountSettingsUrl = GURL("chrome://settings/account");
+  const GURL kSyncSettingsUrl = GURL("chrome://settings/syncSetup");
 
   RunTestSequence(
       InstrumentTab(kTabId, 0, browser()),
-      NavigateWebContents(kTabId, kAccountSettingsUrl),
+      NavigateWebContents(kTabId, kSyncSettingsUrl),
       WaitForStateChange(kTabId, PageWithMatchingTitle("Settings")),
       WaitForStateChange(kTabId, UiElementHasAppeared(kTurnHistorySyncOn)),
       ClickButton(kTabId, kTurnHistorySyncOn),
