@@ -21,7 +21,6 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/message_filter.h"
-#include "ipc/message_filter_router.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace IPC {
@@ -36,7 +35,6 @@ ChannelProxy::Context::Context(
       listener_(listener),
       ipc_task_runner_(ipc_task_runner),
       channel_connected_called_(false),
-      message_filter_router_(new MessageFilterRouter()),
       peer_pid_(base::kNullProcessId) {
   DCHECK(ipc_task_runner_.get());
   // The Listener thread where Messages are handled must be a separate thread
@@ -76,15 +74,6 @@ void ChannelProxy::Context::CreateChannel(
 }
 
 bool ChannelProxy::Context::TryFilters(const Message& message) {
-  DCHECK(message_filter_router_);
-  if (message_filter_router_->TryFilters(message)) {
-    if (message.dispatch_error()) {
-      GetTaskRunner(message.routing_id())
-          ->PostTask(FROM_HERE, base::BindOnce(&Context::OnDispatchBadMessage,
-                                               this, message));
-    }
-    return true;
-  }
   return false;
 }
 
@@ -171,9 +160,6 @@ void ChannelProxy::Context::OnChannelClosed() {
   // would result in this branch being taken.
   if (!channel_)
     return;
-
-  // We don't need the filters anymore.
-  message_filter_router_->Clear();
 
   ClearChannel();
 

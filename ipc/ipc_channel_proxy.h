@@ -40,7 +40,6 @@ namespace IPC {
 
 class ChannelFactory;
 class MessageFilter;
-class MessageFilterRouter;
 class UrgentMessageObserver;
 
 //-----------------------------------------------------------------------------
@@ -343,10 +342,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     // Lock for |channel_| value. This is only relevant in the context of
     // thread-safe send.
     base::Lock channel_lifetime_lock_;
-
-    // Routes a given message to a proper subset of |filters_|, depending
-    // on which message classes a filter might support.
-    std::unique_ptr<MessageFilterRouter> message_filter_router_;
 
     // Lock for pending_io_thread_interfaces_ (formerly for pending_filters_)
     base::Lock pending_filters_lock_;
