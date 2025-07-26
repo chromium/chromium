@@ -158,9 +158,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
-  const blink::mojom::PageMetadata& metadata() {
-    return *metadata_;
-  }
+  const blink::mojom::PageMetadata& metadata() { return *metadata_; }
   const base::flat_map<std::string, content::WeakDocumentPtr>&
   document_identifiers() {
     return document_identifiers_;

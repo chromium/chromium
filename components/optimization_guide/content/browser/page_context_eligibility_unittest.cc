@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 
 TEST(PageContextEligibilityTest, GetFrameMetadataFromPageContent) {
   optimization_guide::AIPageContentResult result;
@@ -21,8 +21,7 @@ TEST(PageContextEligibilityTest, GetFrameMetadataFromPageContent) {
   frame_metadata->url = GURL("https://www.google.com/search?q=text#someref");
 
   std::vector<blink::mojom::MetaTagPtr> meta_tags;
-  blink::mojom::MetaTagPtr meta_tag =
-      blink::mojom::MetaTag::New();
+  blink::mojom::MetaTagPtr meta_tag = blink::mojom::MetaTag::New();
   meta_tag->name = "meta-tag-name";
   meta_tag->content = "meta-tag-content";
   meta_tags.push_back(std::move(meta_tag));

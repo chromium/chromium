@@ -29,10 +29,10 @@ static_library("browser") {
     "//components/optimization_guide/core:page_content",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
+    "//content/public/common",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
-    "//content/public/common",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
