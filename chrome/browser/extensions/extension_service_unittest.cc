@@ -780,8 +780,6 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     loader.set_pack_extension(false);
     loader.LoadExtension(good_extension_dir.UnpackedPath());
 
-    histograms.ExpectTotalCount("Extensions.InstallType", 1);
-    histograms.ExpectTotalCount("Extensions.InstallSource", 1);
     histograms.ExpectTotalCount("Extensions.InstallType.NonUser",
                                 nonuser_expected_total_count);
     histograms.ExpectTotalCount("Extensions.InstallType.User",

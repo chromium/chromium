@@ -616,28 +616,19 @@ void ChromeExtensionRegistrarDelegate::RecordInstallHistograms(
       extensions::profile_util::ProfileCanUseNonComponentExtensions(profile_);
 
   if (!registry_->GetInstalledExtension(extension->id())) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType", extension->GetType(),
-                              100);
     if (is_user_profile) {
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType.User",
                                 extension->GetType(), 100);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User2",
+                                extension->location(), 100);
+      InstalledLoader::RecordPermissionMessagesHistogram(extension, "Install",
+                                                         profile_);
     } else {
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType.NonUser",
                                 extension->GetType(), 100);
-    }
-    UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
-                              extension->location());
-    if (is_user_profile) {
-      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User2",
-                                extension->location(), 100);
-    } else {
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser2",
                                 extension->location(), 100);
     }
-    // TODO(crbug.com/40878021): Address Install metrics below in a follow-up
-    // CL.
-    InstalledLoader::RecordPermissionMessagesHistogram(extension, "Install",
-                                                       is_user_profile);
   }
 }
 
