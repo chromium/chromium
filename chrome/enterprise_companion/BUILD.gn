@@ -214,7 +214,7 @@ source_set("test_utils") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//chrome/enterprise_companion/device_management_storage:device_management_storage",
+    "//chrome/enterprise_companion/device_management_storage",
     "//testing/gtest",
   ]
   visibility = [
@@ -312,7 +312,7 @@ test("enterprise_companion_integration_tests") {
     "//chrome/updater:constants_test",
     "//chrome/updater:public_sources",
     "//chrome/updater/protos:omaha_proto",
-    "//components/named_mojo_ipc_server:named_mojo_ipc_server",
+    "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",

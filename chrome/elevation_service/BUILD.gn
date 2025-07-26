@@ -59,7 +59,7 @@ source_set("lib") {
   ]
 
   deps = [
-    "//base/version_info:version_info",
+    "//base/version_info",
     "//chrome/install_static:install_static_util",
     "//chrome/windows_services/service_program:common",
     "//components/crx_file",

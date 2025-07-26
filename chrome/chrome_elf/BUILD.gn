@@ -166,7 +166,7 @@ source_set("security") {
   deps = [
     ":constants",
     ":nt_registry",
-    "//base:base",
+    "//base",
     "//chrome/install_static:install_static_util",
   ]
 }

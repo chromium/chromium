@@ -38,7 +38,7 @@ source_set("common") {
   ]
   deps = [
     "../gaiacp:util",
-    "//base:base",
+    "//base",
   ]
   configs += [ "//build/config/win:windowed" ]
 }
@@ -58,8 +58,8 @@ source_set("extension_lib") {
   deps = [
     ":common",
     "../gaiacp:util",
-    "//base:base",
-    "//net:net",
+    "//base",
+    "//net",
   ]
   configs += [ "//build/config/win:windowed" ]
 }

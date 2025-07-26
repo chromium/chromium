@@ -52,7 +52,7 @@ source_set("lib") {
     ]
     deps += [
       "//chromeos/services/machine_learning/public/mojom",
-      "//components/soda:soda",
+      "//components/soda",
     ]
   }
 }
@@ -83,11 +83,11 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      "//ash/constants:constants",
-      "//chromeos/services/machine_learning/public/cpp:cpp",
+      "//ash/constants",
+      "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
-      "//components/soda:soda",
+      "//components/soda",
       "//components/soda:test_support",
       "//content/test:test_support",
       "//services/audio/public/cpp:test_support",

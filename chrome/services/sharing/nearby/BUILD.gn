@@ -31,7 +31,7 @@ source_set("nearby") {
     "//base",
     "//chrome/services/sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//mojo/public/cpp/bindings",
     "//third_party/nearby:connections",
     "//third_party/nearby:connections_credential_proto",
@@ -41,9 +41,9 @@ source_set("nearby") {
   ]
 
   deps = [
-    "//chromeos/ash/components/nearby/presence/conversions:conversions",
+    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/services/network_config/public/mojom",
-    "//components/cross_device/nearby:nearby",
+    "//components/cross_device/nearby",
   ]
 }
 
@@ -61,7 +61,7 @@ source_set("unit_tests") {
     "test_support",
     "//ash/public/cpp",
     "//base/test:test_support",
-    "//chromeos/ash/components/nearby/presence/conversions:conversions",
+    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//testing/gmock",
