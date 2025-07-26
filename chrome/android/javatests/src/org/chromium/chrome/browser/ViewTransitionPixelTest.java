@@ -148,7 +148,7 @@ public class ViewTransitionPixelTest {
 
         assertWaitForKeyboardStatus(true);
 
-        double keyboardHeight = getKeyboardHeightDp();
+        int keyboardHeight = getKeyboardHeightPx();
 
         if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
             mViewportTestUtils.waitForExpectedVisualViewportHeight(
@@ -178,17 +178,11 @@ public class ViewTransitionPixelTest {
         }
     }
 
-    private double getKeyboardHeightDp() {
-        double keyboardHeightPx =
-                mActivityTestRule
-                        .getKeyboardDelegate()
-                        .calculateTotalKeyboardHeight(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getWindow()
-                                        .getDecorView()
-                                        .getRootView());
-        return keyboardHeightPx / mViewportTestUtils.getDeviceScaleFactor();
+    private int getKeyboardHeightPx() {
+        return mActivityTestRule
+                .getKeyboardDelegate()
+                .calculateTotalKeyboardHeight(
+                        mActivityTestRule.getActivity().getWindow().getDecorView().getRootView());
     }
 
     private void setLocationAndWaitForLoad(String url) {

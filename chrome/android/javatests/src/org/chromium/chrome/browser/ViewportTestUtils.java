@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import androidx.annotation.Px;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
@@ -15,7 +17,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
@@ -71,12 +72,12 @@ public final class ViewportTestUtils {
                 mActivityTestRule.getActivity().getActivityTab());
         waitForFramePresented();
         int initialPageHeight = getPageInnerHeightPx();
-        int initialBottomInset = getBottomInsetHeightDp();
+        int initialBottomMargin = getBottomMargins();
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
                 mActivityTestRule.getActivity(), /* showControls= */ false);
 
         // Also wait for the browser controls to resize Blink before returning.
-        int finalHeight = initialPageHeight + getTopControlsHeightDp() + initialBottomInset;
+        int finalHeight = initialPageHeight + getTopControlsHeightPx() + initialBottomMargin;
         waitForExpectedPageHeight(finalHeight);
     }
 
@@ -155,23 +156,29 @@ public final class ViewportTestUtils {
         return (int) Math.floor(getTopControlsHeightPx() / getDeviceScaleFactor());
     }
 
-    public int getBottomInsetHeightDp() {
-        EdgeToEdgeController e2eController =
-                mActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting().get();
-        // Returns zero if the inset is not scrollable.
-        return e2eController != null ? e2eController.getBottomInset() : 0;
+    public @Px int getBottomMargins() {
+        BrowserControlsStateProvider browserControlsStateProvider =
+                mActivityTestRule.getActivity().getBrowserControlsManager();
+        return browserControlsStateProvider.getBottomControlsHeight()
+                - browserControlsStateProvider.getBottomControlOffset();
     }
 
     public int getPageInnerHeightPx() throws Throwable {
-        return Integer.parseInt(
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        getWebContents(), "window.innerHeight"));
+        return (int)
+                Math.round(
+                        getDeviceScaleFactor()
+                                * Integer.parseInt(
+                                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                                getWebContents(), "window.innerHeight")));
     }
 
-    public double getVisualViewportHeightPx() throws Throwable {
-        return Float.parseFloat(
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        getWebContents(), "window.visualViewport.height"));
+    public int getVisualViewportHeightPx() throws Throwable {
+        return (int)
+                Math.round(
+                        getDeviceScaleFactor()
+                                * Float.parseFloat(
+                                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                                getWebContents(), "window.visualViewport.height")));
     }
 
     private WebContents getWebContents() {
