@@ -339,11 +339,11 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (currentTab != null) moveTabsToOtherWindow(Collections.singletonList(currentTab));
             return true;
         } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
-            openNewWindow("MobileMenuNewWindow");
+            openNewWindow("MobileMenuNewWindow", /* incognito= */ false);
             return true;
         } else if (id == org.chromium.chrome.R.id.new_incognito_window_menu_id) {
             // TODO(crbug.com/429518328): Hook up with incognito window.
-            openNewWindow("MobileMenuNewIncognitoWindow");
+            openNewWindow("MobileMenuNewIncognitoWindow", /* incognito= */ true);
             return true;
         }
 
@@ -463,7 +463,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         }
     }
 
-    protected void openNewWindow(String umaAction) {
+    protected void openNewWindow(String umaAction, boolean incognito) {
         assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();

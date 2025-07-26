@@ -1188,7 +1188,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         doNothing()
                 .when(mMultiInstanceManager)
-                .openNewWindow(eq("Android.WindowManager.NewWindow"));
+                .openNewWindow(eq("Android.WindowManager.NewWindow"), eq(false));
     }
 
     @Test
@@ -1246,7 +1246,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabToNewWindow(
                         any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
-        verify(mMultiInstanceManager, times(1)).openNewWindow(any());
+        verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean());
     }
 
     @Test
@@ -1261,7 +1261,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabsToNewWindow(
                         any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean());
-        verify(mMultiInstanceManager, times(1)).openNewWindow(any());
+        verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean());
     }
 
     @Test
@@ -1275,7 +1275,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabGroupToNewWindow(
                         any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
-        verify(mMultiInstanceManager, times(1)).openNewWindow(any());
+        verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean());
     }
 
     @Test
