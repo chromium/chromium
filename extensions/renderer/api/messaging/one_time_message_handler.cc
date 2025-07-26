@@ -765,8 +765,9 @@ void OneTimeMessageHandler::PromiseRejectedResponse(const PortId& port_id,
     return;
   }
 
-  debug::ScopedPromiseRejectedResponseCrashKeys(base::FeatureList::IsEnabled(
-      extensions_features::kRuntimeOnMessagePromiseReturnSupport));
+  debug::ScopedPromiseRejectedResponseCrashKeys promise_rejected_crash_keys(
+      base::FeatureList::IsEnabled(
+          extensions_features::kRuntimeOnMessagePromiseReturnSupport));
   v8::Local<v8::Value> promise_reject_reason;
   // This is safe to CHECK() because when a promise rejects it always provides a
   // value. Even if `reject()` (with no argument) is called we see `undefined`
