@@ -19,7 +19,7 @@ static_library("oobe_apps_service") {
   deps = [
     "//base",
     "//chrome/browser/apps/almanac_api_client",
-    "//chrome/browser/apps/app_service:app_service",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/ash/login/oobe_apps_service/proto",
     "//chrome/browser/profiles:profile",

@@ -134,7 +134,7 @@ static_library("core") {
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
-    "//third_party/re2:re2",
+    "//third_party/re2",
     "//ui/base",
     "//url",
 

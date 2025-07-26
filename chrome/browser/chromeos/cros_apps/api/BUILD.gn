@@ -15,7 +15,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    "//chrome/browser:browser",
+    "//chrome/browser",
     "//chrome/browser/chromeos/cros_apps:test_support",
     "//chrome/browser/chromeos/cros_apps/api/test:apitest_support",
     "//chrome/browser/profiles:profile",
@@ -47,7 +47,7 @@ source_set("api") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/common",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//content/public/browser",
     "//content/public/common",
     "//services/network/public/cpp",

@@ -57,12 +57,12 @@ static_library("cert_provisioning") {
     "//chromeos/dbus/common",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
-    "//components/invalidation:invalidation",
+    "//components/invalidation",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/proto",
     "//components/prefs",
-    "//components/user_manager:user_manager",
+    "//components/user_manager",
     "//content/public/browser",
   ]
 

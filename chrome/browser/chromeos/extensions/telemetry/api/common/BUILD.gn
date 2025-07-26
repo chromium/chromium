@@ -62,7 +62,7 @@ source_set("remote_probe_strategy") {
   ]
 
   deps = [
-    "//chrome/browser/ash/crosapi:crosapi",
+    "//chrome/browser/ash/crosapi",
     "//chromeos/ash/components/telemetry_extension/telemetry",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",

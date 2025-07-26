@@ -44,7 +44,7 @@ static_library("history") {
     "//components/reporting/util:status",
     "//components/user_manager",
     "//content/public/browser",
-    "//printing/mojom:mojom",
+    "//printing/mojom",
   ]
 
   if (use_cups) {

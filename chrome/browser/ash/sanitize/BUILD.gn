@@ -19,7 +19,7 @@ static_library("sanitize") {
     "//ash/webui/sanitize_ui/mojom",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash/settings:settings",
+    "//chrome/browser/ui/webui/ash/settings",
   ]
 }
 
@@ -31,7 +31,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/sanitize",
     "//chrome/browser/profile_resetter:fake_profile_resetter",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash/settings:settings",
+    "//chrome/browser/ui/webui/ash/settings",
     "//chrome/test:test_support",
     "//content/public/browser",
     "//testing/gtest",

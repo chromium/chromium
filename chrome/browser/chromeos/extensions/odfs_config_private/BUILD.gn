@@ -18,7 +18,7 @@ static_library("odfs_config_private") {
   deps = [
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/common/extensions/api",
     "//chromeos/constants",

@@ -42,7 +42,7 @@ static_library("crd") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chrome/common:constants",
-    "//chromeos/ash/components/dbus/userdataauth:userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/services/network_config:in_process_instance",
     "//components/policy/core/common",
     "//components/policy/proto:",

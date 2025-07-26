@@ -46,7 +46,7 @@ static_library("boca") {
     "//components/soda:constants",
     "//components/user_manager",
     "//extensions/browser",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//services/network/public/cpp",
   ]
 }

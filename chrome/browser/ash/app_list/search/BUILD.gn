@@ -126,7 +126,7 @@ static_library("search") {
   ]
 
   if (is_chrome_branded) {
-    deps += [ "//chromeos/ash/resources/internal/strings:strings" ]
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
   }
 
   allow_circular_includes_from = [

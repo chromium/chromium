@@ -101,7 +101,7 @@ static_library("apps") {
     "//ash/webui/boca_ui:constants",
     "//ash/webui/boca_ui/resources",
     "//ash/webui/connectivity_diagnostics/resources",
-    "//ash/webui/demo_mode_app_ui/resources:resources",
+    "//ash/webui/demo_mode_app_ui/resources",
     "//ash/webui/diagnostics_ui:url_constants",
     "//ash/webui/diagnostics_ui/resources",
     "//ash/webui/eche_app_ui",

@@ -15,7 +15,7 @@ source_set("drivefs") {
     "//chrome/browser/profiles:profile",
     "//chromeos/components/drivefs/mojom",
     "//components/drive",
-    "//components/keep_alive_registry:keep_alive_registry",
+    "//components/keep_alive_registry",
     "//extensions/browser/api/messaging",
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/common",

@@ -215,8 +215,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
+    "//components/live_caption",
     "//components/live_caption:constants",
-    "//components/live_caption:live_caption",
     "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
 

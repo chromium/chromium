@@ -18,7 +18,7 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/manta",
-    "//net/traffic_annotation:traffic_annotation",
+    "//net/traffic_annotation",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//ui/gfx:test_support",

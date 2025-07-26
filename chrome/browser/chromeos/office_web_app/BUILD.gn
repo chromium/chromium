@@ -17,7 +17,7 @@ source_set("office_web_app") {
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/web_applications",
     "//components/webapps/browser",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 

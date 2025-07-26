@@ -13,7 +13,7 @@ source_set("cros_apps") {
   deps = [
     "//chrome/browser/chromeos/cros_apps/api",
     "//chrome/browser/profiles:profile",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//content/public/browser",
     "//content/public/common",
   ]

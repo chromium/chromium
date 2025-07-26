@@ -36,7 +36,7 @@ static_library("artemis") {
     "//chromeos/services/chromebox_for_meetings/public/proto",
     "//components/feedback/redaction_tool",
     "//mojo/public/cpp/bindings",
-    "//net:net",
+    "//net",
     "//third_party/re2",
   ]
 

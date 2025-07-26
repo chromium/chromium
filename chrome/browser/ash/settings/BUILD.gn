@@ -61,7 +61,7 @@ static_library("settings") {
     "//content/public/browser",
     "//crypto",
     "//net",
-    "//third_party/re2:re2",
+    "//third_party/re2",
 
     # Work around of stub_cros_settings_provider injection.
     # TODO(hidehiko): Move the test support code to test_support target.

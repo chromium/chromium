@@ -343,7 +343,7 @@ source_set("browser_tests") {
     ":browser_test_support",
     ":crostini",
     ":test_support",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
