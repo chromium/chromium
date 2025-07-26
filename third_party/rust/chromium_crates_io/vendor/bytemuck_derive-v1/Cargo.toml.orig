@@ -1,7 +1,7 @@
 [package]
 name = "bytemuck_derive"
 description = "derive proc-macros for `bytemuck`"
-version = "1.9.3"
+version = "1.10.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 repository = "https://github.com/Lokathor/bytemuck"
 readme = "README.md"

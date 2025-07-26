@@ -1,6 +1,10 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.10.0
+
+* add support for deriving NoUninit on enums with fields.
+
 ## 1.9.2
 
 * Removes the `resolver` key from the manifest. This breaks the build

@@ -273,6 +273,7 @@ testing/scripts/variations_smoke_test_data/http_server
 third_party/abseil-cpp
 third_party/abseil-cpp/absl/base
 third_party/abseil-cpp/absl/base/internal
+third_party/abseil-cpp/absl/profiling/internal
 third_party/abseil-cpp/absl/random
 third_party/abseil-cpp/absl/random/internal
 third_party/abseil-cpp/absl/status
