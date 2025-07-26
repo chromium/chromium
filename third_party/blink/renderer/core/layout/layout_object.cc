@@ -4543,11 +4543,17 @@ Element* LayoutObject::ScrollParent(const Element* base) const {
 
 Element* LayoutObject::OffsetParent(const Element* base) const {
   NOT_DESTROYED();
+
+  // Spec: https://drafts.csswg.org/cssom-view-1/#dom-htmlelement-offsetparent
   if (IsDocumentElement() || IsBody())
     return nullptr;
 
-  if (IsFixedPositioned())
+  bool in_position_fixed = IsFixedPositioned();
+  if (in_position_fixed &&
+      !RuntimeEnabledFeatures::
+          OffsetParentNewSpecBehaviorForFixedPositionEnabled()) {
     return nullptr;
+  }
 
   HeapHashSet<Member<TreeScope>> ancestor_tree_scopes;
   if (base)
@@ -4557,8 +4563,6 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
   Node* node = nullptr;
   for (LayoutObject* ancestor = Parent(); ancestor;
        ancestor = ancestor->Parent()) {
-    // Spec: http://www.w3.org/TR/cssom-view/#offset-attributes
-
     node = ancestor->GetNode();
 
     if (!node)
@@ -4569,26 +4573,52 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
     // we will eventually get to a node which is not closed shadow hidden from
     // |base|. https://github.com/w3c/csswg-drafts/issues/159
     if (base && !ancestor_tree_scopes.Contains(&node->GetTreeScope())) {
-      // If 'position: fixed' node is found while traversing up, terminate the
-      // loop and return null.
-      if (ancestor->IsFixedPositioned())
-        return nullptr;
+      if (RuntimeEnabledFeatures::
+              OffsetParentNewSpecBehaviorForFixedPositionEnabled()) {
+        // If a fixed position containing block is found within the shadow tree,
+        // we should treat it as exiting the fixed position mode.
+        if (ancestor->CanContainFixedPositionObjects()) {
+          in_position_fixed = false;
+        } else if (ancestor->IsFixedPositioned()) {
+          in_position_fixed = true;
+        }
+      } else {
+        if (ancestor->IsFixedPositioned()) {
+          return nullptr;
+        }
+      }
       continue;
     }
 
-    if (ancestor->CanContainAbsolutePositionObjects())
-      break;
+    if (RuntimeEnabledFeatures::
+            OffsetParentNewSpecBehaviorForFixedPositionEnabled() &&
+        in_position_fixed) {
+      // If the computed value of the position property of ancestor is fixed,
+      // and no ancestor establishes a fixed position containing block,
+      // terminate this algorithm and return null.
+      if (ancestor->CanContainFixedPositionObjects()) {
+        break;
+      }
+    } else {
+      if (ancestor->CanContainAbsolutePositionObjects()) {
+        break;
+      }
 
-    if (IsA<HTMLBodyElement>(*node))
-      break;
+      if (IsA<HTMLBodyElement>(*node)) {
+        break;
+      }
 
-    if (!IsPositioned() &&
-        (IsA<HTMLTableElement>(*node) || IsA<HTMLTableCellElement>(*node)))
-      break;
+      if (!IsPositioned() &&
+          (IsA<HTMLTableElement>(*node) || IsA<HTMLTableCellElement>(*node))) {
+        break;
+      }
+    }
 
     // Webkit specific extension where offsetParent stops at zoom level changes.
     if (effective_zoom != ancestor->StyleRef().EffectiveZoom())
       break;
+
+    in_position_fixed |= ancestor->IsFixedPositioned();
   }
 
   return DynamicTo<Element>(node);
