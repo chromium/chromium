@@ -14,6 +14,8 @@ source_set("util") {
     "animation_util.mm",
     "attributed_string_util.h",
     "attributed_string_util.mm",
+    "custom_ui_trait_accessor.h",
+    "custom_ui_trait_accessor.mm",
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
     "keyboard_observer_helper.h",

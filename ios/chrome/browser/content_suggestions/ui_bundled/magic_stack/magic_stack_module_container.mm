@@ -612,7 +612,7 @@ const CGFloat kSeparatorHeight = 0.5;
 // set.
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+      [self.traitCollection objectForNewTabPageTrait];
 
   if (colorPalette) {
     self.backgroundColor = colorPalette.secondaryCellColor;

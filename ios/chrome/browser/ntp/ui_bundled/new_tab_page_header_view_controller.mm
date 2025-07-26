@@ -649,7 +649,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   } else {
     NewTabPageColorPalette* colorPalette =
         IsNTPBackgroundCustomizationEnabled()
-            ? [self.traitCollection objectForTrait:NewTabPageTrait.class]
+            ? [self.traitCollection objectForNewTabPageTrait]
             : nil;
     button.layer.cornerRadius = 0;
     [button setImage:nil forState:UIControlStateNormal];

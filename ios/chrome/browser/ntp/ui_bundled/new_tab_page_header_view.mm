@@ -949,7 +949,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // set.
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+      [self.traitCollection objectForNewTabPageTrait];
 
   if (colorPalette) {
     [_fakeLocationBar setStartColor:colorPalette.omniboxColor
@@ -1164,7 +1164,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 - (void)setFakeboxBackgroundWithProgress:(CGFloat)progress {
   UIColor* pinnedColor = [UIColor colorNamed:kTextfieldBackgroundColor];
   NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+      [self.traitCollection objectForNewTabPageTrait];
 
   // Use a quadratic curve interpolation.
   progress = progress * progress;

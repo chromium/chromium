@@ -168,7 +168,7 @@ NSString* const kFakeboxMatchingBackgroundColor =
 - (UIColor*)buttonBackgroundColor {
   NewTabPageColorPalette* colorPalette =
       IsNTPBackgroundCustomizationEnabled()
-          ? [self.traitCollection objectForTrait:NewTabPageTrait.class]
+          ? [self.traitCollection objectForNewTabPageTrait]
           : nil;
 
   if (GetNTPMIAEntrypointVariation() ==
@@ -186,7 +186,7 @@ NSString* const kFakeboxMatchingBackgroundColor =
 // set.
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+      [self.traitCollection objectForNewTabPageTrait];
 
   _incognitoButton.backgroundColor = [self buttonBackgroundColor];
   _voiceSearchButton.backgroundColor = [self buttonBackgroundColor];

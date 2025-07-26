@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -398,8 +399,9 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
         skia::UIColorFromSkColor(colorTheme->color()),
         ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()));
 
-    [self.consumer.traitOverrides setObject:colorPalette
-                                   forTrait:NewTabPageTrait.class];
+    [[[CustomUITraitAccessor alloc]
+        initWithMutableTraits:self.consumer.traitOverrides]
+        setObjectForNewTabPageTrait:colorPalette];
     [self.consumer setBackgroundImage:nil];
     [self.headerConsumer updateLogoColor:colorPalette.tintColor];
     return;
@@ -407,8 +409,9 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
   // Clears the color palette associated with the New Tab Page trait,
   // reverting to the default colors defined by the trait.
-  [self.consumer.traitOverrides setObject:[NewTabPageTrait defaultValue]
-                                 forTrait:NewTabPageTrait.class];
+  [[[CustomUITraitAccessor alloc]
+      initWithMutableTraits:self.consumer.traitOverrides]
+      setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
   if (!background) {
     [self.consumer setBackgroundImage:nil];
     [self.headerConsumer updateLogoColor:nil];

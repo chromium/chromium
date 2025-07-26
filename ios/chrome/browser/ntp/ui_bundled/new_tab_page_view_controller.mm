@@ -1101,7 +1101,7 @@ CGFloat SpaceBetweenModules() {
 // set.
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+      [self.traitCollection objectForNewTabPageTrait];
 
   if (colorPalette) {
     self.view.backgroundColor = colorPalette.primaryColor;

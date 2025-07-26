@@ -36,6 +36,7 @@ source_set("color") {
   deps = [
     "//base",
     "//components/sync/protocol",
+    "//ios/chrome/browser/shared/ui/util",
     "//skia",
     "//skia:skia_core_public_headers",
     "//third_party/material_color_utilities",
@@ -343,8 +344,10 @@ source_set("unit_tests") {
     "new_tab_page_coordinator_unittest.mm",
     "new_tab_page_header_view_controller_unittest.mm",
     "new_tab_page_mediator_unittest.mm",
+    "new_tab_page_trait_unittest.mm",
   ]
   deps = [
+    ":color",
     ":component_factory",
     ":coordinator",
     ":feature_flags",

@@ -194,7 +194,7 @@ const CGFloat kCountBorderWidth = 24;
 // set.
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+      [self.traitCollection objectForNewTabPageTrait];
 
   if (colorPalette) {
     self.imageBackgroundView.tintColor = colorPalette.tertiaryColor;
