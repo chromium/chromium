@@ -39,7 +39,6 @@ class SingleThreadTaskRunner;
 namespace IPC {
 
 class ChannelFactory;
-class MessageFilter;
 class UrgentMessageObserver;
 
 //-----------------------------------------------------------------------------
@@ -59,13 +58,6 @@ class UrgentMessageObserver;
 // will queue up on the IPC::Channel when there is a lot of traffic, and the
 // channel will not get cycles to flush its message queue until the thread, on
 // which it is running, returns to its message loop.)
-//
-// An IPC::ChannelProxy can have a MessageFilter associated with it, which will
-// be notified of incoming messages on the IPC::Channel's thread.  This gives
-// the consumer of IPC::ChannelProxy the ability to respond to incoming
-// messages on this background thread instead of on their own thread, which may
-// be bogged down with other processing.  The result can be greatly improved
-// latency for messages that can be handled on a background thread.
 //
 // The consumer of IPC::ChannelProxy is responsible for allocating the Thread
 // instance where the IPC::Channel will be created and operated.
@@ -136,11 +128,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   // Close the IPC::Channel.  This operation completes asynchronously, once the
   // background thread processes the command to close the channel.  It is ok to
   // call this method multiple times.  Redundant calls are ignored.
-  //
-  // WARNING: MessageFilter objects held by the ChannelProxy is also
-  // released asynchronously, and it may in fact have its final reference
-  // released on the background thread.  The caller should be careful to deal
-  // with / allow for this possibility.
   void Close();
 
   // Send a message asynchronously.  The message is routed to the background

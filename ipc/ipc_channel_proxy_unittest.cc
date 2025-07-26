@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_test_base.h"
-#include "ipc/message_filter.h"
 
 // Get basic type definitions.
 #define IPC_MESSAGE_IMPL
