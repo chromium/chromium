@@ -420,9 +420,8 @@ class Enum(object):
         'type': 'string',
         'enum': enum
     }
-    for property_name in ['cpp_enum_prefix_override', 'nodoc']:
-      if self.node.GetProperty(property_name):
-        result[property_name] = self.node.GetProperty(property_name)
+    if self.node.GetProperty('nodoc'):
+      result['nodoc'] = self.node.GetProperty('nodoc')
     if self.node.GetProperty('deprecated'):
       result['deprecated'] = self.node.GetProperty('deprecated')
     return result

@@ -258,7 +258,6 @@ class Type(object):
             'See crbug.com/472279' % (name, namespace.name))
       self.property_type = PropertyType.ENUM
       self.enum_values = [EnumValue(value, namespace) for value in json['enum']]
-      self.cpp_enum_prefix_override = json.get('cpp_enum_prefix_override', None)
     elif json_type == 'any':
       self.property_type = PropertyType.ANY
     elif json_type == 'binary':
