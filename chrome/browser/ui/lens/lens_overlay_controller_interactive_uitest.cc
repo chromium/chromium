@@ -9,6 +9,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -25,8 +26,10 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -1207,6 +1210,95 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReturnToPageCUJTest,
       // Overlay and side panel should be visible again.
       WaitForShow(LensOverlayController::kOverlayId),
       WaitForShow(LensOverlayController::kOverlaySidePanelWebViewId));
+}
+
+class LensOverlayControllerEduActionChipTest
+    : public LensOverlayControllerCUJTest {
+ public:
+  LensOverlayControllerEduActionChipTest() = default;
+  ~LensOverlayControllerEduActionChipTest() override = default;
+  LensOverlayControllerEduActionChipTest(
+      const LensOverlayControllerEduActionChipTest&) = delete;
+  void operator=(const LensOverlayControllerEduActionChipTest&) = delete;
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(
+            lens::features::kLensOverlayEduActionChip,
+            {{"url-allow-filters", "[\"*\"]"},
+             {"url-path-match-allow-filters", "[\"select\"]"}})},
+        {});
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User navigates to a website that triggers the homework action chip.
+//  (2) User clicks the action chip and the overlay opens. The chip should hide.
+//  (3) User opens a new tab, then switches back. The chip should remain hidden.
+//  (4) User closes the overlay.
+//  (5) The chip should reshow.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
+                       HomeworkActionChipHidesWhenOverlayOpen) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  // In kDocumentWithNamedElement.
+  const DeepQuery kPathToBody{
+      "body",
+  };
+
+  // In the lens overlay.
+  const DeepQuery kPathToCloseButton{
+      "lens-overlay-app",
+      "#closeButton",
+  };
+  constexpr char kClickFn[] = "(el) => { el.click(); }";
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  // Navigate to a matching page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+  // We need to wait for paint in order to take a screenshot of the page.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveTab()
+        ->GetContents()
+        ->CompletedFirstVisuallyNonEmptyPaint();
+  }));
+
+  RunTestSequence(
+      // Ensure homework chip is visible.
+      EnsurePresent(kLensOverlayHomeworkPageActionIconElementId),
+
+      PressButton(kLensOverlayHomeworkPageActionIconElementId),
+
+      // The overlay controller is an independent floating widget associated
+      // with a tab rather than a browser window, so by convention gets its own
+      // element context.
+      InAnyContext(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+
+      // Ensure homework chip is not visible after the overlay opens.
+      EnsureNotPresent(kLensOverlayHomeworkPageActionIconElementId),
+
+      OpenArbitraryNewTab(),
+
+      // Switch back to the original tab.
+      SelectTab(kTabStripElementId, 0),
+
+      // Ensure homework chip is still not visible.
+      EnsureNotPresent(kLensOverlayHomeworkPageActionIconElementId),
+
+      InSameContext(EnsurePresent(kOverlayId, kPathToCloseButton),
+                    ExecuteJsAt(kOverlayId, kPathToCloseButton, kClickFn,
+                                ExecuteJsMode::kFireAndForget),
+                    WaitForHide(kOverlayId)),
+
+      // Ensure homework chip is visible again.
+      EnsurePresent(kLensOverlayHomeworkPageActionIconElementId));
 }
 
 }  // namespace
