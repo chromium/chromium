@@ -1992,10 +1992,6 @@ void RenderTextHarfBuzz::ItemizeAndShapeText(std::u16string_view text,
     if (BuildResolvedTypefaceBreakList(run_list)) {
       ItemizeAndShapeTextImpl(&commonized_run_map, text, run_list);
     }
-
-    // Resolved typefaces are no longer used and can be cleared.
-    layout_resolved_typefaces().Reset();
-    resolved_typefaces().Reset();
   }
 
   // Now that potentially two passes to ItemizeAndShapeTextImpl have occurred,

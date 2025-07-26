@@ -1028,6 +1028,8 @@ class COMPONENT_EXPORT(GFX) RenderText {
   internal::StyleArray styles_;
   BreakList<bool> elidings_;
 
+  // Layout breaklists. These are used for eliding, and should not be manually
+  // cleared.
   mutable BreakList<SkColor> layout_colors_;
   mutable BreakList<BaselineStyle> layout_baselines_;
   mutable BreakList<int> layout_font_size_overrides_;

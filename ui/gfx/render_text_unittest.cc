@@ -2423,6 +2423,22 @@ TEST_F(RenderTextTest, SetElideBehavior) {
   EXPECT_EQ(u"…ef", render_text->GetDisplayText());
 }
 
+TEST_F(RenderTextTest, ElideMissingGlyphs) {
+  constexpr int kGlyphWidth = 10;
+  SetGlyphWidth(kGlyphWidth);
+
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(u"𪛗𪛗𪛗𪛗龭疆龭疆龭疆龭疆疆疆疆");
+  render_text->SetCursorEnabled(false);
+  render_text->SetDisplayRect(Rect(0, 0, 10 * kGlyphWidth, 100));
+
+  // Missing glyph state shouldn't change with elision.
+  const bool has_missing_glyphs = GetHarfBuzzRunList()->HasMissingGlyphs();
+  render_text->SetElideBehavior(ELIDE_TAIL);
+  EXPECT_EQ(u"𪛗𪛗𪛗𪛗龭疆龭疆龭…", render_text->GetDisplayText());
+  EXPECT_EQ(has_missing_glyphs, GetHarfBuzzRunList()->HasMissingGlyphs());
+}
+
 TEST_F(RenderTextTest, SetWhitespaceElision) {
   // This test requires glyphs to be the same width.
   constexpr int kGlyphWidth = 10;
