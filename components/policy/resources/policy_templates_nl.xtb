@@ -1508,6 +1508,9 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
 <translation id="208566302163036794">Uitgezette functies blokkeren</translation>
 <translation id="2086040449830622332">LPAC-sandbox afdrukken aanzetten</translation>
 <translation id="208623333578980446">Wake locks voor het scherm toestaan voor stroombeheer</translation>
+<translation id="2086505225896497574">Als je het beleid instelt, geef je WebAuthn RP-ID's aan waarvoor geen prompt wordt getoond als er bevestigingscertificaten van beveiligingssleutels worden aangevraagd op het inlogscherm. Er wordt ook een signaal naar de beveiligingssleutel gestuurd om aan te geven dat zakelijke bevestiging kan worden gebruikt. Zonder dit signaal krijgen gebruikers een prompt als sites bevestiging van beveiligingssleutels aanvragen.
+
+Dit apparaatbeleid is vergelijkbaar met het bestaande gebruikersbeleid <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, maar wordt in plaats daarvan toegepast op het inlogprofiel op het inlogscherm.</translation>
 <translation id="2089541797660774692">Cloudrapportage voor beheerde browsers aanzetten</translation>
 <translation id="2090712407517297305">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is zichtbaar op chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
@@ -6745,6 +6748,7 @@ Dit beleid heeft invloed op de verificatieprocessen voor zowel inloggen als het 
       Opmerking: Gebruik bij meerdere waarden een komma als scheidingsteken.</translation>
 <translation id="5693469654327063861">Gegevensmigratie toestaan</translation>
 <translation id="56936613186060503">Downloadbeheer heeft geen optie om bestanden op te slaan in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="569457565603183">URL's/domeinen waarvoor rechtstreekse bevestiging van beveiligingssleutels op het inlogscherm automatisch is toegestaan</translation>
 <translation id="5695209488612697377">Hiermee wordt een standaard zoekprovider in het contextmenu gebruikt.
 
           Als je dit beleid niet toepast, is de zoekoptie in het contextmenu die je standaard zoekprovider gebruikt niet beschikbaar.

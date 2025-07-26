@@ -854,6 +854,7 @@
 <translation id="1587275751631642843">JavaScript コンソール(&amp;J)</translation>
 <translation id="1587907146729660231">電源ボタンを指でタップしてください</translation>
 <translation id="1588438908519853928">ノーマル</translation>
+<translation id="1588772269240419305">ロゴと名前の更新内容を確認</translation>
 <translation id="1588870296199743671">次のプログラムでリンクを開く...</translation>
 <translation id="1588919647604819635">カードを右クリック</translation>
 <translation id="1589055389569595240">スペルと文法を表示</translation>
@@ -1321,6 +1322,7 @@
 <translation id="1912867150686509584">カレンダーの他の会議を表示</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止}other{ブラウザの動作を遅くしているタブを一時停止}}</translation>
 <translation id="1913749768968678106">キャスト、保存、共有</translation>
+<translation id="19147273405311768">ツールバーをデフォルトの設定にリセット</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1915734383465415025">販売店の番号</translation>
@@ -2997,6 +2999,7 @@
 <translation id="3060952009917586498">デバイスの言語を変更します。現在の言語は <ph name="LANGUAGE" /> です。</translation>
 <translation id="3060987956645097882">スマートフォンとの接続を確立できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3061302636956643119">テキストは Google に送信されて処理されます。</translation>
+<translation id="306166624240243643">名前と URL の更新内容を確認</translation>
 <translation id="3064871050034234884">サイトが音声を再生できるようにする</translation>
 <translation id="3065041951436100775">タブの強制終了に関するフィードバック。</translation>
 <translation id="3065522099314259755">キーボードのリピート間隔</translation>
@@ -3039,6 +3042,7 @@
 <translation id="3100071818310370858">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがこのデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />位置情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">ライトを暗くする</translation>
 <translation id="3101709781009526431">日時</translation>
+<translation id="3102309003841389927">ロゴの更新内容を確認</translation>
 <translation id="310297983047869047">前のスライド</translation>
 <translation id="3103451787721578293">このデータをアップロードする理由を入力してください。</translation>
 <translation id="3103512663951238230">Alt+クリック</translation>
@@ -6030,6 +6034,7 @@
 <translation id="5225324770654022472">アプリのショートカットを表示</translation>
 <translation id="52254442782792731">公開設定はまだ設定されていません</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
+<translation id="5226253862147382094">ロゴと URL の更新内容を確認</translation>
 <translation id="5226514125747186">サイトのアイコンの周囲に点線の円を表示する。<ph name="BEGIN_LINK" />アクティブでないタブの詳細<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">ウェブサイトでの位置情報の使用は許可されていません</translation>
 <translation id="5227679487546032910">デフォルトの青緑のアバター</translation>
@@ -7343,6 +7348,7 @@
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{拡張機能を削除しますか？}other{# 個の拡張機能を削除しますか？}}</translation>
 <translation id="6180510783007738939">直線ツール</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> に使用するパスキーを指定してください</translation>
+<translation id="6181218116951226898">アプリでブランディングが更新されることがあります。更新の前に、すべての変更内容に問題がないことを確認してください。</translation>
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
 <translation id="6183369864942961155">ライトモード / ダークモード自動設定</translation>
 <translation id="6184099524311454384">タブを検索</translation>
@@ -7416,6 +7422,7 @@
 <translation id="6234108445915742946">Chrome の利用規約が 3 月 31 日に更新されます</translation>
 <translation id="6234474535228214774">インストールを準備しています</translation>
 <translation id="6235208551686043831">デバイスのカメラはオンです。eSIM の QR コードをカメラの前にかざしてください。</translation>
+<translation id="6237256594069101884">URL の更新内容を確認</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> グループ「<ph name="GROUP_NAME" />」 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">タッチペンのメモアプリ</translation>
 <translation id="6237481151388361546">インターネット接続を変更して、[再試行] または [基本エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
@@ -8267,6 +8274,7 @@
 <translation id="6840155290835956714">送信する前に確認する</translation>
 <translation id="6840184929775541289">認証局ではない</translation>
 <translation id="6840214587087739194">住所を削除しました</translation>
+<translation id="6841076158433142214">画面の録画に次のアプリが使用される場合は通知されません。</translation>
 <translation id="6841143363521180029">暗号化されています</translation>
 <translation id="6841186874966388268">エラー</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" /> にログインしているデバイスのみ</translation>
@@ -8727,6 +8735,7 @@
 <translation id="7181329571386134105">今後、保護者の承認を得ずに <ph name="CHILD_NAME" /> さんが拡張機能をインストールできるようにするには、保護者のデバイスでファミリー リンク アプリを開いて、<ph name="CHILD_NAME" /> さんの Google Chrome の設定を更新してください。</translation>
 <translation id="7181840534454431748"><ph name="OWNER_FIRST_NAME" /> さんのタブグループに参加
             {NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> さんのタブグループに参加}=1{<ph name="OWNER_FIRST_NAME" /> さんと他 # 人のタブグループに参加}other{<ph name="OWNER_FIRST_NAME" /> さんと他 # 人のタブグループに参加}}</translation>
+<translation id="7181976109296206547">ロゴ、名前、URL の更新内容を確認</translation>
 <translation id="7182051712900867547">別のアカウントを使用</translation>
 <translation id="7182063559013288142">インスタント アクセス ポイント</translation>
 <translation id="7182791023900310535">パスワードを移動</translation>
@@ -8902,6 +8911,7 @@
 <translation id="7312040805247765153">アプリをインストールできません</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
 <translation id="7313539585802573958">キーボード バックライトの色</translation>
+<translation id="7314865262803554456">録画の開始時には通知されません。</translation>
 <translation id="7314989823816739632">ロマンチック</translation>
 <translation id="7317342082064136423">アカウントを確認</translation>
 <translation id="7317831949569936035">教育機関の登録</translation>
@@ -11435,6 +11445,7 @@
 <translation id="9033765790910064284">続行</translation>
 <translation id="9033857511263905942">貼り付け(&amp;P)</translation>
 <translation id="903480517321259405">もう一度 PIN を入力してください</translation>
+<translation id="9035157477209989051">画面の録画に次のアプリが使用される場合は通知されます。</translation>
 <translation id="9036484080057916082">署名付き証明書のタイムスタンプ リスト</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
 <translation id="9037640663275993951">デバイスは許可されていません</translation>

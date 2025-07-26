@@ -856,6 +856,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1587275751631642843">Konsola &amp;JavaScript</translation>
 <translation id="1587907146729660231">Dotknij palcem przycisku zasilania</translation>
 <translation id="1588438908519853928">Normalny</translation>
+<translation id="1588772269240419305">Sprawdź aktualizacje logo i nazwy</translation>
 <translation id="1588870296199743671">Otwórz link przy użyciu...</translation>
 <translation id="1588919647604819635">Kliknij kartę prawym przyciskiem</translation>
 <translation id="1589055389569595240">Pokaż pisownię i gramatykę</translation>
@@ -1326,6 +1327,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1912867150686509584">Zobacz więcej spotkań w Kalendarzu</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Wstrzymaj kartę, która spowalnia przeglądarkę}few{Wstrzymaj karty, które spowalniają przeglądarkę}many{Wstrzymaj karty, które spowalniają przeglądarkę}other{Wstrzymaj karty, które spowalniają przeglądarkę}}</translation>
 <translation id="1913749768968678106">Przesyłaj, zapisuj i udostępniaj</translation>
+<translation id="19147273405311768">Przywróć ustawienia domyślne paska narzędzi</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1915734383465415025">Numer sklepu</translation>
@@ -1363,6 +1365,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1931152874660185993">Nie zainstalowano żadnych komponentów.</translation>
 <translation id="1931410639376954712">Instaluję <ph name="DEVICE_OS" />…</translation>
 <translation id="1932098463447129402">Nie wcześniej niż</translation>
+<translation id="1933070475689690969">Aktywność w aplikacjach z Gemini</translation>
 <translation id="1933489278505808700">Może odczytywać i zmieniać dane</translation>
 <translation id="1935303383381416800">Zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="193565226207940518">Narzędzie pomocy</translation>
@@ -2989,6 +2992,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3060952009917586498">Zmień język urządzenia. Bieżący język to <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nie udało się nawiązać połączenia z Twoim telefonem. Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi.</translation>
 <translation id="3061302636956643119">Tekst zostanie wysłany do Google w celu przetworzenia.</translation>
+<translation id="306166624240243643">Sprawdź aktualizacje nazwy i adresu URL</translation>
 <translation id="3064871050034234884">Strony mogą odtwarzać dźwięk</translation>
 <translation id="3065041951436100775">Informacje o zakończeniu działania karty.</translation>
 <translation id="3065522099314259755">Opóźnienie powtarzania klawiszy</translation>
@@ -3031,6 +3035,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3100071818310370858">Używaj lokalizacji. Zezwól na używanie lokalizacji tego urządzenia przez aplikacje i usługi, które mają dostęp do lokalizacji. Google może okresowo gromadzić dane o lokalizacji i używać ich anonimowo, aby zwiększyć dokładność lokalizacji oraz usprawnić działanie wykorzystujących ją usług. <ph name="BEGIN_LINK1" />Więcej informacji o lokalizacji<ph name="BEGIN_LINK1_END" />Więcej informacji<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Przyciemnianie ekranu</translation>
 <translation id="3101709781009526431">Data i godzina</translation>
+<translation id="3102309003841389927">Sprawdź aktualizację logo</translation>
 <translation id="310297983047869047">Poprzedni slajd</translation>
 <translation id="3103451787721578293">Wpisz przyczynę przesłania tych danych:</translation>
 <translation id="3103512663951238230">Alt + kliknięcie</translation>
@@ -3476,6 +3481,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="343578350365773421">Brak papieru</translation>
 <translation id="3435896845095436175">Włącz</translation>
+<translation id="3437072258256045988">Zarządzaj aktywnością w aplikacjach z Gemini</translation>
 <translation id="3437397693214267762">Wyświetlanie kalendarza Outlooka i plików SharePoint oraz OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do mikrofonu</translation>
@@ -6025,6 +6031,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5225324770654022472">Pokaż skrót do aplikacji</translation>
 <translation id="52254442782792731">Bieżące ustawienie widoczności nie zostało jeszcze skonfigurowane</translation>
 <translation id="5225463052809312700">Włącz kamerę</translation>
+<translation id="5226253862147382094">Sprawdź aktualizacje logo i adresu URL</translation>
 <translation id="5226514125747186">Wokół ikon witryn pojawia się kropkowane kółko. <ph name="BEGIN_LINK" />Więcej informacji o nieaktywnych kartach<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Witryny nie mogą używać Twojej lokalizacji</translation>
 <translation id="5227679487546032910">Domyślny turkusowy awatar</translation>
@@ -7338,6 +7345,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Usunąć rozszerzenie?}few{Usunąć # rozszerzenia?}many{Usunąć # rozszerzeń?}other{Usunąć # rozszerzenia?}}</translation>
 <translation id="6180510783007738939">Narzędzie Linia</translation>
 <translation id="6180550893222597997">Którego klucza chcesz używać dla aplikacji <ph name="APP_NAME" />?</translation>
+<translation id="6181218116951226898">Aplikacje czasami aktualizują swój wizerunek marki. Przed aktualizacją sprawdź wszystkie zmiany, aby upewnić się, że Ci odpowiadają.</translation>
 <translation id="6181431612547969857">Pobieranie zostało zablokowane</translation>
 <translation id="6183369864942961155">Automatyczny jasny/ciemny motyw</translation>
 <translation id="6184099524311454384">Wyszukaj karty</translation>
@@ -7411,6 +7419,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6234108445915742946">31 marca zmienią się Warunki korzystania z Chrome</translation>
 <translation id="6234474535228214774">Oczekiwanie na instalację</translation>
 <translation id="6235208551686043831">Aparat urządzenia został włączony. Umieść kod QR eSIM przed jego obiektywem.</translation>
+<translation id="6237256594069101884">Sprawdź aktualizację adresu URL</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> grupa <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Aplikacja do robienia notatek rysikiem</translation>
 <translation id="6237481151388361546">Sprawdź połączenie z internetem i wybierz „Spróbuj ponownie”. Możesz też kliknąć „Otwórz w podstawowym edytorze”, aby skorzystać z ograniczonych opcji wyświetlania i edytowania.</translation>
@@ -8266,6 +8275,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6840155290835956714">Pytaj przed wysłaniem</translation>
 <translation id="6840184929775541289">Nie jest urzędem certyfikacji</translation>
 <translation id="6840214587087739194">Adres został usunięty</translation>
+<translation id="6841076158433142214">Gdy te aplikacje będą używane do nagrywania ekranu, nie otrzymasz powiadomienia:</translation>
 <translation id="6841143363521180029">Zaszyfrowany</translation>
 <translation id="6841186874966388268">Błędy</translation>
 <translation id="6842135459748401207">Tylko urządzenia zalogowane na konto <ph name="USER_EMAIL" /></translation>
@@ -8726,6 +8736,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7181329571386134105">Aby dziecko (<ph name="CHILD_NAME" />) mogło instalować rozszerzenia bez Twojej zgody, otwórz na swoim urządzeniu aplikację Family Link i zaktualizuj ustawienia aplikacji Google Chrome, z której korzysta <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" />}=1{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # inna osoba}few{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # inne osoby}many{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # innych osób}other{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # innej osoby}}</translation>
+<translation id="7181976109296206547">Sprawdź aktualizacje logo, nazwy i adresu URL</translation>
 <translation id="7182051712900867547">Użyj innego konta</translation>
 <translation id="7182063559013288142">Błyskawiczny hotspot</translation>
 <translation id="7182791023900310535">Przenieś hasło</translation>
@@ -8901,6 +8912,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7312040805247765153">Nie można zainstalować aplikacji</translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7313539585802573958">Kolory podświetlenia klawiatury</translation>
+<translation id="7314865262803554456">Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.</translation>
 <translation id="7314989823816739632">Romantyczny</translation>
 <translation id="7317342082064136423">Potwierdź, że to Twoje konto</translation>
 <translation id="7317831949569936035">Rejestracja w szkole</translation>
@@ -11432,6 +11444,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9033765790910064284">Kontynuuj mimo to</translation>
 <translation id="9033857511263905942">&amp;Wklej</translation>
 <translation id="903480517321259405">Ponownie wpisz kod PIN</translation>
+<translation id="9035157477209989051">Gdy te aplikacje będą używane do nagrywania ekranu, otrzymasz powiadomienie:</translation>
 <translation id="9036484080057916082">Lista sygnatur czasowych podpisanego certyfikatu</translation>
 <translation id="9037054491984310631">Połączono z urządzeniem Bluetooth o nazwie <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Urządzenie nie zostało dopuszczone</translation>

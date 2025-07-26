@@ -794,7 +794,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2303437270440428119">OpenDocument Spreadsheet</translation>
 <translation id="2305294852062272447">Išsaugoti vairuotojo pažymėjimą?</translation>
 <translation id="2306124309679506798">Leisti įtraukiančią patirtį?</translation>
-<translation id="2307711332257985952">Jūsų namų ir darbo adresai dabar pasiekiami naršyklėje „Chrome“</translation>
 <translation id="2310789833878085574">Išsaugoti ir automatiškai užpildyti</translation>
 <translation id="2312234273148520048">Prieskoniai ir padažai</translation>
 <translation id="2316087952091171402">Mažiau nei <ph name="UPPER_ESTIMATE" />. Per kitą apsilankymą kai kurios svetainės gali būti įkeltos gerokai lėčiau.</translation>
@@ -1210,6 +1209,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3027915437837548462">SVG vaizdas</translation>
 <translation id="3030331669969285614">Šios žymos užkerta kelią gedimą sukeliančiam pakeitimui arba jį panaikina ir yra pasiekiamos tik ribotą laiką.</translation>
 <translation id="3030542417256082866">Išsaugoti transporto priemonę?</translation>
+<translation id="3033200136993730761">Namų adresas gali padėti atlikti užduotis „Google“ paslaugose, pvz., gauti aktualesnių paieškos rezultatų ir nuorodų „Google“ žemėlapiuose. Galite redaguoti arba ištrinti adresą <ph name="BEGIN_LINK" />„Google“ paskyroje <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3034526003882782781">Slinkimas ir mastelio keitimas leidžiamas</translation>
 <translation id="3036894576201005614">Buitinės valymo priemonės</translation>
 <translation id="3037177537145227281">Kaina stebima</translation>
@@ -2918,6 +2918,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5898767305816764989">Mygtukas „Patinka“; paspauskite „Enter“, kad pateiktumėte atsiliepimą apie tai, jog jums patinka, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5903264686717710770">Pavadinimas:</translation>
+<translation id="5905671155741555195">Darbo adresas gali padėti atlikti užduotis „Google“ paslaugose, pvz., gauti aktualesnių paieškos rezultatų ir nuorodų „Google“ žemėlapiuose. Galite redaguoti arba ištrinti adresą <ph name="BEGIN_LINK" />„Google“ paskyroje <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinchronizuota)</translation>
 <translation id="5910140988253729859">Anuliuoti automatinį pildymą</translation>
 <translation id="5911020115933784199">Renginiai ir sąrašai</translation>
@@ -3815,6 +3816,7 @@ Papildoma išsami informacija:
 <translation id="7403392780200267761">Bendrinkite šį skirtuką bendrindami nuorodą, sukurdami QR kodą, perduodami ir kt.</translation>
 <translation id="7403591733719184120">Jūsų „<ph name="DEVICE_NAME" />“ tvarkomas</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> įdiegė papildomų funkcijų programų. Naudojant programas galima pasiekti kai kuriuos jūsų duomenis.</translation>
+<translation id="740691708085211707">Pašalinti darbo adresą iš „Chrome“ automatinio pildymo?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ši klaida rodoma, jei „Windows“ kompiuteryje naudojate „Superfish“ programinę įrangą.&lt;/p&gt;
     &lt;p&gt;Vadovaudamiesi toliau nurodytais veiksmais laikinai išjunkite programinę įrangą, kad galėtumėte naršyti žiniatinklyje. Reikės administratoriaus teisių.&lt;/p&gt;
     &lt;ol&gt;
@@ -3911,6 +3913,7 @@ Papildoma išsami informacija:
 <translation id="7534987659046836932">C7 vokas</translation>
 <translation id="7535087603100972091">Reikšmė</translation>
 <translation id="753556296624075801">Teikia „Google“</translation>
+<translation id="753713322968419914">Pašalinti namų adresą iš „Chrome“ automatinio pildymo?</translation>
 <translation id="7537536606612762813">Privaloma</translation>
 <translation id="7543525346216957623">Paprašykite vieno iš tėvų</translation>
 <translation id="7546409722674205727">Paleidžiama „<ph name="APP_NAME" />“</translation>

@@ -28,7 +28,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> не можеше да се отвори</translation>
 <translation id="1096992026380844478">Поставките за синхронизација ќе се вратат согласно со последниот бекап. <ph name="BEGIN_LINK" />Погледнете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
-<translation id="110491332089958282">Споделете ги содржините на страницата со Gemini за да добивате порелевантни одговори. Кога ќе споделите страница со Gemini, целосните содржини и URL на страницата се испраќаат до Google. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="110491332089958282">Споделувајте ги содржините на страниците со Gemini за да добивате порелевантни одговори. Кога ќе споделите страница со Gemini, сите содржини на страницата и нејзината URL-адреса се испраќаат до Google. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">Синхронизација на историја</translation>
 <translation id="1110772719190051587">Отклучете со ID на лик</translation>
 <translation id="1112015203684611006">Печатењето не успеа.</translation>
@@ -321,7 +321,6 @@
 <translation id="2220529011494928058">Пријави проблем</translation>
 <translation id="2223461067862937305">Создајте QR-код</translation>
 <translation id="2225701818156393674">Додаден е производ во вашиот список производи што ги следите.</translation>
-<translation id="2229345671837147090">Мрежа на далечински картички</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2236949375853147973">Моја активност</translation>
 <translation id="2240256190924001613">Достапен е профил за конфигурација</translation>
@@ -538,7 +537,7 @@
 <translation id="3087734570205094154">Дно</translation>
 <translation id="309710370695886264">Имате 1 повторно употребена лозинка. Решете го проблемот со неа сега за да се заштитите.</translation>
 <translation id="3102790820790869053">Пребарувајте ги неодамнешните картички</translation>
-<translation id="3106258548858559536">Исклучете Reading Mode</translation>
+<translation id="3106258548858559536">Исклучи „Режим за читање“</translation>
 <translation id="3106690631878101882">Скриј „Преведи“</translation>
 <translation id="310900540163454140">Да се избрише лозинката за <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Означи…</translation>
@@ -2106,7 +2105,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="913036870884277353">Лесно отворајте линкови во други апликации.</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>
 <translation id="9140888637198815199">A</translation>
-<translation id="9144152097013965297">Вклучете Reading Mode</translation>
+<translation id="9144152097013965297">Вклучи „Режим за читање“</translation>
 <translation id="9144230693397287797">Добивајте известувања за потсетниците што ги поставувате и за картичките од другите уреди</translation>
 <translation id="914781932147356857">Означи ги сите…</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>

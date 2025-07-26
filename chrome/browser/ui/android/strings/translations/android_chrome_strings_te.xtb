@@ -5,7 +5,6 @@
 <translation id="1011749477052068769">ఇక్కడకు తరలించండి</translation>
 <translation id="1014147525163127655">ఈ పరికరంలో <ph name="ORIGIN" /> కోసం పాస్-కీలు ఏవీ లేవు</translation>
 <translation id="1016498331642356377">త్వరగా మీ వాయిస్‌తో సెర్చ్ చేయండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
-<translation id="1024113959924243553">డెవలపర్ Chrome</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />కు పంపుతోంది...</translation>
 <translation id="103269572468856066">ఈ సైట్‌లు,యాప్‌ల డేటా కూడా తొలగించాలా?</translation>
 <translation id="1034259925032978114">విండో తెరిచి ఉంది</translation>
@@ -167,7 +166,6 @@
 <translation id="1750238553597293878">మీ Google ఖాతాలోని పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
 <translation id="1755203724116202818">ఒక యాడ్ పనితీరును కొలవడానికి (మెజర్ చేయడానికి), వివిధ రకాల డేటా పరిమితంగా మాత్రమే వెబ్‌సైట్లకు షేర్ అవుతుంది. ఈ డేటాలో మీరు ఒక సైట్‌ను సందర్శించిన (విజిట్ చేసిన) తర్వాత దానిలో ఏదైనా కొనుగోలు చేశారా లాంటివి ఉంటాయి.</translation>
-<translation id="1757620656501361327">Google Password Manager అప్‌డేట్</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{పేజీలు, లిస్ట్‌లో 1 పేజీ ఉంది}other{పేజీలు, లిస్ట్‌లో # పేజీలు ఉన్నాయి}}</translation>
 <translation id="1771929606532798550">మీ Chrome వినియోగం గురించిన సమాచారం Googleకు పంపబడింది, కానీ దానిని మీకు అనుబంధించలేదు\n\nChrome క్రాష్ అయితే, ఆ క్రాష్‌కు సంబంధించిన వివరాలలో కొంత వ్యక్తిగత సమాచారం కూడా ఉండవచ్చు\n\nమీ హిస్టరీని మీ Google ఖాతాకు సింక్ చేస్తే, గణాంకాలలో మీరు సందర్శించే URLల గురించిన సమాచారం కూడా ఉండగలదు</translation>
 <translation id="1778457539567749232">చదవనిదిగా మార్క్ చేస్తుంది</translation>
@@ -495,7 +493,6 @@
 <translation id="3265093782546847662"><ph name="DOMAIN" />‌లోని అన్ని పేజీలు</translation>
 <translation id="3268048651973962414">సెర్చ్ ఫలితాలను చూడటానికి పైకి లాగండి</translation>
 <translation id="3269093882174072735">చిత్రాన్ని లోడ్ చేయి</translation>
-<translation id="327204079441056603">మేము ఈ పరికరంలో పాస్‌వర్డ్‌లను సేవ్ చేసే విధానాన్ని మార్చాము</translation>
 <translation id="3280562213547448728">వాయిస్ సెర్చ్</translation>
 <translation id="3282568296779691940">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ట్యాబ్}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
@@ -674,7 +671,6 @@
 <translation id="4132137475637520539">లింక్ ఉన్న ఎవరినైనా చేరడానికి వీలు కల్పించండి</translation>
 <translation id="4135200667068010335">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల లిస్ట్‌ మూసివేయబడింది.</translation>
 <translation id="4137746084635924146">ప్రస్తుత పరికర భాష</translation>
-<translation id="4139654229316918773">Chrome కెనరీ</translation>
 <translation id="414128724510021958">డెస్క్‌టాప్ సైట్‌లు ఆటోమేటిక్‌గా రిక్వెస్ట్ చేయబడ్డాయి</translation>
 <translation id="4162867837470729563">షేరింగ్ ఆప్షన్‌ల లిస్ట్ స్క్రీన్ పూర్తిగా తెరవబడింది.</translation>
 <translation id="4170011742729630528">సేవ అందుబాటులో లేదు; తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -895,7 +891,6 @@
 <translation id="5040262127954254034">గోప్యత</translation>
 <translation id="504456571576643789">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="506254248375231072">ట్యాబ్‌లు ఏవీ లేవు</translation>
-<translation id="5062960805900435602">పాస్‌వర్డ్ విలీనానికి సంబంధించిన అప్‌డేట్ మూసివేయబడింది</translation>
 <translation id="5075939510584558547">ఎన్‌క్రిప్షన్ చేయకుండా సేవ్ చేయండి</translation>
 <translation id="5085038751173179818">మీ పరికరాలన్నింటిలో మీ బుక్‌మార్క్‌లతో పాటు మరిన్నింటిని పొందడానికి ఈ సైట్‌కు, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="5091199029769593641">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="SITE_NAME" /> నుండి కథనాలను చూస్తారు. మీరు ఫాలో అయ్యే సైట్‌లు మీ Google ఖాతాలో సేవ్ చేయబడతాయి. మీరు వాటిని Discover సెట్టింగ్‌లలో మేనేజ్ చేయవచ్చు.</translation>
@@ -1408,7 +1403,6 @@
 <translation id="7207760545532569765">బ్యాక్‌గ్రౌండ్ ట్యాబ్‌లుగా <ph name="TAB_COUNT" />ట్యాబ్‌లను రీస్టోర్ చేయండి.</translation>
 <translation id="7217781228893594884">మీరు Chrome నుండి నిష్క్రమించినప్పుడు అజ్ఞాత ట్యాబ్‌లు లాక్ అవుతాయి</translation>
 <translation id="7221869452894271364">ఈ పేజీని మళ్లీ లోడ్ చేయి</translation>
-<translation id="7224097611345298931">Chrome కోసం, <ph name="CHROME_CHANNEL" /> కోసం ఈ పరికరంలో మాత్రమే సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లు విలీనం (మెర్జ్) చేయబడ్డాయి. సేవ్ చేసిన మీ పాస్‌వర్డ్‌లన్నింటినీ మీరు రెండు యాప్‌లలోనూ ఆటోఫిల్ చేయవచ్చు.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ పెండింగ్‌లో ఉంది}other{# డౌన్‌లోడ్‌లు పెండింగ్‌లో ఉన్నాయి}}</translation>
 <translation id="7230064152164845085">అజ్ఞాత మోడ్‌కు మారండి</translation>
 <translation id="7230836263524391273">రీడింగ్ మోడ్‌ను దాచండి</translation>
@@ -1645,6 +1639,7 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUMBER_OF_OTHER_MEMBERS" /> వ్యక్తితో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}other{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUMBER_OF_OTHER_MEMBERS" /> వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}}</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>
 <translation id="8210770465353466621">మీ ట్యాబ్‌లను ఇక్కడ చూడవచ్చు</translation>
+<translation id="8212799748012101103">ట్యాబ్ సెర్చ్‌ను తెరవండి</translation>
 <translation id="8215740705341534369">సైడ్ షీట్</translation>
 <translation id="8218622182176210845">మీ ఖాతాను నిర్వహించండి</translation>
 <translation id="8221401890884589479">మీకు అవసరం లేని సైట్‌లను మీరు బ్లాక్ చేయవచ్చు. అంతే కాక, 30 రోజుల కంటే పాతవైన సైట్‌లను Chrome ఆటోమేటిక్‌గా లిస్ట్ నుండి తొలగిస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -1866,7 +1861,6 @@
 <translation id="9161172953291434881">మీ డేటా విషయంలో మీరు ఈ సైట్‌ను విశ్వసిస్తారా?</translation>
 <translation id="9168847423516963845">అడ్రస్ బార్‌ను కిందికి తరలించండి</translation>
 <translation id="9169507124922466868">నావిగేషన్ హిస్టరీ సగం తెరిచి ఉంది</translation>
-<translation id="918419812064856259">బీటా Chrome</translation>
 <translation id="9189607089796819144">అయినా సరే మీరు "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="9190276265094487094">సింక్ చేసిన మీ పరికరాలన్నింటిలో మీ హిస్టరీ ఉంటుంది, కాబట్టి మీరు ఏదైతే చేస్తున్నారో, దానిని కొనసాగించవచ్చు</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 నిమిషం క్రితం చెక్ చేసింది}other{# నిమిషాల క్రితం చెక్ చేసింది}}</translation>

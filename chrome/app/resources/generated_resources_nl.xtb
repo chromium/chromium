@@ -854,6 +854,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1587275751631642843">&amp;JavaScript-console</translation>
 <translation id="1587907146729660231">Plaats je vinger op de aan/uit-knop</translation>
 <translation id="1588438908519853928">Normaal</translation>
+<translation id="1588772269240419305">Updates voor logo en naam controleren</translation>
 <translation id="1588870296199743671">Link openen met...</translation>
 <translation id="1588919647604819635">Op kaart klikken met rechtermuisknop</translation>
 <translation id="1589055389569595240">Toon spelling en grammatica</translation>
@@ -1324,6 +1325,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1912867150686509584">Meer vergaderingen bekijken in je Agenda</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Het tabblad onderbreken dat je browser vertraagt}other{De tabbladen onderbreken die je browser vertragen}}</translation>
 <translation id="1913749768968678106">Casten, opslaan en delen</translation>
+<translation id="19147273405311768">Werkbalk resetten naar standaardinstellingen</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1915734383465415025">Winkelnummer</translation>
@@ -3003,6 +3005,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3060952009917586498">Wijzig de taal van het apparaat. De huidige taal is <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">We kunnen geen verbinding maken met je telefoon. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="3061302636956643119">Tekst wordt voor verwerking naar Google gestuurd.</translation>
+<translation id="306166624240243643">Updates voor naam en URL controleren</translation>
 <translation id="3064871050034234884">Sites kunnen geluiden afspelen</translation>
 <translation id="3065041951436100775">Feedback over gesloten tabblad.</translation>
 <translation id="3065522099314259755">Herhalingsvertraging toetsenbord</translation>
@@ -3045,6 +3048,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3100071818310370858">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van dit apparaat gebruiken. Google kan af en toe locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren. <ph name="BEGIN_LINK1" />Meer informatie over locatie<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Licht dimmen</translation>
 <translation id="3101709781009526431">Datum en tijd</translation>
+<translation id="3102309003841389927">Update voor logo controleren</translation>
 <translation id="310297983047869047">Vorige dia</translation>
 <translation id="3103451787721578293">Geef een reden op voor het uploaden van deze gegevens:</translation>
 <translation id="3103512663951238230">Alt + klikken</translation>
@@ -6040,6 +6044,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5225324770654022472">Snelle link voor apps bekijken</translation>
 <translation id="52254442782792731">Huidige zichtbaarheidsinstelling is nog niet ingesteld</translation>
 <translation id="5225463052809312700">Camera aanzetten</translation>
+<translation id="5226253862147382094">Updates voor logo en URL controleren</translation>
 <translation id="5226514125747186">Er verschijnt een gestippelde cirkel rond site-iconen. <ph name="BEGIN_LINK" />Meer informatie over inactieve tabbladen<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Websites mogen je locatie niet gebruiken</translation>
 <translation id="5227679487546032910">Standaard blauwgroene avatar</translation>
@@ -7351,6 +7356,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Extensie verwijderen?}other{# extensies verwijderen?}}</translation>
 <translation id="6180510783007738939">Tool Lijn</translation>
 <translation id="6180550893222597997">Welke toegangssleutel wil je gebruiken voor <ph name="APP_NAME" />?</translation>
+<translation id="6181218116951226898">Apps updaten soms hun branding. Controleer alle wijzigingen om er zeker van te zijn dat je ermee akkoord gaat voordat je een update uitvoert.</translation>
 <translation id="6181431612547969857">Download geblokkeerd</translation>
 <translation id="6183369864942961155">Automatisch licht/donker thema</translation>
 <translation id="6184099524311454384">Tabbladen doorzoeken</translation>
@@ -7424,6 +7430,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6234108445915742946">De Servicevoorwaarden van Chrome veranderen op 31 maart</translation>
 <translation id="6234474535228214774">Installatie in behandeling</translation>
 <translation id="6235208551686043831">De camera van het apparaat staat aan. Houd de QR-code van je e-simkaart voor de camera.</translation>
+<translation id="6237256594069101884">Update voor URL controleren</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App voor notities met stylus</translation>
 <translation id="6237481151388361546">Wijzig je internetverbinding en kies Opnieuw proberen. Als je beperkte weergave- en bewerkingsopties wilt gebruiken, kies je Openen in basiseditor.</translation>
@@ -8277,6 +8284,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6840155290835956714">Vragen vóór verzenden</translation>
 <translation id="6840184929775541289">Is geen certificeringsinstantie</translation>
 <translation id="6840214587087739194">Adres verwijderd</translation>
+<translation id="6841076158433142214">Je krijgt geen melding als deze apps worden gebruikt om je scherm op te nemen:</translation>
 <translation id="6841143363521180029">Versleuteld</translation>
 <translation id="6841186874966388268">Fouten</translation>
 <translation id="6842135459748401207">Alleen apparaten die zijn ingelogd bij <ph name="USER_EMAIL" /></translation>
@@ -8737,6 +8745,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7181329571386134105">Als je wilt toestaan dat <ph name="CHILD_NAME" /> toekomstige extensies zonder jouw goedkeuring installeert, open je de Family Link-app op je apparaat en update je de Google Chrome-instellingen van <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" />}=1{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # andere persoon}other{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # anderen}}</translation>
+<translation id="7181976109296206547">Updates voor logo, naam en URL controleren</translation>
 <translation id="7182051712900867547">Ander account gebruiken</translation>
 <translation id="7182063559013288142">Instant hotspot</translation>
 <translation id="7182791023900310535">Je wachtwoord verplaatsen</translation>
@@ -8912,6 +8921,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7312040805247765153">Kan app niet installeren</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7313539585802573958">Kleuren voor achtergrondverlichting van toetsenbord</translation>
+<translation id="7314865262803554456">Je krijgt geen melding als de opname begint.</translation>
 <translation id="7314989823816739632">Romantisch</translation>
 <translation id="7317342082064136423">Je account laten verifiëren</translation>
 <translation id="7317831949569936035">Schoolinschrijving</translation>
@@ -11445,6 +11455,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="9033765790910064284">Toch doorgaan</translation>
 <translation id="9033857511263905942">&amp;Plakken</translation>
 <translation id="903480517321259405">Typ de pincode nog een keer</translation>
+<translation id="9035157477209989051">Je krijgt een melding als deze apps worden gebruikt om je scherm op te nemen:</translation>
 <translation id="9036484080057916082">Lijst met tijdstempels voor ondertekend certificaat</translation>
 <translation id="9037054491984310631">Verbonden met het bluetooth-apparaat <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Apparaat is niet toegestaan</translation>

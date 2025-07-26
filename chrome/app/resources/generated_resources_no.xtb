@@ -852,6 +852,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1587275751631642843">&amp;JavaScript-konsoll</translation>
 <translation id="1587907146729660231">Legg fingeren på av/på-knappen</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1588772269240419305">Gjennomgå logo- og navneoppdateringer</translation>
 <translation id="1588870296199743671">Åpne link med</translation>
 <translation id="1588919647604819635">Høyreklikk på kort</translation>
 <translation id="1589055389569595240">Vis stavekontroll og grammatikk</translation>
@@ -1328,6 +1329,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1912867150686509584">Se flere møter i kalenderen din</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Sett fanen som gjør nettleseren treg, på pause}other{Sett fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="1913749768968678106">Cast, lagre og del</translation>
+<translation id="19147273405311768">Tilbakestill verktøylinjen til standardinnstillingene</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Legg på</translation>
 <translation id="1915734383465415025">Butikknummer</translation>
@@ -1365,6 +1367,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1931152874660185993">Ingen komponenter er installert.</translation>
 <translation id="1931410639376954712">Installerer <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Ikke før</translation>
+<translation id="1933070475689690969">Aktivitet i Gemini-apper</translation>
 <translation id="1933489278505808700">Har tillatelse til å lese og endre</translation>
 <translation id="1935303383381416800">Nettsteder som har lov til å se posisjonen din</translation>
 <translation id="193565226207940518">Støtteverktøy</translation>
@@ -3010,6 +3013,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3060952009917586498">Bytt enhetsspråk. Gjeldende språk er <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Vi kunne ikke koble til telefonen. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på.</translation>
 <translation id="3061302636956643119">Teksten blir sendt til Google for behandling.</translation>
+<translation id="306166624240243643">Gjennomgå navne- og nettadresseoppdateringer</translation>
 <translation id="3064871050034234884">Nettsteder kan spille av lyd</translation>
 <translation id="3065041951436100775">Tilbakemelding for lukket fane.</translation>
 <translation id="3065522099314259755">Gjentakelsesforsinkelse for tastaturet</translation>
@@ -3052,6 +3056,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3100071818310370858">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene anonymt for å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre. <ph name="BEGIN_LINK1" />Finn ut mer om posisjon<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Svakt lys</translation>
 <translation id="3101709781009526431">Dato og klokkeslett</translation>
+<translation id="3102309003841389927">Gjennomgå logooppdateringen</translation>
 <translation id="310297983047869047">Forrige lysbilde</translation>
 <translation id="3103451787721578293">Oppgi en årsak til at du laster opp disse dataene:</translation>
 <translation id="3103512663951238230">Alt + klikk</translation>
@@ -3501,6 +3506,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="343578350365773421">Tom for papir</translation>
 <translation id="3435896845095436175">Aktivér</translation>
+<translation id="3437072258256045988">Administrer aktiviteten din i Gemini-apper</translation>
 <translation id="3437397693214267762">Se Outlook-kalenderen og SharePoint- og OneDrive-filene dine</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Tillat alltid at <ph name="HOST" /> bruker mikrofonen din</translation>
@@ -6048,6 +6054,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5225324770654022472">Vis appsnarveien</translation>
 <translation id="52254442782792731">Den gjeldende synlighetsinnstillingen er ikke angitt ennå</translation>
 <translation id="5225463052809312700">Slå på kameraet</translation>
+<translation id="5226253862147382094">Gjennomgå oppdateringer av logo og nettadresse</translation>
 <translation id="5226514125747186">En stiplet sirkel vises rundt nettstedsikoner. <ph name="BEGIN_LINK" />Finn ut mer om inaktive faner<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Nettsteder har ikke tillatelse til å bruke posisjonen din</translation>
 <translation id="5227679487546032910">Blågrønt standardbrukerbilde</translation>
@@ -7361,6 +7368,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Vil du fjerne utvidelsen?}other{Vil du fjerne # utvidelser?}}</translation>
 <translation id="6180510783007738939">Linjeverktøy</translation>
 <translation id="6180550893222597997">Hvilken passnøkkel vil du bruke for <ph name="APP_NAME" />?</translation>
+<translation id="6181218116951226898">Apper oppdaterer noen ganger merkevarebyggingen sin. Gjennomgå alle endringene for å forsikre deg om at du er fornøyd med dem, før du oppdaterer.</translation>
 <translation id="6181431612547969857">Nedlastingen ble blokkert</translation>
 <translation id="6183369864942961155">Automatisk lyst/mørkt tema</translation>
 <translation id="6184099524311454384">Søk i faner</translation>
@@ -7434,6 +7442,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6234108445915742946">Vilkårene for bruk av Chrome endres 31. mars</translation>
 <translation id="6234474535228214774">Venter på installering</translation>
 <translation id="6235208551686043831">Enhetskameraet er slått på. Plassér QR-koden for eSIM-kortet foran kameraet.</translation>
+<translation id="6237256594069101884">Gjennomgå oppdateringen av nettadressen</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App for notatskriving med pekepenn</translation>
 <translation id="6237481151388361546">Bytt internettilkobling og velg «Prøv på nytt», eller velg «Åpne i enkelt redigeringsprogram» for å bruke begrensede alternativer for visning og redigering.</translation>
@@ -8287,6 +8296,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6840155290835956714">Spør før noe sendes</translation>
 <translation id="6840184929775541289">Er ikke en sertifiseringsinstans</translation>
 <translation id="6840214587087739194">Adressen er slettet</translation>
+<translation id="6841076158433142214">Du varsles ikke når disse appene brukes til å ta opp skjermen din:</translation>
 <translation id="6841143363521180029">Kryptert</translation>
 <translation id="6841186874966388268">Feil</translation>
 <translation id="6842135459748401207">Bare enheter som er logget på <ph name="USER_EMAIL" /></translation>
@@ -8747,6 +8757,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7181329571386134105">For å tillate at <ph name="CHILD_NAME" /> installerer fremtidige utvidelser uten godkjenning fra deg, åpne Family Link-appen på enheten din og oppdater Google Chrome-innstillingene til <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" />}=1{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og # til}other{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og # til}}</translation>
+<translation id="7181976109296206547">Gjennomgå oppdateringer av logo, navn og nettadresse</translation>
 <translation id="7182051712900867547">Bruk en annen konto</translation>
 <translation id="7182063559013288142">Umiddelbar wifi-sone</translation>
 <translation id="7182791023900310535">Flytt passordet</translation>
@@ -8922,6 +8933,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7312040805247765153">Kan ikke installere appen</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7313539585802573958">Tastaturlysfarger</translation>
+<translation id="7314865262803554456">Du varsles ikke når opptaket starter.</translation>
 <translation id="7314989823816739632">Romantisk</translation>
 <translation id="7317342082064136423">Bekreft kontoen din</translation>
 <translation id="7317831949569936035">Skoleregistrering</translation>
@@ -11456,6 +11468,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9033765790910064284">Fortsett likevel</translation>
 <translation id="9033857511263905942">&amp;Lim inn</translation>
 <translation id="903480517321259405">Skriv inn PIN-koden på nytt</translation>
+<translation id="9035157477209989051">Du varsles når disse appene brukes til å ta opp skjermen din:</translation>
 <translation id="9036484080057916082">Liste over tidsstempler for signerte sertifikater</translation>
 <translation id="9037054491984310631">Koblet til Bluetooth-enheten <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Enheten er ikke tillatt</translation>

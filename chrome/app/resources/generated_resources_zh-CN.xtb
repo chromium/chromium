@@ -849,6 +849,7 @@
 <translation id="1587275751631642843">JavaScript 控制台(&amp;J)</translation>
 <translation id="1587907146729660231">用手指轻触电源按钮</translation>
 <translation id="1588438908519853928">正常</translation>
+<translation id="1588772269240419305">查看徽标和名称更新</translation>
 <translation id="1588870296199743671">链接打开方式...</translation>
 <translation id="1588919647604819635">右键点击卡片</translation>
 <translation id="1589055389569595240">显示拼写和语法</translation>
@@ -1317,6 +1318,7 @@
 <translation id="1912867150686509584">在您的日历上查看更多会议</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{暂停导致浏览器运行缓慢的标签页}other{暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="1913749768968678106">投放、保存和分享</translation>
+<translation id="19147273405311768">将工具栏重置为默认设置</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">中止</translation>
 <translation id="1915734383465415025">商店编号</translation>
@@ -2995,6 +2997,7 @@
 <translation id="3060952009917586498">更改设备语言。当前语言为<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">我们无法与您的手机建立连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="3061302636956643119">系统会将所选文字发送给 Google 以供处理。</translation>
+<translation id="306166624240243643">查看名称和网址更新</translation>
 <translation id="3064871050034234884">网站可以播放声音</translation>
 <translation id="3065041951436100775">标签页意外关闭反馈。</translation>
 <translation id="3065522099314259755">键盘重复延迟时间</translation>
@@ -3037,6 +3040,7 @@
 <translation id="3100071818310370858">使用位置信息。允许具备位置信息权限的应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />详细了解位置信息<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">暗光</translation>
 <translation id="3101709781009526431">日期和时间</translation>
+<translation id="3102309003841389927">查看徽标更新</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3103451787721578293">请输入上传此数据的原因：</translation>
 <translation id="3103512663951238230">Alt+点击</translation>
@@ -6032,6 +6036,7 @@
 <translation id="5225324770654022472">显示应用快捷方式</translation>
 <translation id="52254442782792731">当前尚未设置公开范围</translation>
 <translation id="5225463052809312700">开启摄像头</translation>
+<translation id="5226253862147382094">查看徽标和网址更新</translation>
 <translation id="5226514125747186">网站图标周围会显示一个虚线圆圈。<ph name="BEGIN_LINK" />详细了解闲置标签页<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">不允许网站使用您的位置信息</translation>
 <translation id="5227679487546032910">默认的蓝绿色头像</translation>
@@ -7343,6 +7348,7 @@
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{要移除扩展程序？}other{要移除 # 个扩展程序？}}</translation>
 <translation id="6180510783007738939">直线工具</translation>
 <translation id="6180550893222597997">您要将哪个通行密钥用于<ph name="APP_NAME" />？</translation>
+<translation id="6181218116951226898">应用有时会更新其品牌标识。请查看所有更改，确保您接受这些更改，然后再更新。</translation>
 <translation id="6181431612547969857">下载已被阻止</translation>
 <translation id="6183369864942961155">自动切换浅色/深色主题</translation>
 <translation id="6184099524311454384">搜索标签页</translation>
@@ -7416,6 +7422,7 @@
 <translation id="6234108445915742946">Chrome 的《服务条款》将于 3 月 31 日变更</translation>
 <translation id="6234474535228214774">正等待安装</translation>
 <translation id="6235208551686043831">设备的摄像头已开启。请将摄像头对准您的 eSIM 卡二维码。</translation>
+<translation id="6237256594069101884">查看网址更新</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" />分组“<ph name="GROUP_NAME" />”- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">触控笔记事应用</translation>
 <translation id="6237481151388361546">请更改互联网连接并选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
@@ -8269,6 +8276,7 @@
 <translation id="6840155290835956714">发送前先询问</translation>
 <translation id="6840184929775541289">不是证书授权中心</translation>
 <translation id="6840214587087739194">已删除此地址</translation>
+<translation id="6841076158433142214">当这些应用用于录制屏幕时，您不会收到通知：</translation>
 <translation id="6841143363521180029">已加密</translation>
 <translation id="6841186874966388268">错误</translation>
 <translation id="6842135459748401207">仅限已登录 <ph name="USER_EMAIL" /> 的设备</translation>
@@ -8729,6 +8737,7 @@
 <translation id="7181329571386134105">要允许<ph name="CHILD_NAME" />日后在未经您批准的情况下安装扩展程序，请在设备上打开 Family Link 应用并更新<ph name="CHILD_NAME" />的 Google Chrome 设置。</translation>
 <translation id="7181840534454431748">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组
               {NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}}</translation>
+<translation id="7181976109296206547">查看徽标、名称和网址更新</translation>
 <translation id="7182051712900867547">使用其他账号</translation>
 <translation id="7182063559013288142">即时热点</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
@@ -8904,6 +8913,7 @@
 <translation id="7312040805247765153">无法安装应用</translation>
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7313539585802573958">键盘背光颜色</translation>
+<translation id="7314865262803554456">录制开始时，您不会收到通知。</translation>
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">验证您的账号</translation>
 <translation id="7317831949569936035">学校注册</translation>
@@ -11438,6 +11448,7 @@
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
 <translation id="903480517321259405">重新输入 PIN 码</translation>
+<translation id="9035157477209989051">当这些应用用于录制屏幕时，您会收到通知：</translation>
 <translation id="9036484080057916082">签名证书时间戳列表</translation>
 <translation id="9037054491984310631">已连接到名为“<ph name="DEVICE" />”的蓝牙设备</translation>
 <translation id="9037640663275993951">不允许此设备运行虚拟机</translation>
