@@ -74,7 +74,7 @@ public class MimeUtils {
      */
     @CalledByNative
     public static @JniType("std::string") String remapGenericMimeType(
-            @JniType("std::string") String mimeType,
+            @JniType("std::string") @Nullable String mimeType,
             @JniType("std::string") String url,
             @JniType("std::string") String filename) {
         if (TextUtils.isEmpty(mimeType)) mimeType = UNKNOWN_MIME_TYPE;
