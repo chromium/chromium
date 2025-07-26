@@ -166,6 +166,7 @@ impl Matcher {
         self.with_inner(|inner| {
             for (idx, &t) in tokens.iter().enumerate() {
                 if !inner.parser.validate_token(t)? {
+                    let _ = inner.parser.check_stop()?;
                     return Ok(idx);
                 }
                 let bt = inner.parser.consume_token(t)?;

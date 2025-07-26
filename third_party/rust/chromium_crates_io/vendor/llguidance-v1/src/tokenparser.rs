@@ -139,6 +139,10 @@ impl TokenParser {
         self.stop_reason
     }
 
+    pub fn stopped(&self) -> bool {
+        self.stop_reason != StopReason::NotStopped
+    }
+
     pub fn is_fresh(&self) -> bool {
         self.is_fresh
     }
@@ -334,7 +338,7 @@ impl TokenParser {
     fn check_initialized(&self, lbl: &str) -> Result<()> {
         ensure!(!self.is_fresh, "process_prompt() not called in {}", lbl);
         ensure!(
-            self.stop_reason == StopReason::NotStopped,
+            !self.stopped(),
             "parser stopped in {}; {}",
             lbl,
             self.error_message()
@@ -344,6 +348,9 @@ impl TokenParser {
     }
 
     pub fn validate_token(&mut self, token: TokenId) -> Result<bool> {
+        if self.stopped() {
+            return Ok(false);
+        }
         self.check_initialized("validate_token")?;
         self.validate_tokens_raw(&[token]).map(|n| n > 0)
     }
@@ -407,6 +414,9 @@ impl TokenParser {
     /// It does not tokenize forced bytes, so will accept non-canonical tokenizations.
     /// If called with more than one token, it may ignore max_tokens constraints.
     pub fn validate_tokens_raw(&mut self, tokens: &[TokenId]) -> Result<usize> {
+        if self.stopped() {
+            return Ok(0);
+        }
         self.check_initialized("validate_tokens_raw")?;
 
         if tokens.is_empty() {

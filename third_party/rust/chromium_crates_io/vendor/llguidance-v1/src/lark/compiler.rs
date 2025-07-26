@@ -313,6 +313,18 @@ impl Compiler {
                     Value::SpecialToken(s) => {
                         if s.starts_with("<[") && s.ends_with("]>") {
                             let s = &s[2..s.len() - 2];
+                            let negate = s.starts_with("^");
+                            let s = if negate { &s[1..] } else { s };
+                            if s == "*" {
+                                if negate {
+                                    bail!("negated wildcard token <[^*]> is not supported");
+                                }
+                                return self.builder.any_token();
+                            } else if s.contains('*') {
+                                bail!(
+                                    "wildcard token range '*' must not contain additional tokens"
+                                );
+                            }
                             let mut ranges = vec![];
                             for range in s.split(",") {
                                 let ends: Vec<&str> = range.split('-').map(|s| s.trim()).collect();
@@ -334,7 +346,11 @@ impl Compiler {
                                 ranges.push(start..=end);
                             }
                             ensure!(!ranges.is_empty(), "empty token range");
-                            return self.builder.token_ranges(ranges);
+                            return if negate {
+                                self.builder.negated_token_ranges(ranges)
+                            } else {
+                                self.builder.token_ranges(ranges)
+                            };
                         }
                         return self.builder.special_token(s);
                     }
