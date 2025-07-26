@@ -78,6 +78,7 @@ config("tflite_flags") {
     "-Wno-shadow",
     "-Wno-deprecated-anon-enum-enum-conversion",
     "-Wno-unused-function",
+    "-Wno-unreachable-code-return",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
@@ -403,7 +404,6 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.cc",
     "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.h",
     "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference_impl.h",
-    "src/tensorflow/lite/kernels/internal/optimized/batch_matmul.h",
     "src/tensorflow/lite/kernels/internal/optimized/cpu_check.cc",
     "src/tensorflow/lite/kernels/internal/optimized/cpu_check.h",
     "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_3x3_filter_common.h",
@@ -1294,6 +1294,8 @@ tflite_static_library("tflite") {
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
       "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
       "src/tensorflow/lite/delegates/xnnpack/weight_cache.h",
+      "src/tensorflow/lite/delegates/xnnpack/windows_util.cc",
+      "src/tensorflow/lite/delegates/xnnpack/windows_util.h",
       "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
       "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
     ]

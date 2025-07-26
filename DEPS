@@ -2057,7 +2057,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'e4cadd02a8b386c38b84f0a19eddacec3f433baa',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '33ed0be77d7767d0e2010e2c3cf972ef36c7c307',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'd3d60ac6e0f16780bcfcc825385e1d338801a558',
@@ -2756,7 +2756,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + '28bf5df73ef2f345a936d9cc95d64ba8ed426a53',
 
   'src/third_party/pthreadpool/src':
-    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'fe1680559261f230440de35ca5f8526f5416f111',
+    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + '149f0a86f5ad215e9f0441684385ce09f345dbe4',
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
@@ -2918,7 +2918,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '2fa9270e2ea534a3612fa8e4b9063ed3129ca215',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'b6b24a952939996a1d6dc0f1789b41b6339987e2',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -3007,7 +3007,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '6d8a8c2eee9a75d4260460a304196c4bef53ae74',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '30d941c9f177f2b2c6c88241c96ff123fcbe7667',
 
   'src/third_party/libei/cipd': {
 
