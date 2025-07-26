@@ -63,6 +63,6 @@ test("starboard_cdm_unittests") {
     "//media",
     "//testing/gmock",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }

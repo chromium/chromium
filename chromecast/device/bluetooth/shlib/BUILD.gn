@@ -24,6 +24,6 @@ cast_source_set("mock_shlib") {
     ":shlib",
     "//base",
     "//chromecast/public",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
   ]
 }

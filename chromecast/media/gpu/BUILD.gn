@@ -16,9 +16,9 @@ cast_source_set("gpu") {
       "//chromecast/mojo",
       "//components/viz/common",
       "//media/gpu",
-      "//media/gpu/ipc/client:client",
+      "//media/gpu/ipc/client",
       "//media/gpu/ipc/common",
-      "//media/mojo/clients:clients",
+      "//media/mojo/clients",
       "//media/mojo/mojom",
       "//ui/gfx/geometry/mojom",
     ]

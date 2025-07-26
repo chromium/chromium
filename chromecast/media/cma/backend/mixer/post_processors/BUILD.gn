@@ -110,6 +110,6 @@ cast_source_set("unittests") {
     "//chromecast/media/base",
     "//chromecast/public",
     "//chromecast/public/media",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
