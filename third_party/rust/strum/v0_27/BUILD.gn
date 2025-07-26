@@ -26,7 +26,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "strum"
   cargo_pkg_description = "Helpful macros for working with enums and strings"
   cargo_pkg_repository = "https://github.com/Peternator7/strum"
-  cargo_pkg_version = "0.27.1"
+  cargo_pkg_version = "0.27.2"
 
   allow_unsafe = false
 
