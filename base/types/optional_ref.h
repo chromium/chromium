@@ -208,10 +208,8 @@ class optional_ref {
                                     const optional_ref<T> y)
     requires std::three_way_comparable<T>
   {
-    if (!x.ptr_ || !y.ptr_) {
-      return (!!x.ptr_) <=> (!!y.ptr_);
-    }
-    return *x.ptr_ <=> *y.ptr_;
+    return (!x.ptr_ || !y.ptr_) ? (!!x.ptr_) <=> (!!y.ptr_)
+                                : *x.ptr_ <=> *y.ptr_;
   }
 
  private:

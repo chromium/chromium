@@ -542,6 +542,16 @@ static_assert(!std::equality_comparable<optional_ref<Noncomparable>>);
 static_assert(!std::three_way_comparable<Noncomparable>);
 static_assert(!std::three_way_comparable<optional_ref<Noncomparable>>);
 
+class PartiallyComparable {
+ public:
+  friend std::partial_ordering operator<=>(const PartiallyComparable&,
+                                           const PartiallyComparable&) =
+      default;
+};
+
+static_assert(std::three_way_comparable<PartiallyComparable>);
+static_assert(std::three_way_comparable<optional_ref<PartiallyComparable>>);
+
 TEST(OptionalRefTest, CompatibilityWithOptionalMatcher) {
   using ::testing::Optional;
 
