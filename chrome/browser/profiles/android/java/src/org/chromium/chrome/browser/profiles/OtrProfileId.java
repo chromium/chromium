@@ -53,7 +53,7 @@ public class OtrProfileId {
      * @return A string that represents the given otrProfileId.
      */
     @CalledByNative
-    public static @Nullable String serialize(@Nullable OtrProfileId otrProfileId) {
+    public static @Nullable String serialize(OtrProfileId otrProfileId) {
         // The OtrProfileId might be null, if it represents the regular profile.
         if (otrProfileId == null) return null;
 

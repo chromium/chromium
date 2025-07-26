@@ -94,10 +94,8 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
     void onItemRemoved(ContentId id);
 
     @Override
-    void onItemUpdated(OfflineItem item, @Nullable UpdateDelta updateDelta);
+    void onItemUpdated(OfflineItem item, UpdateDelta updateDelta);
 
-    /**
-     * @return Whether the UI is currently showing.
-     */
+    /** @return Whether the UI is currently showing. */
     boolean isShowing();
 }
