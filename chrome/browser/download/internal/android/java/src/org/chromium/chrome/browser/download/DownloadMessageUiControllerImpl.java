@@ -497,7 +497,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     @Override
-    public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
+    public void onItemUpdated(OfflineItem item, @Nullable UpdateDelta updateDelta) {
         if (mDownloadInterstitialSources.contains(item.originalUrl)) {
             mDownloadInterstitialSources.remove(item.originalUrl);
             mInterstitialItems.add(item.id);

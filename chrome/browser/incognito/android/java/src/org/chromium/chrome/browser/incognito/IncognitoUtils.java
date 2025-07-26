@@ -51,7 +51,7 @@ public class IncognitoUtils {
      * @param otrProfileId The {@link OtrProfileId} of the profile. Null for regular profile.
      * @return The {@link ProfileKey} of the key.
      */
-    public static ProfileKey getProfileKeyFromOtrProfileId(OtrProfileId otrProfileId) {
+    public static ProfileKey getProfileKeyFromOtrProfileId(@Nullable OtrProfileId otrProfileId) {
         // If off-the-record is not requested, the request might be before native initialization.
         if (otrProfileId == null) return ProfileKeyUtil.getLastUsedRegularProfileKey();
 

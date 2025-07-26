@@ -42,7 +42,7 @@ public class DownloadFilter {
     private static final String MIMETYPE_DOCUMENT = "text";
 
     /** Identifies the type of file represented by the given MIME type string. */
-    public static @Type int fromMimeType(String mimeType) {
+    public static @Type int fromMimeType(@Nullable String mimeType) {
         if (TextUtils.isEmpty(mimeType)) return Type.OTHER;
 
         Integer type = filterForSpecialMimeTypes(mimeType);

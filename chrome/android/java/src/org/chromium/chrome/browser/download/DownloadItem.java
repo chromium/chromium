@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.download.ResumeMode;
@@ -19,9 +21,10 @@ import org.chromium.components.offline_items_collection.OfflineItemState;
  * A generic class representing a download item. The item can be either downloaded through the
  * Android DownloadManager, or through Chrome's network stack.
  *
- * This represents the native DownloadItem at a specific point in time -- the native side
+ * <p>This represents the native DownloadItem at a specific point in time -- the native side
  * DownloadManager must be queried for the correct status.
  */
+@NullMarked
 public class DownloadItem {
     private final ContentId mContentId = new ContentId();
     private final boolean mUseAndroidDownloadManager;
@@ -68,7 +71,7 @@ public class DownloadItem {
     /**
      * @return String ID that uniquely identifies the download.
      */
-    public String getId() {
+    public @Nullable String getId() {
         if (mUseAndroidDownloadManager) {
             return String.valueOf(mDownloadId);
         }
@@ -157,7 +160,7 @@ public class DownloadItem {
         DownloadInfo downloadInfo = item.getDownloadInfo();
         offlineItem.id = downloadInfo.getContentId();
         offlineItem.filePath = downloadInfo.getFilePath();
-        offlineItem.title = downloadInfo.getFileName();
+        offlineItem.title = downloadInfo.getFileName() != null ? downloadInfo.getFileName() : "";
         offlineItem.description = downloadInfo.getDescription();
         offlineItem.isTransient = downloadInfo.getIsTransient();
         offlineItem.isAccelerated = downloadInfo.getIsParallelDownload();
