@@ -54,11 +54,10 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
       base::WeakPtr<PrefetchResponseReader> response_reader,
-      PrefetchServiceWorkerState initial_service_worker_state =
-          PrefetchServiceWorkerState::kDisallowed,
-      BrowserContext* browser_context_for_service_worker = nullptr,
+      PrefetchServiceWorkerState initial_service_worker_state,
+      BrowserContext* browser_context_for_service_worker,
       OnServiceWorkerStateDeterminedCallback
-          on_service_worker_state_determined_callback = base::DoNothing());
+          on_service_worker_state_determined_callback);
 
   // Must be called only from `CreateAndStart()`.
   PrefetchStreamingURLLoader(

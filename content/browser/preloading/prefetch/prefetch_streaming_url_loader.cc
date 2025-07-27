@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 
+#include "base/check_is_test.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -309,6 +310,19 @@ void PrefetchStreamingURLLoader::StartServiceWorkerInterceptor(
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::TimeDelta timeout_duration) {
+  auto callback = base::BindOnce(
+      &PrefetchStreamingURLLoader::ServiceWorkerInterceptorLoaderCallback,
+      GetWeakPtr(), network_url_loader_factory, request,
+      network_traffic_annotation, std::move(timeout_duration));
+
+  if (!browser_context) {
+    // In tests, `browser_context` can be null. Emulate as if there are no
+    // service workers without going through the interceptor.
+    CHECK_IS_TEST();
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   // TODO(https://crbug.com/40947546): Set this FetchEvent's Client ID.
   std::string fetch_event_client_id;
 
@@ -330,11 +344,7 @@ void PrefetchStreamingURLLoader::StartServiceWorkerInterceptor(
       request, service_worker_handle_->AsWeakPtr(), network_url_loader_factory);
 
   interceptor_->MaybeCreateLoader(
-      request, browser_context,
-      base::BindOnce(
-          &PrefetchStreamingURLLoader::ServiceWorkerInterceptorLoaderCallback,
-          GetWeakPtr(), network_url_loader_factory, request,
-          network_traffic_annotation, std::move(timeout_duration)),
+      request, browser_context, std::move(callback),
       base::BindOnce(
           [](scoped_refptr<network::SharedURLLoaderFactory>
                  network_url_loader_factory,

@@ -164,7 +164,17 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
       std::move(url_loader_factory), prefetch_request,
       TRAFFIC_ANNOTATION_FOR_TESTS, timeout_duration,
       std::move(on_receive_response_callback),
-      std::move(on_receive_redirect_callback), std::move(response_reader));
+      std::move(on_receive_redirect_callback), std::move(response_reader),
+      // Because `browser_context_for_service_worker` is null, we don't test
+      // ServiceWorker-controlled prefetches (covered by WPTs instead). Still
+      // `OnServiceWorkerStateDetermined()` callback should be passed, to go
+      // through `PrefetchServiceWorkerState` transitions for
+      // `prefetch_container` if non-null.
+      prefetch_container ? prefetch_container->service_worker_state()
+                         : PrefetchServiceWorkerState::kDisallowed,
+      /*browser_context_for_service_worker=*/nullptr,
+      base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
+                     prefetch_container));
 
   if (prefetch_container) {
     prefetch_container->SetStreamingURLLoader(streaming_loader);
