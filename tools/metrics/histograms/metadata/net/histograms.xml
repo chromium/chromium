@@ -1060,6 +1060,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.Pattern.NotCoveredReason{CachedResourceType}"
+    enum="HttpCacheNotCoveredReason" expires_after="2025-12-21">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    For each http cache transaction that reported &quot;Not covered&quot; to the
+    HttpCache.Pattern histogram, the reason why it was not covered. Logged once
+    for every cache transaction that records a &quot;Not covered&quot; reason,
+    in the destructor. {CachedResourceType}
+  </summary>
+  <token key="CachedResourceType">
+    <variant name=""/>
+    <variant name=".MainFrameHTML"
+        summary="Showing reasons only for main-frame HTML resources."/>
+  </token>
+</histogram>
+
 <histogram name="HttpCache.Pattern{CachedResourceType}" enum="HttpCachePattern"
     expires_after="2025-12-21">
   <owner>morlovich@chromium.org</owner>

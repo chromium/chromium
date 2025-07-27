@@ -489,6 +489,48 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="SpdyProxy Secure Server (Invalid)"/>
 </enum>
 
+<!-- LINT.IfChange(HttpCacheNotCoveredReason) -->
+
+<enum name="HttpCacheNotCoveredReason">
+  <int value="0" label="No Reason">Should not happen.</int>
+  <int value="1" label="Reading Auth Response">
+    Stopped caching to read the response body of an auth response.
+  </int>
+  <int value="2" label="Network Error">
+    A network error happened in the headers phase.
+  </int>
+  <int value="3" label="Partial Response Validation">
+    A partial response could not be validated, and it was not due to auth.
+  </int>
+  <int value="4" label="Delete Full Entry">
+    We have a full entry, but the server sent a range response that should
+    replace it.
+  </int>
+  <int value="5" label="Partial Request">Partial requests are hard to log.</int>
+  <int value="6" label="Range Header Found">
+    Original request had a Range header.
+  </int>
+  <int value="7" label="Truncated Entry">The cache entry was truncated.</int>
+  <int value="8" label="Partial Validation">
+    Validating a partial entry, and they are hard to log.
+  </int>
+  <int value="9" label="Pre Conditionalized">
+    The request was externally conditionalized and didn't match our existing
+    cache entry.
+  </int>
+  <int value="10" label="Validate Partial">
+    Attempt to validate a partial response failed.
+  </int>
+  <int value="11" label="Ignore Range Request">
+    Range-related failure led to calling IgnoreRangeRequest().
+  </int>
+  <int value="12" label="Blocked By Ip Space">
+    Cached IP address space blocked by Private Network Access policy.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:OtherStatusReason) -->
+
 <enum name="HttpCachePattern">
   <int value="0" label="Undefined"/>
   <int value="1" label="Not Covered"/>

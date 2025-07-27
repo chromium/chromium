@@ -303,7 +303,7 @@ int HttpCache::Transaction::Read(IOBuffer* buf,
   // user wishes to read the network response (the error page).  If there is a
   // previous response in the cache then we should leave it intact.
   if (auth_response_.headers.get() && mode_ != NONE) {
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kReadingAuthResponse);
     DCHECK(mode_ & WRITE);
     bool stopped = StopCachingImpl(mode_ == READ_WRITE);
     DCHECK(stopped);
@@ -1924,7 +1924,7 @@ int HttpCache::Transaction::DoSendRequestComplete(int result) {
   response_.resolve_error_info = response->resolve_error_info;
 
   // Do not record requests that have network errors or restarts.
-  UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+  UpdateCacheEntryStatusToOther(OtherStatusReason::kNetworkError);
   if (IsCertificateError(result)) {
     // If we get a certificate error, then there is a certificate in ssl_info,
     // so GetResponseInfo() should never return NULL here.
@@ -1992,7 +1992,7 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
     // happening if the user cancels the authentication before we receive
     // the new response.
     net_log_.AddEvent(NetLogEventType::HTTP_CACHE_RE_SEND_PARTIAL_REQUEST);
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kResponseValidation);
     SetResponse(HttpResponseInfo());
     ResetNetworkTransaction();
     new_response_ = nullptr;
@@ -2003,7 +2003,7 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
   if (handling_206_ && mode_ == READ_WRITE && !truncated_ && !is_sparse_) {
     // We have stored the full entry, but it changed and the server is
     // sending a range. We have to delete the old entry.
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kDeleteFullEntry);
     DoneWithEntry(false);
   }
 
@@ -2529,7 +2529,7 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
   if (partial_) {
     // Partial requests are confusing to report in histograms because they may
     // have multiple underlying requests.
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kPartialRequest);
     return DoPartialCacheReadCompleted(result);
   }
 
@@ -2613,7 +2613,7 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   }
 
   if (range_found && !(effective_load_flags_ & LOAD_DISABLE_CACHE)) {
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kRangeHeaderFound);
     partial_ = std::make_unique<PartialData>();
     if (method_ == "GET" && partial_->Init(request_->extra_headers)) {
       // We will be modifying the actual range requested to the server, so
@@ -2747,7 +2747,7 @@ int HttpCache::Transaction::BeginCacheValidation() {
   if (truncated_) {
     // Truncated entries can cause partial gets, so we shouldn't record this
     // load in histograms.
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kTruncatedEntry);
     skip_validation = !partial_->initial_validation();
   }
 
@@ -2820,7 +2820,7 @@ int HttpCache::Transaction::BeginPartialCacheValidation() {
   }
 
   // Partial requests should not be recorded in histograms.
-  UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+  UpdateCacheEntryStatusToOther(OtherStatusReason::kPartialValidation);
   if (method_ == "HEAD") {
     return BeginCacheValidation();
   }
@@ -2868,7 +2868,7 @@ int HttpCache::Transaction::BeginExternallyConditionalizedRequest() {
       !external_validation_->Match(*response_.headers)) {
     // The externally conditionalized request is not a validation request
     // for our existing cache entry. Proceed with caching disabled.
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kPreConditionalized);
     DoneWithEntry(true);
   }
 
@@ -3235,7 +3235,7 @@ bool HttpCache::Transaction::ValidatePartialResponse() {
 
   if (failure) {
     // We cannot truncate this entry, it has to be deleted.
-    UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+    UpdateCacheEntryStatusToOther(OtherStatusReason::kValidatePartial);
     mode_ = NONE;
     if (is_sparse_ || truncated_) {
       // There was something cached to start with, either sparsed data (206), or
@@ -3263,7 +3263,7 @@ void HttpCache::Transaction::IgnoreRangeRequest() {
   // returned the headers), but we'll just pretend that this request is not
   // using the cache and see what happens. Most likely this is the first
   // response from the server (it's not changing its mind midway, right?).
-  UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+  UpdateCacheEntryStatusToOther(OtherStatusReason::kIgnoreRangeRequest);
   DoneWithEntry(mode_ != WRITE);
   partial_.reset(nullptr);
 }
@@ -3290,7 +3290,7 @@ int HttpCache::Transaction::DoConnectedCallbackComplete(int result) {
     if (result ==
         ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY) {
       DoomInconsistentEntry();
-      UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+      UpdateCacheEntryStatusToOther(OtherStatusReason::kBlockedByIpSpace);
       TransitionToState(reading_ ? STATE_SEND_REQUEST
                                  : STATE_HEADERS_PHASE_CANNOT_PROCEED);
       return OK;
@@ -3733,6 +3733,15 @@ void HttpCache::Transaction::UpdateCacheEntryStatus(
   SyncCacheEntryStatusToResponse();
 }
 
+void HttpCache::Transaction::UpdateCacheEntryStatusToOther(
+    OtherStatusReason reason) {
+  if (cache_entry_status_ == CacheEntryStatus::ENTRY_OTHER) {
+    return;
+  }
+  other_status_reason_ = reason;
+  UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+}
+
 void HttpCache::Transaction::SyncCacheEntryStatusToResponse() {
   if (cache_entry_status_ == CacheEntryStatus::ENTRY_UNDEFINED) {
     return;
@@ -3771,15 +3780,16 @@ void HttpCache::Transaction::RecordHistograms() {
   HttpResponseHeaders* response_headers = GetResponseInfo()->headers.get();
   const bool is_no_store = response_headers && response_headers->HasHeaderValue(
                                                    "cache-control", "no-store");
+  bool is_html = false;
   if (response_headers && response_headers->GetMimeType(&mime_type)) {
     // Record the cache pattern by resource type. The type is inferred by
     // response header mime type, which could be incorrect, so this is just an
     // estimate.
-    if (mime_type == "text/html" &&
-        (effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED)) {
+    is_html = (mime_type == "text/html");
+    if (is_html && (effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED)) {
       CACHE_STATUS_HISTOGRAMS(".MainFrameHTML");
       IS_NO_STORE_HISTOGRAMS(".MainFrameHTML", is_no_store);
-    } else if (mime_type == "text/html") {
+    } else if (is_html) {
       CACHE_STATUS_HISTOGRAMS(".NonMainFrameHTML");
     } else if (mime_type == "text/css") {
       if (is_third_party) {
@@ -3816,6 +3826,15 @@ void HttpCache::Transaction::RecordHistograms() {
   IS_NO_STORE_HISTOGRAMS("", is_no_store);
 
   if (cache_entry_status_ == CacheEntryStatus::ENTRY_OTHER) {
+    CHECK_NE(other_status_reason_, OtherStatusReason::kNoReason);
+    UMA_HISTOGRAM_ENUMERATION("HttpCache.Pattern.NotCoveredReason",
+                              other_status_reason_);
+    if (is_html && (effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED)) {
+      base::UmaHistogramEnumeration(
+          "HttpCache.Pattern.NotCoveredReason.MainFrameHTML",
+          other_status_reason_);
+    }
+
     return;
   }
 

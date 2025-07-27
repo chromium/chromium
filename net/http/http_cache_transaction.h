@@ -311,6 +311,30 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NoVarySearchUseResult)
 
+  // Reason why we ended up with status ENTRY_OTHER.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(OtherStatusReason)
+  enum class OtherStatusReason : uint8_t {
+    kNoReason = 0,             // Status was not set to ENTRY_OTHER.
+    kReadingAuthResponse = 1,  // Stopped caching to read auth response body.
+    kNetworkError = 2,         // A network error happened.
+    kResponseValidation = 3,   // Response validation failed.
+    kDeleteFullEntry = 4,      // Need to delete a full entry.
+    kPartialRequest = 5,       // Partial requests are hard to log.
+    kRangeHeaderFound = 6,     // Request had Range header.
+    kTruncatedEntry = 7,       // Cache entry was truncated.
+    kPartialValidation = 8,    // Validating a partial entry.
+    kPreConditionalized = 9,   // Externally conditionalized request.
+    kValidatePartial = 10,     // Validating partial response failed.
+    kIgnoreRangeRequest = 11,  // Very miscellaneous range failure.
+    kBlockedByIpSpace = 12,    // Blocked by Private Network Access.
+    kMaxValue = kBlockedByIpSpace,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpCacheNotCoveredReason)
+
   // Runs the state transition loop. Resets and calls |callback_| on exit,
   // unless the return value is ERR_IO_PENDING.
   int DoLoop(int result);
@@ -546,6 +570,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void UpdateCacheEntryStatus(
       HttpResponseInfo::CacheEntryStatus new_cache_entry_status);
 
+  void UpdateCacheEntryStatusToOther(OtherStatusReason reason);
+
   // Sets the response.cache_entry_status to the current cache_entry_status_.
   void SyncCacheEntryStatusToResponse();
 
@@ -759,6 +785,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // The result of applying the No-Vary-Search to the request. For UMA.
   NoVarySearchUseResult no_vary_search_use_result_ =
       NoVarySearchUseResult::kNotApplied;
+
+  // The first reason why `cache_entry_status_` ended up set to ENTRY_OTHER.
+  // Logged to UMA on destruction when `cache_entry_status_` is ENTRY_OTHER.
+  OtherStatusReason other_status_reason_ = OtherStatusReason::kNoReason;
 
   // If an entry in the NoVarySearchCache was found to be unhelpful, this
   // handle can be used to erase it. Only set if an entry was found in the
