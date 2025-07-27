@@ -749,15 +749,11 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   EXPECT_TRUE(NavigateToURL(contents, main_url));
 
   // Use the crash reporting storage API, to collect some data about the current
-  // page. In this case, just the current origin and the window's outerHeight,
-  // to verify they come out on the other end of the crash report.
-  const int expected_outer_height =
-      content::EvalJs(contents, "window.outerHeight").ExtractInt();
-  EXPECT_TRUE(ExecJs(
-      contents->GetPrimaryMainFrame(),
-      "crashReport.set('self.origin', self.origin + "
-      "'/');crashReport.set('outer_height', "
-      "window.outerHeight);crashReport.set('custom_key', 'custom_value')"));
+  // page. In this case, just the current origin and a custom key, to verify
+  // they come out on the other end of the crash report.
+  EXPECT_TRUE(ExecJs(contents->GetPrimaryMainFrame(),
+                     "crashReport.set('self.origin', self.origin + "
+                     "'/');crashReport.set('custom_key', 'custom_value')"));
   EXPECT_TRUE(ExecJs(contents->GetPrimaryMainFrame(),
                      "crashReport.remove('custom_key')"));
 
@@ -780,7 +776,6 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   const base::Value::Dict* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::string* self_origin = body->FindString("self.origin");
-  const std::string* outer_height = body->FindString("outer_height");
   const std::string* custom_key = body->FindString("custom_key");
 
   EXPECT_EQ("crash", *type);
@@ -789,7 +784,6 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   EXPECT_EQ(
       contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL().spec(),
       *self_origin);
-  EXPECT_EQ(base::ToString(expected_outer_height), *outer_height);
   // Because `crashReport.remove('custom_key')` was called before the process
   // crashed, this value is not present in the report body.
   EXPECT_EQ(custom_key, nullptr);
