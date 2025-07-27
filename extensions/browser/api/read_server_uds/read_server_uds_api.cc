@@ -1,6 +1,9 @@
 #include "extensions/browser/api/read_server_uds/read_server_uds_api.h"
 #include "extensions/common/api/read_server_uds.h"
 
+#include "base/values.h"
+#include "base/json/json_writer.h"
+
 /// tmp/shared-sockets/echo_socket
 namespace extensions {
 
@@ -205,10 +208,14 @@ ExtensionFunction::ResponseAction ReadServerUdsInferSingleBERTFunction::Run() {
 
   auto maybe_params = infer_single_bert_api::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(maybe_params);
-  
-  const std::string& payload = maybe_params->data;
-  
-  LOG(INFO) << "Payload " << payload;
+
+  std::string payload;
+  bool success = base::JSONWriter::Write(maybe_params->request.ToValue(), &payload);
+
+  // Optional: handle 
+  if (!success) {
+    LOG(ERROR) << "Failed to serialize context/question to JSON";
+  }
 
   AddRef();  // async
 

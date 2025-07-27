@@ -161,7 +161,7 @@ singleBertInferBtnEle.addEventListener('click', () => {
 
   // console.log("Bert Infer Paylod", jsonPayload);
 
-  chrome.readServerUds.inferSingleBERT(jsonPayload, (response) => {
+  chrome.readServerUds.inferSingleBERT(payload, (response) => {
     if (chrome.runtime.lastError) {
       bertInputErrorEle.textContent = 'Native Error: ' + chrome.runtime.lastError.message;
       bertInputErrorEle.classList.add('error');

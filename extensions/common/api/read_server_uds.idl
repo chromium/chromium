@@ -5,6 +5,12 @@
 // This IDL defines the `readServerUds` API for interacting with a server.
 
 namespace readServerUds {
+
+  dictionary InferSingleBERTRequest {
+    DOMString context;
+    DOMString question;
+  };
+
   callback ReadDataCallback = void(DOMString result);
   callback SendDataCallback = void(DOMString response);
 
@@ -24,6 +30,6 @@ namespace readServerUds {
     static void loadModelBERT(optional LoadModelBERTCallback callback);
 
     // Sends data for inference and gets a label prediction. (BERT)
-    static void inferSingleBERT(DOMString data, optional InferSingleBERTCallback callback);
+    static void inferSingleBERT(InferSingleBERTRequest request, optional InferSingleBERTCallback callback);
   };
 };
