@@ -387,7 +387,8 @@ class CONTENT_EXPORT FedCmMetrics {
       std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
       FedCmThirdPartyCookiesStatus tpc_status,
       const FedCmRequesterFrameType& requester_frame_type,
-      std::optional<bool> has_signin_account);
+      std::optional<bool> has_signin_account,
+      bool did_show_ui);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,

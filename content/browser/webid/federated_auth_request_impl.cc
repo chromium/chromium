@@ -1886,7 +1886,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
             : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
         webid::ComputeRequesterFrameType(render_frame_host(), origin(),
                                          GetEmbeddingOrigin()),
-        has_signin_account);
+        has_signin_account, did_show_ui_);
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {
@@ -2661,7 +2661,7 @@ bool FederatedAuthRequestImpl::HandlePendingRequestAndCancelNewRequest(
             : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
         webid::ComputeRequesterFrameType(render_frame_host(), origin(),
                                          GetEmbeddingOrigin()),
-        /*has_signin_account=*/std::nullopt);
+        /*has_signin_account=*/std::nullopt, /*did_show_ui=*/false);
 
     AddDevToolsIssue(
         blink::mojom::FederatedAuthRequestResult::kTooManyRequests);

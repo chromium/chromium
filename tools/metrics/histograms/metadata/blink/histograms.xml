@@ -1527,6 +1527,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.DidShowUI" enum="Boolean"
+    expires_after="2025-12-14">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the FedCM UI is shown or not. Records a sample when the
+    FedCM call is completed, i.e. at the same time as
+    Blink.FedCm.Status.RequestIdToken.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Disconnect.FrameType"
     enum="FedCmRequesterFrameType" expires_after="2025-12-12">
   <owner>npm@chromium.org</owner>

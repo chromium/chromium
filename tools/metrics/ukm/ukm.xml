@@ -3922,6 +3922,12 @@ be describing additional metrics about the same event.
       dialog close. Records at the time the API call is completed.
     </summary>
   </metric>
+  <metric name="DidShowUI" enum="Boolean">
+    <summary>
+      Records whether the FedCM dialog was shown. Recorded once per API call
+      when the request is fulfilled (either resolved or rejected).
+    </summary>
+  </metric>
   <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
     <summary>
       Records the type of frame that invokes disconnect(). Records once for each

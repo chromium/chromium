@@ -284,7 +284,8 @@ void FedCmMetrics::RecordRequestTokenStatus(
     std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
     FedCmThirdPartyCookiesStatus tpc_status,
     const FedCmRequesterFrameType& requester_frame_type,
-    std::optional<bool> has_signin_account) {
+    std::optional<bool> has_signin_account,
+    bool did_show_ui) {
   // The following check is to avoid double recording in the following scenario:
   // 1. The request has failed but we have not yet rejected the promise, e.g.
   // when the API is disabled. We record a metric immediately but only post a
@@ -325,7 +326,9 @@ void FedCmMetrics::RecordRequestTokenStatus(
     }
   };
 
-  SetUkm(GetOrCreateFedCmBuilder(), status);
+  ukm::builders::Blink_FedCm* fedcm_builder = GetOrCreateFedCmBuilder();
+  SetUkm(fedcm_builder, status);
+  fedcm_builder->SetDidShowUI(did_show_ui);
 
   for (const auto& provider : requested_providers) {
     ukm::builders::Blink_FedCmIdp* fedcm_idp_builder =
@@ -361,6 +364,7 @@ void FedCmMetrics::RecordRequestTokenStatus(
     base::UmaHistogramBoolean("Blink.FedCm.HasSigninAccount",
                               *has_signin_account);
   }
+  base::UmaHistogramBoolean("Blink.FedCm.DidShowUI", did_show_ui);
 
   // We do not expect more request token status metrics from this API call.
   has_recorded_request_token_status_ = true;

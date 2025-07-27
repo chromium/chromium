@@ -1918,6 +1918,8 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulRequest) {
   // expectation does not check that the client metadata was fetched because
   // client metadata is optional.
   EXPECT_TRUE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", true, 1);
+  ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, true);
 }
 
 // Test successful well-known fetching.
@@ -2162,6 +2164,8 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   ExpectStatusMetrics(TokenStatus::kIdpNotPotentiallyTrustworthy);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", false, 1);
+  ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, false);
 }
 
 // Test that request fails if accounts endpoint cannot be reached.
@@ -3203,6 +3207,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 
   ukm_loop.Run();
 
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", true, 1);
+  ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, true);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
       1);
@@ -3280,6 +3286,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
 
   ukm_loop.Run();
 
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", true, 1);
+  ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, true);
   ASSERT_TRUE(did_show_accounts_dialog());
   EXPECT_EQ(all_accounts_for_display()[0]->browser_trusted_login_state,
             LoginState::kSignUp);
@@ -3613,6 +3621,9 @@ TEST_F(FederatedAuthRequestImplTest, ApiBlockedForOrigin) {
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
   EXPECT_FALSE(DidFetchAnyEndpoint());
+  ExpectStatusMetrics(TokenStatus::kDisabledInSettings);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", false, 1);
+  ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, false);
 }
 
 // Test that token request succeeds if FEDERATED_IDENTITY_API content setting is
