@@ -12,7 +12,6 @@
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -21,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -32,6 +32,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+#include "components/optimization_guide/core/model_execution/performance_class.h"
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 namespace optimization_guide {
 
@@ -111,6 +115,7 @@ void OnURLLoadComplete(
 }
 
 proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   auto performance_class = PerformanceClassFromPref(*local_state);
   switch (performance_class) {
     case OnDeviceModelPerformanceClass::kVeryLow:
@@ -130,6 +135,7 @@ proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
     case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
       return proto::PERFORMANCE_CLASS_UNSPECIFIED;
   }
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   return proto::PERFORMANCE_CLASS_UNSPECIFIED;
 }
 

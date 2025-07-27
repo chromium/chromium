@@ -12,5 +12,8 @@ buildflag_header("machine_learning_tflite_buildflags") {
 
 buildflag_header("optimization_guide_buildflags") {
   header = "optimization_guide_buildflags.h"
-  flags = [ "BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE=$build_with_internal_optimization_guide" ]
+  flags = [
+    "BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE=$build_with_internal_optimization_guide",
+    "BUILD_WITH_MODEL_EXECUTION=$build_with_model_execution",
+  ]
 }

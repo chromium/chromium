@@ -19,12 +19,12 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -35,6 +35,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+#include "components/optimization_guide/core/model_execution/performance_class.h"
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 namespace optimization_guide {
 
@@ -99,10 +103,12 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
     model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
     UpdatePerformanceClassPref(&pref_service_,
                                OnDeviceModelPerformanceClass::kVeryHigh);
   }
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
   void UploadModelQualityLogs(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request) {
@@ -217,7 +223,9 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 };
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   WritePerformanceClassToPref(OnDeviceModelPerformanceClass::kVeryHigh);
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
   auto ai_data_request = BuildComposeLogAiDataReuqest();
   UploadModelQualityLogs(std::move(ai_data_request));
@@ -229,11 +237,13 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
   auto pending_request = GetPendingLogsUploadRequest();
   EXPECT_EQ(proto::LogAiDataRequest::FeatureCase::kCompose,
             pending_request->feature_case());
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   // Performance class should be attached.
   EXPECT_EQ(proto::PERFORMANCE_CLASS_VERY_HIGH,
             pending_request->logging_metadata()
                 .on_device_system_profile()
                 .performance_class());
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   EXPECT_EQ(
       12345,
       pending_request->logging_metadata().system_profile().build_timestamp());
