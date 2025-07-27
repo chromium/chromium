@@ -18,9 +18,9 @@ source_set("activity_log_private") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/extensions:extensions",
-    "//chrome/common/extensions/api:api",
-    "//components/prefs:prefs",
+    "//chrome/browser/extensions",
+    "//chrome/common/extensions/api",
+    "//components/prefs",
     "//extensions/browser",
   ]
 }

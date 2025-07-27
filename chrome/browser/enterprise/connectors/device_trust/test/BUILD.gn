@@ -40,7 +40,7 @@ source_set("test_support") {
 
     public_deps += [
       "//base",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:network",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
     ]
 
     deps += [

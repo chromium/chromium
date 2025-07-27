@@ -17,8 +17,8 @@ source_set("sdk_manager") {
   ]
 
   public_deps = [
-    "//base:base",
-    "//content/public/browser:browser",
+    "//base",
+    "//content/public/browser",
     "//third_party/content_analysis_sdk:liblcasdk",
   ]
 }

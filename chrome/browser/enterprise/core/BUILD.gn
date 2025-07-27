@@ -7,7 +7,7 @@ source_set("core") {
 
   public_deps = [
     "//base",
-    "//components/enterprise/core:core",
+    "//components/enterprise/core",
   ]
 }
 

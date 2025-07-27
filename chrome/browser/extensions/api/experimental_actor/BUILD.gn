@@ -17,7 +17,7 @@ source_set("experimental_actor") {
 
   deps = [
     "//base",
-    "//chrome/browser/actor:actor",
+    "//chrome/browser/actor",
     "//chrome/browser/ai",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",

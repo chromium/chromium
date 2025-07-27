@@ -14,14 +14,14 @@ static_library("android") {
 
   deps = [
     ":jni_headers",
-    "//base:base",
+    "//base",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/autofill",
     "//components/facilitated_payments/android",
     "//components/facilitated_payments/core/browser",
     "//components/facilitated_payments/core/utils",
-    "//content/public/browser:browser",
-    "//ui/android:android",
+    "//content/public/browser",
+    "//ui/android",
   ]
 }
 
@@ -36,9 +36,9 @@ source_set("unit_tests") {
     "//components/facilitated_payments/core/browser",
     "//components/facilitated_payments/core/browser:test_support",
     "//components/facilitated_payments/core/utils",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//testing/gtest",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 

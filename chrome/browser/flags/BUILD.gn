@@ -46,7 +46,7 @@ static_library("flags_android") {
     ":jni_headers",
     "//base",
     "//chrome/browser:browser_process",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//content/public/browser",
     "//content/public/common",
   ]

@@ -16,7 +16,7 @@ static_library("text_finder") {
 
   deps = [
     "//base",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
 
   if (!is_ios) {

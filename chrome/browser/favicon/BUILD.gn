@@ -40,6 +40,6 @@ source_set("favicon") {
     "//ui/resources",
   ]
   if (is_chromeos) {
-    deps += [ "//ash/constants:constants" ]
+    deps += [ "//ash/constants" ]
   }
 }

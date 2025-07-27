@@ -955,14 +955,14 @@ source_set("extensions") {
       "//chrome/browser/resource_coordinator:mojo_bindings",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/web_applications",
-      "//components/cbor:cbor",
+      "//components/cbor",
       "//components/commerce/core:pref_names",
       "//components/device_reauth",
       "//components/optimization_guide/core:features",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_state/content",
       "//components/site_engagement/core/mojom:mojo_bindings",
-      "//components/supervised_user/core/common:common",
+      "//components/supervised_user/core/common",
       "//components/webapps/browser",
       "//components/webapps/common",
       "//components/webauthn/json",
@@ -970,7 +970,7 @@ source_set("extensions") {
       # TODO(crbug.com/346472679): Remove this dependency:
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/extensions/api:extensions_features",
-      "//chrome/services/file_util/public/mojom:mojom",
+      "//chrome/services/file_util/public/mojom",
       "//chrome/services/removable_storage_writer/public/mojom",
       "//components/affiliations/core/browser:affiliations",
       "//components/app_constants",
@@ -1007,7 +1007,7 @@ source_set("extensions") {
       "//components/navigation_interception",
       "//components/net_log",
       "//components/onc",
-      "//components/page_load_metrics/browser:browser",
+      "//components/page_load_metrics/browser",
       "//components/password_manager/content/browser",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser/export",
@@ -1023,7 +1023,7 @@ source_set("extensions") {
       "//components/reading_list/core",
       "//components/resources",
       "//components/safe_browsing:buildflags",
-      "//components/safe_browsing/content/browser/web_ui:web_ui",
+      "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//components/search_engines",
       "//components/services/app_service",
@@ -1052,7 +1052,7 @@ source_set("extensions") {
       "//device/fido",
       "//extensions:extensions_resources",
       "//extensions/browser/api:extensions_api_client",
-      "//extensions/browser/api/content_settings:content_settings",
+      "//extensions/browser/api/content_settings",
       "//extensions/browser/api/system_display:display_info_provider",
       "//extensions/common:mojom",
       "//extensions/common/api",
@@ -1142,7 +1142,7 @@ source_set("extensions") {
         "//chromeos/components/quick_answers/public/cpp:prefs",
         "//chromeos/components/security_token_pin",
         "//chromeos/constants",
-        "//chromeos/dbus/missive:missive",
+        "//chromeos/dbus/missive",
         "//chromeos/dbus/power",
         "//chromeos/services/chromebox_for_meetings/public/cpp",
         "//chromeos/services/chromebox_for_meetings/public/mojom",
@@ -1182,7 +1182,7 @@ source_set("extensions") {
         "//chrome/browser/chromeos/drivefs:native_message_host_origins",
         "//chrome/browser/chromeos/extensions/file_system_provider",
         "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
-        "//chrome/browser/chromeos/extensions/smart_card_provider_private:smart_card_provider_private",
+        "//chrome/browser/chromeos/extensions/smart_card_provider_private",
 
         # TODO(crbug.com/40230380): Find an appropriate spot for vpn_provider.
         "//chrome/browser/chromeos/extensions/contact_center_insights",
@@ -1192,7 +1192,7 @@ source_set("extensions") {
         "//chromeos/components/quick_answers/public/cpp:prefs",
         "//chromeos/components/security_token_pin",
         "//chromeos/constants",
-        "//chromeos/dbus/missive:missive",
+        "//chromeos/dbus/missive",
         "//chromeos/dbus/power",
         "//chromeos/services/chromebox_for_meetings/public/cpp",
         "//chromeos/services/chromebox_for_meetings/public/mojom",
@@ -1341,7 +1341,7 @@ source_set("extensions") {
         "//chromeos/ash/components/cryptohome",
         "//chromeos/ash/components/dbus",
         "//chromeos/ash/components/dbus/attestation:attestation_proto",
-        "//chromeos/ash/components/dbus/cicerone:cicerone",
+        "//chromeos/ash/components/dbus/cicerone",
         "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
         "//chromeos/ash/components/dbus/constants",
         "//chromeos/ash/components/dbus/cros_disks",
@@ -1362,7 +1362,7 @@ source_set("extensions") {
         "//chromeos/ash/components/proximity_auth",
         "//chromeos/ash/components/settings",
         "//chromeos/ash/components/system",
-        "//chromeos/ash/components/tether:tether",
+        "//chromeos/ash/components/tether",
         "//chromeos/ash/components/tpm",
         "//chromeos/ash/experiences/arc",
         "//chromeos/ash/experiences/arc:arc_app_constants",
@@ -1548,7 +1548,7 @@ source_set("extensions") {
     }
 
     if (enable_glic) {
-      deps += [ "//chrome/browser/glic:glic" ]
+      deps += [ "//chrome/browser/glic" ]
     }
 
     if (!is_android && !is_chromeos) {

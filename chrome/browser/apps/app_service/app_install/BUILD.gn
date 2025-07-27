@@ -63,7 +63,7 @@ source_set("implementation") {
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/components/mgs",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//components/metrics/structured:structured_events",
     "//components/services/app_service",

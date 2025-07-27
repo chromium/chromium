@@ -126,7 +126,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/ui/android/theme:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
   ]

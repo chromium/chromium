@@ -25,8 +25,8 @@ source_set("commands") {
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//components/enterprise/client_certificates/core",
     "//components/enterprise/client_certificates/core:cloud_management_delegate",
-    "//components/enterprise/client_certificates/core:core",
     "//components/enterprise/client_certificates/core:dm_server_client",
     "//components/enterprise/client_certificates/core:management_delegate",
     "//components/policy/core/common",
@@ -145,7 +145,7 @@ source_set("unit_tests") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
-      "//components/enterprise:enterprise",
+      "//components/enterprise",
       "//components/enterprise:test_support",
       "//components/enterprise/client_certificates/core:cloud_management_delegate",
       "//components/enterprise/client_certificates/core:test_support",

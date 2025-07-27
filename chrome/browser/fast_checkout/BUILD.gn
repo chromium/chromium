@@ -96,7 +96,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser:test_support",
-    "//components/unified_consent:unified_consent",
+    "//components/unified_consent",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

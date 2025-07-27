@@ -24,7 +24,7 @@ source_set("settings_overrides") {
   deps = [
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/search_engine_choice:search_engine_choice",
+    "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
     "//chrome/common:constants",
     "//chrome/common/extensions",

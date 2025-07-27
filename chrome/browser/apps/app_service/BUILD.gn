@@ -274,7 +274,7 @@ source_set("app_service") {
       "//chromeos/ash/experiences/arc/session",
       "//chromeos/ash/experiences/arc/session:connection_holder",
       "//chromeos/ash/experiences/system_web_apps/types",
-      "//chromeos/components/kiosk:kiosk",
+      "//chromeos/components/kiosk",
       "//chromeos/components/mgs",
       "//chromeos/crosapi/mojom",
       "//components/app_restore",

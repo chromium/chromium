@@ -23,7 +23,7 @@ source_set("runtime") {
 
   deps = [
     "//build:chromeos_buildflags",
-    "//chrome/browser/devtools:devtools",
+    "//chrome/browser/devtools",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

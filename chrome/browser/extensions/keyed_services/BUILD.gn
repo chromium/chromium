@@ -26,6 +26,6 @@ source_set("keyed_service_factories") {
     "//content/public/common:buildflags",
     "//extensions/buildflags",
     "//pdf:buildflags",
-    "//printing/buildflags:buildflags",
+    "//printing/buildflags",
   ]
 }
