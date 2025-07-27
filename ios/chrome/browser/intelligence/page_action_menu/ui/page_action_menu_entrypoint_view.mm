@@ -53,6 +53,8 @@ const CGFloat kHighlightScaling = 0.7;
     [self setPreferredSymbolConfiguration:symbolConfig
                           forImageInState:UIControlStateNormal];
     if (IsDirectBWGEntryPoint()) {
+      self.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_BWG_ASK_GEMINI_ACCESSIBILITY_LABEL);
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       [self setImage:CustomSymbolWithPointSize(kGeminiBrandedLogoImage,
                                                kIconPointSize)
