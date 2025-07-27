@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.download;
 
 import android.Manifest.permission;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,6 +28,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 /** Java counterpart of android DownloadController. Owned by native. */
+@NullMarked
 public class DownloadController {
     /**
      * Called to download the given URL triggered from a tab.
@@ -47,11 +48,14 @@ public class DownloadController {
     @CalledByNative
     private static void onDownloadCompleted(
             @Nullable Tab tab, DownloadInfo downloadInfo, boolean isDownloadSafe) {
-        MediaStoreHelper.addImageToGalleryOnSDCard(
-                downloadInfo.getFilePath(), downloadInfo.getMimeType());
+        String fileName = downloadInfo.getFileName();
+        String filePath = downloadInfo.getFilePath();
+        String mimeType = downloadInfo.getMimeType();
+        assert fileName != null && filePath != null && mimeType != null;
+        MediaStoreHelper.addImageToGalleryOnSDCard(filePath, mimeType);
         if (tab == null
                 || !PdfUtils.shouldOpenPdfInline(tab.isIncognito())
-                || !downloadInfo.getMimeType().equals(MimeTypeUtils.PDF_MIME_TYPE)
+                || !mimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)
                 || !downloadInfo.getIsTransient()) {
             return;
         }
@@ -62,9 +66,7 @@ public class DownloadController {
         // The PdfPage may become a FrozenNativePage while downloading.
         // Need to check before cast to PdfPage.
         if (nativePage instanceof PdfPage) {
-            ((PdfPage) nativePage)
-                    .onDownloadComplete(
-                            downloadInfo.getFileName(), downloadInfo.getFilePath(), isDownloadSafe);
+            ((PdfPage) nativePage).onDownloadComplete(fileName, filePath, isDownloadSafe);
             tab.updateTitle();
         }
     }
@@ -75,7 +77,7 @@ public class DownloadController {
      * @return true if allowed, or false otherwise.
      */
     @CalledByNative
-    private static boolean hasFileAccess(WindowAndroid windowAndroid) {
+    private static boolean hasFileAccess(@Nullable WindowAndroid windowAndroid) {
         if (DownloadCollectionBridge.supportsDownloadCollection()) return true;
         AndroidPermissionDelegate delegate = windowAndroid;
         return delegate == null ? false : delegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE);
@@ -180,9 +182,10 @@ public class DownloadController {
                 boolean granted,
                 @JniType("std::string") String permissionToUpdate);
 
-        void downloadUrl(@JniType("std::string") String url, WebContents webContents);
+        void downloadUrl(@JniType("std::string") String url, @Nullable WebContents webContents);
 
         void cancelDownload(
-                @JniType("Profile*") Profile profile, @JniType("std::string") String downloadGuid);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") @Nullable String downloadGuid);
     }
 }
