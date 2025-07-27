@@ -1896,7 +1896,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" />  यो प्रक्रियाका क्रममा सिस्टम रिबुट गरिने छ।</translation>
-<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ले थप अनुमतिहरू अनुरोध गरेको छ।</translation>
+<translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ले थप अनुमति मागेको छ।</translation>
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2306794767168143227">यो डिभाइसमार्फत <ph name="BRAND" /> मा सेभ गर्नुहोस्</translation>
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
