@@ -352,17 +352,15 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LargestContentfulPaint) {
   Start();
   Load("/soft_navigation.html");
 
-  EXPECT_EQ(
-      EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()").error,
-      "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()")
+                  .is_ok());
 
   SimulateMouseDownElementWithId("link");
 
   if (GetParam()) {
-    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                     "waitForSoftNavigationEntry()")
-                  .error,
-              "");
+    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                       "waitForSoftNavigationEntry()")
+                    .is_ok());
   }
 
   waiter->Wait();
@@ -374,10 +372,9 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LargestContentfulPaint) {
   SimulateMouseDownElementWithId("link");
 
   if (GetParam()) {
-    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                     "waitForSoftNavigationEntry2()")
-                  .error,
-              "");
+    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                       "waitForSoftNavigationEntry2()")
+                    .is_ok());
   }
 
   waiter->Wait();
@@ -570,9 +567,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_INP_ClickWithPresentation) {
   Load("/soft_navigation.html");
 
   // Set up for soft navigation.
-  EXPECT_EQ(
-      EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()").error,
-      "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()")
+                  .is_ok());
 
   // Add event listener to change color on click.
   EXPECT_TRUE(ExecJs(web_contents(), "addChangeColorEventListener();"));
@@ -637,9 +633,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LayoutShift) {
   waiter->Wait();
 
   // Set up for soft navigation.
-  EXPECT_EQ(
-      EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()").error,
-      "");
+  EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(), "setEventAndWait()")
+                  .is_ok());
 
   // Trigger 1st soft navigation.
   TriggerSoftNavigation(waiter.get(), 1);

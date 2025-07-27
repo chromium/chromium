@@ -102,8 +102,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
              "(async () => {"
              "const sandboxRoot = await navigator.storage.getDirectory();"
              "return await self.localFile.move(sandboxRoot); })()");
-  EXPECT_TRUE(base::Contains(result.error, "can not be modified in this way"))
-      << result.error;
+  EXPECT_THAT(result, EvalJsResult::ErrorIs(testing::HasSubstr(
+                          "can not be modified in this way")))
+      << result;
 }
 
 // TODO(crbug.com/40888337): Make this a WPT once crbug.com/1114920 is fixed.
@@ -121,8 +122,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
              "await writable.write('move me to the local file system');"
              "await writable.close();"
              "return await sandboxFile.move(localDir); })()");
-  EXPECT_TRUE(base::Contains(result.error, "can not be modified in this way"))
-      << result.error;
+  EXPECT_THAT(result, EvalJsResult::ErrorIs(testing::HasSubstr(
+                          "can not be modified in this way")))
+      << result;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest, RenameLocal) {

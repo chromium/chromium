@@ -376,14 +376,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
       "{create:false});"
       "return (await self.swapFile.createWritable());"
       "})()");
-  EXPECT_TRUE(base::Contains(result.error, "modifications are not allowed."))
-      << result.error;
+  EXPECT_THAT(result, EvalJsResult::ErrorIs(
+                          testing::HasSubstr("modifications are not allowed.")))
+      << result;
 
   auto close_result = EvalJs(shell(),
                              "(async () => {"
                              "await self.writer.close();"
                              "})()");
-  EXPECT_TRUE(close_result.is_ok()) << close_result.error;
+  EXPECT_TRUE(close_result.is_ok()) << close_result;
 }
 
 // TODO(crbug.com/40639570): Files are only quarantined on windows in
@@ -435,8 +436,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   auto result = EvalJs(shell(),
                        "(async () => {"
                        "  return (await self.entry.createWritable()); })()");
-  EXPECT_TRUE(base::Contains(result.error, "Cannot write to a read-only file."))
-      << result.error;
+  EXPECT_THAT(result, EvalJsResult::ErrorIs(testing::HasSubstr(
+                          "Cannot write to a read-only file.")))
+      << result;
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 

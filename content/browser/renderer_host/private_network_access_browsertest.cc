@@ -3779,7 +3779,7 @@ void ExpectFetchSharedWorkerScriptResult(bool expected,
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(expected, result);
 #else
-  EXPECT_NE("", result.error);
+  EXPECT_FALSE(result.is_ok());
 #endif
 }
 

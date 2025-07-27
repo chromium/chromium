@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(KioskIwaDeviceAttributesApiTest,
   for (const std::string& attribute : kDeviceAttributeNames) {
     content::EvalJsResult result =
         CallDeviceAttributesApi(web_contents(), attribute);
-    EXPECT_EQ(result.error, kNotAllowedOriginExpectedError);
+    EXPECT_EQ(result.ExtractError(), kNotAllowedOriginExpectedError);
   }
 }
 

@@ -1978,9 +1978,9 @@ function generateBid(
     })())",
                            urn_url, base::Value(std::move(replacement_value))));
     if (error_out != nullptr) {
-      *error_out = result.error;
+      *error_out = result.is_ok() ? "" : result.ExtractError();
     }
-    return result.error == "" && result == "done";
+    return result == "done";
   }
 
   void AttachInterestGroupObserver() {
@@ -17492,7 +17492,7 @@ function validateAuctionConfig(auctionConfig) {
       test_origin,
       embedded_https_test_server().GetURL("a.test", kDecisionLogicPath));
   EXPECT_EQ("a JavaScript error: \"manual cancel\"\n",
-            EvalJs(shell(), script).error);
+            EvalJs(shell(), script).ExtractError());
 }
 
 // Test for auctionSignals, perBuyerSignals, directFromSellerSignals, and
@@ -25739,7 +25739,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
    "maxGroupLifetimeMs": %f
 })",
                   kDefaultMaxGroupLifetimeMs))))
-      << all_result.error;
+      << all_result;
 }
 
 // Worklet handling of zero seller timeout.
@@ -26821,7 +26821,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
    "maxGroupLifetimeMs": %f
 })",
                   kDefaultMaxGroupLifetimeMs))))
-      << all_result.error;
+      << all_result;
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
@@ -28251,7 +28251,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
    "maxGroupLifetimeMs": %f
 })",
                   kDefaultMaxGroupLifetimeMs))))
-      << all_result.error;
+      << all_result;
 }
 
 class FledgeUnNoisedRealTimeReportEnabledTest

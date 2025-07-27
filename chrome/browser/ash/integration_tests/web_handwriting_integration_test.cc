@@ -95,9 +95,9 @@ IN_PROC_BROWSER_TEST_F(WebHandwritingIntegrationTest, Recognition) {
 
   // The promise should have evaluated without errors. See the HTML files for
   // details.
-  std::string result_error =
-      content::EvalJs(web_contents, "window.resultPromise").error;
-  EXPECT_TRUE(result_error.empty()) << result_error;
+  content::EvalJsResult result =
+      content::EvalJs(web_contents, "window.resultPromise");
+  EXPECT_TRUE(result.is_ok()) << result;
 }
 
 }  // namespace

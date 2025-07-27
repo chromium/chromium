@@ -112,11 +112,15 @@ constexpr char kJsErrorPrefix[] = "a JavaScript error:";
 // Extracts error from `result` removing `kJsErrorPrefix` and removing leading
 // and trailing whitespace and quotes.
 std::string ExtractJsError(const EvalJsResult& result) {
-  if (!base::StartsWith(result.error, kJsErrorPrefix)) {
-    return result.error;
+  if (result.is_ok()) {
+    return "";
+  }
+  if (!base::StartsWith(result.ExtractError(), kJsErrorPrefix)) {
+    return result.ExtractError();
   }
 
-  std::string error_message = result.error.substr(strlen(kJsErrorPrefix));
+  std::string error_message =
+      result.ExtractError().substr(strlen(kJsErrorPrefix));
   base::TrimString(error_message, "\n \"", &error_message);
   return error_message;
 }

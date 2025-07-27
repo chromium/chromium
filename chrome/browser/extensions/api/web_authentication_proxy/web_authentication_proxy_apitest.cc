@@ -127,9 +127,10 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
               let err = await createPromise;
               return err;
             })();)";
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           kMakeCredentialJs)
-               .error.find("AbortError") >= 0;
+    return testing::Value(
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        kMakeCredentialJs),
+        content::EvalJsResult::ErrorIs(testing::HasSubstr("AbortError")));
   }
 
   content::EvalJsResult NavigateAndCallGetAssertion() {
@@ -167,9 +168,10 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
               let err = await getPromise;
               return err;
             })();)";
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           kGetAssertionJs)
-               .error.find("AbortError") >= 0;
+    return testing::Value(
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        kGetAssertionJs),
+        content::EvalJsResult::ErrorIs(testing::HasSubstr("AbortError")));
   }
 
   bool ProxyIsActive() { return ProxyIsActiveForContext(profile()); }

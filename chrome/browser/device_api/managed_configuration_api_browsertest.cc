@@ -336,12 +336,11 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIGuestTest, Disabled) {
   EXPECT_EQ(api(), nullptr);
   // The JS API should return an error (but not cause a crash - it's a
   // regression test for b/231283325).
-  EXPECT_THAT(
-      GetValuesFromJsApi({kKey1}),
-      testing::Field("error", &content::EvalJsResult::error,
-                     Eq("a JavaScript error: \"NotAllowedError: Service "
-                        "connection error. This API is available only for "
-                        "managed apps.\"\n")));
+  EXPECT_THAT(GetValuesFromJsApi({kKey1}),
+              content::EvalJsResult::ErrorIs(
+                  Eq("a JavaScript error: \"NotAllowedError: Service "
+                     "connection error. This API is available only for "
+                     "managed apps.\"\n")));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

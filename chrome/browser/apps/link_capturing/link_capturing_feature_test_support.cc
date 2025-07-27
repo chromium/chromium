@@ -258,14 +258,13 @@ ResolveWebContentsWaitingForLaunchQueueFlush() {
         if (!has_function.is_ok() || !has_function.ExtractBool()) {
           // Sometimes the web contents is destroyed while evaluating this
           // javascript. That is fine.
-          DLOG_IF(INFO, !has_function.is_ok())
-              << "Got error: " << has_function.error;
+          DLOG_IF(INFO, !has_function.is_ok()) << "Got error: " << has_function;
           return;
         }
         content::EvalJsResult result =
             content::EvalJs(&web_contents, "resolveLaunchParamsFlush()");
         if (!result.is_ok()) {
-          errors.push_back(result.error);
+          errors.push_back(result.ExtractError());
         }
       }));
   if (!errors.empty()) {

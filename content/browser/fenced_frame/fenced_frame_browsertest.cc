@@ -9367,11 +9367,11 @@ class FencedFrameAutomaticBeaconBrowserTest
           // When eventData exceeds the length limit, a security error is thrown
           // instead of a console error.
           EXPECT_FALSE(result.is_ok());
-          EXPECT_THAT(
-              result.error,
-              testing::HasSubstr("The data provided to "
-                                 "setReportEventDataForAutomaticBeacons() "
-                                 "exceeds the maximum length, which is 64KB."));
+          EXPECT_THAT(result,
+                      content::EvalJsResult::ErrorIs(testing::HasSubstr(
+                          "The data provided to "
+                          "setReportEventDataForAutomaticBeacons() "
+                          "exceeds the maximum length, which is 64KB.")));
 
           histogram_tester_.ExpectUniqueSample(
               blink::kAutomaticBeaconEventTypeHistogram,

@@ -844,10 +844,6 @@ std::string JsReplace(std::string_view script_template, Args&&... args) {
 //      of result, or if an exception was thrown.
 class EvalJsResult {
  public:
-  // TODO(https://crbug.com/431787497): rename the `error` field, per style
-  // guide rules.
-  // Error; if things went badly.
-  const std::string error;
 
   // Creates an EvalJs result. If |error| is non-empty, |value| will be
   // ignored.
@@ -880,6 +876,7 @@ class EvalJsResult {
   [[nodiscard]] double ExtractDouble() const;
   [[nodiscard]] base::Value::List ExtractList() const;
   [[nodiscard]] base::Value::Dict ExtractDict() const;
+  [[nodiscard]] const std::string& ExtractError() const;
 
   bool is_ok() const { return error.empty(); }
 
@@ -915,6 +912,10 @@ class EvalJsResult {
   }
 
  private:
+  // TODO(https://crbug.com/431787497): rename the `error` field, per style
+  // guide rules.
+  // Error; if things went badly.
+  const std::string error;
   // Provides informative failure messages when the result of EvalJs() is
   // used in a failing ASSERT_EQ or EXPECT_EQ.
   friend std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);

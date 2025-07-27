@@ -1059,9 +1059,10 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(
-        result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
-    VerifyDebugErrorMessage(result.error);
+    EXPECT_TRUE(
+        base::StartsWith(result.ExtractError(),
+                         GetSharedStorageAddModuleDisabledErrorMessage()));
+    VerifyDebugErrorMessage(result.ExtractError());
     EXPECT_EQ(0u, console_observer.messages().size());
 
     WaitForHistograms({kErrorTypeHistogram});
@@ -1130,9 +1131,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(run_op_result.error,
+    EXPECT_TRUE(base::StartsWith(run_op_result.ExtractError(),
                                  GetSharedStorageDisabledErrorMessage()));
-    VerifyDebugErrorMessage(run_op_result.error);
+    VerifyDebugErrorMessage(run_op_result.ExtractError());
 
     WaitForHistogramsWithSampleCounts(
         {std::make_tuple(kErrorTypeHistogram, 2)});
@@ -1236,9 +1237,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
     EXPECT_TRUE(
-        base::StartsWith(run_url_op_result.error,
+        base::StartsWith(run_url_op_result.ExtractError(),
                          GetSharedStorageSelectURLDisabledErrorMessage()));
-    VerifyDebugErrorMessage(run_url_op_result.error);
+    VerifyDebugErrorMessage(run_url_op_result.ExtractError());
 
     WaitForHistogramsWithSampleCounts(
         {std::make_tuple(kErrorTypeHistogram, 2)});
@@ -1300,9 +1301,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(set_result.error,
+    EXPECT_TRUE(base::StartsWith(set_result.ExtractError(),
                                  GetSharedStorageDisabledErrorMessage()));
-    VerifyDebugErrorMessage(set_result.error);
+    VerifyDebugErrorMessage(set_result.ExtractError());
     return;
   }
 
@@ -1324,9 +1325,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Append) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(append_result.error,
+    EXPECT_TRUE(base::StartsWith(append_result.ExtractError(),
                                  GetSharedStorageDisabledErrorMessage()));
-    VerifyDebugErrorMessage(append_result.error);
+    VerifyDebugErrorMessage(append_result.ExtractError());
     return;
   }
 
@@ -1348,9 +1349,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Delete) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(delete_result.error,
+    EXPECT_TRUE(base::StartsWith(delete_result.ExtractError(),
                                  GetSharedStorageDisabledErrorMessage()));
-    VerifyDebugErrorMessage(delete_result.error);
+    VerifyDebugErrorMessage(delete_result.ExtractError());
     return;
   }
 
@@ -1372,9 +1373,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(clear_result.error,
+    EXPECT_TRUE(base::StartsWith(clear_result.ExtractError(),
                                  GetSharedStorageDisabledErrorMessage()));
-    VerifyDebugErrorMessage(clear_result.error);
+    VerifyDebugErrorMessage(clear_result.ExtractError());
     return;
   }
 
@@ -2253,7 +2254,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                     "    at __const_std::string&_script__:1:24):\n",
                     "        {sharedStorage.worklet.addModule(\"", invalid_url,
                     "\")\n", "                               ^^^^^\n"}),
-      result.error);
+      result.ExtractError());
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -2274,7 +2275,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   EXPECT_EQ(
       base::StrCat({"a JavaScript error: \"OperationError: Failed to load ",
                     script_url.spec(), " HTTP status = 404 Not Found.\"\n"}),
-      result.error);
+      result.ExtractError());
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -2296,7 +2297,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       base::StrCat(
           {"a JavaScript error: \"OperationError: Unexpected redirect on ",
            script_url.spec(), ".\"\n"}),
-      result.error);
+      result.ExtractError());
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
@@ -2951,8 +2952,8 @@ IN_PROC_BROWSER_TEST_P(
           "sharedStorage.createWorklet($1, {dataOrigin: 'script-origin'})",
           script_url));
 
-  EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+  EXPECT_THAT(result, content::EvalJsResult::ErrorIs(testing::StartsWith(
+                          GetSharedStorageAddModuleDisabledErrorMessage())));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3030,7 +3031,7 @@ IN_PROC_BROWSER_TEST_P(
           script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3084,7 +3085,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       )");
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageSelectURLDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageSelectURLDisabledErrorMessage()));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectBucketCount(
@@ -3184,8 +3185,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         window.testWorklet.run('test-operation')
       )");
 
-  EXPECT_TRUE(
-      base::StartsWith(result.error, GetSharedStorageDisabledErrorMessage()));
+  EXPECT_TRUE(base::StartsWith(result.ExtractError(),
+                               GetSharedStorageDisabledErrorMessage()));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectBucketCount(
@@ -3402,7 +3403,7 @@ IN_PROC_BROWSER_TEST_P(
       content::JsReplace("sharedStorage.createWorklet($1)", script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3441,7 +3442,7 @@ IN_PROC_BROWSER_TEST_P(
                                                                  script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3548,7 +3549,7 @@ IN_PROC_BROWSER_TEST_P(
           script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3587,7 +3588,7 @@ IN_PROC_BROWSER_TEST_P(
                                                                  script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3693,7 +3694,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3732,7 +3733,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -3768,7 +3769,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_TRUE(base::StartsWith(
-      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+      result.ExtractError(), GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -4778,9 +4779,9 @@ IN_PROC_BROWSER_TEST_P(
     histogram_tester_.ExpectTotalCount(kTimingDocumentSetHistogram, 1);
   } else {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(set_result.error,
+    EXPECT_TRUE(base::StartsWith(set_result.ExtractError(),
                                  GetSharedStorageDisabledErrorMessage()));
-    VerifyDebugErrorMessage(set_result.error);
+    VerifyDebugErrorMessage(set_result.ExtractError());
   }
 
   // Set up console observer.
@@ -4799,12 +4800,13 @@ IN_PROC_BROWSER_TEST_P(
     // Fenced storage read is disabled when untrusted network access is not
     // revoked.
     ASSERT_FALSE(get_result.is_ok());
-    EXPECT_TRUE(base::StartsWith(
-        get_result.error, GetFencedStorageReadWithoutRevokeNetworkMessage()));
+    EXPECT_TRUE(
+        base::StartsWith(get_result.ExtractError(),
+                         GetFencedStorageReadWithoutRevokeNetworkMessage()));
     EXPECT_TRUE(console_observer.messages().empty());
   } else if (!AllowThirdPartyCookies()) {
     // Fenced storage read is disabled. A JavaScript error is shown.
-    EXPECT_TRUE(base::StartsWith(get_result.error,
+    EXPECT_TRUE(base::StartsWith(get_result.ExtractError(),
                                  GetFencedStorageReadDisabledMessage()));
 
     // Fenced storage read is disabled when all third party cookies are blocked.
@@ -4817,7 +4819,7 @@ IN_PROC_BROWSER_TEST_P(
              EnforcementAndEnrollmentStatus::
                  kAttestationsEnforcedMainHostUnenrolled) {
     // Fenced storage read is disabled. A JavaScript error is shown.
-    EXPECT_TRUE(base::StartsWith(get_result.error,
+    EXPECT_TRUE(base::StartsWith(get_result.ExtractError(),
                                  GetFencedStorageReadDisabledMessage()));
 
     // Fenced storage read is disabled when the accessing site is not enrolled.
@@ -4831,7 +4833,7 @@ IN_PROC_BROWSER_TEST_P(
   } else {
     // Fenced storage read is disabled. A JavaScript error is shown.
     ASSERT_FALSE(EnablePrivacySandbox());
-    EXPECT_TRUE(base::StartsWith(get_result.error,
+    EXPECT_TRUE(base::StartsWith(get_result.ExtractError(),
                                  GetFencedStorageReadDisabledMessage()));
   }
 }
@@ -4862,9 +4864,9 @@ IN_PROC_BROWSER_TEST_P(
     histogram_tester_.ExpectTotalCount(kTimingDocumentSetHistogram, 1);
   } else {
     // Shared Storage will be disabled.
-    EXPECT_TRUE(base::StartsWith(set_result.error,
+    EXPECT_TRUE(base::StartsWith(set_result.ExtractError(),
                                  GetSharedStorageDisabledErrorMessage()));
-    VerifyDebugErrorMessage(set_result.error);
+    VerifyDebugErrorMessage(set_result.ExtractError());
   }
 
   // Set up console observer.
@@ -4893,7 +4895,7 @@ IN_PROC_BROWSER_TEST_P(
     histogram_tester_.ExpectTotalCount(kTimingDocumentGetHistogram, 1);
   } else if (!AllowThirdPartyCookies()) {
     // Fenced storage read is disabled. A JavaScript error is shown.
-    EXPECT_TRUE(base::StartsWith(get_result.error,
+    EXPECT_TRUE(base::StartsWith(get_result.ExtractError(),
                                  GetFencedStorageReadDisabledMessage()));
 
     // Fenced storage read is disabled when all third party cookies are blocked.
@@ -4906,7 +4908,7 @@ IN_PROC_BROWSER_TEST_P(
              EnforcementAndEnrollmentStatus::
                  kAttestationsEnforcedMainHostUnenrolled) {
     // Fenced storage read is disabled. A JavaScript error is shown.
-    EXPECT_TRUE(base::StartsWith(get_result.error,
+    EXPECT_TRUE(base::StartsWith(get_result.ExtractError(),
                                  GetFencedStorageReadDisabledMessage()));
 
     // Fenced storage read is disabled when the accessing site is not enrolled.
@@ -4921,7 +4923,7 @@ IN_PROC_BROWSER_TEST_P(
     // Fenced storage read is disabled. A JavaScript
     // error is shown.
     ASSERT_FALSE(EnablePrivacySandbox());
-    EXPECT_TRUE(base::StartsWith(get_result.error,
+    EXPECT_TRUE(base::StartsWith(get_result.ExtractError(),
                                  GetFencedStorageReadDisabledMessage()));
   }
 }

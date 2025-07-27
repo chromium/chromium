@@ -3307,7 +3307,7 @@ class CookieStorage : public SiteStorage {
     EvalJsResult result =
         EvalJs(frame, "document.cookie", EXECUTE_SCRIPT_NO_USER_GESTURE);
     if (!result.is_ok()) {
-      return base::unexpected(result.error);
+      return base::unexpected(result.ExtractError());
     }
     return base::ok(result.ExtractString());
   }
@@ -3340,7 +3340,7 @@ class LocalStorage : public SiteStorage {
     EvalJsResult result = EvalJs(frame, "localStorage.getItem('value')",
                                  EXECUTE_SCRIPT_NO_USER_GESTURE);
     if (!result.is_ok()) {
-      return base::unexpected(result.error);
+      return base::unexpected(result.ExtractError());
     }
     if (result == base::Value()) {
       return base::ok("");

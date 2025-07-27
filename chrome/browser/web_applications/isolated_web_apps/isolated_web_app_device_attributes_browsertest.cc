@@ -200,10 +200,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
       EXPECT_EQ(kExpectedDeviceAttributeValues[i],
                 CallDeviceAttributesApi(app_frame, kDeviceAttributeNames[i]));
     } else {
-      EXPECT_THAT(
-          CallDeviceAttributesApi(app_frame, kDeviceAttributeNames[i]).error,
-          HasSubstr(IsFeatureFlagEnabled() ? kPermissionsPolicyError
-                                           : kAdminPolicyError));
+      EXPECT_THAT(CallDeviceAttributesApi(app_frame, kDeviceAttributeNames[i]),
+                  content::EvalJsResult::ErrorIs(
+                      HasSubstr(IsFeatureFlagEnabled() ? kPermissionsPolicyError
+                                                       : kAdminPolicyError)));
     }
   }
 }
@@ -232,8 +232,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
   ASSERT_NE(iframe, nullptr);
 
   for (const std::string& attribute_name : kDeviceAttributeNames) {
-    EXPECT_THAT(CallDeviceAttributesApi(iframe, attribute_name).error,
-                HasSubstr(kChildFrameError));
+    EXPECT_THAT(CallDeviceAttributesApi(iframe, attribute_name),
+                content::EvalJsResult::ErrorIs(HasSubstr(kChildFrameError)));
   }
 }
 

@@ -173,9 +173,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest, NoPolicyNoSharing) {
         new WebAssembly.Memory({ shared:true, initial:1, maximum:1 }).buffer;
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
-  EXPECT_THAT(
-      postSharedArrayBuffer.error,
-      testing::HasSubstr("Failed to execute 'postMessage' on 'Window': "));
+  EXPECT_THAT(postSharedArrayBuffer,
+              content::EvalJsResult::ErrorIs(testing::HasSubstr(
+                  "Failed to execute 'postMessage' on 'Window': ")));
 }
 
 }  // namespace policy

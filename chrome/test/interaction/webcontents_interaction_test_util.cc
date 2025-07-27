@@ -749,10 +749,10 @@ base::Value WebContentsInteractionTestUtil::Evaluate(
   auto result = EvalJsLocal(web_contents(), function);
   if (!result.is_ok()) {
     if (error_message) {
-      *error_message = result.error;
+      *error_message = result.ExtractError();
       return base::Value();
     } else {
-      NOTREACHED() << "Uncaught JS exception: " << result.error;
+      NOTREACHED() << "Uncaught JS exception: " << result;
     }
   }
 

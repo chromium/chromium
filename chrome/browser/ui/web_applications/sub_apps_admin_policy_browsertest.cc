@@ -177,8 +177,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, FailsNoGestureNoPolicy) {
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
   // TODO
-  EXPECT_THAT(ret.error, HasSubstr("This API can only be called shortly "
-                                   "after a user activation."));
+  EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
+                       HasSubstr("This API can only be called shortly "
+                                 "after a user activation.")));
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 
@@ -246,8 +247,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
   // TODO
-  EXPECT_THAT(ret.error, HasSubstr("This API can only be called shortly "
-                                   "after a user activation."));
+  EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
+                       HasSubstr("This API can only be called shortly "
+                                 "after a user activation.")));
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 

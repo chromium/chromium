@@ -2208,7 +2208,7 @@ bool TestRecipeReplayer::GetElementProperty(
     *property = result.ExtractString();
     return true;
   }
-  *property = result.error;
+  *property = result.is_ok() ? "" : result.ExtractError();
   return false;
 }
 
@@ -2287,7 +2287,7 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
     VLOG(1) << "Failed to focus element through script:"
             << (result.is_ok()
                     ? (result.is_bool() ? "Returned false" : "Not a valid bool")
-                    : result.error);
+                    : result.ExtractError());
 
     // Failing focusing on an element through script, use the less preferred
     // method of left mouse clicking the element.

@@ -1721,7 +1721,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
   ASSERT_THAT(result, content::EvalJsResult::IsError());
 
   // TODO(crbug.com/407065784): Improve error message for SB checks.
-  EXPECT_EQ(result.error,
+  EXPECT_EQ(result.ExtractError(),
             "a JavaScript error: \"AbortError: Blocked by Safe Browsing.\"\n");
 
   // File is created but remains empty due to block.

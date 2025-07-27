@@ -1651,7 +1651,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       {"a JavaScript error: \"OperationError: ",
        "sharedStorage.selectURL() failed because number of urn::uuid to url ",
        "mappings has reached the limit.\"\n"});
-  EXPECT_EQ(expected_error, extra_result.error);
+  EXPECT_EQ(expected_error, extra_result.ExtractError());
 }
 
 class SharedStorageFencedFrameDocumentGetFeatureDisabledBrowserTest
@@ -2215,7 +2215,7 @@ class SharedStorageSelectURLLimitBrowserTestBase
     EvalJsResult result =
         RunSelectURLScript(execution_target, num_urls, saved_query_name);
 
-    EXPECT_TRUE(result.is_ok()) << result.error;
+    EXPECT_TRUE(result.is_ok()) << result;
     const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     if (!observed_urn_uuid.has_value()) {
       return std::nullopt;

@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
           '/server-redirect?shared_storage/simple_module.js');
     )");
 
-  EXPECT_EQ(expected_error, result.error);
+  EXPECT_THAT(result, content::EvalJsResult::ErrorIs(expected_error));
 
   EXPECT_EQ(1u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_runtime_manager().GetKeepAliveWorkletHostsCount());

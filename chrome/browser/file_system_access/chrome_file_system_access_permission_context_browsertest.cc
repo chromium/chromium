@@ -348,11 +348,9 @@ IN_PROC_BROWSER_TEST_F(
              R"(
       handle.move("test.swf");
   )"),
-      testing::Field(
-          &content::EvalJsResult::error,
-          testing::Eq(
-              "a JavaScript error: \"TypeError: Failed to execute 'move' on "
-              "'FileSystemFileHandle'\"\n")));
+      content::EvalJsResult::ErrorIs(testing::Eq(
+          "a JavaScript error: \"TypeError: Failed to execute 'move' on "
+          "'FileSystemFileHandle'\"\n")));
   // Checks that ConfirmSensitiveEntryAccess() is called again to verify the
   // move target file name.
   EXPECT_TRUE(permission_context.confirm_sensitive_entry_access());

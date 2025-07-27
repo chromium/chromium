@@ -319,8 +319,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
       observer.unobserve(root);
     })()
     )""");
-  EXPECT_TRUE(result.error.find("is not a function") != std::string::npos)
-      << result.error;
+  EXPECT_TRUE(result.ExtractError().find("is not a function") !=
+              std::string::npos)
+      << result;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
@@ -489,9 +490,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
   auto result = EvalJs(shell(), script);
 
   // Check if a JavaScript error occurred.
-  EXPECT_TRUE(result.error.find("InvalidModificationError") !=
+  EXPECT_TRUE(result.ExtractError().find("InvalidModificationError") !=
               std::string::npos)
-      << "Unexpected result: " << result.error;
+      << "Unexpected result: " << result;
   histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
                                       /*sample=*/true, 1);
 }
@@ -567,8 +568,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
       "})()";
   // clang-format on
   auto result = EvalJs(shell(), script);
-  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
-      << result.error;
+  EXPECT_TRUE(result.ExtractError().find("did not support") !=
+              std::string::npos)
+      << result;
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -663,8 +665,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto result = EvalJs(shell(), script);
 
   // Check if a JavaScript error occurred and contains "NotFoundError".
-  EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
-      << "Unexpected result: " << result.error;
+  EXPECT_TRUE(result.ExtractError().find("NotFoundError") != std::string::npos)
+      << "Unexpected result: " << result;
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
@@ -686,8 +688,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto result = EvalJs(shell(), script);
 
   // Check if a JavaScript error occurred and contains "NotFoundError".
-  EXPECT_TRUE(result.error.find("NotFoundError") != std::string::npos)
-      << "Unexpected result: " << result.error;
+  EXPECT_TRUE(result.ExtractError().find("NotFoundError") != std::string::npos)
+      << "Unexpected result: " << result;
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,

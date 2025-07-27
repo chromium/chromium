@@ -1643,6 +1643,12 @@ base::Value::Dict EvalJsResult::ExtractDict() const {
   return value_.GetDict().Clone();
 }
 
+const std::string& EvalJsResult::ExtractError() const {
+  CHECK(!is_ok()) << "Can't ExtractError() because the script did not fail: "
+                  << value_;
+  return error;
+}
+
 std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar) {
   if (!bar.is_ok()) {
     os << bar.error;
@@ -1904,7 +1910,7 @@ class ScopedTestDevToolsProtocolClient : public TestDevToolsProtocolClient {
 
   // NOTE: |eval_result.value| is intentionally ignored by ExecJs().
   if (!eval_result.is_ok()) {
-    return ::testing::AssertionFailure() << eval_result.error;
+    return ::testing::AssertionFailure() << eval_result;
   }
   return ::testing::AssertionSuccess();
 }
@@ -1967,7 +1973,9 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
   EvalJsResult result = EvalJsRunner(execution_target, runner_script,
                                      kWrapperURL, options, world_id);
 
-  if (base::StartsWith(result.error, "a JavaScript error: \"EvalError: Refused",
+  if (!result.is_ok() &&
+      base::StartsWith(result.ExtractError(),
+                       "a JavaScript error: \"EvalError: Refused",
                        base::CompareCase::SENSITIVE)) {
     return EvalJsResult(
         base::Value(),
@@ -1975,7 +1983,7 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
         "is blocked by the document's CSP on this page. To test content that "
         "is protected by CSP, consider using EvalJsAfterLifecycleUpdate in an "
         "isolated world. Details: " +
-            result.error);
+            result.ExtractError());
   }
   return result;
 }

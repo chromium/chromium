@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   EXPECT_EQ(
       "a JavaScript error: \"NotAllowedError: "
       "Registration failed - permission denied\"\n",
-      EvalJs(iframe, "requestPushPermission()").error);
+      EvalJs(iframe, "requestPushPermission()").ExtractError());
 }
 
 // Test that the Notifications.NonPersistentNotificationThirdPartyCount metric
