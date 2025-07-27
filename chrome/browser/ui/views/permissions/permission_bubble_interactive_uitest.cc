@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -169,38 +170,13 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
                        MAYBE_CmdWClosesWindow) {
   EXPECT_TRUE(browser()->window()->IsVisible());
 
-  class NoWidgetsWaiter : public views::WidgetObserver {
-   public:
-    NoWidgetsWaiter() {
-      EXPECT_NE(views::test::WidgetTest::GetAllWidgets().size(), 0U);
-      for (views::Widget* widget : views::test::WidgetTest::GetAllWidgets()) {
-        widget->AddObserver(this);
-      }
-    }
-
-    void Wait() {
-      run_loop_.Run();
-      EXPECT_EQ(views::test::WidgetTest::GetAllWidgets().size(), 0U);
-    }
-
-   private:
-    // views::WidgetObserver:
-    void OnWidgetDestroyed(views::Widget*) override {
-      if (views::test::WidgetTest::GetAllWidgets().empty()) {
-        run_loop_.Quit();
-      }
-    }
-
-    base::RunLoop run_loop_;
-  };
-
   // On Windows, the WM_NCDESTROY message triggering Widget destruction may not
   // have been processed by the time `SendAcceleratorSync` returns (only waits
   // for WM_KEYDOWN). For that reason, wait until there are no more widgets
   // instead of checking immediately that there are no more widgets.
-  NoWidgetsWaiter waiter;
   SendAcceleratorSync(ui::VKEY_W, false, false);
-  waiter.Wait();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return views::test::WidgetTest::GetAllWidgets().empty(); }));
 }
 
 #if BUILDFLAG(IS_MAC)
