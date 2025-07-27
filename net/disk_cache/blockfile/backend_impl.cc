@@ -64,6 +64,10 @@ const int kBaseTableLen = 64 * 1024;
 // Avoid trimming the cache for the first 5 minutes (10 timer ticks).
 const int kTrimDelay = 10;
 
+BASE_FEATURE(kBlockfileCacheBackendDumpWithoutCrashing,
+             "BlockfileCacheBackendDumpWithoutCrashing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 int DesiredIndexTableLen(int32_t storage_size) {
   if (storage_size <= k64kEntriesStore)
     return kBaseTableLen;
@@ -1027,7 +1031,9 @@ void BackendImpl::ReportError(int error) {
       // so this should yield around 0.002 * 8000 = 16 crash reports per day.
       if (!has_considered_dumping) {
         has_considered_dumping = true;
-        if (base::ShouldRecordSubsampledMetric(0.002)) {
+        if (base::FeatureList::IsEnabled(
+                kBlockfileCacheBackendDumpWithoutCrashing) &&
+            base::ShouldRecordSubsampledMetric(0.002)) {
           // Capture the last file error. This may or may not be related to the
           // reason why init failed.
           base::File::Error file_error = base::File::GetLastFileError();
