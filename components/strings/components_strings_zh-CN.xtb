@@ -1209,6 +1209,7 @@
 <translation id="3027915437837548462">SVG 图片</translation>
 <translation id="3030331669969285614">这些标记可以防止或还原破坏性更改，并且只能在有限的时间内使用。</translation>
 <translation id="3030542417256082866">要保存车辆信息吗？</translation>
+<translation id="3033200136993730761">保留住址有助于您在各项 Google 服务中畅享更便利的服务，例如在 Google 地图中获得更相关的搜索结果和更精确的路线。您可以在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="3034526003882782781">允许滚动和缩放</translation>
 <translation id="3036894576201005614">家居清洁用品</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
@@ -2912,6 +2913,7 @@
 <translation id="5898767305816764989">“我喜欢”按钮，按 Enter 键可提交您喜欢<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />的反馈</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903264686717710770">标题：</translation>
+<translation id="5905671155741555195">保留工作地址有助于您在各项 Google 服务中畅享更便利的服务，例如在 Google 地图中获得更相关的搜索结果和更精确的路线。您可以在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（已同步）</translation>
 <translation id="5910140988253729859">撤消自动填充</translation>
 <translation id="5911020115933784199">活动与演出</translation>
@@ -3808,6 +3810,7 @@
 <translation id="7403392780200267761">通过分享链接、创建二维码、投放等操作分享此标签页</translation>
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 受管理</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> 已安装了一些应用来提供更多功能。这些应用有权访问您的部分数据。</translation>
+<translation id="740691708085211707">要从 Chrome 自动填充功能中移除工作地址吗？</translation>
 <translation id="7407424307057130981">&lt;p&gt;如果您的 Windows 计算机上装有 SuperFish 软件，您将会看到这条错误消息。&lt;/p&gt;
       &lt;p&gt;您可以按照下述步骤暂时停用该软件，以便连接到网络。您需要拥有管理员权限才能执行下列操作。&lt;/p&gt;
       &lt;ol&gt;
@@ -3904,6 +3907,7 @@
 <translation id="7534987659046836932">C7 信封</translation>
 <translation id="7535087603100972091">值</translation>
 <translation id="753556296624075801">由 Google 提供支持</translation>
+<translation id="753713322968419914">要从 Chrome 自动填充功能中移除住址吗？</translation>
 <translation id="7537536606612762813">强制</translation>
 <translation id="7543525346216957623">需要家长同意</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>

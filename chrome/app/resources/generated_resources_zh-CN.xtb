@@ -1356,6 +1356,7 @@
 <translation id="1931152874660185993">没有安装任何组件。</translation>
 <translation id="1931410639376954712">正在安装 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">不早于</translation>
+<translation id="1933070475689690969">Gemini 应用活动记录</translation>
 <translation id="1933489278505808700">可以读取和更改</translation>
 <translation id="1935303383381416800">允许查看您的位置信息</translation>
 <translation id="193565226207940518">支持工具</translation>
@@ -3488,6 +3489,7 @@
 <translation id="3435738964857648380">安全</translation>
 <translation id="343578350365773421">纸张已用完</translation>
 <translation id="3435896845095436175">启用</translation>
+<translation id="3437072258256045988">管理 Gemini 应用活动记录</translation>
 <translation id="3437397693214267762">查看您的 Outlook 日历及 SharePoint 和 OneDrive 文件</translation>
 <translation id="3438633801274389918">忍者</translation>
 <translation id="3439153939049640737">始终允许 <ph name="HOST" /> 使用您的麦克风</translation>

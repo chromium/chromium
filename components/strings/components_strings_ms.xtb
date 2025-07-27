@@ -1209,6 +1209,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3027915437837548462">Imej SVG</translation>
 <translation id="3030331669969285614">Bendera ini menghalang atau membalikkan perubahan memutus dan hanya tersedia untuk masa terhad.</translation>
 <translation id="3030542417256082866">Simpan kenderaan?</translation>
+<translation id="3033200136993730761">Alamat rumah anda boleh membantu anda menyelesaikan tugasan merentas perkhidmatan Google, seperti hasil carian Search yang lebih berkaitan dan arah dalam Google Maps. Anda boleh mengedit atau memadamkan alamat anda <ph name="BEGIN_LINK" />dalam Google Account <ph name="ACCOUNT" /><ph name="END_LINK" /> anda.</translation>
 <translation id="3034526003882782781">Tatal &amp; zum dibenarkan</translation>
 <translation id="3036894576201005614">Bekalan Pembersihan Rumah</translation>
 <translation id="3037177537145227281">Menjejaki harga</translation>
@@ -2917,6 +2918,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5898767305816764989">Butang menyukai, tekan Enter untuk menyerahkan maklum balas yang menunjukkan bahawa anda menyukai, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903264686717710770">Tajuk:</translation>
+<translation id="5905671155741555195">Alamat tempat kerja anda boleh membantu anda menyelesaikan tugasan merentas perkhidmatan Google, seperti hasil carian Search yang lebih berkaitan dan arah dalam Google Maps. Anda boleh mengedit atau memadamkan alamat anda <ph name="BEGIN_LINK" />dalam Google Account <ph name="ACCOUNT" /><ph name="END_LINK" /> anda.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (disegerakkan)</translation>
 <translation id="5910140988253729859">Buat asal autolengkap</translation>
 <translation id="5911020115933784199">Acara &amp; Penyenaraian</translation>
@@ -3814,6 +3816,7 @@ Butiran tambahan:
 <translation id="7403392780200267761">Kongsi tab ini dengan berkongsi pautan, membuat kod QR, menghantar dan pelbagai lagi</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> anda diurus</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> telah memasang aplikasi untuk fungsi tambahan. Aplikasi memiliki akses kepada sesetengah data anda.</translation>
+<translation id="740691708085211707">Alih keluar alamat tempat kerja daripada autolengkap Chrome?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Anda akan melihat ralat ini jika anda memasang perisian Superfish pada komputer Windows anda.&lt;/p&gt;
     &lt;p&gt;Ikut langkah berikut untuk melumpuhkan perisian itu buat sementara waktu supaya anda dapat mengakses web. Anda memerlukan hak keistimewaan pentadbir.&lt;/p&gt;
     &lt;ol&gt;
@@ -3910,6 +3913,7 @@ Butiran tambahan:
 <translation id="7534987659046836932">Sampul C7</translation>
 <translation id="7535087603100972091">Nilai</translation>
 <translation id="753556296624075801">Dikuasakan oleh Google</translation>
+<translation id="753713322968419914">Alih keluar alamat rumah daripada autolengkap Chrome?</translation>
 <translation id="7537536606612762813">Wajib</translation>
 <translation id="7543525346216957623">Tanya ibu/bapa anda</translation>
 <translation id="7546409722674205727">Memulakan <ph name="APP_NAME" /></translation>

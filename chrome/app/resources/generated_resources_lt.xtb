@@ -858,6 +858,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1587275751631642843">&amp;„JavaScript“ pultas</translation>
 <translation id="1587907146729660231">Pirštu palieskite maitinimo mygtuką</translation>
 <translation id="1588438908519853928">Įprastas</translation>
+<translation id="1588772269240419305">Logotipo ir pavadinimo atnaujinimų peržiūra</translation>
 <translation id="1588870296199743671">Atidaryti nuorodą naudojant...</translation>
 <translation id="1588919647604819635">Spustelėkite kortelę dešiniuoju pelės klavišu</translation>
 <translation id="1589055389569595240">Rodyti rašybos ir gramatikos tikrinimą</translation>
@@ -1337,6 +1338,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1912867150686509584">Peržiūrėkite daugiau susitikimų Kalendoriuje</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pristabdykite skirtuką, kuris lėtina naršyklę}one{Pristabdykite skirtukus, kurie lėtina naršyklę}few{Pristabdykite skirtukus, kurie lėtina naršyklę}many{Pristabdykite skirtukus, kurie lėtina naršyklę}other{Pristabdykite skirtukus, kurie lėtina naršyklę}}</translation>
 <translation id="1913749768968678106">Perdavimas, išsaugojimas ir bendrinimas</translation>
+<translation id="19147273405311768">Iš naujo nustatyti numatytuosius įrankių juostos nustatymus</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Baigti</translation>
 <translation id="1915734383465415025">Parduotuvės numeris</translation>
@@ -3020,6 +3022,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3060952009917586498">Keiskite įrenginio kalbą. Dabartinė kalba yra <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nepavyko užmegzti ryšio su jūsų telefonu. Įsitikinkite, kad telefonas netoliese, atrakintas ir jame įjungtas „Bluetooth“ bei „Wi-Fi“ ryšys.</translation>
 <translation id="3061302636956643119">Tekstas bus išsiųstas apdoroti sistemai „Google“.</translation>
+<translation id="306166624240243643">Pavadinimo ir URL atnaujinimų peržiūra</translation>
 <translation id="3064871050034234884">Svetainėse galima leisti garsus</translation>
 <translation id="3065041951436100775">Atsiliepimai dėl uždaryto skirtuko.</translation>
 <translation id="3065522099314259755">Klaviatūros kartojimo delsa</translation>
@@ -3062,6 +3065,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3100071818310370858">Naudokite vietovės nustatymą. Leiskite programoms ir paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti šio įrenginio vietovę. „Google“ gali periodiškai rinkti vietovių duomenis ir anonimiškai naudoti šią informaciją vietovės nustatymo tikslumui ir vietove pagrįstoms paslaugoms tobulinti. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie vietovę<ph name="BEGIN_LINK1_END" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Pritemdyta šviesa</translation>
 <translation id="3101709781009526431">Data ir laikas</translation>
+<translation id="3102309003841389927">Logotipo atnaujinimo peržiūra</translation>
 <translation id="310297983047869047">Ankstesnė skaidrė</translation>
 <translation id="3103451787721578293">Įveskite šių duomenų įkėlimo priežastį.</translation>
 <translation id="3103512663951238230">„Alt“ + paspaudimas</translation>
@@ -6062,6 +6066,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5225324770654022472">Rodyti spartųjį programų klavišą</translation>
 <translation id="52254442782792731">Matomumo nustatymas dar nenustatytas</translation>
 <translation id="5225463052809312700">Įjungti fotoaparatą</translation>
+<translation id="5226253862147382094">Logotipo ir URL atnaujinimų peržiūra</translation>
 <translation id="5226514125747186">Aplink svetainės piktogramas rodomas taškinis apskritimas. <ph name="BEGIN_LINK" />Sužinokite daugiau apie neaktyvius skirtukus<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Svetainėms neleidžiama naudoti vietovės informacijos</translation>
 <translation id="5227679487546032910">Numatytasis tamsiai žydras pseudoportretas</translation>
@@ -7378,6 +7383,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Pašalinti plėtinį?}one{Pašalinti # plėtinį?}few{Pašalinti # plėtinius?}many{Pašalinti # plėtinio?}other{Pašalinti # plėtinių?}}</translation>
 <translation id="6180510783007738939">Linijos įrankis</translation>
 <translation id="6180550893222597997">Kurį „passkey“ norite naudoti su „<ph name="APP_NAME" />“?</translation>
+<translation id="6181218116951226898">Programos kartais atnaujina savo prekės ženklą. Peržiūrėkite visus pakeitimus, kad įsitikintumėte, jog esate patenkinti jais, prieš atnaujindami.</translation>
 <translation id="6181431612547969857">Atsisiuntimas užblokuotas</translation>
 <translation id="6183369864942961155">Automatinė šviesioji / tamsioji tema</translation>
 <translation id="6184099524311454384">Ieškoti skirtukų</translation>
@@ -7451,6 +7457,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6234108445915742946">Kovo 31 d. bus pakeistos „Chrome“ paslaugų teikimo sąlygos</translation>
 <translation id="6234474535228214774">Laukiama, kol bus įdiegta</translation>
 <translation id="6235208551686043831">Įrenginio fotoaparatas įjungtas. Padėkite „eSIM“ kortelės QR kodą prieš fotoaparatą.</translation>
+<translation id="6237256594069101884">URL atnaujinimo peržiūra</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> grupė „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Užrašų rašymo rašikliu programa</translation>
 <translation id="6237481151388361546">Pakeiskite interneto ryšį ir pasirinkite „Bandyti dar kartą“ arba pasirinkite „Atidaryti pagrindinėje redagavimo priemonėje“, kad galėtumėte naudoti ribotas peržiūros ir redagavimo parinktis.</translation>
@@ -8310,6 +8317,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6840155290835956714">Klausti prieš siunčiant</translation>
 <translation id="6840184929775541289">Nėra sertifikavimo institucija</translation>
 <translation id="6840214587087739194">Adresas ištrintas</translation>
+<translation id="6841076158433142214">Jums nebus pranešta, kai šios programos bus naudojamos ekrano turiniui įrašyti:</translation>
 <translation id="6841143363521180029">Šifruota</translation>
 <translation id="6841186874966388268">Klaidos</translation>
 <translation id="6842135459748401207">Tik įrenginiai, kuriuose prisijungta prie <ph name="USER_EMAIL" /></translation>
@@ -8770,6 +8778,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7181329571386134105">Jei leidžiate vaikui (<ph name="CHILD_NAME" />) įdiegti būsimus plėtinius be jūsų patvirtinimo, atidarykite „Family Link“ programą įrenginyje ir atnaujinkite vaiko (<ph name="CHILD_NAME" />) „Google Chrome“ nustatymus.</translation>
 <translation id="7181840534454431748">Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" />
             {NUM_OTHER_MEMBERS,plural, =0{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" />}=1{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmeniu}one{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmeniu}few{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmenimis}many{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmens}other{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmenų}}</translation>
+<translation id="7181976109296206547">Logotipo, pavadinimo ir URL atnaujinimų peržiūra</translation>
 <translation id="7182051712900867547">Naudoti kitą paskyrą</translation>
 <translation id="7182063559013288142">Spartusis viešosios interneto prieigos taškas</translation>
 <translation id="7182791023900310535">Perkelti slaptažodį</translation>
@@ -8945,6 +8954,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7312040805247765153">Nepavyko įdiegti programos</translation>
 <translation id="7312210124139670355">Administratorius iš naujo nustato jūsų „eSIM“ kortelę. Tai gali užtrukti kelias minutes.</translation>
 <translation id="7313539585802573958">Klaviatūros foninio apšvietimo spalvos</translation>
+<translation id="7314865262803554456">Jums nebus pranešta, kai įrašymas prasidės.</translation>
 <translation id="7314989823816739632">Romantiška</translation>
 <translation id="7317342082064136423">Patvirtinkite paskyrą</translation>
 <translation id="7317831949569936035">Mokyklos registracija</translation>
@@ -11482,6 +11492,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="9033765790910064284">Vis tiek tęsti</translation>
 <translation id="9033857511263905942">&amp;Įklijuoti</translation>
 <translation id="903480517321259405">Dar kartą įveskite PIN kodą</translation>
+<translation id="9035157477209989051">Gausite pranešimą, kai šios programos bus naudojamos ekrano turiniui įrašyti:</translation>
 <translation id="9036484080057916082">Pasirašyto sertifikato laiko žymių sąrašas</translation>
 <translation id="9037054491984310631">Prisijungta prie „Bluetooth“ įrenginio pavadinimu „<ph name="DEVICE" />“</translation>
 <translation id="9037640663275993951">Įrenginys neleidžiamas</translation>
