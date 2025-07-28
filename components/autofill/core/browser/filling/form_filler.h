@@ -202,7 +202,7 @@ class FormFiller {
   // if it's an override.
   struct FieldFillingData {
     std::u16string value_to_fill;
-    std::optional<FieldType> field_type;
+    FieldType field_type;
     bool value_is_an_override;
   };
 
@@ -217,12 +217,12 @@ class FormFiller {
       std::string* failure_to_fill);
 
   // Fills `field_data` and modifies `autofill_field` given all other states.
-  // Returns true if the field has been filled, false otherwise. This is
-  // independent of whether the field was filled or autofilled before.
-  // When `allow_suggestion_swapping` is true, the method still returns true if
-  // the `autofill_field` is emptied.
+  // Returns the FieldType of the value that was filled, or std::nullopt if no
+  // value was filled. The return value is independent of whether the field was
+  // filled or autofilled before. When `allow_suggestion_swapping` is true, the
+  // method still returns the FieldType if the `autofill_field` is emptied.
   // TODO(crbug.com/40227071): Cleanup API and logic.
-  bool FillField(
+  std::optional<FieldType> FillField(
       AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,

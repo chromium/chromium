@@ -809,6 +809,8 @@ void FormFiller::FillOrPreviewForm(
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure.field_count());
 
+  std::vector<std::pair<FieldGlobalId, FieldType>> filled_field_types;
+
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
   // list of reason for skipping each field.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
@@ -861,10 +863,11 @@ void FormFiller::FillOrPreviewForm(
     // will be sent to the renderer. When `allow_suggestion_swapping` is true,
     // the fields can also be emptied. In that scenario, the
     // `field->is_autofilled()` becomes false.
-    const bool is_newly_autofilled_or_emptied =
+    const std::optional<FieldType> filled_field_type =
         FillField(autofill_field, augmented_filling_payload, forced_fill_values,
                   result_fields[i], action_persistence,
                   allow_suggestion_swapping, &failure_to_fill);
+    const bool is_newly_autofilled_or_emptied = filled_field_type.has_value();
     const bool autofilled_value_did_not_change =
         form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
         form.fields()[i].value() == result_fields[i].value();
@@ -875,6 +878,11 @@ void FormFiller::FillOrPreviewForm(
     } else if (!is_newly_autofilled_or_emptied) {
       skip_reasons[form.fields()[i].global_id()].insert(
           FieldFillingSkipReason::kNoValueToFill);
+    }
+
+    if (filled_field_type) {
+      filled_field_types.emplace_back(result_fields[i].global_id(),
+                                      *filled_field_type);
     }
 
     const bool has_value_before = !form.fields()[i].value().empty();
@@ -905,12 +913,8 @@ void FormFiller::FillOrPreviewForm(
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
           autofill_trigger_field.origin(),
-          base::MakeFlatMap<FieldGlobalId, FieldType>(
-              form_structure, {},
-              [](const auto& field) {
-                return std::make_pair(field->global_id(),
-                                      field->Type().GetStorableType());
-              }),
+          base::flat_map<FieldGlobalId, FieldType>(
+              std::move(filled_field_types)),
           /*section_for_clear_form_on_ios=*/autofill_trigger_field.section());
 
   // This will hold the subset of fields of `result_fields` whose ids are in
@@ -1125,17 +1129,17 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
     return {it->second, autofill_field.Type().GetStorableType(),
             /*value_is_an_override=*/true};
   }
-  const auto& [value_to_fill, filling_type] = std::visit(
+  const auto& [value_to_fill, filled_field_type] = std::visit(
       absl::Overload{
           [&](const AutofillProfile* profile)
-              -> std::pair<std::u16string, std::optional<FieldType>> {
+              -> std::pair<std::u16string, FieldType> {
             return GetFillingValueAndTypeForProfile(
                 CHECK_DEREF(profile), manager_->client().GetAppLocale(),
                 autofill_field.Type(), field_data,
                 manager_->client().GetAddressNormalizer(), failure_to_fill);
           },
           [&](const CreditCard* credit_card)
-              -> std::pair<std::u16string, std::optional<FieldType>> {
+              -> std::pair<std::u16string, FieldType> {
             return {
                 GetFillingValueForCreditCard(
                     CHECK_DEREF(credit_card), manager_->client().GetAppLocale(),
@@ -1144,7 +1148,7 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
           },
           [&](const AugmentedFillingPayload::EntityPayload&
                   entity_and_fields_and_types)
-              -> std::pair<std::u16string, std::optional<FieldType>> {
+              -> std::pair<std::u16string, FieldType> {
             const EntityInstance& entity =
                 CHECK_DEREF(entity_and_fields_and_types.first);
             const std::vector<AutofillFieldWithAttributeType>& fields =
@@ -1156,23 +1160,23 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
                     autofill_field.Type().GetStorableType()};
           },
           [&](const VerifiedProfile* profile)
-              -> std::pair<std::u16string, std::optional<FieldType>> {
+              -> std::pair<std::u16string, FieldType> {
             auto it = profile->find(autofill_field.Type().GetStorableType());
             std::u16string value = it == profile->end() ? u"" : it->second;
             return {value, autofill_field.Type().GetStorableType()};
           },
           [&](const OtpFillData* otp_fill_data)
-              -> std::pair<std::u16string, std::optional<FieldType>> {
+              -> std::pair<std::u16string, FieldType> {
             auto it = otp_fill_data->find(field_data.global_id());
             const std::u16string& value =
                 it == otp_fill_data->end() ? u"" : it->second;
             return {value, autofill_field.Type().GetStorableType()};
           }},
       filling_payload.variant);
-  return {value_to_fill, filling_type, /*value_is_an_override=*/false};
+  return {value_to_fill, filled_field_type, /*value_is_an_override=*/false};
 }
 
-bool FormFiller::FillField(
+std::optional<FieldType> FormFiller::FillField(
     AutofillField& autofill_field,
     const AugmentedFillingPayload& filling_payload,
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
@@ -1188,7 +1192,7 @@ bool FormFiller::FillField(
     field_data.set_value(filling_content.value_to_fill);
     field_data.set_force_override(true);
     field_data.set_is_autofilled(!filling_content.value_to_fill.empty());
-    return true;
+    return filling_content.field_type;
   }
 
   // Do not attempt to fill empty values as it would skew the metrics.
@@ -1196,7 +1200,7 @@ bool FormFiller::FillField(
     if (failure_to_fill) {
       *failure_to_fill += "No value to fill available. ";
     }
-    return false;
+    return std::nullopt;
   }
   field_data.set_value(filling_content.value_to_fill);
   field_data.set_force_override(filling_content.value_is_an_override);
@@ -1219,7 +1223,7 @@ bool FormFiller::FillField(
   // it. This allows the renderer to distinguish autofilled fields from
   // fields with non-empty values, such as select-one fields.
   field_data.set_is_autofilled(true);
-  return true;
+  return filling_content.field_type;
 }
 
 void FormFiller::AppendFillLogEvents(
