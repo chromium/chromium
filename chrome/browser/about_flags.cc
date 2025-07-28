@@ -4786,6 +4786,15 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kAndroidTabDeclutterAutoDeleteTesting[] = {
+    {"android_tab_declutter_auto_delete_promo_test", "true"}};
+const FeatureEntry::FeatureVariation
+    kAndroidTabDeclutterAutoDeleteVariations[] = {
+        {"Testing", kAndroidTabDeclutterAutoDeleteTesting,
+         std::size(kAndroidTabDeclutterAutoDeleteTesting), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10964,7 +10973,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-tab-declutter-auto-delete",
      flag_descriptions::kAndroidTabDeclutterAutoDeleteName,
      flag_descriptions::kAndroidTabDeclutterAutoDeleteDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutterAutoDelete)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidTabDeclutterAutoDelete,
+         kAndroidTabDeclutterAutoDeleteVariations,
+         "AndroidTabDeclutterAutoDeleteVariations")},
 
     {"android-tab-declutter-auto-delete-kill-switch",
      flag_descriptions::kAndroidTabDeclutterAutoDeleteKillSwitchName,

@@ -248,4 +248,8 @@ public class TabArchiveSettings {
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE);
     }
+
+    public boolean isInTestingMode() {
+        return ChromeFeatureList.sAndroidTabDeclutterAutoDeletePromoTest.getValue();
+    }
 }

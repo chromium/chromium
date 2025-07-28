@@ -113,6 +113,7 @@ public class ArchivedTabsAutoDeletePromoManager implements Destroyable {
      * 6. There is at least one tab in the archive.
      */
     private boolean checkConditions() {
+        if (mTabArchiveSettings.isInTestingMode()) return true;
         return ChromeFeatureList.sAndroidTabDeclutterAutoDelete.isEnabled()
                 && ChromeFeatureList.sAndroidTabDeclutterAutoDeleteKillSwitch.isEnabled()
                 && !mTabArchiveSettings.getAutoDeleteDecisionMade()
