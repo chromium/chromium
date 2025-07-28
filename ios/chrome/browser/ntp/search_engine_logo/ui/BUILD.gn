@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "search_engine_logo_consumer.h",
     "search_engine_logo_container_view.h",
     "search_engine_logo_container_view.mm",
   ]

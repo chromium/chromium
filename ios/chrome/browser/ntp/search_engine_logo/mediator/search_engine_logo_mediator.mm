@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/google/model/google_logo_service.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_container_view.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -115,6 +116,13 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   return self;
 }
 
+- (void)disconnect {
+  _profile = nullptr;
+  _webState = nullptr;
+  _browser = nullptr;
+  _imageFetcher.reset();
+}
+
 #pragma mark - Accessors
 
 - (SearchEngineLogoContainerView*)containerView {
@@ -181,13 +189,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       self.containerView.shrunkLogoView.image = [self logoImage];
     }
   }
-}
-
-- (void)disconnect {
-  _profile = nullptr;
-  _webState = nullptr;
-  _browser = nullptr;
-  _imageFetcher.reset();
 }
 
 #pragma mark - SearchEngineLogoContainerViewDelegate
@@ -280,13 +281,11 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   // Animate this view seperately in case the doodle has updated multiple times.
   // This can happen when a particular doodle cycles thru multiple images.
   __weak __typeof(self) weakSelf = self;
-  [self.containerView
-      setDoodleImage:doodle
-            animated:animate
-          animations:^{
-            weakSelf.showingDoodle = YES;
-            [weakSelf.doodleObserver doodleDisplayStateChanged:YES];
-          }];
+  [self.containerView setDoodleImage:doodle
+                            animated:animate
+                          animations:^{
+                            [weakSelf doodleAppearanceAnimationDidFinish];
+                          }];
 
   _onClickUrl = logo->metadata.on_click_url;
 
@@ -305,6 +304,13 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
   [self.containerView setStyle:SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_DOODLE
                       animated:animate];
+}
+
+// Called when the doodle's appearance animation completes.
+- (void)doodleAppearanceAnimationDidFinish {
+  self.showingDoodle = YES;
+  [self.doodleObserver doodleDisplayStateChanged:YES];
+  [self.consumer doodleDisplayStateChanged:YES];
 }
 
 // Attempts to fetch an animated GIF for the doodle.

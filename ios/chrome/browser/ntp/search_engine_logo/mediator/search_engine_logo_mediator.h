@@ -10,15 +10,19 @@
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "url/gurl.h"
 
+@protocol SearchEngineLogoConsumer;
+
 class Browser;
 namespace web {
 class WebState;
 }
 
+// TODO(crbug.com/423883582): LogoVendor is deprecated.
 @interface SearchEngineLogoMediator : NSObject <LogoVendor>
 
 // Whether the logo should be multicolor or monochrome.
 @property(nonatomic, assign) BOOL usesMonochromeLogo;
+@property(nonatomic, weak) id<SearchEngineLogoConsumer> consumer;
 
 // Designated initializer.
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -26,6 +30,9 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Disconnect the instance.
+- (void)disconnect;
 
 @end
 
