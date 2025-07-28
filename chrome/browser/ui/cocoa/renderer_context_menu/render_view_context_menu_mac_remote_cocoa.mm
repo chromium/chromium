@@ -7,6 +7,7 @@
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "components/remote_cocoa/common/menu.mojom.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 
 RenderViewContextMenuMacRemoteCocoa::RenderViewContextMenuMacRemoteCocoa(
