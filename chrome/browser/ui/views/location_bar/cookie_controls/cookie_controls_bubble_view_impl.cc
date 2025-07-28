@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -143,6 +144,12 @@ bool CookieControlsBubbleViewImpl::OnCloseRequested(
   // will automatically close when the page has loaded.
   if (GetReloadingView()->GetVisible() ||
       GetContentView()->GetTrackingProtectionsButton()->GetSpinnerVisible()) {
+    // Always close the bubble if a JS dialog is being shown.
+    if (auto* app_modal_queue =
+            javascript_dialogs::AppModalDialogQueue::GetInstance();
+        app_modal_queue && app_modal_queue->HasActiveDialog()) {
+      return true;
+    }
     return close_reason != views::Widget::ClosedReason::kLostFocus;
   }
 
