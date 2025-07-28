@@ -789,10 +789,6 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
     bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
-  if (!copy_failed && frame_resource->scoped_mapping) {
-    frame_resource->scoped_mapping.reset();
-  }
-
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "media", "CopyVideoFrameToGpuMemoryBuffer",
       TRACE_ID_WITH_SCOPE("CopyVideoFrameToGpuMemoryBuffer",
@@ -978,6 +974,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  if (frame_resource->scoped_mapping) {
+    frame_resource->scoped_mapping.reset();
+  }
   if (copy_failed) {
     // Drop the resource if there was an error with it. If we're not in
     // shutdown we also need to remove the pool entry for the resource.
