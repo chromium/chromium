@@ -4,17 +4,21 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+@NullMarked
 public class DownloadMessageBridge {
     private long mNativeDownloadMessageBridge;
 
@@ -49,6 +53,7 @@ public class DownloadMessageBridge {
         if (snackbarManager == null) return;
 
         Context context = window.getContext().get();
+        assumeNonNull(context);
         Snackbar snackbar =
                 Snackbar.make(
                         context.getString(R.string.download_file_type_not_supported),
