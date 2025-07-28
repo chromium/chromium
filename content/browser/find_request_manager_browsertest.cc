@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/find_request_manager.h"
 
 #include "base/command_line.h"
@@ -1057,15 +1052,15 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
   // Activate matches via points inside each of the find match rects, in an
   // arbitrary order. Check that the correct match becomes active after each
   // activation.
-  int order[19] =
-      {11, 13, 2, 0, 16, 5, 7, 10, 6, 1, 15, 14, 9, 17, 18, 3, 8, 12, 4};
-  for (int i = 0; i < 19; ++i) {
+  const std::array<int, 19> order = {11, 13, 2, 0,  16, 5, 7, 10, 6, 1,
+                                     15, 14, 9, 17, 18, 3, 8, 12, 4};
+  for (const int rect_index : order) {
     delegate()->MarkNextReply();
-    contents()->ActivateNearestFindResult(
-        rects[order[i]].CenterPoint().x(), rects[order[i]].CenterPoint().y());
+    contents()->ActivateNearestFindResult(rects[rect_index].CenterPoint().x(),
+                                          rects[rect_index].CenterPoint().y());
     delegate()->WaitForNextReply();
 
-    bool is_match_in_oopif = order[i] > 1 && test_with_oopif();
+    bool is_match_in_oopif = rect_index > 1 && test_with_oopif();
     // Check widget message rect to make sure it matches.
     if (is_match_in_oopif) {
       message_interceptor_child->WaitForWidgetHostMessage();
@@ -1077,7 +1072,8 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
       message_interceptor_child->Reset();
     }
 
-    EXPECT_EQ(order[i] + 1, delegate()->GetFindResults().active_match_ordinal);
+    EXPECT_EQ(rect_index + 1,
+              delegate()->GetFindResults().active_match_ordinal);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
