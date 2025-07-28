@@ -85,11 +85,6 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     @Override
-    public String getUmaTag() {
-        return "MPTDS";
-    }
-
-    @Override
     public void performMaintenance(List<Integer> tabIds, String dataId) {
         assert false : "perforMaintenance is not available in MockPersistedTabDataStorage";
     }

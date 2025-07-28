@@ -74,18 +74,14 @@ public interface PersistedTabDataStorage {
     void delete(int tabId, String tabDataId);
 
     /**
-     * @return unique tag appended to the end of metrics for Uma
-     */
-    String getUmaTag();
-
-    /**
-     * Identifies and deletes stored {@link Tab} data for Tabs which no longer exist.
-     * This can occur, for example, if a {@link Tab} is closed and then the app crashes,
-     * before the {@link PersistedTabData} stored for that {@link Tab} is cleaned up.
-     * @param tabIds {@link Tab} identifiers corresponding to current live Tabs -
-     * no stored {@link PersistedTabData} corresponding to these Tabs will be removed.
-     * @param dataId identifier for {@link PersistedTabData} which is stored. Each
-     * {@link PersistedTabData} has a unique identifier in the database.
+     * Identifies and deletes stored {@link Tab} data for Tabs which no longer exist. This can
+     * occur, for example, if a {@link Tab} is closed and then the app crashes, before the {@link
+     * PersistedTabData} stored for that {@link Tab} is cleaned up.
+     *
+     * @param tabIds {@link Tab} identifiers corresponding to current live Tabs - no stored {@link
+     *     PersistedTabData} corresponding to these Tabs will be removed.
+     * @param dataId identifier for {@link PersistedTabData} which is stored. Each {@link
+     *     PersistedTabData} has a unique identifier in the database.
      */
     void performMaintenance(List<Integer> tabIds, String dataId);
 }

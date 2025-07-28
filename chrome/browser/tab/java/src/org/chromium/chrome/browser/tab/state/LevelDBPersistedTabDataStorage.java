@@ -128,11 +128,6 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     }
 
     @Override
-    public String getUmaTag() {
-        return "LevelDB";
-    }
-
-    @Override
     public void performMaintenance(List<Integer> tabIds, String dataId) {
         mPersistedDataStorage.performMaintenance(getKeysToKeep(tabIds, dataId), dataId);
     }
