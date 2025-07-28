@@ -1704,6 +1704,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetPinCandidatesSingleTab) {
+  ExecuteJsTest();
+}
+
 class GlicGetHostCapabilityApiTest
     : public GlicApiTestWithOneTab,
       public ::testing::WithParamInterface<bool> {

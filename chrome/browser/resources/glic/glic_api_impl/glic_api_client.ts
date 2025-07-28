@@ -160,15 +160,12 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.getOsHotkeyState().assignAndSignal(payload);
   }
 
-  // TODO(crbug.com/432258121): A race condition can occur when a consumer
-  // unsubscribes and a new one subscribes. An update from the first
-  // subscription that is already in-flight may be delivered to the second
-  // consumer.
   glicWebClientPinCandidatesChanged(payload: {
     candidates: PinCandidatePrivate[],
+    observationId: number,
   }): void {
-    this.host.pinCandidates.assignAndSignal(payload.candidates.map(
-        c => ({tabData: convertTabDataFromPrivate(c.tabData)})));
+    this.host.pinCandidates?.processUpdate(
+        payload.candidates, payload.observationId);
   }
 
   glicWebClientNotifyPinnedTabsChanged(payload: {tabData: TabDataPrivate[]}):
@@ -224,7 +221,9 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
-  pinCandidates = ObservableValueImpl.withNoValue<PinCandidate[]>();
+  pinCandidates: PinCandidatesObservable|undefined;
+  // Makes IDs that are unique within the scope of this class.
+  idGenerator = new IdGenerator();
   private currentZeroStateSuggestionOptions: ZeroStateSuggestionsOptions = {
     isFirstRun: false,
     supportedTools: [],
@@ -677,17 +676,9 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getPinCandidates?
       (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]> {
-    this.pinCandidates =
-        ObservableValueImpl.withNoValue<PinCandidate[]>((isActive: boolean) => {
-          if (isActive) {
-            this.sender.requestNoResponse(
-                'glicBrowserSubscribeToPinCandidates', {options});
-          } else {
-            this.sender.requestNoResponse(
-                'glicBrowserUnsubscribeFromPinCandidates', undefined);
-          }
-        });
-    return this.pinCandidates;
+    this.pinCandidates?.setObsolete();
+    return this.pinCandidates = new PinCandidatesObservable(
+               this.idGenerator.next(), this.sender, options);
   }
 
   async getZeroStateSuggestionsForFocusedTab?
@@ -840,6 +831,61 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
   onTurnCompleted?(model: number, duration: number): void {
     this.sender.requestNoResponse(
         'glicBrowserOnTurnCompleted', {model, duration});
+  }
+}
+
+class IdGenerator {
+  private nextId = 1;
+
+  next(): number {
+    return this.nextId++;
+  }
+}
+
+class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]> {
+  private isObsolete = false;
+
+  constructor(
+      private readonly observationId: number,
+      private sender: PostMessageRequestSender,
+      private options: GetPinCandidatesOptions) {
+    super(false);
+  }
+
+  override activeSubscriptionChanged(hasActiveSubscription: boolean): void {
+    super.activeSubscriptionChanged(hasActiveSubscription);
+    if (this.isObsolete) {
+      console.warn(`getPinCandidates() observable is in use while obsolete.`);
+      return;
+    }
+    if (hasActiveSubscription) {
+      this.sender.requestNoResponse(
+          'glicBrowserSubscribeToPinCandidates',
+          {options: this.options, observationId: this.observationId});
+    } else {
+      this.sender.requestNoResponse(
+          'glicBrowserUnsubscribeFromPinCandidates',
+          {observationId: this.observationId});
+    }
+  }
+
+  processUpdate(candidates: PinCandidatePrivate[], observationId: number) {
+    if (this.observationId !== observationId) {
+      return;
+    }
+
+    this.assignAndSignal(
+        candidates.map(c => ({tabData: convertTabDataFromPrivate(c.tabData)})));
+  }
+
+  // Mark this observable as obsolete. It should not be used any further.
+  // Only one PinCandidatesObservable is active at one time.
+  setObsolete() {
+    if (this.hasActiveSubscription()) {
+      console.warn(
+          `getPinCandidates() observable was made obsolete with subscribers.`);
+    }
+    this.isObsolete = true;
   }
 }
 

@@ -603,11 +603,6 @@ export declare interface GlicBrowserHost {
    *
    * Dynamic updates can be a costly operation so the observable value should be
    * released/destroyed as soon as it's not useful anymore.
-   *
-   * TODO(b/432258121): A race condition can occur when a consumer
-   * unsubscribes and a new one subscribes. An update from the first
-   * subscription that is already in-flight may be delivered to the second
-   * consumer.
    */
   getPinCandidates?
       (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]>;

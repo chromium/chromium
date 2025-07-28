@@ -318,9 +318,14 @@ export declare interface HostRequestTypes {
   glicBrowserSubscribeToPinCandidates: {
     request: {
       options: GetPinCandidatesOptions,
+      observationId: number,
     },
   };
-  glicBrowserUnsubscribeFromPinCandidates: {};
+  glicBrowserUnsubscribeFromPinCandidates: {
+    request: {
+      observationId: number,
+    },
+  };
   glicBrowserGetZeroStateSuggestionsForFocusedTab: {
     request: {
       isFirstRun?: boolean,
@@ -438,6 +443,7 @@ export declare interface WebClientRequestTypes {
   glicWebClientPinCandidatesChanged: {
     request: {
       candidates: PinCandidatePrivate[],
+      observationId: number,
     },
   };
   glicWebClientZeroStateSuggestionsChanged: {

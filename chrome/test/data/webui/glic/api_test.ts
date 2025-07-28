@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {FocusedTabData, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {ObservableValue} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
@@ -45,6 +45,7 @@ class SequencedSubscriber<T> {
     this.current = await waitFor(this.getSignal(this.readIndex++).promise);
     return this.current;
   }
+  /** Returns true if all values have been read. */
   isEmpty(): boolean {
     return this.readIndex === this.writeIndex;
   }
@@ -1157,6 +1158,56 @@ class ApiTests extends ApiTestFixtureBase {
             this.capabilitiesToString(Array.from(capabilities))}`);
   }
 
+  // Test getPinCandidates() in some different scenarios where there is a single
+  // browser tab.
+  async testGetPinCandidatesSingleTab() {
+    assertTrue(!!this.host.pinTabs);
+    assertTrue(!!this.host.getPinCandidates);
+
+    // Gets pinned candidates and asserts that their comma-separated titles
+    // equal `expected`.
+    const getCandidatesEquals =
+        async (options: GetPinCandidatesOptions, expected: string) => {
+      const sequence = observeSequence(this.host.getPinCandidates!(options));
+      const candidates = await sequence.next();
+      sequence.unsubscribe();
+      assertEquals(candidates.map(c => c.tabData.title).join(', '), expected);
+    };
+
+    await getCandidatesEquals({maxCandidates: 1}, 'Test Page');
+    await getCandidatesEquals({maxCandidates: 1, query: 'zxyzyz'}, 'Test Page');
+    await getCandidatesEquals(
+        {maxCandidates: 1, query: 'Test Page'}, 'Test Page');
+    await getCandidatesEquals({maxCandidates: 0}, '');
+
+
+    // Test some races.
+
+    // 1. Calling getPinCandidates a second time will reset the first
+    // observable. We should receive nothing from it.
+    let racedSequence =
+        observeSequence(this.host.getPinCandidates!({maxCandidates: 1}));
+    await getCandidatesEquals({maxCandidates: 1}, 'Test Page');
+    assertTrue(racedSequence.isEmpty());
+    racedSequence.unsubscribe();
+
+    // 2. Unsubscribing the obsolete observable should do nothing to the new
+    // one.
+    racedSequence =
+        observeSequence(this.host.getPinCandidates!({maxCandidates: 1}));
+    const racedSequence2 =
+        observeSequence(this.host.getPinCandidates!({maxCandidates: 1}));
+    racedSequence.unsubscribe();
+    assertEquals(1, (await racedSequence2.next()).length);
+
+    // Pin the current focus. A pinned tab isn't a valid candidate.
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2!()).next();
+    await this.host.pinTabs([checkDefined(focus.hasFocus?.tabData.tabId)]);
+
+    await getCandidatesEquals({maxCandidates: 1}, '');
+  }
+
   async testGetModelQualityClientId() {
     assertTrue(!!this.host.getModelQualityClientId);
     const clientId = await this.host.getModelQualityClientId();
@@ -1429,7 +1480,7 @@ class TestRunner implements TestStepper {
 
   // Sets up the test and starts running it.
   async run(maxTimeoutMs: number, payload: any): Promise<TestResult> {
-    assertTrue(this.testFound, `Test not found`);
+    assertTrue(this.testFound, `Test not found: "${this.testName}"`);
     maxTimeoutEndTime = performance.now() + maxTimeoutMs;
     console.info(`Running test ${this.testName} with payload ${
         JSON.stringify(payload)}`);

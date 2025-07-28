@@ -260,7 +260,8 @@ class WebClientImpl implements WebClientInterface {
 }
 
 class PinCandidatesObserverImpl implements PinCandidatesObserver {
-  constructor(private sender: PostMessageRequestSender) {}
+  constructor(
+      private sender: PostMessageRequestSender, public observationId: number) {}
 
   onPinCandidatesChanged(candidates: PinCandidateMojo[]): void {
     const extras = new ResponseExtras();
@@ -270,16 +271,26 @@ class PinCandidatesObserverImpl implements PinCandidatesObserver {
               candidates.map(c => ({
                                tabData: tabDataToClient(c.tabData, extras),
                              })),
+          observationId: this.observationId,
         },
         extras.transfers);
   }
 }
 
-// Handles all requests to the host.
+/**
+ * Handles all requests to the host.
+ *
+ * Each function is a message handler, automatically called when the host
+ * receives a message with the corresponding request name.
+ *
+ * Any new state or function that's not a handler should be added to
+ * `GlicApiHost`.
+ */
 class HostMessageHandler implements HostMessageHandlerInterface {
   // Undefined until the web client is initialized.
   private receiver: WebClientReceiver|undefined;
-  private pinCandidatesObserver: PinCandidatesObserverReceiver|undefined;
+
+  // Reminder: Don't add more state here! See `HostMessageHandler`'s comment.
 
   constructor(
       private handler: WebClientHandlerInterface,
@@ -291,7 +302,6 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       this.receiver.$.close();
       this.receiver = undefined;
     }
-    this.glicBrowserUnsubscribeFromPinCandidates();
   }
 
   async glicBrowserWebClientCreated(_request: void, extras: ResponseExtras):
@@ -839,18 +849,26 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserSubscribeToPinCandidates(request: {
     options: GetPinCandidatesOptions,
+    observationId: number,
   }): void {
-    const observer = new PinCandidatesObserverImpl(this.sender);
-    this.pinCandidatesObserver = new PinCandidatesObserverReceiver(observer);
+    const observer =
+        new PinCandidatesObserverImpl(this.sender, request.observationId);
+    const receiver = new PinCandidatesObserverReceiver(observer);
+    this.host.pinCandidatesObserver = {receiver, observer};
     this.handler.subscribeToPinCandidates(
         getPinCandidatesOptionsFromClient(request.options),
-        this.pinCandidatesObserver.$.bindNewPipeAndPassRemote());
+        receiver.$.bindNewPipeAndPassRemote());
   }
 
-  glicBrowserUnsubscribeFromPinCandidates(): void {
-    if (this.pinCandidatesObserver) {
-      this.pinCandidatesObserver.$.close();
-      this.pinCandidatesObserver = undefined;
+  glicBrowserUnsubscribeFromPinCandidates(request: {observationId: number}):
+      void {
+    if (!this.host.pinCandidatesObserver) {
+      return;
+    }
+    if (this.host.pinCandidatesObserver.observer.observationId ===
+        request.observationId) {
+      this.host.pinCandidatesObserver.receiver.$.close();
+      this.host.pinCandidatesObserver = undefined;
     }
   }
 
@@ -921,6 +939,12 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 }
 
+/**
+ * The host side of the Glic API.
+ *
+ * Its primary job is to route calls between the client (over postMessage) and
+ * the browser (over Mojo).
+ */
 export class GlicApiHost implements PostMessageRequestHandler {
   private senderId = newSenderId();
   private messageHandler: HostMessageHandler;
@@ -937,6 +961,10 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private browserIsActive = true;
   private hasShownDebuggerAttachedWarning = false;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
+  pinCandidatesObserver?: {
+    receiver: PinCandidatesObserverReceiver,
+    observer: PinCandidatesObserverImpl,
+  };
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
@@ -969,6 +997,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.postMessageReceiver.destroy();
     this.messageHandler.destroy();
     this.sender.destroy();
+    this.closePinCandidatesObserver();
   }
 
   // Called when the webview page is loaded.
@@ -991,7 +1020,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.panelOpenState = state;
     this.clientActiveObs.assignAndSignal(this.isClientActive());
     if (state === PanelOpenState.CLOSED) {
-      this.messageHandler.glicBrowserUnsubscribeFromPinCandidates();
+      this.closePinCandidatesObserver();
     }
   }
 
@@ -1226,6 +1255,13 @@ export class GlicApiHost implements PostMessageRequestHandler {
     chrome.metricsPrivate.recordEnumerationValue(
         `Glic.Api.RequestCounts.${suffix}`, event,
         GlicRequestEvent.MAX_VALUE + 1);
+  }
+
+  closePinCandidatesObserver() {
+    if (this.pinCandidatesObserver) {
+      this.pinCandidatesObserver.receiver.$.close();
+      this.pinCandidatesObserver = undefined;
+    }
   }
 }
 

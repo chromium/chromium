@@ -32,8 +32,8 @@ export interface ObservableValueReadOnly<T> {
 export class ObservableValue<T> {
   private subscribers: Set<ObservableSubscription<T>> = new Set();
 
-  private constructor(
-      private isSet: boolean, private value: T|undefined,
+  protected constructor(
+      private isSet: boolean, private value?: T,
       private hasActiveSubscriptionCallback?:
           (hasActiveSubscription: boolean) => void) {}
 
@@ -97,8 +97,8 @@ export class ObservableValue<T> {
     }
 
     this.subscribers.delete(sub);
-    if (this.hasActiveSubscriptionCallback && this.subscribers.size === 0) {
-      this.hasActiveSubscriptionCallback(false);
+    if (this.subscribers.size === 0) {
+      this.activeSubscriptionChanged(false);
     }
   }
 
@@ -106,14 +106,22 @@ export class ObservableValue<T> {
   subscribe(change: (newValue: T) => void): Subscriber {
     const newSub =
         new ObservableSubscription(change, this.onUnsubscribe.bind(this));
-    if (this.hasActiveSubscriptionCallback && this.subscribers.size === 0) {
-      this.hasActiveSubscriptionCallback(true);
+    if (this.subscribers.size === 0) {
+      this.activeSubscriptionChanged(true);
     }
     this.subscribers.add(newSub);
     if (this.isSet) {
       change(this.value!);
     }
     return newSub;
+  }
+
+  protected activeSubscriptionChanged(hasActiveSubscription: boolean): void {
+    this.hasActiveSubscriptionCallback?.(hasActiveSubscription);
+  }
+
+  protected hasActiveSubscription(): boolean {
+    return this.subscribers.size > 0;
   }
 
   /**
