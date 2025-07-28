@@ -128,6 +128,12 @@ class TabStripActionContainer : public views::View,
   void SetGlicShowState(bool show) override;
   void SetGlicIcon(const gfx::VectorIcon& icon) override;
 
+  // UI Controls for the GlicActorTaskIcon:
+  void TriggerGlicActorTaskIconCheckTasksNudge();
+  void ShowGlicActorTaskIcon();
+  void HideGlicActorTaskIcon();
+  bool GetIsShowingGlicActorTaskIconNudge();
+
   void UpdateButtonBorders(gfx::Insets button_insets);
 
   void DidBecomeActive(BrowserWindowInterface* browser);

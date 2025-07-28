@@ -541,6 +541,37 @@ bool TabStripActionContainer::GetIsShowingGlicNudge() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
+void TabStripActionContainer::TriggerGlicActorTaskIconCheckTasksNudge() {
+#if BUILDFLAG(ENABLE_GLIC)
+// TODO(crbug.com/422442409): Implement show nudge when task needs assistance.
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+void TabStripActionContainer::ShowGlicActorTaskIcon() {
+#if BUILDFLAG(ENABLE_GLIC)
+// TODO(crbug.com/422439520): Implement show icon when task starts.
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+void TabStripActionContainer::HideGlicActorTaskIcon() {
+#if BUILDFLAG(ENABLE_GLIC)
+  // TODO(crbug.com/422439520): Implement hide icon when task is inactive.
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+bool TabStripActionContainer::GetIsShowingGlicActorTaskIconNudge() {
+#if BUILDFLAG(ENABLE_GLIC)
+// TODO(crbug.com/422439520): Implement is showing nudge.
+#else
+#endif  // BUILDFLAG(ENABLE_GLIC)
+  // Default implementation - if Glic is not enabled, nudge cannot show.
+  return false;
+}
+
 DeclutterTriggerCTRBucket TabStripActionContainer::GetDeclutterTriggerBucket(
     bool clicked) {
   const auto total_tab_count =

@@ -127,7 +127,6 @@
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #endif
 
 #if defined(USE_AURA)
@@ -200,11 +199,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
-
-      if (features::kGlicActorUiTaskIcon.Get()) {
-        glic_actor_task_icon_controller_ =
-            std::make_unique<tabs::GlicActorTaskIconController>(browser);
-      }
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -486,6 +480,14 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           browser_view->GetProfile(),
           browser_view->tab_strip_region_view()->GetTabStripActionContainer(),
           glic_service);
+
+      if (features::kGlicActorUiTaskIcon.Get() &&
+          browser_->GetProfile()->IsRegularProfile()) {
+        glic_actor_task_icon_controller_ =
+            std::make_unique<tabs::GlicActorTaskIconController>(
+                browser_->GetProfile(), browser_view->tab_strip_region_view()
+                                            ->GetTabStripActionContainer());
+      }
     }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -537,6 +539,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   toast_service_.reset();
   extension_window_controller_.reset();
   actor_overlay_window_controller_.reset();
+  glic_actor_task_icon_controller_.reset();
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();
