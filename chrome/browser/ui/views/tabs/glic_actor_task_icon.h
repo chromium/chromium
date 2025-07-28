@@ -38,7 +38,7 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   void HighlightTaskIcon();
 
   // Sets the task icon to the task needs assistance state.
-  void ShowTaskNeedsAssistanceLabel();
+  void ShowCheckTasksLabel();
 
   // Sets the task icon to its default colors, label, and tooltip text.
   void SetTaskIconToDefault();

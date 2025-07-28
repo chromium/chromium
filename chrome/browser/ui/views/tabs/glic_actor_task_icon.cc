@@ -92,7 +92,7 @@ void GlicActorTaskIcon::SetTaskIconToDefault() {
   SetDefaultTooltipText();
 }
 
-void GlicActorTaskIcon::ShowTaskNeedsAssistanceLabel() {
+void GlicActorTaskIcon::ShowCheckTasksLabel() {
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
   const std::u16string glic_actor_task_icon_check_task_label =
       u"Check your task";

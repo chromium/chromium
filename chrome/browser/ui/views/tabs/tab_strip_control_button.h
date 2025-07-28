@@ -91,6 +91,9 @@ class TabStripControlButton : public views::LabelButton,
   // views::MaskedTargeterDelegate
   bool GetHitTestMask(SkPath* mask) const override;
 
+  // views::LabelButton
+  void SetText(std::u16string_view text) override;
+
  protected:
   // Returns colors based on the Frame active status.
   ui::ColorId GetBackgroundColor();

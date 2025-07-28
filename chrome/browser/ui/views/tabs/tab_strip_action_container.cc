@@ -589,7 +589,14 @@ bool TabStripActionContainer::GetIsShowingGlicNudge() {
 
 void TabStripActionContainer::TriggerGlicActorTaskIconCheckTasksNudge() {
 #if BUILDFLAG(ENABLE_GLIC)
-// TODO(crbug.com/422442409): Implement show nudge when task needs assistance.
+  CHECK(glic_actor_task_icon_);
+  // Make sure the task icon is visible, for example if another window was
+  // opened after the CheckTask state was sent.
+  ShowGlicActorTaskIcon();
+  glic_actor_task_icon_->ShowCheckTasksLabel();
+  ShowTabStripNudge(glic_actor_task_icon_);
+#else
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
@@ -609,10 +616,18 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
   CHECK(glic_actor_button_container_);
   CHECK(glic_button_);
+  CHECK(glic_actor_task_icon_);
+
+  if (glic_actor_task_icon_->GetIsShowingNudge()) {
+    HideTabStripNudge(glic_actor_task_icon_);
+  }
+  glic_actor_task_icon_->SetTaskIconToDefault();
   glic_button_ = AddChildView(std::move(glic_button_));
   glic_actor_button_container_->SetVisible(false);
+#if !BUILDFLAG(IS_MAC)
   // Re-add the separator so it's ordered after the GlicButton.
   separator_ = AddChildView(std::move(separator_));
+#endif  // !BUILDFLAG(IS_MAC)
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
