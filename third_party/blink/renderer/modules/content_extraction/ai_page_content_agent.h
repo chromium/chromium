@@ -149,6 +149,10 @@ class MODULES_EXPORT AIPageContentAgent final
     // produce a ContentNode.
     base::flat_set<DOMNodeId> interactive_dom_node_ids_;
 
+    // If present, the node which is accessibility focused. This is used to
+    // determine which node to add geometry for in non-actionable mode.
+    DOMNodeId accessibility_focused_node_id_ = kInvalidDOMNodeId;
+
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
 
     base::flat_map<DOMNodeId, int32_t> dom_node_to_z_order_;
