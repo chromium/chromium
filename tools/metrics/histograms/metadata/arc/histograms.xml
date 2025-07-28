@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
-    expires_after="2025-09-01">
+    expires_after="2026-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1007,7 +1007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DataRemoved.Success" enum="Boolean"
-    expires_after="2025-09-01">
+    expires_after="2026-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1019,7 +1019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DataRestore.Duration" units="ms"
-    expires_after="2025-09-01">
+    expires_after="2026-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1029,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DataRestore.Status" enum="ArcDataRestoreStatus"
-    expires_after="2025-09-01">
+    expires_after="2026-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1767,7 +1767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayAutoInstallRequest.State{ArcUserTypes}"
-    enum="ArcPlayAutoInstallRequestState" expires_after="2025-09-01">
+    enum="ArcPlayAutoInstallRequestState" expires_after="2026-09-01">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -1783,7 +1783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayAutoInstallRequest.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2025-09-01">
+    expires_after="2026-09-01">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -2077,7 +2077,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Reauthorization.Result{ArcUserTypes}"
-    enum="ArcProvisioningStatus" expires_after="2025-09-11">
+    enum="ArcProvisioningStatus" expires_after="2026-09-11">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@gmail.com</owner>
   <summary>
