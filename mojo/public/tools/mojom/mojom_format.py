@@ -43,7 +43,7 @@ def main():
             print(file)
             exit_code = 1
       else:
-        with open(file, 'w') as f:
+        with open(file, 'w', newline='\n') as f:
           f.write(output)
     except Exception as e:
       print(f'Failed to format {file}', file=sys.stderr)
