@@ -316,8 +316,9 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
 
   void GetDevices(GetDevicesCallback callback) override {
     std::vector<device::mojom::SerialPortInfoPtr> ports;
-    for (const auto& port : ports_)
+    for (const auto& port : ports_) {
       ports.push_back(port.second->info().Clone());
+    }
     std::move(callback).Run(std::move(ports));
   }
 
@@ -373,8 +374,9 @@ class SerialApiTest : public ExtensionApiTest {
  protected:
   void BindSerialPortManager(
       mojo::PendingReceiver<device::mojom::SerialPortManager> receiver) {
-    if (fail_enumerator_request_)
+    if (fail_enumerator_request_) {
       return;
+    }
 
     port_manager_->Bind(std::move(receiver));
   }
@@ -382,8 +384,6 @@ class SerialApiTest : public ExtensionApiTest {
   bool fail_enumerator_request_ = false;
   std::unique_ptr<FakeSerialPortManager> port_manager_;
 };
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(SerialApiTest, SerialFakeHardware) {
   ResultCatcher catcher;
@@ -409,4 +409,5 @@ IN_PROC_BROWSER_TEST_F(SerialApiTest, SerialRealHardwareFail) {
   ASSERT_TRUE(RunExtensionTest("serial/real_hardware_fail")) << message_;
 }
 
+}  // namespace
 }  // namespace extensions
