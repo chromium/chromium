@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -76,8 +75,7 @@ TEST_F(BrowserPolicyNewTabPageRewriterTest, NoCustomNtpUrl) {
 
 // Tests that chrome://newtab is not re-written when it is in incognito mode.
 TEST_F(BrowserPolicyNewTabPageRewriterTest, IncognitoMode) {
-  web::FakeBrowserState fake_profile;
-  fake_profile.SetOffTheRecord(true);
   GURL url = GURL(kChromeUINewTabURL);
-  EXPECT_FALSE(WillHandleWebBrowserNewTabPageURLForPolicy(&url, &fake_profile));
+  EXPECT_FALSE(WillHandleWebBrowserNewTabPageURLForPolicy(
+      &url, profile_->GetOffTheRecordProfile()));
 }
