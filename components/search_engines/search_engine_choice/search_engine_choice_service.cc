@@ -274,16 +274,18 @@ SearchEngineChoiceService::SearchEngineChoiceService(
       profile_prefs_(profile_prefs),
       local_state_(local_state),
       regional_capabilities_service_(regional_capabilities),
-      prepopulate_data_resolver_(prepopulate_data_resolver) {
+      prepopulate_data_resolver_(prepopulate_data_resolver) {}
+
+SearchEngineChoiceService::~SearchEngineChoiceService() = default;
+
+void SearchEngineChoiceService::Init() {
   ProcessPendingChoiceScreenDisplayState();
   if (auto maybe_wipe_reason = CheckPrefsForWipeReason();
       maybe_wipe_reason.has_value()) {
-    WipeSearchEngineChoicePrefs(profile_prefs, maybe_wipe_reason.value());
+    WipeSearchEngineChoicePrefs(*profile_prefs_, maybe_wipe_reason.value());
   }
-  RecordChoiceScreenCompletionDate(profile_prefs);
+  RecordChoiceScreenCompletionDate(*profile_prefs_);
 }
-
-SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceService::GetStaticChoiceScreenConditions(
@@ -725,6 +727,12 @@ SearchEngineChoiceService::Client&
 SearchEngineChoiceService::GetClientForTesting() {
   CHECK_IS_TEST();
   return *client_.get();
+}
+
+SearchEngineChoiceService::ChoiceStatus
+SearchEngineChoiceService::EvaluateSearchProviderChoiceForTesting(
+    const TemplateURLService& template_url_service) {
+  return EvaluateSearchProviderChoice(template_url_service);
 }
 
 bool SearchEngineChoiceService::IsDsePropagationAllowedForGuest() const {

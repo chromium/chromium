@@ -45,7 +45,7 @@ std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  return std::make_unique<search_engines::SearchEngineChoiceService>(
+  auto service = std::make_unique<search_engines::SearchEngineChoiceService>(
       std::make_unique<IOSSearchEngineChoiceServiceClient>(),
       CHECK_DEREF(profile->GetPrefs()),
       GetApplicationContext()->GetLocalState(),
@@ -53,6 +53,9 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
           profile)));
+
+  service->Init();
+  return service;
 }
 
 void SearchEngineChoiceServiceFactory::RegisterBrowserStatePrefs(

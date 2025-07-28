@@ -23,13 +23,15 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
     content::BrowserContext* context) {
   Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
 
-  return std::make_unique<SearchEngineChoiceService>(
+  auto service = std::make_unique<SearchEngineChoiceService>(
       std::make_unique<SearchEngineChoiceServiceClient>(profile),
       CHECK_DEREF(profile.GetPrefs()), g_browser_process->local_state(),
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
                       GetForProfile(&profile)),
       CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
           &profile)));
+  service->Init();
+  return service;
 }
 }  // namespace
 

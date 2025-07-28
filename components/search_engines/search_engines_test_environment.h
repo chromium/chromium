@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "components/prefs/testing_pref_service.h"
@@ -42,23 +43,30 @@ class SearchEnginesTestEnvironment {
         template_url_service_initializer;
   };
 
+  template <typename T>
+  using ServiceFactory = base::RepeatingCallback<std::unique_ptr<T>(
+      SearchEnginesTestEnvironment& self)>;
+
   struct ServiceFactories {
-    base::RepeatingCallback<
-        std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>(
-            SearchEnginesTestEnvironment& self)>
+    ServiceFactory<regional_capabilities::RegionalCapabilitiesService>
         regional_capabilities_service_factory;
-    base::RepeatingCallback<std::unique_ptr<SearchEngineChoiceService>(
-        SearchEnginesTestEnvironment& self)>
+    ServiceFactory<SearchEngineChoiceService>
         search_engine_choice_service_factory;
-    base::RepeatingCallback<std::unique_ptr<TemplateURLService>(
-        SearchEnginesTestEnvironment& self)>
-        template_url_service_factory;
+    ServiceFactory<TemplateURLService> template_url_service_factory;
 
     ServiceFactories();
     ServiceFactories(const ServiceFactories& other);
     ServiceFactories& operator=(const ServiceFactories& other);
     ~ServiceFactories();
   };
+
+  static ServiceFactory<SearchEngineChoiceService>
+  GetSearchEngineChoiceServiceFactory(
+      bool skip_init = false,
+      base::RepeatingCallback<
+          std::unique_ptr<SearchEngineChoiceService::Client>()> client_factory =
+          base::RepeatingCallback<
+              std::unique_ptr<SearchEngineChoiceService::Client>()>());
 
   explicit SearchEnginesTestEnvironment(
       const Deps& deps = {/*pref_service=*/nullptr,

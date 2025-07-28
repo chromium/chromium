@@ -94,6 +94,11 @@ class SearchEngineChoiceService : public KeyedService {
       TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver);
   ~SearchEngineChoiceService() override;
 
+  // Runs the initialisation step for this service, checking consistency in the
+  // prefs and performing some tasks that might be needed following device state
+  // changes.
+  void Init();
+
   // Returns the choice screen eligibility condition most relevant for the
   // profile associated with `profile_prefs` and `template_url_service`. Only
   // checks dynamic conditions, that can change from one call to the other
@@ -159,6 +164,35 @@ class SearchEngineChoiceService : public KeyedService {
   // used by this service.
   Client& GetClientForTesting();
 
+  enum class ChoiceStatus {
+    // Metedata indicates that a search engine choice has been made and is
+    // considered valid.
+    kValid,
+    // No search engine choice has been made yet.
+    kNotMade,
+    // The current search engine choice has been made on a different device.
+    kFromRestoredDevice,
+    // There is no default search provider available, likely disabled by
+    // enterprise policies.
+    kDefaultSearchDisabled,
+    // The current default search provider is set by enterprise policies.
+    kCurrentIsSetByPolicy,
+    // The current default search provider is non-Google prepopulated one.
+    kCurrentIsNonGooglePrepopulated,
+    // The current default search provider is a custom, client-specified URL.
+    // For example, it could be entered manually by the user or picked up as
+    // site search.
+    kCurrentIsNotPrepopulated,
+    // The current default search provider is coming from search provider
+    // overrides set by the admin or non-standard distribution channel.
+    kCurrentIsDistributionCustom,
+    // The current default search provider has a prepopulated ID that doesn't
+    // match any of the preopulated engines currently available.
+    kCurrentIsUnknownPrepopulated,
+  };
+  ChoiceStatus EvaluateSearchProviderChoiceForTesting(
+      const TemplateURLService& template_url_service);
+
   // Returns whether the profile is eligible for the default search engine to be
   // used across all guest sessions.
   bool IsDsePropagationAllowedForGuest() const;
@@ -191,36 +225,10 @@ class SearchEngineChoiceService : public KeyedService {
 
   void ProcessPendingChoiceScreenDisplayState();
 
-  enum class ChoiceStatus {
-    // Metedata indicates that a search engine choice has been made and is
-    // considered valid.
-    kValid,
-    // No search engine choice has been made yet.
-    kNotMade,
-    // The current search engine choice has been made on a different device.
-    kFromRestoredDevice,
-    // There is no default search provider available, likely disabled by
-    // enterprise policies.
-    kDefaultSearchDisabled,
-    // The current default search provider is set by enterprise policies.
-    kCurrentIsSetByPolicy,
-    // The current default search provider is non-Google prepopulated one.
-    kCurrentIsNonGooglePrepopulated,
-    // The current default search provider is a custom, client-specified URL.
-    // For example, it could be entered manually by the user or picked up as
-    // site search.
-    kCurrentIsNotPrepopulated,
-    // The current default search provider is coming from search provider
-    // overrides set by the admin or non-standard distribution channel.
-    kCurrentIsDistributionCustom,
-    // The current default search provider has a prepopulated ID that doesn't
-    // match any of the preopulated engines currently available.
-    kCurrentIsUnknownPrepopulated,
-  };
   ChoiceStatus EvaluateSearchProviderChoice(
       const TemplateURLService& template_url_service);
 
-  std::unique_ptr<Client> client_;
+  const std::unique_ptr<Client> client_;
   const raw_ref<PrefService> profile_prefs_;
   const raw_ptr<PrefService> local_state_;
   const raw_ref<regional_capabilities::RegionalCapabilitiesService>
@@ -228,10 +236,6 @@ class SearchEngineChoiceService : public KeyedService {
   const raw_ref<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
   base::ObserverList<Observer> observers_;
-
-  // Used to ensure that the value returned from `GetCountryId` never changes
-  // in runtime (different runs can still return different values, though).
-  std::optional<int> country_id_cache_;
 
   // Used to track whether `MaybeRecordChoiceScreenDisplayState()` has already
   // been called for this profile, to monitor the prevalence of some unexpected

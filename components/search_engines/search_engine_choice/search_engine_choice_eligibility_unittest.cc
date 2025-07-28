@@ -28,6 +28,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -46,6 +47,7 @@ using search_engines::SearchEngineChoiceWipeReason;
 using search_engines::SearchEnginesTestEnvironment;
 using search_engines::WipeSearchEngineChoicePrefs;
 using TemplateURLPrepopulateData::PrepopulatedEngine;
+using ChoiceStatus = search_engines::SearchEngineChoiceService::ChoiceStatus;
 
 struct PersistedState {
   std::string country_code;
@@ -113,6 +115,14 @@ SearchEngineChoiceScreenConditions IfSupported(
 class SearchEngineChoiceEligibilityTest
     : public search_engines::SearchEngineChoiceServiceTestBase {
  public:
+  SearchEngineChoiceEligibilityTest()
+      : SearchEngineChoiceEligibilityTest(
+            /*skip_search_engine_choice_service_init=*/false) {}
+  explicit SearchEngineChoiceEligibilityTest(
+      bool skip_search_engine_choice_service_init)
+      : skip_search_engine_choice_service_init_(
+            skip_search_engine_choice_service_init) {}
+
   ~SearchEngineChoiceEligibilityTest() override { ResetDeps(); }
 
   void ResetDeps() {
@@ -163,9 +173,33 @@ class SearchEngineChoiceEligibilityTest
               /* TemplateURLServiceClient= */ nullptr,
               /* dsp_change_callback= */ base::RepeatingClosure());
         });
+
+    lazy_factories.search_engine_choice_service_factory =
+        SearchEnginesTestEnvironment::GetSearchEngineChoiceServiceFactory(
+            // Deliberately do not Init the service here! We'll do it explicitly
+            // either in the test itself when
+            // `skip_search_engine_choice_service_init_` is set, or in
+            // `FinalizeEnvironmentInit()` otherwise. This allows reading the
+            // choice state from the service without having it process and
+            // update this state on construction.
+            /*skip_init=*/true,
+            /*client_factory=*/base::BindLambdaForTesting([args]() {
+              std::unique_ptr<search_engines::SearchEngineChoiceService::Client>
+                  client =
+                      std::make_unique<FakeSearchEngineChoiceServiceClient>(
+                          args.variation_country_id,
+                          args.is_profile_eligible_for_dse_guest_propagation,
+                          args.restore_detected_in_current_session,
+                          args.choice_predates_restore);
+              return client;
+            }));
   }
 
   void FinalizeEnvironmentInit() override {
+    if (!skip_search_engine_choice_service_init_) {
+      search_engine_choice_service().Init();
+    }
+
     // Make sure TURL service loading the db is done.
     template_url_service().Load();
     task_environment_.RunUntilIdle();
@@ -180,6 +214,9 @@ class SearchEngineChoiceEligibilityTest
     return search_engine_choice_service().GetStaticChoiceScreenConditions(
         policy_service(), template_url_service());
   }
+
+ private:
+  bool skip_search_engine_choice_service_init_ = false;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -398,15 +435,11 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 struct Spec {
   struct DeviceStateChanges {
     CountryId country_id;
+    bool set_restored;
   };
   struct ServiceStateChanges {
-    bool set_restored;
     std::optional<std::variant<int, std::string>> select_dse;
     std::optional<ChoiceMadeLocation> choice_location;
-  };
-  struct ExpectationsWithoutServices {
-    bool is_choice_completed;
-    bool is_choice_invalid;
   };
   struct ExpectationsWithServices {
     SearchEngineChoiceScreenConditions static_condition;
@@ -417,10 +450,10 @@ struct Spec {
   // Changes and checks are executed in declaration order, as listed here.
   struct Run {
     std::optional<DeviceStateChanges> update_device_state;
-    std::optional<ExpectationsWithoutServices> check_before_services;
+    std::optional<ChoiceStatus> expect_choice_status_before;
     std::optional<ServiceStateChanges> update_service_state;
     std::optional<ExpectationsWithServices> expect_with_services;
-    std::optional<ExpectationsWithoutServices> check_after_services;
+    std::optional<ChoiceStatus> expect_choice_status_after;
   };
 
   std::string test_name;
@@ -432,13 +465,16 @@ class SearchEngineChoiceEligibilityOnRestoreTest
     : public SearchEngineChoiceEligibilityTest,
       public testing::WithParamInterface<Spec> {
  public:
-  void ProcessExpectationsWithoutServices(
-      Spec::ExpectationsWithoutServices expectations) {
-    EXPECT_EQ(expectations.is_choice_invalid,
-              search_engines::IsSearchEngineChoiceInvalid(pref_service_));
+  SearchEngineChoiceEligibilityOnRestoreTest()
+      : SearchEngineChoiceEligibilityTest(
+            /*skip_search_engine_choice_service_init_=*/true) {}
+  ~SearchEngineChoiceEligibilityOnRestoreTest() override = default;
+
+  void CheckChoiceStatus(ChoiceStatus expected_choice_status) {
     EXPECT_EQ(
-        expectations.is_choice_completed,
-        search_engines::GetChoiceCompletionMetadata(pref_service_).has_value());
+        search_engine_choice_service().EvaluateSearchProviderChoiceForTesting(
+            template_url_service()),
+        expected_choice_status);
   }
 
   void ProcessServicesExpectations(
@@ -460,17 +496,17 @@ class SearchEngineChoiceEligibilityOnRestoreTest
       command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
                                       state_changes.country_id.CountryCode());
     }
-  }
-
-  void InitServicesAndUpdateState(Spec::ServiceStateChanges state_changes) {
-    ASSERT_EQ(state_changes.select_dse.has_value(),
-              state_changes.choice_location.has_value());
 
     InitService({
         .force_reset = true,
         .restore_detected_in_current_session = state_changes.set_restored,
         .choice_predates_restore = state_changes.set_restored,
     });
+  }
+
+  void UpdateServiceState(Spec::ServiceStateChanges state_changes) {
+    ASSERT_EQ(state_changes.select_dse.has_value(),
+              state_changes.choice_location.has_value());
 
     // Process the requested DSE selection & choice location.
     if (state_changes.select_dse.has_value()) {
@@ -522,27 +558,24 @@ TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
       UpdateDeviceState(*current_run.update_device_state);
     }
 
-    if (current_run.check_before_services.has_value()) {
-      ASSERT_FALSE(search_engines_test_environment_);
-      ProcessExpectationsWithoutServices(*current_run.check_before_services);
+    if (current_run.expect_choice_status_before.has_value()) {
+      CheckChoiceStatus(*current_run.expect_choice_status_before);
     }
 
-    // Previous steps should not create the services.
-    // The steps after can explicitly or lazily create it.
-    ASSERT_FALSE(search_engines_test_environment_);
+    // Done explicitly here, which is why we skip the built-in initialization
+    // from the base fixture.
+    search_engine_choice_service().Init();
 
     if (current_run.update_service_state.has_value()) {
-      InitServicesAndUpdateState(*current_run.update_service_state);
+      UpdateServiceState(*current_run.update_service_state);
     }
 
     if (current_run.expect_with_services.has_value()) {
       ProcessServicesExpectations(*current_run.expect_with_services);
     }
 
-    if (current_run.check_after_services.has_value()) {
-      GetOrInitEnvironment();  // Ensure the services are created, so they get a
-                               // chance to process the prefs.
-      ProcessExpectationsWithoutServices(*current_run.check_after_services);
+    if (current_run.expect_choice_status_after.has_value()) {
+      CheckChoiceStatus(*current_run.expect_choice_status_after);
     }
   }
 }
@@ -568,22 +601,18 @@ INSTANTIATE_TEST_SUITE_P(
                                       TemplateURLPrepopulateData::google.id,
                                   .choice_location =
                                       ChoiceMadeLocation::kChoiceScreen,
-
                               },
+                          .expect_choice_status_after = ChoiceStatus::kValid,
                       },
                       // Simulates the device being restored, and its detection
                       // in this run. The client becomes eligible again for a
                       // choice screen, the old choice is marked invalid.
                       {
-                          .check_before_services =
-                              Spec::ExpectationsWithoutServices{
-                                  .is_choice_completed = true,
-                                  .is_choice_invalid = false,
-                              },
-                          .update_service_state =
-                              Spec::ServiceStateChanges{
+                          .update_device_state =
+                              Spec::DeviceStateChanges{
                                   .set_restored = true,
                               },
+                          .expect_choice_status_before = ChoiceStatus::kValid,
                           .expect_with_services =
                               Spec::ExpectationsWithServices{
                                   .static_condition =
@@ -595,11 +624,8 @@ INSTANTIATE_TEST_SUITE_P(
                                   .current_dse_prepopulate_id =
                                       TemplateURLPrepopulateData::google.id,
                               },
-                          .check_after_services =
-                              Spec::ExpectationsWithoutServices{
-                                  .is_choice_completed = false,
-                                  .is_choice_invalid = true,
-                              },
+                          .expect_choice_status_after =
+                              ChoiceStatus::kFromRestoredDevice,
                       },
                   }},
          Spec{
@@ -620,22 +646,17 @@ INSTANTIATE_TEST_SUITE_P(
                                      TemplateURLPrepopulateData::google.id,
                                  .choice_location =
                                      ChoiceMadeLocation::kChoiceScreen,
-
                              },
                      },
                      // Simulates the device being restored. Detection is
                      // disabled, so nothing happens, the client stays
                      // ineligible because already completed.
                      {
-                         .check_before_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
-                         .update_service_state =
-                             Spec::ServiceStateChanges{
+                         .update_device_state =
+                             Spec::DeviceStateChanges{
                                  .set_restored = true,
                              },
+                         .expect_choice_status_before = ChoiceStatus::kValid,
                          .expect_with_services =
                              Spec::ExpectationsWithServices{
                                  .static_condition =
@@ -647,11 +668,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
+                         .expect_choice_status_after = ChoiceStatus::kValid,
                      },
                  },
          },
@@ -684,18 +701,14 @@ INSTANTIATE_TEST_SUITE_P(
                                   .current_dse_prepopulate_id =
                                       TemplateURLPrepopulateData::bing.id,
                               },
-                          .check_after_services =
-                              Spec::ExpectationsWithoutServices{
-                                  .is_choice_completed = true,
-                                  .is_choice_invalid = false,
-                              },
+                          .expect_choice_status_after = ChoiceStatus::kValid,
                       },
                       // Simulates the device being restored, and its detection
                       // in this run. The client becomes eligible again for a
                       // choice screen, the old selection is marked invalid.
                       {
-                          .update_service_state =
-                              Spec::ServiceStateChanges{
+                          .update_device_state =
+                              Spec::DeviceStateChanges{
                                   .set_restored = true,
                               },
                           .expect_with_services =
@@ -709,39 +722,32 @@ INSTANTIATE_TEST_SUITE_P(
                                   .current_dse_prepopulate_id =
                                       TemplateURLPrepopulateData::bing.id,
                               },
-                          .check_after_services =
-                              Spec::ExpectationsWithoutServices{
-                                  .is_choice_completed = false,
-                                  .is_choice_invalid = true,
-                              },
+                          .expect_choice_status_after =
+                              ChoiceStatus::kFromRestoredDevice,
                       },
                       // Select a different 3P DSE on the choice screen, it
                       // restores the selection state to the usual
                       // (completed, choice valid).
-                      {.update_service_state =
-                           Spec::ServiceStateChanges{
-                               .select_dse =
-                                   TemplateURLPrepopulateData::duckduckgo.id,
-                               .choice_location =
-                                   ChoiceMadeLocation::kChoiceScreen,
-                           },
-                       .expect_with_services =
-                           Spec::ExpectationsWithServices{
-                               .static_condition =
-                                   SearchEngineChoiceScreenConditions::
-                                       kAlreadyCompleted,
-                               .dynamic_condition =
-                                   SearchEngineChoiceScreenConditions::
-                                       kAlreadyCompleted,
-                               .current_dse_prepopulate_id =
-                                   TemplateURLPrepopulateData::duckduckgo.id,
-                           },
-                       .check_after_services =
-                           Spec::ExpectationsWithoutServices{
-                               .is_choice_completed = true,
-                               .is_choice_invalid = false,
-                           }
-
+                      {
+                          .update_service_state =
+                              Spec::ServiceStateChanges{
+                                  .select_dse =
+                                      TemplateURLPrepopulateData::duckduckgo.id,
+                                  .choice_location =
+                                      ChoiceMadeLocation::kChoiceScreen,
+                              },
+                          .expect_with_services =
+                              Spec::ExpectationsWithServices{
+                                  .static_condition =
+                                      SearchEngineChoiceScreenConditions::
+                                          kAlreadyCompleted,
+                                  .dynamic_condition =
+                                      SearchEngineChoiceScreenConditions::
+                                          kAlreadyCompleted,
+                                  .current_dse_prepopulate_id =
+                                      TemplateURLPrepopulateData::duckduckgo.id,
+                              },
+                          .expect_choice_status_after = ChoiceStatus::kValid,
                       },
                   }},
          Spec{
@@ -775,18 +781,14 @@ INSTANTIATE_TEST_SUITE_P(
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::bing.id,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
+                         .expect_choice_status_after = ChoiceStatus::kValid,
                      },
                      // Simulates the device being restored. Detection is
                      // disabled, so nothing happens, the client stays
                      // ineligible because already completed.
                      {
-                         .update_service_state =
-                             Spec::ServiceStateChanges{
+                         .update_device_state =
+                             Spec::DeviceStateChanges{
                                  .set_restored = true,
                              },
                          .expect_with_services =
@@ -800,11 +802,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::bing.id,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
+                         .expect_choice_status_after = ChoiceStatus::kValid,
                      },
                  },
          },
@@ -838,21 +836,18 @@ INSTANTIATE_TEST_SUITE_P(
                                          kAlreadyCompleted,
                                  .current_dse_prepopulate_id = 0,
                              },
+                         .expect_choice_status_after = ChoiceStatus::kValid,
                      },
                      // Simulates the device being restored, and its detection
                      // in this run. The old selection is marked invalid, but
                      // since it's a custom search engine, we can't reprompt
                      // over it.
                      {
-                         .check_before_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
-                         .update_service_state =
-                             Spec::ServiceStateChanges{
+                         .update_device_state =
+                             Spec::DeviceStateChanges{
                                  .set_restored = true,
                              },
+                         .expect_choice_status_before = ChoiceStatus::kValid,
                          .expect_with_services =
                              Spec::ExpectationsWithServices{
                                  .static_condition =
@@ -863,11 +858,8 @@ INSTANTIATE_TEST_SUITE_P(
                                          kHasCustomSearchEngine,
                                  .current_dse_prepopulate_id = 0,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = false,
-                                 .is_choice_invalid = true,
-                             },
+                         .expect_choice_status_after =
+                             ChoiceStatus::kCurrentIsNotPrepopulated,
                      },
                      // Simulates the DSE being reset to Google outside of a
                      // user interface Not really sure how exactly that can
@@ -895,11 +887,8 @@ INSTANTIATE_TEST_SUITE_P(
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = false,
-                                 .is_choice_invalid = true,
-                             },
+                         .expect_choice_status_after =
+                             ChoiceStatus::kFromRestoredDevice,
                      },
                      // Select an engine on the choice screen, it restores the
                      // selection state to the usual (completed, choice valid).
@@ -922,11 +911,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
+                         .expect_choice_status_after = ChoiceStatus::kValid,
                      },
                  },
          },
@@ -966,15 +951,11 @@ INSTANTIATE_TEST_SUITE_P(
                      // since it's a custom search engine, we can't reprompt
                      // over it.
                      {
-                         .check_before_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
-                         .update_service_state =
-                             Spec::ServiceStateChanges{
+                         .update_device_state =
+                             Spec::DeviceStateChanges{
                                  .set_restored = true,
                              },
+                         .expect_choice_status_before = ChoiceStatus::kValid,
                          .expect_with_services =
                              Spec::ExpectationsWithServices{
                                  .static_condition =
@@ -985,11 +966,8 @@ INSTANTIATE_TEST_SUITE_P(
                                          kHasCustomSearchEngine,
                                  .current_dse_prepopulate_id = 0,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = false,
-                                 .is_choice_invalid = true,
-                             },
+                         .expect_choice_status_after =
+                             ChoiceStatus::kCurrentIsNotPrepopulated,
                      },
                      // Simulates the DSE being reset to Google outside of a
                      // user interface Not really sure how exactly that can
@@ -1017,11 +995,8 @@ INSTANTIATE_TEST_SUITE_P(
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = false,
-                                 .is_choice_invalid = true,
-                             },
+                         .expect_choice_status_after =
+                             ChoiceStatus::kFromRestoredDevice,
                      },
                      // Select an engine on the choice screen, it restores the
                      // selection state to the usual (completed, choice valid).
@@ -1044,11 +1019,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },
-                         .check_after_services =
-                             Spec::ExpectationsWithoutServices{
-                                 .is_choice_completed = true,
-                                 .is_choice_invalid = false,
-                             },
+                         .expect_choice_status_after = ChoiceStatus::kValid,
                      },
                  },
          }}),
