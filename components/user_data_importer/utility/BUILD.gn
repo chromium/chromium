@@ -26,6 +26,7 @@ source_set("safari_data_importer") {
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
     "//components/reading_list/core",
+    "//components/strings",
     "//components/user_data_importer/common",
   ]
 }

@@ -18,7 +18,8 @@ namespace user_data_importer {
 // Imports bookmarks into the provided BookmarkModel.
 // Returns the number of imported bookmarks.
 size_t ImportBookmarks(bookmarks::BookmarkModel* bookmark_model,
-                       std::vector<ImportedBookmarkEntry> bookmarks);
+                       std::vector<ImportedBookmarkEntry> bookmarks,
+                       const std::u16string& import_folder_title);
 
 // Imports reading list entries into the provided ReadingListModel.
 // Returns the number of imported reading list entries.

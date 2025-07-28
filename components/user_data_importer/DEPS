@@ -12,5 +12,7 @@ include_rules = [
   "+components/password_manager/core/common",
   "+components/password_manager/services/csv_password",
   "+components/reading_list/core",
+  "+components/strings/grit",
   "+mojo/public/cpp/bindings",
+  "+ui/base/l10n",
 ]

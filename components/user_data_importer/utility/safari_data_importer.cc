@@ -21,9 +21,11 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/utility/bookmark_util.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -518,7 +520,8 @@ void SafariDataImporter::ContinueImportPaymentCards() {
 
 void SafariDataImporter::ContinueImportBookmarks() {
   size_t imported_bookmarks_count = user_data_importer::ImportBookmarks(
-      &*bookmark_model_, std::move(pending_bookmarks_));
+      &*bookmark_model_, std::move(pending_bookmarks_),
+      l10n_util::GetStringUTF16(IDS_IMPORTED_FROM_SAFARI_FOLDER));
   size_t imported_reading_list_count = user_data_importer::ImportReadingList(
       &*reading_list_model_, std::move(pending_reading_list_));
 

@@ -17,9 +17,6 @@ namespace {
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-// TODO(crbug.com/407587751): Localize string.
-const char16_t kImportedFromSafariTitle[] = u"Imported from Safari";
-
 std::u16string EscapeAndJoinPath(const std::vector<std::u16string>& path) {
   if (path.empty()) {
     return u"";
@@ -35,7 +32,9 @@ std::u16string EscapeAndJoinPath(const std::vector<std::u16string>& path) {
   return base::JoinString(escaped_path, u"/");
 }
 
-const BookmarkNode* CreateImportBookmarksFolder(BookmarkModel* bookmark_model) {
+const BookmarkNode* CreateImportBookmarksFolder(
+    BookmarkModel* bookmark_model,
+    const std::u16string& folder_title) {
   CHECK(bookmark_model);
   CHECK(bookmark_model->loaded());
 
@@ -46,18 +45,19 @@ const BookmarkNode* CreateImportBookmarksFolder(BookmarkModel* bookmark_model) {
 
   CHECK(other_node);
 
-  return bookmark_model->AddFolder(other_node, 0, kImportedFromSafariTitle);
+  return bookmark_model->AddFolder(other_node, 0, folder_title);
 }
 
 }  // namespace
 
 size_t ImportBookmarks(BookmarkModel* bookmark_model,
-                       std::vector<ImportedBookmarkEntry> bookmarks) {
+                       std::vector<ImportedBookmarkEntry> bookmarks,
+                       const std::u16string& import_folder_title) {
   CHECK(bookmark_model);
   CHECK(bookmark_model->loaded());
 
   const BookmarkNode* import_folder =
-      CreateImportBookmarksFolder(bookmark_model);
+      CreateImportBookmarksFolder(bookmark_model, import_folder_title);
 
   CHECK(import_folder);
 
