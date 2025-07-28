@@ -160,7 +160,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
       const GlobalRenderFrameHostToken& frame_token);
 
   // Globally allows for injecting JavaScript into the main world. This feature
-  // is present only to support Android WebView, WebLayer, Fuchsia web.Contexts,
+  // is present only to support Android WebView, Fuchsia web.Contexts,
   // and CastOS content shell. It must not be used in other configurations.
   static void AllowInjectingJavaScript();
 

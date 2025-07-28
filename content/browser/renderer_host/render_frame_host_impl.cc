@@ -436,7 +436,7 @@ const void* const kDiscardedRFHProcessHelperKey =
 uint32_t g_accessibility_reset_token = 0;
 
 // Whether to allow injecting javascript into any kind of frame, for Android
-// WebView, WebLayer, Fuchsia web.ContextProvider and CastOS content shell.
+// WebView, Fuchsia web.ContextProvider and CastOS content shell.
 bool g_allow_injecting_javascript = false;
 
 const char kDotGoogleDotCom[] = ".google.com";

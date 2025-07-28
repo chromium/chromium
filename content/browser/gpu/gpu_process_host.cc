@@ -775,7 +775,7 @@ GpuProcessHost::~GpuProcessHost() {
               static_cast<int>(content::RESULT_CODE_GPU_DEAD_ON_ARRIVAL)) {
         // Add a sample to Stability.Counts2's GPU crash bucket.
         //
-        // On Android Chrome and Android WebLayer, GPU crashes are logged via
+        // On Android Chrome, GPU crashes are logged via
         // ContentStabilityMetricsProvider::OnCrashDumpProcessed() and
         // StabilityMetricsHelper::IncreaseGpuCrashCount().
         metrics::StabilityMetricsHelper::RecordStabilityEvent(
