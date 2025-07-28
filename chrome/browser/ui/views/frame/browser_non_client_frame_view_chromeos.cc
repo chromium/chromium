@@ -860,12 +860,8 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
     return false;
   }
 
-  if (IsTrustedPinned() && !browser_view()->browser()->IsLockedForOnTask()) {
-    // Avoid using immersive mode in locked fullscreen as it allows the user to
-    // exit the locked mode. Keep immersive mode enabled if the webapp is locked
-    // for OnTask (only relevant for non-web browser scenarios).
-    // TODO(crbug.com/429215055): Use explicit flag to enable / disable
-    // immersive mode for trusted_pinned state.
+  if (IsTrustedPinned() &&
+      !GetFrameWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
     return false;
   }
   if (display::Screen::GetScreen()->InTabletMode() &&

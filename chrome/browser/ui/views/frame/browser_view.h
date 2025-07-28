@@ -877,6 +877,11 @@ class BrowserView : public BrowserWindow,
   // Returns a `TabDragHandler`, if any available, to handle a tab drag.
   TabDragDelegate* GetTabDragDelegate(const gfx::Point& point_in_screen);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // This is used only for SWA/PWA scenario.
+  void OnLockedForOnTaskUpdated();
+#endif
+
  protected:
   // Enumerates where the devtools are docked relative to the browser's main
   // web contents.

@@ -313,6 +313,7 @@
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
@@ -2506,6 +2507,22 @@ TabDragDelegate* BrowserView::GetTabDragDelegate(
   }
   return &multi_contents_view_->drop_target_controller();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+void BrowserView::OnLockedForOnTaskUpdated() {
+  bool locked_for_on_task = browser()->IsLockedForOnTask();
+  // Use immersive mode for tabbed PWA.
+  if (browser()->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
+    GetNativeWindow()->SetProperty(chromeos::kUseImmersiveInTrustedPinned,
+                                   locked_for_on_task);
+  }
+  // TODO(crbug.com/429215055): Move this logic to window manager.
+  SetCanMinimize(!locked_for_on_task);
+  SetShowCloseButton(!locked_for_on_task);
+}
+
+#endif
 
 base::CallbackListSubscription BrowserView::AddOnLinkOpeningFromGestureCallback(
     OnLinkOpeningFromGestureCallback callback) {

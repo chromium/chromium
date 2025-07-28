@@ -1297,7 +1297,7 @@ bool Browser::IsLockedForOnTask() {
 
 void Browser::SetLockedForOnTask(bool locked) {
   on_task_locked_ = locked;
-  OnLockedForOnTaskUpdated();
+  GetBrowserView().OnLockedForOnTaskUpdated();
 }
 #endif
 
@@ -3237,15 +3237,6 @@ void Browser::OnDevToolsAvailabilityChanged() {
     }
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void Browser::OnLockedForOnTaskUpdated() {
-  bool is_locked = IsLockedForOnTask();
-  BrowserView* const browser_view = static_cast<BrowserView*>(window());
-  browser_view->SetCanMinimize(!is_locked);
-  browser_view->SetShowCloseButton(!is_locked);
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, UI update coalescing and handling (private):

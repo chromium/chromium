@@ -1090,11 +1090,6 @@ class Browser : public TabStripModelObserver,
   // Handle changes to kDevToolsAvailability preference.
   void OnDevToolsAvailabilityChanged();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Handle `on_task_locked_` state changes.
-  void OnLockedForOnTaskUpdated();
-#endif
-
   // UI update coalescing and handling ////////////////////////////////////////
 
   // Asks the toolbar (and as such the location bar) to update its state to
