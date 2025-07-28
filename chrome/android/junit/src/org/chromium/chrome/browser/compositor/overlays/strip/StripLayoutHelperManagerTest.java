@@ -1128,16 +1128,16 @@ public class StripLayoutHelperManagerTest {
                 "Ensure top padding increase the entire height",
                 motionEventHandled(SCREEN_WIDTH / 2, topPadding + TAB_STRIP_HEIGHT_PX - 1));
 
-        // topBound(1) = msbOffsetY(3) + topPadding(10) - touchSlop(12)
-        // bottomBound(57) = msbOffsetY(3) + topPadding(10) + msbHeight(32) + touchSlop(12)
+        // topBound(5) = msbOffsetY(3) + topPadding(10) - touchSlop(8)
+        // bottomBound(53) = msbOffsetY(3) + topPadding(10) + msbHeight(32) + touchSlop(8)
         assertEquals(
                 "Touch target top bound for MSB is incorrect.",
-                1,
+                5,
                 mStripLayoutHelperManager.getModelSelectorButton().getTouchTargetBounds().top,
                 0f);
         assertEquals(
                 "Touch target bottom bound for MSB is incorrect.",
-                57,
+                53,
                 mStripLayoutHelperManager.getModelSelectorButton().getTouchTargetBounds().bottom,
                 0f);
     }
@@ -1203,16 +1203,16 @@ public class StripLayoutHelperManagerTest {
                     rect.bottom);
 
             Rect rect2 = mSystemExclusionRectCaptor.getValue().get(1);
-            // Left: 728 = width(800) - rightPadding(20) - modelSelectorWidth(32) - endPadding(8) -
-            // clickSlop(12)
+            // Left: 732 = width(800) - rightPadding(20) - modelSelectorWidth(32) - endPadding(8) -
+            // clickSlop(8)
             // Top: 5 = max(topPadding(5) , topPadding(5) + modelSelectorYOffset(3) -
-            // clickSlop(12)))
-            // Right: 784 =  width(800) - rightPadding(20) - endPadding(8) + clickSlop(12)
+            // clickSlop(8)))
+            // Right: 780 =  width(800) - rightPadding(20) - endPadding(8) + clickSlop(8)
             // Bottom: 45 = min(height(45),  topPadding(5) + modelSelectorHeight(32) +
-            // clickSlop(12))
+            // clickSlop(8))
             assertEquals(
                     "2nd rect should represent model selector button.",
-                    new Rect(728, 5, 784, 45),
+                    new Rect(732, 5, 780, 45),
                     rect2);
         } else {
             assertEquals(

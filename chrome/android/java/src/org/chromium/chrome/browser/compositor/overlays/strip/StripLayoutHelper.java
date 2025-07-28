@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.findGroupTitle;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.animation.Animator;
@@ -174,19 +175,30 @@ public class StripLayoutHelper
 
     // Visibility Constants
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
-    private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 8.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
-    private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
     // Desired spacing between new tab button and tabs when tab strip is not full.
-    private static final float NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS = 4.f;
     private static final float DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS = 2.f;
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
-    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
+
+    // Values adapt based on whether the device is desktop or tablet.
+    private static final boolean IS_DESKTOP_DENSITY = StripLayoutUtils.shouldApplyMoreDensity();
+    private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
+            IS_DESKTOP_DENSITY ? NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP : 48.f;
+    private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP =
+            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP) / 2;
+    // On tablets (48dp button touch target), we can't fully shift the NTB left without affecting
+    // touch target, so we apply a small actual offset(4dp) and also rely on a visual shift(6dp) in
+    // the CC layer instead. On desktop (32dp touch target), we have more room to apply a real
+    // offset(10dp) directly. No more visual offset needed for desktop.
+    private static final float NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS =
+            IS_DESKTOP_DENSITY ? 10.f : 4.f;
+    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING =
+            IS_DESKTOP_DENSITY ? 24.f : 8.f;
 
     private static final int MESSAGE_UPDATE_SPINNER = 1;
     private static final int MESSAGE_HOVER_CARD = 2;
@@ -894,8 +906,10 @@ public class StripLayoutHelper
      * @return Visual offset of new tab button icon.
      */
     protected float getNtbVisualOffsetHorizontal() {
-        return (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2
-                - DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS;
+        return Math.max(
+                (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2
+                        - DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS,
+                0);
     }
 
     /**
@@ -4511,9 +4525,10 @@ public class StripLayoutHelper
         populateVisibleViews(mStripGroupTitles, mStripGroupTitlesToRender);
     }
 
-    private float adjustNewTabButtonOffsetIfFull(float offset) {
+    private float adjustNewTabButtonOffsetIfNotFull(float offset) {
         if (!isTabStripFull()) {
-            // Move NTB close to tabs by 4 dp when tab strip is not full.
+            // Move NTB close to tabs by 4 dp(for tablet) or 10dp(for desktop) when tab strip is not
+            // full.
             boolean isLtr = !LocalizationUtils.isLayoutRtl();
             offset += MathUtils.flipSignIf(NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS, isLtr);
         }
@@ -4531,7 +4546,7 @@ public class StripLayoutHelper
         boolean rtl = LocalizationUtils.isLayoutRtl();
         float offset = getStartPositionForStripViews() + MathUtils.flipSignIf(viewsWidth, rtl);
         if (rtl) offset += getCachedTabWidth() - mNewTabButtonWidth;
-        offset = adjustNewTabButtonOffsetIfFull(offset);
+        offset = adjustNewTabButtonOffsetIfNotFull(offset);
 
         CompositorAnimator animator =
                 CompositorAnimator.ofFloatProperty(
@@ -4563,7 +4578,7 @@ public class StripLayoutHelper
                         mRightMargin,
                         mWidth,
                         mNewTabButtonWidth);
-        offset = adjustNewTabButtonOffsetIfFull(offset);
+        offset = adjustNewTabButtonOffsetIfNotFull(offset);
 
         // 3. Hide the new tab button if it's not visible on the screen.
         boolean isRtl = LocalizationUtils.isLayoutRtl();

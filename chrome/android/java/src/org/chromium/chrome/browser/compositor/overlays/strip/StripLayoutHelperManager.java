@@ -179,8 +179,12 @@ public class StripLayoutHelperManager
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
     private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
-    private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
-    private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
+    private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
+            StripLayoutUtils.shouldApplyMoreDensity()
+                    ? MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP
+                    : 48.f;
+    private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP =
+            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP) / 2;
 
     // Tab strip transition constants.
     @VisibleForTesting
@@ -639,7 +643,6 @@ public class StripLayoutHelperManager
                 startupInfo.createdIncognitoTabOnStartup);
     }
 
-    // Incognito button for Tab Strip Redesign.
     private void createModelSelectorButton(
             Context context,
             StripLayoutViewOnClickHandler selectorClickHandler,
@@ -659,7 +662,7 @@ public class StripLayoutHelperManager
                         R.drawable.ic_incognito,
                         MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
-        // Tab strip redesign button bg size is 32 * 32.
+        // Button bg size is 32 * 32.
         mModelSelectorButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
         mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP;
