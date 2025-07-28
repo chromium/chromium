@@ -7,6 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FrePageHandlerFactory, FrePageHandlerRemote, FreWebUiState} from './glic_fre.mojom-webui.js';
+import {GlicFreWebviewLoadAbortReason} from './metrics_enums.js';
 
 // Time to wait before showing loading panel.
 const PRE_HOLD_LOADING_TIME_MS = loadTimeData.getInteger('preLoadingTimeMs');
@@ -305,6 +306,10 @@ export class FreAppController {
         MAX_WAIT_TIME_MS;
     this.loadingTimer = setTimeout(() => {
       console.warn('Exceeded timeout in finishLoading');
+      chrome.metricsPrivate.recordEnumerationValue(
+          'Glic.Fre.WebviewLoadAbortReason',
+          GlicFreWebviewLoadAbortReason.ERR_TIMED_OUT,
+          GlicFreWebviewLoadAbortReason.MAX_VALUE + 1);
       freHandler.exceededTimeoutError();
       this.setState(FreWebUiState.kError);
     }, timeoutValue - MIN_HOLD_LOADING_TIME_MS);
@@ -334,11 +339,50 @@ export class FreAppController {
     this.webviewEventTracker.add(
         webview, 'contentload', this.onContentLoad.bind(this));
     this.webviewEventTracker.add(
+        webview, 'loadabort', this.onLoadAbort.bind(this));
+    this.webviewEventTracker.add(
         webview, 'newwindow', this.onNewWindow.bind(this));
     this.webviewEventTracker.add(
         webview, 'sizechanged', this.onSizeChanged.bind(this));
 
     return webview;
+  }
+
+  private reasonStringToEnum(reason: string|undefined):
+      GlicFreWebviewLoadAbortReason {
+    switch (reason) {
+      case 'ERR_ABORTED':
+        return GlicFreWebviewLoadAbortReason.ERR_ABORTED;
+      case 'ERR_INVALID_URL':
+        return GlicFreWebviewLoadAbortReason.ERR_INVALID_URL;
+      case 'ERR_DISALLOWED_URL_SCHEME':
+        return GlicFreWebviewLoadAbortReason.ERR_DISALLOWED_URL_SCHEME;
+      case 'ERR_BLOCKED_BY_CLIENT':
+        return GlicFreWebviewLoadAbortReason.ERR_BLOCKED_BY_CLIENT;
+      case 'ERR_ADDRESS_UNREACHABLE':
+        return GlicFreWebviewLoadAbortReason.ERR_ADDRESS_UNREACHABLE;
+      case 'ERR_EMPTY_RESPONSE':
+        return GlicFreWebviewLoadAbortReason.ERR_EMPTY_RESPONSE;
+      case 'ERR_FILE_NOT_FOUND':
+        return GlicFreWebviewLoadAbortReason.ERR_FILE_NOT_FOUND;
+      case 'ERR_UNKNOWN_URL_SCHEME':
+        return GlicFreWebviewLoadAbortReason.ERR_UNKNOWN_URL_SCHEME;
+      case 'ERR_TIMED_OUT':
+        return GlicFreWebviewLoadAbortReason.ERR_TIMED_OUT;
+      case 'ERR_HTTP_RESPONSE_CODE_FAILURE':
+        return GlicFreWebviewLoadAbortReason.ERR_HTTP_RESPONSE_CODE_FAILURE;
+      default:
+        return GlicFreWebviewLoadAbortReason.UNKNOWN;
+    }
+  }
+
+  private onLoadAbort(e: any) {
+    const reasonEnum = this.reasonStringToEnum(e.reason);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Glic.Fre.WebviewLoadAbortReason', reasonEnum,
+        GlicFreWebviewLoadAbortReason.MAX_VALUE + 1);
+
+    this.setState(FreWebUiState.kError);
   }
 
   private panelIdToEnum(panelId: string): FreWebUiState {

@@ -18,6 +18,7 @@ build_webui("build") {
     "fre_app_controller.ts",
     "icons.html.ts",
     "main.ts",
+    "metrics_enums.ts",
   ]
 
   webui_context_type = "trusted"
@@ -36,6 +37,7 @@ build_webui("build") {
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
