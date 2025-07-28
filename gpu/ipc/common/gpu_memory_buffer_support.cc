@@ -201,7 +201,7 @@ bool GpuMemoryBufferSupport::IsConfigurationSupportedForTest(
   }
 
   if (type == gfx::SHARED_MEMORY_BUFFER) {
-    return GpuMemoryBufferImplSharedMemory::IsUsageSupported(usage);
+    return true;
   }
 
   NOTREACHED();
