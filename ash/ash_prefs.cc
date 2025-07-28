@@ -155,7 +155,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   DockedMagnifierController::RegisterProfilePrefs(registry);
   FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
   FocusModeController::RegisterProfilePrefs(registry);
-  RegisterProfilePrefsFullRestore(registry, for_test);
+  RegisterProfilePrefsFullRestore(registry);
   FullscreenController::RegisterProfilePrefs(registry);
   GameDashboardController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);

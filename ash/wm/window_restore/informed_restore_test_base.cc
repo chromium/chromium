@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_restore/informed_restore_test_base.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/test_session_controller_client.h"
 #include "components/account_id/account_id.h"
 
@@ -29,7 +30,12 @@ void InformedRestoreTestBase::SetUp() {
 
   ClearLogin();
 
-  SimulateUserLogin({kTestUserEmail});
+  auto account_id = SimulateUserLogin({kTestUserEmail});
+
+  // Disable the onboarding dialog for testing.
+  PrefService* prefs =
+      ash_test_helper()->prefs_provider()->GetUserPrefs(account_id);
+  prefs->SetBoolean(prefs::kShowInformedRestoreOnboarding, false);
 }
 
 }  // namespace ash

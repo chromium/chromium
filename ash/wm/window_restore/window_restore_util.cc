@@ -58,16 +58,13 @@ gfx::Rect GetBoundsIgnoringTransforms(const aura::Window* window,
 
 }  // namespace
 
-void RegisterProfilePrefsFullRestore(PrefRegistrySimple* registry,
-                                     bool for_test) {
+void RegisterProfilePrefsFullRestore(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  // TODO(crbug.com/432562252): Fix tests that fail when this value is true.
-  registry->RegisterBooleanPref(prefs::kShowInformedRestoreOnboarding,
-                                !for_test);
+  registry->RegisterBooleanPref(prefs::kShowInformedRestoreOnboarding, true);
   registry->RegisterIntegerPref(prefs::kInformedRestoreNudgeShownCount, 0);
   registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
                              base::Time());

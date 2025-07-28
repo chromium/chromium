@@ -38,9 +38,7 @@ enum class RestoreOption {
 }  // namespace full_restore
 
 // Registers the restore pref.
-// TODO(crbug.com/432562252): Remove `for_test`.
-ASH_EXPORT void RegisterProfilePrefsFullRestore(PrefRegistrySimple* registry,
-                                                bool for_test = false);
+ASH_EXPORT void RegisterProfilePrefsFullRestore(PrefRegistrySimple* registry);
 
 // Returns true if the pref `kRestoreAppsAndPagesPrefName` exists. Otherwise,
 // returns false.
