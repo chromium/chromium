@@ -526,6 +526,12 @@ BASE_FEATURE_PARAM(bool,
                    "collaboration_messaging",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationPriceTracking,
+                   &kPageActionsMigration,
+                   "price_tracking",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi,
              "SavePasswordsContextualUi",
              base::FEATURE_DISABLED_BY_DEFAULT);

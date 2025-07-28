@@ -513,6 +513,10 @@ const std::vector<DiscountInfo>& CommerceUiTabHelper::GetDiscounts() {
 }
 
 void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
+  if (IsPageActionMigrated(PageActionIconType::kPriceTracking)) {
+    return;
+  }
+
   UpdatePageActionIconView(PageActionIconType::kPriceTracking);
 }
 
