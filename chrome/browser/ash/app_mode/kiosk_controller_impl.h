@@ -71,11 +71,6 @@ class KioskControllerImpl : public KioskController,
 
   KioskSystemSession* GetKioskSystemSession() override;
 
-  kiosk_vision::TelemetryProcessor* GetKioskVisionTelemetryProcessor() override;
-
-  kiosk_vision::InternalsPageProcessor* GetKioskVisionInternalsPageProcessor()
-      override;
-
  private:
   // `user_manager::UserManager::Observer` implementation:
   void OnUserLoggedIn(const user_manager::User& user) override;

@@ -314,16 +314,6 @@ KioskSystemSession* KioskControllerImpl::GetKioskSystemSession() {
   return &system_session_.value();
 }
 
-kiosk_vision::TelemetryProcessor*
-KioskControllerImpl::GetKioskVisionTelemetryProcessor() {
-  return nullptr;
-}
-
-kiosk_vision::InternalsPageProcessor*
-KioskControllerImpl::GetKioskVisionInternalsPageProcessor() {
-  return nullptr;
-}
-
 void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

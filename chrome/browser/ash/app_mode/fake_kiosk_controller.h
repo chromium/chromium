@@ -43,9 +43,6 @@ class FakeKioskController : public KioskController {
   bool HandleAccelerator(LoginAcceleratorAction action) override;
   void OnGuestAdded(content::WebContents* guest_web_contents) override;
   KioskSystemSession* GetKioskSystemSession() override;
-  kiosk_vision::TelemetryProcessor* GetKioskVisionTelemetryProcessor() override;
-  kiosk_vision::InternalsPageProcessor* GetKioskVisionInternalsPageProcessor()
-      override;
 };
 
 }  // namespace ash

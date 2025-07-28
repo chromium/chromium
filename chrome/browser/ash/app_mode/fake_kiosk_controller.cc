@@ -57,14 +57,4 @@ KioskSystemSession* FakeKioskController::GetKioskSystemSession() {
   return nullptr;
 }
 
-kiosk_vision::TelemetryProcessor*
-FakeKioskController::GetKioskVisionTelemetryProcessor() {
-  return nullptr;
-}
-
-kiosk_vision::InternalsPageProcessor*
-FakeKioskController::GetKioskVisionInternalsPageProcessor() {
-  return nullptr;
-}
-
 }  // namespace ash
