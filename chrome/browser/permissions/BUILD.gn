@@ -66,20 +66,20 @@ source_set("permissions") {
   deps = [
     ":permissions_proto",
     "//chrome/browser:browser_process",
-    "//chrome/browser/content_extraction:content_extraction",
+    "//chrome/browser/content_extraction",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profiles",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/serial",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/ui/hats",
-    "//chrome/browser/ui/page_info:page_info",
+    "//chrome/browser/ui/page_info",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -105,9 +105,9 @@ source_set("permissions") {
     "//components/subresource_filter/content/browser",
     "//components/supervised_user/core/common:features",
     "//components/unified_consent",
-    "//components/vector_icons:vector_icons",
+    "//components/vector_icons",
     "//content/public/browser",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
     "//services/device/public/cpp/geolocation",
   ]
 
@@ -185,6 +185,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "//chrome/browser/permissions/test/enums_to_string.cc",
+    "//chrome/browser/permissions/test/enums_to_string.h",
     "system/mock_platform_handle.cc",
     "system/mock_platform_handle.h",
   ]
@@ -223,7 +225,7 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
-    "//components/permissions/prediction_service:prediction_service",
+    "//components/permissions/prediction_service",
     "//components/site_engagement/content",
     "//components/ukm/content",
     "//components/unified_consent",

@@ -15,6 +15,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
+#include "chrome/browser/permissions/test/enums_to_string.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -55,23 +56,6 @@ constexpr char kAIv3ResponseNotificationsHistogram[] =
     "Permissions.AIv3.Response.Notifications";
 constexpr char kAIv3ResponseGeolocationHistogram[] =
     "Permissions.AIv3.Response.Geolocation";
-
-std::string PredictionSourceToString(PredictionSource prediction_source) {
-  switch (prediction_source) {
-    case PredictionSource::kServerSideCpssV3Model:
-      return "ServerSideCpssV3Model";
-    case PredictionSource::kOnDeviceAiv1AndServerSideModel:
-      return "OnDeviceAiv1AndServerSideModel";
-    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
-      return "OnDeviceAiv3AndServerSideModel";
-    case PredictionSource::kOnDeviceCpssV1Model:
-      return "OnDeviceCpssV1Model";
-    case PredictionSource::kNoCpssModel:
-      [[fallthrough]];
-    default:
-      NOTREACHED();
-  }
-}
 
 }  // namespace
 
@@ -407,6 +391,8 @@ class PredictionBasedPermissionUiExpectedHoldbackChanceTest
         kOnDevPredServiceResponseGeolocationHistogram,
         kPredServiceResponseNotificationsHistogram,
         kPredServiceResponseGeolocationHistogram,
+        kAIv3ResponseNotificationsHistogram,
+        kAIv3ResponseGeolocationHistogram,
     };
 
     for (const auto& histogram_name : kAllHistogramNames) {
@@ -422,7 +408,7 @@ class PredictionBasedPermissionUiExpectedHoldbackChanceTest
           /*sample=*/GetParam().holdback_chance == 1,
           /*expected_count=*/1);
 
-      histogram_tester_.ExpectTotalCount(histogram_name, /*count=*/1);
+      histogram_tester_.ExpectTotalCount(histogram_name, /*expected_count=*/1);
     }
   }
 
@@ -532,8 +518,8 @@ INSTANTIATE_TEST_SUITE_P(
       return base::StrCat(
           {(info.param.holdback_chance == 1) ? "FullHoldbackChance"
                                              : "NoHoldbackChance",
-           "For", PredictionSourceToString(info.param.prediction_source),
-           "Execution", "And",
+           "For", test::ToString(info.param.prediction_source), "Execution",
+           "And",
            (info.param.request_type == permissions::RequestType::kNotifications)
                ? "Notifications"
                : "Geolocation",
