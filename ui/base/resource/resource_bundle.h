@@ -190,6 +190,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   class COMPONENT_EXPORT(UI_BASE) SharedInstanceSwapperForTesting {
    public:
     SharedInstanceSwapperForTesting();
+    explicit SharedInstanceSwapperForTesting(ResourceBundle* instance);
     ~SharedInstanceSwapperForTesting();
 
    private:

@@ -32,22 +32,21 @@ class ScopedFakeResourceBundleDelegate {
  public:
   explicit ScopedFakeResourceBundleDelegate(
       base::span<const FakeResource> resources) {
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &delegate_, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-
     for (const auto& [resource, data] : resources) {
       ON_CALL(delegate_, LoadDataResourceString(resource))
           .WillByDefault(Return(data));
     }
   }
 
-  ~ScopedFakeResourceBundleDelegate() {
-    ui::ResourceBundle::CleanupSharedInstance();
-  }
-
  private:
   testing::NiceMock<ui::MockResourceBundleDelegate> delegate_;
-  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
+
+  // A ResourceBundle that uses the test's mock delegate.
+  ui::ResourceBundle resource_bundle_with_mock_delegate_{&delegate_};
+
+  // Swap in the test ResourceBundle for the lifetime of the test.
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_{
+      &resource_bundle_with_mock_delegate_};
 };
 
 using EmojiSearchTest = testing::Test;

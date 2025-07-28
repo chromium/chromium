@@ -275,8 +275,12 @@ bool ResourceBundle::FontDetails::operator<(const FontDetails& rhs) const {
 }
 
 ResourceBundle::SharedInstanceSwapperForTesting::
-    SharedInstanceSwapperForTesting() {
-  instance_ = SwapSharedInstanceForTesting(nullptr  // IN-TEST
+    SharedInstanceSwapperForTesting()  // IN-TEST
+    : SharedInstanceSwapperForTesting(/*instance=*/nullptr) {}
+
+ResourceBundle::SharedInstanceSwapperForTesting::
+    SharedInstanceSwapperForTesting(ResourceBundle* instance) {
+  instance_ = SwapSharedInstanceForTesting(instance  // IN-TEST
 #if BUILDFLAG(IS_ANDROID)
                                            ,
                                            {}, &android_locale_packs_

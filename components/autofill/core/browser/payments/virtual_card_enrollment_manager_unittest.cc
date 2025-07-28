@@ -92,9 +92,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   void SetNetworkImageInResourceBundle(ui::MockResourceBundleDelegate* delegate,
                                        const std::string& network,
                                        const gfx::Image& network_image) {
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        payments_data_manager().app_locale(), delegate,
-        ui::ResourceBundle::LoadResources::DO_NOT_LOAD_COMMON_RESOURCES);
     int resource_id = CreditCard::IconResourceId(network);
     ON_CALL(*delegate, GetImageNamed(resource_id))
         .WillByDefault(testing::Return(network_image));
@@ -817,14 +814,19 @@ TEST_P(VirtualCardEnrollmentManagerParamTest,
         std::move(SetUpOnDidGetDetailsForEnrollResponse(
             google_legal_message, issuer_legal_message, make_image_present));
     NiceMock<ui::MockResourceBundleDelegate> delegate;
+
+    // A ResourceBundle that uses the test's mock delegate.
+    ui::ResourceBundle resource_bundle_with_mock_delegate{&delegate};
     std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
         resource_bundle_swapper;
 
     gfx::Image network_image;
     if (!make_image_present) {
       network_image = gfx::test::CreateImage(32, 30);
-      resource_bundle_swapper = std::make_unique<
-          ui::ResourceBundle::SharedInstanceSwapperForTesting>();
+      // Swap in the test ResourceBundle for the lifetime of the test.
+      resource_bundle_swapper =
+          std::make_unique<ui::ResourceBundle::SharedInstanceSwapperForTesting>(
+              &resource_bundle_with_mock_delegate);
       SetNetworkImageInResourceBundle(&delegate, card_->network(),
                                       network_image);
     }
@@ -869,9 +871,6 @@ TEST_P(VirtualCardEnrollmentManagerParamTest,
 
     // Avoid dangling pointers to artwork.
     virtual_card_enrollment_manager_->ResetVirtualCardEnrollmentProcessState();
-    if (!make_image_present) {
-      ui::ResourceBundle::CleanupSharedInstance();
-    }
   }
 }
 
