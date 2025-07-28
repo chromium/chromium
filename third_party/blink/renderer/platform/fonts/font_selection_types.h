@@ -407,19 +407,17 @@ template <>
 struct HashTraits<FontSelectionCapabilities>
     : FontSelectionCapabilitiesHashTraits {};
 
-}  // namespace blink
-
 // Used for ClampTo for example in StyleBuilderConverter
 template <>
-inline blink::FontSelectionValue
-DefaultMinimumForClamp<blink::FontSelectionValue>() {
-  return blink::FontSelectionValue::MinimumValue();
+inline FontSelectionValue DefaultMinimumForClamp<FontSelectionValue>() {
+  return FontSelectionValue::MinimumValue();
 }
 
 template <>
-inline blink::FontSelectionValue
-DefaultMaximumForClamp<blink::FontSelectionValue>() {
-  return blink::FontSelectionValue::MaximumValue();
+inline FontSelectionValue DefaultMaximumForClamp<FontSelectionValue>() {
+  return FontSelectionValue::MaximumValue();
 }
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SELECTION_TYPES_H_
