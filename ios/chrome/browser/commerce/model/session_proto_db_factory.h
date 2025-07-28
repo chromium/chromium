@@ -15,7 +15,6 @@
 #import "components/session_proto_db/session_proto_db.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 

@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
-#import "ios/web/public/browser_state.h"
 
 namespace tab_groups {
 

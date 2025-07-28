@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//url",
   ]

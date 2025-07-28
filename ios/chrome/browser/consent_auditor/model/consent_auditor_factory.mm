@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
-#import "ios/web/public/browser_state.h"
 
 // static
 consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfile(

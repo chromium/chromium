@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
-#import "ios/web/public/browser_state.h"
 
 namespace enterprise_connectors {
 

@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/consent_auditor/model/consent_auditor_test_utils.h"
 
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 std::unique_ptr<KeyedService> BuildFakeConsentAuditor(
     web::BrowserState* context) {

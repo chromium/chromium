@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "components/keyed_service/core/keyed_service.h"
-#include "ios/web/public/browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // Returns a basic FakeConsentAuditor.
 // Allows to override factories in tests.

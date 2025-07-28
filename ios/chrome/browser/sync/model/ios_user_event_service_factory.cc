@@ -21,7 +21,6 @@
 #include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #include "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/web/public/browser_state.h"
 
 // static
 syncer::UserEventService* IOSUserEventServiceFactory::GetForProfile(

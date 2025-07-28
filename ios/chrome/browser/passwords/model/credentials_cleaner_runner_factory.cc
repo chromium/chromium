@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "components/password_manager/core/browser/credentials_cleaner_runner.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/web/public/browser_state.h"
 
 CredentialsCleanerRunnerFactory::CredentialsCleanerRunnerFactory()
     : ProfileKeyedServiceFactoryIOS("CredentialsCleanerRunner") {}

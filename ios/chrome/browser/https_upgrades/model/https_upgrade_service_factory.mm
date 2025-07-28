@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/web/public/browser_state.h"
 
 // static
 HttpsUpgradeService* HttpsUpgradeServiceFactory::GetForProfile(

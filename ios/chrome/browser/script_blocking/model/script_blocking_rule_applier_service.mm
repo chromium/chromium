@@ -12,7 +12,6 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/fingerprinting_protection_filter/ios/content_rule_list_data.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/content_manager/content_rule_list_manager.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"

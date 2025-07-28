@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_UTILS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_UTILS_H_
 
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
-#include "ios/web/public/browser_state.h"
 
 // Returns the context to use for KeyedServiceFactory according for `context`
 // according to `profile_selection`.

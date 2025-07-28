@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 

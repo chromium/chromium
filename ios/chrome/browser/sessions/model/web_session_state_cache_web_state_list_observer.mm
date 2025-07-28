@@ -7,8 +7,8 @@
 #import "base/logging.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/web/public/browser_state.h"
 
 WebSessionStateCacheWebStateListObserver::
     WebSessionStateCacheWebStateListObserver(

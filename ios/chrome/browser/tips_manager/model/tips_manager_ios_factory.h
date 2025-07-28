@@ -18,10 +18,6 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace web {
-class BrowserState;
-}  // namespace web
-
 // Singleton that owns all `TipsManagerIOS` objects and associates them
 // with Profiles.
 class TipsManagerIOSFactory : public ProfileKeyedServiceFactoryIOS {

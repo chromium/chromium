@@ -12,10 +12,6 @@ class KeyedService;
 class ProfileIOS;
 struct ProviderStateService;
 
-namespace web {
-class BrowserState;
-}
-
 namespace ios {
 
 // Singleton that owns all ProviderStateServices and associates them with

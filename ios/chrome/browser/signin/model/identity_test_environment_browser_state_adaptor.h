@@ -8,10 +8,7 @@
 #include <memory>
 
 #include "components/keyed_service/core/keyed_service.h"
-
-namespace web {
-class BrowserState;
-}  // namespace web
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // Adaptor for the signin::IdentityTestEnvironment that adds support for
 // injecting test services that have been keyed by profile to identity

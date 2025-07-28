@@ -11,7 +11,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
-#include "ios/web/public/browser_state.h"
 
 namespace {
 

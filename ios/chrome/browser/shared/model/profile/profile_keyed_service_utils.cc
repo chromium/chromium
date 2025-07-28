@@ -5,7 +5,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
 
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/web/public/browser_state.h"
 
 web::BrowserState* GetContextToUseForKeyedServiceFactory(
     web::BrowserState* context,

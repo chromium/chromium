@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/web/public/browser_state.h"
 #import "net/base/completion_repeating_callback.h"
 
 TabsCounter::TabsCounter(BrowserList* browser_list,

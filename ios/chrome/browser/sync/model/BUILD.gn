@@ -204,6 +204,7 @@ source_set("test_support") {
     "//components/consent_auditor:test_support",
     "//components/sync",
     "//components/sync:test_support",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common",
     "//ui/base",
   ]

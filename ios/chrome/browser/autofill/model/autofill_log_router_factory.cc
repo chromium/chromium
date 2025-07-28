@@ -6,7 +6,6 @@
 
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/web/public/browser_state.h"
 
 namespace autofill {
 
