@@ -298,21 +298,6 @@ const CGFloat kOpacityAnimationDuration = 0.4;
                         }];
 }
 
-- (void)revealBottomSheetIfHidden {
-  BOOL resultsPageExists = _resultViewController != nil;
-  BOOL isPresentingResultsPage =
-      _baseViewController.presentedViewController != nil;
-  BOOL isHidden = resultsPageExists && !isPresentingResultsPage;
-  if (isHidden) {
-    BOOL startInTranslate = _detentsManager.presentationStrategy ==
-                            SheetDetentPresentationStategyTranslate;
-    [self presentResultsPageAnimated:YES
-                       maximizeSheet:NO
-                    startInTranslate:startInTranslate
-                          completion:nil];
-  }
-}
-
 - (void)showInfoMessage:(LensOverlayBottomSheetInfoMessageType)infoMessageType {
   UIViewController* infoMessageViewController;
   switch (infoMessageType) {

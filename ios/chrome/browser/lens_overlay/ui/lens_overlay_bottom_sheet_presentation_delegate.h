@@ -35,9 +35,6 @@ enum class LensOverlayBottomSheetInfoMessageType {
 // Hides the bottom sheet without destroying the presentation.
 - (void)hideBottomSheetWithCompletion:(void (^)(void))completion;
 
-// Reveals the hidden bottom sheet.
-- (void)revealBottomSheetIfHidden;
-
 // Hides the results UI and shows the given informational message.
 - (void)showInfoMessage:(LensOverlayBottomSheetInfoMessageType)infoMessageType;
 

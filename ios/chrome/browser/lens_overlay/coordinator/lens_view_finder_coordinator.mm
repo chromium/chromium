@@ -92,6 +92,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
           searchImageWithLens:command.image
                    entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
       initialPresentationBase:_baseViewController
+      resultsPresenterFactory:nil
                    completion:nil];
 }
 

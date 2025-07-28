@@ -8,6 +8,7 @@
 #import "components/lens/lens_overlay_dismissal_source.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/interactive_lens_overlay_promo_view_controller.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/lens_interactive_promo_results_page_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -53,10 +54,19 @@
   // Now that the view has been laid out, create the lens overlay.
   // TODO(crbug.com/416480202): Consider pre-warming the Lens Overlay for cases
   // where the it might take longer to start up.
+  LensResultsPresenterFactory factory =
+      ^(LensOverlayContainerViewController* baseViewController,
+        LensResultPageViewController* resultsViewController) {
+        return [[LensInteractivePromoResultsPagePresenter alloc]
+            initWithBaseViewController:baseViewController
+              resultPageViewController:resultsViewController];
+      };
+
   [_lensOverlayHandler
           searchImageWithLens:_promoViewController.lensSearchImage
                    entrypoint:LensOverlayEntrypoint::kFREPromo
       initialPresentationBase:_promoViewController.lensContainerViewController
+      resultsPresenterFactory:factory
                    completion:nil];
 
   BOOL animated = self.baseNavigationController.topViewController != nil;

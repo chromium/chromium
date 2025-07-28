@@ -182,6 +182,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // The view controller that serves as the base of the presentation.
   __weak UIViewController* _presentationBaseViewController;
 
+  // A factory for creating the results page presenter.
+  LensResultsPresenterFactory _presenterFactory;
+
   // Accumulates the callbacks that are to be run once the overlay is destroyed.
   NSMutableArray<ProceduralBlock>* _runOnDestroy;
 }
@@ -342,8 +345,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)searchImageWithLens:(UIImage*)image
                  entrypoint:(LensOverlayEntrypoint)entrypoint
     initialPresentationBase:(UIViewController*)initialPresentationBase
+    resultsPresenterFactory:(LensResultsPresenterFactory)presenterFactory
                  completion:(void (^)(BOOL))completion {
   _presentationBaseViewController = initialPresentationBase;
+  _presenterFactory = presenterFactory;
   BOOL success = [self prepareOverlayWithEntrypoint:entrypoint];
   if (!success) {
     if (completion) {
@@ -1527,9 +1532,14 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 // Configures and initializes the presenter responsible for displaying the
 // results bottom sheet.
 - (void)buildResultsBottomSheetPresentation {
-  _resultsPagePresenter = [[LensOverlayResultsPagePresenter alloc]
-      initWithBaseViewController:_containerViewController
-        resultPageViewController:_resultViewController];
+  if (_presenterFactory) {
+    _resultsPagePresenter =
+        _presenterFactory(_containerViewController, _resultViewController);
+  } else {
+    _resultsPagePresenter = [[LensOverlayResultsPagePresenter alloc]
+        initWithBaseViewController:_containerViewController
+          resultPageViewController:_resultViewController];
+  }
 
   _resultsPagePresenter.delegate = self;
   _resultMediator.presentationDelegate = _resultsPagePresenter;
