@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_USER_CLOUD_POLICY_INVALIDATOR_H_
 #define CHROME_BROWSER_POLICY_CLOUD_USER_CLOUD_POLICY_INVALIDATOR_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -16,12 +15,13 @@ class Profile;
 
 namespace policy {
 
-class CloudPolicyInvalidator;
 class CloudPolicyManager;
 
 // Provides invalidations to user policy. Implemented as a
 // KeyedService to allow profile-based lifetime management.
-class UserCloudPolicyInvalidator : public KeyedService, public ProfileObserver {
+class UserCloudPolicyInvalidator : public CloudPolicyInvalidator,
+                                   public KeyedService,
+                                   public ProfileObserver {
  public:
   // |profile| is profile associated with the invalidator. It is used to get
   // a reference to the profile's invalidation service. Both the profile and
@@ -43,8 +43,6 @@ class UserCloudPolicyInvalidator : public KeyedService, public ProfileObserver {
 
  private:
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
-  raw_ptr<CloudPolicyManager> policy_manager_;
-  std::unique_ptr<CloudPolicyInvalidator> invalidator_;
 };
 
 }  // namespace policy

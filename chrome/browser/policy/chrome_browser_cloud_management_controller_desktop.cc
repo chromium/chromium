@@ -202,6 +202,10 @@ void ChromeBrowserCloudManagementControllerDesktop::OnServiceAccountSet(
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
+  if (policy_invalidator_) {
+    policy_invalidator_->Shutdown();
+  }
+
   policy_invalidator_.reset();
   commands_invalidator_.reset();
   fm_registration_token_uploaders_.clear();
@@ -342,15 +346,14 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
                    ->machine_level_user_cloud_policy_manager()
                    ->core();
 
-  invalidation::InvalidationListener* policy_invalidation_listener =
-      invalidation_listener_per_project_
-          [policy::kPolicyInvalidationProjectNumber]
-              .get();
   policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
-      PolicyInvalidationScope::kCBCM, policy_invalidation_listener, core,
+      PolicyInvalidationScope::kCBCM, core,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance(),
       0 /* highest_handled_invalidation_version */);
+  policy_invalidator_->Initialize(invalidation_listener_per_project_
+                                      [policy::kPolicyInvalidationProjectNumber]
+                                          .get());
 
   core->StartRemoteCommandsService(
       std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),

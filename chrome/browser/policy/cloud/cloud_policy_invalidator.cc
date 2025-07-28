@@ -157,13 +157,11 @@ CloudPolicyInvalidator::PolicyInvalidationHandler::
 
 CloudPolicyInvalidator::CloudPolicyInvalidator(
     PolicyInvalidationScope scope,
-    invalidation::InvalidationListener* invalidation_listener,
     CloudPolicyCore* core,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
     int64_t highest_handled_invalidation_version)
     : CloudPolicyInvalidator(scope,
-                             invalidation_listener,
                              core,
                              task_runner,
                              clock,
@@ -172,51 +170,74 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
 
 CloudPolicyInvalidator::CloudPolicyInvalidator(
     PolicyInvalidationScope scope,
-    invalidation::InvalidationListener* invalidation_listener,
     CloudPolicyCore* core,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
     int64_t highest_handled_invalidation_version,
     const std::string& device_local_account_id)
-    : policy_invalidation_handler_(scope,
+    : state_(State::UNINITIALIZED),
+      policy_invalidation_handler_(scope,
                                    highest_handled_invalidation_version,
                                    core,
                                    clock,
                                    std::move(task_runner)),
       scope_(scope),
       core_(core),
-      invalidation_listener_(invalidation_listener),
       device_local_account_id_(device_local_account_id) {
-  CHECK(core_);
-  CHECK(invalidation_listener_);
-
-  core_observation_.Observe(core_);
-  if (core_->refresh_scheduler()) {
-    OnRefreshSchedulerStarted(core_);
-  }
+  CHECK(core);
 }
 
 CloudPolicyInvalidator::~CloudPolicyInvalidator() {
-  // Explicitly reset observation of `InvalidationListener` as it needs
-  // `GetType()` to remove observer and `GetType()` requires access to our
-  // state.
+  CHECK(state_ == State::SHUT_DOWN);
+}
+
+void CloudPolicyInvalidator::Initialize(
+    invalidation::InvalidationListener* invalidation_listener) {
+  CHECK(state_ == State::UNINITIALIZED);
+  CHECK(invalidation_listener);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  invalidation_listener_ = invalidation_listener;
+  state_ = State::STOPPED;
+  core_observation_.Observe(core_);
+  if (core_->refresh_scheduler())
+    OnRefreshSchedulerStarted(core_);
+}
+
+void CloudPolicyInvalidator::Shutdown() {
+  CHECK(state_ != State::SHUT_DOWN);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   invalidation_listener_observation_.Reset();
+
+  if (state_ == State::STARTED) {
+    policy_invalidation_handler_.CancelInvalidationHandling();
+  }
+  core_observation_.Reset();
+  invalidation_listener_ = nullptr;
+  state_ = State::SHUT_DOWN;
 }
 
 void CloudPolicyInvalidator::OnCoreConnected(CloudPolicyCore* core) {}
 
 void CloudPolicyInvalidator::OnRefreshSchedulerStarted(CloudPolicyCore* core) {
+  CHECK(state_ == State::STOPPED);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  state_ = State::STARTED;
   OnStoreLoaded(core_->store());
   store_observation_.Observe(core_->store());
 }
 
 void CloudPolicyInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
+  CHECK(state_ == State::STARTED || state_ == State::STOPPED);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  store_observation_.Reset();
+  if (state_ == State::STARTED) {
+    store_observation_.Reset();
+    state_ = State::STOPPED;
+  }
 }
 
 void CloudPolicyInvalidator::OnStoreLoaded(CloudPolicyStore* store) {
+  CHECK(state_ == State::STARTED);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   policy_invalidation_handler_.HandlePolicyRefresh(
@@ -308,8 +329,9 @@ std::string CloudPolicyInvalidator::GetType() const {
 }
 
 bool CloudPolicyInvalidator::IsRegistered() const {
-  return invalidation_listener_observation_.IsObservingSource(
-      invalidation_listener_);
+  return invalidation_listener_ &&
+         invalidation_listener_observation_.IsObservingSource(
+             invalidation_listener_);
 }
 
 bool CloudPolicyInvalidator::AreInvalidationsEnabled() const {

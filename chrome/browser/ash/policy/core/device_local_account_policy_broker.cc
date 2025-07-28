@@ -168,6 +168,10 @@ DeviceLocalAccountPolicyBroker::~DeviceLocalAccountPolicyBroker() {
   store_->RemoveObserver(this);
   external_data_manager_->SetPolicyStore(nullptr);
   external_data_manager_->Disconnect();
+
+  if (invalidator_) {
+    invalidator_->Shutdown();
+  }
 }
 
 void DeviceLocalAccountPolicyBroker::Initialize() {
@@ -207,10 +211,11 @@ void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
   core_.StartRefreshScheduler();
   UpdateRefreshDelay();
   invalidator_ = std::make_unique<CloudPolicyInvalidator>(
-      PolicyInvalidationScope::kDeviceLocalAccount, invalidation_listener_,
-      &core_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      PolicyInvalidationScope::kDeviceLocalAccount, &core_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance(),
       /*highest_handled_invalidation_version=*/0, account_id_);
+  invalidator_->Initialize(invalidation_listener_);
 }
 
 void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
