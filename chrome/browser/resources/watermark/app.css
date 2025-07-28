@@ -7,8 +7,93 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+/* TODO(crbug.com/434676946): Adjust styling to align with UX guidelines
+ * before enabling the experiment. This includes replacing hard-coded
+ * values with named constants/tokens. */
+
+:host {
+  display: block;
+  padding: 24px;
+}
+
+.controls-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3),
+              0 2px 6px 2px rgba(0, 0, 0, .15);
+  padding: 16px 24px;
+  width: 360px;
+}
+
+.card-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.card-header cr-button {
+  border-radius: 100px;
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 16px;
+  border: 1px solid #A8C7FA;
+  color: #0B57D0;
+}
+
+.header-text > h2 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.header-text > p {
+  color: #5f6368;
+  font-size: 13px;
+  margin: 2px 0 0 0;
+}
+
+.control-row {
+  align-items: center;
+  display: flex;
+  height: 40px;
+  justify-content: space-between;
+}
+
+.control-row > span {
+  color: #202124;
+  font-size: 13px;
+}
+
+cr-slider {
+  width: 170px;
+  --cr-slider-active-color: #1F6DD2;
+  --cr-slider-knob-color: #1A73E8;
+  --cr-slider-container-color: #D2E3FC;
+  --cr-slider-bar-height: 4px;
+  line-height: 20px;
+}
+
+cr-input.font-size-input.stroked {
+  --cr-input-border-radius: 8px;
+  width: 70px;
+  --cr-input-border-color: #C7C7C7;
+  --cr-input-color: #1F1F1F;
+}
+
+cr-input.font-size-input.stroked > #input {
+  text-align: center;
+}
+
+#values {
+  border-top: 1px solid #e8eaed;
+  color: #5f6368;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
 #watermark {
-  color: red;
-  font-size: 2em;
-  font-weight: bold;
+  display: none;
 }

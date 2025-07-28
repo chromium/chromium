@@ -3,12 +3,24 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import type {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+
+export interface WatermarkAppElement {
+  $: {
+    fontSizeInput: CrInputElement,
+    fillOpacitySlider: CrSliderElement,
+    outlineOpacitySlider: CrSliderElement,
+  };
+}
 
 export class WatermarkAppElement extends CrLitElement {
   static get is() {
@@ -25,11 +37,51 @@ export class WatermarkAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      message_: {type: String},
+      fontSize_: {type: Number},
+      fillOpacity_: {type: Number},
+      outlineOpacity_: {type: Number},
+      opacityTicks_: {type: Array},
     };
   }
 
-  protected accessor message_: string = loadTimeData.getString('message');
+  protected accessor fontSize_: number = 24;
+  protected accessor fillOpacity_: number = 4;
+  protected accessor outlineOpacity_: number = 6;
+  protected accessor opacityTicks_: SliderTick[] = [];
+
+  constructor() {
+    super();
+    for (let i = 0; i <= 100; i++) {
+      this.opacityTicks_.push({label: String(i), value: i});
+    }
+  }
+
+  protected onCopyJsonClick_() {
+    navigator.clipboard.writeText(JSON.stringify(
+        {
+          WatermarkStyle: {
+            fill_opacity: this.fillOpacity_,
+            outline_opacity: this.outlineOpacity_,
+            font_size: this.fontSize_,
+          },
+        },
+        null, 2));
+  }
+
+  protected onFontSizeChanged_() {
+    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
+    if (!isNaN(parsedValue) && parsedValue >= 1) {
+      this.fontSize_ = parsedValue;
+    }
+  }
+
+  protected onFillOpacityChanged_() {
+    this.fillOpacity_ = Math.round(this.$.fillOpacitySlider.value);
+  }
+
+  protected onOutlineOpacityChanged_() {
+    this.outlineOpacity_ = Math.round(this.$.outlineOpacitySlider.value);
+  }
 }
 
 declare global {

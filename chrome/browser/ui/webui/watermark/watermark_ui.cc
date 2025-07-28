@@ -35,9 +35,6 @@ WatermarkUI::WatermarkUI(content::WebUI* web_ui)
   // Add required resources.
   webui::SetupWebUIDataSource(source, kWatermarkResources,
                               IDR_WATERMARK_WATERMARK_HTML);
-
-  // Pass a simple message to the frontend.
-  source->AddString("message", "This is a watermark page!");
 }
 
 WatermarkUI::~WatermarkUI() = default;
