@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/renderer/render_frame.h"
@@ -39,7 +38,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   RendererURLLoaderThrottle(
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-      base::optional_ref<const blink::LocalFrameToken> local_frame_token);
+      const blink::LocalFrameToken& local_frame_token);
 
   RendererURLLoaderThrottle(const RendererURLLoaderThrottle&) = delete;
   RendererURLLoaderThrottle& operator=(const RendererURLLoaderThrottle&) =
@@ -131,7 +130,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
   // `ChromeContentRendererClient`. Must be dereferenced on the main thread.
   base::WeakPtr<RendererAgent> renderer_agent_;
 
-  const std::optional<blink::LocalFrameToken> frame_token_;
 
   GURL current_url_;
   network::mojom::RequestDestination request_destination_;

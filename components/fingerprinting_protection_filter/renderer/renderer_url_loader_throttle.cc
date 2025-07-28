@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/optional_ref.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
@@ -75,20 +74,18 @@ void RecordDeferTimeHistogram(ActivationLevel activation_level,
 
 RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-    base::optional_ref<const blink::LocalFrameToken> local_frame_token)
+    const blink::LocalFrameToken& local_frame_token)
     : renderer_agent_(nullptr),
-      frame_token_(local_frame_token.CopyAsOptional()),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       main_thread_task_runner_(main_thread_task_runner) {
-  if (frame_token_.has_value() && main_thread_task_runner_) {
+  if (main_thread_task_runner_) {
     // It's only possible to retrieve a `RenderFrame` given a `LocalFrameToken`
     // on the main render thread.
-    auto get_renderer_agent_task =
-        [](std::optional<blink::LocalFrameToken> frame_token)
+    auto get_renderer_agent_task = [](const blink::LocalFrameToken& frame_token)
         -> base::WeakPtr<RendererAgent> {
       base::WeakPtr<RendererAgent> agent_weakptr = nullptr;
       blink::WebLocalFrame* web_frame =
-          blink::WebLocalFrame::FromFrameToken(frame_token.value());
+          blink::WebLocalFrame::FromFrameToken(frame_token);
       content::RenderFrame* render_frame = nullptr;
       if (web_frame) {
         render_frame = content::RenderFrame::FromWebFrame(web_frame);
@@ -104,7 +101,7 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     };
     main_thread_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(get_renderer_agent_task, frame_token_)
+        base::BindOnce(get_renderer_agent_task, local_frame_token)
             .Then(base::BindPostTask(
                 task_runner_,
                 base::BindOnce(

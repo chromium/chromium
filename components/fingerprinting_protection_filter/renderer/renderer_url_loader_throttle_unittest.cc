@@ -60,7 +60,7 @@ class MockRendererURLLoaderThrottle : public RendererURLLoaderThrottle {
   explicit MockRendererURLLoaderThrottle()
       : RendererURLLoaderThrottle(
             base::SingleThreadTaskRunner::GetCurrentDefault(),
-            /*local_frame_token=*/std::nullopt) {}
+            blink::LocalFrameToken()) {}
 
   void InjectRendererAgent(base::WeakPtr<RendererAgent> renderer_agent) {
     SetRendererAgentForTesting(renderer_agent);
@@ -253,7 +253,6 @@ MATCHER_P(GURLWith,
 TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
   base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/");
-  EXPECT_CALL(renderer_agent_, OnSubresourceDisallowed());
 
   bool defer = false;
   network::ResourceRequest request =

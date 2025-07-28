@@ -228,7 +228,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       throttles.emplace_back(
           std::make_unique<
               fingerprinting_protection_filter::RendererURLLoaderThrottle>(
-              main_thread_task_runner_, local_frame_token));
+              main_thread_task_runner_, local_frame_token.value()));
     }
   }
 
