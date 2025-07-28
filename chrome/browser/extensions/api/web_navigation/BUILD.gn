@@ -22,7 +22,6 @@ source_set("web_navigation") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_tab_strip",
     "//content/public/browser",
     "//extensions/browser",
@@ -33,6 +32,7 @@ source_set("web_navigation") {
   deps = [
     "//chrome/browser/extensions",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common/extensions/api",
     "//content/public/common",
@@ -48,7 +48,4 @@ source_set("web_navigation") {
       "//pdf:features",
     ]
   }
-
-  # //chrome/browser/ui and this target are co-dependent.
-  allow_circular_includes_from = [ "//chrome/browser/ui" ]
 }

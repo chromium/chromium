@@ -1801,9 +1801,9 @@ void TabSearchPageHandler::SetTabDeclutterControllerForTesting(
   SetTabDeclutterController(tab_declutter_controller);
 }
 
-bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {
-  return browser->profile() == Profile::FromWebUI(web_ui_) &&
-         browser->type() == Browser::Type::TYPE_NORMAL;
+bool TabSearchPageHandler::ShouldTrackBrowser(BrowserWindowInterface* browser) {
+  return browser->GetProfile() == Profile::FromWebUI(web_ui_) &&
+         browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 void TabSearchPageHandler::SetTimerForTesting(

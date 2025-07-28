@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -211,9 +212,10 @@ TabsEventRouter::~TabsEventRouter() {
   BrowserList::RemoveObserver(this);
 }
 
-bool TabsEventRouter::ShouldTrackBrowser(Browser* browser) {
-  return profile_->IsSameOrParent(browser->profile()) &&
-         ExtensionTabUtil::BrowserSupportsTabs(browser);
+bool TabsEventRouter::ShouldTrackBrowser(BrowserWindowInterface* browser) {
+  return profile_->IsSameOrParent(browser->GetProfile()) &&
+         ExtensionTabUtil::BrowserSupportsTabs(
+             browser->GetBrowserForMigrationOnly());
 }
 
 void TabsEventRouter::OnBrowserSetLastActive(Browser* browser) {

@@ -87,7 +87,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
       const TabStripSelectionChange& selection) override;
 
   // BrowserTabStripTrackerDelegate overrides:
-  bool ShouldTrackBrowser(Browser* browser) override;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
   // BrowserListObserver overrides:
   void OnBrowserAdded(Browser* browser) override;

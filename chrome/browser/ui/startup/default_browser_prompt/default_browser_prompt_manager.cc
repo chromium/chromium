@@ -14,10 +14,10 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -170,10 +170,11 @@ void DefaultBrowserPromptManager::SetAppMenuItemVisibility(bool show) {
   show_app_menu_item_ = show;
 }
 
-bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
-  return browser->is_type_normal() &&
-         !browser->profile()->IsIncognitoProfile() &&
-         !browser->profile()->IsGuestSession();
+bool DefaultBrowserPromptManager::ShouldTrackBrowser(
+    BrowserWindowInterface* browser) {
+  return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+         !browser->GetProfile()->IsIncognitoProfile() &&
+         !browser->GetProfile()->IsGuestSession();
 }
 
 void DefaultBrowserPromptManager::OnTabStripModelChanged(

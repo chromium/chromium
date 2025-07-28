@@ -1917,7 +1917,10 @@ static_library("ui") {
 
     public_deps += [ "//chrome/browser/ui/supervised_user" ]
 
-    deps += [ "//chromeos/ui/vector_icons" ]
+    deps += [
+      "//chrome/browser/extensions/api/web_navigation",
+      "//chromeos/ui/vector_icons",
+    ]
   }
 
   if (is_chromeos) {

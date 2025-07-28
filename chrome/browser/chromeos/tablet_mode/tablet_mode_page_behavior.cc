@@ -48,7 +48,8 @@ void TabletModePageBehavior::OnDisplayTabletStateChanged(
   }
 }
 
-bool TabletModePageBehavior::ShouldTrackBrowser(Browser* browser) {
+bool TabletModePageBehavior::ShouldTrackBrowser(
+    BrowserWindowInterface* browser) {
   return display::Screen::GetScreen()->InTabletMode();
 }
 

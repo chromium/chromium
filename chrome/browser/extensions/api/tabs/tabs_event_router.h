@@ -55,7 +55,7 @@ class TabsEventRouter : public TabStripModelObserver,
   ~TabsEventRouter() override;
 
   // BrowserTabStripTrackerDelegate:
-  bool ShouldTrackBrowser(Browser* browser) override;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;

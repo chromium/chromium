@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_DELEGATE_H_
 #define CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_DELEGATE_H_
 
-class Browser;
+class BrowserWindowInterface;
 
 class BrowserTabStripTrackerDelegate {
  public:
   // Returns true if a TabStripModelObserver should be registered for |browser|.
-  virtual bool ShouldTrackBrowser(Browser* browser) = 0;
+  virtual bool ShouldTrackBrowser(BrowserWindowInterface* browser) = 0;
 
  protected:
   virtual ~BrowserTabStripTrackerDelegate() = default;

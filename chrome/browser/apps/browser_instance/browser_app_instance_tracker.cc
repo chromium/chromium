@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -253,8 +254,9 @@ void BrowserAppInstanceTracker::OnTabStripModelChanged(
   }
 }
 
-bool BrowserAppInstanceTracker::ShouldTrackBrowser(Browser* browser) {
-  return profile_->IsSameOrParent(browser->profile());
+bool BrowserAppInstanceTracker::ShouldTrackBrowser(
+    BrowserWindowInterface* browser) {
+  return profile_->IsSameOrParent(browser->GetProfile());
 }
 
 void BrowserAppInstanceTracker::OnBrowserAdded(Browser* browser) {

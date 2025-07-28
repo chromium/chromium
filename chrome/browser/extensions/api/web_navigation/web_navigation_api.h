@@ -155,7 +155,7 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   };
 
   // BrowserTabStripTrackerDelegate implementation.
-  bool ShouldTrackBrowser(Browser* browser) override;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver implementation.
   void OnTabStripModelChanged(

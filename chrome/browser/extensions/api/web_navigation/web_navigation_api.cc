@@ -12,8 +12,7 @@
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_helpers.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/extensions/api/web_navigation.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -73,8 +72,9 @@ WebNavigationEventRouter::WebNavigationEventRouter(Profile* profile)
 
 WebNavigationEventRouter::~WebNavigationEventRouter() = default;
 
-bool WebNavigationEventRouter::ShouldTrackBrowser(Browser* browser) {
-  return profile_->IsSameOrParent(browser->profile());
+bool WebNavigationEventRouter::ShouldTrackBrowser(
+    BrowserWindowInterface* browser) {
+  return profile_->IsSameOrParent(browser->GetProfile());
 }
 
 void WebNavigationEventRouter::OnTabStripModelChanged(

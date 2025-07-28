@@ -64,7 +64,7 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void SetAppMenuItemVisibility(bool show);
 
   // BrowserTabStripTrackerDelegate
-  bool ShouldTrackBrowser(Browser* browser) override;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

@@ -29,6 +29,7 @@ static_library("tablet_mode") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
