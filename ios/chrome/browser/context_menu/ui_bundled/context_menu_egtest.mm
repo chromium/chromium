@@ -84,6 +84,7 @@ const char kInitialPageHtml[] =
     "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /></head><body><a "
     "style='margin-left:150px' href='/destination' id='link'>"
     "link</a></body></html>";
+
 // The DOM element ID of the link to the destination page.
 const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
@@ -198,6 +199,16 @@ NSString* const kLongLinkTestPageTemplateHtml =
      "/></head><body><p style='margin-bottom:50px'>Short title test.</p>"
      "<p><a style='margin-left:150px' href='%@' id='%s'>LongLink</a></p>"
      "</body></html>";
+
+// Returns an ElementSelector for long pressing the first link in the page.
+ElementSelector* ElementSelectorToLongPressLink() {
+  return [ElementSelector selectorWithCSSSelector:"a"];
+}
+
+// Returns an ElementSelector for long pressing the first image in the page.
+ElementSelector* ElementSelectorToLongPressImage() {
+  return [ElementSelector selectorWithCSSSelector:"img"];
+}
 
 // Matcher for the open image button in the context menu.
 id<GREYMatcher> OpenImageButton() {
@@ -961,20 +972,20 @@ void RelaunchApp() {
   }
 }
 
+// Tests that opening the context menu for a link in Reading mode
+// displays all options.
 - (void)testOpenContextMenuFromReadingMode {
-  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  const GURL initialURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:initialURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:kInitialPageDestinationLinkText];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Open Reader Mode UI.
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
-  [ChromeEarlGreyUI
-      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+  [ChromeEarlGreyUI longPressElementOnWebView:ElementSelectorToLongPressLink()];
 
   // Make sure the context menu appeared.
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
@@ -1000,6 +1011,30 @@ void RelaunchApp() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Waiting for the context menu to disappear");
+}
+
+// Tests that the context menu is displayed for an image url in Reading mode.
+- (void)testContextMenuDisplayedOnImageForReadingMode {
+  const GURL pageURL = self.testServer->GetURL("/article.html");
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:ElementSelectorToLongPressImage()];
+
+  TapOnContextMenuButton(OpenImageButton());
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify url.
+  const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
+  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
