@@ -2854,9 +2854,12 @@ class Spanifier {
                         asString("const char8_t"), asString("const char16_t"),
                         asString("const char32_t"))))))));
     // Matches a pointer type, including `auto` which deduces to a pointer type.
-    auto pointer_type =
-        type(anyOf(non_auto_pointer_type,
-                   autoType(hasDeducedType(qualType(non_auto_pointer_type)))));
+    auto pointer_type = type(anyOf(
+        non_auto_pointer_type,
+        autoType(hasDeducedType(anyOf(
+            qualType(non_auto_pointer_type),
+            decltypeType(hasUnderlyingType(qualType(non_auto_pointer_type)))))),
+        decltypeType(hasUnderlyingType(qualType(non_auto_pointer_type)))));
 
     // Matches a pointer type loc without a restriction like `pointer_type`,
     // which excludes certain pointer types.
