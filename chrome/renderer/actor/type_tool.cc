@@ -302,12 +302,19 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
 
   // Injecting a click to get focus.
   gfx::PointF coordinate = validated_result->target;
+  journal_->Log(
+      task_id_, "TypeTool::Execute",
+      absl::StrFormat("Click to focus on %s", base::ToString(coordinate)));
   mojom::ActionResultPtr click_result =
       CreateAndDispatchClick(blink::WebMouseEvent::Button::kLeft, 1, coordinate,
                              frame_->GetWebFrame()->FrameWidget());
 
   // Cancel rest of typing if initial click failed.
   if (!IsOk(*click_result)) {
+    journal_->Log(
+        task_id_, "TypeTool::Execute",
+        absl::StrFormat("Initial click to focus target failed. Reason: %s",
+                        click_result->message));
     std::move(callback).Run(std::move(click_result));
     return;
   }
@@ -324,8 +331,16 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   // TypeAction modes don't make sense.
   WebElement focused = frame_->GetWebFrame()->GetDocument().FocusedElement();
   if (focused && focused.IsEditable()) {
+    journal_->Log(
+        task_id_, "TypeTool::Execute",
+        absl::StrFormat("Focused element is now %s", base::ToString(focused)));
     PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode);
   } else {
+    journal_->Log(
+        task_id_, "TypeTool::Execute",
+        absl::StrFormat(
+            "Target %s is not editable. Typing will proceed without clearing.",
+            base::ToString(focused)));
     // TODO(crbug.com/421133798): If the target isn't editable, the existing
     // TypeAction modes don't make sense.
     ACTOR_LOG() << "Warning: TypeAction::Mode cannot be applied when targeting "
@@ -344,6 +359,10 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
 
     std::move(callback).Run(MakeOkResult());
   } else {
+    journal_->Log(task_id_, "TypeTool::Execute",
+                  absl::StrFormat(
+                      "Use incremental typing with %s delay",
+                      base::ToString(features::kGlicActorKeyUpDuration.Get())));
     task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     target_and_keys_ = std::move(validated_result).value();
     task_runner_->PostDelayedTask(
@@ -451,6 +470,9 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
   for (char c : action_->text) {
     std::optional<KeyParams> params = GetKeyParamsForChar(c);
     if (!params.has_value()) {
+      journal_->Log(
+          task_id_, "TypeTool::Validate",
+          absl::StrFormat("Failed to map character '%c' to a key event.", c));
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kTypeFailedMappingCharToKey,
                      absl::StrFormat("Failed on char[%c]", c)));

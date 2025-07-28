@@ -69,6 +69,14 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
 
   targeting_smooth_scroller_ = scrolling_element.HasScrollBehaviorSmooth();
 
+  journal_->Log(
+      task_id_, "ScrollTool::Execute",
+      absl::StrFormat("Scrolling element %s from %s by offset %s (CSS "
+                      "pixels). Smooth scroll: %v.",
+                      base::ToString(scrolling_element),
+                      start_offset_css.ToString(), offset_css.ToString(),
+                      targeting_smooth_scroller_));
+
   std::move(callback).Run(
       did_scroll
           ? MakeOkResult()

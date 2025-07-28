@@ -84,6 +84,10 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
     }
   }
 
+  journal_->Log(
+      task_id_, "ClickTool::Execute",
+      absl::StrFormat("Dispatching click at point %s", click_point.ToString()));
+
   mojom::ActionResultPtr result = CreateAndDispatchClick(
       button, click_count, click_point, frame_->GetWebFrame()->FrameWidget());
   std::move(callback).Run(std::move(result));
