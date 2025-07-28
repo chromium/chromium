@@ -818,6 +818,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
   // should behave like a non-opaque image here, but the element may not be
   // opaque so going with that for now.
   Draw<OverdrawOp::kNone>(
+      /*draw_func=*/
       [paint_record, x, y, dwidth, dheight, box_rect](
           MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
@@ -878,7 +879,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
         c->restoreToCount(initial_save_count);
       },
-      NoOverdraw, gfx::RectF(box_rect.width(), box_rect.height()),
+      NoOverdraw, /*bounds=*/gfx::RectF(box_rect.width(), box_rect.height()),
       CanvasRenderingContext2DState::kImagePaintType,
       CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kElement);

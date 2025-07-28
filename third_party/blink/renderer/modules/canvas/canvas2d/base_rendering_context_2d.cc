@@ -1173,11 +1173,10 @@ void BaseRenderingContext2D::DrawTextInternal(
           : CanvasOperationType::kStrokeText);
 
   Draw<OverdrawOp::kNone>(
+      /*draw_func=*/
       [font, text = std::move(text), direction, bidi_override, location,
        run_start, run_end, canvas,
-       text_painter](MemoryManagedPaintCanvas* c,
-                     const cc::PaintFlags* flags)  // draw lambda
-      {
+       text_painter](MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         TextRun text_run(text, direction, bidi_override,
                          /* normalize_space */ true);
         // Font::DrawType::kGlyphsAndClusters is required for printing to PDF,
