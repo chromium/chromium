@@ -140,13 +140,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 mRenderer);
     }
 
-    /**
-     * Sets the visibility of the Most Visited Tiles section.
-     *
-     * @param isMvtVisible True to show the section, false to hide it.
-     */
-    public void setMvtVisibility(boolean isMvtVisible) {
-        mMediator.setMvtVisibility(isMvtVisible);
+    /** Updates the visibility of the Most Visited Tiles section. */
+    public void updateMvtVisibility() {
+        mMediator.updateMvtVisibility();
     }
 
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */

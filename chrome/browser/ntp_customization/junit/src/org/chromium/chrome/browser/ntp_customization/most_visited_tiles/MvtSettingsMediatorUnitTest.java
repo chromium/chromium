@@ -86,11 +86,11 @@ public class MvtSettingsMediatorUnitTest {
     public void testOnMvtSwitchToggledAndState() {
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
         mMediator.onMvtSwitchToggled(/* isEnabled= */ true);
-        assertTrue(configManager.getPrefIsMvtVisible());
+        assertTrue(configManager.getPrefIsMvtToggleOn());
         assertTrue(mMediator.isMvtTurnedOn());
 
         mMediator.onMvtSwitchToggled(/* isEnabled= */ false);
-        assertFalse(configManager.getPrefIsMvtVisible());
+        assertFalse(configManager.getPrefIsMvtToggleOn());
         assertFalse(mMediator.isMvtTurnedOn());
     }
 

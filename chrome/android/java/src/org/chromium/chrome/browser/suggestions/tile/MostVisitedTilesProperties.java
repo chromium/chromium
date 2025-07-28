@@ -14,7 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public final class MostVisitedTilesProperties {
     private MostVisitedTilesProperties() {}
 
-    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTAINER_VISIBLE =
+    public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
     // We need to skip the equality check here since there are some cases when the view removes all
@@ -27,6 +27,6 @@ public final class MostVisitedTilesProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                IS_CONTAINER_VISIBLE, HORIZONTAL_INTERVAL_PADDINGS, HORIZONTAL_EDGE_PADDINGS,
+                IS_VISIBLE, HORIZONTAL_INTERVAL_PADDINGS, HORIZONTAL_EDGE_PADDINGS,
             };
 }

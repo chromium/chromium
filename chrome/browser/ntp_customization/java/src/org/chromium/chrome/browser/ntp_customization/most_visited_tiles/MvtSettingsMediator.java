@@ -45,12 +45,12 @@ public class MvtSettingsMediator {
 
     /** Returns whether the most visited tiles section are turned on and visible to the user. */
     boolean isMvtTurnedOn() {
-        return NtpCustomizationConfigManager.getInstance().getPrefIsMvtVisible();
+        return NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn();
     }
 
     @VisibleForTesting
     void onMvtSwitchToggled(boolean isEnabled) {
-        NtpCustomizationConfigManager.getInstance().setPrefIsMvtVisible(isEnabled);
+        NtpCustomizationConfigManager.getInstance().setPrefIsMvtToggleOn(isEnabled);
     }
 
     void destroy() {

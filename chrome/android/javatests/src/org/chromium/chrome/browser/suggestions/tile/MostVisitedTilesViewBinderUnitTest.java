@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
 
 import android.app.Activity;
 import android.view.View;
@@ -85,10 +85,10 @@ public final class MostVisitedTilesViewBinderUnitTest {
     @UiThreadTest
     @SmallTest
     public void testContainerVisibilitySet() {
-        mModel.set(IS_CONTAINER_VISIBLE, true);
+        mModel.set(IS_VISIBLE, true);
         Assert.assertEquals(View.VISIBLE, mMvTilesContainerLayout.getVisibility());
 
-        mModel.set(IS_CONTAINER_VISIBLE, false);
+        mModel.set(IS_VISIBLE, false);
         Assert.assertEquals(View.GONE, mMvTilesContainerLayout.getVisibility());
     }
 

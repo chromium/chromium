@@ -144,7 +144,7 @@ public class NtpCustomizationMediator {
 
             boolean isMvtVisible =
                     mNtpCustomizationForMvtFeatureEnabled
-                            && NtpCustomizationConfigManager.getInstance().getPrefIsMvtVisible();
+                            && NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn();
             updateMvtSectionSubtitle(isMvtVisible);
         }
     }
@@ -306,7 +306,7 @@ public class NtpCustomizationMediator {
     /** Returns the source id of the mvt section subtitle. */
     @StringRes
     private int getMvtSectionSubtitleId() {
-        return NtpCustomizationConfigManager.getInstance().getPrefIsMvtVisible()
+        return NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn()
                 ? R.string.text_on
                 : R.string.text_off;
     }

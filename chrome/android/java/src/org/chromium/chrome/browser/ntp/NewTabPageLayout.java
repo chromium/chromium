@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -585,10 +584,8 @@ public class NewTabPageLayout extends LinearLayout
         mMostVisitedTilesCoordinator.initWithNative(
                 profile, mManager, tileGroupDelegate, touchEnabledDelegate);
 
-        // Updates the visibility of the Most Visited Tiles section based on a shared preference.
         if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
-            mMostVisitedTilesCoordinator.setMvtVisibility(
-                    NtpCustomizationConfigManager.getInstance().getPrefIsMvtVisible());
+            mMostVisitedTilesCoordinator.updateMvtVisibility();
         }
     }
 

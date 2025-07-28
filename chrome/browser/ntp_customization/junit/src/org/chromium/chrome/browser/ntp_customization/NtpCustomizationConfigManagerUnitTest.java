@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -113,44 +112,44 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testAddAndRemoveMvtVisibilityListener() {
         // Verifies the listener added is notified when the visibility if changed.
         mNtpCustomizationConfigManager.addListener(mListener);
-        mNtpCustomizationConfigManager.setPrefIsMvtVisible(/* isMvtVisible= */ true);
-        verify(mListener).onMvtVisibilityChanged(eq(true));
+        mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ true);
+        verify(mListener).onMvtToggleChanged();
 
         // Removes listener and verifies it's not called.
         clearInvocations(mListener);
         mNtpCustomizationConfigManager.removeListener(mListener);
-        mNtpCustomizationConfigManager.setPrefIsMvtVisible(/* isMvtVisible= */ true);
-        mNtpCustomizationConfigManager.setPrefIsMvtVisible(/* isMvtVisible= */ false);
-        verify(mListener, never()).onMvtVisibilityChanged(anyBoolean());
+        mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ true);
+        mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ false);
+        verify(mListener, never()).onMvtToggleChanged();
     }
 
     @Test
     public void testSetAndGetPrefMvtVisibility() {
         // Verifies setPrefIsMvtVisible() sets the ChromeSharedPreferences properly and
-        // getPrefIsMvtVisible()
-        // gets the right value.
+        // getPrefIsMvtVisible() gets the right value.
         mNtpCustomizationConfigManager.addListener(mListener);
-        mNtpCustomizationConfigManager.setPrefIsMvtVisible(/* isMvtVisible= */ false);
+        mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ false);
         assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
                                 ChromePreferenceKeys.IS_MVT_VISIBLE, /* defaultValue= */ true));
-        assertFalse(mNtpCustomizationConfigManager.getPrefIsMvtVisible());
-        verify(mListener).onMvtVisibilityChanged(/* isMvtVisible= */ false);
+        assertFalse(mNtpCustomizationConfigManager.getPrefIsMvtToggleOn());
+        verify(mListener).onMvtToggleChanged();
 
-        mNtpCustomizationConfigManager.setPrefIsMvtVisible(/* isMvtVisible= */ true);
+        clearInvocations(mListener);
+        mNtpCustomizationConfigManager.setPrefIsMvtToggleOn(/* isMvtToggleOn= */ true);
         assertTrue(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
                                 ChromePreferenceKeys.IS_MVT_VISIBLE, /* defaultValue= */ true));
-        assertTrue(mNtpCustomizationConfigManager.getPrefIsMvtVisible());
-        verify(mListener).onMvtVisibilityChanged(/* isMvtVisible= */ true);
+        assertTrue(mNtpCustomizationConfigManager.getPrefIsMvtToggleOn());
+        verify(mListener).onMvtToggleChanged();
     }
 
     @Test
     public void testDefaultPrefMvtVisibility() {
         // Verifies the default value is true.
-        assertTrue(mNtpCustomizationConfigManager.getPrefIsMvtVisible());
+        assertTrue(mNtpCustomizationConfigManager.getPrefIsMvtToggleOn());
     }
 
     private Bitmap createBitmap() {

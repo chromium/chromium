@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -107,8 +107,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
         mMvtVisibilityListener =
                 new HomepageStateListener() {
                     @Override
-                    public void onMvtVisibilityChanged(boolean isMvtVisible) {
-                        setMvtVisibility(isMvtVisible);
+                    public void onMvtToggleChanged() {
+                        updateMvtVisibility();
                     }
                 };
         NtpCustomizationConfigManager.getInstance().addListener(mMvtVisibilityListener);
@@ -159,18 +159,18 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     public void onTileCountChanged() {
         if (mTileCountChangedRunnable != null) mTileCountChangedRunnable.run();
 
-        // If Custom Links are enabled, keep container visible for the "Add new" button.
-        boolean enable_custom_links = ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled();
-        setMvtVisibility(enable_custom_links || !mTileGroup.isEmpty());
+        updateMvtVisibility();
     }
 
     /**
-     * Sets the visibility of the Most Visited Tiles section.
-     *
-     * @param isMvtVisible True to show the section, false to hide it.
+     * Updates the visibility of the Most Visited Tiles section. The section is visible if and only
+     * if the user has chosen to show it and there are tiles to display.
      */
-    void setMvtVisibility(boolean isMvtVisible) {
-        mModel.set(IS_CONTAINER_VISIBLE, isMvtVisible);
+    void updateMvtVisibility() {
+        mModel.set(
+                IS_VISIBLE,
+                NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn()
+                        && !mTileGroup.isEmpty());
     }
 
     @Override
