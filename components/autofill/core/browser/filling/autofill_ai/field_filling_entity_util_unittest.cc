@@ -263,7 +263,7 @@ TEST_F(GetFillValueForEntityTest, FillingLocalizedCountries) {
            {"ar-LB", u"لبنان"}}) {
     auto field = std::make_unique<AutofillField>();
     field->set_server_predictions({CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
-    field->SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+    field->SetTypeTo(AutofillType(PASSPORT_ISSUING_COUNTRY),
                      AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(GetFillValueForEntity(passport, field,
@@ -435,7 +435,7 @@ TEST_F(GetFillValueForEntityStateTest, FillingStateValueIntoInput) {
                                                       {2u, u"CA"}}) {
     auto field = std::make_unique<AutofillField>();
     field->set_server_predictions({CreatePrediction(DRIVERS_LICENSE_REGION)});
-    field->SetTypeTo(AutofillType(ADDRESS_HOME_STATE),
+    field->SetTypeTo(AutofillType(DRIVERS_LICENSE_REGION),
                      AutofillPredictionSource::kServerCrowdsourcing);
     field->set_max_length(max_length);
 
