@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -114,75 +115,63 @@ content::TtsEventType TtsEventTypeFromString(const std::string& str) {
 
 namespace extensions {
 
-// One of these is constructed for each utterance, and deleted
-// when the utterance gets any final event.
+namespace {
+
+// One of these is constructed for each utterance, and deleted when the
+// utterance gets any final event.
 class TtsExtensionEventHandler : public content::UtteranceEventDelegate {
  public:
-  explicit TtsExtensionEventHandler(const std::string& src_extension_id);
+  explicit TtsExtensionEventHandler(const std::string& extension_id)
+      : extension_id_(extension_id) {}
 
   void OnTtsEvent(content::TtsUtterance* utterance,
                   content::TtsEventType event_type,
                   int char_index,
                   int length,
-                  const std::string& error_message) override;
+                  const std::string& error_message) override {
+    if (utterance->GetSrcId() < 0) {
+      return;
+    }
+
+    const std::set<content::TtsEventType>& desired_event_types =
+        utterance->GetDesiredEventTypes();
+    if (!desired_event_types.empty() &&
+        desired_event_types.find(event_type) == desired_event_types.end()) {
+      return;
+    }
+
+    base::Value::Dict details;
+    if (char_index >= 0) {
+      details.Set(constants::kCharIndexKey, char_index);
+    }
+    if (length >= 0) {
+      details.Set(constants::kLengthKey, length);
+    }
+    details.Set(constants::kEventTypeKey, TtsEventTypeToString(event_type));
+    if (event_type == content::TTS_EVENT_ERROR) {
+      details.Set(constants::kErrorMessageKey, error_message);
+    }
+    details.Set(constants::kSrcIdKey, utterance->GetSrcId());
+    details.Set(constants::kIsFinalEventKey, utterance->IsFinished());
+
+    base::Value::List arguments;
+    arguments.Append(std::move(details));
+
+    auto event = std::make_unique<extensions::Event>(
+        ::extensions::events::TTS_ON_EVENT, ::events::kOnEvent,
+        std::move(arguments), utterance->GetBrowserContext());
+    event->event_url = utterance->GetSrcUrl();
+    extensions::EventRouter::Get(utterance->GetBrowserContext())
+        ->DispatchEventToExtension(extension_id_, std::move(event));
+  }
 
  private:
   // The extension ID of the extension that called speak() and should
   // receive events.
-  std::string src_extension_id_;
+  const std::string extension_id_;
 };
 
-TtsExtensionEventHandler::TtsExtensionEventHandler(
-    const std::string& src_extension_id)
-    : src_extension_id_(src_extension_id) {
-}
-
-void TtsExtensionEventHandler::OnTtsEvent(content::TtsUtterance* utterance,
-                                          content::TtsEventType event_type,
-                                          int char_index,
-                                          int length,
-                                          const std::string& error_message) {
-  if (utterance->GetSrcId() < 0) {
-    if (utterance->IsFinished())
-      delete this;
-    return;
-  }
-
-  const std::set<content::TtsEventType>& desired_event_types =
-      utterance->GetDesiredEventTypes();
-  if (!desired_event_types.empty() &&
-      desired_event_types.find(event_type) == desired_event_types.end()) {
-    if (utterance->IsFinished())
-      delete this;
-    return;
-  }
-
-  const char *event_type_string = TtsEventTypeToString(event_type);
-  base::Value::Dict details;
-  if (char_index >= 0)
-    details.Set(constants::kCharIndexKey, char_index);
-  if (length >= 0)
-    details.Set(constants::kLengthKey, length);
-  details.Set(constants::kEventTypeKey, event_type_string);
-  if (event_type == content::TTS_EVENT_ERROR) {
-    details.Set(constants::kErrorMessageKey, error_message);
-  }
-  details.Set(constants::kSrcIdKey, utterance->GetSrcId());
-  details.Set(constants::kIsFinalEventKey, utterance->IsFinished());
-
-  base::Value::List arguments;
-  arguments.Append(std::move(details));
-
-  auto event = std::make_unique<extensions::Event>(
-      ::extensions::events::TTS_ON_EVENT, ::events::kOnEvent,
-      std::move(arguments), utterance->GetBrowserContext());
-  event->event_url = utterance->GetSrcUrl();
-  extensions::EventRouter::Get(utterance->GetBrowserContext())
-      ->DispatchEventToExtension(src_extension_id_, std::move(event));
-
-  if (utterance->IsFinished())
-    delete this;
-}
+}  // namespace
 
 ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
@@ -326,8 +315,10 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   utterance->SetDesiredEventTypes(desired_event_types);
   utterance->SetEngineId(voice_extension_id);
   utterance->SetOptions(std::move(options));
-  if (extension())
-    utterance->SetEventDelegate(new TtsExtensionEventHandler(extension_id()));
+  if (extension()) {
+    utterance->SetEventDelegate(
+        std::make_unique<TtsExtensionEventHandler>(extension_id()));
+  }
 
   content::TtsController* controller = content::TtsController::GetInstance();
   controller->SpeakOrEnqueue(std::move(utterance));

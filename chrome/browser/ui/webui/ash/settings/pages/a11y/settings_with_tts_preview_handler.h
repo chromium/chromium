@@ -13,8 +13,7 @@ namespace ash::settings {
 
 // Parent Chrome OS TTS-related settings page handler.
 class SettingsWithTtsPreviewHandler : public ::settings::SettingsPageUIHandler,
-                                      public content::VoicesChangedDelegate,
-                                      public content::UtteranceEventDelegate {
+                                      public content::VoicesChangedDelegate {
  public:
   SettingsWithTtsPreviewHandler();
 
@@ -24,6 +23,8 @@ class SettingsWithTtsPreviewHandler : public ::settings::SettingsPageUIHandler,
 
   ~SettingsWithTtsPreviewHandler() override;
 
+  void FireTtsPreviewEvent();
+
   void HandleGetAllTtsVoiceData(const base::Value::List& args);
   void HandlePreviewTtsVoice(const base::Value::List& args);
 
@@ -32,18 +33,12 @@ class SettingsWithTtsPreviewHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // UtteranceEventDelegate implementation.
-  void OnTtsEvent(content::TtsUtterance* utterance,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int length,
-                  const std::string& error_message) override;
-
-  void RefreshTtsVoices(const base::Value::List& args);
-  void RemoveTtsControllerDelegates();
   virtual GURL GetSourceURL() const = 0;
 
  private:
+  void RefreshTtsVoices(const base::Value::List& args);
+  void RemoveTtsControllerDelegates();
+
   base::WeakPtrFactory<SettingsWithTtsPreviewHandler> weak_factory_{this};
 };
 

@@ -31,6 +31,7 @@ namespace extensions {
 class TtsSpeakFunction : public ExtensionFunction {
  private:
   ~TtsSpeakFunction() override = default;
+
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.speak", TTS_SPEAK)
 };

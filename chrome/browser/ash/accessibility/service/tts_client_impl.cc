@@ -49,11 +49,10 @@ ax::mojom::TtsEventType ToMojo(content::TtsEventType event_type) {
   }
 }
 
-// Self-owned, compare to TtsExtensionEventHandler.
+// Owned by TtsUtterance.
 class AtpTtsEventHandler : public content::UtteranceEventDelegate {
  public:
-  // static creator deals with "new" so clients don't have to think about it.
-  static AtpTtsEventHandler* Create() { return new AtpTtsEventHandler(); }
+  AtpTtsEventHandler() = default;
   ~AtpTtsEventHandler() override = default;
   AtpTtsEventHandler(const AtpTtsEventHandler&) = delete;
   AtpTtsEventHandler& operator=(const AtpTtsEventHandler&) = delete;
@@ -73,18 +72,12 @@ class AtpTtsEventHandler : public content::UtteranceEventDelegate {
       mojom_event->error_message = error_message;
     }
     utterance_client_->OnEvent(std::move(mojom_event));
-    if (utterance->IsFinished()) {
-      // Expected to self-destroy on call to TtsEvent, see
-      // tts_utterance_impl.cc.
-      delete this;
-    }
   }
   mojo::PendingReceiver<ax::mojom::TtsUtteranceClient> PassReceiver() {
     return utterance_client_.BindNewPipeAndPassReceiver();
   }
 
  private:
-  AtpTtsEventHandler() = default;
   mojo::Remote<ax::mojom::TtsUtteranceClient> utterance_client_;
 };
 
@@ -157,9 +150,9 @@ void TtsClientImpl::Speak(const std::string& utterance,
     tts_utterance->SetEngineId(options->engine_id.value());
   }
   if (options->on_event) {
-    auto* atpTtsEventHandler = AtpTtsEventHandler::Create();
-    result->utterance_client = atpTtsEventHandler->PassReceiver();
-    tts_utterance->SetEventDelegate(atpTtsEventHandler);
+    auto atp_tts_event_handler = std::make_unique<AtpTtsEventHandler>();
+    result->utterance_client = atp_tts_event_handler->PassReceiver();
+    tts_utterance->SetEventDelegate(std::move(atp_tts_event_handler));
   }
   // Note: we don't need desired/required event types because they aren't
   // passed by ChromeVox or STS. We don't need an options_dict, it's redundant,

@@ -75,10 +75,6 @@ void QuickAnswersUtteranceEventDelegate::OnTtsEvent(
           quick_answers::TtsEngineEvent::TTS_EVENT_OTHER);
       break;
   }
-
-  if (utterance->IsFinished()) {
-    delete this;
-  }
 }
 
 gfx::FontList GetFontList(TypographyToken token) {
@@ -232,7 +228,8 @@ void GenerateTTSAudio(content::BrowserContext* browser_context,
   // TtsController will use the default TTS engine if the Google TTS engine
   // is not available.
   tts_utterance->SetEngineId(kGoogleTtsEngineId);
-  tts_utterance->SetEventDelegate(new QuickAnswersUtteranceEventDelegate());
+  tts_utterance->SetEventDelegate(
+      std::make_unique<QuickAnswersUtteranceEventDelegate>());
 
   tts_controller->SpeakOrEnqueue(std::move(tts_utterance));
 }

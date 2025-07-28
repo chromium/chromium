@@ -48,7 +48,7 @@ CONTENT_EXPORT bool IsFinalTtsEventType(TtsEventType event_type);
 // Class that wants to receive events on utterances.
 class CONTENT_EXPORT UtteranceEventDelegate {
  public:
-  virtual ~UtteranceEventDelegate() {}
+  virtual ~UtteranceEventDelegate() = default;
   // Called when the engine reaches a TTS event in an utterance. If |char_index|
   // or |length| are invalid or not applicable for the given |event_type|, they
   // should be set to -1.
@@ -126,7 +126,8 @@ class CONTENT_EXPORT TtsUtterance {
   virtual void SetEngineId(const std::string& engine_id) = 0;
   virtual const std::string& GetEngineId() = 0;
 
-  virtual void SetEventDelegate(UtteranceEventDelegate* event_delegate) = 0;
+  virtual void SetEventDelegate(
+      std::unique_ptr<UtteranceEventDelegate> event_delegate) = 0;
   virtual UtteranceEventDelegate* GetEventDelegate() = 0;
 
   // Getters and setters for internal state.

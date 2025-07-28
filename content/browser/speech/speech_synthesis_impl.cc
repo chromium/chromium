@@ -17,7 +17,7 @@ using AudibleCB = base::RepeatingCallback<
     std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>()>;
 
 // The lifetime of instances of this class is manually bound to the lifetime of
-// the associated TtsUtterance. See OnTtsEvent.
+// the associated TtsUtterance.
 class EventThunk : public UtteranceEventDelegate {
  public:
   EventThunk(mojo::PendingRemote<blink::mojom::SpeechSynthesisClient> client,
@@ -79,9 +79,6 @@ class EventThunk : public UtteranceEventDelegate {
         client_->OnResumedSpeaking();
         break;
     }
-
-    if (utterance->IsFinished())
-      delete this;
   }
 
  private:
@@ -162,7 +159,7 @@ void SpeechSynthesisImpl::Speak(
                                          utterance->volume);
 
   // See comments on EventThunk about how lifetime of this instance is managed.
-  tts_utterance->SetEventDelegate(new EventThunk(
+  tts_utterance->SetEventDelegate(std::make_unique<EventThunk>(
       std::move(client),
       base::BindRepeating(
           &AudioStreamMonitor::RegisterAudibleClient,
