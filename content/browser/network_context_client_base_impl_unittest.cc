@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <string_view>
 
 #include "base/compiler_specific.h"
@@ -51,12 +46,8 @@ void GrantAccess(const base::FilePath& file, int process_id) {
   ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(process_id, file);
 }
 
-void CreateFile(const base::FilePath& path, const char* content) {
-  base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  ASSERT_TRUE(file.IsValid());
-  int content_size = strlen(content);
-  int bytes_written = UNSAFE_TODO(file.Write(0, content, content_size));
-  EXPECT_EQ(bytes_written, content_size);
+void CreateFile(const base::FilePath& path, std::string_view content) {
+  ASSERT_TRUE(base::WriteFile(path, content));
 }
 
 void ValidateFileContents(base::File& file, std::string_view expected_content) {
