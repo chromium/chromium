@@ -2829,6 +2829,9 @@ extern const char kCpaSpecUpdateDescription[];
 extern const char kDeprecatedExternalPickerFunctionName[];
 extern const char kDeprecatedExternalPickerFunctionDescription[];
 
+extern const char kDrawChromePagesEdgeToEdgeName[];
+extern const char kDrawChromePagesEdgeToEdgeDescription[];
+
 extern const char kDrawCutoutEdgeToEdgeName[];
 extern const char kDrawCutoutEdgeToEdgeDescription[];
 

@@ -378,6 +378,7 @@ public abstract class ChromeFeatureList {
     public static final String DISPLAY_EDGE_TO_EDGE_FULLSCREEN = "DisplayEdgeToEdgeFullscreen";
     public static final String DISPLAY_WILDCARD_CONTENT_SETTINGS =
             "DisplayWildcardInContentSettings";
+    public static final String DRAW_CHROME_PAGES_EDGE_TO_EDGE = "DrawChromePagesEdgeToEdge";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
     public static final String DYNAMIC_SAFE_AREA_INSETS = "DynamicSafeAreaInsets";
     public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
@@ -844,6 +845,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sDisplayEdgeToEdgeFullscreen =
             newCachedFlag(DISPLAY_EDGE_TO_EDGE_FULLSCREEN, false, true);
+    public static final CachedFlag sDrawChromePagesEdgeToEdge =
+            newCachedFlag(DRAW_CHROME_PAGES_EDGE_TO_EDGE, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeBottomChin =
             newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeDebugging =
@@ -1104,6 +1107,7 @@ public abstract class ChromeFeatureList {
                     sCrossDeviceTabPaneAndroid,
                     sDisableInstanceLimit,
                     sDisplayEdgeToEdgeFullscreen,
+                    sDrawChromePagesEdgeToEdge,
                     sEdgeToEdgeBottomChin,
                     sEdgeToEdgeDebugging,
                     sEdgeToEdgeEverywhere,

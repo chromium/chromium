@@ -8460,6 +8460,7 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesStrikeSystemV2:disabled"/>
   <int value="-2060484800"
       label="AutofillRequireCvcForPossibleCardUpdate:enabled"/>
+  <int value="-2060145957" label="DrawChromePagesEdgeToEdge:disabled"/>
   <int value="-2059771509" label="NTPTilesLowerResolutionFavicons:disabled"/>
   <int value="-2059529213" label="ConchSystemAudioFromMic:enabled"/>
   <int value="-2059331227" label="DiceWebSigninInterception:disabled"/>
@@ -11564,6 +11565,7 @@ from previous Chrome versions.
   <int value="-940390151" label="RoundedDisplay:disabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-939519091" label="TabStateFlatBuffer:disabled"/>
+  <int value="-938463322" label="DrawChromePagesEdgeToEdge:enabled"/>
   <int value="-938457958" label="CaptionsOnBrailleDisplay:disabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>

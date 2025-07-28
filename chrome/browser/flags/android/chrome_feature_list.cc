@@ -286,6 +286,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
+    &kDrawChromePagesEdgeToEdge,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeSurveyNextAndroid,
     &kClampAutomotiveScaling,
@@ -887,6 +888,10 @@ BASE_FEATURE(kDisableInstanceLimit,
 BASE_FEATURE(kDontAutoHideBrowserControls,
              "DontAutoHideBrowserControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDrawChromePagesEdgeToEdge,
+             "DrawChromePagesEdgeToEdge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
              "CacheDeprecatedSystemLocationSetting",

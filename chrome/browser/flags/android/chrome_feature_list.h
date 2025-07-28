@@ -131,6 +131,7 @@ BASE_DECLARE_FEATURE(kCrossDeviceTabPaneAndroid);
 BASE_DECLARE_FEATURE(kDeviceAuthenticatorAndroidx);
 BASE_DECLARE_FEATURE(kDisableInstanceLimit);
 BASE_DECLARE_FEATURE(kDontPrefetchLibraries);
+BASE_DECLARE_FEATURE(kDrawChromePagesEdgeToEdge);
 BASE_DECLARE_FEATURE(kEdgeToEdgeBottomChin);
 BASE_DECLARE_FEATURE(kEdgeToEdgeDebugging);
 BASE_DECLARE_FEATURE(kEdgeToEdgeEverywhere);

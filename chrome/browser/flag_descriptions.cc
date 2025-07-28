@@ -4882,6 +4882,10 @@ const char kDeprecatedExternalPickerFunctionName[] =
 const char kDeprecatedExternalPickerFunctionDescription[] =
     "Use the old-style opening of an External Picker when uploading files";
 
+const char kDrawChromePagesEdgeToEdgeName[] = "Draw Chrome Pages Edge-to-Edge";
+const char kDrawChromePagesEdgeToEdgeDescription[] =
+    "Enables drawing more native pages and secondary activities edge-to-edge.";
+
 const char kDrawCutoutEdgeToEdgeName[] = "DrawCutoutEdgeToEdge";
 const char kDrawCutoutEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge Feature to coordinate with the "

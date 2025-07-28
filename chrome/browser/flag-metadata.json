@@ -2392,6 +2392,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "draw-chrome-pages-edge-to-edge",
+    "owners": [ "clhager@google.com", "wenyufu@chromium.org", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "draw-cutout-edge-to-edge",
     "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org"],
     "expiry_milestone": 145
