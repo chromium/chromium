@@ -1274,7 +1274,8 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
     std::string issuer_id,
     std::string currency,
     uint64_t min_price_in_micros,
-    uint64_t max_price_in_micros) {
+    uint64_t max_price_in_micros,
+    std::vector<sync_pb::PaymentInstrument_ActionRequired> actions_required) {
   sync_pb::PaymentInstrument payment_instrument;
   payment_instrument.set_instrument_id(instrument_id);
   payment_instrument.add_supported_rails(
@@ -1289,6 +1290,11 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
   eligible_price_range->set_min_price_in_micros(min_price_in_micros);
   eligible_price_range->set_max_price_in_micros(max_price_in_micros);
   eligible_price_range->set_currency(std::move(currency));
+
+  for (auto& action_required : actions_required) {
+    payment_instrument.add_action_required(action_required);
+  }
+
   return payment_instrument;
 }
 

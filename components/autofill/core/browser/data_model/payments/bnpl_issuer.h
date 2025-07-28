@@ -73,10 +73,13 @@ class BnplIssuer {
   // `instrument_id` is present for linked issuers, and nullopt for unlinked
   // issuers. `issuer_id` is the unique identifier of this specfiic issuer.
   // `eligible_price_ranges` is a list of currencies mapped to their price
-  // ranges, in micros.
+  // ranges, in micros. 'action_required' is the additional steps needed to
+  // use this issuer.
   BnplIssuer(std::optional<int64_t> instrument_id,
              IssuerId issuer_id,
-             std::vector<EligiblePriceRange> eligible_price_ranges);
+             std::vector<EligiblePriceRange> eligible_price_ranges,
+             DenseSet<PaymentInstrument::ActionRequired> action_required =
+                 DenseSet<PaymentInstrument::ActionRequired>());
   BnplIssuer(const BnplIssuer&);
   BnplIssuer& operator=(const BnplIssuer&);
   BnplIssuer(BnplIssuer&&);
