@@ -30,7 +30,7 @@ class MEDIA_EXPORT OffsetByteQueue {
   // These work like their underlying ByteQueue counterparts.
   void Reset();
   [[nodiscard]] bool Push(base::span<const uint8_t> buf);
-  base::span<const uint8_t> Data();
+  base::span<const uint8_t> Data() const;
   void Pop(int count);
 
   // Get a read-only span view of the data after offset. This view is valid only
@@ -49,8 +49,8 @@ class MEDIA_EXPORT OffsetByteQueue {
 
   // The head and tail positions, in terms of the file's absolute offsets.
   // tail() is an exclusive bound.
-  int64_t head() { return head_; }
-  int64_t tail() { return head_ + queue_.Data().size(); }
+  int64_t head() const { return head_; }
+  int64_t tail() const { return head_ + queue_.Data().size(); }
 
  private:
   ByteQueue queue_;

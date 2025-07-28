@@ -27,7 +27,7 @@ bool OffsetByteQueue::Push(base::span<const uint8_t> buf) {
   return true;
 }
 
-base::span<const uint8_t> OffsetByteQueue::Data() {
+base::span<const uint8_t> OffsetByteQueue::Data() const {
   return queue_.Data().empty() ? base::span<const uint8_t>() : queue_.Data();
 }
 

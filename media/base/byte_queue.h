@@ -44,7 +44,7 @@ class MEDIA_EXPORT ByteQueue {
 
   // Get a read-only span view of the data. This is only valid until the next
   // Push() or Pop() call.
-  base::span<const uint8_t> Data() { return data_; }
+  base::span<const uint8_t> Data() const { return data_; }
 
  private:
   // Offset from the start of |buffer_| that marks the front of the queue.
