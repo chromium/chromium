@@ -65,7 +65,7 @@ import javax.annotation.concurrent.GuardedBy;
  * responsible for loading native libraries and running the main entry point of the service.
  *
  * <p>This class does not directly inherit from Service because the logic may be used by a Service
- * implementation which cannot directly inherit from this class (e.g. for WebLayer child services).
+ * implementation which cannot directly inherit from this class.
  */
 @JNINamespace("base::android")
 @SuppressWarnings("SynchronizeOnNonFinalField") // mMainThread assigned in onCreate().

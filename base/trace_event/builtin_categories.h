@@ -253,7 +253,6 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("wayland"),
     perfetto::Category("webaudio").SetTags("audio"),
     perfetto::Category("webengine.fidl"),
-    perfetto::Category("weblayer"),
     perfetto::Category("WebCore"),
     perfetto::Category("webnn"),
     perfetto::Category("webrtc").SetTags("audio", "video"),
