@@ -1,0 +1,58 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+#include "components/permissions/test/fake_permissions_aivx_modelhandlers.h"
+
+#include <memory>
+#include <string>
+
+#include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
+
+namespace test {
+using permissions::PermissionsAiv3Encoder;
+
+inline PermissionsAiv3HandlerFake::~PermissionsAiv3HandlerFake() = default;
+
+PermissionsAiv3HandlerFake::PermissionsAiv3HandlerFake(
+    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    permissions::RequestType request_type)
+    : PermissionsAiv3Handler(
+          model_provider,
+          optimization_target,
+          request_type,
+          std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
+
+void PermissionsAiv3HandlerFake::OnModelUpdated(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  PermissionsAiv3Handler::OnModelUpdated(optimization_target, model_info);
+  if (model_info.has_value()) {
+    model_load_run_loop_for_testing_.Quit();
+  }
+}
+
+void PermissionsAiv3HandlerFake::ExecuteModelWrapper(
+    PermissionsAiv3Handler::ExecutionCallback callback,
+    const std::optional<PermissionsAiv3Encoder::ModelOutput>& output) {
+  std::move(callback).Run(output);
+  model_execute_run_loop_for_testing_.Quit();
+}
+
+void PermissionsAiv3HandlerFake::ExecuteModel(
+    PermissionsAiv3Handler::ExecutionCallback callback,
+    std::unique_ptr<SkBitmap> snapshot) {
+  PermissionsAiv3Handler::ExecuteModel(
+      base::BindOnce(&PermissionsAiv3HandlerFake::ExecuteModelWrapper,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      std::move(snapshot));
+}
+
+void PermissionsAiv3HandlerFake::WaitForModelLoadForTesting() {
+  model_load_run_loop_for_testing_.Run();
+}
+void PermissionsAiv3HandlerFake::WaitForModelExecutionForTesting() {
+  model_execute_run_loop_for_testing_.Run();
+}
+
+}  // namespace test

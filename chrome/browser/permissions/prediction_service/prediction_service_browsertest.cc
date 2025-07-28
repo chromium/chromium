@@ -46,6 +46,7 @@
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/enums_to_string.h"
+#include "components/permissions/test/fake_permissions_aivx_modelhandlers.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
@@ -69,6 +70,7 @@ using ::permissions::PermissionRequestRelevance;
 using ::permissions::PermissionsAiv3Handler;
 using ::permissions::PredictionRequestFeatures;
 using ::permissions::PredictionService;
+using ::test::PermissionsAiv3HandlerFake;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Combine;
@@ -157,54 +159,6 @@ class PredictionServiceMock : public PredictionService {
                LookupRequestCallback request_callback,
                LookupResponseCallback response_callback),
               (override));
-};
-
-class PermissionsAiv3HandlerFake : public PermissionsAiv3Handler {
- public:
-  PermissionsAiv3HandlerFake(
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      RequestType request_type)
-      : PermissionsAiv3Handler(
-            model_provider,
-            optimization_target,
-            request_type,
-            std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
-
-  void OnModelUpdated(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      base::optional_ref<const optimization_guide::ModelInfo> model_info)
-      override {
-    PermissionsAiv3Handler::OnModelUpdated(optimization_target, model_info);
-    if (model_info.has_value()) {
-      model_load_run_loop_for_testing_.Quit();
-    }
-  }
-
-  void ExecuteModelWrapper(
-      PermissionsAiv3Handler::ExecutionCallback callback,
-      const std::optional<PermissionsAiv3Encoder::ModelOutput>& output) {
-    std::move(callback).Run(output);
-    model_execute_run_loop_for_testing_.Quit();
-  }
-
-  void ExecuteModel(PermissionsAiv3Handler::ExecutionCallback callback,
-                    std::unique_ptr<SkBitmap> snapshot) override {
-    PermissionsAiv3Handler::ExecuteModel(
-        base::BindOnce(&PermissionsAiv3HandlerFake::ExecuteModelWrapper,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        std::move(snapshot));
-  }
-
-  void WaitForModelLoadForTesting() { model_load_run_loop_for_testing_.Run(); }
-  void WaitForModelExecutionForTesting() {
-    model_execute_run_loop_for_testing_.Run();
-  }
-
- private:
-  base::RunLoop model_execute_run_loop_for_testing_;
-  base::RunLoop model_load_run_loop_for_testing_;
-  base::WeakPtrFactory<PermissionsAiv3HandlerFake> weak_ptr_factory_{this};
 };
 
 MATCHER_P(PredictionRequestFeatureEq, expected, "") {
