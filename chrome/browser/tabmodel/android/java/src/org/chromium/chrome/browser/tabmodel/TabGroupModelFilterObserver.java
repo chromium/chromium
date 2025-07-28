@@ -72,12 +72,14 @@ public interface TabGroupModelFilterObserver {
     default void willMoveTabOutOfGroup(Tab movedTab, @Nullable Token destinationTabGroupId) {}
 
     /**
-     * This method is called after a tab is moved to form a group or moved into an existed group.
+     * This method is called after a tab is moved to a group.
      *
-     * @param movedTab The {@link Tab} which has been moved. If a group is merged to a tab or
-     *     another group, this is the last tab of the merged group.
+     * @param movedTab The {@link Tab} which has been moved into the group.
+     * @param isDestinationTab Whether the tab is the destination tab of a merge operation. The
+     *     destination tab is the tab that all the other tabs in the merge operation will be grouped
+     *     into.
      */
-    default void didMergeTabToGroup(Tab movedTab) {}
+    default void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {}
 
     // TODO(crbug.com/434015906): Passing the last tab here is a limitation of the current TabGroupModelFilterImpl, we should fix this once tab collections is launched.
     /**

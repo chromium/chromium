@@ -681,8 +681,9 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didMergeTabToGroup(Tab movedTab) {
+                    public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                         assertEquals(tab0, movedTab);
+                        assertTrue(isDestinationTab);
                         didMergeTabToGroupHelper.notifyCalled();
                     }
 

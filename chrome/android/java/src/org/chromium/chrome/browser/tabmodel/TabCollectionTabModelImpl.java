@@ -371,7 +371,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // cast in C++ otherwise results in the tab going to the end of the list which is not
         // intended.
         newIndex = Math.max(0, newIndex);
-        moveTabInternal(tab, currentIndex, newIndex, tab.getTabGroupId(), tab.getIsPinned());
+        moveTabInternal(
+                tab,
+                currentIndex,
+                newIndex,
+                tab.getTabGroupId(),
+                tab.getIsPinned(),
+                /* isDestinationTab= */ false);
     }
 
     @Override
@@ -471,7 +477,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // the observer interface entirely.
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.willMergeTabToGroup(tab, Tab.INVALID_TAB_ID, tabGroupId);
-                observer.didMergeTabToGroup(tab);
+                observer.didMergeTabToGroup(tab, /* isDestinationTab= */ false);
             }
         }
 
@@ -860,7 +866,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         curIndex,
                         newIndex,
                         /* newTabGroupId= */ null,
-                        /* isPinned= */ tab.getIsPinned());
+                        /* isPinned= */ tab.getIsPinned(),
+                        /* isDestinationTab= */ false);
         if (finalIndex != curIndex) {
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.didMoveTabGroup(tab, curIndex, finalIndex);
@@ -1159,7 +1166,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 indexOf(sourceTab),
                 approximateIndex,
                 /* newTabGroupId= */ null,
-                /* isPinned= */ false);
+                /* isPinned= */ false,
+                /* isDestinationTab= */ false);
     }
 
     // Internal methods.
@@ -1302,7 +1310,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         // The C++ side will adjust to a valid index.
         moveTabInternal(
-                tab, currentIndex, currentIndex, /* newTabGroupId= */ null, isPinned);
+                tab,
+                currentIndex,
+                currentIndex,
+                /* newTabGroupId= */ null,
+                isPinned,
+                /* isDestinationTab= */ false);
     }
 
     public void mergeListOfTabsToGroupInternal(
@@ -1353,7 +1366,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (!wasDestinationTabInGroup) {
             int index = indexOf(destinationTab);
             moveTabInternal(
-                    destinationTab, index, index, destinationTabGroupId, /* isPinned= */ false);
+                    destinationTab,
+                    index,
+                    index,
+                    destinationTabGroupId,
+                    /* isPinned= */ false,
+                    /* isDestinationTab= */ true);
         }
 
         // Adopt the title of the first candidate group with a title that was merged into the
@@ -1377,7 +1395,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // Move all the tabs to the end of the tab group. The native code will find the right
             // index to insert the tab.
             moveTabInternal(
-                    tab, indexOf(tab), endIndex, destinationTabGroupId, /* isPinned= */ false);
+                    tab,
+                    indexOf(tab),
+                    endIndex,
+                    destinationTabGroupId,
+                    /* isPinned= */ false,
+                    /* isDestinationTab= */ false);
         }
 
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
@@ -1408,10 +1431,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      * @param newIndex The new index of the tab. This might be adjusted in C++ to a valid index.
      * @param newTabGroupId The new tab group id of the tab.
      * @param isPinned Whether the tab is pinned.
+     * @param isDestinationTab Whether the tab is the destination tab in a merge operation.
      * @return The final index of the tab.
      */
     private int moveTabInternal(
-            Tab tab, int index, int newIndex, @Nullable Token newTabGroupId, boolean isPinned) {
+            Tab tab,
+            int index,
+            int newIndex,
+            @Nullable Token newTabGroupId,
+            boolean isPinned,
+            boolean isDestinationTab) {
         assert newTabGroupId == null || !isPinned
                 : "Pinned and grouped tabs are mutually exclusive.";
 
@@ -1506,7 +1535,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         if (isMergingIntoGroup) {
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
-                observer.didMergeTabToGroup(tab);
+                observer.didMergeTabToGroup(tab, isDestinationTab);
             }
         }
 

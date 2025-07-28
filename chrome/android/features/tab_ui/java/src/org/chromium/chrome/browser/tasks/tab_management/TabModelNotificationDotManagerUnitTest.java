@@ -230,7 +230,9 @@ public class TabModelNotificationDotManagerUnitTest {
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
         when(mTab.getTabGroupId()).thenReturn(null);
-        mTabGroupModelFilterObserverCaptor.getValue().didMergeTabToGroup(mTab);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didMergeTabToGroup(mTab, /* isDestinationTab= */ false);
         verifyHidden();
     }
 

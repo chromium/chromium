@@ -236,7 +236,7 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didMergeTabToGroup(Tab movedTab) {
+                public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                     // TODO(crbug.com/375047646): Investigate kicking off animations here.
                     Token tabGroupId = movedTab.getTabGroupId();
                     assumeNonNull(tabGroupId);

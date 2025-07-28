@@ -964,7 +964,9 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
         doReturn(new Token(1L, TAB2_ROOT_ID)).when(mTab1).getTabGroupId();
-        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMergeTabToGroup(mTab1);
+        mTabGroupModelFilterObserverArgumentCaptor
+                .getValue()
+                .didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
 
         verifyResetStrip(true, tabs);
     }
@@ -973,7 +975,9 @@ public class TabGroupUiMediatorUnitTest {
     public void uiNotVisibleAfterMergeNonCurrentTabToGroup() {
         initAndAssertProperties(mTab1);
 
-        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMergeTabToGroup(mTab3);
+        mTabGroupModelFilterObserverArgumentCaptor
+                .getValue()
+                .didMergeTabToGroup(mTab3, /* isDestinationTab= */ false);
 
         verify(mResetHandler, never()).resetGridWithListOfTabs(any());
     }

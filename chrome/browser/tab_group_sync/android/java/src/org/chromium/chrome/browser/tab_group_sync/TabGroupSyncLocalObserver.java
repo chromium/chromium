@@ -220,7 +220,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didMergeTabToGroup(Tab movedTab) {
+            public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didMergeTabToGroup, rootId = " + movedTab.getRootId());
 

@@ -244,7 +244,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didMergeTabToGroup(tab);
+            observer.didMergeTabToGroup(tab, /* isDestinationTab= */ true);
         }
     }
 
@@ -327,13 +327,13 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
             if (!wasDestinationTabInAGroup) {
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.didMergeTabToGroup(destinationTab);
+                    observer.didMergeTabToGroup(destinationTab, /* isDestinationTab= */ true);
                 }
             }
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.didMergeTabToGroup(tab);
+                    observer.didMergeTabToGroup(tab, /* isDestinationTab= */ false);
                 }
             }
 
@@ -428,7 +428,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                         destinationTab, destinationRootId, destinationTabGroupId);
             }
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(destinationTab);
+                observer.didMergeTabToGroup(destinationTab, /* isDestinationTab= */ true);
             }
         }
 
@@ -681,7 +681,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         if (isChangingGroups && isTabInTabGroup(tab)) {
             // Last shown tab IDs are not preserved across an undo.
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(tab);
+                observer.didMergeTabToGroup(tab, /* isDestinationTab= */ false);
             }
         }
     }
@@ -1245,7 +1245,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             resetFilterState();
 
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(tab);
+                observer.didMergeTabToGroup(tab, /* isDestinationTab= */ false);
             }
         } else {
             reorder();
