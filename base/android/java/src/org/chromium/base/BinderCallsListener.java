@@ -321,17 +321,17 @@ public class BinderCallsListener {
                         shouldTrackBinderIpc = false;
                     }
 
-                    TraceEvent.begin("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
                     if (mObserver != null) {
                         mObserver.accept("onTransactStarted", mCurrentInterfaceDescriptor);
                     }
 
                     return shouldTrackBinderIpc ? mCurrentTransactionId : null;
                 case "onTransactEnded":
-                    TraceEvent.end("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
-
                     long transactionDurationMillis =
                             SystemClock.uptimeMillis() - mCurrentTransactionStartTimeMillis;
+                    TraceEvent.instantAndroidIPC(
+                            "BinderCallsListener#" + mCurrentInterfaceDescriptor,
+                            transactionDurationMillis);
                     mTotalTimeSpentInBinderCallsMillis += transactionDurationMillis;
                     if (mObserver != null) {
                         assert mCurrentInterfaceDescriptor != null;
