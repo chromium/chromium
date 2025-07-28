@@ -349,13 +349,16 @@ void OfflineSigninLimiter::UpdateOnlineSigninData(
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetLastOnlineSignin(user.GetAccountId(), time);
   known_user.SetOfflineSigninLimit(user.GetAccountId(), limit);
+
+  // We need to store the last online timestamp in both local state
+  // and prefs, because for ephemeral users local state can be unavailable
+  // and we need this information on login screen, where prefs are unavailable.
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetTime(prefs::kLastOnlineSignInTime, time);
 }
 
 base::Time OfflineSigninLimiter::GetLastOnlineSigninTime() {
-  const user_manager::User& user = GetUser();
-
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  return known_user.GetLastOnlineSignin(user.GetAccountId());
+  return pref_change_registrar_.prefs()->GetTime(prefs::kLastOnlineSignInTime);
 }
 
 const user_manager::User& OfflineSigninLimiter::GetUser() {
