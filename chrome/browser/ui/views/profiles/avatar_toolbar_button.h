@@ -57,6 +57,7 @@ class AvatarToolbarButton : public ToolbarButton,
     virtual void OnBlur() {}
     virtual void OnIPHPromoChanged(bool has_promo) {}
     virtual void OnIconUpdated() {}
+    virtual void OnButtonPressed() {}
 
     ~Observer() override = default;
   };

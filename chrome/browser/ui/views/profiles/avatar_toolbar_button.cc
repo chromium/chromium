@@ -513,6 +513,11 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
             FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 #endif
+
+  // Notify observers before the action is performed to allow them to close any
+  // open dialogs.
+  observer_list_.Notify(&Observer::OnButtonPressed);
+
   CHECK(state_manager_);
   StateProvider* active_state_provider =
       state_manager_->GetActiveStateProvider();

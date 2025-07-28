@@ -179,6 +179,26 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest, EscClosesDialog) {
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      AvatarButtonClosesDialog) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  RunTestSequence(TriggerDialog(),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  // Press the avatar button.
+                  PressButton(kToolbarAvatarButtonElementId),
+
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId));
+
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
                       NavigationDoesNotCloseDialog) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   constexpr char16_t kNewUrl[] = u"chrome://version";

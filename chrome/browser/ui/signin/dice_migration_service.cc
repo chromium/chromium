@@ -127,6 +127,32 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
                                       kCancelButtonElementId);
 
+class DiceMigrationService::AvatarButtonObserver
+    : public AvatarToolbarButton::Observer {
+ public:
+  AvatarButtonObserver(AvatarToolbarButton* avatar_button,
+                       DiceMigrationService* dice_migration_service)
+      : dice_migration_service_(dice_migration_service) {
+    CHECK(avatar_button);
+    CHECK(dice_migration_service_);
+    CHECK(dice_migration_service_->dialog_widget_);
+    avatar_button_observation_.Observe(avatar_button);
+  }
+
+ private:
+  // `AvatarToolbarButton::Observer`:
+  void OnButtonPressed() override {
+    CHECK(dice_migration_service_->dialog_widget_);
+    dice_migration_service_->dialog_widget_->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+    avatar_button_observation_.Reset();
+  }
+
+  base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
+      avatar_button_observation_{this};
+  raw_ptr<DiceMigrationService> dice_migration_service_;
+};
+
 DiceMigrationService::DiceMigrationService(
     Profile* profile,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing)
@@ -247,8 +273,9 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   browser_ = browser->AsWeakPtr();
   dialog_widget_->Show();
 
-  // TODO(crbug.com/399838468): Close the dialog when the avatar pill is
-  // clicked.
+  // Close the dialog when the avatar pill is clicked.
+  avatar_button_observer_ =
+      std::make_unique<AvatarButtonObserver>(avatar_button, this);
 }
 
 views::Widget* DiceMigrationService::GetDialogWidgetForTesting() {
@@ -261,6 +288,7 @@ base::OneShotTimer& DiceMigrationService::GetDialogTriggerTimerForTesting() {
 
 void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
   CHECK_EQ(dialog_widget_, widget);
+  avatar_button_observer_.reset();
   dialog_widget_observation_.Reset();
   dialog_widget_ = nullptr;
   Browser* browser = browser_.get();

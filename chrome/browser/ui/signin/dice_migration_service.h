@@ -66,6 +66,8 @@ class DiceMigrationService : public KeyedService,
   base::OneShotTimer& GetDialogTriggerTimerForTesting();
 
  private:
+  class AvatarButtonObserver;
+
   // `views::WidgetObserver`:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -108,6 +110,9 @@ class DiceMigrationService : public KeyedService,
       dialog_widget_observation_{this};
   // The browser instance that was used to show the dialog.
   base::WeakPtr<Browser> browser_;
+
+  // Observes the avatar button to close the dialog when it is clicked.
+  std::unique_ptr<AvatarButtonObserver> avatar_button_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_DICE_MIGRATION_SERVICE_H_

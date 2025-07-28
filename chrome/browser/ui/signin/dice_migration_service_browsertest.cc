@@ -13,6 +13,8 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -84,6 +86,12 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
 
   syncer::SyncService* GetSyncService() {
     return SyncServiceFactory::GetForProfile(GetProfile());
+  }
+
+  AvatarToolbarButton* GetAvatarToolbarButton() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetAvatarToolbarButton();
   }
 
  private:
@@ -602,6 +610,37 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   waiter.Wait();
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      CloseDialogUponAvatarButtonPress) {
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Press the avatar button.
+  GetAvatarToolbarButton()->ButtonPressed();
+  waiter.Wait();
+
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      PressingAvatarButtonBeforeDialogIsShown) {
+  // Press the avatar button.
+  GetAvatarToolbarButton()->ButtonPressed();
+
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  // The dialog is shown.
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
 }
 
 class DiceMigrationServiceSyncTest : public SyncTest {
