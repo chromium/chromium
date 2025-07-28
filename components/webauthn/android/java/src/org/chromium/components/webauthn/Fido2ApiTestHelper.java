@@ -770,6 +770,11 @@ public class Fido2ApiTestHelper {
         ClientDataJsonImplJni.setInstanceForTesting(clientDataJsonJni);
     }
 
+    /** Mocks ClientDataJson with the default test value. */
+    public static void mockClientDataJson() {
+        mockClientDataJson(new String(TEST_CLIENT_DATA_JSON));
+    }
+
     /**
      * Creates a {@link WebauthnCredentailDetails} object for testing.
      *
