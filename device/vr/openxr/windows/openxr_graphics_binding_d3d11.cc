@@ -122,12 +122,13 @@ void OpenXrGraphicsBindingD3D11::ClearSwapchainImages() {
   color_swapchain_images_.clear();
 }
 
-base::span<SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages() {
+base::span<OpenXrSwapchainInfo>
+OpenXrGraphicsBindingD3D11::GetSwapChainImages() {
   return color_swapchain_images_;
 }
 
-base::span<const SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages()
-    const {
+base::span<const OpenXrSwapchainInfo>
+OpenXrGraphicsBindingD3D11::GetSwapChainImages() const {
   return color_swapchain_images_;
 }
 
@@ -257,7 +258,8 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
   }
 }
 
-const SwapChainInfo& OpenXrGraphicsBindingD3D11::GetActiveSwapchainImage() {
+const OpenXrSwapchainInfo&
+OpenXrGraphicsBindingD3D11::GetActiveSwapchainImage() {
   CHECK(has_active_swapchain_image());
   CHECK(active_swapchain_index() < color_swapchain_images_.size());
 
@@ -322,7 +324,7 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
 
 bool OpenXrGraphicsBindingD3D11::Render(
     const scoped_refptr<viz::ContextProvider>& context_provider) {
-  const SwapChainInfo& swap_chain_image = GetActiveSwapchainImage();
+  const OpenXrSwapchainInfo& swap_chain_image = GetActiveSwapchainImage();
   if (swap_chain_image.d3d11_shared_texture) {
     if (!texture_helper_->CopyToBackBuffer(
             context_provider, swap_chain_image.d3d11_shared_texture)) {

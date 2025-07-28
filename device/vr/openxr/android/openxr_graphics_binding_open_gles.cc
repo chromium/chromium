@@ -197,11 +197,12 @@ void OpenXrGraphicsBindingOpenGLES::ClearSwapchainImages() {
   color_swapchain_images_.clear();
 }
 
-base::span<SwapChainInfo> OpenXrGraphicsBindingOpenGLES::GetSwapChainImages() {
+base::span<OpenXrSwapchainInfo>
+OpenXrGraphicsBindingOpenGLES::GetSwapChainImages() {
   return color_swapchain_images_;
 }
 
-base::span<const SwapChainInfo>
+base::span<const OpenXrSwapchainInfo>
 OpenXrGraphicsBindingOpenGLES::GetSwapChainImages() const {
   return color_swapchain_images_;
 }
@@ -214,7 +215,7 @@ bool OpenXrGraphicsBindingOpenGLES::CanUseSharedImages() const {
 // with just the types changed as needed, and logic extracted out of the
 // mailbox_to_surface_bridge.
 void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
-    SwapChainInfo& swap_chain_info,
+    OpenXrSwapchainInfo& swap_chain_info,
     gpu::SharedImageInterface* sii) {
   CHECK(sii);
   auto transfer_size = GetTransferSize();
@@ -310,7 +311,8 @@ void OpenXrGraphicsBindingOpenGLES::CreateSharedImages(
   }
 }
 
-const SwapChainInfo& OpenXrGraphicsBindingOpenGLES::GetActiveSwapchainImage() {
+const OpenXrSwapchainInfo&
+OpenXrGraphicsBindingOpenGLES::GetActiveSwapchainImage() {
   CHECK(has_active_swapchain_image());
   CHECK(active_swapchain_index() < color_swapchain_images_.size());
 

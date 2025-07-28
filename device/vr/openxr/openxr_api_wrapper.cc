@@ -840,7 +840,7 @@ void OpenXrApiWrapper::OnContextProviderLost() {
   if (context_provider_ && graphics_binding_) {
     // Mark the shared mailboxes as invalid since the underlying GPU process
     // associated with them has gone down.
-    for (SwapChainInfo& info : graphics_binding_->GetSwapChainImages()) {
+    for (OpenXrSwapchainInfo& info : graphics_binding_->GetSwapChainImages()) {
       info.Clear();
     }
     context_provider_ = nullptr;

@@ -33,11 +33,11 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   XrResult EnumerateSwapchainImages(
       const XrSwapchain& color_swapchain) override;
   void ClearSwapchainImages() override;
-  base::span<SwapChainInfo> GetSwapChainImages() override;
-  base::span<const SwapChainInfo> GetSwapChainImages() const override;
+  base::span<OpenXrSwapchainInfo> GetSwapChainImages() override;
+  base::span<const OpenXrSwapchainInfo> GetSwapChainImages() const override;
   bool CanUseSharedImages() const override;
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
-  const SwapChainInfo& GetActiveSwapchainImage() override;
+  const OpenXrSwapchainInfo& GetActiveSwapchainImage() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
   bool Render(
       const scoped_refptr<viz::ContextProvider>& context_provider) override;
@@ -61,7 +61,7 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   bool initialized_ = false;
   std::unique_ptr<D3D11TextureHelper> texture_helper_;
   base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper_;
-  std::vector<SwapChainInfo> color_swapchain_images_;
+  std::vector<OpenXrSwapchainInfo> color_swapchain_images_;
 
   XrGraphicsBindingD3D11KHR binding_{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR,
                                      nullptr, nullptr};

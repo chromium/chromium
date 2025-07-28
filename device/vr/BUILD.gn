@@ -227,6 +227,8 @@ if (enable_vr) {
         "openxr/openxr_stage_bounds_provider.h",
         "openxr/openxr_stage_bounds_provider_basic.cc",
         "openxr/openxr_stage_bounds_provider_basic.h",
+        "openxr/openxr_swapchain_info.cc",
+        "openxr/openxr_swapchain_info.h",
         "openxr/openxr_unbounded_space_provider.cc",
         "openxr/openxr_unbounded_space_provider.h",
         "openxr/openxr_util.cc",

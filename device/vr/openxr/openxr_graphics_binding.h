@@ -11,24 +11,12 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "device/vr/openxr/openxr_swapchain_info.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
-#include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <d3d11_4.h>
-#include <wrl.h>
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_hardware_buffer_handle.h"
-#include "device/vr/android/local_texture.h"  //nogncheck
-#include "ui/gl/scoped_egl_image.h"
-#endif
 
 namespace gfx {
 class GpuFence;
@@ -45,57 +33,6 @@ class ContextProvider;
 namespace device {
 class OpenXrExtensionEnumeration;
 class OpenXrViewConfiguration;
-
-// TODO(crbug.com/40909689): Refactor this class.
-struct SwapChainInfo {
- public:
-#if BUILDFLAG(IS_WIN)
-  explicit SwapChainInfo(ID3D11Texture2D*);
-#elif BUILDFLAG(IS_ANDROID)
-  explicit SwapChainInfo(uint32_t texture);
-#endif
-  SwapChainInfo();
-  virtual ~SwapChainInfo();
-  SwapChainInfo(SwapChainInfo&&);
-  SwapChainInfo& operator=(SwapChainInfo&&);
-
-  void Clear();
-
-  scoped_refptr<gpu::ClientSharedImage> shared_image;
-  gpu::SyncToken sync_token;
-
-#if BUILDFLAG(IS_WIN)
-  // When shared images are being used, there is a corresponding
-  // ClientSharedImage and D3D11Fence for each D3D11 texture in the vector.
-  raw_ptr<ID3D11Texture2D> d3d11_texture = nullptr;
-  // If a shared handle cannot be created for the swap chain texture, a second
-  // texture which is shareable will be created and passed to the renderer
-  // proceess. When the frame is complete it will be copied to the swap chain
-  // texture prior to submission.
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_shared_texture = nullptr;
-  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
-#elif BUILDFLAG(IS_ANDROID)
-  // Ideally this would be a gluint, but there are conflicting headers for GL
-  // depending on *how* you want to use it; so we can't use it at the moment.
-  uint32_t openxr_texture;
-
-  LocalTexture shared_buffer_texture;
-
-  // The size of the texture used for the shared buffer; which may be different
-  // than the size of the actual swapchain image, as this size is influenced by
-  // any framebuffer scale factor that the page may request.
-  // This property isn't android-specific but it is currently unused on Windows.
-  gfx::Size shared_buffer_size{0, 0};
-
-  // This owns a single reference to an AHardwareBuffer object.
-  base::android::ScopedHardwareBufferHandle scoped_ahb_handle;
-
-  // This object keeps the image alive while processing a frame. That's
-  // required because it owns underlying resources, and must still be
-  // alive when the mailbox texture backed by this image is used.
-  gl::ScopedEGLImage local_eglimage;
-#endif
-};
 
 // This class exists to provide an abstraction for the different rendering
 // paths that can be taken by OpenXR (e.g. DirectX vs. GLES). Any OpenXr methods
@@ -121,34 +58,34 @@ class OpenXrGraphicsBinding {
   // Gets the format that we expect from the platform swapchain.
   virtual int64_t GetSwapchainFormat(XrSession session) const = 0;
 
-  // Calls xrEnumerateSwapChain and updates the stored SwapChainInfo available
-  // via `GetSwapChainImages`.
+  // Calls xrEnumerateSwapChain and updates the stored OpenXrSwapchainInfo
+  // available via `GetSwapChainImages`.
   virtual XrResult EnumerateSwapchainImages(
       const XrSwapchain& color_swapchain) = 0;
 
-  // Returns a list of mutable SwapChainInfo objects. While the items themselves
-  // are mutable, the list is not.
-  // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
+  // Returns a list of mutable OpenXrSwapchainInfo objects. While the items
+  // themselves are mutable, the list is not.
+  // TODO(crbug.com/40909689): Make OpenXrSwapchainInfo internal to the child
   // classes.
-  virtual base::span<SwapChainInfo> GetSwapChainImages() = 0;
+  virtual base::span<OpenXrSwapchainInfo> GetSwapChainImages() = 0;
 
   // Const getter of the above.
-  virtual base::span<const SwapChainInfo> GetSwapChainImages() const = 0;
+  virtual base::span<const OpenXrSwapchainInfo> GetSwapChainImages() const = 0;
 
   // Returns whether or not the platform believes it can support using Shared
   // buffers/images.
   virtual bool CanUseSharedImages() const = 0;
 
   // Creates SharedImages for (and thus populates the mailbox holders of) all
-  // currently held SwapChainInfo objects.
+  // currently held OpenXrSwapchainInfo objects.
   virtual void CreateSharedImages(gpu::SharedImageInterface* sii) = 0;
 
   // Returns the currently active swapchain image. This is only valid between
   // calls to ActivateSwapchainImage and ReleaseSwapchainImage, which happens
   // after BeginFrame and before EndFrame.
-  // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
+  // TODO(crbug.com/40909689): Make OpenXrSwapchainInfo internal to the child
   // classes.
-  virtual const SwapChainInfo& GetActiveSwapchainImage() = 0;
+  virtual const OpenXrSwapchainInfo& GetActiveSwapchainImage() = 0;
 
   // Performs a server wait on the provided gpu_fence. Returns true if it was
   // able to successfully schedule and perform the wait, and false otherwise.
