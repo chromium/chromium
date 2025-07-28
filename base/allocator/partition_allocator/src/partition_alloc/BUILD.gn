@@ -586,10 +586,17 @@ if (is_clang_or_gcc) {
     if (enable_pkeys && partition_alloc_is_debug) {
       configs += [ ":no_stack_protector" ]
 
-      if (is_debug) {
-        # Debug build uses -fstack-protector for libc++ modules and the flag is
-        # not compatible with "no_stack_protector" config.
+      if (defined(is_debug) && is_debug) {
+        # Chromium debug build uses -fstack-protector for libc++ modules and the
+        # flag is not compatible with "no_stack_protector" config.
+        #
+        # Note that `is_debug`, `libcxx_modules` and `use_clang_modules`
+        # arguments are not part of partition_alloc. They are part of Chromium.
+        # They may be undefined or unused respectively.
         use_libcxx_modules = false
+        if (!defined(use_clang_modules)) {
+          not_needed([ "use_libcxx_modules" ])
+        }
       }
     }
   }
@@ -1064,10 +1071,17 @@ if (build_with_chromium) {
       # the test.
       configs += [ ":no_stack_protector" ]
 
-      if (is_debug) {
-        # Debug build uses -fstack-protector for libc++ modules and the flag is
-        # not compatible with "no_stack_protector" config.
+      if (defined(is_debug) && is_debug) {
+        # Chromium debug build uses -fstack-protector for libc++ modules and the
+        # flag is not compatible with "no_stack_protector" config.
+        #
+        # Note that `is_debug`, `libcxx_modules` and `use_clang_modules`
+        # arguments are not part of partition_alloc. They are part of Chromium.
+        # They may be undefined or unused respectively.
         use_libcxx_modules = false
+        if (!defined(use_clang_modules)) {
+          not_needed([ "use_libcxx_modules" ])
+        }
       }
     }
 
