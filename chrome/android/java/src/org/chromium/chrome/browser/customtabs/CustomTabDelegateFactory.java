@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -198,7 +199,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 Supplier<CompositorViewHolder> compositorViewHolderSupplier,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
-                Supplier<Boolean> headerControlsVisibilitySupplier) {
+                Supplier<Boolean> headerControlsVisibilitySupplier,
+                ExclusiveAccessManager exclusiveAccessManager) {
             super(
                     tab,
                     activity,
@@ -209,7 +211,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                     tabCreatorManager,
                     tabModelSelectorSupplier,
                     compositorViewHolderSupplier,
-                    modalDialogManagerSupplier);
+                    modalDialogManagerSupplier,
+                    exclusiveAccessManager);
             mActivity = activity;
             mActivityType = activityType;
             mWebApkScopeUrl = webApkScopeUrl;
@@ -321,6 +324,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
     private ExternalNavigationDelegateImpl mNavigationDelegate;
     private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    @Nullable private final ExclusiveAccessManager mExclusiveAccessManager;
 
     /**
      * @param activity {@link Activity} instance.
@@ -348,6 +352,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param bottomSheetController Controls the bottom sheet.
      * @param contextMenuEnabled Whether the context menu will be enabled.
      * @param browserControlsManager Manages the browser controls.
+     * @param exclusiveAccessManager The fullscreen, pointer and keyboard lock controller
      */
     public CustomTabDelegateFactory(
             Activity activity,
@@ -367,7 +372,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<BottomSheetController> bottomSheetController,
             AuthTabVerifier authTabVerifier,
             BrowserControlsManager browserControlsManager,
-            Supplier<Boolean> headerControlsVisibilitySupplier) {
+            Supplier<Boolean> headerControlsVisibilitySupplier,
+            @Nullable ExclusiveAccessManager exclusiveAccessManager) {
         mIntentDataProvider = intentDataProvider;
         if (mIntentDataProvider != null) {
             mShouldHideBrowserControls = mIntentDataProvider.shouldEnableUrlBarHiding();
@@ -403,6 +409,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mAuthTabVerifier = authTabVerifier;
         mBrowserControlsManager = browserControlsManager;
         mHeaderControlsVisibilitySupplier = headerControlsVisibilitySupplier;
+        mExclusiveAccessManager = exclusiveAccessManager;
     }
 
     /**
@@ -428,7 +435,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 null,
                 null,
-                () -> false);
+                () -> false,
+                null);
     }
 
     @Override
@@ -474,7 +482,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                         mTabModelSelectorSupplier,
                         mCompositorViewHolderSupplier,
                         mModalDialogManagerSupplier,
-                        mHeaderControlsVisibilitySupplier);
+                        mHeaderControlsVisibilitySupplier,
+                        mExclusiveAccessManager);
         return mWebContentsDelegateAndroid;
     }
 

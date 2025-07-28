@@ -352,6 +352,7 @@ public class RootUiCoordinator
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable ToolbarControlContainer mToolbarContainer;
+    private final ExclusiveAccessManager mExclusiveAccessManager;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -567,6 +568,13 @@ public class RootUiCoordinator
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
         mTopControlsStacker = new TopControlsStacker(mBrowserControlsManager);
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
+            mExclusiveAccessManager =
+                    new ExclusiveAccessManager(mFullscreenManager, mActivityTabProvider);
+        } else {
+            mExclusiveAccessManager = null;
+        }
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -609,6 +617,10 @@ public class RootUiCoordinator
 
         destroyUnownedUserDataSuppliers();
         mActivityLifecycleDispatcher.unregister(this);
+
+        if (mExclusiveAccessManager != null) {
+            mExclusiveAccessManager.destroy();
+        }
 
         if (mMessageDispatcher != null) {
             mMessageDispatcher.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
@@ -2205,5 +2217,9 @@ public class RootUiCoordinator
 
     public @Nullable MultiInstanceManager getMultiInstanceManager() {
         return null;
+    }
+
+    public @Nullable ExclusiveAccessManager getExclusiveAccessManager() {
+        return mExclusiveAccessManager;
     }
 }

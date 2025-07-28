@@ -264,13 +264,20 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
+    public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
+        return mDelegate.preHandleKeyboardEvent(nativeKeyEvent);
+    }
+
+    @Override
     public void handleKeyboardEvent(KeyEvent event) {
         mDelegate.handleKeyboardEvent(event);
     }
 
     @Override
-    public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {
-        mDelegate.enterFullscreenModeForTab(prefersNavigationBar, prefersStatusBar);
+    public void enterFullscreenModeForTab(
+            long requestingFrame, boolean prefersNavigationBar, boolean prefersStatusBar) {
+        mDelegate.enterFullscreenModeForTab(
+                requestingFrame, prefersNavigationBar, prefersStatusBar);
     }
 
     @Override

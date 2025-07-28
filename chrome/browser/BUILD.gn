@@ -1840,6 +1840,8 @@ static_library("browser") {
     # gets modularized.
     "//chrome/browser/ui/blocked_content:impl",
 
+    "//chrome/browser/ui/exclusive_access",
+
     # TODO(crbug.com/373646571): Remove this circular dependency when the following
     # directories get modularized:
     # - c/b/preloading/prefetch/no_state_prefetch/
@@ -2063,6 +2065,7 @@ static_library("browser") {
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/cookie_controls:impl",
+    "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/hats:impl",
@@ -4623,7 +4626,6 @@ static_library("browser") {
       "//chrome/browser/ui/search:impl",
 
       "//chrome/browser/ui/browser_window/internal",
-      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/webui/searchbox",

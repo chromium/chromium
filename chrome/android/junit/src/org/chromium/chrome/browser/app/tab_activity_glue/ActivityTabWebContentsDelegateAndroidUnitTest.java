@@ -106,7 +106,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                     tabCreatorManager,
                     mock(Supplier.class),
                     mock(Supplier.class),
-                    mock(Supplier.class));
+                    mock(Supplier.class),
+                    null);
             mTabGroupModelFilter = tabGroupModelFilter;
             mTabMap = new HashMap<>();
         }

@@ -20,15 +20,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/blocked_content/popunder_preventer.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_within_tab_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -50,8 +46,13 @@
 #include "components/prefs/pref_service.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/blocked_content/popunder_preventer.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"  // nogncheck
+#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"  // nogncheck
 #endif
 
 using content::WebContents;
@@ -705,10 +706,13 @@ void FullscreenController::ExitFullscreenModeInternal() {
 
   toggled_into_fullscreen_ = false;
   started_fullscreen_transition_ = true;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   // Mac windows report a state change instantly, and so we must also clear
   // state_prior_to_tab_fullscreen_ to match them else other logic using
   // state_prior_to_tab_fullscreen_ will be incorrect.
+  // On Android the state of fullscreen is keep in the Java Fullscreen
+  // Controller. The change is instant so we notify about access lost to
+  // keep the state coherent.
   NotifyTabExclusiveAccessLost();
 #endif
   exclusive_access_manager()->context()->ExitFullscreen();

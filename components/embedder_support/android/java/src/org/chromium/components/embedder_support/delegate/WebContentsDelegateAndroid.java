@@ -91,6 +91,11 @@ public class WebContentsDelegateAndroid {
     }
 
     @CalledByNative
+    public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
+        return false;
+    }
+
+    @CalledByNative
     public void handleKeyboardEvent(KeyEvent event) {
         // TODO(bulach): we probably want to re-inject the KeyEvent back into
         // the system. Investigate if this is at all possible.
@@ -119,7 +124,8 @@ public class WebContentsDelegateAndroid {
     public void showRepostFormWarningDialog() {}
 
     @CalledByNative
-    public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {}
+    public void enterFullscreenModeForTab(
+            long requestingFrame, boolean prefersNavigationBar, boolean prefersStatusBar) {}
 
     @CalledByNative
     public void fullscreenStateChangedForTab(

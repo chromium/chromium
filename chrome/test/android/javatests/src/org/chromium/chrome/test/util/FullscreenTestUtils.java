@@ -134,7 +134,8 @@ public class FullscreenTestUtils {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     if (state) {
-                        delegate.enterFullscreenModeForTab(prefersNavigationBar, prefersStatusBar);
+                        delegate.enterFullscreenModeForTab(
+                                0, prefersNavigationBar, prefersStatusBar);
                     } else {
                         delegate.exitFullscreenModeForTab();
                     }

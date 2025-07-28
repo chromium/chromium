@@ -443,9 +443,12 @@ class TabImpl implements Tab {
         assert !(window == null && tabDelegateFactory != null);
 
         if (window != null) {
-            updateWindowAndroid(window);
-
+            // Firstly updating the delegates as the fullscreen state is now checked by the delegate
             if (tabDelegateFactory != null) setDelegateFactory(tabDelegateFactory);
+
+            // Updating window as the WebContentsDelegate is now set and delegate can validate the
+            // full screen state.
+            updateWindowAndroid(window);
 
             // Reload the NativePage (if any), since the old NativePage has a reference to the old
             // activity.

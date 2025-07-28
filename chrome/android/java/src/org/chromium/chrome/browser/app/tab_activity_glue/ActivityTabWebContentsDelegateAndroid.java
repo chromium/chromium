@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -101,6 +102,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final TabObserver mTabObserver;
+    @Nullable private final ExclusiveAccessManager mExclusiveAccessManager;
 
     public ActivityTabWebContentsDelegateAndroid(
             Tab tab,
@@ -112,7 +114,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             TabCreatorManager tabCreatorManager,
             @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable ExclusiveAccessManager exclusiveAccessManager) {
         mTab = tab;
         mActivity = activity;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
@@ -123,6 +126,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mExclusiveAccessManager = exclusiveAccessManager;
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -182,9 +186,19 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public boolean isFullscreenForTabOrPending() {
-        return mFullscreenManager != null
-                ? mFullscreenManager.getPersistentFullscreenMode()
-                : false;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            // It may happen that the tab does not have valid WebContents object. In Android
+            // the New Tab Page is not the actual web but the native views.
+            if (mTab.getWebContents() == null) {
+                return false;
+            }
+            return mExclusiveAccessManager != null
+                    && mExclusiveAccessManager.isFullscreenForTabOrPending(mTab.getWebContents());
+        } else {
+            return mFullscreenManager != null
+                    ? mFullscreenManager.getPersistentFullscreenMode()
+                    : false;
+        }
     }
 
     @Override
@@ -426,6 +440,16 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            return mExclusiveAccessManager != null
+                    && mExclusiveAccessManager.preHandleKeyboardEvent(nativeKeyEvent);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public void handleKeyboardEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN && mActivity != null) {
             if (mActivity.onKeyDown(event.getKeyCode(), event)) return;
@@ -528,10 +552,19 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {
-        if (mFullscreenManager != null) {
-            mFullscreenManager.onEnterFullscreen(
-                    mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
+    public void enterFullscreenModeForTab(
+            long requestingFrame, boolean prefersNavigationBar, boolean prefersStatusBar) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            if (mExclusiveAccessManager != null) {
+                mExclusiveAccessManager.enterFullscreenModeForTab(
+                        requestingFrame,
+                        new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
+            }
+        } else {
+            if (mFullscreenManager != null) {
+                mFullscreenManager.onEnterFullscreen(
+                        mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
+            }
         }
     }
 
@@ -547,7 +580,15 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void exitFullscreenModeForTab() {
-        if (mFullscreenManager != null) mFullscreenManager.onExitFullscreen(mTab);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            if (mExclusiveAccessManager != null) {
+                mExclusiveAccessManager.exitFullscreenModeForTab(mTab.getWebContents());
+            }
+        } else {
+            if (mFullscreenManager != null) {
+                mFullscreenManager.onExitFullscreen(mTab);
+            }
+        }
     }
 
     @Override

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -84,7 +85,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
-
+    @Nullable private final ExclusiveAccessManager mExclusiveAccessManager;
     private NativePageFactory mNativePageFactory;
 
     public TabbedModeTabDelegateFactory(
@@ -113,7 +114,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
             @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            StartupMetricsTracker startupMetricsTracker) {
+            StartupMetricsTracker startupMetricsTracker,
+            @Nullable ExclusiveAccessManager exclusiveAccessManager) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -140,6 +142,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
+        mExclusiveAccessManager = exclusiveAccessManager;
     }
 
     @Override
@@ -154,7 +157,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                 mTabCreatorManager,
                 mTabModelSelectorSupplier,
                 mCompositorViewHolderSupplier,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier,
+                mExclusiveAccessManager);
     }
 
     @Override

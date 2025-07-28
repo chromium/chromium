@@ -1370,7 +1370,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                             getBottomSheetController(),
                             getAuthTabVerifier(),
                             getBrowserControlsManager(),
-                            this::isShowingWebAppHeaderButtons);
+                            this::isShowingWebAppHeaderButtons,
+                            mRootUiCoordinator.getExclusiveAccessManager());
         }
         return mDelegateFactory;
     }

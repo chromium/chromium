@@ -1138,6 +1138,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlocker.java",
   "java/src/org/chromium/chrome/browser/ui/BottomContainer.java",
   "java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java",
+  "java/src/org/chromium/chrome/browser/ui/ExclusiveAccessContext.java",
+  "java/src/org/chromium/chrome/browser/ui/ExclusiveAccessManager.java",
   "java/src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImpl.java",
   "java/src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlocker.java",
   "java/src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerFactory.java",

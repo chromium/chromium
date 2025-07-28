@@ -36,32 +36,34 @@ static_library("fullscreen_control") {
   }
 }
 
-source_set("color_mixer") {
-  sources = [
-    "color_mixer.cc",
-    "color_mixer.h",
-  ]
+if (!is_android) {
+  source_set("color_mixer") {
+    sources = [
+      "color_mixer.cc",
+      "color_mixer.h",
+    ]
 
-  deps = [
-    "//components/color:color_headers",
-    "//ui/color",
-  ]
-}
+    deps = [
+      "//components/color:color_headers",
+      "//ui/color",
+    ]
+  }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "fullscreen_control_popup_unittest.cc",
-    "fullscreen_control_view_unittest.cc",
-  ]
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "fullscreen_control_popup_unittest.cc",
+      "fullscreen_control_view_unittest.cc",
+    ]
 
-  deps = [
-    ":fullscreen_control",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gtest",
-    "//ui/gfx:test_support",
-    "//ui/views",
-    "//ui/views:test_support",
-  ]
+    deps = [
+      ":fullscreen_control",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+      "//ui/gfx:test_support",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+  }
 }

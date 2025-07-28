@@ -3222,7 +3222,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             getToolbarManager().getTabStripHeightSupplier(),
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
-                            getStartupMetricsTracker());
+                            getStartupMetricsTracker(),
+                            mRootUiCoordinator.getExclusiveAccessManager());
         }
         return mTabDelegateFactory;
     }
