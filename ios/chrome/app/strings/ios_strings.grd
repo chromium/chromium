@@ -412,6 +412,9 @@
       <message name="IDS_IOS_AUTOFILL_CARD_NUMBER" desc="Title of the field representing the number (PAN) on a credit card. [Length: 10em] [iOS only]">
         Card number
       </message>
+      <message name="IDS_IOS_AUTOFILL_CARD_SAVED" desc="Title for the save local card confirmation message info bar. [iOS only]">
+        Card saved
+      </message>
       <message name="IDS_IOS_AUTOFILL_CITY" desc="Title of the field of a profile address representing the city/town of the address. [Length: 15em] [iOS only]">
         City / Town
       </message>
@@ -499,6 +502,9 @@
       </message>
       <message name="IDS_IOS_AUTOFILL_SAVE_CARD_CLOSE" desc="Title for the save credit card modal's bar button to close the view. [iOS only]">
         Close
+      </message>
+      <message name="IDS_IOS_AUTOFILL_SAVE_CARD_GOT_IT" desc="Title for the save local card confirmation message info bar button to close the view. [iOS only]">
+        Got it
       </message>
       <message name="IDS_IOS_AUTOFILL_SAVE_ELLIPSIS" desc="Title for the button that presents the View for Saving a credit card. The ellipsis indicate that a following action (the presentation) will take place. [Length: 10em] [iOS only]">
         Save…

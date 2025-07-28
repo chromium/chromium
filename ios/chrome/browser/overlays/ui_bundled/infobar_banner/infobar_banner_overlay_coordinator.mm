@@ -39,8 +39,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 
 @interface InfobarBannerOverlayCoordinator () <InfobarBannerPositioner>
@@ -128,6 +130,13 @@
       self.browser->GetCommandDispatcher(), NonModalSignInPromoCommands);
   mediator.engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
+
+  if ([mediator isKindOfClass:[SaveCardInfobarBannerOverlayMediator class]]) {
+    SaveCardInfobarBannerOverlayMediator* saveCardMediator =
+        (SaveCardInfobarBannerOverlayMediator*)mediator;
+    saveCardMediator.snackbarCommandsHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SnackbarCommands);
+  }
 
   self.mediator = mediator;
   // Present the banner.
