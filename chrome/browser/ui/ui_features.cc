@@ -532,6 +532,12 @@ BASE_FEATURE_PARAM(bool,
                    "price_tracking",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationAutofillMandatoryReauth,
+                   &kPageActionsMigration,
+                   "mandatory_reauth",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi,
              "SavePasswordsContextualUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
