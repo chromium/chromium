@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_skeleton_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_header_view.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -385,10 +385,11 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   }
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
-  id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
+  SearchEngineLogoMediator* searchEngineLogoMediator =
+      [self.searchEngineLogoMediatorProvider provideSearchEngineLogoMediator];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
-                           logoVendor:logoVendor
+             searchEngineLogoMediator:searchEngineLogoMediator
                          colorPalette:nil];
 
   if ([itemIdentifier isEqualToString:_selectedBackgroundId]) {

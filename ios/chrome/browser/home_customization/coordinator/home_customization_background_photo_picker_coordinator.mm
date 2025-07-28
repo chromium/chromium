@@ -9,11 +9,11 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mediator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_view_controller.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface HomeCustomizationBackgroundPhotoPickerCoordinator () <
@@ -102,13 +102,16 @@
   }
 
   // Create the logo vendor
-  id<LogoVendor> logoVendor = ios::provider::CreateLogoVendor(
-      self.browser, self.browser->GetWebStateList()->GetActiveWebState());
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  SearchEngineLogoMediator* searchEngineLogoMediator =
+      [[SearchEngineLogoMediator alloc] initWithBrowser:self.browser
+                                               webState:webState];
 
   // Create the framing view controller.
   _framingViewController = [[HomeCustomizationImageFramingViewController alloc]
-      initWithImage:image
-         logoVendor:logoVendor];
+                 initWithImage:image
+      searchEngineLogoMediator:searchEngineLogoMediator];
 
   _framingViewController.mutator = _mediator;
   _framingViewController.delegate = self;

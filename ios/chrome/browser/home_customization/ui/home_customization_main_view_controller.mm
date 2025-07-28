@@ -11,18 +11,16 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_provider.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface HomeCustomizationMainViewController () <
@@ -386,13 +384,14 @@
       static_cast<BackgroundCustomizationConfigurationItem*>(
           backgroundConfiguration);
 
-  id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
+  SearchEngineLogoMediator* searchEngineLogoMediator =
+      [self.searchEngineLogoMediatorProvider provideSearchEngineLogoMediator];
   NewTabPageColorPalette* colorPalette = [self.colorPaletteProvider
       provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor
                           colorVariant:configurationItem.colorVariant];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
-                           logoVendor:logoVendor
+             searchEngineLogoMediator:searchEngineLogoMediator
                          colorPalette:colorPalette];
 
   if ([itemIdentifier isEqualToString:_selectedBackgroundId]) {

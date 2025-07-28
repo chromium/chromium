@@ -19,13 +19,13 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_library_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_view_controller.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -40,10 +40,10 @@ CGFloat const kSheetCornerRadius = 30;
 }  // namespace
 
 @interface HomeCustomizationBackgroundPickerActionSheetCoordinator () <
-    UIAdaptivePresentationControllerDelegate,
-    HomeCustomizationLogoVendorProvider,
+    HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate,
     HomeCustomizationBackgroundPickerActionSheetPresentationDelegate,
-    HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate> {
+    HomeCustomizationSearchEngineLogoMediatorProvider,
+    UIAdaptivePresentationControllerDelegate> {
   // The mediator of the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetMediator* _mediator;
 
@@ -142,11 +142,13 @@ CGFloat const kSheetCornerRadius = 30;
   [super stop];
 }
 
-#pragma mark - HomeCustomizationLogoVendorProvider
+#pragma mark - HomeCustomizationSearchEngineLogoMediatorProvider
 
-- (id<LogoVendor>)provideLogoVendor {
-  return ios::provider::CreateLogoVendor(
-      self.browser, self.browser->GetWebStateList()->GetActiveWebState());
+- (SearchEngineLogoMediator*)provideSearchEngineLogoMediator {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  return [[SearchEngineLogoMediator alloc] initWithBrowser:self.browser
+                                                  webState:webState];
 }
 
 #pragma mark - HomeCustomizationBackgroundPickerActionSheetPresentationDelegate
@@ -272,7 +274,7 @@ CGFloat const kSheetCornerRadius = 30;
       mainViewController =
           [[HomeCustomizationBackgroundPresetGalleryPickerViewController alloc]
               init];
-  mainViewController.logoVendorProvider = self;
+  mainViewController.searchEngineLogoMediatorProvider = self;
   mainViewController.presentationDelegate = self;
   mainViewController.mutator = _backgroundPresetGalleryPickerMediator;
   return mainViewController;

@@ -9,11 +9,9 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_consumer.h"
 
-@protocol HomeCustomizationLogoVendorProvider;
-
-@protocol HomeCustomizationBackgroundPresetGalleryPickerMutator;
-
 @protocol HomeCustomizationBackgroundPickerActionSheetPresentationDelegate;
+@protocol HomeCustomizationBackgroundPresetGalleryPickerMutator;
+@protocol HomeCustomizationSearchEngineLogoMediatorProvider;
 
 // View controller for displaying a preset gallery of background images in the
 // Home customization flow. Uses a collection view to showcase selectable preset
@@ -23,8 +21,9 @@
                         HomeCustomizationBackgroundPresetGalleryPickerConsumer>
 
 // A provider responsible for supplying a logo vendor object.
-@property(nonatomic, weak) id<HomeCustomizationLogoVendorProvider>
-    logoVendorProvider;
+// TODO(crbug.com/423883582): Need to remove this property.
+@property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>
+    searchEngineLogoMediatorProvider;
 
 // Mutator to handle the user's customization updates.
 @property(nonatomic, weak)

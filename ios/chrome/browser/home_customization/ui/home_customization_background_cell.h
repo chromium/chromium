@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol LogoVendor;
-@protocol HomeCustomizationMutator;
 @protocol BackgroundCustomizationConfiguration;
+@protocol HomeCustomizationMutator;
+@class SearchEngineLogoMediator;
 
 @class NewTabPageColorPalette;
 
@@ -27,9 +27,12 @@
 - (void)setupContentView:(UIView*)contentView;
 
 // Configures the cell using the given background customization configuration.
+// TODO(crbug.com/423883582): This class should not know
+// `SearchEngineLogoMediator`.
 - (void)configureWithBackgroundOption:
             (id<BackgroundCustomizationConfiguration>)backgroundConfiguration
-                           logoVendor:(id<LogoVendor>)logoVendor
+             searchEngineLogoMediator:
+                 (SearchEngineLogoMediator*)searchEngineLogoMediator
                          colorPalette:(NewTabPageColorPalette*)colorPalette;
 
 // Updates the background image displayed behind the cell’s content.
