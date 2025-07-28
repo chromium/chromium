@@ -385,7 +385,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     /**
      * @return The currently selected tab for fullscreen.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @Nullable Tab getTab() {
         return mTab;
     }
@@ -431,7 +431,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      *     BrowserControlsUtils#areBrowserControlsOffScreen(BrowserControlsStateProvider)} when both
      *     min-heights are 0.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public boolean areBrowserControlsAtMinHeight() {
         return assertNonNull(mControlsAtMinHeight.get());
     }

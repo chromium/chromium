@@ -41,11 +41,9 @@ public class ReengagementNotificationController {
     /** An {@link Intent} action to open Chrome to the NTP. */
     public static final String LAUNCH_NTP_ACTION = "launch_ntp";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static final String NOTIFICATION_TAG = "reengagement_notification";
+    @VisibleForTesting protected static final String NOTIFICATION_TAG = "reengagement_notification";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static final int NOTIFICATION_ID = 200;
+    @VisibleForTesting protected static final int NOTIFICATION_ID = 200;
 
     private final Context mContext;
     private final Tracker mTracker;
@@ -86,7 +84,7 @@ public class ReengagementNotificationController {
                 });
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected void getDefaultBrowserInfo(
             Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
         DefaultBrowserInfo.getDefaultBrowserInfo(callback);

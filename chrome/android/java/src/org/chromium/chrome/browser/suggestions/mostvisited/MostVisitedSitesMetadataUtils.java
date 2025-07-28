@@ -127,7 +127,7 @@ public class MostVisitedSitesMetadataUtils {
      * @param suggestionTiles The site suggestion tiles.
      * @param callback Callback function after saving file.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void saveSuggestionListsToFile(List<Tile> suggestionTiles, Runnable callback) {
         new AsyncTask<@Nullable Void>() {
             @Override
@@ -263,7 +263,7 @@ public class MostVisitedSitesMetadataUtils {
         return data;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static File getOrCreateTopSitesDirectory() {
         synchronized (DIR_CREATION_LOCK) {
             if (sStateDirectory == null) {

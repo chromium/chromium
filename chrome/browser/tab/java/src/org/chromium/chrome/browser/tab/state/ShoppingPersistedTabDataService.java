@@ -71,7 +71,7 @@ public class ShoppingPersistedTabDataService {
     }
 
     /** Creates a new instance. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected ShoppingPersistedTabDataService() {
         mTabsWithPriceDrop = new HashSet<>();
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();

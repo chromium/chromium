@@ -46,7 +46,7 @@ public class AdaptiveToolbarFeatures {
     /** Default action chip delay for reader mode. */
     public static final int DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS = 3000;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME =
             "CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME";
 

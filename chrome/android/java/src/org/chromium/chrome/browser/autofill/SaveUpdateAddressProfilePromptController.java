@@ -26,7 +26,7 @@ final class SaveUpdateAddressProfilePromptController {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static SaveUpdateAddressProfilePromptController create(
             long nativeSaveUpdateAddressProfilePromptController) {
         return new SaveUpdateAddressProfilePromptController(

@@ -436,7 +436,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
      *
      * @return true if page refresh on overscroll is supported.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean isRefreshOnOverscrollSupported() {
         // TODO(https://crbug.com/422413654) Remove this after long-term fix
         if (DeviceInfo.isDesktop()) {

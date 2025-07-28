@@ -42,7 +42,7 @@ public class TabPersistenceFileInfo {
         public final int tabId;
         public final boolean isEncrypted;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         public TabStateFileInfo(int tabId, boolean isEncrypted) {
             this.tabId = tabId;
             this.isEncrypted = isEncrypted;

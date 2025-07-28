@@ -258,7 +258,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         return 0;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected static @Nullable String getContentUriForUrl(
             String url, ActivityTabProvider activityTabProvider) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)) {
@@ -364,7 +364,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                         assistantPackageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected static void clearCachedContent() {
         synchronized (sLock) {
             if (sInvocationState != null) {

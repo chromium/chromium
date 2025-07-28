@@ -54,8 +54,7 @@ public abstract class PersistedTabData implements UserData {
     private final String mPersistedTabDataId;
     private long mLastUpdatedMs = LAST_UPDATE_UNKNOWN;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public @Nullable ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
+    @VisibleForTesting public @Nullable ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
 
     private @Nullable Callback<Boolean> mTabSaveEnabledToggleCallback;
     private boolean mFirstSaveDone;

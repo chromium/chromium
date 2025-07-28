@@ -1153,7 +1153,7 @@ class AutocompleteMediator
      *
      * @param clear Whether to clear the most recent autocomplete results.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void stopAutocomplete(boolean clear) {
         mAutocomplete.ifPresent(a -> a.stop(clear));
         // All suggestions are now removed.
@@ -1374,7 +1374,7 @@ class AutocompleteMediator
         mFirstSuggestionListModelCreatedTime = null;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     SuggestionsListAnimationDriver initializeAnimationDriver() {
         SuggestionsListAnimationDriver driver;
         if (mDelegate.isToolbarPositionCustomizationEnabled()

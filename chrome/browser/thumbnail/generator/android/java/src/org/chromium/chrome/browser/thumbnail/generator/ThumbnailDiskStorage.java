@@ -85,20 +85,15 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     @VisibleForTesting long mSizeBytes;
 
     // These references allow tests to wait on tasks instead of polling with CriteriaHelper.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    AsyncTask<Void> mInitTask;
+    @VisibleForTesting AsyncTask<Void> mInitTask;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @Nullable AsyncTask<Void> mLastClearTask;
+    @VisibleForTesting @Nullable AsyncTask<Void> mLastClearTask;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @Nullable AsyncTask<Void> mLastCacheThumbnailTask;
+    @VisibleForTesting @Nullable AsyncTask<Void> mLastCacheThumbnailTask;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @Nullable AsyncTask<@Nullable Bitmap> mLastGetThumbnailTask;
+    @VisibleForTesting @Nullable AsyncTask<@Nullable Bitmap> mLastGetThumbnailTask;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @Nullable AsyncTask<Void> mLastRemoveThumbnailTask;
+    @VisibleForTesting @Nullable AsyncTask<Void> mLastRemoveThumbnailTask;
 
     // Whether or not this class has been destroyed and should not be used.
     private boolean mDestroyed;

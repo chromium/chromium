@@ -176,7 +176,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean toggleMaximize(boolean animate) {
         mIsMaximized = !mIsMaximized;
         if (mIsMaximized) {

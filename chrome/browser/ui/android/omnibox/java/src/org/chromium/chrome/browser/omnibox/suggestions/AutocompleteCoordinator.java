@@ -261,7 +261,7 @@ public class AutocompleteCoordinator
      *
      * @param profile The profile to be used.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void setAutocompleteProfile(Profile profile) {
         mMediator.setAutocompleteProfile(profile);
     }

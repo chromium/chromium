@@ -354,7 +354,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         mObservers.removeObserver(observer);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     private FullscreenToast getToast() {
         if (mToast == null) {
             mToast = new FullscreenToast.AndroidToast(mActivity, this::getPersistentFullscreenMode);

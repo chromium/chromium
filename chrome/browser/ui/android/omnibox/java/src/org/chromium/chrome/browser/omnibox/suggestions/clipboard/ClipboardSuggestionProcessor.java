@@ -211,7 +211,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     // TODO(crbug.com/40177279): Make revealButtonClickHandler and concealButtonClickHandler
     // private.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void revealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Reveal");
         if (suggestion.getUrl().isEmpty()) {
@@ -228,7 +228,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestion Selected suggestion.
      * @param model Model representing current suggestion.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void concealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Conceal");
         setupContentField(suggestion, model, /* showContent= */ false);

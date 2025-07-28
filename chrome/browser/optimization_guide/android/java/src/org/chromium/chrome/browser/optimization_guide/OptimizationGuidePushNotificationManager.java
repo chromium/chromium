@@ -112,7 +112,7 @@ public class OptimizationGuidePushNotificationManager {
         ChromeSharedPreferences.getInstance().removeKey(cacheKey(optimizationType));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void clearCacheForAllTypes() {
         for (OptimizationType type : OptimizationType.values()) {
             clearCacheForOptimizationType(type);

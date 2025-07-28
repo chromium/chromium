@@ -137,7 +137,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * @param preferences Search Activity preferences.
      * @param widgetIds List of Widget IDs that should be updated.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void updateWidgets(
             @NonNull Context context,
             @NonNull AppWidgetManager manager,

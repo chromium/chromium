@@ -50,8 +50,7 @@ import java.lang.annotation.RetentionPolicy;
 /** Collection of utility methods that operates on Tab. */
 @NullMarked
 public class TabUtils {
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final float PORTRAIT_THUMBNAIL_ASPECT_RATIO = 0.85f;
+    @VisibleForTesting public static final float PORTRAIT_THUMBNAIL_ASPECT_RATIO = 0.85f;
 
     /** Define the callers of NavigationControllerImpl#setUseDesktopUserAgent. */
     @IntDef({

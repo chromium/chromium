@@ -114,7 +114,7 @@ public class SaveUpdateAddressProfilePrompt {
 
     /** Shows the dialog for saving an address. */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void show() {
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
@@ -161,7 +161,7 @@ public class SaveUpdateAddressProfilePrompt {
      * @param negativeButtonText the text on the negative button.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void setDialogDetails(String title, String positiveButtonText, String negativeButtonText) {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
@@ -177,7 +177,7 @@ public class SaveUpdateAddressProfilePrompt {
      * @param recordTypeNotice the footer notification for the user.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void setRecordTypeNotice(String recordTypeNotice) {
         showTextIfNotEmpty(
                 mDialogView.findViewById(R.id.autofill_address_profile_prompt_record_type_notice),
@@ -192,7 +192,7 @@ public class SaveUpdateAddressProfilePrompt {
      * @param phone the phone to be saved.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void setSaveOrMigrateDetails(String address, String email, String phone) {
         showTextIfNotEmpty(mDialogView.findViewById(R.id.address), address);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.email), email);
@@ -208,7 +208,7 @@ public class SaveUpdateAddressProfilePrompt {
      * @param newDetails details in the new profile that differ.
      */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void setUpdateDetails(String subtitle, String oldDetails, String newDetails) {
         showTextIfNotEmpty(mDialogView.findViewById(R.id.subtitle), subtitle);
         showHeaders(!TextUtils.isEmpty(oldDetails));
@@ -218,7 +218,7 @@ public class SaveUpdateAddressProfilePrompt {
 
     /** Dismisses the prompt without returning any user response. */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void dismiss() {
         // Do not dismiss the editor if closing is pending to not abort the animation.
         if (!mEditorClosingPending && mAddressEditor.isShowing()) mAddressEditor.dismiss();

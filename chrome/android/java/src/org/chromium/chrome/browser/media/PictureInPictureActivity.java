@@ -112,45 +112,34 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     private @Nullable MediaSessionBroadcastReceiver mMediaSessionReceiver;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    MediaActionButtonsManager mMediaActionsButtonsManager;
+    @VisibleForTesting MediaActionButtonsManager mMediaActionsButtonsManager;
 
     /** A helper class for managing media action buttons in PictureInPicture window. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     class MediaActionButtonsManager {
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mPreviousSlide;
+        @VisibleForTesting final RemoteAction mPreviousSlide;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mPreviousTrack;
+        @VisibleForTesting final RemoteAction mPreviousTrack;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mPlay;
+        @VisibleForTesting final RemoteAction mPlay;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mPause;
+        @VisibleForTesting final RemoteAction mPause;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mReplay;
+        @VisibleForTesting final RemoteAction mReplay;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mNextTrack;
+        @VisibleForTesting final RemoteAction mNextTrack;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mNextSlide;
+        @VisibleForTesting final RemoteAction mNextSlide;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final RemoteAction mHangUp;
+        @VisibleForTesting final RemoteAction mHangUp;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final ToggleRemoteAction mMicrophone;
+        @VisibleForTesting final ToggleRemoteAction mMicrophone;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        final ToggleRemoteAction mCamera;
+        @VisibleForTesting final ToggleRemoteAction mCamera;
 
         private @PlaybackState int mPlaybackState;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         static class ToggleRemoteAction {
             private final RemoteAction mActionOn;
             private final RemoteAction mActionOff;
@@ -166,7 +155,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 mState = on;
             }
 
-            @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+            @VisibleForTesting
             RemoteAction getAction() {
                 return mState ? mActionOn : mActionOff;
             }
@@ -266,7 +255,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             mVisibleActions = new HashSet<>();
         }
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         @SuppressLint("NewApi")
         ArrayList<RemoteAction> getActionsForPictureInPictureParams() {
             ArrayList<RemoteAction> actions = new ArrayList<>();
@@ -782,28 +771,28 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         mAspectRatio = new Rational(width, height);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     void setPlaybackState(@PlaybackState int playbackState) {
         mMediaActionsButtonsManager.updatePlaybackState(playbackState);
         updatePictureInPictureParams();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     void setMicrophoneMuted(boolean muted) {
         mMediaActionsButtonsManager.setMicrophoneMuted(muted);
         updatePictureInPictureParams();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     void setCameraState(boolean turnedOn) {
         mMediaActionsButtonsManager.setCameraOn(turnedOn);
         updatePictureInPictureParams();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     void updateVisibleActions(int[] actions) {
         HashSet<Integer> visibleActions = new HashSet<>();

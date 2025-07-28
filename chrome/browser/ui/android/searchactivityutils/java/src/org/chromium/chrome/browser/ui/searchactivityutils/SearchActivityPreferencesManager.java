@@ -62,7 +62,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         /** Whether Incognito browsing functionality is available. */
         public final boolean incognitoAvailable;
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         public SearchActivityPreferences(
                 @Nullable String searchEngineName,
                 @Nullable GURL searchEngineUrl,
@@ -202,7 +202,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      * @param prefs Current preferences.
      * @param updateStorage Whether to update on-disk cache.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void setCurrentlyLoadedPreferences(
             SearchActivityPreferences prefs, boolean updateStorage) {
         SearchActivityPreferencesManager self = get();

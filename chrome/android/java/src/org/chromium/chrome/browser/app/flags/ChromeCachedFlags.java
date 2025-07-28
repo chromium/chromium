@@ -164,7 +164,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void cacheMinimalBrowserFlagsTimeFromNativeTime() {
         ChromeSharedPreferences.getInstance()
                 .writeLong(

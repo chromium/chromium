@@ -77,7 +77,7 @@ public class SerialChooserDialog
     // Used to keep track of when the Mode Changed Receiver is registered.
     boolean mIsLocationModeChangedReceiverRegistered;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     final BroadcastReceiver mLocationModeBroadcastReceiver =
             new BroadcastReceiver() {
                 @Override

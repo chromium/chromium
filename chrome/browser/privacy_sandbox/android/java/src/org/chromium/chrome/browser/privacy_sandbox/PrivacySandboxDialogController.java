@@ -203,22 +203,22 @@ public class PrivacySandboxDialogController {
         sOnDialogDismissedRunnable = runnable;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static @Nullable Dialog getDialog() {
         return sDialog != null ? sDialog.get() : null;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void disableAnimations(boolean disable) {
         sDisableAnimations = disable;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void disableEEANotice(boolean disable) {
         sDisableEEANoticeForTesting = disable;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void setShowMoreButton(boolean value) {
         sShowMoreButtonForTesting = value;
     }

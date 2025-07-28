@@ -508,7 +508,7 @@ class AppMenuHandlerImpl
         return mDelegate;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void registerDefaultViewBinders(
             ModelListAdapter adapter, boolean iconBeforeItem) {
         @LayoutRes

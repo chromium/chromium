@@ -33,11 +33,11 @@ import java.lang.ref.WeakReference;
 @NullMarked
 public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment {
     /** The key for the switch taggle on the setting page. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PREF_TOOLBAR_SHORTCUT_SWITCH = "toolbar_shortcut_switch";
 
     /** The key for the radio button group on the setting page. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PREF_ADAPTIVE_RADIO_GROUP = "adaptive_toolbar_radio_group";
 
     /** Bundle arguments to pass {@link UiState} to this settings fragment. */

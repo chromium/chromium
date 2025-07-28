@@ -176,7 +176,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     /** Begins a new Voice query. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void runVoiceSearch() {
         View micButton = findViewById(R.id.mic_button);
         if (!micButton.performClick()) {

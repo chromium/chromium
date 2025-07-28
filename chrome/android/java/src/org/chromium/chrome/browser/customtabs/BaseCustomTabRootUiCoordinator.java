@@ -626,7 +626,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return isGoogleBottomBarEnabled(mIntentDataProvider.get());
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static boolean isGoogleBottomBarEnabled(BrowserServicesIntentDataProvider intentDataProvider) {
         return GoogleBottomBarCoordinator.isFeatureEnabled()
                 && CustomTabsConnection.getInstance()

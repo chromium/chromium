@@ -68,7 +68,7 @@ public class ProfileManager {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void onProfileAdded(Profile profile) {
         // If a profile has been added, we know the ProfileManager has been initialized.
         sInitialized = true;

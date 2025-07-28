@@ -49,7 +49,7 @@ public class SceneLayer {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void setNativePtr(long nativeSceneLayerPtr) {
         assert mNativePtr == 0 || nativeSceneLayerPtr == 0;
         mNativePtr = nativeSceneLayerPtr;

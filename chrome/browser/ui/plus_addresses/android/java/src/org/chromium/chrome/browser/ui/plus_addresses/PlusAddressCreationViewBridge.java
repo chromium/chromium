@@ -71,7 +71,7 @@ public class PlusAddressCreationViewBridge {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @Nullable
     static PlusAddressCreationViewBridge create(
             long nativePlusAddressCreationPromptAndroid, WindowAndroid window, TabModel tabModel) {

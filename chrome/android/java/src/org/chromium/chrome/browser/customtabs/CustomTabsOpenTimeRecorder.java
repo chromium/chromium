@@ -128,7 +128,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         mOnStartTimestampMs = 0;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     String getPackageName(boolean isPartial) {
         boolean isEmpty = TextUtils.isEmpty(mCachedPackageName);
         if (isPartial && isEmpty) {

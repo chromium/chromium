@@ -190,7 +190,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         return mergeTabs;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected boolean isMultiInstanceApi31Enabled() {
         return MultiWindowUtils.isMultiInstanceApi31Enabled();
     }

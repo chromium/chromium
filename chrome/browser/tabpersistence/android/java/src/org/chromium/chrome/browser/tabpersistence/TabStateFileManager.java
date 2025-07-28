@@ -61,17 +61,16 @@ public class TabStateFileManager {
     // a different prefix.
     private static final String FLATBUFFER_PREFIX = "flatbufferv1_";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String SAVED_TAB_STATE_FILE_PREFIX = "tab";
+    @VisibleForTesting public static final String SAVED_TAB_STATE_FILE_PREFIX = "tab";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO = "cryptonito";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String FLATBUFFER_SAVED_TAB_STATE_FILE_PREFIX =
             FLATBUFFER_PREFIX + SAVED_TAB_STATE_FILE_PREFIX;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String FLATBUFFER_SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO =
             FLATBUFFER_PREFIX + SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO;
 
@@ -107,7 +106,7 @@ public class TabStateFileManager {
         TabStateRestoreMethod.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @interface TabStateRestoreMethod {
         /** TabState restored using FlatBuffer schema */
         int FLATBUFFER = 0;
@@ -128,7 +127,7 @@ public class TabStateFileManager {
         TabStateMigrationStatus.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @interface TabStateMigrationStatus {
         /** TabState has been migrated to FlatBuffer and legacy TabState file removed. */
         int FLATBUFFER = 0;
@@ -188,7 +187,7 @@ public class TabStateFileManager {
         return tabState;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void recordTabStateMigrationStatus(File stateFolder, int id) {
         for (boolean encrypted : new boolean[] {false, true}) {
             boolean legacyFileExists =
@@ -225,7 +224,7 @@ public class TabStateFileManager {
      * @param useFlatBuffer whether to restore using the FlatBuffer based TabState file or not.
      * @return TabState that has been restored, or null if it failed.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static @Nullable TabState restoreTabState(
             File stateFolder, int id, CipherFactory cipherFactory, boolean useFlatBuffer) {
         // First try finding an unencrypted file.
@@ -265,7 +264,7 @@ public class TabStateFileManager {
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @return TabState that has been restored, or null if it failed.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static @Nullable TabState restoreTabStateInternal(
             File tabFile, boolean isEncrypted, CipherFactory cipherFactory) {
         TabState tabState = null;
@@ -628,7 +627,7 @@ public class TabStateFileManager {
      * @param encrypted Whether or not the TabState should be encrypted.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void saveStateInternal(
             File file, TabState state, boolean encrypted, CipherFactory cipherFactory) {
         if (state == null || state.contentsState == null) return;
@@ -832,7 +831,7 @@ public class TabStateFileManager {
      * @param encrypted Whether or not the tab is incognito and should be encrypted.
      * @return The name of the file the Tab state should be saved to.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static String getTabStateFilename(int id, boolean encrypted, boolean isFlatBuffer) {
         if (isFlatBuffer) {
             return (encrypted

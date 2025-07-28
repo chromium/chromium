@@ -518,13 +518,13 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return mBookmarkModelSupplier.get().hasBookmarkIdForTab(currentTab);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public boolean instanceSwitcherWithMultiInstanceEnabled() {
         return MultiWindowUtils.instanceSwitcherEnabled()
                 && MultiWindowUtils.isMultiInstanceApi31Enabled();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public boolean isTabletSizeScreen() {
         return mIsTablet;
     }

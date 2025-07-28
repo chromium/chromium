@@ -47,7 +47,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         TabStateFlatBufferDeserializeResult.NUM_ENTRIES,
     })
     @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @interface TabStateFlatBufferDeserializeResult {
         /** FlatBuffer was successfully deserialized to TabState. */
         int SUCCESS = 0;
@@ -165,7 +165,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         return null;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static @TabLaunchType int getLaunchTypeFromFlatBuffer(int flatBufferLaunchType) {
         switch (flatBufferLaunchType) {
             case TabLaunchTypeAtCreation.FROM_LINK:
@@ -245,7 +245,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static int getLaunchTypeToFlatBuffer(@TabLaunchType int tabLaunchType) {
         switch (tabLaunchType) {
             case TabLaunchType.FROM_LINK:
@@ -321,7 +321,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static @TabUserAgent int getTabUserAgentTypeFromFlatBuffer(int flatbufferUserAgentType) {
         switch (flatbufferUserAgentType) {
             case UserAgentType.DEFAULT:
@@ -342,7 +342,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static int getUserAgentTypeToFlatBuffer(@TabUserAgent int userAgent) {
         switch (userAgent) {
             case TabUserAgent.DEFAULT:

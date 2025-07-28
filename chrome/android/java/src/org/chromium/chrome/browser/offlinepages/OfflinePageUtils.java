@@ -79,7 +79,7 @@ public class OfflinePageUtils {
      * We are using an internal interface, so that instance methods can have the same names as
      * static methods.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public interface Internal {
         /** Returns offline page bridge for specified profile. */
         @Nullable OfflinePageBridge getOfflinePageBridge(@Nullable Profile profile);

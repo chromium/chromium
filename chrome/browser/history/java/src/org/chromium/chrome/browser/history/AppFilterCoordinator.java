@@ -179,7 +179,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         mItemListView.setLayoutParams(layoutParams);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static int calculateSheetHeight(int rowHeight, int baseViewHeight, int rowCount) {
         int maxHeight = (int) (baseViewHeight * MAX_SHEET_HEIGHT_RATIO);
         int visibleRowCount = Math.min(rowCount, MAX_VISIBLE_ITEM_COUNT);

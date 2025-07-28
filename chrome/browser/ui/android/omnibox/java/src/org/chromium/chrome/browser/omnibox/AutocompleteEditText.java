@@ -87,7 +87,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
                 });
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public String sanitizeTextForPaste(String s) {
         return mNativeInitialized ? OmniboxViewUtil.sanitizeTextForPaste(s) : s;
     }

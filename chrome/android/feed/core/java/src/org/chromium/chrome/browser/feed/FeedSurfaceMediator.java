@@ -261,7 +261,7 @@ public class FeedSurfaceMediator
     }
 
     /** Internal implementation of Stream.StreamsMediator. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public class StreamsMediatorImpl implements Stream.StreamsMediator {
         @Override
         public void switchToStreamKind(@StreamKind int streamKind) {

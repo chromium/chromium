@@ -60,7 +60,7 @@ class AppFilterMediator {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void handleClick(PropertyModel model) {
         PropertyModel prevModel = mSelectedModel;
 

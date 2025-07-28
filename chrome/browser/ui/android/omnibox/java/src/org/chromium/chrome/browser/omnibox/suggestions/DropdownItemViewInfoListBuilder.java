@@ -110,7 +110,7 @@ class DropdownItemViewInfoListBuilder {
      *
      * @param processor SuggestionProcessor that handles OmniboxSuggestions.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void registerSuggestionProcessor(SuggestionProcessor processor) {
         mPriorityOrderedSuggestionProcessors.add(processor);
     }
