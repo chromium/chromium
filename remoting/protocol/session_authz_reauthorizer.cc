@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/session_authz_reauthorizer.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check.h"
@@ -20,6 +21,32 @@
 
 namespace remoting::protocol {
 
+namespace {
+
+constexpr base::TimeDelta kMinReauthTokenLifetime = base::Minutes(5);
+constexpr base::TimeDelta kMinReauthRetryDuration = kMinReauthTokenLifetime / 2;
+constexpr base::TimeDelta kMaxReauthRetryDuration = base::Minutes(10);
+
+base::TimeDelta ClampSessionReauthTokenLifetime(
+    base::TimeDelta session_reauth_token_lifetime) {
+  if (session_reauth_token_lifetime < kMinReauthTokenLifetime) {
+    LOG(WARNING) << session_reauth_token_lifetime << " is below the minimum "
+                 << "session reauth token threshold, reauthorization is likely "
+                 << "to fail";
+    return kMinReauthTokenLifetime;
+  }
+  return session_reauth_token_lifetime;
+}
+
+base::TimeDelta GetReauthInterval(base::TimeTicks reauth_token_expire_time) {
+  auto token_lifetime = reauth_token_expire_time - base::TimeTicks::Now();
+  return token_lifetime - std::clamp(token_lifetime / 2,
+                                     kMinReauthRetryDuration,
+                                     kMaxReauthRetryDuration);
+}
+
+}  // namespace
+
 SessionAuthzReauthorizer::SessionAuthzReauthorizer(
     SessionAuthzServiceClient* service_client,
     std::string_view session_id,
@@ -29,9 +56,11 @@ SessionAuthzReauthorizer::SessionAuthzReauthorizer(
     : service_client_(service_client),
       session_id_(session_id),
       session_reauth_token_(session_reauth_token),
-      token_expire_time_(base::TimeTicks::Now() +
-                         session_reauth_token_lifetime),
-      on_reauthorization_failed_(std::move(on_reauthorization_failed)) {}
+      on_reauthorization_failed_(std::move(on_reauthorization_failed)) {
+  token_expire_time_ =
+      base::TimeTicks::Now() +
+      ClampSessionReauthTokenLifetime(session_reauth_token_lifetime);
+}
 
 SessionAuthzReauthorizer::~SessionAuthzReauthorizer() = default;
 
@@ -41,8 +70,7 @@ void SessionAuthzReauthorizer::Start() {
 }
 
 void SessionAuthzReauthorizer::ScheduleNextReauth() {
-  base::TimeDelta next_reauth_interval =
-      (token_expire_time_ - base::TimeTicks::Now()) / 2;
+  base::TimeDelta next_reauth_interval = GetReauthInterval(token_expire_time_);
   reauthorize_timer_.Start(FROM_HERE, next_reauth_interval, this,
                            &SessionAuthzReauthorizer::Reauthorize);
   HOST_LOG << "Next reauthorization scheduled in " << next_reauth_interval;
@@ -70,7 +98,8 @@ void SessionAuthzReauthorizer::OnReauthorizeResult(
   DCHECK(response->session_reauth_token_lifetime.is_positive());
   session_reauth_token_ = response->session_reauth_token;
   token_expire_time_ =
-      base::TimeTicks::Now() + response->session_reauth_token_lifetime;
+      base::TimeTicks::Now() +
+      ClampSessionReauthTokenLifetime(response->session_reauth_token_lifetime);
   VLOG(1) << "SessionAuthz reauthorization succeeded.";
   ScheduleNextReauth();
 }
