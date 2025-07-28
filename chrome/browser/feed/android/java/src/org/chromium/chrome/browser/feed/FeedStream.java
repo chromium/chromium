@@ -814,6 +814,11 @@ public class FeedStream implements Stream {
     }
 
     @Override
+    public List<String> getFeedUrls() {
+        return mBridge.getFeedUrls();
+    }
+
+    @Override
     public void bind(
             RecyclerView rootView,
             FeedListContentManager manager,

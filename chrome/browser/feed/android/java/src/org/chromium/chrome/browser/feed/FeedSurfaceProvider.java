@@ -15,6 +15,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
+import java.util.List;
+
 /** Provides a surface that displays a list of interest feeds. */
 @NullMarked
 public interface FeedSurfaceProvider {
@@ -77,4 +79,9 @@ public interface FeedSurfaceProvider {
 
     /** Supplier of the state of the feed stream being restored. See {@link RestoringState}. */
     ObservableSupplier<Integer> getRestoringStateSupplier();
+
+    /**
+     * @return The list of feed article urls.
+     */
+    List<String> getFeedUrls();
 }

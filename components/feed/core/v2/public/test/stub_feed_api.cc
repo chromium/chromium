@@ -64,6 +64,10 @@ base::Time StubFeedApi::GetLastFetchTime(SurfaceId surface_id) {
   return base::Time();
 }
 
+std::vector<std::string> StubFeedApi::GetFeedUrls(SurfaceId surface_id) {
+  return {};
+}
+
 ContentOrder StubFeedApi::GetContentOrder(const StreamType& stream_type) const {
   return ContentOrder::kUnspecified;
 }

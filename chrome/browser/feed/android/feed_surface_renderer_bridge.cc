@@ -370,6 +370,17 @@ static jlong JNI_FeedSurfaceRendererBridge_GetLastFetchTimeMs(JNIEnv* env,
       .InMillisecondsFSinceUnixEpoch();
 }
 
+std::vector<std::string> JNI_FeedSurfaceRendererBridge_GetFeedUrls(
+    JNIEnv* env,
+    Profile* profile,
+    jint surface_id) {
+  FeedApi* feed_api = GetFeedApi(profile);
+  if (!feed_api) {
+    return {};
+  }
+  return feed_api->GetFeedUrls(FromJavaSurfaceId(surface_id));
+}
+
 static void JNI_FeedSurfaceRendererBridge_ReportInfoCardTrackViewStarted(
     JNIEnv* env,
     Profile* profile,

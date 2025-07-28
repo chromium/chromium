@@ -1373,6 +1373,11 @@ public class FeedSurfaceCoordinator
         return mMediator.getRestoringStateSupplier();
     }
 
+    @Override
+    public List<String> getFeedUrls() {
+        return mMediator.getFeedUrls();
+    }
+
     private int getLateralPaddingsPx() {
         return mActivity
                 .getResources()

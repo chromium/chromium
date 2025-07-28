@@ -242,6 +242,9 @@ class FeedApi {
       SurfaceId surface_id,
       base::TimeDelta elapsed) = 0;
 
+  // Returns a list of feed article urls.
+  virtual std::vector<std::string> GetFeedUrls(SurfaceId surface_id) = 0;
+
   // The following methods are used for the internals page.
 
   virtual DebugStreamData GetDebugStreamData() = 0;

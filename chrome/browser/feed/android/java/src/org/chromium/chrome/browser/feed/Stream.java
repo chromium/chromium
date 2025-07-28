@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Interface used for interacting with the Stream library in order to render a stream of cards. */
@@ -152,5 +153,10 @@ public interface Stream {
     /** Returns a reason to describe how the stream is closed. */
     default @ClosedReason int getClosedReason() {
         return ClosedReason.LEAVE_FEED;
+    }
+
+    /** Returns a list of feed article urls. */
+    default List<String> getFeedUrls() {
+        return new ArrayList<String>();
     }
 }

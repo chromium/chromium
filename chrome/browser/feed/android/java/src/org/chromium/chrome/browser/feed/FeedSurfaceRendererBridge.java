@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 /** Java bridge to feed::SurfaceRenderer, provides shallow JNI bindings. */
 @JNINamespace("feed::android")
 @NullMarked
@@ -218,6 +220,10 @@ public class FeedSurfaceRendererBridge {
         return FeedSurfaceRendererBridgeJni.get().getLastFetchTimeMs(mProfile, mSurfaceId);
     }
 
+    List<String> getFeedUrls() {
+        return FeedSurfaceRendererBridgeJni.get().getFeedUrls(mProfile, mSurfaceId);
+    }
+
     void reportInfoCardTrackViewStarted(int type) {
         FeedSurfaceRendererBridgeJni.get()
                 .reportInfoCardTrackViewStarted(mProfile, mSurfaceId, type);
@@ -331,6 +337,9 @@ public class FeedSurfaceRendererBridge {
                 @JniType("Profile*") Profile profile, int surfaceId, int changeId);
 
         long getLastFetchTimeMs(@JniType("Profile*") Profile profile, int surfaceId);
+
+        @JniType("std::vector<std::string>")
+        List<String> getFeedUrls(@JniType("Profile*") Profile profile, int surfaceId);
 
         void reportInfoCardTrackViewStarted(
                 @JniType("Profile*") Profile profile, int surfaceId, int type);

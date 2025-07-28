@@ -200,6 +200,7 @@ class FeedStream : public FeedApi,
       SurfaceId surface_id,
       base::TimeDelta elapsed) override;
   base::Time GetLastFetchTime(SurfaceId surface_id) override;
+  std::vector<std::string> GetFeedUrls(SurfaceId surface_id) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override;
   ContentOrder GetContentOrder(const StreamType& stream_type) const override;

@@ -83,6 +83,7 @@ import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -890,6 +891,10 @@ public class FeedSurfaceMediator
 
     public boolean isLoadingFeed() {
         return mIsLoadingFeed;
+    }
+
+    public List<String> getFeedUrls() {
+        return (mCurrentStream != null) ? mCurrentStream.getFeedUrls() : new ArrayList<String>();
     }
 
     /** Unbinds the stream and clear all the stream's contents. */
