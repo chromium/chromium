@@ -3569,6 +3569,24 @@
             ]
         }
     ],
+    "BlockfileCacheBackendDumpWithoutCrashing": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "dump_without_crashing_frequency": "0.02"
+                    },
+                    "enable_features": [
+                        "BlockfileCacheBackendDumpWithoutCrashing"
+                    ]
+                }
+            ]
+        }
+    ],
     "BluetoothQualityReport": [
         {
             "platforms": [
