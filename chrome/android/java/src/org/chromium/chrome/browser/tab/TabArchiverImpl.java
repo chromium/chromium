@@ -680,9 +680,13 @@ public class TabArchiverImpl implements TabArchiver {
     }
 
     private void broadcastDeclutterComplete() {
-        for (Observer obs : mObservers) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, obs::onDeclutterPassCompleted);
-        }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    for (Observer obs : mObservers) {
+                        obs.onDeclutterPassCompleted();
+                    }
+                });
 
         // Store the UI {@link ThemeType} at the current instant to compare with the up-to-date
         // theme setting during the next declutter pass.
@@ -690,15 +694,23 @@ public class TabArchiverImpl implements TabArchiver {
     }
 
     private void broadcastPersistedTabDataCreated() {
-        for (Observer obs : mObservers) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, obs::onArchivePersistedTabDataCreated);
-        }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    for (Observer obs : mObservers) {
+                        obs.onArchivePersistedTabDataCreated();
+                    }
+                });
     }
 
     private void broadcastAutodeletePassComplete() {
-        for (Observer obs : mObservers) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, obs::onAutodeletePassCompleted);
-        }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    for (Observer obs : mObservers) {
+                        obs.onAutodeletePassCompleted();
+                    }
+                });
     }
 
     // Determine if the user was active during the declutter inactivity period by checking all tabs
