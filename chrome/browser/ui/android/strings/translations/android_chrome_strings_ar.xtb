@@ -80,7 +80,7 @@
 <translation id="1327257854815634930">يتم فتح سجلّ التنقُّل.</translation>
 <translation id="1331212799747679585">‏يتعذَّر تحديث Chrome. يُرجى الاطِّلاع على مزيد من الخيارات</translation>
 <translation id="1332501820983677155">‏اختصارات ميزات Google Chrome</translation>
-<translation id="1333491156693005331">تم إجراء عملية التحقّق مؤخرًا</translation>
+<translation id="1333491156693005331">تم التحقّق منه مؤخرًا</translation>
 <translation id="1336996151357442890">تم إلغاء الاشتراك في تلقّي الإشعارات من "<ph name="SITE_NAME" />" سيُطلب منك مجددًا منح الإذن في زيارتك القادمة إلى هذا الموقع الإلكتروني.</translation>
 <translation id="1340839264183302272">مغادرة المجموعة</translation>
 <translation id="1342886103232377846">‏للتحقّق من كلمات المرور المحتمَل تعرّضها للاختراق، يُرجى الانتقال إلى "مدير كلمات المرور في Google".</translation>
@@ -598,7 +598,7 @@
 <translation id="3721119614952978349">‏أنت وGoogle</translation>
 <translation id="3737319253362202215">إعدادات الترجمة</translation>
 <translation id="3738139272394829648">المس للبحث</translation>
-<translation id="3739455665973395693">‏ما مِن كلمات مرور محتمَل تعرّضها للاختراق في حسابك على Google</translation>
+<translation id="3739455665973395693">‏ما مِن كلمات مرور معرّضة للاختراق في حسابك على Google</translation>
 <translation id="3739899004075612870">تمت إضافة إشارة مرجعية في <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">لا يتوفر البحث الصوتي على هذا الجهاز.</translation>
 <translation id="376561056759077985">لم يتم حفظ بعض البيانات إلى الآن</translation>
@@ -828,7 +828,7 @@
 <translation id="4782929588435725897">‫<ph name="SEARCH_ENGINE" /> هو محرك البحث التلقائي</translation>
 <translation id="4784349455504343791">يريد <ph name="WEBSITE_ORIGIN" /> استخدام معلومات شخصية من محفظتك الرقمية.</translation>
 <translation id="4787736314074622408">هل تريد حذف "<ph name="ITEM_TITLE" />"؟</translation>
-<translation id="4793679854893018356">‏تعرّف على الطريقة التي يحافظ بها Chrome على أمانك</translation>
+<translation id="4793679854893018356">‏كيف يحافظ Chrome على أمانك؟</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">الاسم المكتوب على البطاقة</translation>
 <translation id="480990236307250886">فتح الصفحة الرئيسية</translation>
