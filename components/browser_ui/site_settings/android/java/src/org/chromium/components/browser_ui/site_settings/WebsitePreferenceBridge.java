@@ -479,6 +479,14 @@ public class WebsitePreferenceBridge {
     }
 
     /**
+     * Returns whether the Android device supports adding exceptions for the javascript-optimizer
+     * content-setting.
+     */
+    public static boolean canAddExceptionsForJavascriptOptimizerSetting() {
+        return WebsitePreferenceBridgeJni.get().canAddExceptionsForJavascriptOptimizerSetting();
+    }
+
+    /**
      * Convert pattern to domain wildcard pattern. If fail to extract domain from the pattern,
      * return the original pattern.
      *
@@ -572,6 +580,8 @@ public class WebsitePreferenceBridge {
                 String origin,
                 String embedder,
                 @ContentSettingValues int value);
+
+        boolean canAddExceptionsForJavascriptOptimizerSetting();
 
         GeolocationSetting getGeolocationSettingForOrigin(
                 BrowserContextHandle browserContextHandle,

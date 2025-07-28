@@ -539,6 +539,10 @@
     Do not speed up sites with Chrome's V8 engine but make Chrome slightly more resistant to attacks
   </message>
 
+  <message name="IDS_WEBSITE_SETTINGS_JS_OPT_ADD_EXCEPTIONS_DISABLED_REASON" desc="Explains that the add-exception button is disabled because the Android device does not have enough RAM.">
+    Exceptions for specific websites disallowed because Android device does not have enough RAM.
+  </message>
+
   <!-- Bluetooth -->
 
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_BLUETOOTH_ASK" desc="Summary text explaining that the Bluetooth permission is set to ask the user for permission to access individual devices. To be shown in the list of permission categories.">

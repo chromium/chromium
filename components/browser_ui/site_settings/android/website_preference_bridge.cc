@@ -45,6 +45,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/site_isolation/site_isolation_policy.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -182,8 +183,9 @@ void GetOrigins(JNIEnv* env,
     const std::string embedder = settings_it.secondary_pattern.ToString();
 
     ScopedJavaLocalRef<jstring> jembedder;
-    if (embedder != origin)
+    if (embedder != origin) {
       jembedder = ConvertUTF8ToJavaString(env, embedder);
+    }
 
     seen_origins.push_back(origin);
     insertionFunc(env, static_cast<int>(content_type), list,
@@ -228,10 +230,11 @@ ContentSetting GetPermissionSettingForOrigin(
   // TODO(raymes): This check to see if '*' is the embedder is a hack that fixes
   // crbug.com/738377. In general querying the settings for patterns is broken
   // and needs to be fixed. See crbug.com/738757.
-  if (embedder_str == "*")
+  if (embedder_str == "*") {
     embedding_origin = requesting_origin;
-  else
+  } else {
     embedding_origin = GURL(embedder_str);
+  }
 
   // If `content_type` is permission, then we need to apply a set of
   // verifications before reading its value in `HostContentSettingsMap`.
@@ -468,6 +471,16 @@ static void JNI_WebsitePreferenceBridge_SetPermissionSettingForOrigin(
   }
 }
 
+static jboolean
+JNI_WebsitePreferenceBridge_CanAddExceptionsForJavascriptOptimizerSetting(
+    JNIEnv* env) {
+  // If origin isolation for JavaScript-optimization exceptions is disabled,
+  // Javascript-optimization exceptions only work for TLDs (ex foo.com) and not
+  // for suborigins (ex bar.foo.com).
+  return site_isolation::SiteIsolationPolicy::
+      IsOriginIsolationForJsOptExceptionsSupported();
+}
+
 static ScopedJavaLocalRef<jobject>
 JNI_WebsitePreferenceBridge_GetGeolocationSettingForOrigin(
     JNIEnv* env,
@@ -578,8 +591,9 @@ static void JNI_WebsitePreferenceBridge_GetChosenObjects(
       GetChooserContext(jbrowser_context_handle, type);
   // The ObjectPermissionContextBase can be null if the embedder doesn't support
   // the given ContentSettingsType.
-  if (!context)
+  if (!context) {
     return;
+  }
   for (const auto& object : context->GetAllGrantedObjects()) {
     // Remove the trailing slash so that origins are matched correctly in
     // SingleWebsitePreferences.mergePermissionInfoForTopLevelOrigin.
@@ -662,8 +676,9 @@ void OnStorageInfoReady(const ScopedJavaGlobalRef<jobject>& java_callback,
 
   storage::UsageInfoEntries::const_iterator i;
   for (i = entries.begin(); i != entries.end(); ++i) {
-    if (i->usage <= 0)
+    if (i->usage <= 0) {
       continue;
+    }
     ScopedJavaLocalRef<jstring> host = ConvertUTF8ToJavaString(env, i->host);
 
     Java_WebsitePreferenceBridge_insertStorageInfoIntoList(env, list, host,
@@ -1113,8 +1128,9 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
               static_cast<ContentSettingsType>(content_settings_type));
   ScopedJavaLocalRef<jstring> jembedder;
   for (const GURL& embargoed_origin : embargoed_origins) {
-    if (base::Contains(seen_origins, embargoed_origin.spec()))
+    if (base::Contains(seen_origins, embargoed_origin.spec())) {
       continue;
+    }
     std::string embargoed_origin_pattern =
         ContentSettingsPattern::FromURLNoWildcard(embargoed_origin).ToString();
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(

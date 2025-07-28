@@ -573,6 +573,14 @@ public class SiteSettingsCategory {
     }
 
     /**
+     * Returns resource id for message about why adding exceptions is blocked. 0 should be returned
+     * if no message should be shown.
+     */
+    protected int getBlockAddingExceptionsReasonResourceId() {
+        return 0;
+    }
+
+    /**
      * Returns whether to show the 'permission blocked' message. Majority of the time, that is
      * warranted when the permission is either blocked per app or globally. But there are exceptions
      * to this, so the sub-classes can overwrite.
