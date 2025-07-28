@@ -229,7 +229,17 @@ if (use_clang_modules) {
         ":sysroot",
       ]
     }
-  } else if (is_mac) {
+  } else if (is_apple) {
+    if (default_toolchain == current_toolchain && is_ios) {
+      # sysroot_modulemaps can be inside the build directory. This no-op action
+      # declares the modulemap files as outputs to satisfy GN's dependency
+      # tracking when other targets use them as inputs.
+      action("copy_sysroot_modulemaps") {
+        script = "//build/noop.py"
+        outputs = sysroot_modulemaps
+      }
+    }
+
     DarwinBasic_module("MachO") {
       public_deps = [
         ":_Builtin_stdbool",

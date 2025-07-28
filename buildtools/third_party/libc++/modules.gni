@@ -5,6 +5,16 @@
 import("//build/config/c++/modules.gni")
 import("//build/config/clang/clang.gni")
 
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+  sdk_path = ios_sdk_path
+}
+
+if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+  sdk_path = mac_sdk_path
+}
+
 configs_to_add = [
   "//buildtools/third_party/libc++:config",
   "//build/config/compiler:no_chromium_code",
@@ -68,23 +78,41 @@ if (use_clang_modules) {
     }
   }
 
-  if (is_mac || is_ios) {
+  if (is_apple) {
     template("DarwinBasic_module") {
       modulemap(target_name) {
         forward_variables_from(invoker, "*")
-        modulemap = "$mac_sdk_path/usr/include/DarwinBasic.modulemap"
+        modulemap = "$sdk_path/usr/include/DarwinBasic.modulemap"
+        if (!defined(public_deps)) {
+          public_deps = []
+        }
+        if (is_ios) {
+          public_deps += [ ":copy_sysroot_modulemaps($default_toolchain)" ]
+        }
       }
     }
     template("DarwinFoundation_module") {
       modulemap(target_name) {
         forward_variables_from(invoker, "*")
-        modulemap = "$mac_sdk_path/usr/include/DarwinFoundation.modulemap"
+        modulemap = "$sdk_path/usr/include/DarwinFoundation.modulemap"
+        if (!defined(public_deps)) {
+          public_deps = []
+        }
+        if (is_ios) {
+          public_deps += [ ":copy_sysroot_modulemaps($default_toolchain)" ]
+        }
       }
     }
     template("c_standard_library_module") {
       modulemap(target_name) {
         forward_variables_from(invoker, "*")
-        modulemap = "$mac_sdk_path/usr/include/c_standard_library.modulemap"
+        modulemap = "$sdk_path/usr/include/c_standard_library.modulemap"
+        if (!defined(public_deps)) {
+          public_deps = []
+        }
+        if (is_ios) {
+          public_deps += [ ":copy_sysroot_modulemaps($default_toolchain)" ]
+        }
       }
     }
   } else {

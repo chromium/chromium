@@ -2,18 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+  sdk_path = ios_sdk_path
+}
+
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
+  sdk_path = mac_sdk_path
 }
 
 if (use_clang_modules) {
   if (is_linux || is_chromeos) {
     sysroot_modulemap = "//build/linux/amd64/module.modulemap"
-  } else if (is_mac) {
+  } else if (is_apple) {
     sysroot_modulemaps = [
-      "$mac_sdk_path/usr/include/DarwinBasic.modulemap",
-      "$mac_sdk_path/usr/include/DarwinFoundation.modulemap",
-      "$mac_sdk_path/usr/include/c_standard_library.modulemap",
+      "$sdk_path/usr/include/DarwinBasic.modulemap",
+      "$sdk_path/usr/include/DarwinFoundation.modulemap",
+      "$sdk_path/usr/include/c_standard_library.modulemap",
     ]
   } else if (is_android) {
     sysroot_modulemap = "//build/android/amd64/module.modulemap"
