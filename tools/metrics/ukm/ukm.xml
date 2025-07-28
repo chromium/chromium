@@ -22156,6 +22156,13 @@ be describing additional metrics about the same event.
       or sum of a UMA/UKM metric.
     </summary>
   </metric>
+  <metric name="ActualResult10">
+    <summary>
+      The 10th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
   <metric name="ActualResult2">
     <summary>
       The 2nd UMA or UKM metrics related to the features affected by the ML
@@ -22187,6 +22194,27 @@ be describing additional metrics about the same event.
   <metric name="ActualResult6">
     <summary>
       The 6th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult7">
+    <summary>
+      The 7th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult8">
+    <summary>
+      The 8th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult9">
+    <summary>
+      The 9th UMA or UKM metrics related to the features affected by the ML
       model, with or without aggregation, after running the features as
       instructed by the ML model. No encoding is used.
     </summary>
