@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.announcement;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +18,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -36,9 +39,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Sends announcement notification for information update of Chrome.
- * When to show notification is controlled by Finch.
+ * Sends announcement notification for information update of Chrome. When to show notification is
+ * controlled by Finch.
  */
+@NullMarked
 public class AnnouncementNotificationManager {
     private static final String ANNOUNCEMENT_NOTIFICATION_TAG = "announcement_notification";
     private static final int ANNOUNCEMENT_NOTIFICATION_ID = 100;
@@ -75,6 +79,7 @@ public class AnnouncementNotificationManager {
                                     IntentUtils.safeGetIntExtra(
                                             intent, EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
                             String url = IntentUtils.safeGetStringExtra(intent, EXTRA_URL);
+                            assumeNonNull(url);
                             switch (intentType) {
                                 case IntentType.UNKNOWN:
                                     break;
