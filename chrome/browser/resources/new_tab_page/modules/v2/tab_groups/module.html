@@ -6,14 +6,17 @@
 </ntp-module-header-v2>
 <div id="tabGroups">
   ${this.getTabGroups_().map(item => html`
-    <a class="tab-group" href="${item.url.url}">
+    <div class="tab-group-container">
       <div id="hoverLayer"></div>
-      <icon-container class="icon-container">
-        <img is="cr-auto-img" class="tab-group-icon" draggable="false">
-      </icon-container>
-      <div class="tab-group-info">
-        <div class="tab-group-title">${item.title}</div>
-      </div>
-    </a>
+      <a class="tab-group">
+        <ntp-icon-container class="icon-container"
+            .faviconUrls="${this.getFaviconUrls_(item.faviconUrls)}"
+            .totalTabCount="${item.totalTabCount}">
+        </ntp-icon-container>
+        <div class="tab-group-info">
+          <div class="tab-group-title">${item.title}</div>
+        </div>
+      </a>
+    </div>
   `)}
 </div>

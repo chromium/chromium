@@ -65,10 +65,29 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {
   auto tab_groups_mojom = RunGetTabGroups();
 
   ASSERT_FALSE(tab_groups_mojom.empty());
-  int num_tab_groups = static_cast<int>(tab_groups_mojom.size());
-  for (int i = 0; i < num_tab_groups; ++i) {
-    auto& tab_group = tab_groups_mojom[i];
-    ASSERT_EQ("Tab Group " + base::NumberToString(i + 1), tab_group->title);
-    ASSERT_EQ(GURL("https://www.google.com"), tab_group->url);
-  }
+
+  const auto& group1 = tab_groups_mojom[0];
+  EXPECT_EQ("Tab Group 1 (3 tabs total)", group1->title);
+  EXPECT_EQ(3, group1->total_tab_count);
+  EXPECT_EQ(3u, group1->favicon_urls.size());
+  EXPECT_EQ(group1->total_tab_count,
+            static_cast<int>(group1->favicon_urls.size()));
+  EXPECT_EQ(GURL("https://www.google.com"), group1->favicon_urls[0]);
+  EXPECT_EQ(GURL("https://www.youtube.com"), group1->favicon_urls[1]);
+  EXPECT_EQ(GURL("https://www.wikipedia.org"), group1->favicon_urls[2]);
+
+  const auto& group2 = tab_groups_mojom[1];
+  EXPECT_EQ("Tab Group 2 (4 tabs total)", group2->title);
+  EXPECT_EQ(4u, group2->favicon_urls.size());
+  EXPECT_EQ(4, group2->total_tab_count);
+
+  const auto& group3 = tab_groups_mojom[2];
+  EXPECT_EQ("Tab Group 3 (8 tabs total)", group3->title);
+  EXPECT_EQ(4u, group3->favicon_urls.size());
+  EXPECT_EQ(8, group3->total_tab_count);
+
+  const auto& group4 = tab_groups_mojom[3];
+  EXPECT_EQ("Tab Group 4 (199 tabs total)", group4->title);
+  EXPECT_EQ(4u, group4->favicon_urls.size());
+  EXPECT_EQ(199, group4->total_tab_count);
 }

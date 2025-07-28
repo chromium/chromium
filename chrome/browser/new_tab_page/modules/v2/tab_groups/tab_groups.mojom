@@ -10,8 +10,10 @@ import "url/mojom/url.mojom";
 struct TabGroup {
   // Title of the tab group.
   string title;
-  // Url to open the tab group.
-  url.mojom.Url url;
+  // The total number of tabs in the tab group.
+  int32 total_tab_count;
+  // The URLs for up to the first three tabs. Used for fetching favicon.
+  array<url.mojom.Url> favicon_urls;
 };
 
 // Browser-side handler for requests from NTP Module UI.

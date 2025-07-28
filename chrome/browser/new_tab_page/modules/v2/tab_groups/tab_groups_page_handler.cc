@@ -10,6 +10,24 @@
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+ntp::tab_groups::mojom::TabGroupPtr MakeTabGroup(
+    const char* title,
+    std::initializer_list<const char*> urls,
+    int total_tabs) {
+  auto group = ntp::tab_groups::mojom::TabGroup::New();
+  group->title = title;
+  group->favicon_urls.reserve(urls.size());
+  for (const char* url : urls) {
+    group->favicon_urls.emplace_back(url);
+  }
+  group->total_tab_count = total_tabs;
+  return group;
+}
+
+}  // namespace
+
 TabGroupsPageHandler::TabGroupsPageHandler(
     mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>
         pending_page_handler,
@@ -31,13 +49,29 @@ void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
 
   if (data_type_param.find("Fake Data") != std::string::npos) {
     // Generate fake data.
-    const int kSampleTabGroupsCount = 4;
-    for (int i = 0; i < kSampleTabGroupsCount; ++i) {
-      auto tab_group = ntp::tab_groups::mojom::TabGroup::New();
-      tab_group->title = "Tab Group " + base::NumberToString(i + 1);
-      tab_group->url = GURL("https://www.google.com");
-      tab_groups_mojom.push_back(std::move(tab_group));
-    }
+    tab_groups_mojom.push_back(
+        MakeTabGroup("Tab Group 1 (3 tabs total)",
+                     {"https://www.google.com", "https://www.youtube.com",
+                      "https://www.wikipedia.org"},
+                     3));
+
+    tab_groups_mojom.push_back(
+        MakeTabGroup("Tab Group 2 (4 tabs total)",
+                     {"https://www.google.com", "https://www.youtube.com",
+                      "https://www.wikipedia.org", "https://maps.google.com"},
+                     4));
+
+    tab_groups_mojom.push_back(
+        MakeTabGroup("Tab Group 3 (8 tabs total)",
+                     {"https://www.google.com", "https://www.youtube.com",
+                      "https://www.wikipedia.org", "https://maps.google.com"},
+                     8));
+
+    tab_groups_mojom.push_back(
+        MakeTabGroup("Tab Group 4 (199 tabs total)",
+                     {"https://www.google.com", "https://www.youtube.com",
+                      "https://www.wikipedia.org", "https://maps.google.com"},
+                     199));
   }
 
   std::move(callback).Run(std::move(tab_groups_mojom));

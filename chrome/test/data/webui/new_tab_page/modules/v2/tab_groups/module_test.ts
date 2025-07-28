@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {TabGroupsModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {IconContainerElement, TabGroupsModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -32,21 +32,43 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     return module;
   }
 
-  test('No module created if no tab groups data', async () => {
+  test('no module created if no tab groups data', async () => {
     const module = await createModule([]);
     assertEquals(null, module);
   });
 
-  test('creates module', async () => {
+  test('create module', async () => {
     // Arrange.
     const tabGroups: TabGroup[] = [
       {
         title: 'Tab Group 1',
-        url: {url: 'http://www.google.com/'},
+        faviconUrls: [
+          {url: 'https://www.google.com'},
+          {url: 'https://www.youtube.com'},
+          {url: 'https://www.wikipedia.org'},
+          {url: 'https://maps.google.com'},
+        ],
+        totalTabCount: 4,
       },
       {
         title: 'Tab Group 2',
-        url: {url: 'http://www.google.com/'},
+        faviconUrls: [
+          {url: 'https://www.google.com'},
+          {url: 'https://www.youtube.com'},
+          {url: 'https://www.wikipedia.org'},
+          {url: 'https://maps.google.com'},
+        ],
+        totalTabCount: 8,
+      },
+      {
+        title: 'Tab Group 3',
+        faviconUrls: [
+          {url: 'https://www.google.com'},
+          {url: 'https://www.youtube.com'},
+          {url: 'https://www.wikipedia.org'},
+          {url: 'https://maps.google.com'},
+        ],
+        totalTabCount: 188,
       },
     ];
     const module = await createModule(tabGroups);
@@ -63,16 +85,128 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertTrue(!!groups);
     assertEquals(tabGroups.length, groups.length);
 
-    assertTrue(!!groups[0]);
-    assertEquals(
-        'Tab Group 1',
-        groups[0].querySelector('.tab-group-title')!.textContent);
-    assertEquals('http://www.google.com/', groups[0].href);
+    // Verify tab group 1.
+    for (let i = 0; i < groups.length; ++i) {
+      assertEquals(
+          `Tab Group ${i + 1}`,
+          groups[i]!.querySelector('.tab-group-title')!.textContent);
+      const iconContainer =
+          groups[i]!.querySelector<IconContainerElement>('ntp-icon-container')!;
+      assertTrue(!!iconContainer);
+      assertDeepEquals(
+          tabGroups[i]!.faviconUrls.map(u => u.url), iconContainer.faviconUrls);
+      assertEquals(tabGroups[i]!.totalTabCount, iconContainer.totalTabCount);
+    }
+  });
 
-    assertTrue(!!groups[1]);
-    assertEquals(
-        'Tab Group 2',
-        groups[1].querySelector('.tab-group-title')!.textContent);
-    assertEquals('http://www.google.com/', groups[1].href);
+  function getIconContainerElement(
+      module: TabGroupsModuleElement, index: number): IconContainerElement {
+    const groups =
+        module.shadowRoot.querySelectorAll<HTMLAnchorElement>('.tab-group');
+    return groups[index]!.querySelector<IconContainerElement>(
+        'ntp-icon-container')!;
+  }
+
+  test('show empty cells if there are less than four tabs', async () => {
+    // Arrange.
+    const module = await createModule([{
+      title: 'Tab Group',
+      faviconUrls: [{url: 'https://www.google.com'}],
+      totalTabCount: 1,
+    }]);
+
+    // Assert.
+    const iconContainer = getIconContainerElement(module, 0);
+    const cells = iconContainer.shadowRoot.querySelectorAll('.cell');
+    assertEquals(4, cells.length);
+
+    const iconCells = iconContainer.shadowRoot.querySelectorAll('.cell.icon');
+    const emptyCells = iconContainer.shadowRoot.querySelectorAll('.cell.empty');
+    const overflowCells =
+        iconContainer.shadowRoot.querySelectorAll('.cell.overflow-count');
+    assertEquals(1, iconCells.length);
+    assertEquals(3, emptyCells.length);
+    assertEquals(0, overflowCells.length);
+  });
+
+  test('show four favicons when there are exactly four tabs', async () => {
+    // Arrange.
+    const module = await createModule([{
+      title: 'Tab Group',
+      faviconUrls: [
+        {url: 'https://www.google.com'},
+        {url: 'https://www.youtube.com'},
+        {url: 'https://www.wikipedia.org'},
+        {url: 'https://maps.google.com'},
+      ],
+      totalTabCount: 4,
+    }]);
+
+    // Assert.
+    const iconContainer = getIconContainerElement(module, 0);
+    const cells = iconContainer.shadowRoot.querySelectorAll('.cell');
+    assertEquals(4, cells.length);
+
+    const iconCells = iconContainer.shadowRoot.querySelectorAll('.cell.icon');
+    const overflowCells =
+        iconContainer.shadowRoot.querySelectorAll('.cell.overflow-count');
+    assertEquals(4, iconCells.length);
+    assertEquals(0, overflowCells.length);
+  });
+
+  test('show +N when more than one tab remains', async () => {
+    // Arrange.
+    const module = await createModule([{
+      title: 'Tab Group',
+      faviconUrls: [
+        {url: 'https://www.google.com'},
+        {url: 'https://www.youtube.com'},
+        {url: 'https://www.wikipedia.org'},
+        {url: 'https://maps.google.com'},
+      ],
+      totalTabCount: 8,
+    }]);
+
+    // Assert.
+    const iconContainer = getIconContainerElement(module, 0);
+    const cells = iconContainer.shadowRoot.querySelectorAll('.cell');
+    assertEquals(4, cells.length);
+
+    const iconCells = iconContainer.shadowRoot.querySelectorAll('.cell.icon');
+    const overflowCells =
+        iconContainer.shadowRoot.querySelectorAll('.cell.overflow-count');
+    assertEquals(3, iconCells.length);
+    assertEquals(1, overflowCells.length);
+
+    const overflowText = overflowCells[0]!.textContent!.trim();
+    assertEquals('+5', overflowText);
+  });
+
+  test('caps at 99+ when more than 99 tabs remain', async () => {
+    // Arrange.
+    const module = await createModule([{
+      title: 'Tab Group',
+      faviconUrls: [
+        {url: 'https://www.google.com'},
+        {url: 'https://www.youtube.com'},
+        {url: 'https://www.wikipedia.org'},
+        {url: 'https://maps.google.com'},
+      ],
+      totalTabCount: 188,
+    }]);
+
+    // Assert.
+    const iconContainer = getIconContainerElement(module, 0);
+    const cells = iconContainer.shadowRoot.querySelectorAll('.cell');
+    assertEquals(4, cells.length);
+
+    const iconCells = iconContainer.shadowRoot.querySelectorAll('.cell.icon');
+    const overflowCells =
+        iconContainer.shadowRoot.querySelectorAll('.cell.overflow-count');
+    assertEquals(3, iconCells.length);
+    assertEquals(1, overflowCells.length);
+
+    const overflowText = overflowCells[0]!.textContent!.trim();
+    assertEquals('99+', overflowText);
   });
 });

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '/strings.m.js';
 import '../module_header.js';
+import './icon_container.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -79,6 +79,10 @@ export class ModuleElement extends ModuleElementBase {
 
   protected getTabGroups_(): TabGroup[] {
     return this.tabGroups.slice(0, MAX_TAB_GROUPS);
+  }
+
+  protected getFaviconUrls_(objects: Array<{url: string}>): string[] {
+    return objects.map(obj => obj.url);
   }
 }
 
