@@ -194,6 +194,9 @@
 [submodule "third_party/crossbench"]
 	path = third_party/crossbench
 	url = https://chromium.googlesource.com/crossbench
+[submodule "third_party/crossbench-web-tests"]
+	path = third_party/crossbench-web-tests
+	url = https://chromium.googlesource.com/chromium/web-tests
 [submodule "third_party/depot_tools"]
 	path = third_party/depot_tools
 	url = https://chromium.googlesource.com/chromium/tools/depot_tools

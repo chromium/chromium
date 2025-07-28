@@ -365,6 +365,10 @@ vars = {
   # and whatever else without interference from each other.
   'crossbench_revision': '0d9d615c19d18a07514e2b9563bcc939a27a9766',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling CrossBench
+  # and whatever else without interference from each other.
+  'crossbench_web_tests_revision': '3c76c8201f0732fe9781742229ab8ac43bf90cbf',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
   'libfuzzer_revision': 'bea408a6e01f0f7e6c82a43121fe3af4506c932e',
@@ -2071,6 +2075,8 @@ deps = {
   'src/third_party/crossbench':
     Var('chromium_git') + '/crossbench.git' + '@' + Var('crossbench_revision'),
 
+  'src/third_party/crossbench-web-tests':
+    Var('chromium_git') + '/chromium/web-tests.git' + '@' + Var('crossbench_web_tests_revision'),
 
   'src/third_party/depot_tools':
     Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '1b44e27e7d4c63dfe83d10ed01d23824536e9811',
