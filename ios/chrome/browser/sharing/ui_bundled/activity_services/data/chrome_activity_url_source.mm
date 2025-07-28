@@ -93,7 +93,9 @@ BASE_FEATURE(kShareNSExtensionItemKillSwitch,
   };
   NSExtensionItem* item = [[NSExtensionItem alloc] init];
   item.attachments = @[ provider ];
-  item.attributedTitle = [[NSAttributedString alloc] initWithString:_subject];
+  if (_subject) {
+    item.attributedTitle = [[NSAttributedString alloc] initWithString:_subject];
+  }
   return item;
 }
 
