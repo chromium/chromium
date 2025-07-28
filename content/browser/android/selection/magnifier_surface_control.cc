@@ -274,9 +274,6 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   renderer_settings.allow_antialiasing = false;
   renderer_settings.highp_threshold_min = 2048;
   renderer_settings.requires_alpha_channel = true;
-  renderer_settings.initial_screen_size = surface_size_;
-  renderer_settings.color_space = display_color_spaces.GetOutputColorSpace(
-      gfx::ContentColorUsage::kHDR, renderer_settings.requires_alpha_channel);
 
   root_params->frame_sink_id = frame_sink_id_;
   root_params->widget = surface_handle_;

@@ -232,11 +232,6 @@ class RendererPerfTest : public VizPerfTest {
   void SetUp() override {
     enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
 
-#if BUILDFLAG(IS_ANDROID)
-    renderer_settings_.color_space = gfx::ColorSpace::CreateSRGB();
-    renderer_settings_.initial_screen_size = kSurfaceSize;
-#endif
-
     auto* gpu_service = TestGpuServiceHolder::GetInstance()->gpu_service();
 
     child_context_provider_ =

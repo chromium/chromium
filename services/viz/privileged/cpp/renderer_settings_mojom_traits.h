@@ -125,16 +125,6 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.occlusion_culler_settings;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  static gfx::Size initial_screen_size(const viz::RendererSettings& input) {
-    return input.initial_screen_size;
-  }
-
-  static gfx::ColorSpace color_space(const viz::RendererSettings& input) {
-    return input.color_space;
-  }
-#endif
-
 #if BUILDFLAG(IS_OZONE)
   static std::vector<viz::OverlayStrategy> overlay_strategies(
       const viz::RendererSettings& input) {
