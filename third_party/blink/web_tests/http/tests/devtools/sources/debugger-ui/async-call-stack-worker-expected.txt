@@ -3,12 +3,12 @@ Tests async call stack for workers.
 Set timer for test function.
 self.onmessageworker.js:4
 Worker.postMessage
-worker.onmessageVM:24
+worker.onmessage
 postMessage
 (anonymous)worker.js:2
 Worker Created
-testFunctionVM:22
+testFunction
 setTimeout
-scheduleTestFunctionVM:3
-(anonymous)VM:1
+scheduleTestFunction
+(anonymous)
 
