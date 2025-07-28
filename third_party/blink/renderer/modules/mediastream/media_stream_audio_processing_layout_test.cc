@@ -304,7 +304,8 @@ TEST_P(MediaStreamAudioProcessingLayoutLoopbackTest, LoopbackAec) {
   EXPECT_TRUE(processing_layout.NeedApmInAudioService());
   EXPECT_EQ(
       processing_layout.webrtc_processing_settings().use_loopback_aec_reference,
-      aec_enabled && loopback_aec_enforced);
+      aec_enabled && loopback_aec_enforced &&
+          media::IsSystemLoopbackAsAecReferenceEnabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -408,6 +409,10 @@ TEST_P(EchoCancellationModeTest, Default_LoopbackAecEnforced) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       media::kSystemLoopbackAsAecReference, {{"forced_on", "true"}});
   ASSERT_TRUE(media::IsChromeWideEchoCancellationEnabled());
+  if (!media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    // Loopback AEC is not available.
+    return;
+  }
   EXPECT_TRUE(EchoCanceller::IsSystemWideAecAvailable(effects_));
   EchoCanceller echo_canceller =
       EchoCanceller::From(EchoCancellationMode::kBrowserDecides, effects_);
@@ -432,6 +437,10 @@ TEST_P(EchoCancellationModeTest, AllLoopbackAec) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       media::kSystemLoopbackAsAecReference, {{"forced_on", "false"}});
+  if (!media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    // Loopback AEC is not available.
+    return;
+  }
   EXPECT_TRUE(EchoCanceller::IsSystemWideAecAvailable(effects_));
   EchoCanceller echo_canceller =
       EchoCanceller::From(EchoCancellationMode::kAll, effects_);

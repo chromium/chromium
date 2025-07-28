@@ -839,6 +839,10 @@ TEST_F(AudioProcessorCallbackLoopbackAecDelayTest,
 
 TEST_F(AudioProcessorCallbackLoopbackAecDelayTest,
        LoopbackSettingLeadsToDelayApplied) {
+  if (!IsSystemLoopbackAsAecReferenceEnabled()) {
+    // Loopback AEC is not available.
+    return;
+  }
   RunTestWithSettings(/*use_loopback_aec_reference=*/true,
                       /*expected_offset=*/base::Milliseconds(99));
 }
