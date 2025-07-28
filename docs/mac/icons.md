@@ -5,15 +5,31 @@
 Mac Chromium stores its app icon and document icon badge in an asset catalog.
 Unlike iOS Chromium, which compiles an `.xcassets` directory into a `.car` file
 at build time, Mac Chromium has the `.car` file pre-built and checked in. This
-is done because (unlike on iOS) the asset catalog file only holds two icons and
-thus isn’t often changing, and because of internal technical constraints in
+is done because (unlike on iOS) the asset catalog file only holds three items
+and thus isn’t often changing, and because of internal technical constraints in
 tooling. This may change in the future.
 
-Chromium’s asset catalog has two multi-size image sets: one named `AppIcon` used
-for the app icon, and one named `Icon` used for badging documents using the
-`UTTypeIcons`/`UTTypeIconBadgeName`/`UTTypeIconText` `Info.plist` keys. The
-asset catalog `.xcassets` source, as well as the compiled `.car` result, are
-checked into the `//chrome/app/theme` directory.
+Chromium’s asset catalog contains three logical items:
+
+1. A collection of assets (`Icon Image`, `MultiSized Image`, `PackedImage`)
+   named `AppIcon` used for the app icon on macOS releases prior to macOS 26.
+2. A collection of assets (`Color`, `Image`, `IconGroup`, `IconImageStack`,
+   `Named Gradient`, `Vector`) named `AppIcon` used for the app icon on macOS 26
+   and subsequent releases.
+3. A collection of assets (`Icon Image`, `MultiSized Image`) named `Icon`
+   used for badging documents using the
+   `UTTypeIcons`/`UTTypeIconBadgeName`/`UTTypeIconText` `Info.plist` keys.
+
+The sources for this catalog are an `.xcassets` directory as well as an `.icon`
+Icon Composer document package. These sources, as well as the compiled `.car`
+result, are checked into the `//chrome/app/theme` directory.
+
+The current state of app icons (as of July 2025) is that Chrome compiles a
+“split app icon” asset catalog: the `AppIcon` bitmaps used for macOS releases
+prior to macOS 26 are those of the old, 2022-era app icon, while the `AppIcon`
+vectors used for macOS 26 and subsequent releases are of the new, 2025-era Icon
+Composer app icon. As users migrate to macOS 26 and subsequent releases, this
+will likely be revisited.
 
 ### Compiling the asset catalog
 
@@ -23,8 +39,10 @@ To compile the asset catalog, invoke `//tools/mac/icons/compile_car.py`:
 
 (or the path to whichever `.xcassets` file you want to compile)
 
-The script will put the files resulting from the asset catalog compilation into
-the directory containing the `.xcassets` file that was processed.
+There is no need to specify the corresponding `.icon` file; its name will be
+derived from the name of the `.xcassets` file specified. The script will compile
+the two source files, and will put the files resulting from the asset catalog
+compilation into the directory containing the source files that were processed.
 
 ## `.icns` files
 

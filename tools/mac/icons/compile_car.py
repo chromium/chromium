@@ -5,12 +5,12 @@
 # found in the LICENSE file.
 """A script to compile asset catalogs into .car files for Chromium Mac.
 
-The Chromium build system has the ability to automatically compile
-`.xcassets` files into `.car` files and include them into outputs; see
+The Chromium build system has the ability to automatically compile `.xcassets`
+and `.icon` files into `.car` files and include them into outputs; see
 //build/toolchain/apple/compile_xcassets.py and
 https://gn.googlesource.com/gn/+/main/docs/reference.md#func_bundle_data.
-However, `actool` is Mac-only, and has a wild amount of dependencies on the
-rest of the Xcode package (`ibtoold` specifically, which has 70+ different
+However, `actool` is Mac-only, and has a wild amount of dependencies on the rest
+of the Xcode package (`ibtoold` specifically, which has 70+ different
 dependencies, mostly frameworks), so pre-compiled `.car` files are checked in
 instead.
 
@@ -44,24 +44,7 @@ def _unsplit_version(version: tuple[int, ...]) -> str:
     return '.'.join((str(x) for x in version))
 
 
-_REQUIRED_OS_VERSION = _split_version('15.5')
 _REQUIRED_ACTOOL_VERSION = _split_version('26.0')
-
-
-def _verify_os_version() -> None:
-    """Verifies that the OS being used is suitably recent.
-
-    Raises:
-        AssetCatalogException: If the OS is too old
-    """
-    version = _split_version(platform.mac_ver()[0])
-
-    if version < _REQUIRED_OS_VERSION:
-        raise AssetCatalogException(
-            'OS is too old; it is version '
-            f'{_unsplit_version(version)} but at least version '
-            f'{_unsplit_version(_REQUIRED_OS_VERSION)} is '
-            'required')
 
 
 def _verify_actool_version() -> None:
@@ -105,13 +88,13 @@ def _min_deployment_target() -> str:
 
 def _process_path(path: pathlib.Path, min_deployment_target: str,
                   verbose: bool) -> None:
-    """Compiles a single .xcassets directory into a .car file.
+    """Compiles a single `.xcassets` directory and `.icon` into a .car file.
 
-    This function invokes `actool` to compile the given asset catalog. It
-    handles the output from `actool`, checks for errors and unexpected
-    warnings/notices, and copies the resulting `Assets.car` file to the same
-    directory as the input `.xcassets` directory, with a name derived from the
-    input path.
+    This function invokes `actool` to compile the given `.xcassets` directory
+    and parallel .icon file. It handles the output from `actool`, checks for
+    errors and unexpected warnings/notices, and copies the resulting `app.icns`
+    and `Assets.car` files to the same directory as the input `.xcassets`
+    directory, with names derived from the input path.
 
     Args:
         path: A pathlib.Path object to the .xcassets directory to process.
@@ -120,7 +103,7 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
 
     Raises:
         ValueError: If the asset catalog's path is incorrect in format.
-        AssetCatalogException: If `actool` reports errors, or behaved in a way
+        AssetCatalogException: If `actool` reported errors, or behaved in a way
             that was unexpected.
     """
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -136,6 +119,14 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             raise ValueError('Asset catalog filename must have at most one _')
         name_tag = f'_{name_parts[1]}' if len(name_parts) == 2 else ''
         source_dir = path.joinpath(os.pardir)
+
+        # The app icon is copied into the .car file under the name that it has
+        # when given to actool, so make a copy in the temp directory to ensure
+        # it has the correct name. `shutil.copytree` is used as .icon "files"
+        # are really packages.
+        appicon_original_path = source_dir.joinpath(f'AppIcon{name_tag}.icon')
+        appicon_tmp_path = tmp_dir.joinpath('AppIcon.icon')
+        shutil.copytree(appicon_original_path, appicon_tmp_path)
 
         command = [
             # The binary.
@@ -160,6 +151,18 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             # file found in various places inside the Xcode package.
             '--lightweight-asset-runtime-mode=enabled',
 
+            # Correctness. This command-line argument is undocumented. By
+            # default, if an `.icon` file is provided to `actool`, then `actool`
+            # will ignore any corresponding fallback bitmaps in the provided
+            # `.xcassets` directory, and generate its own. However, `actool`
+            # only generates 1x fallback bitmaps, which causes blurry icons to
+            # appear on 2x screens on macOS releases prior to macOS 26, which is
+            # undesirable (FB19028379). Given that there already are hand-
+            # crafted icon bitmaps available in the `.xcassets` directory, stop
+            # `actool` from generating its own, and have it use the available
+            # ones instead.
+            '--enable-icon-stack-fallback-generation=disabled',
+
             # Target information.
             '--app-icon=AppIcon',
             f'--minimum-deployment-target={min_deployment_target}',
@@ -169,7 +172,8 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             f'--compile={tmp_dir}',
 
             # What to compile.
-            path
+            path,
+            appicon_tmp_path,
         ]
         if verbose:
             print(f'  Invoking: {" ".join((str(item) for item in command))}')
@@ -203,7 +207,7 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
                          'warnings')
         # Some warnings are expected, so swallow those. Raise all others.
         # TODO(avi): Remove the "ambiguous content" warning exception when
-        # moving to .icon files.
+        # switching to `actool`-generated fallback bitmaps.
         collect_failures(
             output_dict, 'com.apple.actool.document.warnings', failures,
             'document warnings', lambda warnings: [
@@ -244,15 +248,10 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
                 # the required information.
                 pass
             elif output_file.name == 'AppIcon.icns':
-                # For now, ignore the generated icon file in favor of keeping
-                # the existing hand-crafted icns file.
-                #
-                # TODO(avi): When moving to .icon files, uncomment.
-                #
-                # destination_path = source_dir.joinpath( f'app{name_tag}.icns')
-                # if verbose:
-                #     print(f'  Copying output to: {destination_path}')
-                # shutil.copyfile(output_file, destination_path)
+                destination_path = source_dir.joinpath(f'app{name_tag}.icns')
+                if verbose:
+                    print(f'  Copying output to: {destination_path}')
+                shutil.copyfile(output_file, destination_path)
                 pass
             elif output_file.name == 'Assets.car':
                 destination_path = source_dir.joinpath(f'Assets{name_tag}.car')
@@ -265,7 +264,6 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
 
 
 def main(args: list[str]):
-    _verify_os_version()
     _verify_actool_version()
 
     parser = argparse.ArgumentParser()
