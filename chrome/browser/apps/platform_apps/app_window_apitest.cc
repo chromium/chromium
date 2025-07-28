@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace extensions {
+namespace {
 
 using AppWindowApiTest = PlatformAppBrowserTest;
 using ExperimentalAppWindowApiTest = ExperimentalPlatformAppBrowserTest;
@@ -245,4 +246,5 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNotFullscreen) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+}  // namespace
 }  // namespace extensions

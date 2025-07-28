@@ -348,17 +348,11 @@ if (enable_extensions) {
     data_deps = [ "//third_party/angle:includes" ]
   }
 
-  # TODO(rockot) bug 505926: These should be moved to extensions_browsertests but have
-  # old dependencies on chrome files. The chrome dependencies should be removed
-  # and these moved to the extensions_browsertests target. Currently, we solve
-  # the problem by making this a source set and linking it into
-  # //chrome/test:browser_tests.
+  # TODO(crbug.com/505926): Remove this target. Right now it's an empty
+  # source set linked into //chrome/test:browser_tests for historical reasons.
   source_set("chrome_extensions_browsertests_sources") {
     testonly = true
-    sources = [
-      "browser/api/app_window/app_window_apitest.cc",
-      "browser/app_window/app_window_browsertest.cc",
-    ]
+    sources = []
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

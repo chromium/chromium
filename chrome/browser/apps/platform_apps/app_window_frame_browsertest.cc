@@ -16,7 +16,7 @@ namespace extensions {
 
 namespace {
 
-using AppWindowBrowserTest = PlatformAppBrowserTest;
+using AppWindowFrameBrowserTest = PlatformAppBrowserTest;
 
 // This test is disabled on Linux because of the unpredictable nature of native
 // windows. We cannot assume that the window manager will insert any title bar
@@ -29,7 +29,8 @@ using AppWindowBrowserTest = PlatformAppBrowserTest;
 
 // Verifies that the NativeAppWindows implement GetFrameInsets() correctly.
 // See http://crbug.com/346115
-IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, MAYBE_FrameInsetsForDefaultFrame) {
+IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest,
+                       MAYBE_FrameInsetsForDefaultFrame) {
   AppWindow* app_window = CreateTestAppWindow("{}");
   NativeAppWindow* native_window = app_window->GetBaseWindow();
   gfx::Insets insets = native_window->GetFrameInsets();
@@ -43,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, MAYBE_FrameInsetsForDefaultFrame) {
 
 // Verifies that the NativeAppWindows implement GetFrameInsets() correctly.
 // See http://crbug.com/346115
-IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, FrameInsetsForColoredFrame) {
+IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, FrameInsetsForColoredFrame) {
   AppWindow* app_window =
       CreateTestAppWindow("{ \"frame\": { \"color\": \"#ffffff\" } }");
   NativeAppWindow* native_window = app_window->GetBaseWindow();
@@ -58,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, FrameInsetsForColoredFrame) {
 
 // Verifies that the NativeAppWindows implement GetFrameInsets() correctly for
 // frameless windows.
-IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, FrameInsetsForNoFrame) {
+IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, FrameInsetsForNoFrame) {
   AppWindow* app_window = CreateTestAppWindow("{ \"frame\": \"none\" }");
   NativeAppWindow* native_window = app_window->GetBaseWindow();
   gfx::Insets insets = native_window->GetFrameInsets();
@@ -72,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, FrameInsetsForNoFrame) {
   CloseAppWindow(app_window);
 }
 
-IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, IncognitoOpenUrl) {
+IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, IncognitoOpenUrl) {
   AppWindow* app_window = CreateTestAppWindow("{}");
 
   content::WebContents* app_contents =
@@ -91,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, IncognitoOpenUrl) {
   CloseAppWindow(app_window);
 }
 
-IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, DraggableFramelessWindow) {
+IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, DraggableFramelessWindow) {
   AppWindow* app_window = CreateTestAppWindow(R"({ "frame": "none" })");
 
   base::RunLoop run_loop;
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, DraggableFramelessWindow) {
 #if BUILDFLAG(IS_CHROMEOS)
 
 // Disabled due to flake. https://crbug.com/1416579
-IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest,
                        DISABLED_ShouldShowStaleContentOnEviction) {
   AppWindow* app_window = CreateTestAppWindow("{}");
   // Make sure that a surface gets embedded in the frame evictor of the
