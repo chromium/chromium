@@ -3250,6 +3250,10 @@ public class WebContentsAccessibilityTest {
                         .expectNoRecords(
                                 "Accessibility.Android.TextFormatting.Performance.TotalDuration.NoStyleData")
                         .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration.NoStyleData")
+                        .expectAnyRecord(
                                 "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration")
                         .expectNoRecords(
                                 "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration.NoStyleData")
@@ -3299,6 +3303,10 @@ public class WebContentsAccessibilityTest {
                         .expectAnyRecord(
                                 "Accessibility.Android.TextFormatting.Performance.TotalDuration.NoStyleData")
                         .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration.NoStyleData")
+                        .expectNoRecords(
                                 "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration")
                         .expectAnyRecord(
                                 "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration.NoStyleData")
@@ -3341,13 +3349,17 @@ public class WebContentsAccessibilityTest {
                         .expectNoRecords(
                                 "Accessibility.Android.TextFormatting.Performance.TotalDuration.NoStyleData")
                         .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.CheckAXFocusDuration.NoStyleData")
+                        .expectAnyRecord(
                                 "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration")
                         .expectNoRecords(
-                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration.NoStyleData")
+                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration.NoStyleData")
                         .expectAnyRecord(
                                 "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration")
                         .expectNoRecords(
-                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration.NoStyleData")
+                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration.NoStyleData")
                         .expectAnyRecord(
                                 "Accessibility.Android.TextFormatting.Performance.SetAniTextDuration")
                         .expectNoRecords(

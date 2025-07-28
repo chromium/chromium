@@ -542,6 +542,7 @@ chromium-metrics-reviews@google.com.
     the AccessibilityTextFormatting feature enabled.
   </summary>
   <token key="Operation">
+    <variant name="CheckAXFocus" summary="accessibility focus check"/>
     <variant name="GetTextContent" summary="GetSubstringTextContentUTF16()"/>
     <variant name="SetAniText" summary="setAccessibilityNodeInfoText() JNI"/>
     <variant name="ToJavaData" summary="conversion to Java data structures"/>

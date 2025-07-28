@@ -383,6 +383,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
     return allow_image_descriptions_;
   }
 
+  // Gets the accessibility focused node from Java-side code. Must be called
+  // from BrowserAccessibilityManagerAndroid.
   BrowserAccessibilityAndroid* GetAccessibilityFocus() const;
 
   void HandlePageLoaded(int32_t unique_id);
@@ -424,6 +426,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const;
 
   BrowserAccessibilityAndroid* GetAXFromUniqueID(int32_t unique_id) const;
+
+  bool IsAccessibilityFocused(BrowserAccessibilityAndroid* node) const;
 
   void UpdateAccessibilityNodeInfoBoundsRect(
       JNIEnv* env,
