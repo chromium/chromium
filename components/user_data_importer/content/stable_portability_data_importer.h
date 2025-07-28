@@ -8,6 +8,7 @@
 #include "components/user_data_importer/utility/bookmark_parser.h"
 
 namespace base {
+class File;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -40,17 +41,15 @@ class StablePortabilityDataImporter {
                                 ReadingListModel& reading_list_model);
   ~StablePortabilityDataImporter();
 
-  // Attempts to import the `bookmarks_filename`. `bookmarks_callback` is called
-  // at the end of the import process to notify the caller with the number of
-  // successful items imported.
-  void ImportBookmarks(const base::FilePath& bookmarks_filename,
-                       ImportCallback bookmarks_callback);
+  // Attempts to import bookmarks from the given `file`. `bookmarks_callback` is
+  // called at the end of the import process to notify the caller about the
+  // number of items successfully imported.
+  void ImportBookmarks(base::File file, ImportCallback bookmarks_callback);
 
-  // Attempts to import the `reading_list_filename`. `reading_list_callback` is
-  // called at the end of the import process to notify the caller with the
-  // number of successful items imported.
-  void ImportReadingList(const base::FilePath& reading_list_filename,
-                         ImportCallback reading_list_callback);
+  // Attempts to import bookmarks from the given `file`. `reading_list_callback`
+  // is called at the end of the import process to notify the caller about the
+  // number of items successfully imported.
+  void ImportReadingList(base::File file, ImportCallback reading_list_callback);
 
   // Attempts to import the `history_filename`. `history_callback` is called at
   // the end of the import process to notify the caller with the number of

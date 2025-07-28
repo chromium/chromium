@@ -5,6 +5,7 @@
 #include "components/user_data_importer/content/stable_portability_data_importer.h"
 
 #include "base/check_deref.h"
+#include "base/files/file.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -15,14 +16,13 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace {
-// Parses the provided `bookmarks_html` file.
-void ParseBookmarks(const base::FilePath& bookmarks_html,
+
+// Parses bookmarks from the given `file`.
+void ParseBookmarks(base::File file,
                     user_data_importer::BookmarkParser::BookmarkParsingCallback
                         bookmarks_callback) {
-  CHECK(!bookmarks_html.empty());
-
-  auto bookmark_parser = user_data_importer::MakeBookmarkParser();
-  bookmark_parser->Parse(bookmarks_html, std::move(bookmarks_callback));
+  user_data_importer::ContentBookmarkParser bookmark_parser;
+  bookmark_parser.Parse(std::move(file), std::move(bookmarks_callback));
 }
 
 }  // namespace
@@ -87,11 +87,11 @@ StablePortabilityDataImporter::StablePortabilityDataImporter(
 StablePortabilityDataImporter::~StablePortabilityDataImporter() = default;
 
 void StablePortabilityDataImporter::ImportBookmarks(
-    const base::FilePath& bookmarks_filename,
+    base::File file,
     ImportCallback bookmarks_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (bookmarks_filename.empty()) {
+  if (!file.IsValid()) {
     PostCallback(std::move(bookmarks_callback), 0);
     return;
   }
@@ -110,7 +110,7 @@ void StablePortabilityDataImporter::ImportBookmarks(
   // TODO(crnug.com/432010608): Sandbox parsing the bookmarks file.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ParseBookmarks, std::move(bookmarks_filename),
+      base::BindOnce(&ParseBookmarks, std::move(file),
                      std::move(bookmarks_parser_callback_on_thread)));
 }
 
@@ -133,11 +133,11 @@ void StablePortabilityDataImporter::OnBookmarksParsed(
 }
 
 void StablePortabilityDataImporter::ImportReadingList(
-    const base::FilePath& reading_list_filename,
+    base::File file,
     ImportCallback reading_list_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (reading_list_filename.empty()) {
+  if (!file.IsValid()) {
     PostCallback(std::move(reading_list_callback), 0);
     return;
   }
@@ -156,7 +156,7 @@ void StablePortabilityDataImporter::ImportReadingList(
   // TODO(crnug.com/432010608): Sandbox parsing the reading list file.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ParseBookmarks, std::move(reading_list_filename),
+      base::BindOnce(&ParseBookmarks, std::move(file),
                      std::move(reading_list_parser_callback_on_thread)));
 }
 

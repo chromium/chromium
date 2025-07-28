@@ -4,6 +4,7 @@
 
 #include "components/user_data_importer/content/stable_portability_data_importer.h"
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -104,8 +105,13 @@ class StablePortabilityDataImporterTest : public testing::Test {
   void ImportBookmarksFile(const base::FilePath& bookmarks_file) {
     PrepareCallbacks();
 
+    // Note: Some tests use an invalid (non-existent) file name, so `file` might
+    // be invalid here.
+    base::File file(bookmarks_file,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+
     importer_->ImportBookmarks(
-        bookmarks_file,
+        std::move(file),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&StablePortabilityDataImporterTest::OnBookmarksConsumed,
@@ -118,8 +124,13 @@ class StablePortabilityDataImporterTest : public testing::Test {
   void ImportReadingListFile(const base::FilePath& reading_list_file) {
     PrepareCallbacks();
 
+    // Note: Some tests use an invalid (non-existent) file name, so `file` might
+    // be invalid here.
+    base::File file(reading_list_file,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+
     importer_->ImportReadingList(
-        reading_list_file,
+        std::move(file),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(
