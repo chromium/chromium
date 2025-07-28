@@ -82,11 +82,18 @@ class NotificationBarClientView : public views::ClientView {
     if (!bounds().Contains(point)) {
       return HTNOWHERE;
     }
-    // The whole window is HTCAPTION, except the |rect_|.
-    if (rect_.Contains(gfx::PointAtOffsetFromOrigin(point - origin()))) {
+
+    // Client rect is the actionable area of the notification bar.
+    // `point` is in the coordinates of the widget while `rect_` is in the
+    // unmirrored coordinates of the view. In RTL, we need to convert the point
+    // to the mirrored coordinates to compare.
+    // GetMirroredRect() returns the rect as is in LTR.
+    if (GetMirroredRect(rect_).Contains(
+            gfx::PointAtOffsetFromOrigin(point - origin()))) {
       return HTCLIENT;
     }
 
+    // Make the other part of the window draggable.
     return HTCAPTION;
   }
 
