@@ -147,17 +147,6 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
  public:
   // URLRequest::Delegate
 
-  void OnReceivedRedirect(URLRequest* request,
-                          const RedirectInfo& redirect_info,
-                          bool* defer_redirect) override {
-    if (!IsSecure(redirect_info.new_url)) {
-      request->Cancel();
-      OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kPersistentHttpError);
-      // *this is deleted here
-    }
-  }
-
   // TODO(kristianm): Look into if OnAuthRequired might need to be customize
   // for DBSC
 
