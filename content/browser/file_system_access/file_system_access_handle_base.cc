@@ -174,6 +174,43 @@ void FileSystemAccessHandleBase::DoRequestPermission(
 
   // 3. Ask for both read and write permission at the same time, the permission
   // context should coalesce these into one prompt.
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFileSystemAccessWriteMode)) {
+    // When the write mode feature is enabled, we need to check both read and
+    // write permission status.
+    if (GetReadPermissionStatus() == PermissionStatus::ASK &&
+        GetWritePermissionStatus() == PermissionStatus::ASK) {
+      handle_state_.read_grant->RequestPermission(
+          context().frame_id,
+          FileSystemAccessPermissionGrant::UserActivationState::kRequired,
+          base::DoNothing());
+      handle_state_.write_grant->RequestPermission(
+          context().frame_id,
+          FileSystemAccessPermissionGrant::UserActivationState::kRequired,
+          base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
+                         AsWeakPtr(), mode, std::move(callback)));
+      return;
+    }
+    if (GetReadPermissionStatus() == PermissionStatus::ASK) {
+      handle_state_.read_grant->RequestPermission(
+          context().frame_id,
+          FileSystemAccessPermissionGrant::UserActivationState::kRequired,
+          base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
+                         AsWeakPtr(), mode, std::move(callback)));
+      return;
+    }
+    if (GetWritePermissionStatus() == PermissionStatus::ASK) {
+      handle_state_.write_grant->RequestPermission(
+          context().frame_id,
+          FileSystemAccessPermissionGrant::UserActivationState::kRequired,
+          base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
+                         AsWeakPtr(), mode, std::move(callback)));
+      return;
+    }
+    NOTREACHED();
+  }
+
   if (GetReadPermissionStatus() == PermissionStatus::ASK) {
     // Ignore callback for the read permission request; if the request fails,
     // the write permission request probably fails the same way. And we check
@@ -185,11 +222,16 @@ void FileSystemAccessHandleBase::DoRequestPermission(
         base::DoNothing());
   }
 
+  // When the standalone write mode feature is disabled, we don't need to
+  // check the write permission status as it's always requested with read
+  // permission, i.e. only `GetReadWritePermissionStatus()` is valid here, and
+  // it must be ASK.
   handle_state_.write_grant->RequestPermission(
       context().frame_id,
       FileSystemAccessPermissionGrant::UserActivationState::kRequired,
       base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
                      AsWeakPtr(), mode, std::move(callback)));
+  // Both read & write permission is either granted or denied at this point.
 }
 
 void FileSystemAccessHandleBase::DidRequestPermission(

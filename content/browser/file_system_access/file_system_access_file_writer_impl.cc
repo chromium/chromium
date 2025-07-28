@@ -83,7 +83,8 @@ void FileSystemAccessFileWriterImpl::Write(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/40276567): Review whether to switch to write-only.
-  RunWithReadWritePermission(
+  RunWithPermission(
+      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
       base::BindOnce(&FileSystemAccessFileWriterImpl::WriteImpl,
                      weak_factory_.GetWeakPtr(), offset, std::move(stream)),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -99,7 +100,8 @@ void FileSystemAccessFileWriterImpl::Truncate(uint64_t length,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/40276567): Review whether to switch to write-only.
-  RunWithReadWritePermission(
+  RunWithPermission(
+      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
       base::BindOnce(&FileSystemAccessFileWriterImpl::TruncateImpl,
                      weak_factory_.GetWeakPtr(), length),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -113,7 +115,8 @@ void FileSystemAccessFileWriterImpl::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/40276567): Review whether to switch to write-only.
-  RunWithReadWritePermission(
+  RunWithPermission(
+      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
       base::BindOnce(&FileSystemAccessFileWriterImpl::CloseImpl,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -127,7 +130,8 @@ void FileSystemAccessFileWriterImpl::Abort(AbortCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/40276567): Review whether to switch to write-only.
-  RunWithReadWritePermission(
+  RunWithPermission(
+      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
       base::BindOnce(&FileSystemAccessFileWriterImpl::AbortImpl,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,

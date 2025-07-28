@@ -5,10 +5,12 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
@@ -16,6 +18,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom.h"
@@ -120,11 +123,15 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       FileSystemAccessPermissionContext::HandleType handle_type,
       ContentBrowserClient::GetCloudIdentifiersCallback callback);
 
-  // Invokes `callback`, possibly after first requesting write permission. If
-  // permission isn't granted, `no_permission_callback` is invoked instead. The
-  // callbacks can be invoked synchronously.
+  // Invokes `callback`, possibly after first requesting the permission
+  // `permission_to_request`.
+  // If permission is granted, `callback` is invoked with `callback_arg`.
+  // If permission is not granted, `no_permission_callback` is invoked with an
+  // error and `callback_arg`.
+  // The callbacks can be invoked synchronously.
   template <typename CallbackArgType>
-  void RunWithReadWritePermission(
+  void RunWithPermission(
+      blink::mojom::FileSystemAccessPermissionMode permission_to_request,
       base::OnceCallback<void(CallbackArgType)> callback,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               CallbackArgType)> no_permission_callback,
@@ -210,15 +217,29 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
 };
 
 template <typename CallbackArgType>
-void FileSystemAccessHandleBase::RunWithReadWritePermission(
+void FileSystemAccessHandleBase::RunWithPermission(
+    blink::mojom::FileSystemAccessPermissionMode permission_to_request,
     base::OnceCallback<void(CallbackArgType)> callback,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             CallbackArgType)> no_permission_callback,
     CallbackArgType callback_arg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFileSystemAccessWriteMode)) {
+    if (permission_to_request !=
+        blink::mojom::FileSystemAccessPermissionMode::kReadWrite) {
+      // Rejects invalid permission mode.
+      mojo::ReportBadMessage("feature 'FileSystemAccessWriteMode' not enabled");
+      std::move(no_permission_callback)
+          .Run(file_system_access_error::FromStatus(
+                   blink::mojom::FileSystemAccessStatus::kSecurityError),
+               std::move(callback_arg));
+      return;
+    }
+  }
+
   DoRequestPermission(
-      // TODO(crbug.com/40276567): Update to "write"-only after spec discussion.
-      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+      permission_to_request,
       base::BindOnce(
           [](base::OnceCallback<void(CallbackArgType)> callback,
              base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
