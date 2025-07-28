@@ -667,9 +667,9 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     safe_browsing::ReferrerChain referrers = referrer_chain();
     const auto& file_metadata = file_metadata_.at(current_path);
     report_callbacks_.AddUnsafe(base::BindOnce(
-        &MaybeReportDeepScanningVerdict, profile, metadata_->GetURL(),
-        metadata_->GetTabUrl(), /*source=*/"", /*destination=*/"",
-        file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
+        &MaybeReportDeepScanningVerdict, profile, this, /*source=*/"",
+        /*destination=*/"", file_metadata.filename, file_metadata.sha256,
+        file_metadata.mime_type,
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
         file_metadata.size, referrers, result, file_metadata.scan_response));

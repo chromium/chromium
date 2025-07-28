@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -30,8 +31,7 @@ namespace safe_browsing {
 // ultimately allowed to access the text or file.
 void MaybeReportDeepScanningVerdict(
     Profile* profile,
-    const GURL& url,
-    const GURL& tab_url,
+    const enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,

@@ -164,7 +164,7 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, /*url*/ url_, /*tab_url*/ url_,
+      profile_, content_analysis_info_.get(),
       /*source*/
       data_controls::ReportingService::GetClipboardSourceString(
           clipboard_source_),

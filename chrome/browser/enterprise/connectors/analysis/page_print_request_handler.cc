@@ -178,8 +178,8 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, GURL(content_analysis_info_->url()),
-      content_analysis_info_->tab_url(), /*source*/ "",
+      profile_, content_analysis_info_.get(),
+      /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,

@@ -149,8 +149,7 @@ void AddCustomMessageRule(
 
 void MaybeReportDeepScanningVerdict(
     Profile* profile,
-    const GURL& url,
-    const GURL& tab_url,
+    const enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -165,6 +164,8 @@ void MaybeReportDeepScanningVerdict(
     const enterprise_connectors::ContentAnalysisResponse& response,
     enterprise_connectors::EventResult event_result) {
   DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
+  DCHECK(content_analysis_info);
+
   auto* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);
@@ -175,9 +176,10 @@ void MaybeReportDeepScanningVerdict(
   std::string unscanned_reason = MaybeGetUnscannedReason(result);
   if (!unscanned_reason.empty()) {
     reporting_event_router->OnUnscannedFileEvent(
-        url, tab_url, source, destination, file_name, download_digest_sha256,
-        mime_type, trigger, unscanned_reason, content_transfer_method,
-        content_size, event_result);
+        GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
+        source, destination, file_name, download_digest_sha256, mime_type,
+        trigger, unscanned_reason, content_transfer_method, content_size,
+        event_result);
   }
 
   if (result != BinaryUploadService::Result::SUCCESS)
@@ -193,16 +195,16 @@ void MaybeReportDeepScanningVerdict(
         unscanned_reason = "DLP_SCAN_FAILED";
 
       reporting_event_router->OnUnscannedFileEvent(
-          url, tab_url, source, destination, file_name, download_digest_sha256,
-          mime_type, trigger, std::move(unscanned_reason),
-          content_transfer_method, content_size, event_result);
+          GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
+          source, destination, file_name, download_digest_sha256, mime_type,
+          trigger, std::move(unscanned_reason), content_transfer_method,
+          content_size, event_result);
     } else if (response_result.triggered_rules_size() > 0) {
       reporting_event_router->OnAnalysisConnectorResult(
-          url, tab_url, source, destination, file_name, download_digest_sha256,
-          mime_type, trigger, response.request_token(), content_transfer_method,
-          source_email,
-          enterprise_connectors::ContentAreaUserProvider::GetUser(profile,
-                                                                  tab_url),
+          GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
+          source, destination, file_name, download_digest_sha256, mime_type,
+          trigger, response.request_token(), content_transfer_method,
+          source_email, content_analysis_info->GetContentAreaAccountEmail(),
           response_result, content_size, referrer_chain, event_result);
     }
   }
