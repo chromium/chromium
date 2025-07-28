@@ -38,6 +38,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   void OnFocusWindowToolbar() override;
   void OnWindowFullscreenTransitionStart() override;
   void OnWindowFullscreenTransitionComplete() override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
 
   // Overridden from NativeBrowserFrame:
   views::Widget::InitParams GetWidgetParams(

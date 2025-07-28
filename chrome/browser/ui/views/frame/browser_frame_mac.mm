@@ -129,12 +129,7 @@ BrowserFrameMac::BrowserFrameMac(BrowserFrame* browser_frame,
   }
 }
 
-BrowserFrameMac::~BrowserFrameMac() {
-  if (UsesRemoteCocoaApplicationHost(browser_view_->browser())) {
-    chrome::RemoveCommandObserver(browser_view_->browser(), IDC_BACK, this);
-    chrome::RemoveCommandObserver(browser_view_->browser(), IDC_FORWARD, this);
-  }
-}
+BrowserFrameMac::~BrowserFrameMac() = default;
 
 BrowserWindowTouchBarController* BrowserFrameMac::GetTouchBarController()
     const {
@@ -182,6 +177,16 @@ void BrowserFrameMac::OnWindowFullscreenTransitionStart() {
 
 void BrowserFrameMac::OnWindowFullscreenTransitionComplete() {
   browser_view_->FullscreenStateChanged();
+}
+
+void BrowserFrameMac::OnWidgetDestroyed(views::Widget* widget) {
+  if (UsesRemoteCocoaApplicationHost(browser_view_->browser())) {
+    chrome::RemoveCommandObserver(browser_view_->browser(), IDC_BACK, this);
+    chrome::RemoveCommandObserver(browser_view_->browser(), IDC_FORWARD, this);
+  }
+  touch_bar_delegate_ = nullptr;
+  browser_view_ = nullptr;
+  NativeWidgetMac::OnWidgetDestroyed(widget);
 }
 
 void BrowserFrameMac::ValidateUserInterfaceItem(
