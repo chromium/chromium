@@ -9,8 +9,9 @@
 #include <dhcpcsdk.h>
 #include <dhcpv6csdk.h>
 
+#include <type_traits>
+
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
 
 namespace {
 
@@ -23,17 +24,15 @@ class DhcpcsvcInitSingleton {
   }
 };
 
-// Worker pool threads that use the DHCP API may still be running at shutdown.
-// Leak instance and skip cleanup.
-static base::LazyInstance<DhcpcsvcInitSingleton>::Leaky
-    g_dhcpcsvc_init_singleton = LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 namespace net {
 
 void EnsureDhcpcsvcInit() {
-  g_dhcpcsvc_init_singleton.Get();
+  // Worker pool threads that use the DHCP API may still be running at shutdown.
+  // Leak instance and skip cleanup.
+  static_assert(std::is_trivially_destructible<DhcpcsvcInitSingleton>::value);
+  static DhcpcsvcInitSingleton instance;
 }
 
 }  // namespace net

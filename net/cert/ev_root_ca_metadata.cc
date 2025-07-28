@@ -7,8 +7,8 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/boringssl/src/pki/input.h"
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
@@ -41,12 +41,10 @@ struct EVMetadata {
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 }  // namespace
 
-static base::LazyInstance<EVRootCAMetadata>::Leaky g_ev_root_ca_metadata =
-    LAZY_INSTANCE_INITIALIZER;
-
 // static
 EVRootCAMetadata* EVRootCAMetadata::GetInstance() {
-  return g_ev_root_ca_metadata.Pointer();
+  static base::NoDestructor<EVRootCAMetadata> ev_root_ca_metadata;
+  return ev_root_ca_metadata.get();
 }
 
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)

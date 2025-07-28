@@ -7,12 +7,13 @@
 #include <algorithm>
 #include <memory>
 #include <string_view>
+#include <type_traits>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -101,11 +102,10 @@ GetConnectionAttributes() {
 
 namespace internal {
 
-base::LazyInstance<WlanApi>::Leaky lazy_wlanapi =
-  LAZY_INSTANCE_INITIALIZER;
-
 WlanApi& WlanApi::GetInstance() {
-  return lazy_wlanapi.Get();
+  static_assert(std::is_trivially_destructible<WlanApi>::value);
+  static WlanApi wlan_api;
+  return wlan_api;
 }
 
 WlanApi::WlanApi() : initialized(false) {

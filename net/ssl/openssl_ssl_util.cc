@@ -6,9 +6,9 @@
 
 #include <errno.h>
 
+#include <type_traits>
 #include <utility>
 
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -49,11 +49,11 @@ class OpenSSLNetErrorLibSingleton {
   int net_error_lib_;
 };
 
-base::LazyInstance<OpenSSLNetErrorLibSingleton>::Leaky g_openssl_net_error_lib =
-    LAZY_INSTANCE_INITIALIZER;
-
 int OpenSSLNetErrorLib() {
-  return g_openssl_net_error_lib.Get().net_error_lib();
+  static_assert(
+      std::is_trivially_destructible<OpenSSLNetErrorLibSingleton>::value);
+  static OpenSSLNetErrorLibSingleton instance;
+  return instance.net_error_lib();
 }
 
 int MapOpenSSLErrorSSL(uint32_t error_code) {

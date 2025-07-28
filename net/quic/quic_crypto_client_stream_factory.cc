@@ -4,7 +4,7 @@
 
 #include "net/quic/quic_crypto_client_stream_factory.h"
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
@@ -26,15 +26,13 @@ class DefaultCryptoStreamFactory : public QuicCryptoClientStreamFactory {
   }
 };
 
-static base::LazyInstance<DefaultCryptoStreamFactory>::Leaky
-    g_default_crypto_stream_factory = LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 // static
 QuicCryptoClientStreamFactory*
 QuicCryptoClientStreamFactory::GetDefaultFactory() {
-  return g_default_crypto_stream_factory.Pointer();
+  static base::NoDestructor<DefaultCryptoStreamFactory> factory;
+  return factory.get();
 }
 
 }  // namespace net

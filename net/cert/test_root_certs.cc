@@ -20,9 +20,6 @@ namespace {
 
 bool g_has_instance = false;
 
-base::LazyInstance<TestRootCerts>::Leaky
-    g_test_root_certs = LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 bool ThreadSafeTrustStoreInMemory::IsEmpty() const {
@@ -57,7 +54,8 @@ bssl::CertificateTrust ThreadSafeTrustStoreInMemory::GetTrust(
 
 // static
 TestRootCerts* TestRootCerts::GetInstance() {
-  return g_test_root_certs.Pointer();
+  static base::NoDestructor<TestRootCerts> test_root_certs;
+  return test_root_certs.get();
 }
 
 bool TestRootCerts::HasInstance() {

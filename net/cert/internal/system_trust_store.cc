@@ -34,7 +34,6 @@
 #include "net/cert/internal/trust_store_mac.h"
 #include "net/cert/x509_util_apple.h"
 #elif BUILDFLAG(IS_FUCHSIA)
-#include "base/lazy_instance.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #elif BUILDFLAG(IS_WIN)
 #include "net/cert/internal/trust_store_win.h"
@@ -288,8 +287,10 @@ class FuchsiaSystemCerts {
   bssl::TrustStoreInMemory system_trust_store_;
 };
 
-base::LazyInstance<FuchsiaSystemCerts>::Leaky g_root_certs_fuchsia =
-    LAZY_INSTANCE_INITIALIZER;
+FuchsiaSystemCerts& GetFuchsiaRootCerts() {
+  static base::NoDestructor<FuchsiaSystemCerts> certs;
+  return *certs;
+}
 
 }  // namespace
 
@@ -298,12 +299,11 @@ class SystemTrustStoreFuchsia : public SystemTrustStore {
   SystemTrustStoreFuchsia() = default;
 
   bssl::TrustStore* GetTrustStore() override {
-    return g_root_certs_fuchsia.Get().system_trust_store();
+    return GetFuchsiaRootCerts().system_trust_store();
   }
 
   bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
-    return g_root_certs_fuchsia.Get().system_trust_store()->Contains(
-        trust_anchor);
+    return GetFuchsiaRootCerts().system_trust_store()->Contains(trust_anchor);
   }
 };
 

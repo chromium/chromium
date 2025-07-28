@@ -12,8 +12,8 @@
 #include <dlfcn.h>
 
 #include "base/compiler_specific.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "third_party/apple_apsl/dnsinfo.h"
 
 namespace {
@@ -57,8 +57,8 @@ class DnsInfoApi {
 };
 
 const DnsInfoApi& GetDnsInfoApi() {
-  static base::LazyInstance<DnsInfoApi>::Leaky api = LAZY_INSTANCE_INITIALIZER;
-  return api.Get();
+  static base::NoDestructor<DnsInfoApi> api;
+  return *api;
 }
 
 struct DnsConfigTDeleter {

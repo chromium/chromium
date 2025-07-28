@@ -10,8 +10,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,8 +26,11 @@ namespace net {
 namespace {
 
 typedef std::list<URLRequestTestJob*> URLRequestJobList;
-base::LazyInstance<URLRequestJobList>::Leaky
-    g_pending_jobs = LAZY_INSTANCE_INITIALIZER;
+
+URLRequestJobList& GetPendingJobs() {
+  static base::NoDestructor<URLRequestJobList> pending_jobs;
+  return *pending_jobs;
+}
 
 }  // namespace
 
@@ -143,7 +146,7 @@ URLRequestTestJob::URLRequestTestJob(URLRequest* request,
       response_headers_length_(response_headers.size()) {}
 
 URLRequestTestJob::~URLRequestTestJob() {
-  std::erase(g_pending_jobs.Get(), this);
+  std::erase(GetPendingJobs(), this);
 }
 
 bool URLRequestTestJob::GetMimeType(std::string* mime_type) const {
@@ -278,7 +281,7 @@ void URLRequestTestJob::Kill() {
   stage_ = DONE;
   URLRequestJob::Kill();
   weak_factory_.InvalidateWeakPtrs();
-  std::erase(g_pending_jobs.Get(), this);
+  std::erase(GetPendingJobs(), this);
 }
 
 void URLRequestTestJob::ProcessNextOperation() {
@@ -327,16 +330,17 @@ void URLRequestTestJob::AdvanceJob() {
                                   weak_factory_.GetWeakPtr()));
     return;
   }
-  g_pending_jobs.Get().push_back(this);
+  GetPendingJobs().push_back(this);
 }
 
 // static
 bool URLRequestTestJob::ProcessOnePendingMessage() {
-  if (g_pending_jobs.Get().empty())
+  if (GetPendingJobs().empty()) {
     return false;
+  }
 
-  URLRequestTestJob* next_job(g_pending_jobs.Get().front());
-  g_pending_jobs.Get().pop_front();
+  URLRequestTestJob* next_job(GetPendingJobs().front());
+  GetPendingJobs().pop_front();
 
   DCHECK(!next_job->auto_advance());  // auto_advance jobs should be in this q
   next_job->ProcessNextOperation();

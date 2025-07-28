@@ -12,8 +12,8 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ref.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -48,8 +48,10 @@ namespace {
 // 1. Adding the source to the run loop.
 // 2. Handling the source result.
 // 3. Removing the source from the run loop.
-static base::LazyInstance<base::Lock>::Leaky g_cfnetwork_pac_runloop_lock =
-    LAZY_INSTANCE_INITIALIZER;
+base::Lock& GetCFNetworkPacRunloopLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
 
 // Forward declaration of the callback function used by the
 // SynchronizedRunLoopObserver class.
@@ -271,13 +273,13 @@ int ProxyResolverApple::GetProxyForURL(
   // Add the run loop observer to synchronize events of
   // CFNetworkExecuteProxyAutoConfigurationURL sources. See the definition of
   // |g_cfnetwork_pac_runloop_lock|.
-  SynchronizedRunLoopObserver observer(g_cfnetwork_pac_runloop_lock.Get());
+  SynchronizedRunLoopObserver observer(GetCFNetworkPacRunloopLock());
   observer.AddToCurrentRunLoop(private_runloop_mode);
 
   // Make sure that no CFNetworkExecuteProxyAutoConfigurationURL sources
   // are added to the run loop concurrently.
   {
-    base::AutoLock lock(g_cfnetwork_pac_runloop_lock.Get());
+    base::AutoLock lock(GetCFNetworkPacRunloopLock());
     CFRunLoopAddSource(CFRunLoopGetCurrent(), runloop_source.get(),
                        private_runloop_mode);
   }
@@ -287,7 +289,7 @@ int ProxyResolverApple::GetProxyForURL(
   // Make sure that no CFNetworkExecuteProxyAutoConfigurationURL sources
   // are removed from the run loop concurrently.
   {
-    base::AutoLock lock(g_cfnetwork_pac_runloop_lock.Get());
+    base::AutoLock lock(GetCFNetworkPacRunloopLock());
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(), runloop_source.get(),
                           private_runloop_mode);
   }

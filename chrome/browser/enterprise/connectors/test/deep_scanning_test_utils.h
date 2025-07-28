@@ -29,6 +29,8 @@
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+class Profile;
+
 namespace policy {
 class MockCloudPolicyClient;
 }
