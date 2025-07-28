@@ -4508,6 +4508,8 @@ if (!is_android) {
         "../browser/extensions/api/autofill_private/autofill_private_api_unittest.cc",
         "../browser/extensions/api/autofill_private/autofill_private_apitest.cc",
         "../browser/extensions/api/autofill_private/autofill_util_unittest.cc",
+        "../browser/extensions/api/bluetooth/bluetooth_apitest.cc",
+        "../browser/extensions/api/bluetooth/bluetooth_private_apitest.cc",
         "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc",
         "../browser/extensions/api/command_line_private/command_line_private_apitest.cc",
         "../browser/extensions/api/content_settings/content_settings_apitest.cc",

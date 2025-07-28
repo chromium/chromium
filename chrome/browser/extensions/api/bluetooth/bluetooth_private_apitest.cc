@@ -44,8 +44,8 @@ namespace bt = extensions::api::bluetooth;
 namespace bt_private = extensions::api::bluetooth_private;
 
 namespace extensions {
-
 namespace {
+
 const char kTestExtensionId[] = "jofgjdphhceggjecimellaapdjjadibj";
 const char kAdapterName[] = "Helix";
 const char kDeviceName[] = "Red";
@@ -54,16 +54,11 @@ const char kDeviceAddress[] = "11:12:13:14:15:16";
 MATCHER_P(IsFilterEqual, a, "") {
   return arg->Equals(*a);
 }
-}
 
 class BluetoothPrivateApiTest : public ExtensionApiTest {
  public:
-  BluetoothPrivateApiTest()
-      : adapter_name_(kAdapterName),
-        adapter_powered_(false),
-        adapter_discoverable_(false) {}
-
-  ~BluetoothPrivateApiTest() override {}
+  BluetoothPrivateApiTest() = default;
+  ~BluetoothPrivateApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -152,11 +147,11 @@ class BluetoothPrivateApiTest : public ExtensionApiTest {
   }
 
  protected:
-  std::string adapter_name_;
-  bool adapter_powered_;
-  bool adapter_discoverable_;
+  std::string adapter_name_ = kAdapterName;
+  bool adapter_powered_ = false;
+  bool adapter_discoverable_ = false;
 
-  scoped_refptr<NiceMock<MockBluetoothAdapter> > mock_adapter_;
+  scoped_refptr<NiceMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<NiceMock<MockBluetoothDevice>> mock_device_;
 };
 
@@ -317,4 +312,5 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, Pair) {
       << message_;
 }
 
+}  // namespace
 }  // namespace extensions

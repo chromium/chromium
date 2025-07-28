@@ -357,8 +357,6 @@ if (enable_extensions) {
     testonly = true
     sources = [
       "browser/api/app_window/app_window_apitest.cc",
-      "browser/api/bluetooth/bluetooth_apitest.cc",
-      "browser/api/bluetooth/bluetooth_private_apitest.cc",
       "browser/app_window/app_window_browsertest.cc",
     ]
 

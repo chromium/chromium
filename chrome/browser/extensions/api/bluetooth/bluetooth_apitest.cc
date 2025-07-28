@@ -32,12 +32,11 @@ using device::BluetoothDiscoverySession;
 using device::BluetoothUUID;
 using device::MockBluetoothAdapter;
 using device::MockBluetoothDevice;
-using extensions::Extension;
-using extensions::ResultCatcher;
 
 namespace utils = extensions::api_test_utils;
 namespace api = extensions::api;
 
+namespace extensions {
 namespace {
 
 using testing::_;
@@ -46,13 +45,14 @@ using testing::Invoke;
 static const char* kAdapterAddress = "A1:A2:A3:A4:A5:A6";
 static const char* kName = "whatsinaname";
 
-class BluetoothApiTest : public extensions::ExtensionApiTest {
+class BluetoothApiTest : public ExtensionApiTest {
  public:
-  BluetoothApiTest() {}
+  BluetoothApiTest() = default;
+  ~BluetoothApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    extensions::ExtensionApiTest::SetUpOnMainThread();
-    empty_extension_ = extensions::ExtensionBuilder("Test").Build();
+    ExtensionApiTest::SetUpOnMainThread();
+    empty_extension_ = ExtensionBuilder("Test").Build();
     SetUpMockAdapter();
   }
 
@@ -122,20 +122,18 @@ class BluetoothApiTest : public extensions::ExtensionApiTest {
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device2_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device3_;
 
-  extensions::BluetoothEventRouter* event_router() {
+  BluetoothEventRouter* event_router() {
     return bluetooth_api()->event_router();
   }
 
-  extensions::BluetoothAPI* bluetooth_api() {
-    return extensions::BluetoothAPI::Get(browser()->profile());
+  BluetoothAPI* bluetooth_api() {
+    return BluetoothAPI::Get(browser()->profile());
   }
 
  private:
   scoped_refptr<const Extension> empty_extension_;
   bool fail_next_call_ = false;
 };
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetAdapterState) {
   EXPECT_CALL(*mock_adapter_, GetAddress())
@@ -209,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, Discovery) {
       .WillOnce(Invoke(this, &BluetoothApiTest::StartScanOverride));
   start_function = setupFunction(new api::BluetoothStartDiscoveryFunction);
   utils::RunFunction(start_function.get(), "[]", browser()->profile(),
-                     extensions::api_test_utils::FunctionMode::kNone);
+                     utils::FunctionMode::kNone);
 
   testing::Mock::VerifyAndClearExpectations(mock_adapter_);
   // Simulate stop discovery with a failure
@@ -449,3 +447,6 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DeviceInfo) {
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+
+}  // namespace
+}  // namespace extensions
