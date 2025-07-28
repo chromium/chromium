@@ -10,6 +10,7 @@
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 
 #if defined(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/ml/chrome_ml.h"      // nogncheck
@@ -24,7 +25,8 @@
 #include "sandbox/policy/linux/sandbox_linux.h"
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && \
+    !(BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_CAST_RECEIVER))
 #include "base/feature_list.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
@@ -63,7 +65,8 @@ void UpdateSandboxOptionsForGpu(
 }
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && \
+    !(BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_CAST_RECEIVER))
 // If this feature is enabled, a WebGPU device is created for each valid
 // adapter. This makes sure any relevant drivers or other libs are loaded before
 // enabling the sandbox.
@@ -97,7 +100,8 @@ bool PreSandboxInit() {
   }
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && \
+    !(BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_CAST_RECEIVER))
   if (base::FeatureList::IsEnabled(kOnDeviceModelWarmDrivers)
 #if defined(ENABLE_ML_INTERNAL)
       && !ml::IsGpuBlocked(ml::ChromeML::Get()->api(), /*log_histogram=*/false)
