@@ -157,6 +157,7 @@ void GetCachedNetworkPropertiesResultCallback(
 
 NetworkingPrivateLinux::NetworkingPrivateLinux()
     : dbus_thread_("Networking Private DBus"), network_manager_proxy_(nullptr) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
 
   dbus_thread_.StartWithOptions(std::move(thread_options));
@@ -166,6 +167,7 @@ NetworkingPrivateLinux::NetworkingPrivateLinux()
 }
 
 NetworkingPrivateLinux::~NetworkingPrivateLinux() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (dbus_) {
     // dbus_thread_.Stop() below will wait for this task.
     dbus_thread_.task_runner()->PostTask(
@@ -206,6 +208,7 @@ bool NetworkingPrivateLinux::CheckNetworkManagerSupported() {
 
 void NetworkingPrivateLinux::GetProperties(const std::string& guid,
                                            PropertiesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!network_manager_proxy_) {
     LOG(WARNING) << "NetworkManager over DBus is not supported";
     std::move(callback).Run(std::nullopt,
@@ -234,6 +237,7 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
 
 void NetworkingPrivateLinux::GetManagedProperties(const std::string& guid,
                                                   PropertiesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   LOG(WARNING) << "GetManagedProperties is not supported";
   std::move(callback).Run(std::nullopt,
                           extensions::networking_private::kErrorNotSupported);
@@ -242,6 +246,7 @@ void NetworkingPrivateLinux::GetManagedProperties(const std::string& guid,
 void NetworkingPrivateLinux::GetState(const std::string& guid,
                                       DictionaryCallback success_callback,
                                       FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("GetState", std::move(failure_callback));
     return;
@@ -293,6 +298,7 @@ void NetworkingPrivateLinux::SetProperties(const std::string& guid,
                                            bool allow_set_shared_config,
                                            VoidCallback success_callback,
                                            FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("SetProperties", std::move(failure_callback));
 }
 
@@ -300,6 +306,7 @@ void NetworkingPrivateLinux::CreateNetwork(bool shared,
                                            base::Value::Dict properties,
                                            StringCallback success_callback,
                                            FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("CreateNetwork", std::move(failure_callback));
 }
 
@@ -307,6 +314,7 @@ void NetworkingPrivateLinux::ForgetNetwork(const std::string& guid,
                                            bool allow_forget_shared_config,
                                            VoidCallback success_callback,
                                            FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(zentaro): Implement for Linux.
   ReportNotSupported("ForgetNetwork", std::move(failure_callback));
 }
@@ -317,6 +325,7 @@ void NetworkingPrivateLinux::GetNetworks(const std::string& network_type,
                                          int limit,
                                          NetworkListCallback success_callback,
                                          FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("GetNetworks", std::move(failure_callback));
     return;
@@ -540,6 +549,7 @@ void NetworkingPrivateLinux::DisconnectFromNetwork(const std::string& guid,
 void NetworkingPrivateLinux::StartConnect(const std::string& guid,
                                           VoidCallback success_callback,
                                           FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("StartConnect", std::move(failure_callback));
     return;
@@ -560,6 +570,7 @@ void NetworkingPrivateLinux::StartConnect(const std::string& guid,
 void NetworkingPrivateLinux::StartDisconnect(const std::string& guid,
                                              VoidCallback success_callback,
                                              FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!CheckNetworkManagerSupported()) {
     ReportNotSupported("StartDisconnect", std::move(failure_callback));
     return;
@@ -581,6 +592,7 @@ void NetworkingPrivateLinux::GetCaptivePortalStatus(
     const std::string& guid,
     StringCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("GetCaptivePortalStatus", std::move(failure_callback));
 }
 
@@ -590,6 +602,7 @@ void NetworkingPrivateLinux::UnlockCellularSim(
     const std::string& puk,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("UnlockCellularSim", std::move(failure_callback));
 }
 
@@ -600,6 +613,7 @@ void NetworkingPrivateLinux::SetCellularSimState(
     const std::string& new_pin,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("SetCellularSimState", std::move(failure_callback));
 }
 
@@ -608,12 +622,14 @@ void NetworkingPrivateLinux::SelectCellularMobileNetwork(
     const std::string& network_id,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReportNotSupported("SelectCellularMobileNetwork",
                      std::move(failure_callback));
 }
 
 void NetworkingPrivateLinux::GetEnabledNetworkTypes(
     EnabledNetworkTypesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::Value::List network_list;
   network_list.Append(::onc::network_type::kWiFi);
   std::move(callback).Run(std::move(network_list));
@@ -621,6 +637,7 @@ void NetworkingPrivateLinux::GetEnabledNetworkTypes(
 
 void NetworkingPrivateLinux::GetDeviceStateList(
     DeviceStateListCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DeviceStateList device_state_list;
   api::networking_private::DeviceStateProperties& properties =
       device_state_list.emplace_back();
@@ -630,36 +647,43 @@ void NetworkingPrivateLinux::GetDeviceStateList(
 }
 
 void NetworkingPrivateLinux::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(base::Value::Dict());
 }
 
 void NetworkingPrivateLinux ::GetCertificateLists(
     GetCertificateListsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(base::Value::Dict());
 }
 
 void NetworkingPrivateLinux::EnableNetworkType(const std::string& type,
                                                BoolCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(false);
 }
 
 void NetworkingPrivateLinux::DisableNetworkType(const std::string& type,
                                                 BoolCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(false);
 }
 
 void NetworkingPrivateLinux::RequestScan(const std::string& /* type */,
                                          BoolCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(GetNetworksForScanRequest());
 }
 
 void NetworkingPrivateLinux::AddObserver(
     NetworkingPrivateDelegateObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   network_events_observers_.AddObserver(observer);
 }
 
 void NetworkingPrivateLinux::RemoveObserver(
     NetworkingPrivateDelegateObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   network_events_observers_.RemoveObserver(observer);
 }
 
