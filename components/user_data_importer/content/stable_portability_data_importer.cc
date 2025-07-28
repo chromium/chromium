@@ -16,48 +16,35 @@
 
 namespace user_data_importer {
 
-// Object used to allow Rust History import pipeline to communicate results
-// back to this importer.
-class RustHistoryCallbackForStablePortabilityFormat final
-    : public user_data_importer::HistoryCallbackFromRust<
-          StablePortabilityHistoryEntry> {
- public:
-  using TransferHistoryCallback = base::RepeatingCallback<void(
-      const std::vector<user_data_importer::StablePortabilityHistoryEntry>&)>;
+StablePortabilityDataImporter::RustHistoryCallbackForStablePortabilityFormat::
+    RustHistoryCallbackForStablePortabilityFormat(
+        TransferHistoryCallback transfer_history_callback,
+        user_data_importer::StablePortabilityDataImporter::ImportCallback
+            done_callback)
+    : transfer_history_callback_(std::move(transfer_history_callback)),
+      done_callback_(std::move(done_callback)) {}
 
-  explicit RustHistoryCallbackForStablePortabilityFormat(
-      TransferHistoryCallback transfer_history_callback,
-      user_data_importer::StablePortabilityDataImporter::ImportCallback
-          done_callback)
-      : transfer_history_callback_(std::move(transfer_history_callback)),
-        done_callback_(std::move(done_callback)) {}
+StablePortabilityDataImporter::RustHistoryCallbackForStablePortabilityFormat::
+    ~RustHistoryCallbackForStablePortabilityFormat() = default;
 
-  ~RustHistoryCallbackForStablePortabilityFormat() override = default;
+void StablePortabilityDataImporter::
+    RustHistoryCallbackForStablePortabilityFormat::ImportHistoryEntries(
+        const std::unique_ptr<std::vector<StablePortabilityHistoryEntry>>
+            history_entries,
+        bool completed) {
+  transfer_history_callback_.Run(*history_entries);
 
-  // Called from Rust when a batch of history entries has been parsed.
-  void ImportHistoryEntries(
-      std::unique_ptr<std::vector<StablePortabilityHistoryEntry>>
-          history_entries,
-      bool completed) override {
-    transfer_history_callback_.Run(*history_entries);
-
-    if (completed && done_callback_) {
-      std::move(done_callback_).Run(history_entries->size());
-    }
+  if (completed && done_callback_) {
+    std::move(done_callback_).Run(history_entries->size());
   }
+}
 
-  // Calls `done_callback_` with 0 to signal that parsing has failed.
-  void Fail() {
-    if (done_callback_) {
-      std::move(done_callback_).Run(0);
-    }
+void StablePortabilityDataImporter::
+    RustHistoryCallbackForStablePortabilityFormat::Fail() {
+  if (done_callback_) {
+    std::move(done_callback_).Run(0);
   }
-
- private:
-  TransferHistoryCallback transfer_history_callback_;
-  user_data_importer::StablePortabilityDataImporter::ImportCallback
-      done_callback_;
-};
+}
 
 StablePortabilityDataImporter::StablePortabilityDataImporter(
     history::HistoryService& history_service,
@@ -208,13 +195,10 @@ void StablePortabilityDataImporter::ImportHistory(
 
   // Convert the base::FilePath to a UTF-8 string and then to a Rust slice.
   std::string history_filename_utf8 = history_filename.AsUTF8Unsafe();
-  rust::Slice<const uint8_t> history_filename_slice(
-      reinterpret_cast<const uint8_t*>(history_filename_utf8.data()),
-      history_filename_utf8.length());
 
-  // TODO(crbug.com/430253028): Move history parsing to the background thread.
-  user_data_importer::parse_stable_portability_history(
-      history_filename_slice, std::move(callback), import_batch_size);
+  background_worker_.AsyncCall(&BackgroundWorker::ParseHistory)
+      .WithArgs(std::move(history_filename_utf8), std::move(callback),
+                import_batch_size);
 }
 
 void StablePortabilityDataImporter::PostCallback(auto callback, auto results) {
@@ -232,6 +216,17 @@ void StablePortabilityDataImporter::BackgroundWorker::ParseBookmarks(
     base::File file,
     BookmarkParser::BookmarkParsingCallback bookmarks_callback) {
   bookmark_parser_->Parse(std::move(file), std::move(bookmarks_callback));
+}
+
+void StablePortabilityDataImporter::BackgroundWorker::ParseHistory(
+    const std::string& history_filename,
+    std::unique_ptr<RustHistoryCallbackForStablePortabilityFormat> callback,
+    size_t import_batch_size) {
+  rust::Slice<const uint8_t> history_filename_slice(
+      reinterpret_cast<const uint8_t*>(history_filename.data()),
+      history_filename.length());
+  user_data_importer::parse_stable_portability_history(
+      history_filename_slice, std::move(callback), import_batch_size);
 }
 
 }  // namespace user_data_importer

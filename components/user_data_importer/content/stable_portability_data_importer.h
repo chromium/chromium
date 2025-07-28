@@ -8,6 +8,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
+#include "components/user_data_importer/utility/history_callback_from_rust.h"
 
 namespace base {
 class File;
@@ -63,6 +64,37 @@ class StablePortabilityDataImporter {
                      const size_t import_batch_size);
 
  private:
+  // Object used to allow Rust History import pipeline to communicate results
+  // back to this importer.
+  class RustHistoryCallbackForStablePortabilityFormat final
+      : public user_data_importer::HistoryCallbackFromRust<
+            StablePortabilityHistoryEntry> {
+   public:
+    using TransferHistoryCallback = base::RepeatingCallback<void(
+        const std::vector<user_data_importer::StablePortabilityHistoryEntry>&)>;
+
+    explicit RustHistoryCallbackForStablePortabilityFormat(
+        TransferHistoryCallback transfer_history_callback,
+        user_data_importer::StablePortabilityDataImporter::ImportCallback
+            done_callback);
+
+    ~RustHistoryCallbackForStablePortabilityFormat() override;
+
+    // Called from Rust when a batch of history entries has been parsed.
+    void ImportHistoryEntries(
+        const std::unique_ptr<std::vector<
+            user_data_importer::StablePortabilityHistoryEntry>> history_entries,
+        bool completed) override;
+
+    // Calls `done_callback_` with 0 to signal that parsing has failed.
+    void Fail();
+
+   private:
+    TransferHistoryCallback transfer_history_callback_;
+    user_data_importer::StablePortabilityDataImporter::ImportCallback
+        done_callback_;
+  };
+
   // Encapsulates work which must occur in the background thread.
   class BackgroundWorker {
    public:
@@ -74,6 +106,11 @@ class StablePortabilityDataImporter {
         base::File file,
         user_data_importer::BookmarkParser::BookmarkParsingCallback
             bookmarks_callback);
+
+    void ParseHistory(
+        const std::string& history_filename,
+        std::unique_ptr<RustHistoryCallbackForStablePortabilityFormat> callback,
+        size_t import_batch_size);
 
    private:
     scoped_refptr<ContentBookmarkParser> bookmark_parser_;
