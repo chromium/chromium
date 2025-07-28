@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/c/system/trap.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -1875,7 +1871,7 @@ void ReadAllMessages(const MojoTrapEvent* event) {
 }
 
 MojoHandle RandomHandle(MojoHandle* handles, size_t size) {
-  return handles[base::RandInt(0, static_cast<int>(size) - 1)];
+  return UNSAFE_TODO(handles[base::RandInt(0, static_cast<int>(size) - 1)]);
 }
 
 void DoRandomThing(MojoHandle* traps,
@@ -1955,9 +1951,10 @@ TEST_F(TrapTest, ConcurrencyStressTest) {
       &DoRandomThing, traps, kNumTraps, watched_handles, kNumWatchedHandles);
 
   for (size_t i = 0; i < kNumTraps; ++i)
-    MojoCreateTrap(&ReadAllMessages, nullptr, &traps[i]);
+    MojoCreateTrap(&ReadAllMessages, nullptr, &UNSAFE_TODO(traps[i]));
   for (size_t i = 0; i < kNumWatchedHandles; i += 2)
-    CreateMessagePipe(&watched_handles[i], &watched_handles[i + 1]);
+    CreateMessagePipe(&UNSAFE_TODO(watched_handles[i]),
+                      &UNSAFE_TODO(watched_handles[i + 1]));
 
   std::array<std::unique_ptr<ThreadedRunner>, kNumThreads> threads;
   for (size_t i = 0; i < kNumThreads; ++i) {
@@ -1970,9 +1967,9 @@ TEST_F(TrapTest, ConcurrencyStressTest) {
   for (size_t i = 0; i < kNumThreads; ++i)
     threads[i]->Join();
   for (size_t i = 0; i < kNumTraps; ++i)
-    MojoClose(traps[i]);
+    MojoClose(UNSAFE_TODO(traps[i]));
   for (size_t i = 0; i < kNumWatchedHandles; ++i)
-    MojoClose(watched_handles[i]);
+    MojoClose(UNSAFE_TODO(watched_handles[i]));
 }
 
 }  // namespace

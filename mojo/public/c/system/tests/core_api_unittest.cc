@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file tests the C API.
-
-#include "mojo/public/c/system/core.h"
 
 #include <stdint.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -219,13 +214,13 @@ TEST(CoreAPITest, BasicDataPipe) {
   static const char kWorld[] = "world";
   ASSERT_GE(buffer_size, sizeof(kWorld));
   // Include the terminating null.
-  memcpy(write_pointer, kWorld, sizeof(kWorld));
+  UNSAFE_TODO(memcpy(write_pointer, kWorld, sizeof(kWorld)));
   EXPECT_EQ(
       MOJO_RESULT_OK,
       MojoEndWriteData(hp, static_cast<uint32_t>(sizeof(kWorld)), nullptr));
 
   // Read one character from |hc|.
-  memset(buffer, 0, sizeof(buffer));
+  UNSAFE_TODO(memset(buffer, 0, sizeof(buffer)));
   buffer_size = 1;
   EXPECT_EQ(MOJO_RESULT_OK, MojoReadData(hc, nullptr, buffer, &buffer_size));
 
@@ -252,7 +247,7 @@ TEST(CoreAPITest, BasicDataPipe) {
     }
     ASSERT_EQ(result, MOJO_RESULT_OK);
     ASSERT_LE(buffer_size, sizeof(buffer) - 1);
-    memcpy(&buffer[read_offset], read_pointer, buffer_size);
+    UNSAFE_TODO(memcpy(&buffer[read_offset], read_pointer, buffer_size));
     EXPECT_EQ(MOJO_RESULT_OK, MojoEndReadData(hc, buffer_size, nullptr));
     read_offset += buffer_size;
   }
@@ -291,7 +286,7 @@ TEST(CoreAPITest, BasicSharedBuffer) {
   void* pointer = nullptr;
   EXPECT_EQ(MOJO_RESULT_OK, MojoMapBuffer(h0, 0, 100, nullptr, &pointer));
   ASSERT_TRUE(pointer);
-  static_cast<char*>(pointer)[50] = 'x';
+  UNSAFE_TODO(static_cast<char*>(pointer)[50]) = 'x';
 
   // Duplicate |h0| to |h1|.
   MojoHandle h1 = MOJO_HANDLE_INVALID;
@@ -302,7 +297,7 @@ TEST(CoreAPITest, BasicSharedBuffer) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h0));
 
   // The mapping should still be good.
-  static_cast<char*>(pointer)[51] = 'y';
+  UNSAFE_TODO(static_cast<char*>(pointer)[51]) = 'y';
 
   // Unmap it.
   EXPECT_EQ(MOJO_RESULT_OK, MojoUnmapBuffer(pointer));
@@ -314,7 +309,7 @@ TEST(CoreAPITest, BasicSharedBuffer) {
 
   // It should have what we wrote.
   EXPECT_EQ('x', static_cast<char*>(pointer)[0]);
-  EXPECT_EQ('y', static_cast<char*>(pointer)[1]);
+  UNSAFE_TODO(EXPECT_EQ('y', static_cast<char*>(pointer)[1]));
 
   // Unmap it.
   EXPECT_EQ(MOJO_RESULT_OK, MojoUnmapBuffer(pointer));

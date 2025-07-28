@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/test/test_support_impl.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -80,7 +76,7 @@ char** TestSupportImpl::EnumerateSourceRootRelativeDirectory(
   // |names.size() + 1| for null terminator.
   char** rv = static_cast<char**>(calloc(names.size() + 1, sizeof(char*)));
   for (size_t i = 0; i < names.size(); ++i)
-    rv[i] = base::strdup(names[i].c_str());
+    UNSAFE_TODO(rv[i]) = UNSAFE_TODO(base::strdup(names[i].c_str()));
   return rv;
 }
 

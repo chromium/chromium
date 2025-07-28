@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 
 #include <memory>
 #include <utility>
+
+#include "base/compiler_specific.h"
 
 namespace mojo {
 
@@ -77,7 +74,7 @@ bool UnionTraits<mojo_base::mojom::ValueDataView, base::Value>::Read(
       const char* data_pointer =
           reinterpret_cast<const char*>(binary_data_view.data());
       base::Value::BlobStorage blob_storage(
-          data_pointer, data_pointer + binary_data_view.size());
+          data_pointer, UNSAFE_TODO(data_pointer + binary_data_view.size()));
       *value_out = base::Value(std::move(blob_storage));
       return true;
     }

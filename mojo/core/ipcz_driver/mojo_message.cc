@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ipcz_driver/mojo_message.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/core/ipcz_api.h"
@@ -134,11 +130,12 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
     // correct in that case; and in any other case we don't care what's copied,
     // as long as all subsequent reads operate on the private copy and not on
     // `data`.
-    memcpy(data_storage_.get(), const_cast<const void*>(data), num_bytes);
+    UNSAFE_TODO(
+        memcpy(data_storage_.get(), const_cast<const void*>(data), num_bytes));
   } else {
     data_storage_.reset();
   }
-  data_ = {data_storage_.get(), num_bytes};
+  data_ = UNSAFE_TODO({data_storage_.get(), num_bytes});
   data_storage_size_ = num_bytes;
 
   result = GetIpczAPI().EndGet(parcel_.get(), transaction, IPCZ_NO_FLAGS,
@@ -167,7 +164,7 @@ MojoResult MojoMessage::ReserveCapacity(uint32_t payload_buffer_size,
   data_storage_size_ = std::max(payload_buffer_size, uint32_t{kMinBufferSize});
   DataPtr new_storage(new uint8_t[data_storage_size_]);
   data_storage_ = std::move(new_storage);
-  data_ = base::span(data_storage_.get(), 0u);
+  data_ = UNSAFE_TODO(base::span(data_storage_.get(), 0u));
 
   if (buffer_size) {
     *buffer_size = base::checked_cast<uint32_t>(data_storage_size_);
@@ -194,14 +191,14 @@ MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
     data_storage_size_ =
         std::max(data_size * kGrowthFactor, required_storage_size);
     DataPtr new_storage(new uint8_t[data_storage_size_]);
-    std::ranges::copy(base::span(data_storage_.get(), copy_size),
+    std::ranges::copy(UNSAFE_TODO(base::span(data_storage_.get(), copy_size)),
                       new_storage.get());
     data_storage_ = std::move(new_storage);
   }
-  data_ = base::span(data_storage_.get(), new_data_size);
+  data_ = UNSAFE_TODO(base::span(data_storage_.get(), new_data_size));
 
   handles_.reserve(handles_.size() + num_handles);
-  for (MojoHandle handle : base::span(handles, num_handles)) {
+  for (MojoHandle handle : UNSAFE_TODO(base::span(handles, num_handles))) {
     handles_.push_back(handle);
   }
   if (buffer) {
@@ -434,9 +431,9 @@ IpczResult MojoMessage::SerializeForIpczImpl(volatile void* data,
   }
 
   // TODO(crbug.com/40270656): Do a volatile-friendly copy here.
-  memcpy(const_cast<void*>(data), data_.data(), data_.size());
+  UNSAFE_TODO(memcpy(const_cast<void*>(data), data_.data(), data_.size()));
   for (size_t i = 0; i < handles_.size(); ++i) {
-    handles[i] = std::exchange(handles_[i], IPCZ_INVALID_HANDLE);
+    UNSAFE_TODO(handles[i]) = std::exchange(handles_[i], IPCZ_INVALID_HANDLE);
   }
   return IPCZ_RESULT_OK;
 }

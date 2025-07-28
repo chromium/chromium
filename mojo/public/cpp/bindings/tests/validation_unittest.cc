@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
@@ -65,7 +61,7 @@ template <typename T>
 void Append(std::vector<uint8_t>* data_vector, T data) {
   size_t pos = data_vector->size();
   data_vector->resize(pos + sizeof(T));
-  memcpy(&(*data_vector)[pos], &data, sizeof(T));
+  UNSAFE_TODO(memcpy(&(*data_vector)[pos], &data, sizeof(T)));
 }
 
 bool TestInputParser(const std::string& input,
@@ -124,7 +120,7 @@ bool ReadFile(const std::string& path, std::string* result) {
   }
   fseek(fp, 0, SEEK_SET);
   result->resize(size);
-  size_t size_read = fread(&result->at(0), 1, size, fp);
+  size_t size_read = UNSAFE_TODO(fread(&result->at(0), 1, size, fp));
   fclose(fp);
   return size == size_read;
 }
@@ -180,7 +176,7 @@ bool ReadTestCase(const std::string& test,
 
   *message = CreateRawMessage(data.size());
   if (!data.empty())
-    memcpy(message->mutable_data(), &data[0], data.size());
+    UNSAFE_TODO(memcpy(message->mutable_data(), &data[0], data.size()));
   message->mutable_handles()->resize(num_handles);
 
   return true;

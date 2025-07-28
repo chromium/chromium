@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "mojo/public/cpp/base/big_buffer.h"
 
 #include <algorithm>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/rand_util.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/big_buffer.mojom.h"
@@ -23,8 +20,9 @@ namespace big_buffer_unittest {
 namespace {
 
 bool BufferEquals(const BigBuffer& a, const BigBuffer& b) {
-  return a.size() == b.size() && std::equal(a.data(), a.data() + a.size(),
-                                            b.data(), b.data() + b.size());
+  return a.size() == b.size() &&
+         std::equal(a.data(), UNSAFE_TODO(a.data() + a.size()), b.data(),
+                    UNSAFE_TODO(b.data() + b.size()));
 }
 
 }  // namespace

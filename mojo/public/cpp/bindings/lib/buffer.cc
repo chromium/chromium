@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 
 #include <cstring>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
@@ -88,7 +84,8 @@ size_t Buffer::Allocate(size_t num_bytes) {
   // TODO(rockot): We should consider only clearing the alignment padding. This
   // means being careful about generated bindings zeroing padding explicitly,
   // which itself gets particularly messy with e.g. packed bool bitfields.
-  memset(static_cast<uint8_t*>(data_) + block_start, 0, aligned_num_bytes);
+  UNSAFE_TODO(
+      memset(static_cast<uint8_t*>(data_) + block_start, 0, aligned_num_bytes));
 
   return block_start;
 }

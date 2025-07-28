@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "mojo/public/cpp/bindings/tests/router_test_util.h"
 
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/tests/message_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,8 +20,8 @@ void AllocRequestMessage(uint32_t name, const char* text, Message* message) {
   size_t payload_size = strlen(text) + 1;  // Plus null terminator.
   *message =
       Message(name, Message::kFlagExpectsResponse, payload_size, 0, nullptr);
-  memcpy(message->payload_buffer()->AllocateAndGet(payload_size), text,
-         payload_size);
+  UNSAFE_TODO(memcpy(message->payload_buffer()->AllocateAndGet(payload_size),
+                     text, payload_size));
 }
 
 void AllocResponseMessage(uint32_t name,
@@ -35,8 +31,8 @@ void AllocResponseMessage(uint32_t name,
   size_t payload_size = strlen(text) + 1;  // Plus null terminator.
   *message = Message(name, Message::kFlagIsResponse, payload_size, 0, nullptr);
   message->set_request_id(request_id);
-  memcpy(message->payload_buffer()->AllocateAndGet(payload_size), text,
-         payload_size);
+  UNSAFE_TODO(memcpy(message->payload_buffer()->AllocateAndGet(payload_size),
+                     text, payload_size));
 }
 
 MessageAccumulator::MessageAccumulator(MessageQueue* queue,

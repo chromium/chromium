@@ -2,16 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
-
-#include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -24,6 +15,10 @@
 #include <set>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "mojo/public/c/system/macros.h"
 
 namespace mojo {
@@ -89,7 +84,7 @@ class ValidationTestInputParser {
   void AppendData(T data) {
     size_t pos = data_->size();
     data_->resize(pos + sizeof(T));
-    memcpy(&(*data_)[pos], &data, sizeof(T));
+    UNSAFE_TODO(memcpy(&(*data_)[pos], &data, sizeof(T)));
   }
 
   template <typename TargetType, typename InputType>
@@ -110,7 +105,7 @@ class ValidationTestInputParser {
     }
     TargetType target_value = static_cast<TargetType>(value);
     assert(pos + sizeof(TargetType) <= data_->size());
-    memcpy(&(*data_)[pos], &target_value, sizeof(TargetType));
+    UNSAFE_TODO(memcpy(&(*data_)[pos], &target_value, sizeof(TargetType)));
     return true;
   }
 
@@ -212,17 +207,17 @@ bool ValidationTestInputParser::GetNextItem(Range* range) {
       return false;
     }
 
-    if (StartsWith(Range(&(*input_)[0] + input_cursor_,
-                         &(*input_)[0] + input_->size()),
+    if (StartsWith(Range(UNSAFE_TODO(&(*input_)[0] + input_cursor_),
+                         UNSAFE_TODO(&(*input_)[0] + input_->size())),
                    "//", 2)) {
       // Skip contents until the end of the line.
       input_cursor_ = input_->find_first_of(kEndOfLineChars, input_cursor_);
     } else {
-      range->first = &(*input_)[0] + input_cursor_;
+      range->first = UNSAFE_TODO(&(*input_)[0] + input_cursor_);
       input_cursor_ = input_->find_first_of(kItemDelimiters, input_cursor_);
       range->second = input_cursor_ >= input_->size()
-                          ? &(*input_)[0] + input_->size()
-                          : &(*input_)[0] + input_cursor_;
+                          ? UNSAFE_TODO(&(*input_)[0] + input_->size())
+                          : UNSAFE_TODO(&(*input_)[0] + input_cursor_);
       return true;
     }
   }
@@ -230,10 +225,12 @@ bool ValidationTestInputParser::GetNextItem(Range* range) {
 
 bool ValidationTestInputParser::ParseItem(const Range& range) {
   for (size_t i = 0; i < kDataTypeCount; ++i) {
-    if (StartsWith(range, kDataTypes[i].name, kDataTypes[i].name_size)) {
-      return (this->*kDataTypes[i].parse_data_func)(
-          kDataTypes[i],
-          std::string(range.first + kDataTypes[i].name_size, range.second));
+    if (StartsWith(range, UNSAFE_TODO(kDataTypes[i]).name,
+                   UNSAFE_TODO(kDataTypes[i]).name_size)) {
+      return (this->*UNSAFE_TODO(kDataTypes[i]).parse_data_func)(
+          UNSAFE_TODO(kDataTypes[i]),
+          std::string(UNSAFE_TODO(range.first + kDataTypes[i].name_size),
+                      range.second));
     }
   }
 
@@ -268,8 +265,9 @@ bool ValidationTestInputParser::ParseSignedInteger(
     const DataType& type,
     const std::string& value_string) {
   long long int value;
-  if (sscanf(value_string.c_str(), "%lli", &value) != 1)
+  if (UNSAFE_TODO(sscanf(value_string.c_str(), "%lli", &value)) != 1) {
     return false;
+  }
 
   switch (type.data_size) {
     case 1:
@@ -291,8 +289,9 @@ bool ValidationTestInputParser::ParseFloat(const DataType& type,
   static_assert(sizeof(float) == 4, "sizeof(float) is not 4");
 
   float value;
-  if (sscanf(value_string.c_str(), "%f", &value) != 1)
+  if (UNSAFE_TODO(sscanf(value_string.c_str(), "%f", &value)) != 1) {
     return false;
+  }
 
   AppendData(value);
   return true;
@@ -303,8 +302,9 @@ bool ValidationTestInputParser::ParseDouble(const DataType& type,
   static_assert(sizeof(double) == 8, "sizeof(double) is not 8");
 
   double value;
-  if (sscanf(value_string.c_str(), "%lf", &value) != 1)
+  if (UNSAFE_TODO(sscanf(value_string.c_str(), "%lf", &value)) != 1) {
     return false;
+  }
 
   AppendData(value);
   return true;
@@ -392,7 +392,7 @@ bool ValidationTestInputParser::StartsWith(const Range& range,
   if (static_cast<size_t>(range.second - range.first) < prefix_length)
     return false;
 
-  return memcmp(range.first, prefix, prefix_length) == 0;
+  return UNSAFE_TODO(memcmp(range.first, prefix, prefix_length)) == 0;
 }
 
 bool ValidationTestInputParser::ConvertToUnsignedInteger(
@@ -403,7 +403,7 @@ bool ValidationTestInputParser::ConvertToUnsignedInteger(
     format = "%llx";
   else
     format = "%llu";
-  return sscanf(value_string.c_str(), format, value) == 1;
+  return UNSAFE_TODO(sscanf(value_string.c_str(), format, value)) == 1;
 }
 
 }  // namespace

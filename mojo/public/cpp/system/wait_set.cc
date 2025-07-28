@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/system/wait_set.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -221,7 +217,7 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
       ready_handles[i] = it->first;
       ready_results[i] = it->second.result;
       if (signals_states)
-        signals_states[i] = it->second.signals_state;
+        UNSAFE_TODO(signals_states[i]) = it->second.signals_state;
       ready_handles_.erase(it);
     }
 
