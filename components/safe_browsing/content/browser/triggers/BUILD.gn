@@ -20,7 +20,7 @@ source_set("triggers") {
   ]
   deps = [
     ":trigger_throttler",
-    "//base:base",
+    "//base",
     "//components/prefs",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser",
@@ -72,7 +72,7 @@ source_set("ad_sampler_trigger") {
     ":trigger_throttler",
     ":trigger_util",
     ":triggers",
-    "//base:base",
+    "//base",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common",
@@ -91,14 +91,14 @@ source_set("suspicious_site_trigger") {
   deps = [
     ":trigger_throttler",
     ":triggers",
-    "//base:base",
-    "//components/history/core/browser:browser",
-    "//components/prefs:prefs",
+    "//base",
+    "//components/history/core/browser",
+    "//components/prefs",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common",
     "//content/public/browser",
-    "//net:net",
+    "//net",
   ]
 }
 
@@ -121,11 +121,11 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/core/browser:browser",
+    "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common",
     "//components/subresource_filter/content/browser:test_support",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

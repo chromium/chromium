@@ -39,14 +39,14 @@ if (safe_browsing_mode != 0) {
     public_deps = [
       "//base",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
-      "//url:url",
+      "//url",
     ]
 
     deps = [
       "//components/policy/core/browser",
       "//components/prefs",
       "//components/resources:components_resources",
-      "//components/url_matcher:url_matcher",
+      "//components/url_matcher",
       "//ui/base",
     ]
   }
@@ -68,11 +68,11 @@ if (safe_browsing_mode != 0) {
     deps = [
       ":file_type_policies",
       ":file_type_policies_test_support",
-      "//base:base",
+      "//base",
       "//components/policy/core/browser:test_support",
       "//components/prefs:test_support",
-      "//testing/gmock:gmock",
-      "//testing/gtest:gtest",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 
@@ -83,11 +83,11 @@ if (safe_browsing_mode != 0) {
     deps = [
       ":file_type_policies",
       ":file_type_policies_test_support",
-      "//base:base",
+      "//base",
       "//components/policy/core/browser:test_support",
       "//components/prefs:test_support",
-      "//testing/gmock:gmock",
-      "//testing/gtest:gtest",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 
@@ -101,7 +101,7 @@ if (safe_browsing_mode != 0) {
 
     deps = [
       "//components/safe_browsing:buildflags",
-      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//ui/gfx:color_utils",
@@ -116,8 +116,8 @@ if (safe_browsing_mode != 0) {
       ":visual_utils",
       "//base/test:test_support",
       "//components/safe_browsing/core/common",
-      "//testing/gmock:gmock",
-      "//testing/gtest:gtest",
+      "//testing/gmock",
+      "//testing/gtest",
       "//ui/gfx:color_utils",
     ]
   }

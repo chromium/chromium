@@ -29,14 +29,14 @@ source_set("notification_content_detection") {
 
   deps = [
     ":notifications_global_cache_list",
-    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
-    "//components/permissions:permissions",
+    "//components/permissions",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common:features",
-    "//components/site_engagement/content:content",
+    "//components/site_engagement/content",
     "//third_party/blink/public/common:headers",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -53,7 +53,7 @@ source_set("test_utils") {
 
   deps = [
     ":notification_content_detection",
-    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/optimization_guide/core:test_support",
     "//components/safe_browsing/core/browser/db:test_database_manager",
@@ -71,17 +71,17 @@ source_set("unittests") {
     ":notification_content_detection",
     ":notifications_global_cache_list",
     ":test_utils",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/permissions:test_support",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common:features",
-    "//components/site_engagement/content:content",
-    "//components/user_prefs:user_prefs",
+    "//components/site_engagement/content",
+    "//components/user_prefs",
     "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",

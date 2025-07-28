@@ -10,7 +10,7 @@ static_library("policy_engine") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
-    "//base:base",
+    "//base",
     "//components/enterprise/connectors/core",
     "//components/prefs",
     "//components/safe_browsing/core/common",
@@ -19,7 +19,7 @@ static_library("policy_engine") {
     "//components/unified_consent",
     "//components/user_prefs",
     "//components/variations/service",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
 }
@@ -35,7 +35,7 @@ static_library("url_lookup_service") {
   deps = [
     ":policy_engine",
     ":url_lookup_service_base",
-    "//base:base",
+    "//base",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
@@ -50,9 +50,9 @@ static_library("url_lookup_service") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/unified_consent",
-    "//components/variations/service:service",
-    "//services/network/public/cpp:cpp",
-    "//url:url",
+    "//components/variations/service",
+    "//services/network/public/cpp",
+    "//url",
   ]
 }
 
@@ -95,7 +95,7 @@ static_library("url_lookup_service_base") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/connectors/core",
     "//components/keyed_service/core",
@@ -107,13 +107,13 @@ static_library("url_lookup_service_base") {
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/utils",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/sessions:session_id",
-    "//services/network/public/cpp:cpp",
-    "//url:url",
+    "//services/network/public/cpp",
+    "//url",
   ]
 }
 
@@ -132,7 +132,7 @@ static_library("test_support") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//net/traffic_annotation:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -159,9 +159,9 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/unified_consent",
     "//components/user_prefs",
-    "//components/variations/service:service",
+    "//components/variations/service",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gtest",
     "//third_party/googletest:gmock",

@@ -76,7 +76,7 @@ if (safe_browsing_mode == 2) {
       "//components/safe_browsing/android:realtimeallowlist_proto",
       "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
       "//components/safe_browsing/core/common",
-      "//ui/base:base",
+      "//ui/base",
       "//url",
     ]
   }
@@ -92,7 +92,7 @@ static_library("remote_database_manager") {
 
   deps = [
     ":safe_browsing_api_handler",
-    "//base:base",
+    "//base",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
@@ -138,7 +138,7 @@ source_set("safe_browsing_api_handler") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//url",
   ]
 }

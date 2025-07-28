@@ -85,7 +85,7 @@ static_library("test_database_manager") {
     ":database_manager",
     ":util",
     ":v4_protocol_manager_util",
-    "//base:base",
+    "//base",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -106,9 +106,9 @@ static_library("util") {
   ]
   deps = [
     "//base",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//crypto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//url",
   ]
@@ -150,7 +150,7 @@ static_library("v4_get_hash_protocol_manager") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//net",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -195,8 +195,8 @@ source_set("v4_protocol_manager_util") {
   deps = [
     "//base",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/version_info:version_info",
-    "//google_apis:google_apis",
+    "//components/version_info",
+    "//google_apis",
     "//net",
     "//url",
   ]
@@ -388,8 +388,8 @@ static_library("allowlist_checker_client") {
 
   deps = [
     ":database_manager",
-    "//base:base",
-    "//url:url",
+    "//base",
+    "//url",
   ]
 }
 

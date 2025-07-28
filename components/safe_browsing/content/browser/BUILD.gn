@@ -20,7 +20,7 @@ source_set("safe_browsing_service") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common/proto:csd_proto",
@@ -110,7 +110,7 @@ source_set("browser") {
     "//components/history/core/browser",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/content/browser/web_ui:web_ui",
+    "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
@@ -122,7 +122,7 @@ source_set("browser") {
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/utils",
     "//components/safe_browsing/core/browser/utils:url_loader_factory_params",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
@@ -134,7 +134,7 @@ source_set("browser") {
     "//components/signin/public/identity_manager",
     "//components/unified_consent",
     "//components/version_info",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//content/public/common",
     "//net",
     "//net:extras",
@@ -170,14 +170,14 @@ source_set("unit_tests") {
 
   deps = [
     ":client_side_detection_images_cache",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/content/browser:browser",
-    "//components/safe_browsing/core/browser:browser",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
@@ -255,10 +255,10 @@ if (safe_browsing_mode != 0) {
     ]
 
     deps = [
-      "//components/optimization_guide/core:core",
+      "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/prefs",
-      "//components/safe_browsing/content/browser/web_ui:web_ui",
+      "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -266,11 +266,11 @@ if (safe_browsing_mode != 0) {
       "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//content/public/browser",
-      "//google_apis:google_apis",
-      "//net:net",
-      "//net/traffic_annotation:traffic_annotation",
+      "//google_apis",
+      "//net",
+      "//net/traffic_annotation",
       "//services/network/public/cpp",
-      "//url:url",
+      "//url",
     ]
   }
 
@@ -287,9 +287,9 @@ if (safe_browsing_mode != 0) {
     deps = [
       ":client_side_detection_images_cache",
       ":client_side_detection_service",
-      "//base:base",
+      "//base",
       "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/permissions:permissions",
+      "//components/permissions",
       "//components/prefs",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
@@ -300,7 +300,7 @@ if (safe_browsing_mode != 0) {
       "//components/safe_browsing/core/browser/db:allowlist_checker_client",
       "//components/safe_browsing/core/browser/db:database_manager",
       "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
-      "//components/safe_browsing/core/browser/sync:sync",
+      "//components/safe_browsing/core/browser/sync",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/safe_browsing/core/common/fbs:client_model",
@@ -308,7 +308,7 @@ if (safe_browsing_mode != 0) {
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core:unsafe_resource",
       "//components/variations",
-      "//components/zoom:zoom",
+      "//components/zoom",
       "//content/public/browser",
       "//mojo/public/mojom/base:protobuf_support",
     ]

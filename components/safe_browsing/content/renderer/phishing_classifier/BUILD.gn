@@ -63,7 +63,7 @@ if (safe_browsing_mode != 0) {
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
       "//ui/base",
-      "//ui/gfx/geometry:geometry",
+      "//ui/gfx/geometry",
       "//url",
       "//v8",
     ]
@@ -80,7 +80,7 @@ if (safe_browsing_mode != 0) {
     ]
     deps = [
       ":phishing_classifier",
-      "//base:base",
+      "//base",
       "//base/test:test_support",
       "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
       "//components/safe_browsing/core/common/fbs:client_model",
@@ -112,7 +112,7 @@ if (safe_browsing_mode != 0) {
       deps = [
         ":client_side_phishing_fuzzer_proto",
         ":phishing_classifier",
-        "//base:base",
+        "//base",
         "//components/safe_browsing/core/common/fbs:client_model",
         "//components/safe_browsing/core/common/proto:client_model_proto",
         "//skia",

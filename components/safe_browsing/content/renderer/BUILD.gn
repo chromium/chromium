@@ -18,7 +18,7 @@ source_set("renderer") {
     deps = [
       "//base",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common",
       "//content/public/renderer",
       "//ipc",
       "//third_party/blink/public:blink",
@@ -44,16 +44,16 @@ source_set("throttles") {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
-      "//base:base",
+      "//base",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:interfaces",
-      "//content/public/common:common",
+      "//content/public/common",
       "//extensions/buildflags",
       "//net",
       "//services/network/public/mojom",
       "//third_party/blink/public:blink",
-      "//url:url",
+      "//url",
     ]
 
     if (enable_extensions) {
@@ -72,7 +72,7 @@ source_set("throttles_unittest") {
 
     deps = [
       ":throttles",
-      "//base:base",
+      "//base",
       "//base/test:test_support",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/core/common",
