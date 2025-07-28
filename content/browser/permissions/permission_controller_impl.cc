@@ -322,12 +322,15 @@ PermissionStatus PermissionControllerImpl::GetSubscriptionCurrentValue(
 
 PermissionControllerImpl::SubscriptionsStatusMap
 PermissionControllerImpl::GetSubscriptionsStatuses(
-    const std::optional<GURL>& origin) {
+    const std::optional<GURL>& requesting_origin,
+    const std::optional<GURL>& embedding_origin) {
   SubscriptionsStatusMap statuses;
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
     PermissionStatusSubscription* subscription = iter.GetCurrentValue();
-    if (origin.has_value() && subscription->requesting_origin != *origin) {
+    if (requesting_origin.has_value() && embedding_origin.has_value() &&
+        subscription->requesting_origin != *requesting_origin &&
+        subscription->embedding_origin != *embedding_origin) {
       continue;
     }
     statuses[iter.GetCurrentKey()] = GetSubscriptionCurrentValue(*subscription);
@@ -392,8 +395,10 @@ PermissionControllerImpl::SetPermissionOverride(
       !delegate->IsPermissionOverridable(permission, origin, origin)) {
     return OverrideStatus::kOverrideNotSet;
   }
-  const auto old_statuses = GetSubscriptionsStatuses(
-      origin ? std::make_optional(origin->GetURL()) : std::nullopt);
+
+  const std::optional<GURL> origin_url =
+      origin.has_value() ? std::make_optional(origin->GetURL()) : std::nullopt;
+  const auto old_statuses = GetSubscriptionsStatuses(origin_url, origin_url);
   permission_overrides_.Set(origin, origin, permission, status);
   NotifyChangedSubscriptions(old_statuses);
 
@@ -417,8 +422,9 @@ PermissionControllerImpl::GrantPermissionOverrides(
     }
   }
 
-  const auto old_statuses = GetSubscriptionsStatuses(
-      origin ? std::make_optional(origin->GetURL()) : std::nullopt);
+  const std::optional<GURL> origin_url =
+      origin.has_value() ? std::make_optional(origin->GetURL()) : std::nullopt;
+  const auto old_statuses = GetSubscriptionsStatuses(origin_url, origin_url);
   permission_overrides_.GrantPermissions(origin, origin, permissions);
   // If any statuses changed because they lose overrides or the new overrides
   // modify their previous state (overridden or not), subscribers must be

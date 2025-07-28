@@ -177,7 +177,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   PermissionStatus GetSubscriptionCurrentValue(
       const content::PermissionStatusSubscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
-      const std::optional<GURL>& origin = std::nullopt);
+      const std::optional<GURL>& requesting_origin = std::nullopt,
+      const std::optional<GURL>& embedding_origin = std::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
   // Notifies the callback of the new permission status.
   // If `ignore_status_override` is true, the status override is not applied,
