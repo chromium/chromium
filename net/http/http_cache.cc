@@ -537,6 +537,25 @@ void HttpCache::OnExternalCacheHit(
     }
   }
 
+  OnExternalCacheHitForRequest(request_info);
+
+  if (no_vary_search_cache_ &&
+      features::kHttpCacheNoVarySearchApplyToExternalHits.Get()) {
+    auto result = no_vary_search_cache_->Lookup(request_info);
+    if (result) {
+      // Do this in addition to, rather than instead of, the URL passed to the
+      // function. If both exist in the cache, then we may need to fall back to
+      // the supplied URL in some cases so it is useful to keep it fresh. The
+      // version of the URL from the NoVarySearchCache is touched second so that
+      // it is slightly fresher and so less likely to be evicted.
+      request_info.url = result->original_url;
+      OnExternalCacheHitForRequest(request_info);
+    }
+  }
+}
+
+void HttpCache::OnExternalCacheHitForRequest(
+    const HttpRequestInfo& request_info) {
   std::optional<std::string> key = GenerateCacheKeyForRequest(&request_info);
   if (!key) {
     return;

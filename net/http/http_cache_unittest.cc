@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -28,6 +29,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -14409,6 +14411,63 @@ TEST_P(HttpCacheNoVarySearchTest, ModeIsReadButRequiresValidation) {
   // Now `transaction2` has caught up. It should also have used the fresh cache
   // entry.
   expect_fresh_response(*transaction2);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, ExternalHitWithFeatureParamFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kHttpCacheNoVarySearch,
+      base::FieldTrialParams{
+          {features::kHttpCacheNoVarySearchApplyToExternalHits.name, "false"}});
+
+  FetchIntoCache("q=john&a=10", "params=(\"a\")");
+
+  MockTransaction& transaction =
+      CreateMockTransaction("q=john", "params=(\"a\")");
+
+  MockHttpRequest request(transaction);
+
+  cache()->OnExternalCacheHit(request.url, request.method,
+                              request.network_isolation_key,
+                              (request.load_flags & LOAD_DO_NOT_SAVE_COOKIES));
+
+  ASSERT_OK_AND_ASSIGN(const std::string expected_cache_key,
+                       HttpCache::GenerateCacheKeyForRequest(&request));
+
+  EXPECT_THAT(mock_disk_cache()->GetExternalCacheHits(),
+              ElementsAre(expected_cache_key));
+}
+
+TEST_P(HttpCacheNoVarySearchTest, ExternalHitWithFeatureParamTrue) {
+  static constexpr std::string_view kNvsQuery = "q=john&a=10";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kHttpCacheNoVarySearch,
+      {{features::kHttpCacheNoVarySearchApplyToExternalHits.name, "true"}});
+
+  FetchIntoCache(kNvsQuery, "params=(\"a\")");
+
+  MockTransaction& transaction =
+      CreateMockTransaction("q=john", "params=(\"a\")");
+
+  MockHttpRequest request(transaction);
+
+  cache()->OnExternalCacheHit(request.url, request.method,
+                              request.network_isolation_key,
+                              (request.load_flags & LOAD_DO_NOT_SAVE_COOKIES));
+
+  ASSERT_OK_AND_ASSIGN(const std::string new_url_cache_key,
+                       HttpCache::GenerateCacheKeyForRequest(&request));
+
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(kNvsQuery);
+  request.url = request.url.ReplaceComponents(replacements);
+  ASSERT_OK_AND_ASSIGN(const std::string nvs_url_cache_key,
+                       HttpCache::GenerateCacheKeyForRequest(&request));
+
+  EXPECT_THAT(mock_disk_cache()->GetExternalCacheHits(),
+              ElementsAre(new_url_cache_key, nvs_url_cache_key));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

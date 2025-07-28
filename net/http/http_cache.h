@@ -539,6 +539,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
       bool is_shared_resource,
       std::optional<url::Origin> initiator);
 
+  // Generates a cache key for `request_info` and informs the backend it should
+  // consider it used if it exists.
+  void OnExternalCacheHitForRequest(const HttpRequestInfo& request_info);
+
   // Creates a WorkItem and sets it as the |pending_op|'s writer, or adds it to
   // the queue if a writer already exists.
   Error CreateAndSetWorkItem(scoped_refptr<ActiveEntry>* entry,

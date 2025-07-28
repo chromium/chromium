@@ -779,6 +779,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
                                       kHttpCacheNoVarySearchCacheMaxEntries);
 
+// Whether the NoVarySearchCache should be consulted in
+// HttpCache::OnExternalCacheHit().
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHttpCacheNoVarySearchApplyToExternalHits);
+
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
