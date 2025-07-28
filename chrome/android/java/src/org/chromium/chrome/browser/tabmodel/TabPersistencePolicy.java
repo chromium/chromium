@@ -41,9 +41,9 @@ public interface TabPersistencePolicy {
     String getMetadataFileNameToBeMerged();
 
     /**
-     * Performs any necessary initialization required before accessing the tab information.  This
-     * can include cleanups or migrations that must occur before the tab state information can be
-     * read reliably.
+     * Performs any necessary initialization required before accessing the tab information. This can
+     * include cleanups or migrations that must occur before the tab state information can be read
+     * reliably.
      *
      * @param taskRunner The task runner that any asynchronous tasks should be run on.
      * @return Whether any blocking initialization is necessary.
@@ -60,7 +60,7 @@ public interface TabPersistencePolicy {
     /**
      * @return Whether a merge is currently in progress.
      */
-    // TODO(tedchoc): Merging is currently very tabbed mode specific.  Investigate moving more
+    // TODO(tedchoc): Merging is currently very tabbed mode specific. Investigate moving more
     //                of the merging logic into this class and out of the main persistence store.
     boolean isMergeInProgress();
 
@@ -80,8 +80,8 @@ public interface TabPersistencePolicy {
      * @param tabDataToDelete Callback that is triggered with data to identify stored Tab data to
      *     delete. The stored Tab data must reside in {@link #getOrCreateStateDirectory()}.
      */
-    // TODO(tedchoc): Clean up this API.  This does a mixture of file deletion as well as collecting
-    //                files to be deleted.  It should either handle all deletions internally or not
+    // TODO(tedchoc): Clean up this API. This does a mixture of file deletion as well as collecting
+    //                files to be deleted. It should either handle all deletions internally or not
     //                do anything but collect files to be deleted.
     void cleanupUnusedFiles(Callback<TabPersistenceFileInfo> tabDataToDelete);
 

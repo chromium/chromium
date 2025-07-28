@@ -212,7 +212,7 @@ public class PendingTabClosureManager {
         }
 
         /**
-         * Destroy all tabs in this model.  This will check to see if the tab is already destroyed
+         * Destroy all tabs in this model. This will check to see if the tab is already destroyed
          * before destroying it.
          */
         public void destroy() {
@@ -446,10 +446,10 @@ public class PendingTabClosureManager {
     private void cancelClosureInternal(Tab tab) {
         tab.setClosing(false);
 
-        // Find a valid previous tab entry so we know what tab to insert after.  With the following
-        // example, calling cancelTabClosure(4) would need to know to insert after 2.  So we have to
+        // Find a valid previous tab entry so we know what tab to insert after. With the following
+        // example, calling cancelTabClosure(4) would need to know to insert after 2. So we have to
         // track across mRewoundTabs and mTabModel and see what the last valid mTabModel entry was
-        // (2) when we hit the 4 in the rewound list.  An insertIndex of -1 represents the beginning
+        // (2) when we hit the 4 in the rewound list. An insertIndex of -1 represents the beginning
         // of the list, as this is the index of tab to insert after.
         // mTabModel:   0   2     5
         // mRewoundTabs 0 1 2 3 4 5
@@ -461,7 +461,7 @@ public class PendingTabClosureManager {
             if (rewoundTab == mTabModel.getTabAt(prevIndex + 1)) prevIndex++;
         }
 
-        // Figure out where to insert the tab.  Just add one to prevIndex, as -1 represents the
+        // Figure out where to insert the tab. Just add one to prevIndex, as -1 represents the
         // beginning of the list, so we'll insert at 0.
         int insertIndex = prevIndex + 1;
         mDelegate.insertUndoneTabClosureAt(tab, insertIndex);

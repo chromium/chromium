@@ -458,9 +458,9 @@ public class TabPersistentStore {
             if (mSaveTabTask != null) {
                 // Cancel calls get() to wait for this to finish internally if it has to.
                 // The issue is it may assume it cancelled the task, but the task still actually
-                // wrote the state to disk.  That's why we have to check mStateSaved here.
+                // wrote the state to disk. That's why we have to check mStateSaved here.
                 if (mSaveTabTask.cancel(false) && !mSaveTabTask.mStateSaved) {
-                    // The task was successfully cancelled.  We should try to save this state again.
+                    // The task was successfully cancelled. We should try to save this state again.
                     Tab cancelledTab = mSaveTabTask.mTab;
                     addTabToSaveQueueIfApplicable(cancelledTab);
                 }
@@ -491,7 +491,7 @@ public class TabPersistentStore {
                         }
                     }
                 } catch (OutOfMemoryError e) {
-                    Log.e(TAG, "Out of memory error while attempting to save tab state.  Erasing.");
+                    Log.e(TAG, "Out of memory error while attempting to save tab state. Erasing.");
                     deleteTabState(id, incognito);
                     if (isFlatBufferSchemaEnabled()) {
                         TabStateFileManager.deleteMigratedFile(getStateDirectory(), id, incognito);
@@ -671,12 +671,12 @@ public class TabPersistentStore {
     }
 
     /**
-     * Restore tab state.  Tab state is loaded asynchronously, other than the active tab which
-     * can be forced to load synchronously.
+     * Restore tab state. Tab state is loaded asynchronously, other than the active tab which can be
+     * forced to load synchronously.
      *
      * @param setActiveTab If true the last active tab given in the saved state is loaded
-     *                     synchronously and set as the current active tab. If false all tabs are
-     *                     loaded asynchronously.
+     *     synchronously and set as the current active tab. If false all tabs are loaded
+     *     asynchronously.
      */
     public void restoreTabs(boolean setActiveTab) {
         if (setActiveTab) {
@@ -947,7 +947,7 @@ public class TabPersistentStore {
     }
 
     /**
-     * Deletes all files in the tab state directory.  This will delete all files and not just those
+     * Deletes all files in the tab state directory. This will delete all files and not just those
      * owned by this TabPersistentStore.
      */
     public void clearState() {
@@ -960,7 +960,7 @@ public class TabPersistentStore {
                     if (baseStateFiles == null) return;
                     for (File baseStateFile : baseStateFiles) {
                         // In legacy scenarios (prior to migration, state files could reside in
-                        // the root state directory.  So, handle deleting direct child files as
+                        // the root state directory. So, handle deleting direct child files as
                         // well as those that reside in sub directories.
                         if (!baseStateFile.isDirectory()) {
                             if (!baseStateFile.delete()) {
@@ -1191,7 +1191,7 @@ public class TabPersistentStore {
 
         int maxId = 0;
         // Calculation of the max tab ID is done only once per user and is stored in
-        // SharedPreferences afterwards.  This is done on the UI thread because it is on the
+        // SharedPreferences afterwards. This is done on the UI thread because it is on the
         // critical patch to initializing the TabIdManager with the correct max tab ID.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {
@@ -1506,7 +1506,7 @@ public class TabPersistentStore {
                     getStateDirectory(), state, tabId, encrypted, mCipherFactory);
             return true;
         } catch (OutOfMemoryError e) {
-            Log.e(TAG, "Out of memory error while attempting to save tab state.  Erasing.");
+            Log.e(TAG, "Out of memory error while attempting to save tab state. Erasing.");
             deleteTabState(tabId, encrypted);
         }
         return false;
