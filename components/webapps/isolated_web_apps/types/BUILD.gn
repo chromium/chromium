@@ -4,6 +4,8 @@
 
 source_set("types") {
   sources = [
+    "iwa_version.cc",
+    "iwa_version.h",
     "source.cc",
     "source.h",
     "storage_location.cc",
@@ -17,5 +19,14 @@ source_set("types") {
     "//base",
     "//components/web_package",
     "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "iwa_version_unittest.cc" ]
+  deps = [
+    ":types",
+    "//base/test:test_support",
   ]
 }

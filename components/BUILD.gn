@@ -566,10 +566,6 @@ test("components_unittests") {
     deps += [ "//components/named_system_lock:unit_tests" ]
   }
 
-  if (is_linux || is_win || is_mac || is_chromeos) {
-    deps += [ "//components/webapps/isolated_web_apps:unit_tests" ]
-  }
-
   if (is_ios) {
     bundle_deps = [ ":components_tests_pak_bundle_data" ]
     if (use_blink) {
@@ -790,7 +786,10 @@ test("components_unittests") {
   }
 
   if (is_win || is_linux || is_chromeos || is_mac) {
-    deps += [ "//components/stability_report:unit_tests" ]
+    deps += [
+      "//components/stability_report:unit_tests",
+      "//components/webapps/isolated_web_apps:unit_tests",
+    ]
   }
 
   if (is_win) {
