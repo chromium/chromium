@@ -262,14 +262,16 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
         False,
     ),
     BanRule(
-        pattern=(r'/((DeviceInfo\.isDesktop\()|IS_DESKTOP_ANDROID)'),
+        pattern=(r'/((DeviceInfo\.isDesktop\()|IS_DESKTOP_ANDROID|PackageManager\.FEATURE_PC)'),
         explanation=(
             'Do not add new uses of IS_DESKTOP_ANDROID build flag or '
-            'DeviceInfo.isDesktop() until you have the approval of tedchoc@ or '
-            'twellington@. Background: it is highly important to reduce the '
-            'divergence of features across platforms. '
+            'DeviceInfo.isDesktop() until you have the approval of tedchoc@ '
+            'or twellington@.',
+            'Once approved, please use centralized util DeviceInfo.isDesktop() '
+            'instead of direct build flag or PackageManager.FEATURE_PC checks.',
+            'See https://source.chromium.org/chromium/chromium/src/+/main:docs/ui/android/device_form_factor.md for guidelines.'
             'Allowances may be granted to only the directories below: '
-            '[build/, chrome/, components/, extensions/, infra/, tools/] ',
+            '[build/, chrome/, components/, extensions/, infra/, tools/]',
             'Note: in particular we need to avoid components shared with '
             'WebView.',
         ),

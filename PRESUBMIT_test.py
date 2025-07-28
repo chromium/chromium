@@ -2977,10 +2977,18 @@ class BannedTypeCheckTest(unittest.TestCase):
                 'content/java/problematic/desktopandroid.java', [
                     'if (DeviceInfo.isDesktop()) {}'
                 ]),
+             MockFile(
+                'content/java/problematic/desktopandroid1.java', [
+                    'if (PackageManager.FEATURE_PC) {}'
+                ]),
+             MockFile(
+                'content/java/problematic/desktopandroid2.java', [
+                    'if (BuildConfig.IS_DESKTOP_ANDROID) {}'
+                ]),
         ]
 
         errors = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
-        self.assertEqual(12, len(errors))
+        self.assertEqual(14, len(errors))
         self.assertTrue(
             'some/java/problematic/diskread.java' in errors[0].message)
         self.assertTrue(
@@ -3008,6 +3016,12 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertTrue(
             'content/java/problematic/desktopandroid.java' in
             errors[11].message)
+        self.assertTrue(
+            'content/java/problematic/desktopandroid1.java' in
+            errors[12].message)
+        self.assertTrue(
+            'content/java/problematic/desktopandroid2.java' in
+            errors[13].message)
 
 
     def testBannedCppFunctions(self):
