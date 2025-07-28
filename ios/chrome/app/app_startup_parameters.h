@@ -114,6 +114,8 @@ class GURL;
 @property(nonatomic, readwrite, assign) BOOL openedViaWidgetScheme;
 // Boolean to track whether the app was opened via URL.
 @property(nonatomic, readwrite, assign) BOOL openedWithURL;
+// Boolean to track whether the app was opened via share extension.
+@property(nonatomic, readwrite, assign) BOOL openedViaShareExtensionScheme;
 
 - (instancetype)init NS_UNAVAILABLE;
 

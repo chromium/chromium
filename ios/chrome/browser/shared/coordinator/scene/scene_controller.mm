@@ -631,6 +631,11 @@ void OnListFamilyMembersResponse(
     return;
   }
 
+  if (parameters.openedViaShareExtensionScheme) {
+    [self handleExternalIntents];
+    return;
+  }
+
   if (parameters.openedViaWidgetScheme) {
     // Notify Default Browser promo that user opened Chrome with widget.
     default_browser::NotifyStartWithWidget(

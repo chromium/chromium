@@ -90,6 +90,11 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       // connectionInformation.startupParamters can be not nil and what to do in
       // that case.
       [connectionInformation setStartupParameters:params];
+      if (params.openedViaShareExtensionScheme &&
+          (params.textQuery || params.imageSearchData)) {
+        return YES;
+      }
+
       ProceduralBlock tabOpenedCompletion = ^{
         [connectionInformation setStartupParameters:nil];
       };

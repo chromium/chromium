@@ -634,7 +634,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.textQuery = externalText;
-
+    params.openedViaShareExtensionScheme = YES;
     action = ACTION_SEARCH_TEXT;
   }
 
@@ -653,7 +653,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.textQuery = externalText;
-
+    params.openedViaShareExtensionScheme = YES;
     action = ACTION_SEARCH_TEXT;
   }
 
@@ -673,6 +673,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.imageSearchData = externalData;
+    params.openedViaShareExtensionScheme = YES;
 
     action = ACTION_SEARCH_IMAGE;
   }
@@ -692,7 +693,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
 
     params.imageSearchData = externalData;
-
+    params.openedViaShareExtensionScheme = YES;
     action = ACTION_SEARCH_IMAGE;
   }
 
