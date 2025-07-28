@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -18,6 +19,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -31,6 +33,8 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -48,6 +52,26 @@ import java.util.Objects;
 @JNINamespace("autofill")
 public class PersonalDataManager implements Destroyable {
     private static final String TAG = "PersonalDataManager";
+
+    @VisibleForTesting
+    static final String AUTOFILL_ADDRESS_OPT_IN_CHANGE_HISTOGRAM_NAME =
+            "Autofill.Address.IsEnabled.Change";
+
+    // Enum to represent the Autofill address opt-in changes.
+    //
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(AutofillAddressOptInChange)
+    @VisibleForTesting
+    @IntDef({AutofillAddressOptInChange.OPT_IN, AutofillAddressOptInChange.OPT_OUT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AutofillAddressOptInChange {
+        int OPT_IN = 0;
+        int OPT_OUT = 1;
+        int HISTOGRAM_BUCKET_COUNT = 2;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAddressOptInChange)
 
     /** Observer of PersonalDataManager events. */
     public interface PersonalDataManagerObserver {
@@ -987,6 +1011,10 @@ public class PersonalDataManager implements Destroyable {
      */
     public void setAutofillProfileEnabled(boolean enable) {
         mPrefService.setBoolean(Pref.AUTOFILL_PROFILE_ENABLED, enable);
+        RecordHistogram.recordEnumeratedHistogram(
+                AUTOFILL_ADDRESS_OPT_IN_CHANGE_HISTOGRAM_NAME,
+                enable ? AutofillAddressOptInChange.OPT_IN : AutofillAddressOptInChange.OPT_OUT,
+                AutofillAddressOptInChange.HISTOGRAM_BUCKET_COUNT);
     }
 
     /**
