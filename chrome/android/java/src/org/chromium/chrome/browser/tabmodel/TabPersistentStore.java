@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabMode
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -1945,7 +1946,11 @@ public class TabPersistentStore {
                 byte[] data;
                 try {
                     stream = new FileInputStream(stateFile);
-                    data = new byte[(int) stateFile.length()];
+                    int size = (int) stateFile.length();
+                    int sizeInKb = size / ConversionUtils.BYTES_PER_KILOBYTE;
+                    RecordHistogram.recordMemoryKBHistogram(
+                            "Tabs.Metadata.FileSizeOnRead." + mClientTag, sizeInKb);
+                    data = new byte[size];
                     stream.read(data);
                 } catch (IOException exception) {
                     Log.e(TAG, "Could not read state file.", exception);

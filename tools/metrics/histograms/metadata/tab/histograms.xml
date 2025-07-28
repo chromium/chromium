@@ -2374,6 +2374,19 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
+<histogram name="Tabs.Metadata.FileSizeOnRead.{TabModelSelectorType}"
+    units="KB" expires_after="2026-07-28">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the size of the tab list metadata file that's loaded on tab model
+    creation split out by client type. This is for the regular tab model, not
+    the incognito. Additionally this file may be loaded more times for various
+    things such as clean up and merging, these loads are all ignored. Clients
+    such as headless will still report with their selector type.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.MissingWebStateStorageFileOnSessionRestore"
     enum="Boolean" expires_after="2026-03-20">
   <owner>justincohen@google.com</owner>
