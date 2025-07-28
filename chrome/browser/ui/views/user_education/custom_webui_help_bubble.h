@@ -59,7 +59,6 @@ class CustomWebUIHelpBubble : public user_education::CustomHelpBubbleViews {
   static std::unique_ptr<CustomWebUIHelpBubble> CreateForController(
       const GURL& webui_url,
       ui::ElementContext from_context,
-      user_education::HelpBubbleArrow arrow,
       user_education::FeaturePromoSpecification::BuildHelpBubbleParams params,
       const BuildCustomWebUIHelpBubbleViewCallback& build_bubble_view_callback =
           GetDefaultBuildBubbleViewCallback());
@@ -89,11 +88,11 @@ MakeCustomWebUIHelpBubbleFactoryCallback(
       [](const GURL& webui_url,
          const CustomWebUIHelpBubble::BuildCustomWebUIHelpBubbleViewCallback&
              build_bubble_view_callback,
-         ui::ElementContext from_context, user_education::HelpBubbleArrow arrow,
+         ui::ElementContext from_context,
          user_education::FeaturePromoSpecification::BuildHelpBubbleParams
              params) {
         auto bubble = CustomWebUIHelpBubble::CreateForController<T>(
-            webui_url, from_context, arrow, std::move(params),
+            webui_url, from_context, std::move(params),
             build_bubble_view_callback);
         return bubble;
       },
@@ -124,7 +123,6 @@ std::unique_ptr<CustomWebUIHelpBubble>
 CustomWebUIHelpBubble::CreateForController(
     const GURL& webui_url,
     ui::ElementContext from_context,
-    user_education::HelpBubbleArrow arrow,
     user_education::FeaturePromoSpecification::BuildHelpBubbleParams params,
     const BuildCustomWebUIHelpBubbleViewCallback& build_bubble_view_callback) {
   Browser* const browser =
@@ -135,7 +133,7 @@ CustomWebUIHelpBubble::CreateForController(
   auto ui = wrapper->GetWebUIController()->GetCustomUiAsWeakPtr();
   auto bubble_ptr = build_bubble_view_callback.Run(
       params.anchor_element->AsA<views::TrackedElementViews>()->view(),
-      user_education::HelpBubbleViews::TranslateArrow(arrow),
+      user_education::HelpBubbleViews::TranslateArrow(params.arrow),
       wrapper->GetWeakPtr());
   auto* const bubble = bubble_ptr.get();
 
@@ -152,7 +150,7 @@ CustomWebUIHelpBubble::CreateForController(
       std::move(bubble_ptr), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   // Maybe set the arrow. This may require recalculating the bubble bounds.
-  if (arrow != user_education::HelpBubbleArrow::kNone) {
+  if (params.arrow != user_education::HelpBubbleArrow::kNone) {
     bubble->GetBubbleFrameView()->SetDisplayVisibleArrow(true);
     bubble->SizeToContents();
   }

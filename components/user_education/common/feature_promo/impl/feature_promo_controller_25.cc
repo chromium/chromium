@@ -381,6 +381,8 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
       std::move(promo_data.params().screen_reader_params);
   build_params.title_format = std::move(promo_data.params().title_params);
   build_params.can_snooze = promo_data.GetLifecycle()->CanSnooze();
+  build_params.arrow =
+      build_params.spec->GetBubbleArrow(build_params.anchor_element);
 
   // If the session policy allows overriding the current promo, abort it.
   if (current_promo()) {

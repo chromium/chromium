@@ -473,6 +473,8 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoCommon(
   build_params.screen_reader_format = std::move(params.screen_reader_params);
   build_params.title_format = std::move(params.title_params);
   build_params.can_snooze = current_promo()->CanSnooze();
+  build_params.arrow =
+      build_params.spec->GetBubbleArrow(build_params.anchor_element);
 
   // Try to show the bubble and bail out if we cannot.
   auto bubble =

@@ -135,6 +135,11 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
       base::RepeatingCallback<void(ui::ElementContext context,
                                    FeaturePromoHandle promo_handle)>;
 
+  // Callback that retrieves the arrow for a help bubble based on the anchor
+  // element. Used to override the default help bubble arrow.
+  using HelpBubbleArrowCallback = base::RepeatingCallback<HelpBubbleArrow(
+      const ui::TrackedElement* anchor_element)>;
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -267,6 +272,9 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
     // The anchor element to attach to. Required.
     raw_ptr<ui::TrackedElement> anchor_element = nullptr;
 
+    // The help bubble arrow to use.
+    HelpBubbleArrow arrow = kDefaultBubbleArrow;
+
     // Forwarded from `FeaturePromoParams`; can be used by the custom help
     // bubble UI construction code to perform string substitutions.
     FormatParameters body_format;
@@ -293,7 +301,6 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   using CustomHelpBubbleFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<T>(
           ui::ElementContext from_context,
-          HelpBubbleArrow arrow,
           BuildHelpBubbleParams build_params)>;
 
   FeaturePromoSpecification();
@@ -462,6 +469,14 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // Set the bubble arrow. Default is top-left.
   FeaturePromoSpecification& SetBubbleArrow(HelpBubbleArrow bubble_arrow);
 
+  // Set the bubble arrow callback. Default is none.
+  FeaturePromoSpecification& SetBubbleArrowCallback(
+      HelpBubbleArrowCallback bubble_arrow_callback);
+
+  // Retrieves the target help bubble arrow.
+  HelpBubbleArrow GetBubbleArrow(
+      const ui::TrackedElement* anchor_element) const;
+
   // Overrides the default focus-on-show behavior for the bubble. By default
   // bubbles with action buttons are focused to aid with accessibility. In
   // unusual circumstances this allows the value to be overridden. However, it
@@ -518,7 +533,6 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   int bubble_body_string_id() const { return bubble_body_string_id_; }
   int bubble_title_string_id() const { return bubble_title_string_id_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
-  HelpBubbleArrow bubble_arrow() const { return bubble_arrow_; }
   const std::optional<bool>& focus_on_show_override() const {
     return focus_on_show_override_;
   }
@@ -609,7 +623,6 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
                                             base::WeakPtr<CustomHelpBubbleUi>>;
   CustomHelpBubbleResult BuildCustomHelpBubble(
       ui::ElementContext from_context,
-      HelpBubbleArrow arrow,
       BuildHelpBubbleParams params) const;
 
  private:
@@ -620,7 +633,6 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // internally.
   using WrappedCustomHelpBubbleFactoryCallback =
       base::RepeatingCallback<CustomHelpBubbleResult(ui::ElementContext,
-                                                     HelpBubbleArrow,
                                                      BuildHelpBubbleParams)>;
 
   // Converts a `CustomHelpBubbleFactoryCallback` to a
@@ -668,6 +680,9 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
 
   // Optional arrow pointing to the promo'd element. Defaults to top left.
   HelpBubbleArrow bubble_arrow_ = kDefaultBubbleArrow;
+
+  // Overrides the default bubble arrow with a dynamic callback.
+  HelpBubbleArrowCallback bubble_arrow_callback_;
 
   // Overrides the default focus-on-show behavior for a bubble, which is to
   // focus bubbles with action buttons, but not bubbles that only have a close
@@ -731,9 +746,8 @@ FeaturePromoSpecification::WrapCustomHelpBubbleFactoryCallback(
   CHECK(callback);
   return base::BindRepeating(
       [](const CustomHelpBubbleFactoryCallback<T>& callback,
-         ui::ElementContext ctx, HelpBubbleArrow arrow,
-         BuildHelpBubbleParams params) {
-        std::unique_ptr<T> result = callback.Run(ctx, arrow, std::move(params));
+         ui::ElementContext ctx, BuildHelpBubbleParams params) {
+        std::unique_ptr<T> result = callback.Run(ctx, std::move(params));
         auto ui_ptr = static_cast<CustomHelpBubble*>(result.get())
                           ->custom_bubble_ui()
                           ->GetCustomUiAsWeakPtr();

@@ -308,15 +308,14 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
     UserEducationContextPtr context) {
   CHECK(context && context->IsValid());
   const auto& spec = *params.spec;
-  HelpBubbleParams bubble_params;
   const auto* const accelerator_provider = context->GetAcceleratorProvider();
   const auto bubble_context = GetContextForHelpBubble(params.anchor_element);
 
   bool had_screen_reader_promo = false;
   std::unique_ptr<HelpBubble> help_bubble;
   if (spec.promo_type() == FeaturePromoSpecification::PromoType::kCustomUi) {
-    auto result = spec.BuildCustomHelpBubble(
-        context->GetElementContext(), spec.bubble_arrow(), std::move(params));
+    auto result = spec.BuildCustomHelpBubble(context->GetElementContext(),
+                                             std::move(params));
     help_bubble = std::move(std::get<std::unique_ptr<HelpBubble>>(result));
     CHECK(help_bubble);
     auto* const ui = std::get<base::WeakPtr<CustomHelpBubbleUi>>(result).get();
@@ -352,6 +351,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
             base::Unretained(this), base::Unretained(&spec), context,
             bubble_context));
   } else {
+    HelpBubbleParams bubble_params;
     bubble_params.body_text = FeaturePromoSpecification::FormatString(
         spec.bubble_body_string_id(), std::move(params.body_format));
     bubble_params.title_text = FeaturePromoSpecification::FormatString(
@@ -378,7 +378,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
     if (bubble_params.body_icon) {
       bubble_params.body_icon_alt_text = GetBodyIconAltText();
     }
-    bubble_params.arrow = spec.bubble_arrow();
+    bubble_params.arrow = params.arrow;
     bubble_params.focus_on_show_hint = spec.focus_on_show_override();
 
     bubble_params.timeout_callback =

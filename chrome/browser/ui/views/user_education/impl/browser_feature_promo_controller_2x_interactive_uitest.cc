@@ -294,7 +294,6 @@ class BrowserFeaturePromoController2xUiTest
             kCustomUiTestFeature, kToolbarAppMenuButtonElementId,
             user_education::CreateCustomHelpBubbleViewFactoryCallback(
                 base::BindRepeating([](ui::ElementContext reference_context,
-                                       user_education::HelpBubbleArrow arrow,
                                        FeaturePromoSpecification::
                                            BuildHelpBubbleParams build_params) {
                   auto* const anchor_element =
@@ -302,7 +301,8 @@ class BrowserFeaturePromoController2xUiTest
                   return std::make_unique<
                       user_education::test::TestCustomHelpBubbleView>(
                       anchor_element->AsA<views::TrackedElementViews>()->view(),
-                      user_education::HelpBubbleViews::TranslateArrow(arrow));
+                      user_education::HelpBubbleViews::TranslateArrow(
+                          build_params.arrow));
                 })),
             base::BindRepeating(&BrowserFeaturePromoController2xUiTestBase::
                                     OnCustomUiCustomAction,

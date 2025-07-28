@@ -304,9 +304,8 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
                 params;
             params.anchor_element = el;
             help_bubble = CustomWebUIHelpBubble::CreateForController<
-                TestWebUIHelpBubbleController>(
-                GURL(kTestWebUIHostUrl), el->context(),
-                user_education::HelpBubbleArrow::kTopRight, params);
+                TestWebUIHelpBubbleController>(GURL(kTestWebUIHostUrl),
+                                               el->context(), params);
             sub = help_bubble->custom_bubble_ui()->AddUserActionCallback(
                 base::BindLambdaForTesting(
                     [=](user_education::CustomHelpBubbleUi::UserAction action) {
