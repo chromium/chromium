@@ -458,7 +458,7 @@ void ProxyImpl::NotifyReadyToActivate() {
   TRACE_EVENT_INSTANT("cc,benchmark", "ProxyImpl::ReadyToActivate",
                       [&](perfetto::EventContext ctx) {
                         EmitMainFramePipelineStep(
-                            ctx, host_impl_->active_tree()->trace_id(),
+                            ctx, host_impl_->sync_tree()->trace_id(),
                             perfetto::protos::pbzero::MainFramePipeline::Step::
                                 READY_TO_ACTIVATE);
                       });
