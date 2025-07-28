@@ -11245,8 +11245,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"prompt-api-for-gemini-nano",
      flag_descriptions::kPromptAPIForGeminiNanoName,
-     flag_descriptions::kPromptAPIForGeminiNanoDescription,
-     kOsDesktop,
+     flag_descriptions::kPromptAPIForGeminiNanoDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAIPromptAPI,
                                     kAILangsVariation,
                                     "kAIPromptAPI"),
@@ -11261,8 +11260,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"summarization-api-for-gemini-nano",
      flag_descriptions::kSummarizationAPIForGeminiNanoName,
-     flag_descriptions::kSummarizationAPIForGeminiNanoDescription,
-     kOsDesktop,
+     flag_descriptions::kSummarizationAPIForGeminiNanoDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAISummarizationAPI,
                                     kAILangsVariation,
                                     "kAISummarizationAPI"),
@@ -11270,8 +11268,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"writer-api-for-gemini-nano",
      flag_descriptions::kWriterAPIForGeminiNanoName,
-     flag_descriptions::kWriterAPIForGeminiNanoDescription,
-     kOsDesktop,
+     flag_descriptions::kWriterAPIForGeminiNanoDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAIWriterAPI,
                                     kAILangsVariation,
                                     "kAIWriterAPI"),
@@ -11279,8 +11276,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"rewriter-api-for-gemini-nano",
      flag_descriptions::kRewriterAPIForGeminiNanoName,
-     flag_descriptions::kRewriterAPIForGeminiNanoDescription,
-     kOsDesktop,
+     flag_descriptions::kRewriterAPIForGeminiNanoDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAIRewriterAPI,
                                     kAILangsVariation,
                                     "kAIRewriterAPI"),
@@ -11288,8 +11284,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"proofreader-api-for-gemini-nano",
      flag_descriptions::kProofreaderAPIForGeminiNanoName,
-     flag_descriptions::kProofreaderAPIForGeminiNanoDescription,
-     kOsDesktop,
+     flag_descriptions::kProofreaderAPIForGeminiNanoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kAIProofreadingAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
