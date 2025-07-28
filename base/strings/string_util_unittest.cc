@@ -492,11 +492,13 @@ TEST(StringUtilTest, IsStringUTF8) {
 }
 
 TEST(StringUtilTest, IsStringASCII) {
-  static char char_ascii[] = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-  static char16_t char16_ascii[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
-                                    '9', '0', 'A', 'B', 'C', 'D', 'E', 'F', '0',
-                                    '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                                    '0', 'A', 'B', 'C', 'D', 'E', 'F', 0};
+  static std::array<char, 49> char_ascii{
+      "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"};
+  static auto char16_ascii = std::to_array<char16_t>({
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A',
+      'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6',
+      '7', '8', '9', '0', 'A', 'B', 'C', 'D', 'E', 'F', 0,
+  });
   static std::wstring wchar_ascii(
       L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF");
 
@@ -509,11 +511,12 @@ TEST(StringUtilTest, IsStringASCII) {
     for (size_t offset = 0; offset < 8; ++offset) {
       for (size_t len = 0, max_len = string_length - offset; len < max_len;
            ++len) {
-        EXPECT_TRUE(IsStringASCII(std::string_view(char_ascii + offset, len)));
+        EXPECT_TRUE(IsStringASCII(std::string_view(
+            base::span(char_ascii).subspan(offset).data(), len)));
         for (size_t char_pos = offset; char_pos < len; ++char_pos) {
           char_ascii[char_pos] |= '\x80';
-          EXPECT_FALSE(
-              IsStringASCII(std::string_view(char_ascii + offset, len)));
+          EXPECT_FALSE(IsStringASCII(std::string_view(
+              base::span(char_ascii).subspan(offset).data(), len)));
           char_ascii[char_pos] &= ~'\x80';
         }
       }
@@ -525,17 +528,17 @@ TEST(StringUtilTest, IsStringASCII) {
     for (size_t offset = 0; offset < 4; ++offset) {
       for (size_t len = 0, max_len = string_length - offset; len < max_len;
            ++len) {
-        EXPECT_TRUE(
-            IsStringASCII(std::u16string_view(char16_ascii + offset, len)));
+        EXPECT_TRUE(IsStringASCII(std::u16string_view(
+            base::span(char16_ascii).subspan(offset).data(), len)));
         for (size_t char_pos = offset; char_pos < len; ++char_pos) {
           char16_ascii[char_pos] |= 0x80;
-          EXPECT_FALSE(
-              IsStringASCII(std::u16string_view(char16_ascii + offset, len)));
+          EXPECT_FALSE(IsStringASCII(std::u16string_view(
+              base::span(char16_ascii).subspan(offset).data(), len)));
           char16_ascii[char_pos] &= ~0x80;
           // Also test when the upper half is non-zero.
           char16_ascii[char_pos] |= 0x100;
-          EXPECT_FALSE(
-              IsStringASCII(std::u16string_view(char16_ascii + offset, len)));
+          EXPECT_FALSE(IsStringASCII(std::u16string_view(
+              base::span(char16_ascii).subspan(offset).data(), len)));
           char16_ascii[char_pos] &= ~0x100;
         }
       }
@@ -564,11 +567,11 @@ TEST(StringUtilTest, IsStringASCII) {
 }
 
 TEST(StringUtilTest, ConvertASCII) {
-  static const char* const char_cases[] = {"Google Video", "Hello, world\n",
-                                           "0123ABCDwxyz \a\b\t\r\n!+,.~"};
+  static const auto char_cases = std::to_array<const char*>(
+      {"Google Video", "Hello, world\n", "0123ABCDwxyz \a\b\t\r\n!+,.~"});
 
-  static const wchar_t* const wchar_cases[] = {
-      L"Google Video", L"Hello, world\n", L"0123ABCDwxyz \a\b\t\r\n!+,.~"};
+  static const auto wchar_cases = std::to_array<const wchar_t*>(
+      {L"Google Video", L"Hello, world\n", L"0123ABCDwxyz \a\b\t\r\n!+,.~"});
 
   for (size_t i = 0; i < std::size(char_cases); ++i) {
     EXPECT_TRUE(IsStringASCII(char_cases[i]));

@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing_buildflags.h"
@@ -613,16 +614,22 @@ class BASE_EXPORT TraceArguments {
   // Constructor used to convert legacy set of arguments, where the
   // convertable values are also provided by an array of CONVERTABLE_TYPE.
   template <typename CONVERTABLE_TYPE>
-  TraceArguments(int num_args,
-                 const char* const* arg_names,
-                 const unsigned char* arg_types,
-                 const unsigned long long* arg_values,
+  TraceArguments(int spanification_suspected_redundant_num_args,
+                 base::span<const char* const> arg_names,
+                 base::span<const unsigned char> arg_types,
+                 base::span<const unsigned long long> arg_values,
                  CONVERTABLE_TYPE* arg_convertables) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(static_cast<size_t>(spanification_suspected_redundant_num_args) ==
+              arg_names.size(),
+          base::NotFatalUntil::M143);
     static int max_args = static_cast<int>(kMaxSize);
-    if (num_args > max_args) {
-      num_args = max_args;
+    if (spanification_suspected_redundant_num_args > max_args) {
+      spanification_suspected_redundant_num_args = max_args;
     }
-    size_ = static_cast<unsigned char>(num_args);
+    size_ =
+        static_cast<unsigned char>(spanification_suspected_redundant_num_args);
     for (size_t n = 0; n < size_; ++n) {
       types_[n] = arg_types[n];
       names_[n] = arg_names[n];

@@ -93,14 +93,13 @@ class TaskQueueSelectorTest : public testing::Test {
     }
   }
 
-  void PushTasksWithEnqueueOrder(const size_t queue_indices[],
-                                 const size_t enqueue_orders[],
-                                 size_t num_tasks) {
-    for (size_t i = 0; i < num_tasks; i++) {
-      task_queues_[UNSAFE_TODO(queue_indices[i])]->immediate_work_queue()->Push(
-          Task(
-              PostedTask(nullptr, test_closure_, FROM_HERE), EnqueueOrder(),
-              EnqueueOrder::FromIntForTesting(UNSAFE_TODO(enqueue_orders[i]))));
+  void PushTasksWithEnqueueOrder(base::span<const size_t> queue_indices,
+                                 base::span<const size_t> enqueue_orders) {
+    CHECK_EQ(queue_indices.size(), enqueue_orders.size());
+    for (size_t i = 0; i < queue_indices.size(); i++) {
+      task_queues_[queue_indices[i]]->immediate_work_queue()->Push(
+          Task(PostedTask(nullptr, test_closure_, FROM_HERE), EnqueueOrder(),
+               EnqueueOrder::FromIntForTesting(enqueue_orders[i])));
     }
   }
 
@@ -319,7 +318,7 @@ TEST_F(TaskQueueSelectorTest, TestEmptyQueues) {
 TEST_F(TaskQueueSelectorTest, TestAge) {
   size_t enqueue_order[] = {10, 1, 2, 9, 4};
   size_t queue_order[] = {0, 1, 2, 3, 4};
-  PushTasksWithEnqueueOrder(queue_order, enqueue_order, 5);
+  PushTasksWithEnqueueOrder(queue_order, enqueue_order);
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(1, 2, 4, 3, 0));
 }
 

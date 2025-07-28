@@ -7,8 +7,10 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -115,7 +117,7 @@ TEST(WaitableEventTest, WaitManyShortcut) {
 }
 
 TEST(WaitableEventTest, WaitManyLeftToRight) {
-  WaitableEvent* ev[5];
+  std::array<WaitableEvent*, 5> ev;
   for (auto*& i : ev) {
     i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
                           WaitableEvent::InitialState::NOT_SIGNALED);
@@ -126,25 +128,25 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
   // the WaitableEvents' addresses -- are relevant in determining who wins when
   // multiple events are signaled.
 
-  std::sort(ev, UNSAFE_TODO(ev + 5));
+  std::ranges::sort(ev);
   do {
     ev[0]->Signal();
     ev[1]->Signal();
-    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev, 5));
+    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev.data(), 5));
 
     ev[2]->Signal();
-    EXPECT_EQ(1u, WaitableEvent::WaitMany(ev, 5));
-    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev, 5));
+    EXPECT_EQ(1u, WaitableEvent::WaitMany(ev.data(), 5));
+    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev.data(), 5));
 
     ev[3]->Signal();
     ev[4]->Signal();
     ev[0]->Signal();
-    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev, 5));
-    EXPECT_EQ(3u, WaitableEvent::WaitMany(ev, 5));
+    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev.data(), 5));
+    EXPECT_EQ(3u, WaitableEvent::WaitMany(ev.data(), 5));
     ev[2]->Signal();
-    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev, 5));
-    EXPECT_EQ(4u, WaitableEvent::WaitMany(ev, 5));
-  } while (std::next_permutation(ev, UNSAFE_TODO(ev + 5)));
+    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev.data(), 5));
+    EXPECT_EQ(4u, WaitableEvent::WaitMany(ev.data(), 5));
+  } while (std::ranges::next_permutation(ev).found);
 
   for (auto* i : ev) {
     delete i;

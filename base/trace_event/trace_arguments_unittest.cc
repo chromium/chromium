@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 
 namespace base::trace_event {
@@ -307,7 +308,7 @@ TEST(TraceArguments, ConstructorLegacyWithConvertables) {
       std::make_unique<MyConvertable>("Second one"),
       std::make_unique<MyConvertable>("Third one"),
   };
-  TraceArguments args(3, kNames, kTypes, nullptr, convertables);
+  TraceArguments args(3, kNames, kTypes, {}, convertables);
   // Check that only the first kMaxSize arguments are taken!
   EXPECT_EQ(2U, args.size());
   EXPECT_STREQ(kNames[0], args.names()[0]);
