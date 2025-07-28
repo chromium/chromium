@@ -223,6 +223,32 @@ bool PaintTimingDetector::NotifyImagePaint(
                    current_paint_chunk_properties, nullptr, image_border);
 }
 
+// static
+void PaintTimingDetector::NotifyFirstVideoFrame(
+    const LayoutObject& object,
+    const gfx::Size& intrinsic_size,
+    const MediaTiming& media_timing,
+    const PropertyTreeStateOrAlias& current_paint_chunk_properties,
+    const gfx::Rect& image_border) {
+  if (NotifyImagePaint(object, intrinsic_size, media_timing,
+                       current_paint_chunk_properties, image_border)) {
+    LocalFrameView* frame_view = object.GetFrameView();
+    CHECK(frame_view);
+    // crbug.com/434659231: Recording this as an LCP candidate and setting the
+    // presentation time (without ReportFirstFrameTimeAsRenderTime) depends on
+    // the next main frame, which we request here. This is flag-guarded for hard
+    // LCP, since it might move metrics; for soft navs, do this unconditionally
+    // since this is still experimental and we want accurate behavior for origin
+    // trial along with attributing video src changes (crbug.com/434215966).
+    if (RuntimeEnabledFeatures::RequestMainFrameAfterFirstVideoFrameEnabled() ||
+        !frame_view->GetPaintTimingDetector()
+             .GetImagePaintTimingDetector()
+             .IsRecordingLargestImagePaint()) {
+      frame_view->ScheduleAnimation();
+    }
+  }
+}
+
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
                                               const MediaTiming* media_timing) {
   if (IgnorePaintTimingScope::ShouldIgnore()) {

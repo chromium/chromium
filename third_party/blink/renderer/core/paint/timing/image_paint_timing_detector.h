@@ -290,8 +290,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   std::optional<uint64_t> viewport_size_;
   // Whether the viewport size used is the page viewport.
   bool uses_page_viewport_;
-  // Are we recording an LCP candidate? True after a navigation (including soft
-  // navigations) until the next user interaction.
+  // Are we recording an LCP candidate? True after a hard navigation until the
+  // next user interaction.
   bool recording_largest_image_paint_ = true;
 
   ImageRecordsManager records_manager_;

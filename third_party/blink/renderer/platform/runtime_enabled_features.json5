@@ -4019,6 +4019,10 @@
       status: "test",
     },
     {
+      name: "RequestMainFrameAfterFirstVideoFrame",
+      status: "experimental",
+    },
+    {
       name: "ResolveVarStylesOnCopy",
       status: "stable",
     },
