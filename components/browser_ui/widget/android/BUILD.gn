@@ -482,6 +482,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.components.browser_ui.widget"
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/ActionConfirmationDialogUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/BrowserUiListMenuUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/ChromeTransitionDrawableTest.java",
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegateUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/ContextMenuDialogUnitTest.java",

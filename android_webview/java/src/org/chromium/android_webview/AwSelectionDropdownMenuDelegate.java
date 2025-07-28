@@ -6,14 +6,13 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
@@ -217,12 +216,13 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
 
         assert windowContext != null : "Window context cannot be null.";
 
-        LayoutInflater inflater =
-                (LayoutInflater) windowContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View contentView = inflater.inflate(R.layout.list_menu_layout, null);
-        ListView listView = contentView.findViewById(R.id.menu_list);
         return new BasicListMenu(
-                windowContext, items, contentView, listView, clickListener::onItemClick, 0);
+                windowContext,
+                items,
+                clickListener::onItemClick,
+                /* backgroundDrawable= */ Resources.ID_NULL,
+                /* backgroundTintColor= */ Resources.ID_NULL,
+                /* bottomHairlineColor= */ null);
     }
 
     /**

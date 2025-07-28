@@ -90,7 +90,11 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     private BasicListMenu buildIncognitoReauthMenu() {
         MVCListAdapter.ModelList itemList = buildMenuItems();
         return BrowserUiListMenuUtils.getBasicListMenu(
-                mContext, itemList, this, R.color.menu_item_bg_color_dark_baseline);
+                mContext,
+                itemList,
+                this,
+                R.color.menu_item_bg_color_dark_baseline,
+                mContext.getColor(R.color.divider_line_bg_color_dark));
     }
 
     private MVCListAdapter.ModelList buildMenuItems() {

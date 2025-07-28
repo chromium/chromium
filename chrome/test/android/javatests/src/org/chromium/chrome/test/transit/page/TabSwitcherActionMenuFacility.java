@@ -39,7 +39,7 @@ public class TabSwitcherActionMenuFacility extends Facility<CtaPageStation> {
 
     @Override
     public void declareExtraElements() {
-        appMenuListElement = declareView(withId(R.id.app_menu_list));
+        appMenuListElement = declareView(withId(R.id.menu_list));
         closeTabMenuItemElement =
                 declareView(appMenuListElement.descendant(withText(R.string.close_tab)));
         newTabMenuItemElement =
