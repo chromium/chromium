@@ -37,6 +37,8 @@
 
 namespace blink {
 
+class MemoryManagedPaintCanvas;
+
 namespace {
 const size_t kHardMaxCachedFonts = 250;
 const size_t kMaxCachedFonts = 25;
@@ -381,7 +383,8 @@ Color OffscreenCanvasRenderingContext2D::GetCurrentColor() const {
   return Color::kBlack;
 }
 
-cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
+MemoryManagedPaintCanvas*
+OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   if (!is_valid_size_ || isContextLost() ||
       !GetOrCreateCanvas2DResourceProvider()) [[unlikely]] {
     return nullptr;
@@ -389,8 +392,8 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return GetPaintCanvas();
 }
 
-const cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas()
-    const {
+const MemoryManagedPaintCanvas*
+OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
   if (!is_valid_size_ || isContextLost()) [[unlikely]] {
     return nullptr;
   }

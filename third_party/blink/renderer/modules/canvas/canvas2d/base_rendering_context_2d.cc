@@ -109,6 +109,9 @@
 // IWYU pragma: no_include "base/numerics/clamped_math.h"
 
 namespace blink {
+
+class MemoryManagedPaintCanvas;
+
 namespace {
 
 wgpu::TextureFormat AsDawnType(const viz::SharedImageFormat& format) {
@@ -1171,8 +1174,9 @@ void BaseRenderingContext2D::DrawTextInternal(
 
   Draw<OverdrawOp::kNone>(
       [font, text = std::move(text), direction, bidi_override, location,
-       run_start, run_end, canvas, text_painter](
-          cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
+       run_start, run_end, canvas,
+       text_painter](MemoryManagedPaintCanvas* c,
+                     const cc::PaintFlags* flags)  // draw lambda
       {
         TextRun text_run(text, direction, bidi_override,
                          /* normalize_space */ true);

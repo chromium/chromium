@@ -114,7 +114,7 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
@@ -1758,7 +1758,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
     }
     auto line = path.line();
     Draw<OverdrawOp::kNone>(
-        [line](cc::PaintCanvas* c,
+        [line](MemoryManagedPaintCanvas* c,
                const cc::PaintFlags* flags)  // draw lambda
         {
           c->drawLine(line.start.x(), line.start.y(), line.end.x(),
@@ -1786,7 +1786,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
     const bool closed = arc.closed;
     Draw<OverdrawOp::kNone>(
         [oval, start_degrees, sweep_degrees, closed](
-            cc::PaintCanvas* c,
+            MemoryManagedPaintCanvas* c,
             const cc::PaintFlags* flags)  // draw lambda
         {
           cc::PaintFlags arc_paint_flags(*flags);
@@ -1807,7 +1807,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
   sk_path.setFillType(fill_type);
 
   Draw<OverdrawOp::kNone>(
-      [sk_path, use_paint_cache](cc::PaintCanvas* c,
+      [sk_path, use_paint_cache](MemoryManagedPaintCanvas* c,
                                  const cc::PaintFlags* flags)  // draw lambda
       { c->drawPath(sk_path, *flags, use_paint_cache); },
       [](const SkIRect& rect)  // overdraw test lambda
@@ -1923,7 +1923,8 @@ void Canvas2DRecorderContext::fillRect(double x,
   gfx::RectF rect(ClampTo<float>(x), ClampTo<float>(y), ClampTo<float>(width),
                   ClampTo<float>(height));
   Draw<OverdrawOp::kNone>(
-      [rect](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
+      [rect](MemoryManagedPaintCanvas* c,
+             const cc::PaintFlags* flags)  // draw lambda
       { c->drawRect(gfx::RectFToSkRect(rect), *flags); },
       [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
       { return RectContainsTransformedRect(rect, clip_bounds); },
@@ -1982,7 +1983,8 @@ void Canvas2DRecorderContext::strokeRect(double x,
   }
 
   Draw<OverdrawOp::kNone>(
-      [rect](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
+      [rect](MemoryManagedPaintCanvas* c,
+             const cc::PaintFlags* flags)  // draw lambda
       { StrokeRectOnCanvas(rect, c, flags); },
       kNoOverdraw, bounds, CanvasRenderingContext2DState::kStrokePaintType,
       GetState().HasPattern(CanvasRenderingContext2DState::kStrokePaintType)
@@ -2486,7 +2488,8 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
 
   Draw<OverdrawOp::kDrawImage>(
       [this, image_source, image, src_rect, dst_rect](
-          cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
+          MemoryManagedPaintCanvas* c,
+          const cc::PaintFlags* flags)  // draw lambda
       {
         SkSamplingOptions sampling =
             cc::PaintFlags::FilterQualityToSkSamplingOptions(
@@ -2811,7 +2814,7 @@ void Canvas2DRecorderContext::drawMesh(
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
       [&image, &vertex_data, &uv_data, &index_data](
-          cc::PaintCanvas* c, const cc::PaintFlags* flags) {
+          MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         const gfx::RectF src(image->width(), image->height());
         // UV coordinates are normalized, relative to the texture size.
         const SkMatrix local_matrix =
