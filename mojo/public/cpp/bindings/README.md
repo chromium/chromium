@@ -774,7 +774,7 @@ class IfaceImpl : public mojom::Iface {
     } else {
       auto failure = mojom::Failure::New();
       failure->reason = "too hard!";
-      callback.Run(base::unexpected(std::move(success)));
+      callback.Run(base::unexpected(std::move(failure)));
     }
   }
 };
