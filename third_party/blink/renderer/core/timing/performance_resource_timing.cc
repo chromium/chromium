@@ -510,8 +510,8 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddNumber("workerRouterEvaluationStart",
                       workerRouterEvaluationStart());
     builder.AddNumber("workerCacheLookupStart", workerCacheLookupStart());
-    builder.AddString("matchedSourceType", workerMatchedSourceType());
-    builder.AddString("finalSourceType", workerFinalSourceType());
+    builder.AddString("workerMatchedSourceType", workerMatchedSourceType());
+    builder.AddString("workerFinalSourceType", workerFinalSourceType());
   }
   if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
     builder.AddString("initiatorUrl", initiatorUrl());
