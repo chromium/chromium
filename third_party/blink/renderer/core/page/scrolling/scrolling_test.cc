@@ -3276,14 +3276,18 @@ class ScrollingSimTest : public SimTest {
                                        int delta_y = 0) {
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                           WebInputEvent::GetStaticTimeStampForTests(),
-                          WebGestureDevice::kTouchscreen);
+                          WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(gfx::PointF(100, 100));
     if (type == WebInputEvent::Type::kGestureScrollUpdate) {
       event.data.scroll_update.delta_x = delta_x;
       event.data.scroll_update.delta_y = delta_y;
+      event.data.scroll_update.delta_units =
+          ui::ScrollGranularity::kScrollByPixel;
     } else if (type == WebInputEvent::Type::kGestureScrollBegin) {
       event.data.scroll_begin.delta_x_hint = delta_x;
       event.data.scroll_begin.delta_y_hint = delta_y;
+      event.data.scroll_begin.delta_hint_units =
+          ui::ScrollGranularity::kScrollByPixel;
     }
     return event;
   }
@@ -3341,6 +3345,53 @@ TEST_F(ScrollingSimTest, BasicScroll) {
       GenerateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, 0, -100));
   widget.DispatchThroughCcInputHandler(
       GenerateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0, -100));
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
+
+  Compositor().BeginFrame();
+
+  Element* scroller = GetDocument().getElementById(AtomicString("s"));
+  LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
+  EXPECT_EQ(100, box->ScrolledContentOffset().top);
+}
+
+// TODO(crbug.com/434513378) Fix flakiness on Fuchsia with enable_smooth_scroll
+// (see GetSynchronousSingleThreadLayerTreeSettings in frame_test_helpers.cc)
+// and re-enable. Note this was only caught in the "test new tests for
+// flakiness" step in fuchsia-x64-cast-receiver-rel try bot when adding this
+// test but it appears the existing BasicScroll test above can fail as well with
+// the same error. So the failure is not related to the new test, and rather an
+// existing issue with the BasicScroll test with smooth scrolling.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_BasicScrollClampedToScrollerSize \
+  DISABLED_BasicScrollClampedToScrollerSize
+#else
+#define MAYBE_BasicScrollClampedToScrollerSize BasicScrollClampedToScrollerSize
+#endif  // BUILDFLAG(IS_FUCHSIA)
+TEST_F(ScrollingSimTest, MAYBE_BasicScrollClampedToScrollerSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kLimitScrollDeltaToScrollerSize},
+                                {});
+  String kUrl = "https://example.com/test.html";
+  SimRequest request(kUrl, "text/html");
+  LoadURL(kUrl);
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #s { overflow: scroll; width: 100px; height: 100px; }
+      #sp { width: 600px; height: 600px; }
+    </style>
+    <div id=s><div id=sp>hello</div></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, 0, -120));
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0, -120));
   widget.DispatchThroughCcInputHandler(
       GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
 

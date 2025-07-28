@@ -464,8 +464,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
                        const ScrollNode& scroll_node);
   // Returns the amount of delta that can be applied to scroll_node, taking
   // page scale into account.
-  gfx::Vector2dF ComputeScrollDelta(const ScrollNode& scroll_node,
-                                    const gfx::Vector2dF& delta);
+  gfx::Vector2dF ComputeScrollDelta(
+      const ScrollNode& scroll_node,
+      const gfx::Vector2dF& delta,
+      const ScrollState* scroll_state = nullptr) const;
 
   gfx::Vector2dF ScrollSingleNode(const ScrollNode& scroll_node,
                                   const gfx::Vector2dF& delta,
@@ -742,6 +744,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // scroll has ended. Otherwise, we assume the scroll has ended for
   // |CurrentlyScrollingNode()|.
   void ScrollEnd(ScrollNode* scroll_node, bool should_snap = false);
+
+  void LimitDeltaToScrollerSize(const ScrollState& scroll_state,
+                                const ScrollNode& scroll_node,
+                                gfx::Vector2dF& delta) const;
 
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.

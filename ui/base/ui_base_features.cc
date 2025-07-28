@@ -223,6 +223,12 @@ BASE_FEATURE(kElasticOverscroll,
 );
 #endif
 
+// Limits the scroll delta to the size of the scroller when scrolled using the
+// mouse wheel only.
+BASE_FEATURE(kLimitScrollDeltaToScrollerSize,
+             "LimitScrollDeltaToScrollerSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables focus follow follow cursor (sloppyfocus).
 BASE_FEATURE(kFocusFollowsCursor,
              "FocusFollowsCursor",

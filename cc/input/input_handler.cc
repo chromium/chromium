@@ -4,6 +4,8 @@
 
 #include "cc/input/input_handler.h"
 
+#include <algorithm>
+#include <cmath>
 #include <string>
 #include <utility>
 #include <vector>
@@ -29,6 +31,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -1511,6 +1514,35 @@ float InputHandler::LineStep() const {
   return kPixelsPerLineStep * ActiveTree().painted_device_scale_factor();
 }
 
+void InputHandler::LimitDeltaToScrollerSize(const ScrollState& scroll_state,
+                                            const ScrollNode& scroll_node,
+                                            gfx::Vector2dF& delta) const {
+  // Exclude cases like touch interaction, flings, scrollbar interactions and
+  // scroll by page/document.
+  if (scroll_state.is_direct_manipulation() ||
+      scroll_state.is_in_inertial_phase() ||
+      scroll_state.is_scrollbar_interaction() ||
+      scroll_state.delta_granularity() ==
+          ui::ScrollGranularity::kScrollByPage ||
+      scroll_state.delta_granularity() ==
+          ui::ScrollGranularity::kScrollByDocument ||
+      !base::FeatureList::IsEnabled(
+          features::kLimitScrollDeltaToScrollerSize)) {
+    return;
+  }
+  gfx::SizeF scroller_size = gfx::SizeF(scroll_node.container_bounds);
+
+  float sign_x = std::signbit(delta.x()) ? -1 : 1;
+  float sign_y = std::signbit(delta.y()) ? -1 : 1;
+  float delta_x = std::abs(delta.x());
+  float delta_y = std::abs(delta.y());
+
+  delta_x = std::min(delta_x, scroller_size.width());
+  delta_y = std::min(delta_y, scroller_size.height());
+  delta.set_x(std::copysign(delta_x, sign_x));
+  delta.set_y(std::copysign(delta_y, sign_y));
+}
+
 // TODO(mehdika): There is some redundancy between this function and
 // ScrollbarController::GetScrollDistanceForScrollbarPart, these two need to be
 // kept in sync.
@@ -1703,8 +1735,10 @@ bool InputHandler::IsInitialScrollHitTestReliable(
   return false;
 }
 
-gfx::Vector2dF InputHandler::ComputeScrollDelta(const ScrollNode& scroll_node,
-                                                const gfx::Vector2dF& delta) {
+gfx::Vector2dF InputHandler::ComputeScrollDelta(
+    const ScrollNode& scroll_node,
+    const gfx::Vector2dF& delta,
+    const ScrollState* scroll_state) const {
   ScrollTree& scroll_tree = GetScrollTree();
   float scale_factor = compositor_delegate_->PageScaleFactor();
 
@@ -1717,7 +1751,15 @@ gfx::Vector2dF InputHandler::ComputeScrollDelta(const ScrollNode& scroll_node,
   gfx::PointF new_offset = scroll_tree.ClampScrollOffsetToLimits(
       old_offset + adjusted_scroll, scroll_node);
 
-  return new_offset - old_offset;
+  auto updated_delta = new_offset - old_offset;
+  if (!scroll_state) {
+    if (!last_scroll_update_state_.has_value()) {
+      return updated_delta;
+    }
+    scroll_state = &last_scroll_update_state_.value();
+  }
+  LimitDeltaToScrollerSize(*scroll_state, scroll_node, updated_delta);
+  return updated_delta;
 }
 
 bool InputHandler::CalculateLocalScrollDeltaAndStartPoint(
@@ -1944,7 +1986,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
         applied_delta = result.consumed_delta;
         SetViewportConsumedDelta(result);
       } else {
-        applied_delta = ComputeScrollDelta(scroll_node, delta);
+        applied_delta = ComputeScrollDelta(scroll_node, delta, &scroll_state);
         compositor_delegate_->ScrollAnimationCreate(scroll_node, applied_delta,
                                                     delayed_by);
       }
@@ -2171,8 +2213,10 @@ bool InputHandler::CanConsumeDelta(const ScrollState& scroll_state,
         scroll_node, delta_to_scroll, scroll_state.delta_granularity());
   }
 
-  if (ComputeScrollDelta(scroll_node, delta_to_scroll) != gfx::Vector2dF())
+  if (ComputeScrollDelta(scroll_node, delta_to_scroll, &scroll_state) !=
+      gfx::Vector2dF()) {
     return true;
+  }
 
   return false;
 }
