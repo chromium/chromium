@@ -38,6 +38,7 @@ class WebTransportConnectorImpl final
       const GURL& url,
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const std::vector<std::string>& application_protocols,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client) override;
 
@@ -46,6 +47,7 @@ class WebTransportConnectorImpl final
       const GURL& url,
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const std::vector<std::string>& application_protocols,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::unique_ptr<WebTransportThrottleContext::Tracker> tracker);
@@ -54,6 +56,7 @@ class WebTransportConnectorImpl final
       const GURL& url,
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const std::vector<std::string>& application_protocols,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::optional<network::mojom::WebTransportErrorPtr> error);

@@ -28,9 +28,11 @@ namespace {
 
 net::WebTransportParameters CreateParameters(
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
-        fingerprints) {
+        fingerprints,
+    std::vector<std::string> application_protocols) {
   net::WebTransportParameters params;
   params.enable_web_transport_http3 = true;
+  params.application_protocols = std::move(application_protocols);
 
   for (const auto& fingerprint : fingerprints) {
     params.server_certificate_fingerprints.push_back(
@@ -401,14 +403,16 @@ WebTransport::WebTransport(
     const net::NetworkAnonymizationKey& key,
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
         fingerprints,
+    const std::vector<std::string>& application_protocols,
     NetworkContext* context,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
-    : transport_(net::CreateWebTransportClient(url,
-                                               origin,
-                                               this,
-                                               key,
-                                               context->url_request_context(),
-                                               CreateParameters(fingerprints))),
+    : transport_(net::CreateWebTransportClient(
+          url,
+          origin,
+          this,
+          key,
+          context->url_request_context(),
+          CreateParameters(fingerprints, std::move(application_protocols)))),
       context_(context),
       receiver_(this),
       handshake_client_(std::move(handshake_client)) {
@@ -591,6 +595,7 @@ void WebTransport::OnConnected(
   handshake_client_->OnConnectionEstablished(
       receiver_.BindNewPipeAndPassRemote(),
       client_.BindNewPipeAndPassReceiver(), std::move(response_headers),
+      transport_->session()->GetNegotiatedSubprotocol(),
       StatsToMojom(transport_->session()->GetSessionStats()));
 
   handshake_client_.reset();

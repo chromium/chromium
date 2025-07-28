@@ -508,6 +508,11 @@ int DedicatedWebTransportHttp3Client::DoInit() {
   if (!IsPortAllowedForScheme(url_.EffectiveIntPort(), url_.scheme_piece()))
     return ERR_UNSAFE_PORT;
 
+  if (!application_protocols_.empty() &&
+      !webtransport::ValidateSubprotocolList(application_protocols_)) {
+    return ERR_INVALID_ARGUMENT;
+  }
+
   // TODO(vasilvv): check if QUIC is disabled by policy.
 
   // Ensure that RFC 9000 is always supported.

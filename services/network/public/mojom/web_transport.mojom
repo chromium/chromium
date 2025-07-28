@@ -190,6 +190,7 @@ interface WebTransportHandshakeClient {
   OnConnectionEstablished(pending_remote<WebTransport> transport,
                           pending_receiver<WebTransportClient> client,
                           HttpResponseHeaders response_headers,
+                          string? selected_application_protocol,
                           WebTransportStats initial_stats);
 
   // Called when the handshake fails.

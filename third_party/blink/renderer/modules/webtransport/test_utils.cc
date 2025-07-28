@@ -89,6 +89,7 @@ TestWebTransportCreator::~TestWebTransportCreator() {
 void TestWebTransportCreator::Connect(
     const KURL&,
     Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>,
+    const Vector<String>&,
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         pending_handshake_client) {
   mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>
@@ -103,7 +104,7 @@ void TestWebTransportCreator::Connect(
   handshake_client->OnConnectionEstablished(
       std::move(web_transport_to_pass),
       client_remote.InitWithNewPipeAndPassReceiver(),
-      network::mojom::blink::HttpResponseHeaders::New(),
+      network::mojom::blink::HttpResponseHeaders::New(), String(),
       network::mojom::blink::WebTransportStats::New());
   client_remote_.Bind(std::move(client_remote));
 }

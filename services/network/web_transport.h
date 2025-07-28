@@ -50,6 +50,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
       const net::NetworkAnonymizationKey& key,
       const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
           fingerprints,
+      const std::vector<std::string>& application_protocols,
       NetworkContext* context,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client);
   ~WebTransport() override;

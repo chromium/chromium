@@ -153,11 +153,13 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
       mojo::PendingRemote<mojom::WebTransport> transport,
       mojo::PendingReceiver<mojom::WebTransportClient> client_receiver,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      const std::optional<std::string>& selected_application_protocol,
       mojom::WebTransportStatsPtr initial_stats) override {
     transport_ = std::move(transport);
     client_receiver_ = std::move(client_receiver);
     has_seen_connection_establishment_ = true;
     receiver_.reset();
+    selected_application_protocol_ = selected_application_protocol;
     std::move(callback_).Run();
   }
 
@@ -192,6 +194,9 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   std::optional<net::WebTransportError> handshake_error() const {
     return handshake_error_;
   }
+  std::optional<std::string> selected_application_protocol() const {
+    return selected_application_protocol_;
+  }
 
  private:
   mojo::Receiver<mojom::WebTransportHandshakeClient> receiver_;
@@ -203,6 +208,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   bool has_seen_handshake_failure_ = false;
   bool has_seen_mojo_connection_error_ = false;
   std::optional<net::WebTransportError> handshake_error_;
+  std::optional<std::string> selected_application_protocol_;
 };
 
 class TestClient final : public mojom::WebTransportClient {
@@ -349,10 +355,22 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
       const url::Origin& origin,
       const net::NetworkAnonymizationKey& key,
       std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      const std::vector<std::string>& application_protocols,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
     network_context_->CreateWebTransport(
-        url, origin, key, std::move(fingerprints), std::move(handshake_client));
+        url, origin, key, std::move(fingerprints), application_protocols,
+        std::move(handshake_client));
+  }
+  void CreateWebTransport(
+      const GURL& url,
+      const url::Origin& origin,
+      const net::NetworkAnonymizationKey& key,
+      std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient>
+          handshake_client) {
+    CreateWebTransport(url, origin, key, std::move(fingerprints), {},
+                       std::move(handshake_client));
   }
   void CreateWebTransport(
       const GURL& url,
@@ -421,6 +439,28 @@ TEST_F(WebTransportTest, ConnectSuccessfully) {
   EXPECT_TRUE(test_handshake_client.has_seen_connection_establishment());
   EXPECT_FALSE(test_handshake_client.has_seen_handshake_failure());
   EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
+  EXPECT_EQ(test_handshake_client.selected_application_protocol(),
+            std::nullopt);
+  EXPECT_EQ(1u, network_context().NumOpenWebTransports());
+}
+
+TEST_F(WebTransportTest, ConnectWithCustomProtocol) {
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  CreateWebTransport(GetURL("/selected-subprotocol"), origin(),
+                     net::NetworkAnonymizationKey(), {},
+                     {"first", "second", "third"}, std::move(handshake_client));
+
+  run_loop_for_handshake.Run();
+
+  EXPECT_TRUE(test_handshake_client.has_seen_connection_establishment());
+  EXPECT_FALSE(test_handshake_client.has_seen_handshake_failure());
+  EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
+  EXPECT_EQ(test_handshake_client.selected_application_protocol(), "first");
   EXPECT_EQ(1u, network_context().NumOpenWebTransports());
 }
 

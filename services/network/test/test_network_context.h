@@ -219,6 +219,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const url::Origin& origin,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      const std::vector<std::string>& application_protocols,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
       override {}
   void LookUpProxyForURL(

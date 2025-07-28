@@ -1951,6 +1951,7 @@ void NetworkContext::CreateWebTransport(
     const url::Origin& origin,
     const net::NetworkAnonymizationKey& key,
     std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+    const std::vector<std::string>& application_protocols,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client) {
   if (!IsNetworkForNonceAndUrlAllowed(
@@ -1961,9 +1962,9 @@ void NetworkContext::CreateWebTransport(
         net::WebTransportError(net::ERR_NETWORK_ACCESS_REVOKED));
     return;
   }
-  web_transports_.insert(
-      std::make_unique<WebTransport>(url, origin, key, fingerprints, this,
-                                     std::move(pending_handshake_client)));
+  web_transports_.insert(std::make_unique<WebTransport>(
+      url, origin, key, fingerprints, application_protocols, this,
+      std::move(pending_handshake_client)));
 }
 
 void NetworkContext::CreateNetLogExporter(

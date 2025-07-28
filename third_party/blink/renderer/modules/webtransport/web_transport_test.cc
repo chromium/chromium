@@ -80,15 +80,18 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
         const KURL& url,
         Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
             fingerprints,
+        Vector<WTF::String> application_protocols,
         mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
           fingerprints(std::move(fingerprints)),
+          application_protocols(std::move(application_protocols)),
           handshake_client(std::move(handshake_client)) {}
 
     KURL url;
     Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
         fingerprints;
+    Vector<WTF::String> application_protocols;
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
@@ -97,10 +100,12 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
       const KURL& url,
       Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const Vector<WTF::String>& application_protocols,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
-    connect_args_.push_back(
-        ConnectArgs(url, std::move(fingerprints), std::move(handshake_client)));
+    connect_args_.push_back(ConnectArgs(url, std::move(fingerprints),
+                                        application_protocols,
+                                        std::move(handshake_client)));
   }
 
   Vector<ConnectArgs> TakeConnectArgs() { return std::move(connect_args_); }
@@ -252,6 +257,7 @@ class WebTransportTest : public ::testing::Test {
         std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver(),
         network::mojom::blink::HttpResponseHeaders::New(),
+        /*selected_application_protocol=*/WTF::String(),
         network::mojom::blink::WebTransportStats::New());
     client_remote_.Bind(std::move(client_remote));
   }
