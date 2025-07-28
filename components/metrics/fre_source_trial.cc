@@ -36,6 +36,11 @@ std::string CreateFirstRunTrial(
       control_percent = 50;
       default_percent = 0;
       break;
+    case version_info::Channel::STABLE:
+      enabled_percent = 1;
+      control_percent = 1;
+      default_percent = 98;
+      break;
     default:
       break;
   }
