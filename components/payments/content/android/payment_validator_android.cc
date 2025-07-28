@@ -46,7 +46,7 @@ jboolean JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
   }
   std::string unused_error_message;
   return PaymentsValidators::IsValidPaymentValidationErrorsFormat(
-      std::move(errors), &unused_error_message);
+      errors, &unused_error_message);
 }
 
 }  // namespace payments
