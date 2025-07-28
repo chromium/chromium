@@ -27,6 +27,10 @@
 #include "base/mac/mac_util.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace switches {
 
 // Allow users to specify a custom buffer size for debugging purpose.
@@ -1821,6 +1825,12 @@ bool IsMacSckSystemLoopbackCaptureSupported() {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+bool IsWindowsSystemLoopbackCaptureSupported() {
+  return (base::win::GetVersion() >= base::win::Version::WIN11);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool IsSystemLoopbackCaptureSupported() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
   return true;
@@ -1839,6 +1849,10 @@ bool IsSystemLoopbackAsAecReferenceEnabled() {
 
 #if BUILDFLAG(IS_MAC)
   if (!IsMacCatapSystemLoopbackCaptureSupported()) {
+    return false;
+  }
+#elif BUILDFLAG(IS_WIN)
+  if (!IsWindowsSystemLoopbackCaptureSupported()) {
     return false;
   }
 #endif
