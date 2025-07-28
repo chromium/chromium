@@ -234,16 +234,16 @@ void BrowserPolicyConnectorAsh::Init(
   device_local_account_policy_service_->Connect(device_management_service());
 
   if (device_cloud_policy_manager_) {
-    device_cloud_policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
-        PolicyInvalidationScope::kDevice, device_cloud_policy_manager_->core(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::DefaultClock::GetInstance(),
-        /*highest_handled_invalidation_version=*/0,
-        /*device_local_account_id=*/"");
-    device_cloud_policy_invalidator_->Initialize(
+    invalidation::InvalidationListener* policy_invalidation_listener =
         invalidation_listener_per_project_
             [policy::kPolicyInvalidationProjectNumber]
-                .get());
+                .get();
+    device_cloud_policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
+        PolicyInvalidationScope::kDevice, policy_invalidation_listener,
+        device_cloud_policy_manager_->core(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::DefaultClock::GetInstance(),
+        /*highest_handled_invalidation_version=*/0);
 
     invalidation::InvalidationListener* remote_commands_invalidation_listener =
         invalidation_listener_per_project_
@@ -388,9 +388,6 @@ void BrowserPolicyConnectorAsh::Shutdown() {
     device_cloud_policy_manager_->RemoveDeviceCloudPolicyManagerObserver(this);
   }
 
-  if (device_cloud_policy_invalidator_) {
-    device_cloud_policy_invalidator_->Shutdown();
-  }
   device_cloud_policy_invalidator_.reset();
 
   device_remote_commands_invalidator_.reset();

@@ -28,9 +28,6 @@ class SequencedTaskRunner;
 
 namespace policy {
 
-// The state of the object.
-enum class State { UNINITIALIZED, STOPPED, STARTED, SHUT_DOWN };
-
 // Listens for and provides policy invalidations.
 class CloudPolicyInvalidator
     : public invalidation::InvalidationListener::Observer,
@@ -58,6 +55,9 @@ class CloudPolicyInvalidator
 
   // |scope| indicates the invalidation scope that this invalidator
   // is responsible for.
+  // |invalidation_listener| provides invalidations and is observed during the
+  // whole invaldiator's lifetime. Must remain valid until the invalidator is
+  // destroyed.
   // |core| is the cloud policy core which connects the various policy objects.
   // It must remain valid until Shutdown is called.
   // |task_runner| is used for scheduling delayed tasks. It must post tasks to
@@ -70,6 +70,7 @@ class CloudPolicyInvalidator
   // if scope is not DeviceLocalAccount.
   CloudPolicyInvalidator(
       PolicyInvalidationScope scope,
+      invalidation::InvalidationListener* invalidation_listener,
       CloudPolicyCore* core,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
@@ -77,6 +78,7 @@ class CloudPolicyInvalidator
       const std::string& device_local_account_id);
   CloudPolicyInvalidator(
       PolicyInvalidationScope scope,
+      invalidation::InvalidationListener* invalidation_listener,
       CloudPolicyCore* core,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
@@ -84,15 +86,6 @@ class CloudPolicyInvalidator
   CloudPolicyInvalidator(const CloudPolicyInvalidator&) = delete;
   CloudPolicyInvalidator& operator=(const CloudPolicyInvalidator&) = delete;
   ~CloudPolicyInvalidator() override;
-
-  // Initializes the invalidator. No invalidations will be generated before this
-  // method is called. This method must only be called once.
-  // `invalidation_listener` must remain valid until Shutdown is called.
-  void Initialize(invalidation::InvalidationListener* invalidation_listener);
-
-  // Shuts down and disables invalidations. It must be called before the object
-  // is destroyed.
-  void Shutdown();
 
   // The highest invalidation version that was handled already.
   int64_t highest_handled_invalidation_version() const;
@@ -224,8 +217,6 @@ class CloudPolicyInvalidator
   // Returns true if ready to receive invalidations and invalidations are
   // enabled.
   bool AreInvalidationsEnabled() const;
-
-  State state_;
 
   PolicyInvalidationHandler policy_invalidation_handler_;
 
