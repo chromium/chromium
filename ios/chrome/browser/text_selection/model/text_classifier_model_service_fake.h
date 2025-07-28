@@ -7,21 +7,21 @@
 
 #include <memory>
 
-#import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 
-namespace web {
-class BrowserState;
-}  // namespace web
 class OptimizationGuideService;
 
 // Fake implementation of TextClassifierModelService that can be used by tests.
 class TextClassifierModelServiceFake : public TextClassifierModelService {
  public:
+  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+
   static std::unique_ptr<KeyedService> CreateTextClassifierModelService(
       web::BrowserState* context);
+  static TestingFactory GetTestingFactory();
   ~TextClassifierModelServiceFake() override;
 
- private:
   TextClassifierModelServiceFake(OptimizationGuideService* opt_guide);
 };
 
