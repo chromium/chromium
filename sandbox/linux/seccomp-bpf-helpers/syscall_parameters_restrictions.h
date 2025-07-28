@@ -40,6 +40,10 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictIoctl();
 // Crash if any other flag is used.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMmapFlags();
 
+// Restrict the flags argument in mremap(2).
+// Crash if any flags are used.
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMremapFlagsForODML();
+
 // Restrict the prot argument in mprotect(2).
 // Only allow: PROT_READ | PROT_WRITE | PROT_EXEC.
 // PROT_BTI | PROT_MTE is additionally allowed on 64-bit Arm.

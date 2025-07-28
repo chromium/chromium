@@ -34,7 +34,8 @@ using sandbox::syscall_broker::BrokerProcess;
 namespace sandbox {
 namespace policy {
 
-GpuProcessPolicy::GpuProcessPolicy() {}
+GpuProcessPolicy::GpuProcessPolicy(bool allow_mremap)
+    : allow_mremap_(allow_mremap) {}
 
 GpuProcessPolicy::~GpuProcessPolicy() {}
 
@@ -87,6 +88,13 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     // We also hit this on the linux_chromeos bot but don't yet know what
     // weird flags were involved.
     case __NR_mprotect:
+      return Allow();
+    // XNNPACK needs mremap when building weight caches.
+    case __NR_mremap:
+      if (allow_mremap_) {
+        return RestrictMremapFlagsForODML();
+      }
+      break;
     // TODO(jln): restrict prctl.
     case __NR_prctl:
     case __NR_sysinfo:

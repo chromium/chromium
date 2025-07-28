@@ -20,7 +20,8 @@ using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox::policy {
 
-CrosVirtIoGpuProcessPolicy::CrosVirtIoGpuProcessPolicy() = default;
+CrosVirtIoGpuProcessPolicy::CrosVirtIoGpuProcessPolicy(bool allow_mremap)
+    : GpuProcessPolicy(allow_mremap) {}
 
 CrosVirtIoGpuProcessPolicy::~CrosVirtIoGpuProcessPolicy() = default;
 

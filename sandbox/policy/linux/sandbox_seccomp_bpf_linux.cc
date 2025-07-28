@@ -123,27 +123,28 @@ inline bool IsArchitectureArm() {
 }
 
 std::unique_ptr<BPFBasePolicy> GetGpuProcessSandbox(
-    const SandboxSeccompBPF::Options& options) {
+    const SandboxSeccompBPF::Options& options,
+    bool allow_mremap) {
   if (IsChromeOS() || UseChromecastSandboxAllowlist()) {
     if (IsArchitectureArm()) {
       return std::make_unique<CrosArmGpuProcessPolicy>(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kGpuSandboxAllowSysVShm));
+          allow_mremap, base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            switches::kGpuSandboxAllowSysVShm));
     }
     if (options.use_amd_specific_policies) {
-      return std::make_unique<CrosAmdGpuProcessPolicy>();
+      return std::make_unique<CrosAmdGpuProcessPolicy>(allow_mremap);
     }
     if (options.use_intel_specific_policies) {
-      return std::make_unique<CrosIntelGpuProcessPolicy>();
+      return std::make_unique<CrosIntelGpuProcessPolicy>(allow_mremap);
     }
     if (options.use_nvidia_specific_policies) {
-      return std::make_unique<CrosNvidiaGpuProcessPolicy>();
+      return std::make_unique<CrosNvidiaGpuProcessPolicy>(allow_mremap);
     }
     if (options.use_virtio_specific_policies) {
-      return std::make_unique<CrosVirtIoGpuProcessPolicy>();
+      return std::make_unique<CrosVirtIoGpuProcessPolicy>(allow_mremap);
     }
   }
-  return std::make_unique<GpuProcessPolicy>();
+  return std::make_unique<GpuProcessPolicy>(allow_mremap);
 }
 #endif  // !defined(IN_NACL_HELPER)
 
@@ -186,11 +187,11 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     const SandboxSeccompBPF::Options& options) {
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kGpu:
-      return GetGpuProcessSandbox(options);
+      return GetGpuProcessSandbox(options, /*allow_mremap=*/false);
     case sandbox::mojom::Sandbox::kRenderer:
       return std::make_unique<RendererProcessPolicy>();
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-      return GetGpuProcessSandbox(options);
+      return GetGpuProcessSandbox(options, /*allow_mremap=*/true);
     case sandbox::mojom::Sandbox::kUtility:
       return std::make_unique<UtilityProcessPolicy>();
     case sandbox::mojom::Sandbox::kCdm:
@@ -227,7 +228,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       // TODO(b/255554267): we're using the GPU process sandbox policy for now
       // as a transition step. However, we should create a policy that's tighter
       // just for hardware video encoding.
-      return GetGpuProcessSandbox(options);
+      return GetGpuProcessSandbox(options, /*allow_mremap=*/false);
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_LINUX)

@@ -247,6 +247,13 @@ ResultExpr RestrictMmapFlags() {
   return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }
 
+SANDBOX_EXPORT ResultExpr RestrictMremapFlagsForODML() {
+  // No flags are allowed.
+  const uint64_t kAllowedMask = 0;
+  const Arg<int> flags(3);
+  return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
+}
+
 ResultExpr RestrictMprotectFlags() {
   // The flags you see are actually the allowed ones, and the variable is a
   // "denied" mask because of the negation operator.

@@ -15,7 +15,7 @@ namespace policy {
 // This policy is for ChromeOS running on Intel GPUs.
 class SANDBOX_POLICY_EXPORT CrosIntelGpuProcessPolicy : public GpuProcessPolicy {
  public:
-  CrosIntelGpuProcessPolicy();
+  explicit CrosIntelGpuProcessPolicy(bool allow_mremap);
 
   CrosIntelGpuProcessPolicy(const CrosIntelGpuProcessPolicy&) = delete;
   CrosIntelGpuProcessPolicy& operator=(const CrosIntelGpuProcessPolicy&) = delete;
