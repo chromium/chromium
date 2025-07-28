@@ -93,9 +93,7 @@ class ScopedBlockPopupsException {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Disable EarlGrey synchronization to avoid infinite spinner loop.
-  if (iOS26_OR_ABOVE()) {
-    ScopedSynchronizationDisabler disabler;
-  }
+  ScopedSynchronizationDisabler disabler;
 
   // Close the settings menu.
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
@@ -224,9 +222,7 @@ class ScopedBlockPopupsException {
                             nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Disable EarlGrey synchronization to avoid infinite spinner loop.
-  if (iOS26_OR_ABOVE()) {
-    ScopedSynchronizationDisabler disabler;
-  }
+  ScopedSynchronizationDisabler disabler;
 
   // Close the settings menu.
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
