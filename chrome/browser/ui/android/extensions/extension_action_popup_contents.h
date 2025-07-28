@@ -17,6 +17,7 @@ class RenderFrameHost;
 
 namespace extensions {
 
+class ExtensionHost;
 class ExtensionViewHost;
 
 // ExtensionActionPopupContents is the native C++ class responsible for managing
@@ -66,6 +67,7 @@ class ExtensionActionPopupContents : public content::WebContentsObserver,
 
  private:
   void SetUpNewMainFrame(content::RenderFrameHost* render_frame_host);
+  void HandleCloseExtensionHost(extensions::ExtensionHost* host);
 
   std::unique_ptr<ExtensionViewHost> host_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

@@ -42,6 +42,12 @@ ExtensionActionPopupContents::ExtensionActionPopupContents(
       AttachCurrentThread(), reinterpret_cast<jlong>(this),
       host_->host_contents());
   host_->set_view(this);
+  // Handle the containing view calling window.close();
+  // The base::Unretained() below is safe because this object owns `host_`, so
+  // the callback will never fire if `this` is deleted.
+  host_->SetCloseHandler(
+      base::BindOnce(&ExtensionActionPopupContents::HandleCloseExtensionHost,
+                     base::Unretained(this)));
   WebContentsObserver::Observe(host_->host_contents());
   auto* primary_main_frame = host_->host_contents()->GetPrimaryMainFrame();
   if (primary_main_frame->IsRenderFrameLive()) {
@@ -115,6 +121,13 @@ void ExtensionActionPopupContents::LoadInitialPage(JNIEnv* env) {
 void ExtensionActionPopupContents::SetUpNewMainFrame(
     RenderFrameHost* render_frame_host) {
   render_frame_host->GetView()->EnableAutoResize(kMinSize, kMaxSize);
+}
+
+void ExtensionActionPopupContents::HandleCloseExtensionHost(
+    ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  Java_ExtensionActionPopupContents_onClose(AttachCurrentThread(),
+                                            java_object_);
 }
 
 // JNI method to create an ExtensionActionPopupContents instance.

@@ -108,15 +108,29 @@ public class ExtensionActionPopupContents implements Destroyable {
         }
     }
 
+    @CalledByNative
+    private void onClose() {
+        if (mDelegate != null) {
+            mDelegate.onClose();
+        }
+    }
+
     /**
      * Interface for receiving UI-related callbacks from an {@link ExtensionActionPopupContents}.
      *
      * <p>This allows embedders or UI coordinators to react to events like content resizing.
      */
     public interface Delegate {
+        /** Called when the renderer requested to resize the window to fit the content size. */
         void resizeDueToAutoResize(int width, int height);
 
+        /** Called when it finished loading the initial page. */
         void onLoaded();
+
+        /**
+         * Called when the popup is requested to close programmatically (e.g. by window.close()).
+         */
+        void onClose();
     }
 
     @NativeMethods
