@@ -729,13 +729,16 @@ class CORE_EXPORT StyleRuleCustomMedia : public StyleRuleBase {
     DCHECK(std::holds_alternative<bool>(value_));
     return std::get<bool>(value_);
   }
+  void SetMediaQueries(const MediaQuerySet* media_queries) {
+    value_ = media_queries;
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString name_;
   using CustomMediaValue = std::variant<Member<const MediaQuerySet>, bool>;
-  const CustomMediaValue value_;
+  CustomMediaValue value_;
 };
 
 template <>

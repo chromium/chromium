@@ -141,6 +141,7 @@ struct DowncastTraits<CSSGroupingRule> {
       // go/keep-sorted start
       case CSSRule::kCharsetRule:
       case CSSRule::kCounterStyleRule:
+      case CSSRule::kCustomMediaRule:
       case CSSRule::kFontFaceRule:
       case CSSRule::kFontFeatureRule:
       case CSSRule::kFontFeatureValuesRule:
