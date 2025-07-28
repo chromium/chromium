@@ -55,7 +55,7 @@ bool WaitForFileWritable(const base::FilePath& path) {
           // shouldn't be replaced.
           return base::File(path, base::File::FLAG_OPEN |
                                       base::File::FLAG_WRITE |
-                                      base::File::FLAG_WIN_SHARE_DELETE)
+                                      base::File::FLAG_WIN_EXCLUSIVE_WRITE)
               .IsValid();
         }()) {
       return true;
