@@ -34,6 +34,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/mouse_watcher.h"
@@ -285,6 +286,13 @@ TabStripActionContainer::TabStripActionContainer(
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(
           tab_strip_controller->GetProfile())) {
+    if (features::kGlicActorUiTaskIcon.Get()) {
+      glic_actor_button_container_ =
+          AddChildView(CreateGlicActorButtonContainer());
+      glic_actor_task_icon_ = glic_actor_button_container_->AddChildView(
+          CreateGlicActorTaskIcon(tab_strip_controller));
+      glic_actor_button_container_->SetVisible(false);
+    }
     glic_button_ = AddChildView(CreateGlicButton(tab_strip_controller));
 
     SetupButtonProperties(glic_button_);
@@ -408,6 +416,38 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
   return glic_button;
 }
 
+std::unique_ptr<glic::GlicActorTaskIcon>
+TabStripActionContainer::CreateGlicActorTaskIcon(
+    TabStripController* tab_strip_controller) {
+  std::unique_ptr<glic::GlicActorTaskIcon> glic_actor_task_icon =
+      std::make_unique<glic::GlicActorTaskIcon>(
+          tab_strip_controller,
+          base::BindRepeating(
+              &TabStripActionContainer::OnGlicActorTaskIconClicked,
+              base::Unretained(this)));
+
+  glic_actor_task_icon->SetProperty(views::kCrossAxisAlignmentKey,
+                                    views::LayoutAlignment::kCenter);
+
+  return glic_actor_task_icon;
+}
+
+// TODO(crbug.com/431015299): Clean up when GlicButton and GlicActorTaskIcon
+// have been combined.
+std::unique_ptr<views::FlexLayoutView>
+TabStripActionContainer::CreateGlicActorButtonContainer() {
+  auto glic_actor_button_container = std::make_unique<views::FlexLayoutView>();
+  glic_actor_button_container->SetCollapseMargins(true);
+  glic_actor_button_container->SetBackground(views::CreateRoundedRectBackground(
+      kColorNewTabButtonCRBackgroundFrameActive, gfx::RoundedCornersF(12),
+      gfx::Insets::VH(4, 4)));
+
+  // Should be hidden until a task starts.
+  glic_actor_button_container->SetVisible(false);
+
+  return glic_actor_button_container;
+}
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 void TabStripActionContainer::OnToggleActionUIState(const Browser* browser,
@@ -514,6 +554,12 @@ void TabStripActionContainer::OnGlicButtonMouseDown() {
       /*is_first_run=*/false, /*supported_tools=*/std::nullopt,
       base::DoNothing());
 }
+
+void TabStripActionContainer::OnGlicActorTaskIconClicked() {
+  // TODO(crbug.com/422442409): Call Glic API to open the actuation view on
+  // click.
+}
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
@@ -549,7 +595,11 @@ void TabStripActionContainer::TriggerGlicActorTaskIconCheckTasksNudge() {
 
 void TabStripActionContainer::ShowGlicActorTaskIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
-// TODO(crbug.com/422439520): Implement show icon when task starts.
+  CHECK(glic_actor_button_container_);
+  CHECK(glic_button_);
+  glic_button_ =
+      glic_actor_button_container_->AddChildView(std::move(glic_button_));
+  glic_actor_button_container_->SetVisible(true);
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -557,7 +607,12 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
 
 void TabStripActionContainer::HideGlicActorTaskIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
-  // TODO(crbug.com/422439520): Implement hide icon when task is inactive.
+  CHECK(glic_actor_button_container_);
+  CHECK(glic_button_);
+  glic_button_ = AddChildView(std::move(glic_button_));
+  glic_actor_button_container_->SetVisible(false);
+  // Re-add the separator so it's ordered after the GlicButton.
+  separator_ = AddChildView(std::move(separator_));
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -565,11 +620,10 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
 
 bool TabStripActionContainer::GetIsShowingGlicActorTaskIconNudge() {
 #if BUILDFLAG(ENABLE_GLIC)
-// TODO(crbug.com/422439520): Implement is showing nudge.
+  return glic_actor_task_icon_ && glic_actor_task_icon_->GetIsShowingNudge();
 #else
-#endif  // BUILDFLAG(ENABLE_GLIC)
-  // Default implementation - if Glic is not enabled, nudge cannot show.
   return false;
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 DeclutterTriggerCTRBucket TabStripActionContainer::GetDeclutterTriggerBucket(
@@ -677,7 +731,7 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
       button, this, TabStripNudgeAnimationSession::AnimationSessionType::SHOW,
       base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
                      base::Unretained(this)),
-      button != glic_button_);
+      (button != glic_button_ && button != glic_actor_task_icon_));
   animation_session_->Start();
 
   if (button == tab_declutter_button_) {
@@ -702,7 +756,7 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
     return;
   }
   // Since the glic button is still visible in it's hidden state we need to have
-  // a sepacial case to query if it's in its Hide state.
+  // a special case to query if it's in its Hide state.
 #if BUILDFLAG(ENABLE_GLIC)
   if (button == glic_button_ && button->GetWidthFactor() == 0.0) {
     return;
@@ -717,7 +771,7 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
       button, this, TabStripNudgeAnimationSession::AnimationSessionType::HIDE,
       base::BindOnce(&TabStripActionContainer::OnAnimationSessionEnded,
                      base::Unretained(this)),
-      button != glic_button_);
+      (button != glic_button_ && button != glic_actor_task_icon_));
   animation_session_->Start();
 }
 

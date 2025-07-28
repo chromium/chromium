@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
+#include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/buildflags.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
 
@@ -27,6 +29,7 @@ class Insets;
 }
 namespace glic {
 class GlicButton;
+class GlicActorTaskIcon;
 }
 class ProductSpecificationsButton;
 
@@ -108,6 +111,14 @@ class TabStripActionContainer : public views::View,
 
   glic::GlicButton* GetGlicButton() { return glic_button_; }
 
+  glic::GlicActorTaskIcon* glic_actor_task_icon() {
+    return glic_actor_task_icon_;
+  }
+
+  views::FlexLayoutView* glic_actor_button_container() {
+    return glic_actor_button_container_;
+  }
+
   ProductSpecificationsButton* GetProductSpecificationsButton() {
     return product_specifications_button_;
   }
@@ -157,6 +168,17 @@ class TabStripActionContainer : public views::View,
   void OnGlicButtonDismissed();
   void OnGlicButtonHovered();
   void OnGlicButtonMouseDown();
+
+  std::unique_ptr<glic::GlicActorTaskIcon> CreateGlicActorTaskIcon(
+      TabStripController* tab_strip_controller);
+  void OnGlicActorTaskIconClicked();
+
+  // TODO(crbug.com/431015299): Clean up when GlicButton and GlicActorTaskIcon
+  // have been combined.
+  // Container to store the GlicButton and GlicActorTaskIcon when a task is
+  // active.
+  // Adds a toggle-like background.
+  std::unique_ptr<views::FlexLayoutView> CreateGlicActorButtonContainer();
 #endif
 
   void OnTabDeclutterButtonClicked();
@@ -205,9 +227,12 @@ class TabStripActionContainer : public views::View,
   raw_ptr<TabOrganizationService> tab_organization_service_ = nullptr;
   raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_ = nullptr;
   raw_ptr<tabs::GlicNudgeController> glic_nudge_controller_ = nullptr;
+
   raw_ptr<views::Separator> separator_ = nullptr;
 
+  raw_ptr<views::FlexLayoutView> glic_actor_button_container_ = nullptr;
   raw_ptr<glic::GlicButton> glic_button_ = nullptr;
+  raw_ptr<glic::GlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
 
   raw_ptr<const Browser> browser_;
 
