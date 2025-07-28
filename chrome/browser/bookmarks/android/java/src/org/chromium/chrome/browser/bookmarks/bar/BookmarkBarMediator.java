@@ -71,9 +71,11 @@ class BookmarkBarMediator
      * @param heightSupplier A Supplier to fetch the height of the bookmark bar view.
      * @param itemsModel The model for the items which are rendered within the bookmark bar.
      * @param itemsOverflowSupplier The supplier for the current state of items overflow.
-     * @param currentTab The current tab if it exists.
      * @param model The model used to read/write bookmark bar properties.
      * @param profileSupplier The supplier for the currently active profile.
+     * @param currentTab The current tab if it exists.
+     * @param bookmarkOpener Used to open bookmarks.
+     * @param bookmarkManagerOpenerSupplier Used to open the bookmark manager.
      */
     public BookmarkBarMediator(
             Activity activity,
@@ -354,7 +356,7 @@ class BookmarkBarMediator
                 });
     }
 
-    // TODO(crbug.com/339492600): Replace w/ positioning construct akin to `BottomControlsStacker`.
+    // TODO(crbug.com/430058918): Replace w/ positioning construct akin to `BottomControlsStacker`.
     private void updateTopMargin() {
         // NOTE: Top controls height is the sum of all top browser control heights which includes
         // that of the bookmark bar. Subtract the bookmark bar's height from the top controls height
@@ -365,11 +367,17 @@ class BookmarkBarMediator
                 mBrowserControlsStateProvider.getTopControlsHeight() - mHeightSupplier.get());
     }
 
+    // TODO(crbug.com/430058918): Mediator should not internally determine visibility by offsets.
+    @Deprecated
     private void updateVisibility() {
         mModel.set(
                 BookmarkBarProperties.VISIBILITY,
                 mBrowserControlsStateProvider.getTopControlOffset() == 0
                         ? View.VISIBLE
                         : View.GONE);
+    }
+
+    public void setVisibility(boolean isVisible) {
+        mModel.set(BookmarkBarProperties.VISIBILITY, isVisible ? View.VISIBLE : View.GONE);
     }
 }

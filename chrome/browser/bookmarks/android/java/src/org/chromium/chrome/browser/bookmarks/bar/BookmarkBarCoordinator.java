@@ -147,6 +147,14 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
         return mView;
     }
 
+    public boolean isVisible() {
+        return mView != null && mView.getVisibility() == VISIBLE;
+    }
+
+    public void setVisibility(boolean isVisible) {
+        mMediator.setVisibility(isVisible);
+    }
+
     private BookmarkBarButton inflateBookmarkBarButton(ViewGroup parent) {
         return (BookmarkBarButton)
                 LayoutInflater.from(parent.getContext())

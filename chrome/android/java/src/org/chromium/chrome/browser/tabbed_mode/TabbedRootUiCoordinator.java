@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +14,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
@@ -687,10 +682,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mBookmarkBarVisibilityProvider != null) {
-            destroyBookmarkBarIfNecessary();
+            if (mBookmarkBarCoordinator != null) {
+                mBookmarkBarVisibilityProvider.removeObserver(mBookmarkBarCoordinator);
+            }
             mBookmarkBarVisibilityProvider.removeObserver(mBookmarkBarVisibilityObserver);
             mBookmarkBarVisibilityProvider.destroy();
             mBookmarkBarVisibilityProvider = null;
+        }
+
+        if (mBookmarkBarCoordinator != null) {
+            mBookmarkBarCoordinator.destroy();
+            mBookmarkBarCoordinator = null;
+            mBookmarkOpener = null;
+            if (mToolbarManager != null) {
+                mToolbarManager.setBookmarkBarHeightSupplier(null);
+            }
         }
 
         if (mLoadingFullscreenCoordinator != null) {
@@ -1792,46 +1798,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarCoordinator);
             }
             mBookmarkBarHeightSupplier = mBookmarkBarCoordinator::getTopControlHeight;
+        } else {
+            mBookmarkBarCoordinator.setVisibility(true);
+            // When toggling the visibility of the existing view, the LayoutChangeListener will not
+            // be triggered as it is on instantiation, so we update the top controls height here.
+            updateTopControlsHeight();
         }
 
         if (mToolbarManager != null) {
             mToolbarManager.setBookmarkBarHeightSupplier(mBookmarkBarHeightSupplier);
-        }
-    }
-
-    private void destroyBookmarkBarIfNecessary() {
-        View view = null;
-
-        if (mBookmarkBarCoordinator != null) {
-            view = mBookmarkBarCoordinator.getView();
-            if (mBookmarkBarVisibilityProvider != null) {
-                mBookmarkBarVisibilityProvider.removeObserver(mBookmarkBarCoordinator);
-            }
-            mBookmarkBarCoordinator.destroy();
-            mBookmarkBarCoordinator = null;
-        }
-
-        if (mBookmarkOpener != null) {
-            mBookmarkOpener = null;
-        }
-
-        if (mToolbarManager != null) {
-            mToolbarManager.setBookmarkBarHeightSupplier(null);
-        }
-
-        if (view != null) {
-            // Remove view for bookmark bar.
-            final var parent = (ViewGroup) view.getParent();
-            final int index = parent.indexOfChild(view);
-            parent.removeViewInLayout(view);
-
-            // Add stub for bookmark bar.
-            final var viewStub = new ViewStub(mActivity, R.layout.bookmark_bar);
-            viewStub.setId(R.id.bookmark_bar_stub);
-            viewStub.setInflatedId(R.id.bookmark_bar);
-            parent.addView(viewStub, index, new LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-
-            updateTopControlsHeight();
         }
     }
 
@@ -1844,7 +1819,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // onLayoutChange we will have the correct height and update the top controls then.
             createBookmarkBarIfNecessary();
         } else {
-            destroyBookmarkBarIfNecessary();
+            if (mBookmarkBarCoordinator != null) {
+                mBookmarkBarCoordinator.setVisibility(false);
+                updateTopControlsHeight();
+            }
         }
     }
 

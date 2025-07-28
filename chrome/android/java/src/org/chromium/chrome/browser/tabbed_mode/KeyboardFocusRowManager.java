@@ -150,7 +150,8 @@ import java.util.List;
         }
 
         // The next item in the focus cycle order is BOOKMARKS_BAR, if it is present.
-        if (mBookmarkBarCoordinatorSupplier.hasValue()) {
+        if (mBookmarkBarCoordinatorSupplier.hasValue()
+                && mBookmarkBarCoordinatorSupplier.get().isVisible()) {
             keyboardFocusRows.add(KeyboardFocusRow.BOOKMARKS_BAR);
         }
 
