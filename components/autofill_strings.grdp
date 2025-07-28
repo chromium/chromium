@@ -483,6 +483,9 @@
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to update an existing address.">
     Update
   </message>
+  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to add new info to an existing address.">
+    Add
+  </message>
   <message name="IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user the prompt to migrate the profile to the account.">
     Save in Account
   </message>
