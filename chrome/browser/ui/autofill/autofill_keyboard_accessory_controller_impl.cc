@@ -197,6 +197,10 @@ std::u16string GetAccountEmail(content::WebContents* web_contents) {
         removal_text->confirm_button_text =
             l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
         break;
+      case AutofillProfile::RecordType::kAccountNameEmail:
+        // TODO(crbug.com/356845298): Handle setting appropriate text for
+        // removing address suggestion for kAccountNameEmail profiles.
+        NOTREACHED();
     }
   }
   return true;

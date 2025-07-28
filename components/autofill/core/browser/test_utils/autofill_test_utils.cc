@@ -281,6 +281,10 @@ void SetProfileCategory(
       test_api(profile).set_record_type(
           AutofillProfile::RecordType::kAccountWork);
       break;
+    case autofill_metrics::AutofillProfileRecordTypeCategory::kAccountNameEmail:
+      test_api(profile).set_record_type(
+          AutofillProfile::RecordType::kAccountNameEmail);
+      break;
   }
 }
 

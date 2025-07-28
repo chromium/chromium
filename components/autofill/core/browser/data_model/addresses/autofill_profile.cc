@@ -695,6 +695,7 @@ bool AutofillProfile::IsAccountProfile() const {
     case RecordType::kAccount:
     case RecordType::kAccountHome:
     case RecordType::kAccountWork:
+    case RecordType::kAccountNameEmail:
       return true;
   }
   NOTREACHED();
@@ -704,6 +705,7 @@ bool AutofillProfile::IsHomeAndWorkProfile() const {
   switch (record_type()) {
     case RecordType::kLocalOrSyncable:
     case RecordType::kAccount:
+    case RecordType::kAccountNameEmail:
       return false;
     case RecordType::kAccountHome:
     case RecordType::kAccountWork:
