@@ -29,11 +29,12 @@ TEST_F(SlotStartTest, SlotStartDoesntCrash) {
   void* buffer = allocator_.root()->Alloc(16, "");
 
   // `buffer` _is_ a slot start, so this must not crash.
-  SlotStart::FromObject</*enforce=*/true>(buffer);
+  SlotStart::FromObject</*enforce=*/true>(buffer, allocator_.root());
 
   // This is _not_ a slot start, but with enforcement off, this also
   // must not crash.
-  SlotStart::FromObject</*enforce=*/false>(static_cast<char*>(buffer) + 1);
+  SlotStart::FromObject</*enforce=*/false>(static_cast<char*>(buffer) + 1,
+                                           allocator_.root());
 
   allocator_.root()->Free(buffer);
 }
@@ -44,7 +45,8 @@ TEST_F(SlotStartTest, SlotStartCrashes) {
 
   // `buffer + 1` is not a slot start, so this must crash.
   EXPECT_DEATH_IF_SUPPORTED(
-      SlotStart::FromObject</*enforce=*/true>(static_cast<char*>(buffer) + 1),
+      SlotStart::FromObject</*enforce=*/true>(static_cast<char*>(buffer) + 1,
+                                              allocator_.root()),
       "");
 
   allocator_.root()->Free(buffer);
@@ -64,8 +66,8 @@ TEST_F(SlotStartTest, SlotStartCrashesOnFreedDirectMap) {
 
   // `buffer` was decommitted by the `Free()` above. We expect this
   // to crash.
-  EXPECT_DEATH_IF_SUPPORTED(SlotStart::FromObject</*enforce=*/true>(buffer),
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      SlotStart::FromObject</*enforce=*/true>(buffer, allocator_.root()), "");
 }
 #endif  // PA_USE_DEATH_TESTS()
 

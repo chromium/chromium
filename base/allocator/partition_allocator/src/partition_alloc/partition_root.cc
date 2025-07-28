@@ -78,7 +78,13 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
   // Zero it just in case, to catch errors.
   orig_address = 0;
 
-  auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  std::ptrdiff_t offset = internal::PartitionAddressSpace::MetadataOffset(
+      pool_handle::kBRPPoolHandle);
+#else
+  std::ptrdiff_t offset = 0;
+#endif
+  auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, offset);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Double check that in-slot metadata is indeed present. Currently that's the
   // case only when BRP is used.
@@ -384,7 +390,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     discardable_bytes = bucket->slot_size - utilized_slot_size;
     if (discardable_bytes && !accounting_only) {
       uintptr_t slot_span_start =
-          internal::SlotSpanMetadata::ToSlotSpanStart(slot_span);
+          internal::SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
       uintptr_t committed_data_end = slot_span_start + utilized_slot_size;
       ScopedSyscallTimer timer{root};
       DiscardSystemPages(committed_data_end, discardable_bytes);
@@ -422,7 +428,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 #endif
   std::fill_n(slot_usage.begin(), num_provisioned_slots, 1);
   uintptr_t slot_span_start =
-      internal::SlotSpanMetadata::ToSlotSpanStart(slot_span);
+      internal::SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
   for (FreelistEntry* entry = slot_span->get_freelist_head(); entry;
@@ -526,7 +532,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
         if (num_new_freelist_entries) {
           back->SetNext(entry);
         } else {
-          slot_span->SetFreelistHead(entry, root);
+          slot_span->SetFreelistHead(entry);
         }
         back = entry;
         num_new_freelist_entries++;
@@ -551,7 +557,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
           if (num_new_freelist_entries) {
             back->SetNext(entry);
           } else {
-            slot_span->SetFreelistHead(entry, root);
+            slot_span->SetFreelistHead(entry);
           }
           skipped = false;
         }
@@ -574,7 +580,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 #endif
       } else {
         PA_DCHECK(!back);
-        slot_span->SetFreelistHead(nullptr, root);
+        slot_span->SetFreelistHead(nullptr);
       }
       PA_DCHECK(num_new_freelist_entries ==
                 num_provisioned_slots - slot_span->num_allocated_slots);
@@ -881,20 +887,34 @@ void PartitionRoot::DestructForTesting()
 #else
   PA_DCHECK(pool_handle <= internal::kNumPools);
 #endif
-
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  std::ptrdiff_t metadata_offset = MetadataOffset();
+  bool must_decommit_metadata = MetadataOffset() & internal::kSuperPageBaseMask;
+#endif
   {
     auto* curr = first_extent;
     while (curr != nullptr) {
       auto* next = curr->next;
-      uintptr_t address = SuperPagesBeginFromExtent(curr);
-      size_t size =
-          internal::kSuperPageSize * curr->number_of_consecutive_super_pages;
+      uintptr_t super_page = SuperPagesBeginFromExtent(curr);
+      size_t num_super_pages = curr->number_of_consecutive_super_pages;
+      size_t size = internal::kSuperPageSize * num_super_pages;
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       internal::AddressPoolManager::GetInstance().MarkUnused(pool_handle,
-                                                             address, size);
+                                                             super_page, size);
 #endif
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+      if (must_decommit_metadata) {
+        uintptr_t metadata_start = internal::PartitionSuperPageToMetadataPage(
+            super_page, metadata_offset);
+        for (size_t index = 0; index < num_super_pages; ++index) {
+          DecommitAndZeroSystemPages(metadata_start, SystemPageSize(),
+                                     PageTag::kPartitionAlloc);
+          metadata_start += internal::kSuperPageSize;
+        }
+      }
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
       internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
-          pool_handle, address, size);
+          pool_handle, super_page, size);
       curr = next;
     }
     first_extent = current_extent = nullptr;
@@ -906,7 +926,9 @@ void PartitionRoot::DestructForTesting()
     while (curr != nullptr) {
       auto* next = curr->next_extent;
       uintptr_t reservation_start = internal::base::bits::AlignDown(
-          reinterpret_cast<uintptr_t>(curr), kSuperPageSize);
+          internal::PartitionMetadataPageToSuperPage(
+              reinterpret_cast<uintptr_t>(curr), metadata_offset),
+          internal::kSuperPageAlignment);
       size_t reservation_size = curr->reservation_size;
 
       GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
@@ -916,6 +938,14 @@ void PartitionRoot::DestructForTesting()
           pool_handle, reservation_start, reservation_size);
 #endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
+      if (must_decommit_metadata) {
+        uintptr_t metadata_start = internal::PartitionSuperPageToMetadataPage(
+            reservation_start, metadata_offset);
+        DecommitAndZeroSystemPages(metadata_start, SystemPageSize(),
+                                   PageTag::kPartitionAlloc);
+      }
+
+      // After resetting the table entries, unreserve and decommit the memory.
       internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
           pool_handle, reservation_start, reservation_size);
       curr = next;
@@ -1185,8 +1215,10 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // Slot-span metadata isn't MTE-tagged.
+  // Metadata may not be placed inside GigaCage.
   PA_DCHECK(GetReservationOffsetTable().IsManagedByDirectMap(
-      reinterpret_cast<uintptr_t>(slot_span)));
+      internal::PartitionMetadataPageToSuperPage(
+          reinterpret_cast<uintptr_t>(slot_span), MetadataOffset())));
 #endif
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
@@ -1227,7 +1259,8 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
   // bucket->slot_size is the currently committed size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
   size_t current_usable_size = GetSlotUsableSize(slot_span);
-  uintptr_t slot_start = internal::SlotSpanMetadata::ToSlotSpanStart(slot_span);
+  uintptr_t slot_start =
+      internal::SlotSpanMetadata::ToSlotSpanStart(slot_span, this);
   // This is the available part of the reservation up to which the new
   // allocation can grow.
   size_t available_reservation_size =
@@ -1418,10 +1451,10 @@ void PartitionRoot::PurgeMemory(int flags) {
 
       // Do it at the end, as the actions above change the status of slot
       // spans (e.g. empty -> decommitted).
-      bucket.MaintainActiveList(this);
+      bucket.MaintainActiveList();
 
       if (sort_active_slot_spans_) {
-        bucket.SortActiveSlotSpans(this);
+        bucket.SortActiveSlotSpans();
       }
       // Checking at the end to make sure we make progress by processing at
       // least one bucket.
@@ -1780,7 +1813,7 @@ void PartitionRoot::SetSortActiveSlotSpansEnabled(bool new_value) {
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 PA_NOINLINE void PartitionRoot::QuarantineForBrp(
-    internal::SlotSpanMetadata* slot_span,
+    const internal::SlotSpanMetadata* slot_span,
     void* object) {
   auto usable_size = GetSlotUsableSize(slot_span);
   auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
@@ -1815,12 +1848,13 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
   }
 
   PA_CHECK(reservation_offset.IsManagedByNormalBuckets(address));
-  SlotSpanMetadata* slot_span = SlotSpanMetadata::FromAddr(address);
+  SlotSpanMetadata* slot_span = SlotSpanMetadata::FromAddr(address, root);
   PA_CHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == root);
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     PA_BUILDFLAG(USE_PARTITION_COOKIE)
-  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
+  uintptr_t slot_span_start =
+      SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
   size_t offset_in_slot_span = address - slot_span_start;
 
   auto* bucket = slot_span->bucket;

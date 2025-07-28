@@ -57,7 +57,8 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= reservation_size);
   root->total_size_of_direct_mapped_pages -= reservation_size;
 
-  uintptr_t reservation_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
+  uintptr_t reservation_start =
+      SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
   // The mapping may start at an unspecified location within a super page, but
   // we always reserve memory aligned to super page size.
   reservation_start = base::bits::AlignDown(reservation_start, kSuperPageSize);
@@ -164,8 +165,7 @@ SlotSpanMetadata::SlotSpanMetadata(PartitionBucket* bucket)
       empty_cache_index_(0u) {}
 
 void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
-  PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(this);
-  DCheckRootLockIsAcquired(root);
+  DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpanMetadata(this));
   PA_DCHECK(this != get_sentinel_slot_span());
 
   // The caller has already modified |num_allocated_slots|. It is a
@@ -209,7 +209,7 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
     if (this == bucket->active_slot_spans_head) [[likely]] {
-      bucket->SetNewActiveSlotSpan(root);
+      bucket->SetNewActiveSlotSpan();
     }
     PA_DCHECK(bucket->active_slot_spans_head != this);
 
@@ -225,7 +225,7 @@ void SlotSpanMetadata::Decommit(PartitionRoot* root) {
   PartitionRootLock(root).AssertAcquired();
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
-  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(this);
+  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(this, root);
   // If lazy commit is enabled, only provisioned slots are committed.
   size_t dirty_size =
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
@@ -246,7 +246,7 @@ void SlotSpanMetadata::Decommit(PartitionRoot* root) {
   // Pulling this trick enables us to use a singly-linked list for all
   // cases, which is critical in keeping the slot span metadata structure down
   // to 32 bytes in size.
-  SetFreelistHead(nullptr, root);
+  SetFreelistHead(nullptr);
   num_unprovisioned_slots = 0;
   PA_DCHECK(is_decommitted());
   PA_DCHECK(bucket);
@@ -264,9 +264,10 @@ void SlotSpanMetadata::DecommitIfPossible(PartitionRoot* root) {
   root->global_empty_slot_span_ring[empty_cache_index_] = nullptr;
 }
 
-void SlotSpanMetadata::SortFreelist(PartitionRoot* root) {
+void SlotSpanMetadata::SortFreelist(
+    [[maybe_unused]] const PartitionRoot* root) {
   std::bitset<kMaxSlotsPerSlotSpan> free_slots;
-  uintptr_t slot_span_start = ToSlotSpanStart(this);
+  uintptr_t slot_span_start = ToSlotSpanStart(this, root);
 
   size_t num_provisioned_slots =
       bucket->get_slots_per_span() - num_unprovisioned_slots;
@@ -304,7 +305,7 @@ void SlotSpanMetadata::SortFreelist(PartitionRoot* root) {
         back = entry;
       }
     }
-    SetFreelistHead(head, root);
+    SetFreelistHead(head);
   }
 
   freelist_is_sorted_ = true;
@@ -358,6 +359,18 @@ void UnmapNow(uintptr_t reservation_start,
 #endif
   }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  // Decommit metadata area inside metadata cage to avoid DCHECK() failure
+  // at next allocation. This must be done before
+  // `UnreserveAndDecommit(reservation_start, reservation_size)`.
+  if (root->MetadataOffset() & kSuperPageBaseMask) {
+    uintptr_t metadata_start = PartitionSuperPageToMetadataPage(
+        reservation_start, root->MetadataOffset());
+    DecommitAndZeroSystemPages(metadata_start, SystemPageSize(),
+                               PageTag::kPartitionAlloc);
+  }
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
   // Reset the offset table entries for the given memory before unreserving
   // it. Since the memory is not unreserved and not available for other

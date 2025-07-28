@@ -126,13 +126,12 @@ struct PartitionBucket {
   // decommitted list and full slot spans are unlinked from any list.
   //
   // This is where the guts of the bucket maintenance is done!
-  bool SetNewActiveSlotSpan(PartitionRoot* root);
+  bool SetNewActiveSlotSpan();
 
   // Walks the entire active slot span list, and perform regular maintenance,
   // where empty, decommitted and full slot spans are moved to their
   // steady-state place.
-  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  void MaintainActiveList(PartitionRoot* root);
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC) void MaintainActiveList();
 
   // Returns a slot number starting from the beginning of the slot span.
   PA_ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) const {
@@ -155,10 +154,9 @@ struct PartitionBucket {
   }
 
   // Sort the freelists of all slot spans.
-  void SortSmallerSlotSpanFreeLists(PartitionRoot* root);
+  void SortSmallerSlotSpanFreeLists([[maybe_unused]] const PartitionRoot* root);
   // Sort the active slot span list in ascending freelist length.
-  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  void SortActiveSlotSpans(PartitionRoot* root);
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC) void SortActiveSlotSpans();
 
   // We need `AllocNewSuperPageSpan` and `InitializeSlotSpan` to stay
   // PA_ALWAYS_INLINE for speed, but we also need to use them from a separate
@@ -167,8 +165,7 @@ struct PartitionBucket {
                                             size_t super_page_count,
                                             AllocFlags flags)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
-  void InitializeSlotSpanForGwpAsan(SlotSpanMetadata* slot_span,
-                                    PartitionRoot* root);
+  void InitializeSlotSpanForGwpAsan(SlotSpanMetadata* slot_span);
 
   size_t SlotSpanCommittedSize(PartitionRoot* root) const;
 
@@ -205,8 +202,7 @@ struct PartitionBucket {
   // for the span (in PartitionPage::SlotSpanMetadata) and registers this bucket
   // as the owner of the span. It does NOT put the slots into the bucket's
   // freelist.
-  PA_ALWAYS_INLINE void InitializeSlotSpan(SlotSpanMetadata* slot_span,
-                                           PartitionRoot* root);
+  PA_ALWAYS_INLINE void InitializeSlotSpan(SlotSpanMetadata* slot_span);
 
   // Initializes a super page. Returns the address of the super page's payload.
   PA_ALWAYS_INLINE uintptr_t InitializeSuperPage(PartitionRoot* root,

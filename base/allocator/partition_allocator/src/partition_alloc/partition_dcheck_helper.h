@@ -59,7 +59,7 @@ void DCheckRootLockIsAcquired(PartitionRoot* root)
 // `partition_page.h`, and so can't be moved into the latter (layering
 // violation).
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-bool DeducedRootIsValid(SlotSpanMetadata* slot_span);
+bool DeducedRootIsValid(const SlotSpanMetadata* slot_span);
 
 }  // namespace partition_alloc::internal
 

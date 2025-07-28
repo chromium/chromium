@@ -8,6 +8,7 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
@@ -78,12 +79,19 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   root.Free(data);
 
   uintptr_t slot_start = root.ObjectToSlotStart(data);
-  auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start);
+  auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start, &root);
 
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  // Crashes, because `metadata` points outside of giga cage.
+  // `GetPoolInfo()` will hit NOTREACHED().
+  EXPECT_DEATH(FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true),
+               "");
+#else
   FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
 
   // Crashes, because |metadata| points inside the metadata area.
   EXPECT_DEATH(root.Alloc(kAllocSize), "");
+#endif
 }
 #endif  // PA_USE_DEATH_TESTS() && PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 
@@ -159,12 +167,17 @@ TEST(HardeningTest, PoolOffsetMetadataPointerCrashing) {
   root.Free(data);
 
   uintptr_t slot_start = root.ObjectToSlotStart(data);
-  auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start);
+  auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start, &root);
 
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  EXPECT_DEATH(FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true),
+               "");
+#else
   FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
 
   // Crashes, because |metadata| points inside the metadata area.
   EXPECT_DEATH(root.Alloc(kAllocSize), "");
+#endif
 }
 #endif  // PA_USE_DEATH_TESTS() && PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 

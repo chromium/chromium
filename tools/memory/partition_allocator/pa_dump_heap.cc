@@ -174,8 +174,14 @@ class HeapDumper {
       ret.Set("type", value);
 
       if (value != "metadata" && value != "guard") {
+        // TODO(crbug.com/40238514): provide `offsets_to_metadata_`
+        // and `pool` information for pa_dump_heap.
+        // Currently there is no way to provide `metadata_offset_` for
+        // pa_dump_heap. So pa_dump_heap cannot find any metadata, i.e.
+        // PartitionPageMetadata, SlotSpanMetadata, and so on.
+        constexpr std::ptrdiff_t metadata_offset = 0;
         const auto* page_metadata = PartitionPageMetadata::FromAddr(
-            reinterpret_cast<uintptr_t>(data + offset));
+            reinterpret_cast<uintptr_t>(data + offset), metadata_offset);
         ret.Set("page_index_in_span", page_metadata->slot_span_metadata_offset);
         if (page_metadata->slot_span_metadata_offset == 0 &&
             page_metadata->slot_span_metadata.bucket) {
