@@ -1670,7 +1670,7 @@ public class ExternalNavigationHandler {
                 navigationChainBlocksExternalNavigation(
                         params, resolvingInfos, isExternalProtocol, shouldReturnAsResult);
 
-        // Short-circuit expensive quertyIntentActivities calls below since we won't prompt anyways
+        // Short-circuit expensive queryIntentActivities calls below since we won't prompt anyways
         // for protocols the browser can handle.
         if (navigationChainResult == NavigationChainResult.REQUIRES_PROMPT && !isExternalProtocol) {
             return OverrideUrlLoadingResult.forNoOverride();
