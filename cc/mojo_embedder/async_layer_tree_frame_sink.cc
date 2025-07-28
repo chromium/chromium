@@ -432,6 +432,13 @@ void AsyncLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {
   begin_frames_paused_ = paused;
   if (begin_frame_source_)
     begin_frame_source_->OnSetBeginFrameSourcePaused(paused);
+  if (use_internal_begin_frame_source_) {
+    if (paused) {
+      client_->SetBeginFrameSource(begin_frame_source_.get());
+    } else {
+      client_->SetBeginFrameSource(internal_begin_frame_source_.get());
+    }
+  }
 }
 
 void AsyncLayerTreeFrameSink::ReclaimResources(
@@ -531,7 +538,9 @@ void AsyncLayerTreeFrameSink::UpdateInternalBeginFrameSource(
       internal_begin_frame_source_->OnUpdateVSyncParameters(
           last_args.frame_time, last_args.interval);
     }
-    client_->SetBeginFrameSource(internal_begin_frame_source_.get());
+    if (!begin_frames_paused_) {
+      client_->SetBeginFrameSource(internal_begin_frame_source_.get());
+    }
     use_internal_begin_frame_source_ = true;
   } else {
     client_->SetBeginFrameSource(begin_frame_source_.get());
