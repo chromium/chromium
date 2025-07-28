@@ -419,14 +419,16 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockWithoutMock) {
 TEST(TracingProfileBuilderTest, ValidModule) {
   base::TestModule module;
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(), std::make_unique<DummyTraceWriter>(), false);
+      base::PlatformThreadId::ForTest(123),
+      std::make_unique<DummyTraceWriter>(), false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)},
                                     base::TimeTicks());
 }
 
 TEST(TracingProfileBuilderTest, InvalidModule) {
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(), std::make_unique<DummyTraceWriter>(), false);
+      base::PlatformThreadId::ForTest(123),
+      std::make_unique<DummyTraceWriter>(), false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, nullptr)},
                                     base::TimeTicks());
 }
