@@ -40,6 +40,7 @@ import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshR
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchEngineChoiceServiceUnitTest {
@@ -87,6 +88,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
         var supplier = service.getIsDeviceChoiceRequiredSupplier();
         ShadowLooper.runUiThreadTasks();
+        ShadowLooper.idleMainLooper(3000, TimeUnit.MILLISECONDS);
         assertTrue(supplier.get());
 
         // The calls below should be fine to run without triggering anything.
