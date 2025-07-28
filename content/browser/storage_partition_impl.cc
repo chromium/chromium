@@ -3072,7 +3072,15 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     }
   }
 
-  if (remove_mask_ & REMOVE_DATA_MASK_SHADER_CACHE) {
+  if ((remove_mask_ & REMOVE_DATA_MASK_SHADER_CACHE) &&
+      // Old behavior: Always execute the code block below.
+      // New behavior: If kDisablePartialStorageCleanupForGPUDiskCache == true
+      // then consider the behavior of perform_storage_cleanup
+      // in executing the code. Note that the feature flag is only relevant
+      // when perform_storage_cleanup is false.
+      (!base::FeatureList::IsEnabled(
+           features::kDisablePartialStorageCleanupForGPUDiskCache) ||
+       perform_storage_cleanup)) {
     gpu::GpuDiskCacheFactory* gpu_cache_factory =
         GetGpuDiskCacheFactorySingleton();
     // May be null in tests where it is difficult to plumb through a test

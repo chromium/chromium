@@ -121,7 +121,7 @@ class GpuDiskCacheFactory {
   GpuDiskCacheFactory(const GpuDiskCacheFactory&) = delete;
   GpuDiskCacheFactory& operator=(const GpuDiskCacheFactory&) = delete;
 
-  ~GpuDiskCacheFactory();
+  virtual ~GpuDiskCacheFactory();
 
   // Clear the given gpu disk |cache|. This supports unbounded deletes in
   // either direction by using null Time values for either |begin_time| or
@@ -135,10 +135,10 @@ class GpuDiskCacheFactory {
   // deletes in either direction by using null Time values for either
   // |begin_time| or |end_time|. The |callback| will be executed when the
   // clear is complete.
-  void ClearByPath(const base::FilePath& path,
-                   base::Time begin_time,
-                   base::Time end_time,
-                   base::OnceClosure callback);
+  virtual void ClearByPath(const base::FilePath& path,
+                           base::Time begin_time,
+                           base::Time end_time,
+                           base::OnceClosure callback);
 
   // Looks up a |path| and returns a cache handle for it (registering it if
   // necessary) for the given |type|.

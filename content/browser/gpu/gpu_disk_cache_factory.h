@@ -17,6 +17,13 @@ CONTENT_EXPORT void InitGpuDiskCacheFactorySingleton();
 // This can return nullptr if an instance has not yet been created.
 CONTENT_EXPORT gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactorySingleton();
 
+// Sets the GpuDiskCacheFactory singleton instance for testing.
+CONTENT_EXPORT void SetGpuDiskCacheFactorySingletonForTesting(
+    gpu::GpuDiskCacheFactory* factory);
+
+// Tears down the GpuDiskCacheFactory singleton instance. For use in tests.
+CONTENT_EXPORT void DestroyGpuDiskCacheFactorySingletonForTesting();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_GPU_GPU_DISK_CACHE_FACTORY_H_

@@ -14,6 +14,7 @@ namespace content {
 
 namespace {
 
+gpu::GpuDiskCacheFactory* g_gpu_disk_cache_factory_for_testing = nullptr;
 gpu::GpuDiskCacheFactory* factory_instance = nullptr;
 
 void CreateFactoryInstance() {
@@ -52,7 +53,25 @@ void InitGpuDiskCacheFactorySingleton() {
 }
 
 gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactorySingleton() {
+  if (g_gpu_disk_cache_factory_for_testing)
+    return g_gpu_disk_cache_factory_for_testing;
   return factory_instance;
+}
+
+void SetGpuDiskCacheFactorySingletonForTesting(
+    gpu::GpuDiskCacheFactory* factory) {
+  g_gpu_disk_cache_factory_for_testing = factory;
+}
+
+void DestroyGpuDiskCacheFactorySingletonForTesting() {
+  if (g_gpu_disk_cache_factory_for_testing) {
+    delete g_gpu_disk_cache_factory_for_testing;
+    g_gpu_disk_cache_factory_for_testing = nullptr;
+  }
+  if (factory_instance) {
+    delete factory_instance;
+    factory_instance = nullptr;
+  }
 }
 
 }  // namespace content

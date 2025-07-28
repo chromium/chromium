@@ -378,6 +378,13 @@ BASE_FEATURE(kWebContentsDiscard,
              "WebContentsDiscard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, partial storage cleanup will be
+// disabled for the GPU disk cache. (Performance improvement)
+BASE_FEATURE(kDisablePartialStorageCleanupForGPUDiskCache,
+             "PerformStorageCleanupForGPUDiskCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+
 // Enable drawing under System Bars within DisplayCutout.
 BASE_FEATURE(kDrawCutoutEdgeToEdge,
              "DrawCutoutEdgeToEdge",
