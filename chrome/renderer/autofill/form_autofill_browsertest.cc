@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/run_loop.h"
@@ -505,8 +506,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
   void TestFormFillFunctions(const char* html,
                              bool unowned,
                              const char* url_override,
-                             const AutofillFieldCase* field_cases,
-                             size_t number_of_field_cases,
+                             base::span<const AutofillFieldCase> field_cases,
                              mojom::ActionPersistence action_persistence,
                              GetValueFunction get_value_function) {
     if (url_override) {
@@ -519,10 +519,10 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("firstname");
     FormData form = FindForm(input_element);
     const std::vector<FormFieldData>& fields = form.fields();
-    ASSERT_EQ(number_of_field_cases, fields.size());
+    ASSERT_EQ(field_cases.size(), fields.size());
 
     // Verify the initial state of the form and setup filling data.
-    for (size_t i = 0; i < number_of_field_cases; ++i) {
+    for (size_t i = 0; i < field_cases.size(); ++i) {
       SCOPED_TRACE(base::StringPrintf("Verify initial value for field %s",
                                       field_cases[i].id_attribute));
       EXPECT_EQ(field_cases[i].form_control_type,
@@ -540,7 +540,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       action_persistence);
-    for (size_t i = 0; i < number_of_field_cases; ++i) {
+    for (size_t i = 0; i < field_cases.size(); ++i) {
       ValidateFilledField(field_cases[i], get_value_function,
                           action_persistence);
     }
@@ -612,7 +612,6 @@ class FormAutofillTest : public test::AutofillRendererTest {
          "some multi-\nline value", "some multi-\nline value"},
     };
     TestFormFillFunctions(html, unowned, url_override, field_cases,
-                          std::size(field_cases),
                           mojom::ActionPersistence::kFill, &GetValueWrapper);
     WebInputElement firstname = GetInputElementById("firstname");
     EXPECT_EQ(16u, firstname.SelectionStart());
@@ -668,9 +667,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
         {FormControlType::kTextArea, "textarea-nonempty", "Go\naway!", true,
          "suggested multi-\nline value", "suggested multi-\nline value"},
     };
-    TestFormFillFunctions(
-        html, unowned, url_override, field_cases, std::size(field_cases),
-        mojom::ActionPersistence::kPreview, &GetSuggestedValueWrapper);
+    TestFormFillFunctions(html, unowned, url_override, field_cases,
+                          mojom::ActionPersistence::kPreview,
+                          &GetSuggestedValueWrapper);
 
     // Verify preview selection.
     WebInputElement firstname = GetInputElementById("firstname");

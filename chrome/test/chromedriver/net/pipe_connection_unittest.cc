@@ -7,20 +7,24 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/test/chromedriver/net/pipe_connection.h"
+
 #include <cmath>
+#include <cstdint>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/test/chromedriver/net/pipe_connection.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,16 +55,20 @@ int ReadFromPipeNoBestEffort(base::PlatformFile file_in,
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
-int ReadFromPipe(base::PlatformFile file_out, char* buffer, int size) {
-  int offset = 0;
-  int rv = 0;
+std::vector<uint8_t> ReadFromPipe(base::PlatformFile file_out, size_t size) {
+  std::vector<uint8_t> buffer(size);
+  size_t offset = 0;
+  size_t rv = 0;
   for (; offset < size; offset += rv) {
-    rv = ReadFromPipeNoBestEffort(file_out, buffer + offset, size - offset);
+    rv = ReadFromPipeNoBestEffort(file_out,
+                                  reinterpret_cast<char*>(&buffer[offset]),
+                                  base::saturated_cast<int>(size - offset));
     if (rv < 0) {
-      return rv;
+      buffer.resize(offset);
+      break;
     }
   }
-  return offset;
+  return buffer;
 }
 #endif
 
@@ -230,10 +238,12 @@ TEST_F(PipeConnectionTest, Send) {
   const std::string expected_message = "Hello, World!";
   EXPECT_TRUE(connection->Send(expected_message));
 
-  std::string actual_message(expected_message.size() + 1, ' ');
-  EXPECT_EQ(static_cast<int>(actual_message.size()),
-            ReadFromPipe(read_pipe.get(), actual_message.data(),
-                         actual_message.size()));
+  std::vector<uint8_t> actual_message_bytes =
+      ReadFromPipe(read_pipe.get(), expected_message.size() + 1);
+  EXPECT_EQ(expected_message.size() + 1, actual_message_bytes.size());
+  std::string actual_message(
+      reinterpret_cast<char*>(actual_message_bytes.data()),
+      actual_message_bytes.size());
   EXPECT_EQ(static_cast<char>(0), actual_message.back());
   actual_message.resize(expected_message.size());
   EXPECT_EQ(expected_message, actual_message);
@@ -367,8 +377,10 @@ TEST_F(PipeConnectionTest, SendMany) {
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->Send("1"));
   EXPECT_TRUE(connection->Send("2"));
-  std::string received_string(4, ' ');
-  ReadFromPipe(read_pipe.get(), received_string.data(), 4);
+  std::vector<uint8_t> received_bytes = ReadFromPipe(read_pipe.get(), 4);
+  EXPECT_EQ(4u, received_bytes.size());
+  std::string received_string(reinterpret_cast<char*>(received_bytes.data()),
+                              received_bytes.size());
   EXPECT_EQ('1', received_string[0]);
   EXPECT_EQ('\0', received_string[1]);
   EXPECT_EQ('2', received_string[2]);
