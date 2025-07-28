@@ -953,16 +953,21 @@ select:disabled {
    (to solve a nasty scrollbar location problem) */
 select:-internal-list-box {
     appearance: auto;
-    align-items: flex-start;
-    overflow-inline: hidden;
-    overflow-block: scroll;
-    vertical-align: text-bottom;
-    white-space: nowrap;
     @supports blink-feature(CustomizableSelectInPage) {
       border-radius: -internal-auto-base(2px, 0);
+      align-items: -internal-auto-base(flex-start, initial);
+      overflow-inline: -internal-auto-base(hidden, auto);
+      overflow-block: -internal-auto-base(scroll, auto);
+      vertical-align: -internal-auto-base(text-bottom, initial);
+      white-space: -internal-auto-base(nowrap, inherit);
     }
     @supports not blink-feature(CustomizableSelectInPage) {
       border-radius: 2px;
+      align-items: flex-start;
+      overflow-inline: hidden;
+      overflow-block: scroll;
+      vertical-align: text-bottom;
+      white-space: nowrap;
     }
 }
 
@@ -2069,8 +2074,6 @@ dialog:where(:modal) {
 
   select:-internal-list-box {
     box-sizing: -internal-auto-base(border-box, initial);
-    overflow-inline: -internal-auto-base(hidden, auto);
-    overflow-block: -internal-auto-base(scroll, auto);
   }
 
   select:-internal-list-box::picker-icon {
