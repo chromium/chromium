@@ -161,6 +161,10 @@ export class SettingsCreditCardListEntryElement extends
     return this.creditCard.metadata!.isVirtualCardEnrolled!;
   }
 
+  private getCardIdentifierAriaLabel_(): string {
+    return this.creditCard.metadata!.summarySublabel || '';
+  }
+
   private getSummaryAriaLabel_(): string {
     const cardNumberDescription =
         this.getCardNumberDescription_(this.creditCard);
@@ -267,7 +271,9 @@ export class SettingsCreditCardListEntryElement extends
       case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG:
       case CardSummarySublabelType.EXPIRATION_DATE:
         return this.i18n(
-            'creditCardExpDateA11yLabeled', this.getSummarySublabel_());
+            'creditCardExpDateA11yLabeled',
+            this.shouldShowNewFopDisplay_() ? this.getCardExpiryDate_() :
+                                              this.getSummarySublabel_());
       default:
         assertNotReached();
     }
