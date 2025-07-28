@@ -771,8 +771,8 @@ void NavigationURLLoaderImpl::Restart() {
                resource_request_->navigation_redirect_chain
                    [resource_request_->navigation_redirect_chain.size() -
                     2]))) {
-    if (url_loader_) {
-      url_loader_->ResetForFollowRedirect(
+    if (loader_holder_.url_loader()) {
+      loader_holder_.url_loader()->ResetForFollowRedirect(
           *resource_request_.get(), url_loader_removed_headers_,
           url_loader_modified_headers_,
           url_loader_modified_cors_exempt_headers_);
@@ -780,7 +780,7 @@ void NavigationURLLoaderImpl::Restart() {
       url_loader_modified_headers_.Clear();
       url_loader_modified_cors_exempt_headers_.Clear();
     }
-    url_loader_.reset();
+    loader_holder_.ResetLoader();
   }
   received_response_ = false;
   head_update_params_ = ResponseHeadUpdateParams();
@@ -846,28 +846,70 @@ void NavigationURLLoaderImpl::StartInterceptedRequest(
   // If `url_loader_` already exists, this means we are following a redirect
   // using an interceptor. In this case we should make sure to reset the
   // loader, similar to what is done in Restart().
-  if (url_loader_) {
-    url_loader_->ResetForFollowRedirect(
+  if (loader_holder_.url_loader()) {
+    loader_holder_.url_loader()->ResetForFollowRedirect(
         *resource_request_.get(), url_loader_removed_headers_,
         url_loader_modified_headers_, url_loader_modified_cors_exempt_headers_);
     url_loader_removed_headers_.clear();
     url_loader_modified_headers_.Clear();
     url_loader_modified_cors_exempt_headers_.Clear();
-    url_loader_.reset();
   }
+  loader_holder_.ResetLoader();
 
   CreateThrottlingLoaderAndStart(std::move(single_request_factory),
                                  std::move(additional_throttles));
 }
 
+NavigationURLLoaderImpl::LoaderHolder::LoaderHolder(
+    network::mojom::URLLoaderClient* receiver)
+    : response_loader_receiver_(receiver) {}
+
+NavigationURLLoaderImpl::LoaderHolder::~LoaderHolder() = default;
+
+void NavigationURLLoaderImpl::LoaderHolder::Reset() {
+  response_loader_receiver_.reset();
+  url_loader_.reset();
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::ResetLoader() {
+  url_loader_.reset();
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::BindReceiver(
+    mojo::PendingReceiver<network::mojom::URLLoaderClient> pending_receiver,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  response_loader_receiver_.reset();
+  response_loader_receiver_.Bind(std::move(pending_receiver),
+                                 std::move(task_runner));
+  url_loader_.reset();
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::SetLoader(
+    std::unique_ptr<blink::ThrottlingURLLoader> url_loader) {
+  url_loader_ = std::move(url_loader);
+}
+
+network::mojom::URLLoaderClientEndpointsPtr
+NavigationURLLoaderImpl::LoaderHolder::Unbind() {
+  if (url_loader_) {
+    // Even after this point `url_loader_` should be alive and accessed via
+    // `url_loader()`.
+    // TODO(https://crbug.com/40251638): Clean up this behavior if needed.
+    return url_loader_->Unbind();
+  } else {
+    return network::mojom::URLLoaderClientEndpoints::New(
+        std::move(response_url_loader_), response_loader_receiver_.Unbind());
+  }
+}
+
 void NavigationURLLoaderImpl::StartNonInterceptedRequest(
     ResponseHeadUpdateParams head_update_params) {
   // If we already have the default `url_loader_` we must come here after a
-  // redirect. No interceptors wanted to intercept the redirected request, so
-  // let the loader just follow the redirect.
-  if (url_loader_) {
+  // redirect. No interceptors wanted to intercept the redirected request,
+  // so let the loader just follow the redirect.
+  if (loader_holder_.url_loader()) {
     DCHECK(!redirect_info_.new_url.is_empty());
-    url_loader_->FollowRedirect(
+    loader_holder_.url_loader()->FollowRedirect(
         std::move(url_loader_removed_headers_),
         std::move(url_loader_modified_headers_),
         std::move(url_loader_modified_cors_exempt_headers_));
@@ -883,7 +925,7 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
     factory = GetOrCreateNonNetworkLoaderFactory();
   }
 
-  response_loader_receiver_.reset();
+  loader_holder_.Reset();
   CreateThrottlingLoaderAndStart(std::move(factory),
                                  /*additional_throttles=*/{});
 }
@@ -1036,7 +1078,7 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
       "navigation", "NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart",
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  CHECK(!url_loader_);
+  CHECK(!loader_holder_.url_loader());
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateURLLoaderThrottles();
@@ -1047,11 +1089,11 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
   uint32_t options =
       GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
 
-  url_loader_ = blink::ThrottlingURLLoader::CreateLoader(
+  loader_holder_.SetLoader(blink::ThrottlingURLLoader::CreateLoader(
       std::move(throttles), /*client=*/this,
       kNavigationUrlLoaderTrafficAnnotation,
-      /*client_receiver_delegate=*/nullptr);
-  url_loader_->Start(
+      /*client_receiver_delegate=*/nullptr));
+  loader_holder_.url_loader()->Start(
       std::move(factory), global_request_id_.request_id, options,
       resource_request_.get(),
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}),
@@ -1162,14 +1204,8 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     return;
   }
 
-  network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints;
-
-  if (url_loader_) {
-    url_loader_client_endpoints = url_loader_->Unbind();
-  } else {
-    url_loader_client_endpoints = network::mojom::URLLoaderClientEndpoints::New(
-        std::move(response_url_loader_), response_loader_receiver_.Unbind());
-  }
+  network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints =
+      loader_holder_.Unbind();
 
   // 304 responses should abort the navigation, rather than display the page.
   // This needs to be after the URLLoader has been moved to
@@ -1179,7 +1215,7 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
       head->headers->response_code() == net::HTTP_NOT_MODIFIED) {
     // Call CancelWithError instead of OnComplete so that if there is an
     // intercepting URLLoaderFactory it gets notified.
-    url_loader_->CancelWithError(
+    loader_holder_.url_loader()->CancelWithError(
         net::ERR_ABORTED,
         std::string_view(base::NumberToString(net::ERR_ABORTED)));
     return;
@@ -1285,11 +1321,11 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
     }
   }
   if (error != net::OK) {
-    if (url_loader_) {
+    if (loader_holder_.url_loader()) {
       // Call CancelWithError instead of OnComplete so that if there is an
       // intercepting URLLoaderFactory (created through the embedder's
       // ContentBrowserClient::WillCreateURLLoaderFactory) it gets notified.
-      url_loader_->CancelWithError(
+      loader_holder_.url_loader()->CancelWithError(
           error, std::string_view(base::NumberToString(error)));
     } else {
       // TODO(crbug.com/40118809): Make sure ResetWithReason() is called
@@ -1496,7 +1532,7 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   // If the request is restarted, all of the client hints should be replaced
   // the "original"/non-edited values.
   resource_request_->headers.MergeFrom(modified_headers);
-  url_loader_.reset();
+  loader_holder_.ResetLoader();
   Restart();
 }
 
@@ -1524,14 +1560,12 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
     bool skip_other_interceptors = false;
     if (interceptor->MaybeCreateLoaderForResponse(
             status, *resource_request_, response, &response_body_,
-            &response_url_loader_, &response_client_receiver, url_loader_.get(),
-            &skip_other_interceptors)) {
-      response_loader_receiver_.reset();
-      response_loader_receiver_.Bind(
+            loader_holder_.response_url_loader(), &response_client_receiver,
+            loader_holder_.url_loader(), &skip_other_interceptors)) {
+      loader_holder_.BindReceiver(
           std::move(response_client_receiver),
           GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
       default_loader_used_ = false;
-      url_loader_.reset();     // Consumed above.
       response_body_.reset();  // Consumed above.
       if (skip_other_interceptors) {
         std::vector<std::unique_ptr<NavigationLoaderInterceptor>>

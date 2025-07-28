@@ -317,15 +317,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // current navigation.
   bool default_loader_used_ = false;
 
-  // URLLoaderClient receiver for loaders created for responses received from
-  // the network loader.
-  mojo::Receiver<network::mojom::URLLoaderClient> response_loader_receiver_{
-      this};
-
-  // URLLoader instance for response loaders, i.e loaders created for handling
-  // responses received from the network URLLoader.
-  mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
-
   // Set to true if we receive a valid response from a URLLoader, i.e.
   // URLLoaderClient::OnReceiveResponse() is called.
   bool received_response_ = false;
@@ -350,7 +341,72 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   std::map<std::string, scoped_refptr<network::SharedURLLoaderFactory>>
       non_network_url_loader_factories_;
 
-  std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
+  // `NavigationURLLoaderImpl` performs the loading (receiving the
+  // `URLLoaderClient` callbacks and related operations) in multiple ways (e.g.
+  // through `url_loader_` or `response_loader_receiver_`). `LoaderHolder`
+  // centralizes these, to ensure that:
+  // - All related operations are cancelled when `Reset()` is called.
+  // - The state transitions are consistent.
+  //
+  // Note: This isn't a complete encapsulation. Some states and operations
+  // (especially related to https://crbug.com/434182226) are centralized and
+  // checked in `LoaderHolder`, while other operations are still performed
+  // directly via `url_loader()`.
+  class LoaderHolder final {
+   public:
+    explicit LoaderHolder(network::mojom::URLLoaderClient* receiver);
+    ~LoaderHolder();
+
+    blink::ThrottlingURLLoader* url_loader() const { return url_loader_.get(); }
+    mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader() {
+      return &response_url_loader_;
+    }
+
+    // Cancel the current loading, if any.
+    // Any associated pending operations should be cancelled.
+    // TODO(https://crbug.com/434182226): Still some known pending operations
+    // are not cancelled. Actually cancel them.
+    void Reset();
+
+    // Resets `url_loader_`.
+    // TODO(https://crbug.com/434182226): Use `Reset()` instead to always reset
+    // `response_loader_receiver_` as well.
+    void ResetLoader();
+
+    // For starting loading via `url_loader` (transitioning from `kNone` to
+    // `kLoadingViaLoader`). THe caller should actually start the loading by
+    // calling `url_loader->Start()`.
+    void SetLoader(std::unique_ptr<blink::ThrottlingURLLoader> url_loader);
+
+    // Switches to loading via `pending_receiver` (transitioning from
+    // `kLoadingViaLoader` to `kLoadingViaReceiver`). The caller might already
+    // call `url_loader()->Unbind()` etc.
+    void BindReceiver(
+        mojo::PendingReceiver<network::mojom::URLLoaderClient> pending_receiver,
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    // Unbind the endpoints from ``NavigationURLLoaderImpl`` to
+    // `URLLoaderClientEndpointsPtr` (transitioning to `kUnbound`).
+    [[nodiscard]] network::mojom::URLLoaderClientEndpointsPtr Unbind();
+
+   private:
+    // `NavigationURLLoaderImpl`'s `URLLoaderClient` methods are called either
+    // via `url_loader_` or `response_loader_receiver_`.
+    std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
+    mojo::Receiver<network::mojom::URLLoaderClient> response_loader_receiver_;
+
+    // URLLoader instance for response loaders, i.e loaders created for handling
+    // responses received from the network URLLoader.
+    //
+    // NOTE: This looks like coupled with
+    // `LoaderHolder::response_loader_receiver_` but actually isn't, because
+    // `response_url_loader_` is never touched during
+    // `MaybeCreateLoaderForResponse()` (at least within Chromium codesearch).
+    // For now this is kept here as-is but probably can be removed.
+    mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
+  };
+
+  LoaderHolder loader_holder_{this};
 
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 
