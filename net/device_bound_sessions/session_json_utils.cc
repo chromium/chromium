@@ -92,15 +92,6 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     unexportable_keys::UnexportableKeyId key_id,
     std::optional<std::string> expected_session_id,
     std::string_view response_json) {
-  // TODO(kristianm): Skip XSSI-escapes, see for example:
-  // https://hg.mozilla.org/mozilla-central/rev/4cee9ec9155e
-  // Discuss with others if XSSI should be part of the standard.
-
-  // TODO(kristianm): Decide if the standard should require parsing
-  // to fail fully if any item is wrong, or if that item should be
-  // ignored.
-
-  net::SchemefulSite fetcher_site(fetcher_url);
   std::optional<base::Value::Dict> maybe_root = base::JSONReader::ReadDict(
       response_json, base::JSON_PARSE_RFC, /*max_depth=*/5u);
   if (!maybe_root) {
