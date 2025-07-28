@@ -81,7 +81,7 @@ void ShowSharedTabGroupVersionUpgradeModal(
 
 void MaybeShowSharedTabGroupVersionUpgradeModal(Browser* browser) {
   // Only show on normal browser.
-  if (!browser->is_type_normal()) {
+  if (!browser || !browser->is_type_normal()) {
     return;
   }
 
