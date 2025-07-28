@@ -67,6 +67,7 @@
 #include "components/webapps/isolated_web_apps/features.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
@@ -88,9 +89,13 @@ using ash::kiosk::test::LaunchAppManually;
 using ash::kiosk::test::TheKioskApp;
 using ash::kiosk::test::WaitKioskLaunched;
 using ash::kiosk::test::WaitNetworkScreen;
+using base::test::ErrorIs;
+using base::test::HasValue;
 using base::test::ValueIs;
 using testing::Eq;
+using testing::Field;
 using testing::HasSubstr;
+using testing::Ne;
 
 constexpr char kEmail[] = "iwa@example.com";
 constexpr char kMgsDisplayName[] = "MGS";
@@ -433,7 +438,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                          std::optional<ash::KioskApp> kiosk_app =
                              ash::kiosk::test::GetAppByAccountId(
                                  expected_iwas[0].id());
-                         ASSERT_TRUE(kiosk_app.has_value());
+                         EXPECT_THAT(kiosk_app, Ne(std::nullopt));
                          ASSERT_TRUE(LaunchAppManually(kiosk_app.value()));
                        },
                        [&](LoginManagerMixin& login_manager_mixin) {
@@ -990,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMgsTest, UpdateAppWhenAppNotOpened) {
       provider(), GetAppId(kWebBundleId), apply_update_future.GetCallback());
   DiscoverUpdatesNow();
 
-  EXPECT_TRUE(apply_update_future.Get().has_value());
+  EXPECT_THAT(apply_update_future.Get(), HasValue());
   AssertAppInstalledAtVersion(kWebBundleId, kUpdateVersion,
                               /*wait_for_initial_installation=*/false);
   CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
@@ -1016,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMgsTest, UpdateApplyTaskWhenAppClosed) {
       provider(), GetAppId(kWebBundleId), apply_update_future.GetCallback());
   DiscoverUpdatesNow();
 
-  EXPECT_TRUE(apply_update_future.Get().has_value());
+  EXPECT_THAT(apply_update_future.Get(), HasValue());
   AssertAppInstalledAtVersion(kWebBundleId, kUpdateVersion,
                               /*wait_for_initial_installation=*/false);
   CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
@@ -1041,9 +1046,9 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMgsTest, CopyToCacheFailed) {
 
   // The update is applied, but it was not saved to cache because of the error
   // during copying to cache.
-  ASSERT_FALSE(apply_update_future.Get().has_value());
-  EXPECT_THAT(apply_update_future.Get().error().message,
-              HasSubstr(ApplyTask::kCopyToCacheFailedMessage));
+  EXPECT_THAT(apply_update_future.Get(),
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr(ApplyTask::kCopyToCacheFailedMessage))));
   AssertAppInstalledAtVersion(kWebBundleId, kUpdateVersion,
                               /*wait_for_initial_installation=*/false);
   CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kUpdateVersion));

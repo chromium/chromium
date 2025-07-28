@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
@@ -27,6 +28,7 @@ namespace {
 using base::test::ErrorIs;
 using base::test::TestFuture;
 using base::test::ValueIs;
+using testing::Property;
 using web_package::SignedWebBundleId;
 using CleanupResult = CleanupBundleCacheResult;
 using Callback = base::OnceCallback<void(CleanupResult)>;
@@ -264,9 +266,10 @@ TEST_P(CleanupBundleCacheCommandTest, FailedToDeleteMultipleDirs) {
   TestFuture<CleanupResult> cleanup_future;
   ScheduleCommand(/*iwas_to_keep_in_cache*/ {}, cleanup_future.GetCallback());
 
-  ASSERT_FALSE(cleanup_future.Get().has_value());
-  EXPECT_THAT(cleanup_future.Get().error().type(),
-              CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles);
+  EXPECT_THAT(cleanup_future.Get(),
+              ErrorIs(Property(
+                  &CleanupBundleCacheError::type,
+                  CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles)));
   EXPECT_THAT(
       cleanup_future.Get().error().number_of_failed_to_cleaned_up_directories(),
       2);

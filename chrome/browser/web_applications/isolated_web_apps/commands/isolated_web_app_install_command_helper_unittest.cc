@@ -880,7 +880,7 @@ TEST_P(InstallIsolatedWebAppCommandHelperRelocationTest, NormalFlow) {
   UpdateBundlePathAndCreateStorageLocation(profile_dir_, source,
                                            future.GetCallback());
   RelocationResult result = future.Take();
-  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(result, HasValue());
   std::visit(VerifyRelocationVisitor{profile_dir_, bundle, GetParam()},
              result->variant());
 

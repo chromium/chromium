@@ -213,7 +213,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
 
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
       source, test_future.GetCallback());
-  EXPECT_TRUE(test_future.Get().has_value());
+  EXPECT_THAT(test_future.Get(), HasValue());
 }
 
 class IsolatedWebAppGURLConversionTest

@@ -55,6 +55,7 @@ namespace {
 using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::RunOnceCallback;
+using testing::AllOf;
 using testing::ElementsAre;
 using testing::Field;
 using testing::HasSubstr;
@@ -403,13 +404,18 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
   FulfillMetadata();
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kResponseNotFound);
-  EXPECT_EQ(result.error().message,
-            "Failed to read response from Signed Web Bundle: The Web Bundle "
-            "does not contain a response for the provided URL: "
-            "isolated-app://"
-            "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/foo");
+  EXPECT_THAT(
+      result,
+      ErrorIs(AllOf(
+          Field(&ReadResponseError::type,
+                ReadResponseError::Type::kResponseNotFound),
+          Field(
+              &ReadResponseError::message,
+              "Failed to read response from Signed Web Bundle: The Web Bundle "
+              "does not contain a response for the provided URL: "
+              "isolated-app://"
+              "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/"
+              "foo"))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.ReadResponseHead"),
@@ -527,10 +533,12 @@ TEST_P(IsolatedWebAppReaderRegistryIntegrityBlockParserErrorTest,
   parser_factory_->RunIntegrityBlockCallback(nullptr, std::move(error));
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            "Failed to parse integrity block: test error");
+  EXPECT_THAT(
+      result,
+      ErrorIs(AllOf(
+          Field(&ReadResponseError::type, ReadResponseError::Type::kOtherError),
+          Field(&ReadResponseError::message,
+                "Failed to parse integrity block: test error"))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -574,10 +582,12 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   FulfillMetadata();
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_THAT(result.error().message,
-              testing::HasSubstr("Failed to validate integrity block"));
+  EXPECT_THAT(
+      result,
+      ErrorIs(AllOf(
+          Field(&ReadResponseError::type, ReadResponseError::Type::kOtherError),
+          Field(&ReadResponseError::message,
+                testing::HasSubstr("Failed to validate integrity block")))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -612,18 +622,20 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  ASSERT_TRUE(read_response_future.Take().has_value());
+  EXPECT_THAT(read_response_future.Take(), HasValue());
 
   histogram_tester.ExpectBucketCount(
       ToSuccessHistogramName("WebApp.Isolated.SwbnFileUsability"),
       /*success*/ 1, 1);
 #else
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            base::StringPrintf("Failed to verify signatures: %s",
-                               GetParam().message.c_str()));
+  EXPECT_THAT(
+      result,
+      ErrorIs(AllOf(
+          Field(&ReadResponseError::type, ReadResponseError::Type::kOtherError),
+          Field(&ReadResponseError::message,
+                base::StringPrintf("Failed to verify signatures: %s",
+                                   GetParam().message.c_str())))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -666,9 +678,11 @@ TEST_P(IsolatedWebAppReaderRegistryMetadataParserErrorTest,
                                        std::move(error));
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message, "Failed to parse metadata: test error");
+  EXPECT_THAT(result,
+              ErrorIs(AllOf(Field(&ReadResponseError::type,
+                                  ReadResponseError::Type::kOtherError),
+                            Field(&ReadResponseError::message,
+                                  "Failed to parse metadata: test error"))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -710,12 +724,15 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
                                        std::move(metadata));
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            base::StringPrintf("Failed to validate metadata: Primary URL must "
-                               "not be present, but was %s",
-                               kUrl.spec().c_str()));
+  EXPECT_THAT(
+      result,
+      ErrorIs(AllOf(
+          Field(&ReadResponseError::type, ReadResponseError::Type::kOtherError),
+          Field(&ReadResponseError::message,
+                base::StringPrintf(
+                    "Failed to validate metadata: Primary URL must "
+                    "not be present, but was %s",
+                    kUrl.spec().c_str())))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -743,14 +760,18 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
                                        std::move(metadata));
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            "Failed to validate metadata: The URL of an exchange is invalid: "
-            "The host of isolated-app:// URLs must be a valid Signed Web "
-            "Bundle ID (got foo): The signed web bundle ID must be exactly 56 "
-            "characters long (for Ed25519) or 58 characters long (for ECDSA "
-            "P-256), but was 3 characters long.");
+  EXPECT_THAT(
+      result,
+      ErrorIs(AllOf(
+          Field(&ReadResponseError::type, ReadResponseError::Type::kOtherError),
+          Field(
+              &ReadResponseError::message,
+              "Failed to validate metadata: The URL of an exchange is invalid: "
+              "The host of isolated-app:// URLs must be a valid Signed Web "
+              "Bundle ID (got foo): The signed web bundle ID must be exactly "
+              "56 "
+              "characters long (for Ed25519) or 58 characters long (for ECDSA "
+              "P-256), but was 3 characters long."))));
 }
 
 class IsolatedWebAppReaderRegistryResponseHeadParserErrorTest
@@ -786,10 +807,12 @@ TEST_P(IsolatedWebAppReaderRegistryResponseHeadParserErrorTest,
       nullptr, std::move(error));
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            "Failed to parse response head: test error");
+  EXPECT_THAT(
+      result,
+      ErrorIs(AllOf(
+          Field(&ReadResponseError::type, ReadResponseError::Type::kOtherError),
+          Field(&ReadResponseError::message,
+                "Failed to parse response head: test error"))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.ReadResponseHead"),
@@ -949,9 +972,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
   FulfillMetadata();
 
   ReadResult result = read_response_future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message, "The bundle is waiting to close");
+  EXPECT_THAT(result, ErrorIs(AllOf(Field(&ReadResponseError::type,
+                                          ReadResponseError::Type::kOtherError),
+                                    Field(&ReadResponseError::message,
+                                          "The bundle is waiting to close"))));
 
   ASSERT_TRUE(close_future.Wait());
 

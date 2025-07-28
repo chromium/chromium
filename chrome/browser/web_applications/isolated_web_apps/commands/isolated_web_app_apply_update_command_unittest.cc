@@ -51,10 +51,12 @@
 namespace web_app {
 namespace {
 
+using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::ValueIs;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::IsFalse;
 using ::testing::IsNull;
@@ -260,8 +262,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   fake_provider().Shutdown();
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message, HasSubstr("shutting down"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("shutting down"))));
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIwaIsNotInstalled) {
@@ -270,8 +273,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIwaIsNotInstalled) {
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message, HasSubstr("App is no longer installed"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("App is no longer installed"))));
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
@@ -287,8 +291,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstalledAppIsNotIsolated) {
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message, HasSubstr("not an Isolated Web App"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("not an Isolated Web App"))));
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
@@ -303,9 +308,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message,
-              HasSubstr("does not have a pending update"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("does not have a pending update"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
@@ -317,9 +322,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
   SetTrustedWebBundleIdsForTesting({});
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message,
-              HasSubstr("The public key(s) are not trusted"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("The public key(s) are not trusted"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
@@ -332,8 +337,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfUrlLoadingFails) {
       webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message, HasSubstr("FailedErrorPageLoaded"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("FailedErrorPageLoaded"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
@@ -347,10 +353,12 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallabilityCheckFails) {
       webapps::InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME;
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
   EXPECT_THAT(
-      result.error().message,
-      HasSubstr("Manifest does not contain a 'name' or 'short_name' field"));
+      result,
+      ErrorIs(Field(
+          &IsolatedWebAppApplyUpdateCommandError::message,
+          HasSubstr(
+              "Manifest does not contain a 'name' or 'short_name' field"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
@@ -363,9 +371,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
       GURL("https://example.com/foo/");
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message,
-              HasSubstr("Scope should resolve to the origin"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("Scope should resolve to the origin"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
@@ -376,9 +384,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message,
-              HasSubstr("Error during icon downloading"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("Error during icon downloading"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
@@ -411,8 +419,9 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
   auto result = ApplyPendingUpdate();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error().message, HasSubstr("Error during finalization"));
+  EXPECT_THAT(result,
+              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
+                            HasSubstr("Error during finalization"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
