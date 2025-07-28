@@ -455,7 +455,6 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   bodyTextView.backgroundColor = [UIColor clearColor];
   bodyTextView.scrollEnabled = NO;
   bodyTextView.editable = NO;
-  bodyTextView.selectable = NO;
   bodyTextView.delegate = self;
   bodyTextView.textContainerInset = UIEdgeInsetsZero;
   bodyTextView.textContainer.lineFragmentPadding = 0;
@@ -473,7 +472,6 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   footNoteTextView.backgroundColor = [UIColor clearColor];
   footNoteTextView.scrollEnabled = NO;
   footNoteTextView.editable = NO;
-  footNoteTextView.selectable = NO;
   footNoteTextView.delegate = self;
 
   footNoteTextView.textContainerInset = UIEdgeInsetsZero;
