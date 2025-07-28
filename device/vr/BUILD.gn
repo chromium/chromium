@@ -136,7 +136,7 @@ if (enable_vr) {
       ":vr_base",
       ":vr_util",
       "//base",
-      "//components/ukm:ukm",
+      "//components/ukm",
       "//device/base",
       "//device/vr/buildflags",
       "//device/vr/public/mojom:isolated_xr_service",

@@ -210,7 +210,7 @@ test("device_unittests") {
     ]
 
     deps += [
-      "//components/sync/protocol:protocol",
+      "//components/sync/protocol",
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
     ]

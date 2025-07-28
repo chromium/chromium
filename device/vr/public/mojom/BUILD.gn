@@ -20,7 +20,7 @@ mojom_component("vr_service") {
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:shared_image_format",
-    "//ui/display/mojom:mojom",
+    "//ui/display/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
@@ -94,7 +94,7 @@ component("vr_public_typemaps") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//skia",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",
