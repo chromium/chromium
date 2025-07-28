@@ -75,7 +75,8 @@ class MediaSession : public media_session::mojom::MediaSession {
   virtual void SetAudioFocusGroupId(const base::UnguessableToken& group_id) = 0;
 
   // Returns the `RenderFrameHost` for the currently MediaSession routed
-  // service, if the routed service exists, nullptr otherwise.
+  // service, if the routed service exists, otherwise returns the top most frame
+  // with an active media player.
   virtual RenderFrameHost* GetRoutedFrame() = 0;
 
   // Returns the current media session info synchronously for a one-off request.

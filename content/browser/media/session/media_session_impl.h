@@ -209,9 +209,8 @@ class MediaSessionImpl : public MediaSession,
       const base::UnguessableToken& group_id) override;
 
   // Returns the `RenderFrameHost` for the currently MediaSession routed
-  // service.
-  // TODO(crbug.com/409427125): Also return a frame if no service is created for
-  // a player.
+  // service, if the routed service exists, otherwise returns the top most frame
+  // with an active media player.
   RenderFrameHost* GetRoutedFrame() override;
 
   // Returns the current media session info synchronously for a one-off request.
@@ -475,9 +474,12 @@ class MediaSessionImpl : public MediaSession,
   // Returns whether the frame |rfh| uses MediaSession API.
   bool IsServiceActiveForRenderFrameHost(RenderFrameHost* rfh);
 
-  // Compute the MediaSessionService that should be routed, which will be used
-  // to update |routed_service_|.
-  CONTENT_EXPORT MediaSessionServiceImpl* ComputeServiceForRouting();
+  // Compute the frame that should be routed for media session. If
+  // |ensure_service| is true, the routed frame must have an active
+  // MediaSessionService, otherwise it does not, e.g. when no MediaSession API
+  // has been called but there is an active media player. This method can be
+  // used to compute both the routed frame and routed service.
+  CONTENT_EXPORT RenderFrameHost* ComputeFrameForRouting(bool ensure_service);
 
   // Rebuilds |actions_| and notifies observers if they have changed.
   void RebuildAndNotifyActionsChanged();

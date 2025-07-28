@@ -2260,11 +2260,6 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsFile());
 
-  // Set MediaSession Play action handler to ensure a MediaSession routed frame
-  // is created.
-  ASSERT_TRUE(
-      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
-
   // Verify that the overlay window is trusted for media playback.
   EXPECT_TRUE(IsTrustedForMediaPlayback());
 }
@@ -2288,11 +2283,6 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
-
-  // Set MediaSession Play action handler to ensure a MediaSession routed frame
-  // is created.
-  ASSERT_TRUE(
-      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
 
   // Verify that the overlay window is not trusted for media playback.
   SetExpectedHasHighEngagement(false);
@@ -2319,11 +2309,6 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
 
-  // Set MediaSession Play action handler to ensure a MediaSession routed frame
-  // is created.
-  ASSERT_TRUE(
-      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
-
   // Verify that the overlay window is trusted for media playback.
   SetExpectedHasHighEngagement(true);
   EXPECT_TRUE(IsTrustedForMediaPlayback());
@@ -2349,42 +2334,12 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   auto* sub_frame = ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(sub_frame);
 
-  // Set MediaSession Play action handler to ensure a MediaSession routed frame
-  // is created.
-  ASSERT_TRUE(ExecJs(sub_frame, "setMediaSessionPlayActionHandler();"));
-
   // Add picture-in-picture event listener to sub frame.
   ASSERT_TRUE(ExecJs(sub_frame, "addPictureInPictureEventListeners();"));
 
   // Enter Picture-in-Picture from the iframe.
   ASSERT_TRUE(ExecJs(main_frame, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-
-  // Verify that the overlay window is not trusted for media playback, even with
-  // high media engagement.
-  SetExpectedHasHighEngagement(true);
-  EXPECT_FALSE(IsTrustedForMediaPlayback());
-}
-
-IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
-                       IsTrustedForMediaPlayback_NoRoutedFrame) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL(
-          "example.com", "/media/picture-in-picture/window-size.html")));
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(active_web_contents);
-
-  SetUpWindowController(active_web_contents);
-  ASSERT_TRUE(window_controller() != nullptr);
-
-  // Open Picture-in-Picture window.
-  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-
-  ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
 
   // Verify that the overlay window is not trusted for media playback, even with
   // high media engagement.
