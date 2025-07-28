@@ -61,7 +61,7 @@ bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
 }
 
 void OpenLearnMore(const GURL& url) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

@@ -303,7 +303,7 @@ void NetworkPortalSigninController::ShowSigninDialog(const GURL& url) {
 
 void NetworkPortalSigninController::ShowSigninWindow(const GURL& url) {
   // Calls NetworkPortalSigninWindow::Show in the appropriate browser.
-  ash::NewWindowDelegate::GetPrimary()->OpenCaptivePortalSignin(url);
+  ash::NewWindowDelegate::GetInstance()->OpenCaptivePortalSignin(url);
 }
 
 void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
@@ -324,7 +324,7 @@ void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
 
 void NetworkPortalSigninController::ShowActiveProfileTab(const GURL& url) {
   // Opens a new tab the appropriate browser.
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

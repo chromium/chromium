@@ -433,7 +433,7 @@ void SystemTrayClientImpl::ShowDarkModeSettings() {
   // Settings/System Tray.
   ash::personalization_app::LogPersonalizationEntryPoint(
       ash::PersonalizationEntryPoint::kSystemTray);
-  ash::NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
+  ash::NewWindowDelegate::GetInstance()->OpenPersonalizationHub();
 }
 
 void SystemTrayClientImpl::ShowStorageSettings() {
@@ -902,7 +902,7 @@ void SystemTrayClientImpl::ShowChromebookPerksYouTubePage() {
 }
 
 void SystemTrayClientImpl::ShowEolInfoPage() {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kEolNotificationURL),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);

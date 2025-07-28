@@ -17,11 +17,6 @@ NewWindowDelegate* NewWindowDelegate::GetInstance() {
   return g_new_window_delegate;
 }
 
-// static
-NewWindowDelegate* NewWindowDelegate::GetPrimary() {
-  return g_new_window_delegate;
-}
-
 NewWindowDelegate::NewWindowDelegate() {
   CHECK(!g_new_window_delegate);
   g_new_window_delegate = this;

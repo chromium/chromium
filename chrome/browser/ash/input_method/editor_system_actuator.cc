@@ -97,7 +97,7 @@ void EditorSystemActuator::OpenUrlInNewWindow(const GURL& url) {
     mojo::ReportBadMessage("Invalid URL scheme. Only HTTPS is allowed.");
     return;
   }
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUnspecified,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

@@ -103,7 +103,7 @@ class BubbleButton : public views::LabelButton {
 };
 
 void OnLearnMoreLinkClicked() {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);

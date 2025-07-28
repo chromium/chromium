@@ -455,7 +455,7 @@ void EditingList::OnDoneButtonPressed() {
 }
 
 void EditingList::OnHelpButtonPressed() {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kHelpUrl), ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

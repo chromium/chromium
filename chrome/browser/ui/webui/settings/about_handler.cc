@@ -819,7 +819,7 @@ void AboutHandler::HandleSetConsumerAutoUpdate(const base::Value::List& args) {
 
 void AboutHandler::HandleOpenProductLicenseOther(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUICreditsURL),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

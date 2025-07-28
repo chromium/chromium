@@ -44,7 +44,7 @@ void ScopedAssistantBrowserDelegate::RequestMediaControllerManager(
 }
 
 void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

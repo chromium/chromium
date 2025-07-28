@@ -41,11 +41,6 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Returns an instance connected to ash-chrome.
   static NewWindowDelegate* GetInstance();
 
-  // DEPRECATED: This method is no longer useful after Lacros deprecation. This
-  // now returns the same value as `GetInstance` but will be removed soon.
-  // TODO(b/367844818): Remove this.
-  static NewWindowDelegate* GetPrimary();
-
   // Invoked when the user uses Ctrl+T to open a new tab.
   virtual void NewTab() = 0;
 

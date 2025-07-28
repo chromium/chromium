@@ -100,7 +100,7 @@ void AccessibilityHandler::RegisterMessages() {
 
 void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAppearanceSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

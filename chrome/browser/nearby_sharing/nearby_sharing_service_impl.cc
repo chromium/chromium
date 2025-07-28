@@ -1066,7 +1066,7 @@ void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
 
 void NearbySharingServiceImpl::OpenURL(GURL url) {
   DCHECK(profile_);
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

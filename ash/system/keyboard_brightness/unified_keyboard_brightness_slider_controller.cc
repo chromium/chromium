@@ -114,7 +114,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
     base::UmaHistogramEnumeration(
         kPersonalizationEntryPointHistogramName,
         PersonalizationEntryPoint::kKeyboardBrightnessSlider);
-    NewWindowDelegate* primary_delegate = NewWindowDelegate::GetPrimary();
+    NewWindowDelegate* primary_delegate = NewWindowDelegate::GetInstance();
     primary_delegate->OpenPersonalizationHub();
     return;
   }

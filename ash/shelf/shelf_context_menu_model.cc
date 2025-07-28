@@ -123,7 +123,7 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
       // Record entry point metric to Personalization Hub through Home Screen.
       base::UmaHistogramEnumeration(kPersonalizationEntryPointHistogramName,
                                     PersonalizationEntryPoint::kHomeScreen);
-      NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
+      NewWindowDelegate::GetInstance()->OpenPersonalizationHub();
       break;
     case MENU_HIDE_CONTINUE_SECTION:
       DCHECK(is_tablet_mode);

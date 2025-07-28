@@ -208,7 +208,7 @@ void StorageHandler::HandleOpenMyFiles(const base::Value::List& unused_args) {
 
 void StorageHandler::HandleOpenBrowsingDataSettings(
     const base::Value::List& unused_args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL)
           .Resolve(chrome::kClearBrowserDataSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,

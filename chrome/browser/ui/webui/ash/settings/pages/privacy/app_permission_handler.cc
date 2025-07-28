@@ -128,7 +128,7 @@ void AppPermissionHandler::OpenBrowserPermissionSettings(
       NOTREACHED();
   }
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }

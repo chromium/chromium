@@ -514,7 +514,7 @@ void MultideviceHandler::HandleCancelFeatureSetupConnection(
 
 void MultideviceHandler::HandleShowBrowserSyncSettings(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL("chrome://settings/syncSetup/advanced"),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

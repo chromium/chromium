@@ -303,7 +303,7 @@ void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
   // such, the browser will always be instructed to open |url| in a new
   // browser tab and Assistant UI state will be updated downstream to respect
   // |in_background|.
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

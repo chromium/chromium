@@ -493,7 +493,7 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
 #if BUILDFLAG(IS_CHROMEOS)
 void SearchEnginesHandler::HandleOpenBrowserSearchSettings(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSearchSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

@@ -207,7 +207,7 @@ void OpenUrlForProfile(Profile* profile,
                        scalable_iph::Logger* logger) {
   SCALABLE_IPH_LOG(logger) << "Opening a url with ash::NewWindowDelegate. Url: "
                            << url;
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewWindow);
 }
@@ -644,7 +644,7 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenFileManager: {
-      ash::NewWindowDelegate::GetPrimary()->OpenFileManager();
+      ash::NewWindowDelegate::GetInstance()->OpenFileManager();
       SCALABLE_IPH_LOG(GetLogger()) << "Opening file manager.";
       break;
     }

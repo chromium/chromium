@@ -231,7 +231,7 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
   }
 
   GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

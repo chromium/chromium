@@ -167,7 +167,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
             base::Unretained(this),
             base::BindRepeating(
                 &NewWindowDelegate::OpenUrl,
-                base::Unretained(NewWindowDelegate::GetPrimary()),
+                base::Unretained(NewWindowDelegate::GetInstance()),
                 GURL(phonehub::kPhoneHubLearnMoreLink),
                 NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                 NewWindowDelegate::Disposition::kNewForegroundTab)));

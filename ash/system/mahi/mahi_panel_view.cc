@@ -949,7 +949,7 @@ void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
 }
 
 void MahiPanelView::OnLearnMoreLinkClicked() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kHelpMeReadWriteLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

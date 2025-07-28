@@ -1698,7 +1698,7 @@ void CaptureModeSession::OnDisclaimerAccepted(ScannerEntryPoint entry_point,
 }
 
 void CaptureModeSession::OnDisclaimerLinkPressed(const char* url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 

@@ -96,7 +96,7 @@ void MahiContentSourceButton::OpenContentSourcePage() {
   }
 
   // Opens or switches to the URL.
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       content_source_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }

@@ -124,7 +124,7 @@ void ExtendedUpdatesNotification::ShowExtendedUpdatesDialog() {
 }
 
 void ExtendedUpdatesNotification::OpenLearnMoreUrl() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kDeviceExtendedUpdatesLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

@@ -83,7 +83,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
   }
 
   // As a last resort, launch browser to the family link site.
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kFamilyLinkSiteURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewWindow);

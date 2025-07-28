@@ -102,7 +102,7 @@ void OnPeripheralLimitedNotificationClicked(std::optional<int> button_index) {
       UpdateNotificationPrefCount(/*clicked_settings=*/true);
       break;
     case ButtonIndex::kLearnMore:
-      NewWindowDelegate::GetPrimary()->OpenUrl(
+      NewWindowDelegate::GetInstance()->OpenUrl(
           GURL(kLearnMoreHelpUrl),
           NewWindowDelegate::OpenUrlFrom::kUserInteraction,
           NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -112,7 +112,7 @@ void OnPeripheralLimitedNotificationClicked(std::optional<int> button_index) {
 }
 
 void OnGuestNotificationClicked(bool is_thunderbolt_only) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kLearnMoreHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 
@@ -125,14 +125,14 @@ void OnGuestNotificationClicked(bool is_thunderbolt_only) {
 }
 
 void OnPeripheralBlockedNotificationClicked() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kLearnMoreHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
   RemoveNotification(kPciePeripheralDeviceBlockedNotificationId);
 }
 
 void OnBillboardNotificationClicked() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kLearnMoreHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
   RemoveNotification(kPciePeripheralBillboardDeviceNotificationId);

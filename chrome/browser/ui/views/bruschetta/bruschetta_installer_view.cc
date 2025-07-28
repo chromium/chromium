@@ -220,7 +220,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   learn_more_url_ = bruschetta::GetLearnMoreUrl(profile_);
   link_label_->SetCallback(base::BindRepeating(
       [](GURL url) {
-        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        ash::NewWindowDelegate::GetInstance()->OpenUrl(
             url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
             ash::NewWindowDelegate::Disposition::kNewForegroundTab);
       },

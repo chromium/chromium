@@ -81,10 +81,10 @@ bool IsViewableInBrowser(const base::FilePath& file_path) {
 bool OpenNewTab(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!ash::NewWindowDelegate::GetPrimary()) {
+  if (!ash::NewWindowDelegate::GetInstance()) {
     return false;
   }
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
   return true;

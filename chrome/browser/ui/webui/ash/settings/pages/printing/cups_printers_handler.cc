@@ -594,7 +594,7 @@ void CupsPrintersHandler::DisplayPpdFile(const base::FilePath& ppd_file_path) {
   }
 
   PRINTER_LOG(DEBUG) << "PPD saved to " << ppd_file_path;
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(base::StringPrintf("file://%s", ppd_file_path.value().c_str())),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

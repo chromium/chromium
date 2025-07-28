@@ -89,7 +89,7 @@ bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
 }
 
 void OnToastClicked() {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);

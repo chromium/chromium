@@ -332,9 +332,9 @@ void MaybeLaunchPreferredAppForUrl(Profile* profile,
       return;
     }
   }
-  CHECK(ash::NewWindowDelegate::GetPrimary());
+  CHECK(ash::NewWindowDelegate::GetInstance());
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -356,9 +356,9 @@ void LaunchUrlInInstalledAppOrBrowser(Profile* profile,
     }
   }
 
-  CHECK(ash::NewWindowDelegate::GetPrimary());
+  CHECK(ash::NewWindowDelegate::GetInstance());
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

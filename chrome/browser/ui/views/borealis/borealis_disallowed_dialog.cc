@@ -127,7 +127,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
       link_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       link_label->SetCallback(base::BindRepeating(
           [](GURL url) {
-            ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+            ash::NewWindowDelegate::GetInstance()->OpenUrl(
                 url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                 ash::NewWindowDelegate::Disposition::kNewForegroundTab);
           },

@@ -643,7 +643,7 @@ void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source,
     RecordUserWithNoTasksRedictedToTasksUI();
   }
   RecordTasksLaunchSource(source);
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       target_url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

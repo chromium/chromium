@@ -590,7 +590,7 @@ TEST_F(SharesheetBubbleViewTest, DriveActionShouldNotCrash) {
 
   // Make sure the drive action was invoked.
   auto* delegate = static_cast<::TestNewWindowDelegate*>(
-      ash::NewWindowDelegate::GetPrimary());
+      ash::NewWindowDelegate::GetInstance());
   auto url = delegate->retrieve_url();
   ASSERT_TRUE(url.has_value());
   EXPECT_EQ(drive_share_url, *url);

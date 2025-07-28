@@ -56,7 +56,7 @@ void UserRequestedSteamGameInstall(Profile* profile, uint32_t steam_game_id) {
   std::string url =
       base::StrCat({kSteamStoreUrlPrefix, base::NumberToString(steam_game_id)});
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(url), ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

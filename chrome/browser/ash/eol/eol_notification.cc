@@ -192,7 +192,7 @@ void EolNotification::Click(const std::optional<int>& button_index,
                            ? chrome::kEolNotificationURL
                            : chrome::kAutoUpdatePolicyURL);
         // Show eol link.
-        NewWindowDelegate::GetPrimary()->OpenUrl(
+        NewWindowDelegate::GetInstance()->OpenUrl(
             url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
             NewWindowDelegate::Disposition::kNewForegroundTab);
         break;

@@ -60,7 +60,7 @@ GURL GetURLToOpen(const std::string& allowed_host) {
 
 void OnNotificationClick(const GURL& url) {
   base::RecordAction(base::UserMetricsAction(kNotificationClickedActionName));
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

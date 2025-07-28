@@ -269,7 +269,7 @@ void GlanceablesClassroomStudentView::AnimateResize(
 }
 
 void GlanceablesClassroomStudentView::OpenUrl(const GURL& url) const {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

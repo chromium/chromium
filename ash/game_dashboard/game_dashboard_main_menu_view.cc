@@ -991,7 +991,7 @@ void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
 }
 
 void GameDashboardMainMenuView::OnHelpButtonPressed() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
   RecordGameDashboardFunctionTriggered(context_->app_id(),

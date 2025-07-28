@@ -161,7 +161,7 @@ void TabDragDropDelegate::DropAndDeleteSelf(
 
   auto closure = base::BindOnce(&TabDragDropDelegate::OnNewBrowserWindowCreated,
                                 base::Owned(this), location_in_screen);
-  NewWindowDelegate::GetPrimary()->NewWindowForDetachingTab(
+  NewWindowDelegate::GetInstance()->NewWindowForDetachingTab(
       source_window_, drop_data, std::move(closure));
 }
 

@@ -15,7 +15,7 @@ NewWindowProxy::NewWindowProxy(
 NewWindowProxy::~NewWindowProxy() = default;
 
 void NewWindowProxy::OpenUrl(const GURL& url) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUnspecified,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

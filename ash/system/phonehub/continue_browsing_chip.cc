@@ -146,7 +146,7 @@ void ContinueBrowsingChip::ButtonPressed() {
   phone_hub_metrics::LogTabContinuationChipClicked(index_);
   user_action_recorder_->RecordBrowserTabOpened();
 
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 

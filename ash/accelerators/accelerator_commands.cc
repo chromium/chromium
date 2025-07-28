@@ -1063,17 +1063,17 @@ void NewDesk() {
 }
 
 void NewIncognitoWindow() {
-  NewWindowDelegate::GetPrimary()->NewWindow(
+  NewWindowDelegate::GetInstance()->NewWindow(
       /*is_incognito=*/true,
       /*should_trigger_session_restore=*/false);
 }
 
 void NewTab() {
-  NewWindowDelegate::GetPrimary()->NewTab();
+  NewWindowDelegate::GetInstance()->NewTab();
 }
 
 void NewWindow() {
-  NewWindowDelegate::GetPrimary()->NewWindow(
+  NewWindowDelegate::GetInstance()->NewWindow(
       /*is_incognito=*/false,
       /*should_trigger_session_restore=*/false);
 }
@@ -1178,7 +1178,7 @@ void ResizePipWindow() {
 }
 
 void RestoreTab() {
-  NewWindowDelegate::GetPrimary()->RestoreTab();
+  NewWindowDelegate::GetInstance()->RestoreTab();
 }
 
 void RotateActiveWindow() {
