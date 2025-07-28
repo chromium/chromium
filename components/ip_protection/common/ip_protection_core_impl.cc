@@ -41,7 +41,7 @@ namespace {
 // only with SCHEME_QUIC.
 std::vector<net::ProxyChain> MakeQuicProxyList(
     const std::vector<net::ProxyChain>& proxy_list,
-    bool include_https_fallback = true) {
+    bool include_https_fallback) {
   if (proxy_list.empty()) {
     return proxy_list;
   }
