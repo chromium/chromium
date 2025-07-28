@@ -352,8 +352,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
-  void ScrollToX(int x_screen_coords) override;
-  void ScrollToY(int y_screen_coords) override;
+  void ScrollToX(int x_screen_coords, bool force_smooth_scroll) override;
+  void ScrollToY(int y_screen_coords, bool force_smooth_scroll) override;
   void ScrollBy(const gfx::Vector2d& delta) override;
   void ScrollToPage(int page) override;
   void NavigateTo(const std::string& url,

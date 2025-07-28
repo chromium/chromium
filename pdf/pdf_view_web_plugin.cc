@@ -1067,20 +1067,24 @@ void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {
     paint_manager_.ScrollRect(available_area_, offset);
 }
 
-void PdfViewWebPlugin::ScrollToX(int x_screen_coords) {
+void PdfViewWebPlugin::ScrollToX(int x_screen_coords,
+                                 bool force_smooth_scroll) {
   const float x_scroll_pos = x_screen_coords / device_scale_;
 
   client_->PostMessage(base::Value::Dict()
                            .Set("type", "setScrollPosition")
-                           .Set("x", static_cast<double>(x_scroll_pos)));
+                           .Set("x", static_cast<double>(x_scroll_pos))
+                           .Set("forceSmoothScroll", force_smooth_scroll));
 }
 
-void PdfViewWebPlugin::ScrollToY(int y_screen_coords) {
+void PdfViewWebPlugin::ScrollToY(int y_screen_coords,
+                                 bool force_smooth_scroll) {
   const float y_scroll_pos = y_screen_coords / device_scale_;
 
   client_->PostMessage(base::Value::Dict()
                            .Set("type", "setScrollPosition")
-                           .Set("y", static_cast<double>(y_scroll_pos)));
+                           .Set("y", static_cast<double>(y_scroll_pos))
+                           .Set("forceSmoothScroll", force_smooth_scroll));
 }
 
 void PdfViewWebPlugin::ScrollBy(const gfx::Vector2d& delta) {
@@ -1851,7 +1855,7 @@ void PdfViewWebPlugin::HandleHighlightTextFragmentsMessage(
     text_fragments.push_back(fragment.GetString());
   }
   if (engine_->FindAndHighlightTextFragments(text_fragments)) {
-    engine_->ScrollToFirstTextFragment();
+    engine_->ScrollToFirstTextFragment(/*force_smooth_scroll=*/false);
   }
 }
 
@@ -2978,7 +2982,7 @@ bool PdfViewWebPlugin::FindAndHighlightTextFragments(
 
 void PdfViewWebPlugin::ScrollTextFragmentIntoView() {
   if (engine_) {
-    engine_->ScrollToFirstTextFragment();
+    engine_->ScrollToFirstTextFragment(/*force_smooth_scroll=*/false);
   }
 }
 

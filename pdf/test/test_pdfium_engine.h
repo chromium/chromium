@@ -165,7 +165,7 @@ class TestPDFiumEngine : public PDFiumEngine {
               (base::span<const std::string>),
               (override));
 
-  MOCK_METHOD(void, ScrollToFirstTextFragment, (), (override));
+  MOCK_METHOD(void, ScrollToFirstTextFragment, (bool), (override));
 
   MOCK_METHOD(void, RemoveTextFragments, (), (override));
 

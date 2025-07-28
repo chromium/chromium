@@ -38,11 +38,13 @@ void PreviewModeClient::DidScroll(const gfx::Vector2d& point) {
   NOTREACHED();
 }
 
-void PreviewModeClient::ScrollToX(int x_in_screen_coords) {
+void PreviewModeClient::ScrollToX(int x_in_screen_coords,
+                                  bool force_smooth_scroll) {
   NOTREACHED();
 }
 
-void PreviewModeClient::ScrollToY(int y_in_screen_coords) {
+void PreviewModeClient::ScrollToY(int y_in_screen_coords,
+                                  bool force_smooth_scroll) {
   NOTREACHED();
 }
 

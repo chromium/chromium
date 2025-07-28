@@ -1073,9 +1073,9 @@ bool PDFiumEngine::FindAndHighlightTextFragments(
   return !text_fragment_highlights_.empty();
 }
 
-void PDFiumEngine::ScrollToFirstTextFragment() {
+void PDFiumEngine::ScrollToFirstTextFragment(bool force_smooth_scroll) {
   CHECK(!text_fragment_highlights_.empty());
-  ScrollToBoundingRects(text_fragment_highlights_[0]);
+  ScrollToBoundingRects(text_fragment_highlights_[0], force_smooth_scroll);
 }
 
 void PDFiumEngine::RemoveTextFragments() {
@@ -2238,7 +2238,8 @@ bool PDFiumEngine::SelectFindResult(bool forward) {
   selection_.push_back(find_results_[current_find_index_.value()]);
 
   // If the result is not in view, scroll to it.
-  ScrollToBoundingRects(find_results_[current_find_index_.value()]);
+  ScrollToBoundingRects(find_results_[current_find_index_.value()],
+                        /*force_smooth_scroll=*/false);
 
   client_->NotifySelectedFindResultChanged(
       current_find_index_.value(), /*final_result=*/!search_in_progress_);
@@ -4109,16 +4110,19 @@ void PDFiumEngine::ScrollAnnotationIntoView(FPDF_ANNOTATION annot,
   if (rect.y() < visible_rect.y() || rect.bottom() > visible_rect.bottom()) {
     // Scroll the viewport vertically to align the top of focus rect to
     // centre.
-    client_->ScrollToY(rect.y() * current_zoom_ - plugin_size().height() / 2);
+    client_->ScrollToY(rect.y() * current_zoom_ - plugin_size().height() / 2,
+                       /*force_smooth_scroll=*/false);
   }
   if (rect.x() < visible_rect.x() || rect.right() > visible_rect.right()) {
     // Scroll the viewport horizontally to align the left of focus rect to
     // centre.
-    client_->ScrollToX(rect.x() * current_zoom_ - plugin_size().width() / 2);
+    client_->ScrollToX(rect.x() * current_zoom_ - plugin_size().width() / 2,
+                       /*force_smooth_scroll=*/false);
   }
 }
 
-void PDFiumEngine::ScrollToBoundingRects(const PDFiumRange& range) {
+void PDFiumEngine::ScrollToBoundingRects(const PDFiumRange& range,
+                                         bool force_smooth_scroll) {
   // Use zoom of 1.0 since `visible_rect` is without zoom.
   const std::vector<gfx::Rect>& rects =
       range.GetScreenRects(gfx::Point(), 1.0, GetCurrentOrientation());
@@ -4133,13 +4137,13 @@ void PDFiumEngine::ScrollToBoundingRects(const PDFiumRange& range) {
   // Make the page centered.
   int new_y =
       CalculateCenterForZoom(center.y(), visible_rect.height(), current_zoom_);
-  client_->ScrollToY(new_y);
+  client_->ScrollToY(new_y, force_smooth_scroll);
 
   // Only move horizontally if it's not visible.
   if (center.x() < visible_rect.x() || center.x() > visible_rect.right()) {
     int new_x =
         CalculateCenterForZoom(center.x(), visible_rect.width(), current_zoom_);
-    client_->ScrollToX(new_x);
+    client_->ScrollToX(new_x, force_smooth_scroll);
   }
 }
 

@@ -549,7 +549,11 @@ export class Ink2Manager extends EventTarget {
     }
 
     if (scrollX !== undefined || scrollY !== undefined) {
-      this.viewport_.scrollTo({x: scrollX, y: scrollY});
+      // TODO(crbug.com/40218278): Re-enable smooth scrolling for all codepaths.
+      this.viewport_.scrollTo({
+        x: scrollX,
+        y: scrollY,
+      });
     }
   }
 

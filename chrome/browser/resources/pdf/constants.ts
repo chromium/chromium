@@ -157,6 +157,10 @@ export interface Point {
   y: number;
 }
 
+export interface ScrollData extends Point {
+  forceSmoothScroll: boolean;
+}
+
 export interface Rect {
   x: number;
   y: number;

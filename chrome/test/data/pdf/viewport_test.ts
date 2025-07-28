@@ -1618,6 +1618,18 @@ const tests = [
     chrome.test.assertEq(40, viewport.position.x);
     chrome.test.assertEq(30, viewport.position.y);
 
+    mockCallback.reset();
+    viewport.scrollTo({x: 10, y: 20, forceSmoothScroll: true});
+    chrome.test.assertTrue(mockCallback.wasCalled);
+    chrome.test.assertEq(10, viewport.position.x);
+    chrome.test.assertEq(20, viewport.position.y);
+
+    mockCallback.reset();
+    viewport.scrollTo({forceSmoothScroll: true});
+    chrome.test.assertFalse(mockCallback.wasCalled);
+    chrome.test.assertEq(10, viewport.position.x);
+    chrome.test.assertEq(20, viewport.position.y);
+
     chrome.test.succeed();
   },
 

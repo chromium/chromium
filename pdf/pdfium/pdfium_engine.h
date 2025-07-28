@@ -567,7 +567,9 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Scrolls to and highlights the first entry in `text_fragment_highlights_`.
   // Only valid if `text_fragment_highlights_` is non-empty (gated by a CHECK).
-  virtual void ScrollToFirstTextFragment();
+  // `force_smooth_scroll` forces smooth scrolling regardless of the current
+  // animation settings.
+  virtual void ScrollToFirstTextFragment(bool force_smooth_scroll);
 
   // Removes the text fragments and their highlights.
   virtual void RemoveTextFragments();
@@ -1004,8 +1006,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   void ScrollAnnotationIntoView(FPDF_ANNOTATION annot, int page_index);
 
   // Scrolls to the bounding rectangles that represent the `range` on the
-  // screen.
-  void ScrollToBoundingRects(const PDFiumRange& range);
+  // screen. `force_smooth_scroll` forces smooth scrolling regardless of the
+  // current animation settings.
+  void ScrollToBoundingRects(const PDFiumRange& range,
+                             bool force_smooth_scroll);
 
   void OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot, int page_index);
 

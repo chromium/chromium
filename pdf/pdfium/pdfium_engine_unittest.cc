@@ -1937,8 +1937,8 @@ class ScrollingTestClient : public TestClient {
   ScrollingTestClient& operator=(const ScrollingTestClient&) = delete;
 
   // Mock PDFiumEngineClient methods.
-  MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int), (override));
+  MOCK_METHOD(void, ScrollToX, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
 };
 
 TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
@@ -1952,10 +1952,12 @@ TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
   {
     InSequence sequence;
     static constexpr gfx::Point kScrollValue = {510, 478};
-    EXPECT_CALL(client, ScrollToY(kScrollValue.y()))
+    EXPECT_CALL(client,
+                ScrollToY(kScrollValue.y(), /*force_smooth_scroll=*/false))
         .WillOnce(Invoke(
             [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); }));
-    EXPECT_CALL(client, ScrollToX(kScrollValue.x()))
+    EXPECT_CALL(client,
+                ScrollToX(kScrollValue.x(), /*force_smooth_scroll=*/false))
         .WillOnce(Invoke(
             [&engine]() { engine->ScrolledToXPosition(kScrollValue.x()); }));
   }
@@ -2007,11 +2009,13 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
     static constexpr gfx::Point kScrollValues[] = {{510, 478}, {510, 478}};
 
     for (const auto& scroll_value : kScrollValues) {
-      EXPECT_CALL(client, ScrollToY(scroll_value.y()))
+      EXPECT_CALL(client,
+                  ScrollToY(scroll_value.y(), /*force_smooth_scroll=*/false))
           .WillOnce(Invoke([&engine, &scroll_value]() {
             engine->ScrolledToYPosition(scroll_value.y());
           }));
-      EXPECT_CALL(client, ScrollToX(scroll_value.x()))
+      EXPECT_CALL(client,
+                  ScrollToX(scroll_value.x(), /*force_smooth_scroll=*/false))
           .WillOnce(Invoke([&engine, &scroll_value]() {
             engine->ScrolledToXPosition(scroll_value.x());
           }));
@@ -2903,8 +2907,8 @@ class SearchStringTestClient : public TestClient {
     return TextSearch(/*needle=*/needle, /*haystack=*/haystack, case_sensitive);
   }
 
-  MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int), (override));
+  MOCK_METHOD(void, ScrollToX, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
   MOCK_METHOD(void, OnNewTextFragmentsSearchStarted, (), (override));
 };
 
@@ -3087,11 +3091,11 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
   ASSERT_TRUE(engine);
   engine->PluginSizeUpdated({200, 400});
 
-  EXPECT_CALL(client, ScrollToX(424));
-  EXPECT_CALL(client, ScrollToY(749));
+  EXPECT_CALL(client, ScrollToX(424, /*force_smooth_scroll=*/true));
+  EXPECT_CALL(client, ScrollToY(749, /*force_smooth_scroll=*/true));
 
   engine->FindAndHighlightTextFragments({"difficult to implement"});
-  engine->ScrollToFirstTextFragment();
+  engine->ScrollToFirstTextFragment(/*force_smooth_scroll=*/true);
 }
 
 // Assert that OnNewTextFragmentsSearchStarted() is called for any text
