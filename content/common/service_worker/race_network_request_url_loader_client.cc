@@ -201,7 +201,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // This happens when the response is faster than the fetch handler.
       owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-      forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
+      forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
       break;
     case FetchResponseFrom::kServiceWorker:
       // This happens when the fetch handler is faster, so basically
@@ -209,7 +209,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       // handler is already executed but in rare case in-flight request may be
       // used. Let the fetch handler side client to handle the rest. The fetch
       // handler side close the connection if it's not needed anyway.
-      forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
+      forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
       break;
     case FetchResponseFrom::kWithoutServiceWorker:
       // This happens when the fetch handler is faster and the result is
