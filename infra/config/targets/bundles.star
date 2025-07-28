@@ -326,6 +326,10 @@ targets.bundle(
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
+        # TODO(crbug.com/424259075): Replace this bundle with
+        # android_ci_only_fieldtrial_webview_tests (or appropriate cts tests)
+        # once those tests are working on android 16.
+        "webview_ui_test_app_test_apk_no_field_trial",
     ],
 )
 
