@@ -551,6 +551,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   }
 #endif
 
+  comments_side_panel_coordinator_.reset();
+
   history_clusters_side_panel_coordinator_.reset();
 
   // TODO(crbug.com/346148093): This logic should not be gated behind a
