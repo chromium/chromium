@@ -8,15 +8,16 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.PowerManager;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.UUID;
 
 /** Delegates calls out from the OmahaClient. */
+@NullMarked
 public abstract class OmahaDelegateBase extends OmahaDelegate {
     private final ExponentialBackoffScheduler mScheduler;
 
