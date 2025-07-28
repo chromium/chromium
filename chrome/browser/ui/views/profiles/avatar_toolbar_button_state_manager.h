@@ -13,8 +13,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -30,6 +32,31 @@ class ColorProvider;
 }
 
 class StateObserver;
+class SigninDetectionService;
+
+// Singleton that manages the `SigninDetectionService` per `Profile`.
+class SigninDetectionServiceFactory : public ProfileKeyedServiceFactory {
+ public:
+  static SigninDetectionService* GetForProfile(Profile* profile);
+
+  // Returns an instance of the `SigninDetectionServiceFactory` singleton.
+  static SigninDetectionServiceFactory* GetInstance();
+
+  SigninDetectionServiceFactory(const SigninDetectionServiceFactory&) = delete;
+  SigninDetectionServiceFactory& operator=(
+      const SigninDetectionServiceFactory&) = delete;
+
+ private:
+  friend base::NoDestructor<SigninDetectionServiceFactory>;
+
+  SigninDetectionServiceFactory();
+  ~SigninDetectionServiceFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+};
 
 // Provides the information needed to display a specific button state.
 // This class provides a default implementation for button appearance/behavior,

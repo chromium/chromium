@@ -76,6 +76,18 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
+// Profile-scoped service that detects if the user has signed in before any
+// browser window was created. Used by `StateProvider`(s) to catch potentially
+// missed on sign-in events.
+class SigninDetectionService : public KeyedService {
+ public:
+  ~SigninDetectionService() override = default;
+
+  // Returns true if the user has signed before any browser window was created
+  // (for the current profile).
+  virtual bool HasSignedInBeforeBrowserCreated() const = 0;
+};
+
 namespace {
 
 using ButtonState = ::AvatarToolbarButtonStateManager::ButtonState;
@@ -363,20 +375,25 @@ class ExplicitStateProvider : public StateProvider {
 // If this state is overridden by another higher-priotity state, then it cannot
 // become active anymore after this, even if the higher-priority state ends. It
 // can only become active again at the next signin event.
-class OnSigninCoordinator : public base::SupportsUserData::Data,
-                            public signin::IdentityManager::Observer,
-                            public AvatarToolbarButtonStateManager::Observer {
+class OnSigninCoordinator : public signin::IdentityManager::Observer,
+                            public AvatarToolbarButtonStateManager::Observer,
+                            public SigninDetectionService {
  public:
-  static OnSigninCoordinator& GetOrCreateForProfile(Profile& profile) {
+  static OnSigninCoordinator& GetForProfile(Profile& profile) {
     OnSigninCoordinator* coordinator = static_cast<OnSigninCoordinator*>(
-        profile.GetUserData(kOnSigninCoordinatorKey));
-    if (!coordinator) {
-      coordinator = new OnSigninCoordinator(profile);
-      profile.SetUserData(kOnSigninCoordinatorKey,
-                          base::WrapUnique(coordinator));
-    }
+        SigninDetectionServiceFactory::GetForProfile(&profile));
+    CHECK(coordinator);
     return *coordinator;
   }
+
+  explicit OnSigninCoordinator(signin::IdentityManager* identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
+
+  OnSigninCoordinator(const OnSigninCoordinator&) = delete;
+  OnSigninCoordinator& operator=(const OnSigninCoordinator&) = delete;
+
+  ~OnSigninCoordinator() override = default;
 
   bool triggered() const { return triggered_; }
 
@@ -405,6 +422,12 @@ class OnSigninCoordinator : public base::SupportsUserData::Data,
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       return;
     }
+    // `state_changed_callbacks_` is empty if there is no browser.
+    //
+    // NOTE: Consider relying on `signin_metrics::AccessPoint` (from `event`)
+    // instead if more granular control is needed (e.g. to restrict triggering
+    // to specific access points).
+    has_signed_in_before_browser_created_ = state_changed_callbacks_.empty();
     Trigger();
   }
 
@@ -439,15 +462,12 @@ class OnSigninCoordinator : public base::SupportsUserData::Data,
                        base::Unretained(this)));
   }
 
- private:
-  constexpr static const void* const kOnSigninCoordinatorKey =
-      &kOnSigninCoordinatorKey;
-
-  explicit OnSigninCoordinator(Profile& profile) : profile_(profile) {
-    identity_manager_observation_.Observe(
-        IdentityManagerFactory::GetForProfile(&profile));
+  // SigninDetectionService:
+  bool HasSignedInBeforeBrowserCreated() const override {
+    return has_signed_in_before_browser_created_;
   }
 
+ private:
   void Trigger() {
     if (triggered_) {
       return;
@@ -462,7 +482,7 @@ class OnSigninCoordinator : public base::SupportsUserData::Data,
   // changes.
   base::RepeatingCallbackList<void()> state_changed_callbacks_;
 
-  const raw_ref<Profile> profile_;
+  bool has_signed_in_before_browser_created_ = false;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -475,8 +495,7 @@ class OnSigninStateProvider : public StateProvider {
                                  StateObserver* state_observer)
       : StateProvider(browser->profile(), state_observer),
         browser_(*browser),
-        coordinator_(
-            OnSigninCoordinator::GetOrCreateForProfile(*browser->profile())) {}
+        coordinator_(OnSigninCoordinator::GetForProfile(*browser->profile())) {}
   ~OnSigninStateProvider() override = default;
 
   // StateProvider:
@@ -603,6 +622,18 @@ class ShowIdentityNameStateProvider : public StateProvider,
     if (!IdentityManagerFactory::GetForProfile(&profile())
              ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       return;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      // Prevents from showing the greetings if the user has signed in before
+      // the browser is created (on sign-in state should be shown instead).
+      const SigninDetectionService* signin_detection_service =
+          SigninDetectionServiceFactory::GetForProfile(&profile());
+      CHECK(signin_detection_service);
+      if (signin_detection_service->HasSignedInBeforeBrowserCreated()) {
+        return;
+      }
     }
 
     OnUserIdentityChanged();
@@ -1550,6 +1581,39 @@ class NormalStateProvider : public StateProvider {
 
 }  // namespace
 
+SigninDetectionServiceFactory::SigninDetectionServiceFactory()
+    : ProfileKeyedServiceFactory("SigninDetection",
+                                 ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
+
+SigninDetectionServiceFactory::~SigninDetectionServiceFactory() = default;
+
+// static
+SigninDetectionService* SigninDetectionServiceFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<SigninDetectionService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+SigninDetectionServiceFactory* SigninDetectionServiceFactory::GetInstance() {
+  static base::NoDestructor<SigninDetectionServiceFactory> instance;
+  return instance.get();
+}
+
+std::unique_ptr<KeyedService>
+SigninDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  return std::make_unique<OnSigninCoordinator>(
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(context)));
+}
+
+bool SigninDetectionServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 StateProvider::StateProvider(Profile* profile, StateObserver* state_observer)
     : profile_(*profile), state_observer_(*state_observer) {}
 
@@ -1696,7 +1760,7 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       state_manager_observers_.emplace_back(
-          OnSigninCoordinator::GetOrCreateForProfile(*profile));
+          OnSigninCoordinator::GetForProfile(*profile));
       states_[ButtonState::kOnSignin] =
           std::make_unique<OnSigninStateProvider>(browser,
                                                   /*state_observer=*/this);

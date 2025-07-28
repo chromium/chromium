@@ -353,6 +353,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -1333,6 +1334,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   SharingServiceFactory::GetInstance();
   ShortcutsBackendFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  SigninDetectionServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(IS_ANDROID)
   SigninManagerAndroidFactory::GetInstance();
 #endif

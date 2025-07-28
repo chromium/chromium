@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
@@ -2907,6 +2908,43 @@ IN_PROC_BROWSER_TEST_F(
   avatar_toolbar_button->ClearActiveStateForTesting();
   EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowMakingChromeYoursOnSigninBeforeBrowserWindow \
+  DISABLED_ShowMakingChromeYoursOnSigninBeforeBrowserWindow
+#else
+#define MAYBE_ShowMakingChromeYoursOnSigninBeforeBrowserWindow \
+  ShowMakingChromeYoursOnSigninBeforeBrowserWindow
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ShowMakingChromeYoursOnSigninBeforeBrowserWindow) {
+  // Create a new profile and sign in.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_NE(profile_manager, nullptr);
+  Profile& profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(&profile), "test@gmail.com",
+      signin::ConsentLevel::kSignin);
+
+  // Create a new browser window for the new profile.
+  Browser* browser = CreateBrowser(&profile);
+  AvatarToolbarButton* avatar_toolbar_button = GetAvatarToolbarButton(browser);
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+
+  // The on sign-in state should be shown after the the browser window is
+  // created if the sign-in event happened before the browser window was
+  // created.
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_toolbar_button->ClearActiveStateForTesting();
+  // The button should return to the normal state.
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
