@@ -145,5 +145,27 @@ TEST_F(BackendImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
   }
 }
 
+TEST_F(BackendImplAndroidTest, NativeSessionDeletionIsSafe) {
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreSessionFactory(
+      env_, java_helper_);
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setCompleteAsync(env_,
+                                                                java_helper_);
+
+  TestResponseHolder response_holder;
+  session->Generate(mojom::GenerateOptions::New(), response_holder.BindRemote(),
+                    /*on_complete=*/base::DoNothing());
+
+  // Delete the native session manually and ensure async completion doesn't
+  // cause a crash.
+  session.reset();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_resumeOnCompleteCallback(
+      env_, java_helper_);
+}
+
 }  // namespace
 }  // namespace on_device_model

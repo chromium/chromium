@@ -20,6 +20,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
      * back as the response.
      */
     public static class MockAiCoreSession implements AiCoreSession {
+        // If true, the onComplete callback will be called asynchronously through
+        // resumeOnCompleteCallback.
+        private boolean mCompleteAsync;
+        private boolean mNativeDestroyed;
+        private long mNativeBackendSession;
         private final SessionParams mParams;
 
         public MockAiCoreSession(SessionParams params) {
@@ -50,7 +55,25 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
                 }
             }
             AiCoreSessionJni.get().onResponse(nativeBackendSession, sb.toString());
-            AiCoreSessionJni.get().onComplete(nativeBackendSession);
+            if (mCompleteAsync) {
+                // Safe the native backend session pointer for later.
+                mNativeBackendSession = nativeBackendSession;
+            } else {
+                AiCoreSessionJni.get().onComplete(nativeBackendSession);
+            }
+        }
+
+        @Override
+        public void onNativeDestroyed() {
+            mNativeDestroyed = true;
+        }
+
+        public void resumeOnCompleteCallback() {
+            assert mCompleteAsync;
+            if (mNativeDestroyed) {
+                return;
+            }
+            AiCoreSessionJni.get().onComplete(mNativeBackendSession);
         }
     }
 
@@ -70,6 +93,13 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     private MockAiCoreSessionFactory mMockAiCoreSessionFactory;
 
     @CalledByNative
+    public void verifySessionParams(int topK, float temperature) {
+        SessionParams params = mMockAiCoreSessionFactory.mSession.mParams;
+        assertEquals(topK, params.topK);
+        assertEquals(temperature, params.temperature, 0.01f);
+    }
+
+    @CalledByNative
     public void setMockAiCoreSessionFactory() {
         mMockAiCoreSessionFactory = new MockAiCoreSessionFactory();
         ServiceLoaderUtil.setInstanceForTesting(
@@ -77,10 +107,13 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    public void verifySessionParams(int topK, float temperature) {
-        SessionParams params = mMockAiCoreSessionFactory.mSession.mParams;
-        assertEquals(topK, params.topK);
-        assertEquals(temperature, params.temperature, 0.01f);
+    public void setCompleteAsync() {
+        mMockAiCoreSessionFactory.mSession.mCompleteAsync = true;
+    }
+
+    @CalledByNative
+    public void resumeOnCompleteCallback() {
+        mMockAiCoreSessionFactory.mSession.resumeOnCompleteCallback();
     }
 
     @CalledByNative

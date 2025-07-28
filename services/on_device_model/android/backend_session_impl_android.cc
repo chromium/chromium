@@ -62,7 +62,10 @@ BackendSessionImplAndroid::BackendSessionImplAndroid(
     on_device_model::mojom::SessionParamsPtr params)
     : java_session_(OnDeviceModelBridge::CreateSession(std::move(params))) {}
 
-BackendSessionImplAndroid::~BackendSessionImplAndroid() = default;
+BackendSessionImplAndroid::~BackendSessionImplAndroid() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AiCoreSession_onNativeDestroyed(env, java_session_);
+}
 
 void BackendSessionImplAndroid::Append(
     on_device_model::mojom::AppendOptionsPtr options,

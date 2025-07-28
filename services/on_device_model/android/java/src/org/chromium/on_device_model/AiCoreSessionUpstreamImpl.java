@@ -15,4 +15,9 @@ class AiCoreSessionUpstreamImpl implements AiCoreSession {
         AiCoreSessionJni.get().onResponse(nativeBackendSession, "AiCore response");
         AiCoreSessionJni.get().onComplete(nativeBackendSession);
     }
+
+    @Override
+    public void onNativeDestroyed() {
+        // Do nothing because generate is handled synchronously.
+    }
 }

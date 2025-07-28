@@ -25,6 +25,13 @@ interface AiCoreSession {
     @CalledByNative
     void generate(long nativeBackendSession, InputPiece[] inputPieces);
 
+    /**
+     * Called when the native session is destroyed. The implementation class should not call native
+     * functions after this is called.
+     */
+    @CalledByNative
+    void onNativeDestroyed();
+
     @NativeMethods
     interface Natives {
         void onComplete(long backendSession);
