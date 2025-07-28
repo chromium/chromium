@@ -1459,7 +1459,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"deleteWorkAddressNotice",
        IDS_SETTINGS_WORK_ADDRESS_REMOVE_CONFIRMATION_DIALOG_NOTICE},
       {"removeAddressFromChrome",
-       IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVE_CONFIRMATION_DIALOG_ACTION_OK}};
+       IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVE_CONFIRMATION_DIALOG_ACTION_OK},
+      {"homeAndWorkAddressRemovedMessage",
+       IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVED_MESSAGE}};
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());

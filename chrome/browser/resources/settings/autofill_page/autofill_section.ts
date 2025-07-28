@@ -247,6 +247,9 @@ export class SettingsAutofillSectionElement extends
         this.shadowRoot!
             .querySelector(
                 'settings-address-remove-confirmation-dialog')!.wasConfirmed();
+    const isHomeOrWorkAddress =
+        this.isAccountHomeAddress_(this.activeAddress!) ||
+        this.isAccountWorkAddress_(this.activeAddress!);
     if (wasDeletionConfirmed) {
       // Two corner cases are handled:
       // 1. removing the only address: the focus goes to the Add button
@@ -264,8 +267,9 @@ export class SettingsAutofillSectionElement extends
       }
 
       this.autofillManager_.removeAddress(this.activeAddress!.guid as string);
-      getAnnouncerInstance().announce(
-          loadTimeData.getString('addressRemovedMessage'));
+      getAnnouncerInstance().announce(loadTimeData.getString(
+          isHomeOrWorkAddress ? 'homeAndWorkAddressRemovedMessage' :
+                                'addressRemovedMessage'));
     }
     chrome.metricsPrivate.recordBoolean(
         'Autofill.ProfileDeleted.Settings',
