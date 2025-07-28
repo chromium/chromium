@@ -476,8 +476,6 @@ WebMediaConfiguration ToWebMediaConfiguration(
   DCHECK(configuration->hasType());
   if (configuration->type() == "record") {
     web_configuration.type = MediaConfigurationType::kRecord;
-  } else if (configuration->type() == "transmission") {
-    web_configuration.type = MediaConfigurationType::kTransmission;
   } else {
     NOTREACHED();
   }
