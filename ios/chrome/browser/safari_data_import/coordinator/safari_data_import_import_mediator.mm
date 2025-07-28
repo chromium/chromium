@@ -47,8 +47,8 @@
   if (self) {
     _importClient = std::make_unique<IOSSafariDataImportClient>();
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
-    std::unique_ptr<user_data_importer::IOSBookmarkParser> bookmarkParser =
-        std::make_unique<user_data_importer::IOSBookmarkParser>();
+    scoped_refptr<user_data_importer::IOSBookmarkParser> bookmarkParser =
+        base::MakeRefCounted<user_data_importer::IOSBookmarkParser>();
     std::string locale =
         GetApplicationContext()->GetApplicationLocaleStorage()->Get();
     _importer = std::make_unique<user_data_importer::SafariDataImporter>(

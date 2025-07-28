@@ -189,8 +189,8 @@ BookmarkParser::BookmarkParsingResult TranslateJSResult(id result,
 }  // namespace
 
 // Declared in bookmark_parser.h.
-std::unique_ptr<BookmarkParser> MakeBookmarkParser() {
-  return std::make_unique<IOSBookmarkParser>();
+scoped_refptr<BookmarkParser> MakeBookmarkParser() {
+  return base::MakeRefCounted<IOSBookmarkParser>();
 }
 
 IOSBookmarkParser::IOSBookmarkParser() {

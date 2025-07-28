@@ -288,8 +288,8 @@ TEST_F(ContentBookmarkParserWithData, ReadFromFile) {
 
   base::test::TestFuture<BookmarkParser::BookmarkParsingResult>
       bookmarks_parsed_future;
-  ContentBookmarkParser().Parse(std::move(file),
-                                bookmarks_parsed_future.GetCallback());
+  auto parser = base::MakeRefCounted<ContentBookmarkParser>();
+  parser->Parse(std::move(file), bookmarks_parsed_future.GetCallback());
   BookmarkParser::BookmarkParsingResult result = bookmarks_parsed_future.Take();
 
   ASSERT_EQ(3U, result->bookmarks.size());

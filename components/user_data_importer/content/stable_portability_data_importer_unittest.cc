@@ -49,7 +49,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
 
     importer_ = std::make_unique<StablePortabilityDataImporter>(
         *history_service_, *bookmark_model_, *reading_list_model_,
-        std::make_unique<ContentBookmarkParser>());
+        base::MakeRefCounted<ContentBookmarkParser>());
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }

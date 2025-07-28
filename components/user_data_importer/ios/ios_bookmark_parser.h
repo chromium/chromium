@@ -21,12 +21,15 @@ namespace user_data_importer {
 class IOSBookmarkParser : public BookmarkParser {
  public:
   IOSBookmarkParser();
-  ~IOSBookmarkParser() override;
 
   void Parse(const base::FilePath& file,
              BookmarkParser::BookmarkParsingCallback callback) override;
 
  private:
+  friend class base::RefCountedThreadSafe<BookmarkParser>;
+
+  ~IOSBookmarkParser() override;
+
   // Injects JS into the WebView to cause parsing of the currently loaded
   // content.
   void TriggerParseInJS(BookmarkParser::BookmarkParsingCallback callback);

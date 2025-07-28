@@ -63,7 +63,7 @@ StablePortabilityDataImporter::StablePortabilityDataImporter(
     history::HistoryService& history_service,
     bookmarks::BookmarkModel& bookmark_model,
     ReadingListModel& reading_list_model,
-    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
+    scoped_refptr<ContentBookmarkParser> bookmark_parser)
     : history_service_(history_service),
       bookmark_model_(bookmark_model),
       reading_list_model_(reading_list_model),
@@ -223,7 +223,7 @@ void StablePortabilityDataImporter::PostCallback(auto callback, auto results) {
 }
 
 StablePortabilityDataImporter::BackgroundWorker::BackgroundWorker(
-    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
+    scoped_refptr<ContentBookmarkParser> bookmark_parser)
     : bookmark_parser_(std::move(bookmark_parser)) {}
 
 StablePortabilityDataImporter::BackgroundWorker::~BackgroundWorker() = default;

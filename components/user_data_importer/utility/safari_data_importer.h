@@ -58,7 +58,7 @@ class SafariDataImporter {
                      history::HistoryService* history_service,
                      bookmarks::BookmarkModel* bookmark_model,
                      ReadingListModel* reading_list_model,
-                     std::unique_ptr<BookmarkParser> bookmark_parser,
+                     scoped_refptr<BookmarkParser> bookmark_parser,
                      std::string app_locale);
   ~SafariDataImporter();
 
@@ -193,7 +193,7 @@ class SafariDataImporter {
   const raw_ref<ReadingListModel> reading_list_model_;
 
   // The model-layer object used to parse bookmarks from an HTML file.
-  std::unique_ptr<BookmarkParser> bookmark_parser_;
+  scoped_refptr<BookmarkParser> bookmark_parser_;
 
   // Internal state
 

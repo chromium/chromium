@@ -339,8 +339,8 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
 namespace user_data_importer {
 
 // Declared in bookmark_parser.h.
-std::unique_ptr<BookmarkParser> MakeBookmarkParser() {
-  return std::make_unique<ContentBookmarkParser>();
+scoped_refptr<BookmarkParser> MakeBookmarkParser() {
+  return base::MakeRefCounted<ContentBookmarkParser>();
 }
 
 ContentBookmarkParser::ContentBookmarkParser() = default;

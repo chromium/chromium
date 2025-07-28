@@ -20,7 +20,6 @@ namespace user_data_importer {
 class ContentBookmarkParser : public BookmarkParser {
  public:
   ContentBookmarkParser();
-  ~ContentBookmarkParser() override;
 
   void Parse(const base::FilePath& file,
              BookmarkParsingCallback callback) override;
@@ -29,6 +28,11 @@ class ContentBookmarkParser : public BookmarkParser {
   void Parse(base::File file, BookmarkParsingCallback callback);
 
  private:
+ private:
+  friend class base::RefCountedThreadSafe<ContentBookmarkParser>;
+
+  ~ContentBookmarkParser() override;
+
   void ParseImpl(std::string content, BookmarkParsingCallback callback);
 };
 
