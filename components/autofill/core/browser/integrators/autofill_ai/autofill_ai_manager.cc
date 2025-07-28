@@ -366,7 +366,7 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
     return {};
   }
 
-  return CreateFillingSuggestions(form, trigger_field, entities,
+  return CreateAutofillAiFillingSuggestions(form, trigger_field, entities,
                                   client_->GetAppLocale());
 }
 

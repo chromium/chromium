@@ -133,9 +133,10 @@ class AutofillAiSuggestionsTest : public testing::Test {
                               field.format_string());
   }
 
-  std::vector<Suggestion> CreateFillingSuggestions(const AutofillField& field) {
-    return autofill::CreateFillingSuggestions(*form_structure_, field,
-                                              entities_, kAppLocaleUS);
+  std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
+      const AutofillField& field) {
+    return autofill::CreateAutofillAiFillingSuggestions(
+        *form_structure_, field, entities_, kAppLocaleUS);
   }
 
  private:
@@ -161,7 +162,7 @@ std::u16string GetPassportNumber(const EntityInstance& entity) {
 TEST_F(AutofillAiSuggestionsTest, NoSuggestionsOnNonAiField) {
   SetEntities({MakePassportWithRandomGuid()});
   SetForm({ADDRESS_HOME_ZIP, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)), IsEmpty());
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)), IsEmpty());
 }
 
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
@@ -169,7 +170,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   SetEntities({passport_entity});
   SetForm({NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
 
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
 
   // There should be only one suggestion whose main text matches the entity
   // value for the passport name.
@@ -205,7 +207,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
   // the value already existing in the triggering field.
   // Note that there is one separator and one footer suggestion as well.
   EXPECT_THAT(
-      CreateFillingSuggestions(field(0)),
+      CreateAutofillAiFillingSuggestions(field(0)),
       SuggestionsAre(HasMainText(GetPassportName(passport_prefix_matches))));
 }
 
@@ -216,7 +218,7 @@ TEST_F(AutofillAiSuggestionsTest,
   SetEntities({MakePassportWithRandomGuid({.number = u"12345"})});
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
   field(0).set_value(u"12");
-  EXPECT_THAT(CreateFillingSuggestions(field(0)), Not(IsEmpty()));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)), Not(IsEmpty()));
 }
 
 TEST_F(AutofillAiSuggestionsTest,
@@ -229,7 +231,8 @@ TEST_F(AutofillAiSuggestionsTest,
   field(1).set_section(Section::FromAutocomplete(Section::Autocomplete("bar")));
   ASSERT_NE(field(0).section(), field(1).section());
 
-  std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(suggestions,
               SuggestionsAre(HasMainText(GetPassportNumber(passport_entity))));
   EXPECT_THAT(suggestions, SuggestionsAre(HasLabel(u"Passport")));
@@ -249,7 +252,7 @@ TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
       test::GetDriversLicenseEntityInstance();
   SetEntities({drivers_license_entity});
   SetForm({NAME_FULL, PASSPORT_NUMBER});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)), IsEmpty());
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)), IsEmpty());
 }
 
 // Tests that suggestions whose structured attribute would have empty text for
@@ -266,8 +269,8 @@ TEST_F(AutofillAiSuggestionsTest, EmptyMainTextForStructuredAttribute) {
 
   SetForm({NAME_FIRST, NAME_LAST, PASSPORT_NUMBER});
 
-  EXPECT_THAT(CreateFillingSuggestions(field(0)), IsEmpty());
-  EXPECT_THAT(CreateFillingSuggestions(field(1)), Not(IsEmpty()));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)), IsEmpty());
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(1)), Not(IsEmpty()));
 }
 
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
@@ -284,7 +287,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   // `passport3` is deduped because there is no expiry date in the form and its
   // remaining attributes are a subset of `passport1`.
   // `passport4` is deduped because it is a proper subset of `passport1`.
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasMainText(GetPassportName(passport2)),
                              HasMainText(GetPassportName(passport1))));
 }
@@ -295,17 +298,17 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
   SetEntities({MakePassportWithRandomGuid()});
   SetForm({PASSPORT_NUMBER});
 
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Not(Contains(HasType(SuggestionType::kUndoOrClear))));
   field(0).set_is_autofilled(true);
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Contains(HasType(SuggestionType::kUndoOrClear)));
 }
 
 TEST_F(AutofillAiSuggestionsTest, LabelGeneration_SingleEntity_NoLabelAdded) {
   SetEntities({MakePassportWithRandomGuid()});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport")));
 }
 
@@ -321,7 +324,7 @@ TEST_F(
                                   .year = nullptr}),
        MakeVehicleWithRandomGuid({.name = nullptr, .number = nullptr})});
   SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_VIN});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Vehicle · BMW · Series 2")));
 }
 
@@ -333,7 +336,7 @@ TEST_F(AutofillAiSuggestionsTest,
                MakePassportWithRandomGuid(
                    {.name = u"Machado de Assis", .number = u"123"})});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump"),
                              HasLabel(u"Passport · Machado de Assis")));
 }
@@ -349,7 +352,7 @@ TEST_F(
 
   // Note that passport name is the first at the rank of disambiguating texts.
   SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
 }
 
@@ -363,7 +366,7 @@ TEST_F(
 
   // Note that passport name is the first at the rank of disambiguating texts.
   SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport · Sweden"),
                              HasLabel(u"Passport · Brazil")));
 }
@@ -383,7 +386,7 @@ TEST_F(
   // the same. However, we still add the top differentiating label as a label,
   // as we always prioritize having it.
   SetForm({PASSPORT_ISSUING_COUNTRY, PASSPORT_NUMBER});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump"),
                              HasLabel(u"Passport · Machado de Assis")));
 }
@@ -396,7 +399,7 @@ TEST_F(AutofillAiSuggestionsTest,
                MakeVehicleWithRandomGuid({.model = u"Series 3"}),
                MakeVehicleWithRandomGuid({.name = u"Diego Maradona"})});
   SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_MODEL, NAME_FULL});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Vehicle · Series 2 · Knecht Ruprecht"),
                              HasLabel(u"Vehicle · Series 3 · Knecht Ruprecht"),
                              HasLabel(u"Vehicle · Series 2 · Diego Maradona")));
@@ -413,7 +416,7 @@ TEST_F(
        MakePassportWithRandomGuid()});
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
   EXPECT_THAT(
-      CreateFillingSuggestions(field(0)),
+      CreateAutofillAiFillingSuggestions(field(0)),
       SuggestionsAre(HasLabel(u"Passport · Brazil"), HasLabel(u"Passport"),
                      HasLabel(u"Passport · Sweden")));
 }
@@ -427,7 +430,7 @@ TEST_F(
                MakePassportWithRandomGuid({.expiry_date = u"2018-12-29"})});
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY, NAME_FULL,
            PASSPORT_EXPIRATION_DATE});
-  EXPECT_THAT(CreateFillingSuggestions(field(0)),
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
 }
 

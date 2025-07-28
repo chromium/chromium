@@ -17,8 +17,8 @@ class FormFieldData;
 class FormStructure;
 struct Suggestion;
 
-// Creates filling suggestions using `EntityInstance`s.
-std::vector<Suggestion> CreateFillingSuggestions(
+// Creates filling suggestions using `EntityInstance`s for Autofill AI.
+std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field_data,
     base::span<const EntityInstance> entities,

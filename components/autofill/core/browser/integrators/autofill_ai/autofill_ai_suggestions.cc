@@ -360,7 +360,7 @@ SuggestionWithMetadata GetSuggestionForEntity(
 
 }  // namespace
 
-std::vector<Suggestion> CreateFillingSuggestions(
+std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field_data,
     base::span<const EntityInstance> entities,
