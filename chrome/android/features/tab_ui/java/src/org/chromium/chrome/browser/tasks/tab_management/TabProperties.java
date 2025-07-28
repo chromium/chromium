@@ -170,6 +170,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<String> TAB_GROUP_SYNC_ID =
             new WritableObjectPropertyKey<>();
 
+    /** The {@link org.chromium.chrome.browser.tab.TabImpl.MediaState} indicator of the tab. */
+    public static final WritableIntPropertyKey MEDIA_INDICATOR = new WritableIntPropertyKey();
+
     private static final PropertyKey[] COMMON_KEYS_TAB_AND_GROUP_GRID =
             new PropertyKey[] {
                 IS_INCOGNITO,
@@ -208,7 +211,8 @@ public class TabProperties {
                         SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                         HAS_NOTIFICATION_BUBBLE,
                         TAB_CARD_LABEL_DATA,
-                        IS_HIGHLIGHTED
+                        IS_HIGHLIGHTED,
+                        MEDIA_INDICATOR
                     },
                     COMMON_KEYS_TAB_AND_GROUP_GRID);
 

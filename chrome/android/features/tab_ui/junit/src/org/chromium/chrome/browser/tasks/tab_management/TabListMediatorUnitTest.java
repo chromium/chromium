@@ -122,6 +122,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -5127,6 +5128,36 @@ public class TabListMediatorUnitTest {
 
         mMediator.removeListItemFromModelList(UiType.TAB_GROUP, ITEM4_ID);
         assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
+    public void testMediaState_TabAudible() {
+        // Simulate tablet
+        when(mResources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(2);
+        assertEquals(MediaState.NONE, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+
+        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        mTabObserverCaptor.getValue().onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        assertEquals(
+                MediaState.AUDIBLE, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
+    public void testMediaState_TabNone() {
+        // Simulate tablet
+        when(mResources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(2);
+        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        mTabObserverCaptor.getValue().onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+        assertEquals(
+                MediaState.AUDIBLE, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+
+        when(mTab1.getMediaState()).thenReturn(MediaState.NONE);
+        mTabObserverCaptor.getValue().onMediaStateChanged(mTab1, MediaState.NONE);
+
+        assertEquals(MediaState.NONE, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
     }
 
     private void setUpTabGroupCardDescriptionString() {

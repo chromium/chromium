@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.serial.SerialNotificationManager;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
@@ -413,6 +414,17 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                     null,
                     mLastUrl,
                     mTab.isIncognito());
+        }
+
+        @Override
+        public void mediaStartedPlaying() {
+            // TODO(crbug.com/430072416): Identify when audio is muted.
+            mTab.setMediaState(MediaState.AUDIBLE);
+        }
+
+        @Override
+        public void mediaStoppedPlaying() {
+            mTab.setMediaState(MediaState.NONE);
         }
     }
 }

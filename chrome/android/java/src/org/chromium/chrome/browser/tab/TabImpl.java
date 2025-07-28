@@ -103,6 +103,7 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -275,6 +276,7 @@ class TabImpl implements Tab {
     private @Nullable Token mTabGroupId;
     private boolean mTabHasSensitiveContent;
     private boolean mIsPinned;
+    private @MediaState int mMediaState;
     private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
 
     /**
@@ -2674,6 +2676,22 @@ class TabImpl implements Tab {
         mIsPinned = isPinned;
         for (TabObserver observer : mObservers) {
             observer.onTabPinnedStateChanged(this, isPinned);
+        }
+    }
+
+    @Override
+    public @MediaState int getMediaState() {
+        return mMediaState;
+    }
+
+    @Override
+    public void setMediaState(@MediaState int mediaState) {
+        mMediaState = mediaState;
+        if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            for (TabObserver observer : mObservers) {
+                observer.onMediaStateChanged(this, mediaState);
+            }
         }
     }
 

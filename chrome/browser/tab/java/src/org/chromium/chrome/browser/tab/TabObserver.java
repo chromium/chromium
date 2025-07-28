@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -115,13 +116,23 @@ public interface TabObserver {
     void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl);
 
     /**
+     * Called when the media state changes
+     *
+     * @param tab The notifying {@link Tab}.
+     * @param mediaState The {@link MediaState} of the tab.
+     */
+    void onMediaStateChanged(Tab tab, @MediaState int mediaState);
+
+    /**
      * Called when the title of a {@link Tab} changes.
+     *
      * @param tab The notifying {@link Tab}.
      */
     void onTitleUpdated(Tab tab);
 
     /**
      * Called when the URL of a {@link Tab} changes.
+     *
      * @param tab The notifying {@link Tab}.
      */
     void onUrlUpdated(Tab tab);

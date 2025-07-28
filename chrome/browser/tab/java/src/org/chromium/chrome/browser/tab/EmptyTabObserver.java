@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -66,6 +67,9 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {}
+
+    @Override
+    public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {}
 
     @Override
     public void onTitleUpdated(Tab tab) {}

@@ -218,6 +218,8 @@ class TabGridViewBinder {
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
             setNullableLongClickListener(
                     model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
+        } else if (TabProperties.MEDIA_INDICATOR == propertyKey) {
+            ((TabGridView) view).setMediaIndicator(model.get(TabProperties.MEDIA_INDICATOR));
         }
     }
 
@@ -535,6 +537,7 @@ class TabGridViewBinder {
         TextView titleView = rootView.fastFindViewById(R.id.tab_title);
         TabThumbnailView thumbnail = rootView.fastFindViewById(R.id.tab_thumbnail);
         ChromeImageView backgroundView = rootView.fastFindViewById(R.id.background_view);
+        ImageView mediaIndicator = rootView.fastFindViewById(R.id.media_indicator_icon);
 
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
@@ -555,6 +558,10 @@ class TabGridViewBinder {
                 backgroundView,
                 TabUiThemeProvider.getHoveredCardBackgroundTintList(
                         backgroundView.getContext(), isIncognito, isSelected));
+
+        mediaIndicator.setImageTintList(
+                TabCardThemeUtil.getMediaIndicatorColorStateList(
+                        mediaIndicator.getContext(), isIncognito, isSelected));
     }
 
     private static void updateColorForSelectionToggleButton(

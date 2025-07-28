@@ -24,8 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
@@ -33,6 +35,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
@@ -220,6 +223,35 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
                         ? createFadeInAnimation(cardWrapper)
                         : createFadeOutAnimation(cardWrapper));
         cardWrapper.setBackground(gridCardHighlightDrawable);
+    }
+
+    void setMediaIndicator(@MediaState int mediaState) {
+        // TODO(crbug.com/430072416): Update state for muted tabs once the setting controls are
+        // implemented.
+        TextView tabTitle = findViewById(R.id.tab_title);
+        ImageView tabMediaIndicator = findViewById(R.id.media_indicator_icon);
+        ConstraintLayout.LayoutParams titleParams =
+                (ConstraintLayout.LayoutParams) tabTitle.getLayoutParams();
+
+        int mediaIndicatorVisibility = View.GONE;
+        switch (mediaState) {
+            case MediaState.AUDIBLE:
+                titleParams.endToEnd = R.id.media_indicator_icon;
+                mediaIndicatorVisibility = View.VISIBLE;
+                break;
+            case MediaState.MUTED:
+            case MediaState.RECORDING:
+            case MediaState.SHARING:
+            case MediaState.NONE:
+                titleParams.endToEnd = R.id.card_view;
+                break;
+            default:
+                assert false : "Invalid media state";
+                break;
+        }
+
+        tabTitle.setLayoutParams(titleParams);
+        tabMediaIndicator.setVisibility(mediaIndicatorVisibility);
     }
 
     private void setTabActionButtonCloseDrawable() {

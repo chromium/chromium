@@ -411,6 +411,7 @@ chrome_java_resources = [
   "java/res/drawable/tablet_tab_strip_close_all_tabs_context_menu.xml",
   "java/res/drawable/text_cursor_lowend.xml",
   "java/res/drawable/virtual_card_enrollment_illustration.xml",
+  "java/res/drawable/volume_up_24dp.xml",
   "java/res/drawable/xr_toolbar_rounded_rect.xml",
   "java/res/layout-sw600dp/find_toolbar.xml",
   "java/res/layout/account_chooser_dialog_item.xml",

@@ -57,6 +57,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -643,6 +645,28 @@ class TabListMediator implements TabListNotificationHandler {
                         // Changing URL should also invalidate the favicon.
                         updateFaviconForTab(model, tab, null, null);
                     }
+                }
+
+                @Override
+                public void onMediaStateChanged(Tab updatedTab, @MediaState int mediaState) {
+                    assert mShowingTabs;
+
+                    @Nullable PropertyModel model;
+                    Tab representativeTab = updatedTab;
+                    if (mActionsOnAllRelatedTabs && isTabInTabGroup(updatedTab)) {
+                        @Nullable Pair<Integer, Tab> indexAndTab =
+                                getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
+                        if (indexAndTab == null) return;
+                        model = mModelList.get(indexAndTab.first).model;
+                        representativeTab = indexAndTab.second;
+                    } else {
+                        model = mModelList.getModelFromTabId(updatedTab.getId());
+                    }
+
+                    if (model == null) return;
+                    model.set(
+                            TabProperties.MEDIA_INDICATOR,
+                            getTabGridMediaIndicator(representativeTab));
                 }
             };
 
@@ -1714,6 +1738,7 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.IS_SELECTED, isTabSelected);
         model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         model.set(TabProperties.TITLE, getLatestTitleForTab(tab, /* useDefault= */ true));
+        model.set(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab));
 
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
@@ -1744,6 +1769,26 @@ class TabListMediator implements TabListNotificationHandler {
         assert filter.isTabModelRestored();
 
         return filter.isTabInTabGroup(tab);
+    }
+
+    private @MediaState int getTabGridMediaIndicator(Tab representativeTab) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                || !ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
+            return MediaState.NONE;
+        }
+
+        if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(representativeTab)) {
+            return representativeTab.getMediaState();
+        }
+        List<Tab> relatedTabs = getRelatedTabsForId(representativeTab.getId());
+        @MediaState int state;
+        for (Tab tab : relatedTabs) {
+            state = tab.getMediaState();
+            if (state != MediaState.NONE) {
+                return state;
+            }
+        }
+        return MediaState.NONE;
     }
 
     /**
@@ -2088,6 +2133,7 @@ class TabListMediator implements TabListNotificationHandler {
                                 QuickDeleteAnimationStatus.TAB_RESTORE)
                         .with(TabProperties.VISIBILITY, View.VISIBLE)
                         .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
+                        .with(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab))
                         .build();
 
         if (!mActionsOnAllRelatedTabs || isInTabGroup) {
@@ -2662,8 +2708,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         Tab tab = getTabForIndex(index);
         // If the found tab has a different group ID from the tabGroupId set in the args then the
-        // update
-        // is likely for a group that no longer exists so we should drop the update.
+        // update is likely for a group that no longer exists so we should drop the update.
         if (tab == null
                 || !tabGroupId.equals(tab.getTabGroupId())
                 || !filter.isTabInTabGroup(tab)) {

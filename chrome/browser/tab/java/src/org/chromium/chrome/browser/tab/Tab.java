@@ -27,8 +27,10 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Tab is a visual/functional unit that encapsulates the content (not just web site content from
@@ -45,6 +47,24 @@ public interface Tab extends TabLifecycle {
     @interface TabLoadStatus {
         int PAGE_LOAD_FAILED = 0;
         int DEFAULT_PAGE_LOAD = 1;
+    }
+
+    /** Tracks the media indicator state of the tab. */
+    @IntDef({
+        MediaState.NONE,
+        MediaState.AUDIBLE,
+        MediaState.MUTED,
+        MediaState.RECORDING,
+        MediaState.SHARING
+    })
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MediaState {
+        int NONE = 0;
+        int AUDIBLE = 1;
+        int MUTED = 2;
+        int RECORDING = 3;
+        int SHARING = 4;
     }
 
     /** The result of the loadUrl. */
@@ -490,6 +510,17 @@ public interface Tab extends TabLifecycle {
      * @param isPinned True if the tab is pinned.
      */
     void setIsPinned(boolean isPinned);
+
+    /** Returns the media state of the tab. */
+    @MediaState
+    int getMediaState();
+
+    /**
+     * Sets the media state of the tab.
+     *
+     * @param mediaState The {@link MediaState} of the tab.
+     */
+    void setMediaState(@MediaState int mediaState);
 
     /** Called when the tab is restored from the archived tab model. */
     void onTabRestoredFromArchivedTabModel();

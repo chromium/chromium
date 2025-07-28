@@ -88,6 +88,17 @@ found in the LICENSE file.
           android:ellipsize="none"
           android:singleLine="true"
           android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
+        <ImageView
+            android:id="@+id/media_indicator_icon"
+            android:src="@drawable/volume_up_24dp"
+            android:layout_height="@dimen/tab_grid_card_header_height"
+            android:layout_width="@dimen/tab_grid_card_header_height"
+            android:layout_gravity="center_vertical"
+            android:padding="@dimen/tab_grid_card_favicon_padding_start"
+            android:importantForAccessibility="no"
+            app:layout_constraintTop_toTopOf="@id/card_view"
+            app:layout_constraintEnd_toStartOf="@id/action_button"
+            android:visibility="gone"/>
         <org.chromium.chrome.browser.tab_ui.TabThumbnailView
           android:id="@+id/tab_thumbnail"
           android:layout_width="0dp"
