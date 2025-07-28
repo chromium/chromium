@@ -46,7 +46,7 @@
   {
     "name": "ack-on-surface-activation-when-interactive",
     "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "act-features",
