@@ -13,10 +13,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 
-class ExtensionInstallBlockedDialogViewTest : public DialogBrowserTest {
+class ExtensionInstallBlockedDialogTest : public DialogBrowserTest {
  public:
-  ExtensionInstallBlockedDialogViewTest() = default;
-  ~ExtensionInstallBlockedDialogViewTest() override = default;
+  ExtensionInstallBlockedDialogTest() = default;
+  ~ExtensionInstallBlockedDialogTest() override = default;
 
   void ShowUi(const std::string& name) override {
     extensions::ShowExtensionInstallBlockedDialog(
@@ -38,18 +38,18 @@ class ExtensionInstallBlockedDialogViewTest : public DialogBrowserTest {
   std::u16string message_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogTest,
                        InvokeUi_WithoutCustomMessage) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogTest,
                        InvokeUi_WithCustomMessage) {
   set_message(u"message");
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogTest,
                        InvokeUi_WithLongCustomMessage) {
   set_message(u"long\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmessage");
   ShowAndVerifyUi();

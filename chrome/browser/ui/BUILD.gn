@@ -3822,7 +3822,6 @@ static_library("ui") {
       "views/extensions/expandable_container_view.h",
       "views/extensions/extension_context_menu_controller.cc",
       "views/extensions/extension_context_menu_controller.h",
-      "views/extensions/extension_install_blocked_dialog_view.cc",
       "views/extensions/extension_install_dialog_view.cc",
       "views/extensions/extension_install_dialog_view.h",
       "views/extensions/extension_install_friction_dialog_view.cc",
@@ -5145,6 +5144,7 @@ static_library("ui") {
   if (enable_extensions_core) {
     sources += [
       "extensions/extension_dialog_utils.h",
+      "extensions/extension_install_blocked_dialog.cc",
       "extensions/extension_uninstall_dialog_impl.cc",
       "webui/extensions/extension_icon_source.cc",
       "webui/extensions/extension_icon_source.h",
