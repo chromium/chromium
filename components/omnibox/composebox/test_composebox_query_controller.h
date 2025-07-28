@@ -137,7 +137,7 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       const std::vector<std::string>& cors_exempt_headers,
       UploadProgressCallback upload_progress_callback) override;
 
-  void ResetRequestClusterInfoState() override;
+  void ResetRequestClusterInfoState(int session_id) override;
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;

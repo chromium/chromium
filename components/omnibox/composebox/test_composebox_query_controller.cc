@@ -114,9 +114,10 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   return response;
 }
 
-void TestComposeboxQueryController::ResetRequestClusterInfoState() {
+void TestComposeboxQueryController::ResetRequestClusterInfoState(
+    int session_id) {
   if (!enable_cluster_info_ttl_) {
     return;
   }
-  ComposeboxQueryController::ResetRequestClusterInfoState();
+  ComposeboxQueryController::ResetRequestClusterInfoState(session_id);
 }
