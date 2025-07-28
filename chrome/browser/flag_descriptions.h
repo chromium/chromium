@@ -413,6 +413,11 @@ extern const char kEnableAutoDisableAccessibilityDescription[];
 extern const char kImageDescriptionsAlternateRoutingName[];
 extern const char kImageDescriptionsAlternateRoutingDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillAndroidDesktopSuppressAccessoryOnEmptyName[];
+extern const char kAutofillAndroidDesktopSuppressAccessoryOnEmptyDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
 extern const char
     kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];

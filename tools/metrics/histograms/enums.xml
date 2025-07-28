@@ -14520,6 +14520,8 @@ from previous Chrome versions.
   <int value="156657549" label="DiscountAutofill:enabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
+  <int value="158086823"
+      label="AutofillAndroidDesktopSuppressAccessoryOnEmpty:disabled"/>
   <int value="158490417" label="PhoneHubCameraRoll:enabled"/>
   <int value="158889810" label="ArcInputOverlayAlphaV2:enabled"/>
   <int value="160429011" label="LensSearchOptimizations:enabled"/>
@@ -17787,6 +17789,8 @@ from previous Chrome versions.
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
   <int value="1357749568" label="EnableLazyLoadImageForInvisiblePage:enabled"/>
   <int value="1357785514" label="AndroidNativePagesInNewTab:disabled"/>
+  <int value="1358271872"
+      label="AutofillAndroidDesktopSuppressAccessoryOnEmpty:enabled"/>
   <int value="1359703966" label="Prerender2InNewTab:disabled"/>
   <int value="1359972809" label="enable-gesture-deletion"/>
   <int value="1360774969"

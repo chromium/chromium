@@ -13011,6 +13011,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kTabModelInitFixes)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-android-desktop-suppress-accessory-on-empty",
+     flag_descriptions::kAutofillAndroidDesktopSuppressAccessoryOnEmptyName,
+     flag_descriptions::
+         kAutofillAndroidDesktopSuppressAccessoryOnEmptyDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

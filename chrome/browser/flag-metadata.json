@@ -669,6 +669,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-android-desktop-suppress-accessory-on-empty",
+    "owners": [ "luchenpeng@google.com", "piotrkotynia@google.com" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "autofill-content-editables",
     "owners": [ "jkeitel@chromium.org", "schwering@google.com" ],
     "expiry_milestone": 125

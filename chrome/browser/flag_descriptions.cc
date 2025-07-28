@@ -622,6 +622,15 @@ const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAutofillAndroidDesktopSuppressAccessoryOnEmptyName[] =
+    "Enable suppressing keyboard accessory on android desktop";
+const char kAutofillAndroidDesktopSuppressAccessoryOnEmptyDescription[] =
+    "When enabled, Autofill will suppress keyboard accessory when the form "
+    "field is not a username/password field and does not have any autofill "
+    "suggestions. ";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
     "Enable allowlist for showing category benefits for BMO cards";
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =
