@@ -553,7 +553,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // framebuffer into a buffer of a certain size with 4-byte pixels.
   void ReadBackFramebuffer(base::span<uint8_t> pixels,
                            SkColorType,
-                           WebGLImageConversion::AlphaOp);
+                           WebGLImageConversion::AlphaOp,
+                           GrSurfaceOrigin destination_origin);
 
   // If RGB emulation is required, then the CHROMIUM image's alpha channel
   // must be immediately cleared after it is bound to a texture. Nothing

@@ -554,7 +554,7 @@ void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
   const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
       size_, viz::SinglePlaneFormat::kRGBA_8888);
   ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
-                      kN32_SkColorType, op);
+                      kN32_SkColorType, op, kBottomLeft_GrSurfaceOrigin);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -1807,9 +1807,8 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
 
   auto pixels = base::span<uint8_t>(
       static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
-  ReadBackFramebuffer(pixels, color_type,
-                      WebGLImageConversion::kAlphaDoNothing);
-  FlipVertically(pixels, num_rows.ValueOrDie(), row_bytes.ValueOrDie());
+  ReadBackFramebuffer(pixels, color_type, WebGLImageConversion::kAlphaDoNothing,
+                      kTopLeft_GrSurfaceOrigin);
 
   if (fbo) {
     // The front buffer was used as the source of the pixels via |fbo|; clean up
@@ -1831,7 +1830,8 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
 
 void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
                                         SkColorType color_type,
-                                        WebGLImageConversion::AlphaOp op) {
+                                        WebGLImageConversion::AlphaOp op,
+                                        GrSurfaceOrigin destination_origin) {
   DCHECK(state_restorer_);
   state_restorer_->SetPixelPackParametersDirty();
   gl_->PixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -1846,15 +1846,16 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
 
   GLenum data_type = GL_UNSIGNED_BYTE;
 
-  base::CheckedNumeric<size_t> expected_data_size = 4;
-  expected_data_size *= Size().width();
-  expected_data_size *= Size().height();
-
+  base::CheckedNumeric<size_t> row_bytes = 4;
   if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
       color_type == kRGBA_F16_SkColorType) {
     data_type = (webgl_version_ > kWebGL1) ? GL_HALF_FLOAT : GL_HALF_FLOAT_OES;
-    expected_data_size *= 2;
+    row_bytes *= 2;
   }
+  row_bytes *= Size().width();
+
+  base::CheckedNumeric<size_t> num_rows = Size().height();
+  base::CheckedNumeric<size_t> expected_data_size = num_rows * row_bytes;
 
   DCHECK_EQ(expected_data_size.ValueOrDie(), pixels.size());
 
@@ -1878,6 +1879,12 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
     }
   } else if (op != WebGLImageConversion::kAlphaDoNothing) {
     NOTREACHED();
+  }
+
+  // ReadPixels always reads with bottom-left origin regardless of the
+  // `opengl_flip_y_extension_`
+  if (destination_origin != kBottomLeft_GrSurfaceOrigin) {
+    FlipVertically(pixels, num_rows.ValueOrDie(), row_bytes.ValueOrDie());
   }
 }
 
