@@ -101,7 +101,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 @synthesize showingLogo = _showingLogo;
 @synthesize containerView = _containerView;
 @synthesize showingDoodle = _showingDoodle;
-@synthesize doodleObserver = _doodleObserver;
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        webState:(web::WebState*)webState {
@@ -122,29 +121,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   _browser = nullptr;
   _imageFetcher.reset();
 }
-
-#pragma mark - Accessors
-
-- (SearchEngineLogoContainerView*)containerView {
-  if (!_containerView) {
-    // Create the container view and set its delegate.
-    _containerView =
-        [[SearchEngineLogoContainerView alloc] initWithFrame:CGRectZero];
-    [_containerView setDelegate:self];
-
-    // Set the accessibility label of the container to the alt text for the
-    // logo.
-    _containerView.isAccessibilityElement = YES;
-    _containerView.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_NEW_TAB_LOGO_ACCESSIBILITY_LABEL);
-
-    _containerView.shrunkLogoView =
-        [[UIImageView alloc] initWithImage:[self logoImage]];
-  }
-  return _containerView;
-}
-
-#pragma mark - LogoVendor
 
 - (UIView*)view {
   return self.containerView;
@@ -191,17 +167,32 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   }
 }
 
+#pragma mark - Accessors
+
+- (SearchEngineLogoContainerView*)containerView {
+  if (!_containerView) {
+    // Create the container view and set its delegate.
+    _containerView =
+        [[SearchEngineLogoContainerView alloc] initWithFrame:CGRectZero];
+    [_containerView setDelegate:self];
+
+    // Set the accessibility label of the container to the alt text for the
+    // logo.
+    _containerView.isAccessibilityElement = YES;
+    _containerView.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_NEW_TAB_LOGO_ACCESSIBILITY_LABEL);
+
+    _containerView.shrunkLogoView =
+        [[UIImageView alloc] initWithImage:[self logoImage]];
+  }
+  return _containerView;
+}
+
 #pragma mark - SearchEngineLogoContainerViewDelegate
 
 - (void)searchEngineLogoContainerViewDoodleWasTapped:
     (SearchEngineLogoContainerView*)containerView {
   [self handleDoodleTapped];
-}
-
-#pragma mark - LogoAnimationControllerOwnerOwner
-
-- (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  return nil;
 }
 
 #pragma mark - VisibleForTesting
@@ -309,7 +300,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 // Called when the doodle's appearance animation completes.
 - (void)doodleAppearanceAnimationDidFinish {
   self.showingDoodle = YES;
-  [self.doodleObserver doodleDisplayStateChanged:YES];
   [self.consumer doodleDisplayStateChanged:YES];
 }
 

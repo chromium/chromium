@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "url/gurl.h"
 
 @protocol SearchEngineLogoConsumer;
@@ -17,22 +16,39 @@ namespace web {
 class WebState;
 }
 
-// TODO(crbug.com/423883582): LogoVendor is deprecated.
-@interface SearchEngineLogoMediator : NSObject <LogoVendor>
+@interface SearchEngineLogoMediator : NSObject
 
 // Whether the logo should be multicolor or monochrome.
 @property(nonatomic, assign) BOOL usesMonochromeLogo;
 @property(nonatomic, weak) id<SearchEngineLogoConsumer> consumer;
 
+// View that shows a doodle or a search engine logo.
+// TODO(crbug.com/423883582): Need to be removed.
+@property(nonatomic, strong, readonly) UIView* view;
+// Whether or not the logo should be shown.  Defaults to YES.
+// TODO(crbug.com/423883582): Need to be removed.
+@property(nonatomic, assign, getter=isShowingLogo) BOOL showingLogo;
+
 // Designated initializer.
 - (instancetype)initWithBrowser:(Browser*)browser
                        webState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnect the instance.
 - (void)disconnect;
+
+// Whether or not the doodle is being shown. Defaults to NO.
+// TODO(crbug.com/423883582): Need to be removed.
+- (BOOL)isShowingDoodle;
+
+// Checks for a new doodle.  Calling this method frequently will result in a
+// query being issued at most once per hour.
+// TODO(crbug.com/423883582): Need to be removed.
+- (void)fetchDoodle;
+
+// Updates the vendor's WebState.
+- (void)setWebState:(web::WebState*)webState;
 
 @end
 

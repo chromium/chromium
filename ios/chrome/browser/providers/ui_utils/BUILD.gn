@@ -4,17 +4,6 @@
 
 source_set("chromium_ui_utils") {
   sources = [ "chromium_ui_utils.mm" ]
-  deps = [
-    ":chromium_logo_controller",
-    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
-  ]
+  deps = [ "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api" ]
   frameworks = [ "CoreGraphics.framework" ]
-}
-
-source_set("chromium_logo_controller") {
-  sources = [
-    "chromium_logo_controller.h",
-    "chromium_logo_controller.mm",
-  ]
-  deps = [ "//ios/chrome/browser/ntp/ui_bundled:logo" ]
 }
