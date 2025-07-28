@@ -534,6 +534,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
       break;
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+    case TabGroupActionType::kCloseLastTabUnknownRole:
       NOTREACHED();
   }
 

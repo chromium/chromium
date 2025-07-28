@@ -72,6 +72,7 @@ source_set("tab_group_confirmation") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ui/base",
+    "//ui/strings",
   ]
 }
 

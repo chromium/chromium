@@ -530,6 +530,7 @@ using collaboration::CollaborationControllerDelegate;
       break;
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+    case TabGroupActionType::kCloseLastTabUnknownRole:
       NOTREACHED();
   }
 

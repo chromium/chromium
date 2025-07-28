@@ -292,6 +292,7 @@
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
@@ -3621,6 +3622,15 @@ enum class ToolbarKind {
     [weakSelf runLeaveOrDeleteCompletion:command.group
                           viewController:viewController];
   };
+  if (command.actionType == TabGroupActionType::kCloseLastTabUnknownRole) {
+    // If the user's member role is unkown (i.e. sync not complete yet),
+    // cannot show option to leave/keep group when attempting to close last
+    // tab. Instead, close last tab and replace with new tab after an error
+    // alert is shown.
+    _lastTabClosingAlert.primaryAction = ^{
+      [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
+    };
+  }
   _lastTabClosingAlert.secondaryAction = ^{
     if (command.closing) {
       [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
