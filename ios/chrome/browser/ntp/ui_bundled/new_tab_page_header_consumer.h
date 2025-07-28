@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol LogoVendor;
 @class NewTabPageColorPalette;
+@class SearchEngineLogoMediator;
 
 // Handles updates to the NTP header.
 @protocol NewTabPageHeaderConsumer <NSObject>
@@ -17,7 +17,10 @@
 - (void)setLogoIsShowing:(BOOL)logoIsShowing;
 
 // Exposes view and methods to drive the doodle.
-- (void)setLogoVendor:(id<LogoVendor>)logoVendor;
+// TODO(crbug.com/423883582): The mediator should not be passed to the
+// consumer.
+- (void)setSearchEngineLogoMediator:
+    (SearchEngineLogoMediator*)searchEngineLogoMediator;
 
 // Sets the color for the monochrome logo. Pass `nil` to display the color
 // version.

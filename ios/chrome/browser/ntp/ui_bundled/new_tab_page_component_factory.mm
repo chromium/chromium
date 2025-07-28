@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
-#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
 @implementation NewTabPageComponentFactory
 

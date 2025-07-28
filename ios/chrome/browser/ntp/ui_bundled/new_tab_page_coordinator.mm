@@ -75,7 +75,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_controller.h"
-#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -139,7 +138,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -271,9 +269,6 @@
 // Recorder for new tab page metrics.
 @property(nonatomic, strong) NewTabPageMetricsRecorder* NTPMetricsRecorder;
 
-// Logo vendor to display the doodle on the NTP.
-@property(nonatomic, strong) id<LogoVendor> logoVendor;
-
 @end
 
 @implementation NewTabPageCoordinator {
@@ -291,6 +286,8 @@
   AccountMenuCoordinator* _accountMenuCoordinator;
   // The sign in coordinator displayed on top of the NTP.
   SigninCoordinator* _signinCoordinator;
+  // Logo mediator to display the doodle on the NTP.
+  SearchEngineLogoMediator* _searchEngineLogoMediator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -411,8 +408,8 @@
 
   [sceneState.profileState removeObserver:self];
 
-  [self.logoVendor disconnect];
-  self.logoVendor = nil;
+  [_searchEngineLogoMediator disconnect];
+  _searchEngineLogoMediator = nil;
 
   [_tabGroupIndicatorCoordinator stop];
   _tabGroupIndicatorCoordinator = nil;
@@ -670,7 +667,7 @@
   Browser* browser = self.browser;
   id<NewTabPageComponentFactoryProtocol> componentFactory =
       self.componentFactory;
-  self.logoVendor =
+  _searchEngineLogoMediator =
       [[SearchEngineLogoMediator alloc] initWithBrowser:browser
                                                webState:self.webState];
   self.NTPViewController = [componentFactory NTPViewController];
@@ -758,7 +755,7 @@
   headerViewController.baseViewController = self.baseViewController;
   headerViewController.NTPMetricsRecorder = self.NTPMetricsRecorder;
   headerViewController.mutator = self.NTPMediator;
-  [headerViewController setLogoVendor:self.logoVendor];
+  [headerViewController setSearchEngineLogoMediator:_searchEngineLogoMediator];
 }
 
 // Configures `self.contentSuggestionsCoordinator`.
@@ -1755,7 +1752,7 @@
 
   _webState = webState;
   self.contentSuggestionsCoordinator.webState = _webState;
-  [self.logoVendor setWebState:_webState];
+  [_searchEngineLogoMediator setWebState:_webState];
 }
 
 // Called when the NTP changes visibility, either when the user navigates to
