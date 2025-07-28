@@ -819,7 +819,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-13">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-08-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1543,9 +1543,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.EnoughBudgetForAnyValueIfNotEnoughOverall"
-    enum="Boolean" expires_after="2025-08-10">
+    enum="Boolean" expires_after="2026-08-01">
   <owner>alexmt@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
   <summary>
     When the result of a request to consume budget for the Private Aggregation
     API fails due to insufficient budget, records whether there was still
@@ -1561,9 +1561,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.LockHoldDuration"
-    units="ms" expires_after="2025-08-25">
+    units="ms" expires_after="2026-08-01">
   <owner>alexmt@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the duration that the budgeter was locked. When the budgeter is
