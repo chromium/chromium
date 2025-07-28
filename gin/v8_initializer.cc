@@ -485,23 +485,6 @@ void SetFeatureFlags() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kV8EfficiencyModeTiering)) {
-    int delay = features::kV8EfficiencyModeTieringDelayTurbofan.Get();
-    if (delay == 0) {
-      SetV8FlagsFormatted(
-          "--efficiency-mode-for-tiering-heuristics "
-          "--efficiency-mode-disable-turbofan");
-    } else {
-      SetV8FlagsFormatted(
-          "--efficiency-mode-for-tiering-heuristics "
-          "--noefficiency-mode-disable-turbofan "
-          "--efficiency-mode-delay-turbofan=%i",
-          delay);
-    }
-  } else {
-    SetV8FlagsFormatted("--no-efficiency-mode-for-tiering-heuristics");
-  }
-
   // Make sure aliases of kV8SlowHistograms only enable the feature to
   // avoid contradicting settings between multiple finch experiments.
   bool any_slow_histograms_alias =

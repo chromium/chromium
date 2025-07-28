@@ -206,13 +206,6 @@ BASE_FEATURE(kV8SingleThreadedGCInBackgroundNoIncrementalMarking,
              "V8SingleThreadedGCInBackgroundNoIncrementalMarking",
              kFeatureDefaultStateControlledByV8);
 
-// Use V8 efficiency mode for tiering decisions.
-BASE_FEATURE(kV8EfficiencyModeTiering,
-             "V8EfficiencyModeTiering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kV8EfficiencyModeTieringDelayTurbofan{
-    &kV8EfficiencyModeTiering, "V8EfficiencyModeTieringDelayTurbofan", 15000};
-
 // Enables slow histograms that provide detailed information at increased
 // runtime overheads.
 BASE_FEATURE(kV8SlowHistograms,

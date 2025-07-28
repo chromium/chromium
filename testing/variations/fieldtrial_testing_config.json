@@ -25353,55 +25353,6 @@
             ]
         }
     ],
-    "V8EfficiencyModeTiering": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Delay10k",
-                    "params": {
-                        "V8EfficiencyModeTieringDelayTurbofan": "10000"
-                    },
-                    "enable_features": [
-                        "V8EfficiencyModeTiering"
-                    ]
-                },
-                {
-                    "name": "NoTurbofan",
-                    "params": {
-                        "V8EfficiencyModeTieringDelayTurbofan": "0"
-                    },
-                    "enable_features": [
-                        "V8EfficiencyModeTiering"
-                    ]
-                },
-                {
-                    "name": "Delay15k",
-                    "params": {
-                        "V8EfficiencyModeTieringDelayTurbofan": "15000"
-                    },
-                    "enable_features": [
-                        "V8EfficiencyModeTiering"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "V8EfficiencyModeTiering"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ExternalMemoryAccountedInGlobalLimit": [
         {
             "platforms": [
