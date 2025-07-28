@@ -329,6 +329,32 @@ public class TabGroupColorPickerUtils {
         };
     }
 
+    /**
+     * Get the {@link TabGroupColorId} associated with a tab group color plain integer. This
+     * function should only be used for mapping a tab group color back to its IntDef value.
+     *
+     * @param colorId The plain color id corresponding to the color of the Tab Group.
+     */
+    public static @TabGroupColorId int getTabGroupCardColorId(int colorId) {
+        return switch (colorId) {
+                // LINT.IfChange
+            case 0 -> TabGroupColorId.GREY;
+            case 1 -> TabGroupColorId.BLUE;
+            case 2 -> TabGroupColorId.RED;
+            case 3 -> TabGroupColorId.YELLOW;
+            case 4 -> TabGroupColorId.GREEN;
+            case 5 -> TabGroupColorId.PINK;
+            case 6 -> TabGroupColorId.PURPLE;
+            case 7 -> TabGroupColorId.CYAN;
+            case 8 -> TabGroupColorId.ORANGE;
+            default -> {
+                assert false : "Invalid tab group color id " + colorId;
+                yield TabGroupColorId.GREY;
+            }
+                // LINT.ThenChange(//components/tab_groups/tab_group_color.h)
+        };
+    }
+
     private static @ColorInt int resolveGroupRelatedColor(
             Context context, @ColorRes int colorRes, boolean isIncognito) {
         @ColorInt int color = ContextCompat.getColor(context, colorRes);

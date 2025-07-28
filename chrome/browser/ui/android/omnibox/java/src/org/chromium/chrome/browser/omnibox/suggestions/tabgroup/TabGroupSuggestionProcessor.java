@@ -29,6 +29,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -94,12 +95,13 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
                         mContext.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.hub_search_tab_group_image_span_edge_size);
+        int plainColorId = Integer.parseInt(assumeNonNull(suggestion.getImageDominantColor()));
+        @TabGroupColorId
+        int colorId = TabGroupColorPickerUtils.getTabGroupCardColorId(plainColorId);
         @ColorInt
         int color =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                        mContext,
-                        Integer.parseInt(assumeNonNull(suggestion.getImageDominantColor())),
-                        /* isIncognito= */ false);
+                        mContext, colorId, /* isIncognito= */ false);
         ShapeDrawable inlineColorIcon = new ShapeDrawable(new OvalShape());
         inlineColorIcon.setBounds(
                 /* left= */ 0,
