@@ -20,6 +20,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
@@ -91,13 +93,16 @@ public class HomePageButtonsMediator {
 
         mNtpCustomizationButtonData =
                 new HomePageButtonData(
-                        /* onClickListener= */ view ->
-                                new NtpCustomizationCoordinator(
-                                                mContext,
-                                                mBottomSheetController,
-                                                mProfileSupplier,
-                                                NtpCustomizationCoordinator.BottomSheetType.MAIN)
-                                        .showBottomSheet(),
+                        /* onClickListener= */ view -> {
+                            new NtpCustomizationCoordinator(
+                                            mContext,
+                                            mBottomSheetController,
+                                            mProfileSupplier,
+                                            NtpCustomizationCoordinator.BottomSheetType.MAIN)
+                                    .showBottomSheet();
+                            NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
+                                    EntryPointType.TOOL_BAR);
+                        },
                         /* onLongClickListener= */ null);
         mModel.set(BUTTON_DATA, new Pair<>(1, mNtpCustomizationButtonData));
     }

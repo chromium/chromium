@@ -58,6 +58,12 @@ public class NtpCustomizationCoordinator {
     private @Nullable NtpThemeCoordinator mNtpThemeCoordinator;
     private ViewFlipper mViewFlipperView;
 
+    /**
+     * New Tab Page Customization bottom sheet type.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. See tools/metrics/histograms/enums.xml.
+     */
     @IntDef({
         BottomSheetType.MAIN,
         BottomSheetType.NTP_CARDS,
@@ -79,6 +85,12 @@ public class NtpCustomizationCoordinator {
         int NUM_ENTRIES = 7;
     }
 
+    /**
+     * New Tab Page Customization bottom sheet entry point.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. See tools/metrics/histograms/enums.xml.
+     */
     @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR, EntryPointType.NEW_TAB_PAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EntryPointType {
