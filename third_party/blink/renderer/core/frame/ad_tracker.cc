@@ -104,34 +104,9 @@ void AdTracker::Shutdown() {
   local_root_ = nullptr;
 }
 
-String AdTracker::ScriptAtTopOfStack(
-    std::optional<AdScriptIdentifier>* out_top_script) {
-  // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you need
-  // is the url of the script at the top of the stack. See crbug.com/1057211 for
-  // more detail.
+int AdTracker::ScriptAtTopOfStack() {
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  if (!isolate) [[unlikely]] {
-    return String();
-  }
-
-  v8::Local<v8::StackTrace> stack_trace =
-      v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/1);
-  if (stack_trace.IsEmpty() || stack_trace->GetFrameCount() < 1)
-    return String();
-
-  v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, 0);
-  v8::Local<v8::String> script_name = frame->GetScriptName();
-
-  if (out_top_script) {
-    *out_top_script = AdScriptIdentifier(
-        GetDebuggerIdForContext(isolate->GetCurrentContext()),
-        frame->GetScriptId());
-  }
-
-  if (script_name.IsEmpty() || !script_name->Length())
-    return GenerateFakeUrlFromScriptId(frame->GetScriptId());
-
-  return ToCoreString(isolate, script_name);
+  return v8::StackTrace::CurrentScriptId(isolate);
 }
 
 ExecutionContext* AdTracker::GetCurrentExecutionContext() {
@@ -408,10 +383,15 @@ bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
   if (IsKnownAdExecutionContext(execution_context))
     return true;
 
-  // We don't care about the `out_ad_script` param here because that only gets
-  // filled when `url` is empty, but we have a url to pass in this case.
-  return IsKnownAdScriptForCheckedContext(*execution_context, url,
-                                          /*out_ad_script=*/nullptr);
+  if (url.empty()) {
+    return false;
+  }
+
+  auto it = context_known_ad_scripts_.find(execution_context);
+  if (it == context_known_ad_scripts_.end()) {
+    return false;
+  }
+  return it->value.Contains(url);
 }
 
 bool AdTracker::IsKnownAdScriptForCheckedContext(
@@ -428,23 +408,20 @@ bool AdTracker::IsKnownAdScriptForCheckedContext(
     return false;
   }
 
-  std::optional<AdScriptIdentifier> top_of_stack_script;
-  // Delay calling ScriptAtTopOfStack() as much as possible due to its cost.
-  String script_url =
-      url.IsNull()
-          ? ScriptAtTopOfStack(out_ad_script ? &top_of_stack_script : nullptr)
-          : url;
-
-  if (script_url.empty()) {
+  int top_script_id = ScriptAtTopOfStack();
+  if (top_script_id <= 0) {
     return false;
   }
 
-  bool found = it->value.Contains(script_url);
-  if (found && out_ad_script) {
-    *out_ad_script = std::move(top_of_stack_script);
+  bool is_ad_script = ad_script_ids_.Contains(top_script_id);
+  if (is_ad_script && out_ad_script) {
+    v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+
+    *out_ad_script = AdScriptIdentifier(
+        GetDebuggerIdForContext(isolate->GetCurrentContext()), top_script_id);
   }
 
-  return found;
+  return is_ad_script;
 }
 
 // This is a separate function for testing purposes.
@@ -481,6 +458,8 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
   if (script_id == v8::Message::kNoScriptIdInfo) {
     return;
   }
+
+  ad_script_ids_.insert(script_id);
 
   const HashMap<String, std::unique_ptr<AdProvenance>>&
       known_ad_scripts_and_provenance = it->value;
