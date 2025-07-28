@@ -54,6 +54,14 @@ ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
 }
 
 // static
+ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
+    base::PassKey<login_detection::IdentityProviderMetrics>,
+    const GURL& provider_url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(provider_url,
+                                               SourceIdType::WEB_IDENTITY_ID);
+}
+
+// static
 ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
     base::PassKey<content::BtmNavigationHandle>,
     const GURL& redirect_url) {

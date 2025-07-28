@@ -28,6 +28,10 @@ namespace apps {
 class WebsiteMetrics;
 }  // namespace apps
 
+namespace login_detection {
+class IdentityProviderMetrics;
+}  // namespace login_detection
+
 namespace metrics {
 class UkmRecorderInterface;
 }  // namespace metrics
@@ -124,6 +128,10 @@ class METRICS_EXPORT UkmRecorder {
   // FedCmMetrics class.
   static SourceId GetSourceIdForWebIdentityFromScope(
       base::PassKey<content::FedCmMetrics>,
+      const GURL& provider_url);
+
+  static SourceId GetSourceIdForWebIdentityFromScope(
+      base::PassKey<login_detection::IdentityProviderMetrics>,
       const GURL& provider_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL

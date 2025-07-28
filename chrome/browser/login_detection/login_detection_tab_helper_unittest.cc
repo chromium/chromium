@@ -38,12 +38,14 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
   void VerifyLoginDetectionTypeMetrics(LoginDetectionType type) {
     histogram_tester_->ExpectUniqueSample("Login.PageLoad.DetectionType", type,
                                           1);
-    VerifyLoginDetectionUkm(type);
+    VerifyLoginDetectionUkm(type, ukm::builders::LoginDetectionV2::kEntryName);
+    VerifyLoginDetectionUkm(
+        type, ukm::builders::LoginDetectionV2IdentityProvider::kEntryName);
   }
 
-  void VerifyLoginDetectionUkm(LoginDetectionType type) {
-    auto entries = ukm_recorder_->GetEntriesByName(
-        ukm::builders::LoginDetectionV2::kEntryName);
+  void VerifyLoginDetectionUkm(LoginDetectionType type,
+                               const char* entry_name) {
+    auto entries = ukm_recorder_->GetEntriesByName(entry_name);
     if (type == LoginDetectionType::kNoLogin) {
       EXPECT_TRUE(entries.empty());
       return;
