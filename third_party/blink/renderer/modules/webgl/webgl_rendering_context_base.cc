@@ -1943,7 +1943,6 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
 scoped_refptr<CanvasResource>
 WebGLRenderingContextBase::PaintRenderingResultsToResource(
     bool was_dirty,
-    bool has_dispatcher,
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
   if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
@@ -1953,7 +1952,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 
   auto* resource_provider =
       PaintRenderingResultsToResourceProvider(source_buffer);
-  if (has_dispatcher && was_dirty && resource_provider) {
+  if (was_dirty && resource_provider) {
     return resource_provider->ProduceCanvasResource(reason);
   }
   return nullptr;

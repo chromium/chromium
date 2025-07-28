@@ -218,7 +218,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ClearMarkedCanvasDirty() {}
   virtual scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
       bool was_dirty,
-      bool has_dispatcher,
       SourceDrawingBuffer source_buffer,
       FlushReason reason) {
     NOTREACHED();
