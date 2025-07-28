@@ -736,11 +736,6 @@
           =1 {Bookmark saved}
           other {{count} bookmarks saved}}
       </message>
-      <message name="IDS_IOS_BOOKMARKS_BULK_SAVED_ACCOUNT" desc="This confirmation message is intended to help users understand that multiple bookmarks have been saved in their account. The confirmation message appears at the bottom of the page after users bulk add bookmarks, telling them how many bookmarks they've added into their account. The tone should be informative.">
-          {count, plural,
-          =1 {Bookmark saved in your Google Account, {email}}
-          other {{count} bookmarks saved in your Google Account, {email}}}
-      </message>
       <message name="IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL" desc="Accessibility label of the cloud.slash icon in the bookmark views on Folder. For voice over only, not in UI. [iOS only]">
         <ph name="FOLDER_NAME">$1<ex>new folder</ex></ph>. Only on this device.
       </message>
