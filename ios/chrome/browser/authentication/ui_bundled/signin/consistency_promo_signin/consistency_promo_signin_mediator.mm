@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
@@ -37,6 +38,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 
 @interface ConsistencyPromoSigninMediator () <
     AuthenticationFlowDelegate,
+    AuthenticationServiceObserving,
     IdentityManagerObserverBridgeDelegate> {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<AuthenticationService> _authenticationService;
@@ -71,6 +73,10 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   // True if the mediator was initialized with no existing account on device.
   // Kept for metrics reasons.
   BOOL _initializedWithDefaultAccount;
+
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 @end
@@ -88,12 +94,19 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   self = [super init];
   if (self) {
     CHECK(identityManager);
+    CHECK(accountManagerService, base::NotFatalUntil::M144);
+    CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M144);
+    CHECK(accountReconcilor, base::NotFatalUntil::M144);
+    CHECK(userPrefService, base::NotFatalUntil::M144);
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
     _accountReconcilor = accountReconcilor;
     _prefService = userPrefService;
     _accessPoint = accessPoint;
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
     _addedGaiaIDs = [[NSMutableSet alloc] init];
     if (!base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
       _identityManagerObserverBridge =
@@ -190,6 +203,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   _identityManager = nullptr;
   _accountReconcilor = nullptr;
   _prefService = nullptr;
+  _authServiceObserverBridge.reset();
   _identityManagerObserverBridge.reset();
   _webSigninTracker.reset();
   _authenticationFlow = nil;
@@ -394,6 +408,16 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     return;
   }
   [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    // Signin is now disabled, so the consistency default account must be
+    // stopped.
+    [self.delegate consistencyPromoSigninMediatorSignInDisabled:self];
+  }
 }
 
 @end

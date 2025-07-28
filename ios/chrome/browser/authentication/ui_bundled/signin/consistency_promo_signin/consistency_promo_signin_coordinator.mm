@@ -572,6 +572,15 @@
                    completionIdentity:completionIdentity];
 }
 
+- (void)consistencyPromoSigninMediatorSignInDisabled:
+    (ConsistencyPromoSigninMediator*)mediator {
+  CHECK_EQ(self.consistencyPromoSigninMediator, mediator,
+           base::NotFatalUntil::M143);
+  [self dismissViewControllerAnimated:YES];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                   completionIdentity:nil];
+}
+
 - (void)consistencyPromoSigninMediatorSignInCancelled:
     (ConsistencyPromoSigninMediator*)mediator {
   [self.defaultAccountCoordinator stopSigninSpinner];

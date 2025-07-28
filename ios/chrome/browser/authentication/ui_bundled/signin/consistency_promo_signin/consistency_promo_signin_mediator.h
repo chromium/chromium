@@ -62,6 +62,10 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
             (ConsistencyPromoSigninMediator*)mediator
                                     withIdentity:(id<SystemIdentity>)identity;
 
+// Called if the sign-in is disabled.
+- (void)consistencyPromoSigninMediatorSignInDisabled:
+    (ConsistencyPromoSigninMediator*)mediator;
+
 // Called if the sign-in is cancelled.
 - (void)consistencyPromoSigninMediatorSignInCancelled:
     (ConsistencyPromoSigninMediator*)mediator;
@@ -93,6 +97,8 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
 
 @property(nonatomic, weak) id<ConsistencyPromoSigninMediatorDelegate> delegate;
 
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)
     initWithAccountManagerService:
         (ChromeAccountManagerService*)accountManagerService
@@ -100,7 +106,8 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
                   identityManager:(signin::IdentityManager*)identityManager
                 accountReconcilor:(AccountReconcilor*)accountReconcilor
                   userPrefService:(PrefService*)userPrefService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint;
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+    NS_DESIGNATED_INITIALIZER;
 
 // Disconnects the mediator.
 - (void)disconnectWithResult:(SigninCoordinatorResult)signinResult;
