@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webui_browser") {
+  sources = [
+    "webui_browser.h",
+    "webui_browser_window.h",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "webui_browser.cc",
+    "webui_browser_window.cc",
+  ]
+
+  deps = [
+    ":webui_browser",
+    "//base",
+    "//components/input",
+    "//components/sharing_message",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}

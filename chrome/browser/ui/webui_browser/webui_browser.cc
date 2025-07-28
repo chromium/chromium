@@ -1,0 +1,13 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
+
+namespace webui_browser {
+
+bool IsWebUIBrowserEnabled() {
+  return false;
+}
+
+}  // namespace webui_browser
