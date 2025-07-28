@@ -33,7 +33,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -160,7 +159,6 @@ public class AuthTabIntentDataProviderUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
     public void testIntentData_ephemeralBrowsing() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

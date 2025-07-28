@@ -49,7 +49,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
@@ -82,7 +81,6 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for {@link CustomTabActivity} launched in ephemeral mode. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
 @Batch(Batch.PER_CLASS)
 public class CustomTabActivityEphemeralTest {
     private static final String HISTOGRAM_NAME = "CustomTabs.IncognitoCctCallerId";
@@ -189,17 +187,6 @@ public class CustomTabActivityEphemeralTest {
         CustomTabActivity activity = launchEphemeralCustomTabActivity();
         Profile profile = activity.getActivityTab().getProfile();
         assertTrue(profile.isOffTheRecord());
-        assertFalse(profile.isIncognitoBranded());
-        assertFalse(profile.isPrimaryOtrProfile());
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
-    public void testEphemeralTabLaunchesInRegularProfileWhenDisabled() {
-        CustomTabActivity activity = launchEphemeralCustomTabActivity();
-        Profile profile = activity.getActivityTab().getProfile();
-        assertFalse(profile.isOffTheRecord());
         assertFalse(profile.isIncognitoBranded());
         assertFalse(profile.isPrimaryOtrProfile());
     }

@@ -1479,16 +1479,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "cct-ephemeral-media-viewer-experiment",
-    "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 137
-  },
-  {
-    "name": "cct-ephemeral-mode",
-    "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "cct-google-bottom-bar",
     "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org", "edmundw@google.com", "tivi@google.com" ],
     "expiry_milestone": 140

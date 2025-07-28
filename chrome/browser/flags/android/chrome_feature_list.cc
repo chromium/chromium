@@ -260,8 +260,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTContextualMenuItems,
     &kCCTEarlyNav,
     &kCCTExtendTrustedCdnPublisher,
-    &kCCTEphemeralMediaViewerExperiment,
-    &kCCTEphemeralMode,
     &kCCTFixWarmup,
     &kCCTFreInSameTask,
     &kCCTIncognitoAvailableToThirdParty,
@@ -774,14 +772,6 @@ BASE_FEATURE(kCCTContextualMenuItems,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTEarlyNav, "CCTEarlyNav", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTEphemeralMediaViewerExperiment,
-             "CCTEphemeralMediaViewerExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTEphemeralMode,
-             "CCTEphemeralMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTExtendTrustedCdnPublisher,
              "CCTExtendTrustedCdnPublisher",

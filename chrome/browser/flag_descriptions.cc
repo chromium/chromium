@@ -4775,18 +4775,6 @@ const char kCCTContextualMenuItemsDescription[] =
     "When enabled, contextual menu items passed by developers will be visible "
     "in CCTs.";
 
-const char kCCTEphemeralMediaViewerExperimentName[] =
-    "Ephemeral CCT for Media Viewer";
-const char kCCTEphemeralMediaViewerExperimentDescription[] =
-    "Enables Media Viewer launched from Downloads to open in Ephemeral "
-    "mode.";
-
-const char kCCTEphemeralModeName[] =
-    "Allow CCT embedders to open CCTs in ephemeral mode";
-const char kCCTEphemeralModeDescription[] =
-    "Enabling it would allow apps to open ephemeral mode for "
-    "Chrome Custom Tabs, on Android.";
-
 const char kCCTIncognitoAvailableToThirdPartyName[] =
     "Allow third party to open Custom Tabs Incognito mode";
 const char kCCTIncognitoAvailableToThirdPartyDescription[] =

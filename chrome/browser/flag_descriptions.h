@@ -2763,12 +2763,6 @@ extern const char kCCTAuthTabEnableHttpsRedirectsDescription[];
 extern const char kCCTContextualMenuItemsName[];
 extern const char kCCTContextualMenuItemsDescription[];
 
-extern const char kCCTEphemeralMediaViewerExperimentName[];
-extern const char kCCTEphemeralMediaViewerExperimentDescription[];
-
-extern const char kCCTEphemeralModeName[];
-extern const char kCCTEphemeralModeDescription[];
-
 extern const char kCCTIncognitoAvailableToThirdPartyName[];
 extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 

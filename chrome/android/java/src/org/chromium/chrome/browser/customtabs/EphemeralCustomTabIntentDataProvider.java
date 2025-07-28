@@ -15,7 +15,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IncognitoCctCallerId;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +50,6 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
     }
 
     private static boolean isEphemeralTabRequested(Intent intent) {
-        if (!ChromeFeatureList.sCctEphemeralMode.isEnabled()) return false;
         return IntentUtils.safeGetBooleanExtra(intent, EXTRA_ENABLE_EPHEMERAL_BROWSING, false);
     }
 

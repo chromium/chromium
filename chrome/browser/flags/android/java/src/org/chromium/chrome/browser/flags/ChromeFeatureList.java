@@ -301,9 +301,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
     public static final String CCT_CONTEXTUAL_MENU_ITEMS = "CCTContextualMenuItems";
     public static final String CCT_EARLY_NAV = "CCTEarlyNav";
-    public static final String CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT =
-            "CCTEphemeralMediaViewerExperiment";
-    public static final String CCT_EPHEMERAL_MODE = "CCTEphemeralMode";
     public static final String CCT_EXTEND_TRUSTED_CDN_PUBLISHER = "CCTExtendTrustedCdnPublisher";
     public static final String CCT_FIX_WARMUP = "CCTFixWarmup";
     public static final String CCT_FRE_IN_SAME_TASK = "CCTFreInSameTask";
@@ -776,12 +773,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION, true);
     public static final CachedFlag sCctContextualMenuItems =
             newCachedFlag(CCT_CONTEXTUAL_MENU_ITEMS, false);
-    public static final CachedFlag sCctEphemeralMediaViewerExperiment =
-            newCachedFlag(
-                    CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
-    public static final CachedFlag sCctEphemeralMode = newCachedFlag(CCT_EPHEMERAL_MODE, true);
     public static final CachedFlag sCctFixWarmup =
             newCachedFlag(
                     CCT_FIX_WARMUP, /* defaultValue= */ false, /* defaultValueInTests= */ true);
@@ -1085,8 +1076,6 @@ public abstract class ChromeFeatureList {
                     sCctAutoTranslate,
                     sCctBlockTouchesDuringEnterAnimation,
                     sCctContextualMenuItems,
-                    sCctEphemeralMediaViewerExperiment,
-                    sCctEphemeralMode,
                     sCctFixWarmup,
                     sCctFreInSameTask,
                     sCctGoogleBottomBar,

@@ -22,7 +22,6 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -454,9 +453,6 @@ public class DownloadUtils {
                             !isAutomotive,
                             !isAutomotive,
                             context);
-            intent.putExtra(
-                    CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING,
-                    ChromeFeatureList.sCctEphemeralMediaViewerExperiment.isEnabled());
             IntentHandler.startActivityForTrustedIntent(context, intent);
             service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;
