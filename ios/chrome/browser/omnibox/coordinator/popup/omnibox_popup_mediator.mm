@@ -256,6 +256,8 @@ const std::string kShortcutEntrypointAimID = "62";
       GURL aimURL =
           GetUrlForAim(self.templateURLService, kShortcutEntrypointAimID,
                        /*query_start_time=*/base::Time::Now(), match.contents);
+      UMA_HISTOGRAM_COUNTS_100("IOS.Omnibox.AimShortcutTapped",
+                               aimMatch.contents.length());
       [self.omniboxAutocompleteController
              selectMatchForOpening:aimMatch
           withCustomDestinationURL:aimURL
