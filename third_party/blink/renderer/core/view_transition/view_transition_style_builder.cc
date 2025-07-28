@@ -13,18 +13,22 @@
 namespace blink {
 namespace {
 
-const char* kGroupTagName = "html::view-transition-group";
-const char* kGroupChildrenTagName = "html::view-transition-group-children";
-const char* kImagePairTagName = "html::view-transition-image-pair";
-const char* kNewImageTagName = "html::view-transition-new";
-const char* kOldImageTagName = "html::view-transition-old";
-const char* kKeyframeNamePrefix = "-ua-view-transition-group-anim-";
+const char* const kGroupTagName = "html::view-transition-group";
+const char* const kGroupChildrenTagName =
+    "html::view-transition-group-children";
+const char* const kImagePairTagName = "html::view-transition-image-pair";
+const char* const kNewImageTagName = "html::view-transition-new";
+const char* const kOldImageTagName = "html::view-transition-old";
+const char* const kKeyframeNamePrefix = "-ua-view-transition-group-anim-";
+const char* const kGroupChildrenKeyframeNamePrefix =
+    "-ua-view-transition-group-children-anim-";
 
-const char* kGroupTagNameScoped = "::view-transition-group";
-const char* kGroupChildrenTagNameScoped = "::view-transition-group-children";
-const char* kImagePairTagNameScoped = "::view-transition-image-pair";
-const char* kNewImageTagNameScoped = "::view-transition-new";
-const char* kOldImageTagNameScoped = "::view-transition-old";
+const char* const kGroupTagNameScoped = "::view-transition-group";
+const char* const kGroupChildrenTagNameScoped =
+    "::view-transition-group-children";
+const char* const kImagePairTagNameScoped = "::view-transition-image-pair";
+const char* const kNewImageTagNameScoped = "::view-transition-new";
+const char* const kOldImageTagNameScoped = "::view-transition-old";
 
 const char* GroupTagName() {
   return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
@@ -126,6 +130,26 @@ void ViewTransitionStyleBuilder::AddAnimations(
   }
 }
 
+void ViewTransitionStyleBuilder::AddGroupChildrenAnimations(
+    const String& tag,
+    const CapturedCssProperties& animated_properties) {
+  if (animated_properties.empty()) {
+    return;
+  }
+
+  const String& animation_name =
+      AddGroupChildrenKeyframes(tag, animated_properties);
+  StringBuilder rule_builder;
+  rule_builder.Append("animation-name: ");
+  rule_builder.Append(animation_name);
+  rule_builder.Append(";\n");
+  rule_builder.Append("animation-timing-function: ease;\n");
+  rule_builder.Append("animation-delay: 0s;\n");
+  rule_builder.Append("animation-iteration-count: 1;\n");
+  rule_builder.Append("animation-direction: normal;\n");
+  AddRules(GroupChildrenTagName(), tag, rule_builder.ReleaseString());
+}
+
 namespace {
 std::string GetTransformString(
     const ViewTransitionStyleBuilder::ContainerProperties& properties,
@@ -174,6 +198,30 @@ String ViewTransitionStyleBuilder::AddKeyframes(
   return keyframe_name;
 }
 
+String ViewTransitionStyleBuilder::AddGroupChildrenKeyframes(
+    const String& tag,
+    const CapturedCssProperties& properties) {
+  String keyframe_name = [&tag]() {
+    StringBuilder builder;
+    builder.Append(kGroupChildrenKeyframeNamePrefix);
+    builder.Append(tag);
+    return builder.ReleaseString();
+  }();
+
+  builder_.Append("@keyframes ");
+  builder_.Append(keyframe_name);
+  builder_.Append("{\n from {\n");
+
+  for (const auto& [id, value] : properties) {
+    builder_.AppendFormat(
+        "%s: %s;\n",
+        CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
+        value.Utf8().c_str());
+  }
+  builder_.Append("}}");
+  return keyframe_name;
+}
+
 void ViewTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
     const ContainerProperties& properties,
@@ -202,6 +250,10 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
 void ViewTransitionStyleBuilder::AddGroupChildrenStyles(
     const String& name,
     const CapturedCssProperties& captured_css_properties) {
+  if (captured_css_properties.empty()) {
+    return;
+  }
+
   StringBuilder builder;
   for (const auto& [id, value] : captured_css_properties) {
     builder.Append(CSSProperty::Get(id).GetPropertyNameAtomicString());
@@ -217,6 +269,7 @@ void ViewTransitionStyleBuilder::AddFlagGuardedDefaultAnimationStyles() {
     AddRules(ImagePairTagName(), "*", "animation-delay: inherit;");
     AddRules(NewImageTagName(), "*", "animation-delay: inherit;");
     AddRules(OldImageTagName(), "*", "animation-delay: inherit;");
+    AddRules(GroupChildrenTagName(), "*", "animation-delay: inherit;");
   }
   if (RuntimeEnabledFeatures::
           ViewTransitionInheritAnimationPropertiesEnabled()) {
@@ -230,6 +283,7 @@ void ViewTransitionStyleBuilder::AddFlagGuardedDefaultAnimationStyles() {
     AddRules(ImagePairTagName(), "*", animation_inherit);
     AddRules(NewImageTagName(), "*", animation_inherit);
     AddRules(OldImageTagName(), "*", animation_inherit);
+    AddRules(GroupChildrenTagName(), "*", animation_inherit);
   }
 }
 

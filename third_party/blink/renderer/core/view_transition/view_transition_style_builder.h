@@ -35,6 +35,10 @@ class ViewTransitionStyleBuilder {
                      const CapturedCssProperties& animated_css_properties,
                      const gfx::Transform& parent_transform);
 
+  void AddGroupChildrenAnimations(
+      const String& tag,
+      const CapturedCssProperties& animated_properties);
+
   void AddContainerStyles(const String& tag,
                           const ContainerProperties& properties,
                           const CapturedCssProperties& captured_css_properites,
@@ -56,6 +60,8 @@ class ViewTransitionStyleBuilder {
                       const ContainerProperties& source_properties,
                       const CapturedCssProperties& captured_css_properties,
                       const gfx::Transform& parent_transform);
+  String AddGroupChildrenKeyframes(const String& tag,
+                                   const CapturedCssProperties& properties);
   void AddRules(const String& selector, const String& tag, const String& rules);
   void AddSelector(const String& name, const String& tag);
 

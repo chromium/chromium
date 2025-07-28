@@ -71,18 +71,26 @@ namespace {
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
 
-CSSPropertyID kPropertiesToCapture[] = {
+const CSSPropertyID kPropertiesToCapture[] = {
     CSSPropertyID::kBackdropFilter, CSSPropertyID::kColorScheme,
     CSSPropertyID::kMixBlendMode,   CSSPropertyID::kTextOrientation,
     CSSPropertyID::kWritingMode,
 };
 
-CSSPropertyID kPropertiesToCaptureOnGroupChildren[] = {
-    CSSPropertyID::kBorderWidth,
+const CSSPropertyID kPropertiesToAnimate[] = {
+    CSSPropertyID::kBackdropFilter,
 };
 
-CSSPropertyID kPropertiesToAnimate[] = {
-    CSSPropertyID::kBackdropFilter,
+const CSSPropertyID kPropertiesToCaptureOnGroupChildren[] = {
+    CSSPropertyID::kBorderRadius,
+    CSSPropertyID::kBorderWidth,
+    CSSPropertyID::kCornerShape,
+};
+
+const CSSPropertyID kPropertiesToAnimateOnGroupChildren[] = {
+    CSSPropertyID::kBorderRadius,
+    CSSPropertyID::kBorderWidth,
+    CSSPropertyID::kCornerShape,
 };
 
 template <typename K, typename V>
@@ -106,8 +114,10 @@ class FlatMapBuilder {
 
 #define FOR_EACH_CSS_PROPERTY(OP) \
   OP(BackdropFilter)              \
+  OP(BorderRadius)                \
   OP(BorderWidth)                 \
   OP(ColorScheme)                 \
+  OP(CornerShape)                 \
   OP(MixBlendMode)                \
   OP(TextOrientation)             \
   OP(WritingMode)
@@ -1528,8 +1538,10 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
     capture_property(id, css_property_builder);
   }
 
-  for (CSSPropertyID id : kPropertiesToCaptureOnGroupChildren) {
-    capture_property(id, group_children_css_property_builder);
+  if (RuntimeEnabledFeatures::NestedViewTransitionEnabled()) {
+    for (CSSPropertyID id : kPropertiesToCaptureOnGroupChildren) {
+      capture_property(id, group_children_css_property_builder);
+    }
   }
 
   auto css_properties = std::move(css_property_builder).Finish();
@@ -1547,10 +1559,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
       captured_rect_in_layout_space ==
           element_data->captured_rect_in_layout_space &&
       css_properties == element_data->captured_css_properties &&
-      (state_ != State::kCapturing ||
-       (group_children_css_properties ==
-            element_data->group_children_css_properties &&
-        border_offset == element_data->border_offset))) {
+      group_children_css_properties ==
+          element_data->group_children_css_properties &&
+      border_offset == element_data->border_offset) {
     return true;
   }
 
@@ -1560,6 +1571,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
       visual_overflow_rect_in_layout_space;
   element_data->captured_css_properties = std::move(css_properties);
   element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
+  element_data->group_children_css_properties =
+      std::move(group_children_css_properties);
+  element_data->border_offset = border_offset;
 
   PseudoId live_content_element = HasLiveNewContent()
                                       ? kPseudoIdViewTransitionNew
@@ -1582,9 +1596,6 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
   // Ensure that the cached state stays in sync with the current state while
   // we're capturing.
   if (state_ == State::kCapturing) {
-    element_data->group_children_css_properties =
-        std::move(group_children_css_properties);
-    element_data->border_offset = border_offset;
     element_data->CacheStateForOldSnapshot();
   }
 
@@ -2202,7 +2213,7 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
 
         old_parent_transform = compute_parent_transform(
             containing_group_data->cached_container_properties.snapshot_matrix,
-            containing_group_data->border_offset);
+            containing_group_data->cached_border_offset);
 
         if (containing_group_data->container_properties) {
           const auto& new_container_properties =
@@ -2239,6 +2250,10 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
                               element_data->cached_container_properties,
                               element_data->cached_animated_css_properties,
                               old_parent_transform);
+
+        builder.AddGroupChildrenAnimations(
+            view_transition_name,
+            element_data->cached_group_children_animated_properties);
       }
     }
   }
@@ -2337,15 +2352,27 @@ void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {
       visual_overflow_rect_in_layout_space;
   cached_captured_rect_in_layout_space = captured_rect_in_layout_space;
 
-  FlatMapBuilder<CSSPropertyID, String> builder(
-      std::size(kPropertiesToAnimate));
-  for (auto& id : kPropertiesToAnimate) {
-    auto it = captured_css_properties.find(id);
-    if (it != captured_css_properties.end()) {
-      builder.Insert(it->first, it->second);
-    }
-  }
-  cached_animated_css_properties = std::move(builder).Finish();
+  auto copy_animated_properties =
+      [](const base::span<const CSSPropertyID>& properties_to_animate,
+         const base::flat_map<CSSPropertyID, String>& captured_properties) {
+        FlatMapBuilder<CSSPropertyID, String> builder(
+            std::size(properties_to_animate));
+        for (auto id : properties_to_animate) {
+          auto it = captured_properties.find(id);
+          if (it != captured_properties.end()) {
+            builder.Insert(it->first, it->second);
+          }
+        }
+        return std::move(builder).Finish();
+      };
+
+  cached_animated_css_properties =
+      copy_animated_properties(kPropertiesToAnimate, captured_css_properties);
+
+  cached_group_children_animated_properties = copy_animated_properties(
+      kPropertiesToAnimateOnGroupChildren, group_children_css_properties);
+
+  cached_border_offset = border_offset;
 }
 
 // TODO(vmpstr): This could be optimized by caching values for individual layout

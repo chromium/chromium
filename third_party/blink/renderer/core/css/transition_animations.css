@@ -45,3 +45,8 @@ html::view-transition-old(*) {
   animation-duration: inherit;
   animation-fill-mode: inherit;
 }
+
+html::view-transition-group-children(*) {
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+}
