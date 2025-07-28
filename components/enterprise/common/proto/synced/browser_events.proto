@@ -426,7 +426,7 @@ message SafeBrowsingPasswordChangedEvent {
   repeated SecurityAgent security_agents = 4;
 }
 
-// A message for reporting dangerous download events.
+// A message for reporting dangerous download events (malware transfer events).
 // Next ID: 41.
 message SafeBrowsingDangerousDownloadEvent {
   reserved 5, 11, 12, 13, 14, 15, 16;
@@ -447,7 +447,7 @@ message SafeBrowsingDangerousDownloadEvent {
   // The file name.
   string file_name = 2;
 
-  // SHA256 digest of this download.
+  // The file hashes, not limited to downloaded files.
   string download_digest_sha256 = 3;
 
   // Username of the profile. This will be an email address.
@@ -483,7 +483,8 @@ message SafeBrowsingDangerousDownloadEvent {
   // Size of downloaded content (in bytes).
   uint64 content_size = 9;
 
-  // Which direction the dangerous file was transferred.
+  // Which direction the dangerous file was transferred, can be upload,
+  // download, file transfer (CrOS only).
   DataTransferEventTrigger trigger = 10;
 
   // The address of the webpages that sent the user to this url.

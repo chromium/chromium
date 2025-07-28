@@ -33,6 +33,12 @@
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
+#endif
+
 namespace safe_browsing {
 
 namespace {
@@ -49,7 +55,7 @@ bool DangerTypeIsDangerous(download::DownloadDangerType danger_type) {
 }
 
 void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // If |download| has a deep scanning malware verdict, then it means the
   // dangerous file has already been reported.
   auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
@@ -63,12 +69,10 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
 
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile)
-    return;
 
   auto* router =
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          browser_context);
   if (!router)
     return;
 
@@ -82,9 +86,11 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
       download->GetURL(), download->GetTabUrl(),
       download->GetTargetFilePath().AsUTF8Unsafe(),
       base::HexEncode(download->GetHash()), download->GetDangerType(),
-      download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
-      referrer_chain, enterprise_connectors::EventResult::WARNED);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      download->GetMimeType(),
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+      download->GetTotalBytes(), referrer_chain,
+      enterprise_connectors::EventResult::WARNED);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void ReportDangerousDownloadWarningBypassed(

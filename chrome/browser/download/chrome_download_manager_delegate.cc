@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -163,7 +164,13 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 using content::BrowserThread;
@@ -458,9 +465,10 @@ void MaybeReportDangerousDownloadBlocked(
     }
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto* router =
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          browser_context);
   if (router) {
     std::string raw_digest_sha256;
     if (download->GetState() == DownloadItem::DownloadState::COMPLETE) {
@@ -474,12 +482,15 @@ void MaybeReportDangerousDownloadBlocked(
     }
 
     router->OnDangerousDownloadEvent(
-        download->GetURL(), download->GetTabUrl(), download_path,
-        base::HexEncode(raw_digest_sha256), danger_type,
-        download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
-        referrer_chain, enterprise_connectors::EventResult::BLOCKED);
+        download->GetURL(), download->GetTabUrl(), /*source*/ "",
+        /*destination=*/"", download_path, base::HexEncode(raw_digest_sha256),
+        danger_type, download->GetMimeType(),
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id=*/"", /*content_transfer_method=*/"",
+        download->GetTotalBytes(), referrer_chain,
+        enterprise_connectors::EventResult::BLOCKED);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 }
 

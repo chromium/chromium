@@ -46,6 +46,7 @@ source_set("core") {
 
   public_deps = [
     ":constants",
+    "//components/download/public/common:public",
     "//components/enterprise/common/proto:connectors_proto",
   ]
 

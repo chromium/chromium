@@ -4,6 +4,8 @@
 
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -65,6 +67,30 @@ std::string MalwareRuleToThreatType(const std::string& rule_name) {
     return kUnknownDownloadThreatType;
   }
 }
+
+std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
+  switch (danger_type) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+      return kDangerousFileTypeDownloadThreatType;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+      return kDangerousFileTypeDownloadThreatType;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+      return kDangerousDownloadThreatType;
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+      return kUncommonDownloadThreatType;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+      return kDangerousHostDownloadThreatType;
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+      return kPotentiallyUnwantedDownloadThreatType;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return kDangerousAccountCompromiseDownloadThreatType;
+    default:
+      // This can be reached when reporting an opened download that doesn't have
+      // a verdict yet.
+      return kUnknownDownloadThreatType;
+  }
+}
+
 }  // namespace
 
 ReportingEventRouter::ReportingEventRouter(
@@ -536,7 +562,26 @@ void ReportingEventRouter::OnSensitiveDataEvent(
   }
 }
 
-void ReportingEventRouter::OnDangerousDeepScanningResult(
+void ReportingEventRouter::OnDangerousDownloadEvent(
+    const GURL& url,
+    const GURL& tab_url,
+    const std::string& file_name,
+    const std::string& download_digest_sha256,
+    const download::DownloadDangerType danger_type,
+    const std::string& mime_type,
+    const std::string& trigger,
+    const int64_t content_size,
+    const ReferrerChain& referrer_chain,
+    EventResult event_result) {
+  OnDangerousDownloadEvent(url, tab_url, /*source=*/"", /*destination=*/"",
+                           file_name, download_digest_sha256,
+                           DangerTypeToThreatType(danger_type), mime_type,
+                           trigger, /*scan_id=*/"",
+                           /*content_transfer_method*/ "", content_size,
+                           referrer_chain, event_result);
+}
+
+void ReportingEventRouter::OnDangerousDownloadEvent(
     const GURL& url,
     const GURL& tab_url,
     const std::string& source,
@@ -546,11 +591,11 @@ void ReportingEventRouter::OnDangerousDeepScanningResult(
     const std::string& threat_type,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& scan_id,
+    const std::string& content_transfer_method,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
-    EventResult event_result,
-    const std::string& scan_id,
-    const std::string& content_transfer_method) {
+    EventResult event_result) {
   if (!IsEventEnabled(kKeyDangerousDownloadEvent)) {
     return;
   }
@@ -613,11 +658,11 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
     EventResult event_result) {
   if (result.tag() == "malware") {
     DCHECK_EQ(1, result.triggered_rules().size());
-    OnDangerousDeepScanningResult(
+    OnDangerousDownloadEvent(
         url, tab_url, source, destination, file_name, download_digest_sha256,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
-        mime_type, trigger, content_size, referrer_chain, event_result, scan_id,
-        content_transfer_method);
+        mime_type, trigger, scan_id, content_transfer_method, content_size,
+        referrer_chain, event_result);
   } else if (result.tag() == "dlp") {
     OnSensitiveDataEvent(url, tab_url, source, destination, file_name,
                          download_digest_sha256, mime_type, trigger, scan_id,

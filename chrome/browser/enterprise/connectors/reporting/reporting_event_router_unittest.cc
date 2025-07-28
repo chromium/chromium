@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
@@ -1076,11 +1077,12 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
-  reporting_event_router_->OnDangerousDeepScanningResult(
+  reporting_event_router_->OnDangerousDownloadEvent(
       GURL("https://example.com/download.exe"), GURL("https://example.com/"),
       "exampleSource", "exampleDestination", "encrypted.zip", "sha256_of_data",
-      "POTENTIALLY_UNWANTED", "application/zip", "FILE_DOWNLOAD", 12345,
-      std::move(referrer_chain), EventResult::WARNED, "123", "");
+      "POTENTIALLY_UNWANTED", "application/zip", "FILE_DOWNLOAD", "123",
+      /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
+      EventResult::WARNED);
   run_loop.Run();
 }
 
@@ -1117,11 +1119,54 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
-  reporting_event_router_->OnDangerousDeepScanningResult(
+  reporting_event_router_->OnDangerousDownloadEvent(
       GURL("https://example.com/download.exe"), GURL("https://example.com/"),
       "exampleSource", "exampleDestination", "encrypted.zip", "sha256_of_data",
-      "DANGEROUS", "application/zip", "FILE_DOWNLOAD", 12345,
-      std::move(referrer_chain), EventResult::BLOCKED, "123", "");
+      "DANGEROUS", "application/zip", "FILE_DOWNLOAD", "123",
+      /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
+      EventResult::BLOCKED);
+  run_loop.Run();
+}
+
+TEST_P(ReportingEventRouterTest,
+       TestOnDangerousDownloadEvent_WarnedFromSafeBrowsing) {
+  EnableEnhancedFieldsForSecOps();
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyDangerousDownloadEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  validator.ExpectDangerousDeepScanningResult(
+      /*url*/ "https://example.com/download.exe",
+      /*tab_url*/ "https://example.com/",
+      /*source*/ "",
+      /*destination*/ "",
+      /*filename*/ "encrypted.zip",
+      /*sha256*/ "sha256_of_data",
+      /*threat_type*/ "DANGEROUS",
+      /*trigger*/ "FILE_DOWNLOAD",
+      /*mimetypes*/ ZipMimeType(),
+      /*size*/ 12345,
+      /*result*/ "EVENT_RESULT_WARNED",
+      /*username*/ profile_->GetProfileUserName(),
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ std::nullopt);
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnDangerousDownloadEvent(
+      GURL("https://example.com/download.exe"), GURL("https://example.com/"),
+      "encrypted.zip", "sha256_of_data",
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
+      "FILE_DOWNLOAD", 12345, std::move(referrer_chain), EventResult::WARNED);
   run_loop.Run();
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

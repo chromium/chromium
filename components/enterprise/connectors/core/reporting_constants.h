@@ -37,10 +37,19 @@ inline constexpr char kEnterpriseWarnedBypassTheatType[] =
 inline constexpr char kEnterpriseBlockedSeenThreatType[] =
     "ENTERPRISE_BLOCKED_SEEN";
 
+inline constexpr char kUnspecifiedDangerousDownloadThreatType[] =
+    "DANGEROUS_DOWNLOAD_THREAT_TYPE_UNSPECIFIED";
 inline constexpr char kDangerousDownloadThreatType[] = "DANGEROUS";
+inline constexpr char kDangerousHostDownloadThreatType[] = "DANGEROUS_HOST";
 inline constexpr char kPotentiallyUnwantedDownloadThreatType[] =
     "POTENTIALLY_UNWANTED";
 inline constexpr char kUnknownDownloadThreatType[] = "UNKNOWN";
+inline constexpr char kUncommonDownloadThreatType[] = "UNCOMMON";
+inline constexpr char kDangerousFileTypeDownloadThreatType[] =
+    "DANGEROUS_FILE_TYPE";
+inline constexpr char kDangerousUrlDownloadThreatType[] = "DANGEROUS_URL";
+inline constexpr char kDangerousAccountCompromiseDownloadThreatType[] =
+    "DANGEROUS_ACCOUNT_COMPROMISE";
 
 inline constexpr char kFilePasswordProtectedUnscannedReason[] =
     "FILE_PASSWORD_PROTECTED";

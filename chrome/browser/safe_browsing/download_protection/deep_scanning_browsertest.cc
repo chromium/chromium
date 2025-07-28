@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -1012,9 +1013,11 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
   validator.SetDoneClosure(run_loop.QuitClosure());
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
-  validator.ExpectDangerousDownloadEvent(
+  validator.ExpectDangerousDeepScanningResult(
       /*url*/ url.spec(),
       /*tab_url*/ url.spec(),
+      /*source*/ "",
+      /*destination*/ "",
       /*filename*/
       connectors_machine_scope() ? main_file.AsUTF8Unsafe()
                                  : "zipfile_two_archives.zip",
@@ -1030,7 +1033,8 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       enterprise_connectors::EventResultToString(
           enterprise_connectors::EventResult::BLOCKED),
       /*username*/ kUserName,
-      /*profile_identifier*/ GetProfileIdentifier());
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ std::nullopt);
 
   WaitForDownloadToFinish();
 
