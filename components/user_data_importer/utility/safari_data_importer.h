@@ -162,6 +162,10 @@ class SafariDataImporter {
   // Imports Credit Cards to the Payments Data Manager.
   void ContinueImportPaymentCards();
 
+  // Imports bookmarks and reading list entries from pending data into the
+  // corresponding BookmarkModel and ReadingListModel.
+  void ContinueImportBookmarks();
+
   // Objects used by this importer to do work (esp. parsing)
 
   // A queue for tasks which may block (e.g., I/O).

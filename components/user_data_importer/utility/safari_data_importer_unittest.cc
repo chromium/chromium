@@ -20,7 +20,9 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/bookmarks/test/test_matchers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
@@ -40,6 +42,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using bookmarks::test::IsFolder;
+using bookmarks::test::IsUrlBookmark;
 
 using password_manager::ImportEntry;
 using password_manager::ImportResults;
@@ -101,14 +106,21 @@ class SafariDataImporterTest : public testing::Test {
                                                      /*create_db=*/false);
 
     auto bookmark_client = std::make_unique<bookmarks::TestBookmarkClient>();
-    bookmark_model_ =
-        std::make_unique<bookmarks::BookmarkModel>(std::move(bookmark_client));
+
+    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModelWithClient(
+        std::move(bookmark_client));
 
     auto storage = std::make_unique<FakeReadingListModelStorage>();
+
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
         std::move(storage), syncer::StorageType::kUnspecified,
         syncer::WipeModelUponSyncDisabledBehavior::kNever,
         base::DefaultClock::GetInstance());
+
+    storage_ptr->TriggerLoadCompletion();
 
     importer_ = std::make_unique<SafariDataImporter>(
         &client_, &presenter_,
@@ -205,6 +217,12 @@ class SafariDataImporterTest : public testing::Test {
         .Times(times)
         .WillRepeatedly(Assign(&bookmarks_idle_, true));
   }
+
+  const bookmarks::BookmarkNode* GetOtherBookmarkNode() {
+    return bookmark_model_->other_node();
+  }
+
+  ReadingListModel* GetReadingListModel() { return reading_list_model_.get(); }
 
   testing::StrictMock<MockSafariDataImportClient> client_;
 
@@ -334,13 +352,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_NoTopLevelDL) {
 }
 
 TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
-// TODO(crbug.com/407587751): Align iOS and Blink implementation on if non-empty
-// folders should be added explicitly.
-#if BUILDFLAG(IS_IOS)
-  ExpectBookmarksReady(6u);
-#else
-  ExpectBookmarksReady(4u);
-#endif
+  ExpectBookmarksReady(3u);
 
   PrepareBookmarks(
       R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -501,13 +513,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
 #endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
-  // TODO(crbug.com/407587751): Align iOS and Blink implementation on if
-  // non-empty folders should be added explicitly.
-#if BUILDFLAG(IS_IOS)
-  ExpectBookmarksReady(3u);
-#else
   ExpectBookmarksReady(2u);
-#endif
 
   PrepareBookmarks(R"(
       <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -699,13 +705,13 @@ TEST_F(SafariDataImporterTest, ImportFileEndToEnd) {
   EXPECT_CALL(client_, OnPasswordsReady(
                            AllOf(Field(&ImportResults::number_imported, 0u),
                                  Field(&ImportResults::number_to_import, 3u))));
-  // TODO(crbug.com/407587751): Align iOS and Blink implementation on if
-  // non-empty folders should be added explicitly.
+
 #if BUILDFLAG(IS_IOS)
-  ExpectBookmarksReady(7u);
-#else
   ExpectBookmarksReady(6u);
+#else
+  ExpectBookmarksReady(5u);
 #endif
+
   EXPECT_CALL(client_, OnPaymentCardsReady(3u));
   EXPECT_CALL(client_, OnHistoryReady(13u, _));  // Approximation.
 
@@ -718,7 +724,8 @@ TEST_F(SafariDataImporterTest, ImportFileEndToEnd) {
   EXPECT_CALL(client_, OnPasswordsImported(
                            AllOf(Field(&ImportResults::number_imported, 3u),
                                  Field(&ImportResults::number_to_import, 0u))));
-  EXPECT_CALL(client_, OnBookmarksImported(0u));
+
+  EXPECT_CALL(client_, OnBookmarksImported(5u));
   EXPECT_CALL(client_, OnPaymentCardsImported(3u));
   EXPECT_CALL(client_, OnHistoryImported(7u));  // Actual.
 
@@ -733,12 +740,10 @@ TEST_F(SafariDataImporterTest, PrepareImportFileTwice) {
                                  Field(&ImportResults::number_to_import, 3u))))
       .Times(2);
 
-  // TODO(crbug.com/407587751): Align iOS and Blink implementation on if
-  // non-empty folders should be added explicitly.
 #if BUILDFLAG(IS_IOS)
-  ExpectBookmarksReady(7u, /*times=*/2);
-#else
   ExpectBookmarksReady(6u, /*times=*/2);
+#else
+  ExpectBookmarksReady(5u, /*times=*/2);
 #endif
 
   EXPECT_CALL(client_, OnPaymentCardsReady(3u)).Times(2);
@@ -746,6 +751,222 @@ TEST_F(SafariDataImporterTest, PrepareImportFileTwice) {
 
   PrepareImportFromFile();
   PrepareImportFromFile();
+}
+
+// Tests importing a single bookmark into the "Imported from Safari" folder.
+TEST_F(SafariDataImporterTest, ImportSingleBookmark) {
+  ExpectBookmarksReady(1u);
+  PrepareBookmarks(
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+          <DT><A HREF="https://www.example.com/">Single Bookmark</A>)");
+
+  EXPECT_CALL(client_, OnBookmarksImported(1u));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+  CompleteImport({});
+
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(other_node->children(),
+              ElementsAre(IsFolder(
+                  u"Imported from Safari",
+                  ElementsAre(IsUrlBookmark(
+                      u"Single Bookmark", GURL("https://www.example.com/"))))));
+}
+
+// Tests importing multiple bookmarks into the "Imported from Safari" folder.
+TEST_F(SafariDataImporterTest, ImportsMultipleBookmarks) {
+  ExpectBookmarksReady(2u);
+  PrepareBookmarks(
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+          <DL>
+            <DT><A HREF="https://www.one.com/">First Bookmark</A>
+            <DT><A HREF="https://www.two.com/">Second Bookmark</A>
+          </DL>)");
+
+  EXPECT_CALL(client_, OnBookmarksImported(2u));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  CompleteImport({});
+
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(other_node->children(),
+              ElementsAre(IsFolder(
+                  u"Imported from Safari",
+                  ElementsAre(IsUrlBookmark(u"First Bookmark",
+                                            GURL("https://www.one.com/")),
+                              IsUrlBookmark(u"Second Bookmark",
+                                            GURL("https://www.two.com/"))))));
+}
+
+// Tests that the folder hierarchy is preserved when importing a nested
+// bookmark.
+TEST_F(SafariDataImporterTest, ImportsNestedBookmark) {
+  ExpectBookmarksReady(1u);
+  PrepareBookmarks(
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+          <DL>
+            <DT><H3>Top Folder</H3>
+            <DL>
+              <DT><H3>Second Folder</H3>
+                <DL>
+                  <DT><A HREF="https://www.nested.com/">Nested Bookmark</A>
+                </DL>
+            </DL>
+          </DL>)");
+
+  EXPECT_CALL(client_, OnBookmarksImported(1u));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  CompleteImport({});
+
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(
+      other_node->children(),
+      ElementsAre(IsFolder(
+          u"Imported from Safari",
+          ElementsAre(IsFolder(
+              u"Top Folder",
+              ElementsAre(IsFolder(u"Second Folder",
+                                   ElementsAre(IsUrlBookmark(
+                                       u"Nested Bookmark",
+                                       GURL("https://www.nested.com/"))))))))));
+}
+
+// Tests that an empty bookmark folder is imported correctly.
+TEST_F(SafariDataImporterTest, ImportsEmptyFolder) {
+  ExpectBookmarksReady(0u);
+  PrepareBookmarks(
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+          <DL>
+            <DT><H3>Empty Folder</H3>
+            <DL></DL>
+          </DL>)");
+
+  EXPECT_CALL(client_, OnBookmarksImported(0u));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  CompleteImport({});
+
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(
+      other_node->children(),
+      ElementsAre(IsFolder(u"Imported from Safari",
+                           ElementsAre(IsFolder(u"Empty Folder", IsEmpty())))));
+}
+
+// Tests that the reading lists are imported into the Reading List model on iOS.
+#if BUILDFLAG(IS_IOS)
+TEST_F(SafariDataImporterTest, ImportsMultipleReadingListItems) {
+  ExpectBookmarksReady(5u);
+  PrepareBookmarks(
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+                          <DL>
+                            <DT><H3 id="com.apple.ReadingList">Reading List</H3>
+                            <DL>
+                              <DT><A HREF="https://www.item1.com/">First Item</A>
+                              <DT><A HREF="https://www.item2.com/">Second Item</A>
+                              <DT>Third Item No URL</DT>
+                              <DT><A HREF="invalid_url">Invalid URL</A>
+                              <DT><A HREF="https://www.item3.com/">Third Item</A>
+                            </DL>
+                          </DL>)");
+
+  EXPECT_CALL(client_, OnBookmarksImported(3u));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  CompleteImport({});
+
+  const ReadingListModel* model = GetReadingListModel();
+
+  const auto& reading_list_entries = model->GetKeys();
+  ASSERT_EQ(reading_list_entries.size(), 3u);
+
+  const ReadingListEntry* entry1 =
+      model->GetEntryByURL(GURL("https://www.item1.com/")).get();
+  ASSERT_TRUE(entry1);
+  EXPECT_EQ(entry1->Title(), "First Item");
+
+  const ReadingListEntry* entry2 =
+      model->GetEntryByURL(GURL("https://www.item2.com/")).get();
+  ASSERT_TRUE(entry2);
+  EXPECT_EQ(entry2->Title(), "Second Item");
+
+  const ReadingListEntry* entry3 =
+      model->GetEntryByURL(GURL("https://www.item3.com/")).get();
+  ASSERT_TRUE(entry3);
+  EXPECT_EQ(entry3->Title(), "Third Item");
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+TEST_F(SafariDataImporterTest, DuplicateBookmarkFolders) {
+// TODO(crbug.com/407587751): Align behaviour of ContentBookmarkParser and
+// IOSBookmarkParser.
+#if BUILDFLAG(IS_IOS)
+  ExpectBookmarksReady(3u);
+#else
+  ExpectBookmarksReady(2u);
+#endif
+
+  PrepareBookmarks(
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+          <DL>
+            <DT><H3>Folder A</H3>
+            <DL>
+              <DT><A HREF="https://www.example1.com/">Bookmark 1</A>
+            </DL>
+            <DT><H3>Folder A</H3> <DL>
+              <DT><H3>Folder B</H3>
+              <DL>
+                <DT><A HREF="https://www.example2.com/">Bookmark 2</A>
+              </DL>
+            </DL>
+            <DT><H3>Folder A</H3> <DL>
+              <DT><A HREF="https://www.example3.com/">Bookmark 3</A>
+            </DL>
+          </DL>)");
+
+// TODO(crbug.com/407587751): Align behaviour of ContentBookmarkParser and
+// IOSBookmarkParser.
+#if BUILDFLAG(IS_IOS)
+  EXPECT_CALL(client_, OnBookmarksImported(3u));
+#else
+  EXPECT_CALL(client_, OnBookmarksImported(2u));
+#endif
+
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+  CompleteImport({});
+
+  const bookmarks::BookmarkNode* import_folder =
+      GetOtherBookmarkNode()->children().at(0).get();
+
+#if BUILDFLAG(IS_IOS)
+  EXPECT_THAT(
+      import_folder->children(),
+      ElementsAre(
+          IsFolder(u"Folder A",
+                   ElementsAre(IsUrlBookmark(
+                       u"Bookmark 1", GURL("https://www.example1.com/")))),
+          IsFolder(u"Folder A",
+                   ElementsAre(IsFolder(
+                       u"Folder B", ElementsAre(IsUrlBookmark(
+                                        u"Bookmark 2",
+                                        GURL("https://www.example2.com/")))))),
+          IsFolder(u"Folder A",
+                   ElementsAre(IsUrlBookmark(
+                       u"Bookmark 3", GURL("https://www.example3.com/"))))));
+#else
+  EXPECT_THAT(
+      import_folder->children(),
+      ElementsAre(
+          IsFolder(u"Folder A",
+                   ElementsAre(IsUrlBookmark(
+                       u"Bookmark 1", GURL("https://www.example1.com/")))),
+          IsFolder(u"Folder B",
+                   ElementsAre(IsUrlBookmark(
+                       u"Bookmark 2", GURL("https://www.example2.com/"))))));
+#endif
 }
 
 }  // namespace user_data_importer

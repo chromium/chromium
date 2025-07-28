@@ -21,7 +21,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/reading_list/core/reading_list_model.h"
-#include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/utility/bookmark_util.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
@@ -244,14 +244,19 @@ void SafariDataImporter::CompleteImport(
                     std::move(done_history_closure)),
                 history_size_threshold_);
 
-  // TODO(crbug.com/407587751): Move this to a task.
-  password_importer_->ContinueImport(
-      selected_password_ids,
-      base::BindOnce(&SafariDataImportClient::OnPasswordsImported,
-                     client_->AsWeakPtr()));
+  if (password_importer_ &&
+      password_importer_->IsState(
+          password_manager::PasswordImporter::kUserInteractionRequired)) {
+    // TODO(crbug.com/407587751): Move this to a task.
+    password_importer_->ContinueImport(
+        selected_password_ids,
+        base::BindOnce(&SafariDataImportClient::OnPasswordsImported,
+                       client_->AsWeakPtr()));
+  }
 
-  // TODO(crbug.com/407587751): Import other types here.
-  client_->OnBookmarksImported(/*count=*/0);
+  GetRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&SafariDataImporter::ContinueImportBookmarks,
+                                weak_factory_.GetWeakPtr()));
 
   GetRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SafariDataImporter::ContinueImportPaymentCards,
@@ -433,7 +438,14 @@ void SafariDataImporter::OnBookmarksParsed(
   pending_bookmarks_ = std::move(value.bookmarks);
   pending_reading_list_ = std::move(value.reading_list);
 
-  client_->OnBookmarksReady(pending_bookmarks_.size() +
+  size_t importable_bookmarks_count = 0;
+  for (const auto& bookmark : pending_bookmarks_) {
+    if (!bookmark.is_folder) {
+      ++importable_bookmarks_count;
+    }
+  }
+
+  client_->OnBookmarksReady(importable_bookmarks_count +
                             pending_reading_list_.size());
 }
 
@@ -498,10 +510,20 @@ void SafariDataImporter::ContinueImportPaymentCards() {
       payments_data_manager_->AddCreditCard(credit_card);
     }
 
-    imported_credit_cards++;
+    ++imported_credit_cards;
   }
 
   client_->OnPaymentCardsImported(imported_credit_cards);
+}
+
+void SafariDataImporter::ContinueImportBookmarks() {
+  size_t imported_bookmarks_count = user_data_importer::ImportBookmarks(
+      &*bookmark_model_, std::move(pending_bookmarks_));
+  size_t imported_reading_list_count = user_data_importer::ImportReadingList(
+      &*reading_list_model_, std::move(pending_reading_list_));
+
+  client_->OnBookmarksImported(imported_bookmarks_count +
+                               imported_reading_list_count);
 }
 
 }  // namespace user_data_importer

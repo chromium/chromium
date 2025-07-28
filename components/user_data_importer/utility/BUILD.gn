@@ -9,6 +9,8 @@ source_set("safari_data_importer") {
   sources = [
     "bookmark_parser.cc",
     "bookmark_parser.h",
+    "bookmark_util.cc",
+    "bookmark_util.h",
     "history_callback_from_rust.h",
     "safari_data_import_client.h",
     "safari_data_importer.cc",
