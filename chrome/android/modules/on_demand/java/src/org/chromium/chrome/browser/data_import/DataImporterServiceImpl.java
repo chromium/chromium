@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.util.Base64;
 
+import com.google.protobuf.ByteString;
+
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.Metadata;
@@ -36,6 +38,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 // A service for importing user data coming from other browsers. It implements
 // a gRPC API, called the "OS migration system app API".
@@ -161,6 +165,17 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
     }
 
     static class TargetService extends TargetServiceGrpc.TargetServiceImplBase {
+        // Helper "struct" to accumulate import results for a given session ID, to be returned to
+        // the API caller in `importItemsDone()`.
+        static class ImportResults {
+            // Note: The counts are in number of files, *not* number of individual entries.
+            public int successItemCount;
+            public int failedItemCount;
+            public int ignoredItemCount;
+        }
+
+        private final Map<ByteString, ImportResults> mPendingImports = new HashMap<>();
+
         @Override
         public void handshake(
                 TargetHandshakeRequest request,
@@ -176,8 +191,15 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     response.setSupported(false);
                     break;
             }
-            // TODO(crbug.com/431218724): Store the session_id, for use (stats tracking) in
-            // importItem() / importItemsDone().
+            ByteString sessionId = request.getSessionId();
+            if (sessionId.isEmpty()) {
+                responseObserver.onError(
+                        new StatusRuntimeException(
+                                Status.INVALID_ARGUMENT.withDescription("Missing session_id")));
+                return;
+            }
+            // Note: No need to actually do anything with the `sessionId` here.
+
             responseObserver.onNext(response.build());
             responseObserver.onCompleted();
         }
@@ -196,6 +218,19 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                     Status.INVALID_ARGUMENT.withDescription(
                                             "Invalid or unsupported item type")));
                     return;
+            }
+
+            ByteString sessionId = request.getSessionId();
+            if (sessionId.isEmpty()) {
+                responseObserver.onError(
+                        new StatusRuntimeException(
+                                Status.INVALID_ARGUMENT.withDescription("Missing session_id")));
+                return;
+            }
+            ImportResults importResults = mPendingImports.get(sessionId);
+            if (importResults == null) {
+                importResults = new ImportResults();
+                mPendingImports.put(sessionId, importResults);
             }
 
             ParcelFileDescriptor pfd = PFD_CONTEXT_KEY.get(Context.current());
@@ -225,6 +260,7 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                 case BROWSER_FILE_TYPE_BROWSING_HISTORY:
                     // TODO(crbug.com/430254294): Hook up to the actual import logic (i.e. to
                     // StablePortabilityDataImporter from components/user_data_importer/) via JNI.
+                    importResults.ignoredItemCount++;
                     break;
                 case UNRECOGNIZED:
                 case BROWSER_FILE_TYPE_UNSPECIFIED:
@@ -255,10 +291,32 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                             "Invalid or unsupported item type")));
                     return;
             }
-            // TODO(crbug.com/431218724): Return the actual counts, based on the session_id.
+
+            ByteString sessionId = request.getSessionId();
+            if (sessionId.isEmpty()) {
+                responseObserver.onError(
+                        new StatusRuntimeException(
+                                Status.INVALID_ARGUMENT.withDescription("Missing session_id")));
+                return;
+            }
+            ImportResults importResults = mPendingImports.get(sessionId);
+            if (importResults == null) {
+                responseObserver.onError(
+                        new StatusRuntimeException(
+                                Status.INVALID_ARGUMENT.withDescription("Unknown session_id")));
+                return;
+            }
+
             responseObserver.onNext(
-                    ImportItemsDoneResponse.newBuilder().setIgnoredItemCount(1).build());
+                    ImportItemsDoneResponse.newBuilder()
+                            .setSuccessItemCount(importResults.successItemCount)
+                            .setFailedItemCount(importResults.failedItemCount)
+                            .setIgnoredItemCount(importResults.ignoredItemCount)
+                            .build());
             responseObserver.onCompleted();
+
+            // This import session is completed; clean up the corresponding stats.
+            mPendingImports.remove(sessionId);
         }
     }
 }
