@@ -1833,11 +1833,6 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
     GetDrawingBuffer()->SetBufferClearNeeded(true);
 }
 
-bool WebGLRenderingContextBase::IsAccelerated() const {
-  // This method is not supported for WebGL and should not be called.
-  NOTREACHED();
-}
-
 bool WebGLRenderingContextBase::
     CanUseDrawingBufferSIWithoutCopyForLowLatency() {
   if (!SharedGpuContext::IsGpuCompositingEnabled()) {

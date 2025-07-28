@@ -221,7 +221,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   gfx::ColorSpace GetColorSpace() const final {
     return color_params_.GetGfxColorSpace();
   }
-  bool IsAccelerated() const final;
+  bool Is2DCanvasAccelerated() const final;
   void PageVisibilityChanged() override {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const final;
   void Reset() override;

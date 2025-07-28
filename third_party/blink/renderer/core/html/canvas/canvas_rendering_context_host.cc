@@ -179,9 +179,11 @@ bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
 
 bool CanvasRenderingContextHost::IsAccelerated() const {
   if (RenderingContext()) {
+    // This method is supported only on 2D contexts.
+    CHECK(IsRenderingContext2D());
     return RenderingContext()->IsHibernating()
                ? false
-               : RenderingContext()->IsAccelerated();
+               : RenderingContext()->Is2DCanvasAccelerated();
   }
 
   // Whether or not to accelerate is not yet resolved, the canvas cannot be

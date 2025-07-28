@@ -73,7 +73,6 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
     return gfx::ColorSpace::CreateSRGB();
   }
   bool IsComposited() const final { return true; }
-  bool IsAccelerated() const final;
   bool PushFrame() override;
 
   cc::Layer* CcLayer() const final;

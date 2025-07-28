@@ -80,7 +80,6 @@ class GPUCanvasContext : public ScriptWrappable,
   void SizeChanged() override;
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
-  bool IsAccelerated() const final;
   bool IsPaintable() const final { return true; }
   void Stop() final;
   cc::Layer* CcLayer() const final;

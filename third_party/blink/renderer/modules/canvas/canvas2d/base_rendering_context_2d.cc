@@ -780,7 +780,7 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   Canvas2DRecorderContext::Trace(visitor);
 }
 
-bool BaseRenderingContext2D::IsAccelerated() const {
+bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
   auto* resource_provider = GetResourceProviderForCanvas2D();
   return resource_provider ? resource_provider->IsAccelerated()
                            : Host()->ShouldTryToUseGpuRaster();

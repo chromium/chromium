@@ -129,11 +129,6 @@ gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
   return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
 
-bool GPUCanvasContext::IsAccelerated() const {
-  // This method is not supported for WebGPU and should not be called.
-  NOTREACHED();
-}
-
 void GPUCanvasContext::Stop() {
   ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
   stopped_ = true;

@@ -221,11 +221,6 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
   return resource_provider_for_offscreen_canvas_.get();
 }
 
-bool ImageBitmapRenderingContext::IsAccelerated() const {
-  // This method is not supported for ImageBitmap and should not be called.
-  NOTREACHED();
-}
-
 bool ImageBitmapRenderingContext::PushFrame() {
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
