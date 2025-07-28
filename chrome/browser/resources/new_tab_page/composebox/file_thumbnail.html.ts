@@ -27,7 +27,8 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           class="img-overlay"
           id="removeImgButton"
           iron-icon="cr:clear"
-          title="${this.deleteFileButtonTitle}"
+          title="${this.file.name}"
+          aria-label="${this.deleteFileButtonTitle}"
           @click="${this.deleteFile_}">
       </cr-icon-button>
     </div>` : html`
@@ -45,7 +46,8 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           <cr-icon-button
               id="removePdfButton"
               iron-icon="cr:clear"
-              title="${this.deleteFileButtonTitle}"
+              title="${this.file.name}"
+              aria-label="${this.deleteFileButtonTitle}"
               @click="${this.deleteFile_}">
           </cr-icon-button>
         </div>
