@@ -1237,7 +1237,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     if (!slot_start) [[unlikely]] {
       return 0;
     }
-    PA_DCHECK(slot_span == SlotSpanMetadata::FromSlotStart(slot_start));
+    PA_DCHECK(slot_span == SlotSpanMetadata::FromSlotStart(slot_start, this));
     PA_CHECK(DeducedRootIsValid(slot_span));
     // For direct mapped allocations, |bucket| is the sentinel.
     PA_DCHECK((slot_span->bucket == bucket) ||

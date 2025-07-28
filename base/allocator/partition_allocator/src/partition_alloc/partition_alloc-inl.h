@@ -89,6 +89,41 @@ PA_ALWAYS_INLINE uintptr_t SlotStartPtr2Addr(const void* slot_start) {
   return UntagPtr(slot_start);
 }
 
+// In order to resolve circular dependencies, define template method:
+// GetMetadataOffset() here and SlotSpanMetadata::FromAddr(),
+// SuperPageExtentEntry's SuperPageBeginFromExtent() ... use it.
+template <typename T>
+std::ptrdiff_t GetMetadataOffset([[maybe_unused]] const T* root) {
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  PA_DCHECK(root);
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+  return static_cast<std::ptrdiff_t>(root->MetadataOffset());
+#else
+  return static_cast<std::ptrdiff_t>(SystemPageSize());
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+}
+
+PA_ALWAYS_INLINE uintptr_t
+PartitionSuperPageToMetadataPage(uintptr_t super_page,
+                                 [[maybe_unused]] std::ptrdiff_t offset) {
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  return super_page + static_cast<uintptr_t>(offset);
+#else
+  return super_page + SystemPageSize();
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+}
+
+PA_ALWAYS_INLINE uintptr_t
+PartitionMetadataPageToSuperPage(uintptr_t metadata_page,
+                                 [[maybe_unused]] std::ptrdiff_t offset) {
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  return metadata_page - static_cast<uintptr_t>(offset);
+#else
+  return metadata_page - SystemPageSize();
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+}
+
 }  // namespace partition_alloc::internal
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_INL_H_

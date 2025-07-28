@@ -12,6 +12,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
@@ -135,14 +136,62 @@ struct SlotSpanMetadata {
   // |slot_span| pointer may be the result of an offset calculation and
   // therefore cannot be trusted. The objective of these functions is to
   // sanitize this input.
+
+  // If metadata is outside of GigaCage, the following methods:
+  //  ToSlotSpanStart(), FromAddr(), FromSlotStart(), FromObject(),
+  //  FromObjectInnerAddr(), and FromObjectInnerAddr()
+  // are much slower, because:
+  // (1) need to find `pool` from the given address,
+  // (2) need to obtain `offset` from the `pool`.
+  // If `PartitionRoot` is known or metadata offset is known, it is much better
+  // to use methods with `root` or `offset`.
+  // For example, `FromAddr(uintptr_t address)` is slow and not recommended.
+  // `FromAddr(uintptr_t address, const PartitionRoot*)` takes a `root`
+  // parameter and `FromAddr(uintptr_t address, std::ptrdiff offset)` takes an
+  // `offset` parameter, which are recommended 146-147.
   PA_ALWAYS_INLINE static uintptr_t ToSlotSpanStart(
-      const SlotSpanMetadata* slot_span);
+      const SlotSpanMetadata* slot_span,
+      [[maybe_unused]] const PartitionRoot* root = nullptr);
+  PA_ALWAYS_INLINE static uintptr_t ToSlotSpanStart(
+      const SlotSpanMetadata* slot_span,
+      [[maybe_unused]] std::ptrdiff_t offset);
+
   PA_ALWAYS_INLINE static SlotSpanMetadata* FromAddr(uintptr_t address);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromAddr(
+      uintptr_t address,
+      [[maybe_unused]] const PartitionRoot* root);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromAddr(
+      uintptr_t address,
+      [[maybe_unused]] std::ptrdiff_t offset);
+
   PA_ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(
+      uintptr_t slot_start,
+      [[maybe_unused]] const PartitionRoot* root);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(
+      uintptr_t slot_start,
+      [[maybe_unused]] std::ptrdiff_t offset);
+
   PA_ALWAYS_INLINE static SlotSpanMetadata* FromObject(const void* object);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObject(
+      const void* object,
+      [[maybe_unused]] const PartitionRoot* root);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObject(
+      const void* object,
+      [[maybe_unused]] std::ptrdiff_t offset);
+
   PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerAddr(
-      uintptr_t address);
-  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(const void* ptr);
+      uintptr_t address,
+      [[maybe_unused]] const PartitionRoot* root);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerAddr(
+      uintptr_t address,
+      [[maybe_unused]] std::ptrdiff_t offset);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(
+      const void* ptr,
+      [[maybe_unused]] const PartitionRoot* root = nullptr);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(
+      const void* ptr,
+      [[maybe_unused]] std::ptrdiff_t offset);
 
   PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* ToSuperPageExtent() const;
 
@@ -315,7 +364,12 @@ struct PartitionPageMetadata {
   bool has_valid_span_after_this : 1;
   uint8_t unused;
 
-  PA_ALWAYS_INLINE static PartitionPageMetadata* FromAddr(uintptr_t address);
+  PA_ALWAYS_INLINE static PartitionPageMetadata* FromAddr(
+      uintptr_t address,
+      [[maybe_unused]] const PartitionRoot* root = nullptr);
+  PA_ALWAYS_INLINE static PartitionPageMetadata* FromAddr(
+      uintptr_t address,
+      [[maybe_unused]] std::ptrdiff_t offet);
 };
 #pragma pack(pop)
 static_assert(sizeof(PartitionPageMetadata) == kPageMetadataSize,
@@ -339,16 +393,26 @@ static_assert(offsetof(PartitionPageMetadata, subsequent_page_metadata) == 0,
 #endif
 
 PA_ALWAYS_INLINE PartitionPageMetadata* PartitionSuperPageToMetadataArea(
-    uintptr_t super_page) {
+    uintptr_t super_page,
+    [[maybe_unused]] std::ptrdiff_t offset) {
   // This can't be just any super page, but it has to be the first super page of
   // the reservation, as we assume here that the metadata is near its beginning.
   PA_DCHECK(
       ReservationOffsetTable::Get(super_page).IsReservationStart(super_page));
   PA_DCHECK(!(super_page & kSuperPageOffsetMask));
+  uintptr_t address = PartitionSuperPageToMetadataPage(super_page, offset);
+#if !PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   // The metadata area is exactly one system page (the guard page) into the
   // super page.
-  return reinterpret_cast<PartitionPageMetadata*>(super_page +
-                                                  SystemPageSize());
+  PA_DCHECK(super_page + SystemPageSize() == address);
+#endif
+  return reinterpret_cast<PartitionPageMetadata*>(address);
+}
+
+PA_ALWAYS_INLINE PartitionPageMetadata* PartitionSuperPageToMetadataArea(
+    uintptr_t super_page,
+    [[maybe_unused]] const PartitionRoot* root = nullptr) {
+  return PartitionSuperPageToMetadataArea(super_page, GetMetadataOffset(root));
 }
 
 PA_ALWAYS_INLINE const SubsequentPageMetadata* GetSubsequentPageMetadata(
@@ -362,10 +426,17 @@ PA_ALWAYS_INLINE SubsequentPageMetadata* GetSubsequentPageMetadata(
 }
 
 PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* PartitionSuperPageToExtent(
-    uintptr_t super_page) {
+    uintptr_t super_page,
+    [[maybe_unused]] std::ptrdiff_t offset) {
   // The very first entry of the metadata is the super page extent entry.
   return reinterpret_cast<PartitionSuperPageExtentEntry*>(
-      PartitionSuperPageToMetadataArea(super_page));
+      PartitionSuperPageToMetadataArea(super_page, offset));
+}
+
+PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* PartitionSuperPageToExtent(
+    uintptr_t super_page,
+    [[maybe_unused]] const PartitionRoot* root = nullptr) {
+  return PartitionSuperPageToExtent(super_page, GetMetadataOffset(root));
 }
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
@@ -397,8 +468,11 @@ PA_ALWAYS_INLINE size_t SuperPagePayloadSize(uintptr_t super_page) {
 
 PA_ALWAYS_INLINE PartitionSuperPageExtentEntry*
 SlotSpanMetadata::ToSuperPageExtent() const {
-  uintptr_t super_page = reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask;
-  return PartitionSuperPageToExtent(super_page);
+  // SlotSpanMetadata and SuperPageExtentEntry are always in the same cage.
+  // But the memory layout is different from GigaCage.
+  uintptr_t super_page =
+      reinterpret_cast<uintptr_t>(this) & SystemPageBaseMask();
+  return reinterpret_cast<PartitionSuperPageExtentEntry*>(super_page);
 }
 
 // Returns whether the pointer lies within the super page's payload area (i.e.
@@ -422,7 +496,14 @@ PA_ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address) {
 // care has to be taken with direct maps that span multiple super pages. This
 // function's behavior is undefined if |ptr| lies in a subsequent super page.
 PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
-    uintptr_t address) {
+    uintptr_t address,
+    [[maybe_unused]] const PartitionRoot* root) {
+  return PartitionPageMetadata::FromAddr(address, GetMetadataOffset(root));
+}
+
+PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
+    uintptr_t address,
+    [[maybe_unused]] std::ptrdiff_t metadata_offset) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -439,16 +520,36 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
   // for other exclusions.
   PA_DCHECK(partition_page_index);
   PA_DCHECK(partition_page_index < NumPartitionPagesPerSuperPage() - 1);
-  return PartitionSuperPageToMetadataArea(super_page) + partition_page_index;
+  return PartitionSuperPageToMetadataArea(super_page, metadata_offset) +
+         partition_page_index;
 }
 
 // Converts from a pointer to the SlotSpanMetadata object (within a super
 // pages's metadata) into a pointer to the beginning of the slot span. This
 // works on direct maps too.
 PA_ALWAYS_INLINE uintptr_t
-SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span) {
-  uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
-  uintptr_t super_page_offset = (pointer_as_uint & kSuperPageOffsetMask);
+SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span,
+                                  [[maybe_unused]] const PartitionRoot* root) {
+  return ToSlotSpanStart(slot_span, GetMetadataOffset(root));
+}
+
+PA_ALWAYS_INLINE uintptr_t
+SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span,
+                                  [[maybe_unused]] std::ptrdiff_t offset) {
+  uintptr_t slot_span_addr = reinterpret_cast<uintptr_t>(slot_span);
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  uintptr_t partition_page_index =
+      (slot_span_addr & SystemPageOffsetMask()) >> kPageMetadataShift;
+  uintptr_t super_page_base =
+      PartitionMetadataPageToSuperPage(slot_span_addr, offset) &
+      kSuperPageBaseMask;
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  PA_DCHECK(PartitionAddressSpace::IsInMetadataRegion(slot_span_addr) ||
+            super_page_base == (slot_span_addr & kSuperPageBaseMask));
+#endif
+  return super_page_base + (partition_page_index << PartitionPageShift());
+#else
+  uintptr_t super_page_offset = (slot_span_addr & kSuperPageOffsetMask);
 
   // A valid |page| must be past the first guard System page and within
   // the following metadata region.
@@ -464,8 +565,9 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span) {
   // pages.
   PA_DCHECK(partition_page_index);
   PA_DCHECK(partition_page_index < NumPartitionPagesPerSuperPage() - 1);
-  uintptr_t super_page_base = (pointer_as_uint & kSuperPageBaseMask);
+  uintptr_t super_page_base = slot_span_addr & kSuperPageBaseMask;
   return super_page_base + (partition_page_index << PartitionPageShift());
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
 
 // Converts an address inside a slot span into a pointer to the SlotSpanMetadata
@@ -476,7 +578,39 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span) {
 // partition page.
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
     uintptr_t address) {
-  auto* page_metadata = PartitionPageMetadata::FromAddr(address);
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  std::ptrdiff_t metadata_offset =
+      PartitionAddressSpace::MetadataOffset(GetPool(address));
+#else
+  constexpr std::ptrdiff_t metadata_offset = 0;
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  return FromAddr(address, metadata_offset);
+}
+
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
+    uintptr_t address,
+    [[maybe_unused]] const PartitionRoot* root) {
+  auto* page_metadata = PartitionPageMetadata::FromAddr(address, root);
+  PA_DCHECK(page_metadata->is_valid);
+  // Partition pages in the same slot span share the same SlotSpanMetadata
+  // object (located in the first PartitionPageMetadata object of that span).
+  // Adjust for that.
+  page_metadata -= page_metadata->slot_span_metadata_offset;
+  PA_DCHECK(page_metadata->is_valid);
+  PA_DCHECK(!page_metadata->slot_span_metadata_offset);
+  auto* slot_span = &page_metadata->slot_span_metadata;
+  PA_DCHECK(DeducedRootIsValid(slot_span));
+  // For direct map, if |address| doesn't point within the first partition page,
+  // |slot_span_metadata_offset| will be 0, |page_metadata| won't get shifted,
+  // leaving |slot_size| at 0.
+  PA_DCHECK(slot_span->bucket->slot_size);
+  return slot_span;
+}
+
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
+    uintptr_t address,
+    [[maybe_unused]] std::ptrdiff_t offset) {
+  auto* page_metadata = PartitionPageMetadata::FromAddr(address, offset);
   PA_DCHECK(page_metadata->is_valid);
   // Partition pages in the same slot span share the same SlotSpanMetadata
   // object (located in the first PartitionPageMetadata object of that span).
@@ -499,12 +633,43 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
 // This works on direct maps too.
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
     uintptr_t slot_start) {
-  auto* slot_span = FromAddr(slot_start);
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  std::ptrdiff_t metadata_offset =
+      PartitionAddressSpace::MetadataOffset(GetPool(slot_start));
+#else
+  constexpr std::ptrdiff_t metadata_offset = 0;
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  return FromSlotStart(slot_start, metadata_offset);
+}
+
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
+    uintptr_t slot_start,
+    [[maybe_unused]] const PartitionRoot* root) {
+  return FromSlotStart(slot_start, GetMetadataOffset(root));
+}
+
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
+    uintptr_t slot_start,
+    [[maybe_unused]] std::ptrdiff_t offset) {
+  auto* slot_span = FromAddr(slot_start, offset);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Checks that the pointer is a multiple of slot size.
-  uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
+  uintptr_t slot_span_start = ToSlotSpanStart(slot_span, offset);
   PA_DCHECK(!((slot_start - slot_span_start) % slot_span->bucket->slot_size));
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+  return slot_span;
+}
+
+// Like |FromAddr|, but asserts that |object| indeed points to the beginning of
+// an object. It doesn't check if the object is actually allocated.
+//
+// This works on direct maps too.
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObject(
+    const void* object,
+    [[maybe_unused]] const PartitionRoot* root) {
+  uintptr_t object_addr = ObjectPtr2Addr(object);
+  auto* slot_span = FromAddr(object_addr, root);
+  DCheckIsValidObjectAddress(slot_span, object_addr);
   return slot_span;
 }
 
@@ -526,11 +691,18 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObject(
 // CAUTION! For direct-mapped allocation, |address| has to be within the first
 // partition page.
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerAddr(
-    uintptr_t address) {
-  auto* slot_span = FromAddr(address);
+    uintptr_t address,
+    [[maybe_unused]] const PartitionRoot* root) {
+  return FromObjectInnerAddr(address, GetMetadataOffset(root));
+}
+
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerAddr(
+    uintptr_t address,
+    [[maybe_unused]] std::ptrdiff_t offset) {
+  auto* slot_span = FromAddr(address, offset);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Checks that the address is within the expected object boundaries.
-  uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
+  uintptr_t slot_span_start = ToSlotSpanStart(slot_span, offset);
   uintptr_t shift_from_slot_start =
       (address - slot_span_start) % slot_span->bucket->slot_size;
   DCheckIsValidShiftFromSlotStart(slot_span, shift_from_slot_start);
@@ -539,8 +711,15 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerAddr(
 }
 
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerPtr(
-    const void* ptr) {
-  return FromObjectInnerAddr(ObjectInnerPtr2Addr(ptr));
+    const void* ptr,
+    [[maybe_unused]] const PartitionRoot* root) {
+  return FromObjectInnerAddr(ObjectInnerPtr2Addr(ptr), root);
+}
+
+PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerPtr(
+    const void* ptr,
+    [[maybe_unused]] std::ptrdiff_t offset) {
+  return FromObjectInnerAddr(ObjectInnerPtr2Addr(ptr), offset);
 }
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetRawSize(size_t raw_size) {
@@ -771,19 +950,22 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
  public:
   template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
   PA_ALWAYS_INLINE static SlotStart FromUntaggedAddr(
-      uintptr_t untagged_slot_start) {
+      uintptr_t untagged_slot_start,
+      [[maybe_unused]] const PartitionRoot* root = nullptr) {
     auto result = SlotStart(untagged_slot_start);
     if constexpr (enforce) {
-      result.CheckIsSlotStart();
+      result.CheckIsSlotStart(root);
     }
     return result;
   }
 
   template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
-  PA_ALWAYS_INLINE static SlotStart FromObject(const void* tagged_object) {
+  PA_ALWAYS_INLINE static SlotStart FromObject(
+      const void* tagged_object,
+      [[maybe_unused]] const PartitionRoot* root = nullptr) {
     uintptr_t untagged_slot_start =
         internal::UntagAddr(reinterpret_cast<uintptr_t>(tagged_object));
-    return SlotStart::FromUntaggedAddr<enforce>(untagged_slot_start);
+    return SlotStart::FromUntaggedAddr<enforce>(untagged_slot_start, root);
   }
 
   // Tagging objects is not free. Avoid calling this repeatedly.
@@ -792,9 +974,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
   }
 
   PA_ALWAYS_INLINE
-  void CheckIsSlotStart() const {
-    auto* slot_span_metadata = SlotSpanMetadata::FromAddr(untagged_slot_start_);
-    uintptr_t slot_span = SlotSpanMetadata::ToSlotSpanStart(slot_span_metadata);
+  void CheckIsSlotStart([[maybe_unused]] const PartitionRoot* root) const {
+    auto* slot_span_metadata =
+        SlotSpanMetadata::FromAddr(untagged_slot_start_, root);
+    uintptr_t slot_span =
+        SlotSpanMetadata::ToSlotSpanStart(slot_span_metadata, root);
     PA_CHECK(!((untagged_slot_start_ - slot_span) %
                slot_span_metadata->bucket->slot_size));
   }
