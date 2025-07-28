@@ -34,9 +34,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -220,30 +217,6 @@ void CloseProfileWindows(Profile* profile) {
   BrowserList::CloseAllBrowsersWithProfile(profile,
                                            BrowserList::CloseCallback(),
                                            BrowserList::CloseCallback(), false);
-}
-
-void LaunchSigninHatsSurveyForBrowser(const std::string& trigger,
-                                      Browser* browser) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (trigger.empty() ||
-      !signin_util::IsFeatureEnabledForHatsTrigger(trigger)) {
-    return;
-  }
-
-  // A browser is required to launch the survey.
-  if (!browser) {
-    return;
-  }
-
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(browser->GetProfile(),
-                                        /*create_if_necessary=*/true);
-  if (hats_service) {
-    // HaTS service is not available for OTR profiles.
-    // TODO(crbug.com/427971911): add product-specific data.
-    hats_service->LaunchSurvey(trigger);
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(

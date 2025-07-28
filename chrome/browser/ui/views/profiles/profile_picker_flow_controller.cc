@@ -23,6 +23,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_hats_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -750,8 +751,8 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(
     // profile picker accessed from the profile menu. This excludes first-run or
     // startup scenarios.
     if (entry_point_ == ProfilePicker::EntryPoint::kProfileMenuManageProfiles) {
-      profiles::LaunchSigninHatsSurveyForBrowser(
-          kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, browser);
+      signin::LaunchSigninHatsSurveyForProfile(
+          kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, profile);
     }
     RecordProfilePickerAction(
         open_settings

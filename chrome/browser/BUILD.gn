@@ -1480,6 +1480,8 @@ static_library("browser") {
     "signin/identity_manager_factory.cc",
     "signin/signin_error_controller_factory.cc",
     "signin/signin_error_controller_factory.h",
+    "signin/signin_hats_util.cc",
+    "signin/signin_hats_util.h",
     "signin/signin_metrics_service_factory.cc",
     "signin/signin_metrics_service_factory.h",
     "signin/signin_policy_service.cc",

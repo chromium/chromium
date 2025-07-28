@@ -40,6 +40,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
+#include "chrome/browser/signin/signin_hats_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -236,8 +237,8 @@ void ProfileMenuView::OnClose() {
     // Launch a HaTS survey only if the user dismissed the profile menu by
     // clicking outside or pressing the Escape key. Do not launch if a button
     // within the menu was clicked.
-    profiles::LaunchSigninHatsSurveyForBrowser(
-        kHatsSurveyTriggerIdentityProfileMenuDismissed, &browser());
+    signin::LaunchSigninHatsSurveyForProfile(
+        kHatsSurveyTriggerIdentityProfileMenuDismissed, &profile());
   }
 }
 
@@ -466,8 +467,15 @@ void ProfileMenuView::OnOtherProfileSelected(
     // associated non-webapp browser.
     profiles::SwitchToProfile(
         profile_path, /*always_create=*/false,
-        base::BindOnce(&profiles::LaunchSigninHatsSurveyForBrowser,
-                       kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu));
+        base::BindOnce(
+            [](Browser* browser) {
+              if (!browser) {
+                return;
+              }
+              signin::LaunchSigninHatsSurveyForProfile(
+                  kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+                  browser->GetProfile());
+            }));
   } else {
     // Open the same web app for another profile.
     // On non-macOS the only allowlisted case is PasswordManager WebApp, which
