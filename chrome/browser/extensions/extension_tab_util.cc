@@ -353,11 +353,10 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
     browser = chrome::FindTabbedBrowser(original_profile, false);
     if (!browser) {
-      browser = CreateBrowser(original_profile, user_gesture);
+      browser = CreateAndShowBrowser(original_profile, user_gesture, &error);
       if (!browser) {
-        return base::unexpected(kBrowserWindowNotAllowed);
+        return base::unexpected(error);
       }
-      browser->window()->Show();
     }
   }
 
