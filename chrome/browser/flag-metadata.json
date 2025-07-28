@@ -2737,6 +2737,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-android-spellcheck-native-ui",
+    "owners": [
+      "jhtin@google.com",
+      "essential-inputs-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-android-window-occlusion",
     "owners": [
       "edcourtney@chromium.org",

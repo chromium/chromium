@@ -9366,6 +9366,7 @@ from previous Chrome versions.
   <int value="-1733673658" label="ComposeUpfrontInputModes:enabled"/>
   <int value="-1733227150"
       label="CCTOpenInBrowserButtonIfEnabledByEmbedder:enabled"/>
+  <int value="-1732976188" label="AndroidSpellcheckNativeUi:disabled"/>
   <int value="-1732940196" label="MultiCalendarSupport:disabled"/>
   <int value="-1732888954" label="UseButtonTranslateBubbleUI:enabled"/>
   <int value="-1732881759"
@@ -13660,6 +13661,7 @@ from previous Chrome versions.
   <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
   <int value="-157958447"
       label="EnableDevtoolsDeepLinkViaExtensibilityApi:enabled"/>
+  <int value="-157631262" label="AndroidSpellcheckNativeUi:enabled"/>
   <int value="-157036790" label="CrosPrivacyHubAppPermissions:disabled"/>
   <int value="-156983642" label="ByDateHistoryInSidePanel:disabled"/>
   <int value="-155494963" label="ToolbarPhoneAnimationRefactor:enabled"/>

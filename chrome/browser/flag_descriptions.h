@@ -128,6 +128,8 @@ extern const char kAndroidDesktopWebPrefsLargeDisplaysDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidGrammarCheckName[];
 extern const char kAndroidGrammarCheckDescription[];
+extern const char kAndroidSpellcheckNativeUiName[];
+extern const char kAndroidSpellcheckNativeUiDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

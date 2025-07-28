@@ -6369,6 +6369,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidGrammarCheckName,
      flag_descriptions::kAndroidGrammarCheckDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(spellcheck::kAndroidGrammarCheck)},
+    {"enable-android-spellcheck-native-ui",
+     flag_descriptions::kAndroidSpellcheckNativeUiName,
+     flag_descriptions::kAndroidSpellcheckNativeUiDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(spellcheck::kAndroidSpellcheckNativeUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-cros-touch-text-editing-redesign",
      flag_descriptions::kTouchTextEditingRedesignName,
