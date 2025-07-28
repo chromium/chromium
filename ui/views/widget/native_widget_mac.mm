@@ -1195,6 +1195,7 @@ void NativeWidgetMac::OnFocusManagerDestroying(FocusManager* focus_manager) {
   // parent's focus manager. However, this is not happening for unknown reasons.
   CHECK_EQ(focus_manager, focus_manager_);
   focus_manager->RemoveFocusChangeListener(this);
+  focus_manager_ = nullptr;
 }
 
 ui::EventDispatchDetails NativeWidgetMac::DispatchKeyEventPostIME(
