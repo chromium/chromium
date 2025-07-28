@@ -30,16 +30,16 @@ struct SupportedFormat {
     // capture stream in Chrome VCD as it is mandatory for the camera HAL to
     // support YUV flexbile format video streams.
     {cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_YCbCr_420_888,
-     {PIXEL_FORMAT_NV12, gfx::BufferFormat::YUV_420_BIPLANAR}},
+     {PIXEL_FORMAT_NV12, viz::MultiPlaneFormat::kNV12}},
     // FIXME(jcliang): MJPEG is not accurate; we should have BLOB or JPEG
     {cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB,
-     {PIXEL_FORMAT_MJPEG, gfx::BufferFormat::R_8}},
+     {PIXEL_FORMAT_MJPEG, viz::SinglePlaneFormat::kR_8}},
     // Add more mappings when we have more devices.
 };
 
 }  // namespace
 
-std::vector<ChromiumPixelFormat> PixFormatHalToChromium(
+std::vector<ChromiumPixelFormat> HalPixelFormatToChromiumPixelFormat(
     cros::mojom::HalPixelFormat from) {
   std::vector<ChromiumPixelFormat> ret;
   for (const auto& it : kSupportedFormats) {
@@ -59,18 +59,6 @@ uint32_t PixFormatVideoToDrm(VideoPixelFormat from) {
     default:
       // Unsupported format.
       return 0;
-  }
-}
-
-std::optional<gfx::BufferFormat> PixFormatVideoToGfx(
-    VideoPixelFormat pixel_format) {
-  switch (pixel_format) {
-    case PIXEL_FORMAT_MJPEG:
-      return gfx::BufferFormat::R_8;
-    case PIXEL_FORMAT_NV12:
-      return gfx::BufferFormat::YUV_420_BIPLANAR;
-    default:
-      return std::nullopt;
   }
 }
 
