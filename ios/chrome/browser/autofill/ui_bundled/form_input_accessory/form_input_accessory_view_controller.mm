@@ -260,16 +260,16 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       weakSelf.showScrollHint = NO;
     }
   };
-  // Check if the view is in the current hierarchy before performing the layout.
-  if (self.formInputAccessoryView.window) {
-    [self.formInputAccessoryView layoutIfNeeded];
-    self.formSuggestionViewMask.frame = self.formSuggestionContainerView.bounds;
-  }
   [self.formSuggestionView
           updateSuggestions:suggestions
              showScrollHint:self.showScrollHint
       accessoryTrailingView:self.formInputAccessoryView.trailingView
                  completion:completion];
+  // Check if the view is in the current hierarchy before performing the layout.
+  if (self.formInputAccessoryView.window) {
+    [self.formInputAccessoryView layoutIfNeeded];
+    self.formSuggestionViewMask.frame = self.formSuggestionContainerView.bounds;
+  }
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];
