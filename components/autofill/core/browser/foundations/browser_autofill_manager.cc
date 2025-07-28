@@ -747,6 +747,16 @@ BrowserAutofillManager::GetCreditCardAccessManager() const {
       ->GetCreditCardAccessManager();
 }
 
+payments::AmountExtractionManager&
+BrowserAutofillManager::GetAmountExtractionManager() {
+  if (!amount_extraction_manager_) {
+    amount_extraction_manager_ =
+        std::make_unique<AmountExtractionManager>(this);
+  }
+
+  return *amount_extraction_manager_;
+}
+
 payments::BnplManager* BrowserAutofillManager::GetPaymentsBnplManager() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -1650,7 +1660,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   // should happen, and if so, triggers amount extraction.
   if (autofill_field) {
     const DenseSet<AmountExtractionManager::EligibleFeature> eligible_features =
-        amount_extraction_manager_->GetEligibleFeatures(
+        GetAmountExtractionManager().GetEligibleFeatures(
             context,
             ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
             !suggestions.empty(), autofill_field->Type().GetStorableType());
@@ -1666,7 +1676,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
         }
         NOTREACHED();
       }
-      amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+      GetAmountExtractionManager().TriggerCheckoutAmountExtraction();
     }
   }
 
@@ -2542,6 +2552,8 @@ void BrowserAutofillManager::Reset() {
     touch_to_fill_delegate_->Reset();
   }
   form_filler_->Reset();
+  amount_extraction_manager_.reset();
+  bnpl_manager_.reset();
 
   // The order below is relevant:
   // `credit_card_access_manager_` has a reference to `metrics_`.

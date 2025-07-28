@@ -1449,7 +1449,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   MockAmountExtractionManager& amount_extraction_manager() {
     return static_cast<MockAmountExtractionManager&>(
-        test_api(manager()).get_amount_extraction_manager_for_testing());
+        manager().GetAmountExtractionManager());
   }
 
   TestAutofillExternalDelegate* external_delegate() {

@@ -69,11 +69,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->bnpl_manager_ = std::move(bnpl_manager);
   }
 
-  payments::AmountExtractionManager&
-  get_amount_extraction_manager_for_testing() {
-    return *manager_->amount_extraction_manager_;
-  }
-
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) {
     manager_->OnFormProcessed(form, form_structure);
