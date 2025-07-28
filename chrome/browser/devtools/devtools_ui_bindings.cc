@@ -1700,6 +1700,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     base::Value::Dict freestyler_dict;
     freestyler_dict.Set("enabled", base::FeatureList::IsEnabled(
                                        ::features::kDevToolsFreestyler));
+    freestyler_dict.Set("featureName", ::features::kDevToolsFreestyler.name);
     freestyler_dict.Set("modelId", features::kDevToolsFreestylerModelId.Get());
     freestyler_dict.Set("temperature",
                         features::kDevToolsFreestylerTemperature.Get());
@@ -1727,6 +1728,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     network_agent_dict.Set("enabled",
                            base::FeatureList::IsEnabled(
                                ::features::kDevToolsAiAssistanceNetworkAgent));
+    network_agent_dict.Set("featureName",
+                           ::features::kDevToolsAiAssistanceNetworkAgent.name);
     network_agent_dict.Set(
         "modelId", features::kDevToolsAiAssistanceNetworkAgentModelId.Get());
     network_agent_dict.Set(
@@ -1746,6 +1749,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     ai_assistance_performance_agent_dict.Set(
         "enabled", base::FeatureList::IsEnabled(
                        ::features::kDevToolsAiAssistancePerformanceAgent));
+    ai_assistance_performance_agent_dict.Set(
+        "featureName", ::features::kDevToolsAiAssistancePerformanceAgent.name);
     ai_assistance_performance_agent_dict.Set(
         "modelId",
         features::kDevToolsAiAssistancePerformanceAgentModelId.Get());
@@ -1769,6 +1774,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     ai_assistance_file_agent_dict.Set(
         "enabled", base::FeatureList::IsEnabled(
                        ::features::kDevToolsAiAssistanceFileAgent));
+    ai_assistance_file_agent_dict.Set("featureName",
+                                       ::features::kDevToolsAiAssistanceFileAgent.name);
     ai_assistance_file_agent_dict.Set(
         "modelId", features::kDevToolsAiAssistanceFileAgentModelId.Get());
     ai_assistance_file_agent_dict.Set(
