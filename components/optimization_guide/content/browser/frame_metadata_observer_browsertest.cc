@@ -18,6 +18,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 #include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom.h"
 #include "ui/display/display_switches.h"
 
@@ -27,9 +28,6 @@ namespace optimization_guide {
 
 namespace {
 
-// Allow 1px differences from rounding.
-#define EXPECT_ALMOST_EQ(a, b) EXPECT_LE(abs(a - b), 1);
-
 base::FilePath GetTestDataDir() {
   return base::FilePath{
       FILE_PATH_LITERAL("components/test/data/optimization_guide")};
@@ -37,7 +35,8 @@ base::FilePath GetTestDataDir() {
 
 class FrameMetadataObserverBrowserTest
     : public content::ContentBrowserTest,
-      public blink::mojom::PaidContentMetadataObserver {
+      public blink::mojom::PaidContentMetadataObserver,
+      public blink::mojom::MetaTagsObserver {
  public:
   FrameMetadataObserverBrowserTest() = default;
 
@@ -75,7 +74,8 @@ class FrameMetadataObserverBrowserTest
   }
 
   bool LoadPage(GURL url) {
-    callback_waiter_.Clear();
+    paid_content_callback_waiter_.Clear();
+    metadata_callback_waiter_.Clear();
     return content::NavigateToURL(web_contents(), url);
   }
 
@@ -84,11 +84,16 @@ class FrameMetadataObserverBrowserTest
         web_contents()->GetPrimaryMainFrame());
   }
 
-  void AddObserver() {
-    auto* rfh = web_contents()->GetPrimaryMainFrame();
-    rfh->GetRemoteInterfaces()->GetInterface(
+  void BindRegistry() {
+    if (frame_metadata_observer_registry_.is_bound()) {
+      return;
+    }
+    web_contents()->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
         frame_metadata_observer_registry_.BindNewPipeAndPassReceiver());
+  }
 
+  void AddPaidContentObserver() {
+    BindRegistry();
     mojo::PendingRemote<blink::mojom::PaidContentMetadataObserver> remote;
     frame_metadata_observer_receiver_.Bind(
         remote.InitWithNewPipeAndPassReceiver());
@@ -99,21 +104,57 @@ class FrameMetadataObserverBrowserTest
 
   // Invoked when the frame metadata changes.
   void OnPaidContentMetadataChanged(bool has_paid_content) override {
-    callback_waiter_.SetValue(has_paid_content);
+    paid_content_callback_waiter_.SetValue(has_paid_content);
   }
 
-  void WaitForCallback() {
-    ASSERT_TRUE(callback_waiter_.Wait())
+  void WaitForPaidContentChanged() {
+    ASSERT_TRUE(paid_content_callback_waiter_.Wait())
         << "Timed out waiting for OnPaidContentMetadataChanged callback";
   }
 
-  bool hasPaidContent() { return callback_waiter_.Get(); }
+  bool hasPaidContent() { return paid_content_callback_waiter_.Get(); }
+
+  void AddMetaTagsObserver(const std::vector<std::string>& names) {
+    BindRegistry();
+    mojo::PendingRemote<blink::mojom::MetaTagsObserver> remote;
+    meta_tags_observer_receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+    frame_metadata_observer_registry_->AddMetaTagsObserver(names,
+                                                           std::move(remote));
+  }
+
+  // Invoked when the frame metadata changes.
+  void OnMetaTagsChanged(blink::mojom::PageMetadataPtr page_metadata) override {
+    metadata_callback_waiter_.SetValue(true);
+    page_metadata_ = std::move(page_metadata);
+  }
+
+  void WaitForMetaTagsChanged() {
+    ASSERT_TRUE(metadata_callback_waiter_.Wait())
+        << "Timed out waiting for OnMetaTagsChanged callback";
+  }
+
+  bool was_meta_tags_changed_called() {
+    return metadata_callback_waiter_.Get();
+  }
+  blink::mojom::PageMetadataPtr& page_metadata() { return page_metadata_; }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  void VerifyAuthorMetaTag() {
+    EXPECT_TRUE(was_meta_tags_changed_called());
+
+    blink::mojom::PageMetadataPtr& metadata = page_metadata();
+    EXPECT_EQ(metadata->frame_metadata.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
+    EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Gary");
+  }
+
  protected:
   // TestFuture that will be signaled when the callback runs.
-  base::test::TestFuture<bool> callback_waiter_;
+  base::test::TestFuture<bool> paid_content_callback_waiter_;
+  base::test::TestFuture<bool> metadata_callback_waiter_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -121,13 +162,17 @@ class FrameMetadataObserverBrowserTest
       frame_metadata_observer_registry_;
   mojo::Receiver<blink::mojom::PaidContentMetadataObserver>
       frame_metadata_observer_receiver_{this};
+  mojo::Receiver<blink::mojom::MetaTagsObserver> meta_tags_observer_receiver_{
+      this};
+
+  blink::mojom::PageMetadataPtr page_metadata_;
 };
 
 IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, PaidContent) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("/paid_content.html")));
 
-  AddObserver();
-  WaitForCallback();
+  AddPaidContentObserver();
+  WaitForPaidContentChanged();
 
   EXPECT_TRUE(hasPaidContent());
 }
@@ -135,8 +180,8 @@ IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, PaidContent) {
 IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, NoPaidContent) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("/simple.html")));
 
-  AddObserver();
-  WaitForCallback();
+  AddPaidContentObserver();
+  WaitForPaidContentChanged();
 
   EXPECT_FALSE(hasPaidContent());
 }
@@ -147,10 +192,60 @@ IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, LateObserver) {
   // Wait for the page to load before adding the observer.
   ASSERT_TRUE(WaitForRenderFrameReady());
 
-  AddObserver();
-  WaitForCallback();
+  AddPaidContentObserver();
+  WaitForPaidContentChanged();
 
   EXPECT_TRUE(hasPaidContent());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, MetaTags) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+
+  const std::vector<std::string> names = {"author", "subject"};
+
+  AddMetaTagsObserver(names);
+  WaitForMetaTagsChanged();
+
+  VerifyAuthorMetaTag();
+}
+
+IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, MetaTagsLateObserver) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+
+  // Wait for the page to load before adding the observer.
+  ASSERT_TRUE(WaitForRenderFrameReady());
+
+  const std::vector<std::string> names = {"author", "subject"};
+  AddMetaTagsObserver(names);
+  WaitForMetaTagsChanged();
+
+  VerifyAuthorMetaTag();
+}
+
+IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, MetaTagsNameMismatch) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+
+  const std::vector<std::string> names = {"subject", "category"};
+
+  AddMetaTagsObserver(names);
+  WaitForMetaTagsChanged();
+
+  EXPECT_TRUE(was_meta_tags_changed_called());
+  blink::mojom::PageMetadataPtr& metadata = page_metadata();
+  EXPECT_TRUE(metadata->frame_metadata.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameMetadataObserverBrowserTest, NoMetaTags) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/simple.html")));
+
+  const std::vector<std::string> names = {"author", "subject"};
+  AddMetaTagsObserver(names);
+
+  WaitForMetaTagsChanged();
+
+  EXPECT_TRUE(was_meta_tags_changed_called());
+  blink::mojom::PageMetadataPtr& metadata = page_metadata();
+  EXPECT_TRUE(metadata->frame_metadata.empty());
 }
 
 }  // namespace

@@ -4,18 +4,55 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/frame_metadata_observer_registry.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/mutation_observer.h"
-#include "third_party/blink/renderer/core/dom/mutation_record.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/content_extraction/paid_content.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+void CollectMetaTagsFromFrame(LocalFrame* frame,
+                              const HeapVector<String>& names_to_find,
+                              mojom::blink::PageMetadata& page_metadata) {
+  if (!frame) {
+    return;
+  }
+
+    auto* local_frame = To<LocalFrame>(frame);
+    Document* document = local_frame->GetDocument();
+    if (document && document->head()) {
+      Vector<mojom::blink::MetaTagPtr> found_tags;
+      for (HTMLMetaElement& meta :
+           Traversal<HTMLMetaElement>::ChildrenOf(*document->head())) {
+        const String& name = meta.GetName();
+        if (names_to_find.Contains(name)) {
+          auto meta_tag = mojom::blink::MetaTag::New();
+          meta_tag->name = name;
+          meta_tag->content = meta.Content();
+          found_tags.push_back(std::move(meta_tag));
+        }
+      }
+      if (!found_tags.empty()) {
+        auto frame_metadata = mojom::blink::FrameMetadata::New();
+        frame_metadata->url = document->Url();
+        frame_metadata->meta_tags = std::move(found_tags);
+        page_metadata.frame_metadata.push_back(std::move(frame_metadata));
+      }
+    }
+}
+
+}  // namespace
 
 // static
 const char FrameMetadataObserverRegistry::kSupplementName[] =
@@ -49,7 +86,11 @@ FrameMetadataObserverRegistry::FrameMetadataObserverRegistry(
     LocalFrame& frame)
     : Supplement<Document>(*frame.GetDocument()),
       receiver_set_(this, frame.DomWindow()),
-      paid_content_metadata_observers_(frame.DomWindow()) {}
+      paid_content_metadata_observers_(frame.DomWindow()),
+      metatags_observers_(frame.DomWindow()) {
+  metatags_observers_.set_disconnect_handler(blink::BindRepeating(
+      &FrameMetadataObserverRegistry::DisconnectHandler, WrapPersistent(this)));
+}
 
 FrameMetadataObserverRegistry::~FrameMetadataObserverRegistry() = default;
 
@@ -66,6 +107,8 @@ void FrameMetadataObserverRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_set_);
   visitor->Trace(dom_content_loaded_observer_);
   visitor->Trace(paid_content_metadata_observers_);
+  visitor->Trace(metatags_observers_);
+  visitor->Trace(metatags_observer_names_);
 }
 
 class FrameMetadataObserverRegistry::DomContentLoadedListener final
@@ -83,19 +126,13 @@ class FrameMetadataObserverRegistry::DomContentLoadedListener final
 
     auto* registry =
         Supplement<Document>::From<FrameMetadataObserverRegistry>(document);
-    if (!registry) {
-      // There is no registry. Just abort.
-      return;
+    if (registry) {
+      registry->OnDomContentLoaded();
     }
-    registry->OnDomContentLoaded();
   }
 };
 
-void FrameMetadataObserverRegistry::AddPaidContentMetadataObserver(
-    mojo::PendingRemote<mojom::blink::PaidContentMetadataObserver> observer) {
-  paid_content_metadata_observers_.Add(
-      std::move(observer),
-      GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
+void FrameMetadataObserverRegistry::ListenForDomContentLoaded() {
   if (GetSupplementable()->HasFinishedParsing()) {
     OnDomContentLoaded();
   } else {
@@ -109,8 +146,28 @@ void FrameMetadataObserverRegistry::AddPaidContentMetadataObserver(
   }
 }
 
+void FrameMetadataObserverRegistry::AddPaidContentMetadataObserver(
+    mojo::PendingRemote<mojom::blink::PaidContentMetadataObserver> observer) {
+  paid_content_metadata_observers_.Add(
+      std::move(observer),
+      GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
+  ListenForDomContentLoaded();
+}
+
+void FrameMetadataObserverRegistry::AddMetaTagsObserver(
+    const Vector<String>& names,
+    mojo::PendingRemote<mojom::blink::MetaTagsObserver> observer) {
+  const mojo::RemoteSetElementId& remote_id = metatags_observers_.Add(
+      std::move(observer),
+      GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
+
+  metatags_observer_names_.Set(remote_id.value(), HeapVector<String>(names));
+  ListenForDomContentLoaded();
+}
+
 void FrameMetadataObserverRegistry::OnDomContentLoaded() {
   OnPaidContentMetadataChanged();
+  OnMetaTagsChanged();
 
   if (dom_content_loaded_observer_) {
     GetSupplementable()->removeEventListener(
@@ -121,14 +178,42 @@ void FrameMetadataObserverRegistry::OnDomContentLoaded() {
 }
 
 void FrameMetadataObserverRegistry::OnPaidContentMetadataChanged() {
-  bool has_paid_content = PaidContent::HasPaidContent(*GetSupplementable());
+  if (paid_content_metadata_observers_.empty()) {
+    return;
+  }
+  PaidContent paid_content;
+  bool paid_content_exists =
+      paid_content.QueryPaidElements(*GetSupplementable());
 
-  // TODO(gklassen): Add a MuationObserver to monitor for changes during the
-  // lifetime of the page.
+  // TODO(gklassen): Add a MutationObserver to monitor for changes during
+  // the lifetime of the page.
 
   for (auto& observer : paid_content_metadata_observers_) {
-    observer->OnPaidContentMetadataChanged(has_paid_content);
+    observer->OnPaidContentMetadataChanged(paid_content_exists);
   }
+}
+
+void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
+  if (metatags_observers_.empty()) {
+    return;
+  }
+
+  LocalFrame* current_frame = GetSupplementable()->GetFrame();
+  if (!current_frame) {
+    return;
+  }
+
+  for (auto& it : metatags_observer_names_) {
+    auto page_metadata = mojom::blink::PageMetadata::New();
+    CollectMetaTagsFromFrame(current_frame, it.value, *page_metadata);
+    metatags_observers_.Get(mojo::RemoteSetElementId(it.key))
+        ->OnMetaTagsChanged(std::move(page_metadata));
+  }
+}
+
+void FrameMetadataObserverRegistry::DisconnectHandler(
+    mojo::RemoteSetElementId id) {
+  metatags_observer_names_.erase(id.value());
 }
 
 }  // namespace blink

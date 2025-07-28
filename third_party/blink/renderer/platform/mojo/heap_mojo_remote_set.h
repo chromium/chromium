@@ -79,6 +79,10 @@ class HeapMojoRemoteSet {
   Iterator end() { return wrapper_->remote_set().end(); }
   Iterator end() const { return wrapper_->remote_set().end(); }
 
+  Interface* Get(mojo::RemoteSetElementId id) {
+    return wrapper_->remote_set().Get(id);
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(wrapper_); }
 
  private:

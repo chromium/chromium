@@ -7,16 +7,20 @@
 
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote_set.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
 class LocalFrame;
 
 // Registry used to Add Observers for when frame metadata changes.
@@ -41,18 +45,29 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
 
   void Trace(Visitor* visitor) const override;
 
- private:
-  class DomContentLoadedListener;
-
-  void Bind(mojo::PendingReceiver<mojom::blink::FrameMetadataObserverRegistry>
-                receiver);
-
+  // mojom::blink::FrameMetadataObserverRegistry:
   void AddPaidContentMetadataObserver(
       mojo::PendingRemote<mojom::blink::PaidContentMetadataObserver> observer)
       override;
 
+  void AddMetaTagsObserver(
+      const Vector<String>& names,
+      mojo::PendingRemote<mojom::blink::MetaTagsObserver> observer) override;
+
+ private:
+  class DomContentLoadedListener;
+  friend class DomContentLoadedListener;
+
+  void Bind(mojo::PendingReceiver<mojom::blink::FrameMetadataObserverRegistry>
+                receiver);
+
   void OnDomContentLoaded();
   void OnPaidContentMetadataChanged();
+  void OnMetaTagsChanged();
+
+  void ListenForDomContentLoaded();
+
+  void DisconnectHandler(mojo::RemoteSetElementId id);
 
   HeapMojoReceiverSet<mojom::blink::FrameMetadataObserverRegistry,
                       FrameMetadataObserverRegistry>
@@ -60,6 +75,10 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
 
   HeapMojoRemoteSet<mojom::blink::PaidContentMetadataObserver>
       paid_content_metadata_observers_;
+
+  HeapMojoRemoteSet<mojom::blink::MetaTagsObserver> metatags_observers_;
+
+  HeapHashMap<uint32_t, HeapVector<String>> metatags_observer_names_;
 
   Member<DomContentLoadedListener> dom_content_loaded_observer_;
 };
