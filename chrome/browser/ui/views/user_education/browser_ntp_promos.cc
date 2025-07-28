@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/user_education/ntp_promo_identifiers.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,6 +20,8 @@
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_metadata.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/common/extension_urls.h"
 
 using user_education::NtpPromoContent;
 using user_education::NtpPromoSpecification;
@@ -59,6 +62,21 @@ void InvokeSignInPromo(BrowserWindowInterface* browser) {
       browser->GetProfile(), signin_metrics::AccessPoint::kNtpFeaturePromo);
 }
 
+NtpPromoSpecification::Eligibility CheckExtensionsPromoEligibility(
+    Profile* profile) {
+  return extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(profile)
+             ? NtpPromoSpecification::Eligibility::kCompleted
+             : NtpPromoSpecification::Eligibility::kEligible;
+}
+
+void InvokeExtensionsPromo(BrowserWindowInterface* browser) {
+  NavigateParams params(browser->GetProfile(),
+                        extension_urls::GetWebstoreLaunchURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 }  // namespace
 
 void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
@@ -91,4 +109,15 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
       user_education::Metadata(
           141, "cjgrant@google.com",
           "Promotes sign-in capability on the New Tab Page")));
+
+  registry.AddPromo(NtpPromoSpecification(
+      kNtpExtensionsPromoId,
+      NtpPromoContent("my_extensions", IDS_NTP_EXTENSIONS_PROMO,
+                      IDS_NTP_EXTENSIONS_PROMO_ACTION_BUTTON),
+      base::BindRepeating(&CheckExtensionsPromoEligibility),
+      base::BindRepeating(&InvokeExtensionsPromo),
+      /*show_after=*/{},
+      user_education::Metadata(
+          141, "cjgrant@google.com",
+          "Promotes Chrome extensions on the New Tab Page")));
 }
