@@ -3362,11 +3362,12 @@
     "BackgroundNotPerceptibleBinding": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20250728",
                     "enable_features": [
                         "BackgroundNotPerceptibleBinding"
                     ]
@@ -5659,11 +5660,12 @@
     "CleanupToBeNormalTermination": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20250728",
                     "enable_features": [
                         "CleanupToBeNormalTermination"
                     ]
@@ -13519,11 +13521,12 @@
     "KeepChildProcessAfterIPCReset": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20250728",
                     "enable_features": [
                         "KeepChildProcessAfterIPCReset"
                     ]
@@ -23646,11 +23649,12 @@
     "StrictHighRankProcessLRU": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20250728",
                     "enable_features": [
                         "StrictHighRankProcessLRU"
                     ]
