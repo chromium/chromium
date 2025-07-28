@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_formatter/url_formatter.h"
 
 #include <algorithm>
@@ -341,7 +336,7 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
     if (component_end > component_start) {
       // Add the substring that we just found.
       component_result = IDNToUnicodeOneComponent(
-          {host16.data() + component_start, component_length}, top_level_domain,
+          host16.substr(component_start, component_length), top_level_domain,
           top_level_domain_unicode, ignore_spoof_check_results, &out16);
       result.has_idn_component |= component_result.has_idn_component;
       if (component_result.spoof_check_result !=

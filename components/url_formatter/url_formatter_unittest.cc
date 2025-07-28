@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_formatter/url_formatter.h"
 
 #include <stddef.h>
@@ -59,20 +54,36 @@ void VerboseExpect(size_t expected,
 void CheckAdjustedOffsets(const std::string& url_string,
                           FormatUrlTypes format_types,
                           base::UnescapeRule::Type unescape_rules,
-                          const size_t* output_offsets) {
+                          const std::vector<size_t>& expected_offsets) {
   GURL url(url_string);
   size_t url_length = url_string.length();
+
+  // Create vector of test offsets
   std::vector<size_t> offsets;
+  offsets.reserve(url_length + 3);  // Pre-allocate to avoid reallocations
+
+  // Add all positions in URL plus one past the end
   for (size_t i = 0; i <= url_length + 1; ++i) {
     offsets.push_back(i);
   }
-  offsets.push_back(500000);  // Something larger than any input length.
+
+  // Add test cases for out-of-bounds positions
+  offsets.push_back(500000);  // Something larger than any input length
   offsets.push_back(std::string::npos);
+
+  // Format URL and adjust offsets
   std::u16string formatted_url = FormatUrlWithOffsets(
       url, format_types, unescape_rules, nullptr, nullptr, &offsets);
+
+  // Verify each position matches expected output
+  DCHECK_EQ(expected_offsets.size(), url_length)
+      << "Expected offsets vector must match URL length";
   for (size_t i = 0; i < url_length; ++i) {
-    VerboseExpect(output_offsets[i], offsets[i], url_string, i, formatted_url);
+    VerboseExpect(expected_offsets[i], offsets[i], url_string, i,
+                  formatted_url);
   }
+
+  // Check special cases: end of string and out-of-bounds positions
   VerboseExpect(formatted_url.length(), offsets[url_length], url_string,
                 url_length, formatted_url);
   VerboseExpect(std::u16string::npos, offsets[url_length + 1], url_string,
@@ -661,8 +672,9 @@ TEST(UrlFormatterTest, FormatUrlRoundTripQueryEscaped) {
         FormatUrl(url, kFormatUrlOmitUsernamePassword,
                   base::UnescapeRule::NORMAL, nullptr, &prefix_len, nullptr);
 
-    if (test_char &&
-        strchr(kUnescapedCharacters, static_cast<char>(test_char))) {
+    std::string_view unescaped(kUnescapedCharacters);
+    if (test_char && unescaped.find(static_cast<char>(test_char)) !=
+                         std::string_view::npos) {
       EXPECT_NE(url.spec(), GURL(formatted).spec());
     } else {
       EXPECT_EQ(url.spec(), GURL(formatted).spec());
@@ -698,118 +710,120 @@ TEST(UrlFormatterTest, StripWWWFromHostComponent) {
 }
 
 TEST(UrlFormatterTest, FormatUrlWithOffsets) {
+  // Empty URL case
   CheckAdjustedOffsets(std::string(), kFormatUrlOmitNothing,
-                       base::UnescapeRule::NORMAL, nullptr);
+                       base::UnescapeRule::NORMAL, std::vector<size_t>());
 
-  const size_t basic_offsets[] = {0,  1,  2,  3,  4,  5,  6,  7,  8,
-                                  9,  10, 11, 12, 13, 14, 15, 16, 17,
-                                  18, 19, 20, 21, 22, 23, 24, 25};
+  const std::vector<size_t> basic_offsets({0,  1,  2,  3,  4,  5,  6,  7,  8,
+                                           9,  10, 11, 12, 13, 14, 15, 16, 17,
+                                           18, 19, 20, 21, 22, 23, 24, 25});
   CheckAdjustedOffsets("http://www.google.com/foo/", kFormatUrlOmitNothing,
                        base::UnescapeRule::NORMAL, basic_offsets);
 
-  const size_t omit_auth_offsets_1[] = {
-      0,     1,     2,     3,     4,     5,  6,  7,  kNpos, kNpos,
-      kNpos, kNpos, kNpos, kNpos, kNpos, 7,  8,  9,  10,    11,
-      12,    13,    14,    15,    16,    17, 18, 19, 20,    21};
+  // Test omitting username/passwords
+  const std::vector<size_t> omit_auth_offsets_1(
+      {0,     1,     2,     3,     4,     5,  6,  7,  kNpos, kNpos,
+       kNpos, kNpos, kNpos, kNpos, kNpos, 7,  8,  9,  10,    11,
+       12,    13,    14,    15,    16,    17, 18, 19, 20,    21});
   CheckAdjustedOffsets("http://foo:bar@www.google.com/",
                        kFormatUrlOmitUsernamePassword,
                        base::UnescapeRule::NORMAL, omit_auth_offsets_1);
 
-  const size_t omit_auth_offsets_2[] = {
-      0, 1,  2,  3,  4,  5,  6,  7,  kNpos, kNpos, kNpos, 7,  8,
-      9, 10, 11, 12, 13, 14, 15, 16, 17,    18,    19,    20, 21};
+  const std::vector<size_t> omit_auth_offsets_2(
+      {0, 1,  2,  3,  4,  5,  6,  7,  kNpos, kNpos, kNpos, 7,  8,
+       9, 10, 11, 12, 13, 14, 15, 16, 17,    18,    19,    20, 21});
   CheckAdjustedOffsets("http://foo@www.google.com/",
                        kFormatUrlOmitUsernamePassword,
                        base::UnescapeRule::NORMAL, omit_auth_offsets_2);
 
-  const size_t dont_omit_auth_offsets[] = {
-      0,  1,     2,     3,     4,     5,     6,     7,     8,     9,
-      10, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 11,
-      12, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 13,
-      14, 15,    16,    17,    18,    19,    20,    21,    22,    23,
-      24, 25,    26,    27,    28,    29,    30,    31};
+  const std::vector<size_t> dont_omit_auth_offsets(
+      {0,  1,     2,     3,     4,     5,     6,     7,     8,     9,
+       10, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 11,
+       12, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 13,
+       14, 15,    16,    17,    18,    19,    20,    21,    22,    23,
+       24, 25,    26,    27,    28,    29,    30,    31});
   // Unescape to "http://foo\x30B0:\x30B0bar@www.google.com".
   CheckAdjustedOffsets("http://foo%E3%82%B0:%E3%82%B0bar@www.google.com/",
                        kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
                        dont_omit_auth_offsets);
 
-  const size_t view_source_offsets[] = {
-      0,  1,  2,  3,  4,  5,  6,  7,     8,     9,     10, 11, 12,
-      13, 14, 15, 16, 17, 18, 19, kNpos, kNpos, kNpos, 19, 20, 21,
-      22, 23, 24, 25, 26, 27, 28, 29,    30,    31,    32, 33};
+  const std::vector<size_t> view_source_offsets(
+      {0,  1,  2,  3,  4,  5,  6,  7,     8,     9,     10, 11, 12,
+       13, 14, 15, 16, 17, 18, 19, kNpos, kNpos, kNpos, 19, 20, 21,
+       22, 23, 24, 25, 26, 27, 28, 29,    30,    31,    32, 33});
   CheckAdjustedOffsets("view-source:http://foo@www.google.com/",
                        kFormatUrlOmitUsernamePassword,
                        base::UnescapeRule::NORMAL, view_source_offsets);
 
-  const size_t idn_hostname_offsets_1[] = {
-      0,     1,     2,     3,     4,     5,     6,     7,     kNpos,
-      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 12,    13,
-      14,    15,    16,    17,    18,    19};
+  const std::vector<size_t> idn_hostname_offsets_1(
+      {0,     1,     2,     3,     4,     5,     6,     7,     kNpos,
+       kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+       kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 12,    13,
+       14,    15,    16,    17,    18,    19});
   // Convert punycode to "http://\x671d\x65e5\x3042\x3055\x3072.jp/foo/".
   CheckAdjustedOffsets("http://xn--l8jvb1ey91xtjb.jp/foo/",
                        kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
                        idn_hostname_offsets_1);
 
-  const size_t idn_hostname_offsets_2[] = {
-      0,     1,     2,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-      kNpos, kNpos, kNpos, kNpos, 14,    15,    kNpos, kNpos, kNpos, kNpos,
-      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-      kNpos, 19,    20,    21,    22,    23,    24};
+  const std::vector<size_t> idn_hostname_offsets_2(
+      {0,     1,     2,     3,     4,     5,     6,     7,     8,     9,
+       10,    11,    12,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+       kNpos, kNpos, kNpos, kNpos, 14,    15,    kNpos, kNpos, kNpos, kNpos,
+       kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+       kNpos, 19,    20,    21,    22,    23,    24});
   // Convert punycode to
   // "http://test.\x89c6\x9891.\x5317\x4eac\x5927\x5b78.test/".
   CheckAdjustedOffsets("http://test.xn--cy2a840a.xn--1lq90ic7f1rc.test/",
                        kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
                        idn_hostname_offsets_2);
 
-  const size_t unescape_offsets[] = {
-      0,     1,     2,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-      20,    21,    22,    23,    24,    25,    kNpos, kNpos, 26,    27,
-      28,    29,    30,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-      kNpos, 31,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-      32,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 33,
-      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos};
+  const std::vector<size_t> unescape_offsets(
+      {0,     1,     2,     3,     4,     5,     6,     7,     8,     9,
+       10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
+       20,    21,    22,    23,    24,    25,    kNpos, kNpos, 26,    27,
+       28,    29,    30,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+       kNpos, 31,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+       32,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 33,
+       kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos});
   // Unescape to "http://www.google.com/foo bar/\x30B0\x30FC\x30B0\x30EB".
   CheckAdjustedOffsets(
       "http://www.google.com/foo%20bar/%E3%82%B0%E3%83%BC%E3%82%B0%E3%83%AB",
       kFormatUrlOmitNothing, base::UnescapeRule::SPACES, unescape_offsets);
 
-  const size_t ref_offsets[] = {
-      0,  1,     2,     3,     4,     5,     6,     7,     8,     9,
-      10, 11,    12,    13,    14,    15,    16,    17,    18,    19,
-      20, 21,    22,    23,    24,    25,    26,    27,    28,    29,
-      30, 31,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-      32, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 33};
+  const std::vector<size_t> ref_offsets(
+      {0,  1,     2,     3,     4,     5,     6,     7,     8,     9,
+       10, 11,    12,    13,    14,    15,    16,    17,    18,    19,
+       20, 21,    22,    23,    24,    25,    26,    27,    28,    29,
+       30, 31,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+       32, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 33});
 
   // Unescape to "http://www.google.com/foo.html#\x30B0\x30B0z".
   CheckAdjustedOffsets("http://www.google.com/foo.html#%E3%82%B0%E3%82%B0z",
                        kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
                        ref_offsets);
 
-  const size_t omit_http_offsets[] = {
-      0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,  1,  2,  3,
-      4, 5,     6,     7,     8,     9,     10,    11, 12, 13, 14};
+  const std::vector<size_t> omit_http_offsets(
+      {0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,  1,  2,  3,
+       4, 5,     6,     7,     8,     9,     10,    11, 12, 13, 14});
   CheckAdjustedOffsets("http://www.google.com/", kFormatUrlOmitHTTP,
                        base::UnescapeRule::NORMAL, omit_http_offsets);
 
-  const size_t omit_http_start_with_ftp_offsets[] = {
-      0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-      11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
+  const std::vector<size_t> omit_http_start_with_ftp_offsets(
+      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+       11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21});
   CheckAdjustedOffsets("http://ftp.google.com/", kFormatUrlOmitHTTP,
                        base::UnescapeRule::NORMAL,
                        omit_http_start_with_ftp_offsets);
 
-  const size_t omit_all_offsets[] = {
-      0,     kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0, kNpos, kNpos,
-      kNpos, kNpos, 0,     1,     2,     3,     4,     5, 6,     7};
+  const std::vector<size_t> omit_all_offsets(
+      {0,     kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0, kNpos, kNpos,
+       kNpos, kNpos, 0,     1,     2,     3,     4,     5, 6,     7});
   CheckAdjustedOffsets("http://user@foo.com/", kFormatUrlOmitDefaults,
                        base::UnescapeRule::NORMAL, omit_all_offsets);
 
-  const size_t trim_after_host_offsets[] = {
-      0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,     1,     2,     3, 4,
-      5, 6,     7,     kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 9};
+  const std::vector<size_t> trim_after_host_offsets(
+      {0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,     1,     2,    3, 4,
+       5, 6,     7,     kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos});
   CheckAdjustedOffsets("http://foo.com/abcdefg",
                        kFormatUrlOmitDefaults | kFormatUrlTrimAfterHost,
                        base::UnescapeRule::NORMAL, trim_after_host_offsets);
@@ -825,37 +839,37 @@ TEST(UrlFormatterTest, FormatUrlWithOffsets) {
   CheckAdjustedOffsets("http://foo.com/a?a=b#f",
                        kFormatUrlOmitDefaults | kFormatUrlTrimAfterHost,
                        base::UnescapeRule::NORMAL, trim_after_host_offsets);
-  CheckAdjustedOffsets("http://foo.com//??###",
+  CheckAdjustedOffsets("http://foo.com//??####",
                        kFormatUrlOmitDefaults | kFormatUrlTrimAfterHost,
                        base::UnescapeRule::NORMAL, trim_after_host_offsets);
 
-  const size_t omit_https_offsets[] = {
-      0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,  1,  2, 3,
-      4, 5,     6,     7,     8,     9,     10,    11,    12, 13, 14};
+  const std::vector<size_t> omit_https_offsets(
+      {0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,  1,  2, 3,
+       4, 5,     6,     7,     8,     9,     10,    11,    12, 13, 14});
   CheckAdjustedOffsets("https://www.google.com/", kFormatUrlOmitHTTPS,
                        base::UnescapeRule::NORMAL, omit_https_offsets);
 
-  const size_t omit_https_with_auth_offsets[] = {
-      0,     kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,
-      kNpos, kNpos, kNpos, 0,     1,     2,     3,     4,     5,
-      6,     7,     8,     9,     10,    11,    12,    13,    14};
+  const std::vector<size_t> omit_https_with_auth_offsets(
+      {0,     kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,
+       kNpos, kNpos, kNpos, 0,     1,     2,     3,     4,     5,
+       6,     7,     8,     9,     10,    11,    12,    13,    14});
   CheckAdjustedOffsets("https://u:p@www.google.com/",
                        kFormatUrlOmitDefaults | kFormatUrlOmitHTTPS,
                        base::UnescapeRule::NORMAL,
                        omit_https_with_auth_offsets);
 
-  const size_t strip_trivial_subdomains_offsets_1[] = {
-      0, 1,  2,  3,  4,  5,  6,  7,  kNpos, kNpos, kNpos, 7,  8,
-      9, 10, 11, 12, 13, 14, 15, 16, 17,    18,    19,    20, 21};
+  const std::vector<size_t> strip_trivial_subdomains_offsets_1(
+      {0, 1,  2,  3,  4,  5,  6,  7,  kNpos, kNpos, kNpos, 7,  8,
+       9, 10, 11, 12, 13, 14, 15, 16, 17,    18,    19,    20, 21});
   CheckAdjustedOffsets(
       "http://www.google.com/foo/", kFormatUrlOmitTrivialSubdomains,
       base::UnescapeRule::NORMAL, strip_trivial_subdomains_offsets_1);
 
-  const size_t strip_trivial_subdomains_from_idn_offsets[] = {
-      0,     1,     2,     3,     4,     5,     6,     7,     kNpos, kNpos,
-      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 12,
-      13,    14,    15,    16,    17,    18,    19};
+  const std::vector<size_t> strip_trivial_subdomains_from_idn_offsets(
+      {0,     1,     2,     3,     4,     5,     6,     7,     kNpos, kNpos,
+       kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+       kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 12,
+       13,    14,    15,    16,    17,    18,    19});
   CheckAdjustedOffsets(
       "http://www.xn--l8jvb1ey91xtjb.jp/foo/", kFormatUrlOmitTrivialSubdomains,
       base::UnescapeRule::NORMAL, strip_trivial_subdomains_from_idn_offsets);
