@@ -891,6 +891,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_SUBTITLE" desc="Safari import entry point screen - Subtitle. [iOS only]">
         Import your data to use your passwords, history, bookmarks and credit cards on Chrome
       </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_EXPORT_STATIC_INSTRUCTION_STEP_5" desc="Safari import export education screen - Step 5 to export Safari data. Displayed in the static text instructions below the animated tutorial. [iOS only]">
+        Return to Chrome to upload your file
+      </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_SUBTITLE" desc="Safari import import screen - Subtitle. [iOS only]">
         Use your Safari passwords, history, bookmarks, and credit cards in Chrome
       </message>

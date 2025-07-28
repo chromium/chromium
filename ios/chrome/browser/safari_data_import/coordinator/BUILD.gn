@@ -39,6 +39,9 @@ source_set("export_coordinator") {
     ":coordinator_delegate",
     ":import_coordinator",
     "//base",
+    "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/safari_data_import:safari_data_import_api",
   ]
 }
 

@@ -13,3 +13,13 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/safari_data_import.imageset/safari_data_import_dark.pdf",
   ]
 }
+
+bundle_data("animation_files") {
+  sources = [
+    "safari_data_export_education_dark.json",
+    "safari_data_export_education_dark_rtl.json",
+    "safari_data_export_education_light.json",
+    "safari_data_export_education_light_rtl.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}

@@ -5,9 +5,14 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_export_view_controller.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/public/provider/chrome/browser/safari_data_import/safari_data_import_api.h"
 
-@interface SafariDataImportExportCoordinator () <UINavigationControllerDelegate>
+@interface SafariDataImportExportCoordinator () <ConfirmationAlertActionHandler,
+                                                 UINavigationControllerDelegate>
 
 @end
 
@@ -21,8 +26,11 @@
 }
 
 - (void)start {
+  SafariDataImportExportViewController* viewController =
+      [[SafariDataImportExportViewController alloc] init];
+  viewController.actionHandler = self;
   _navigationController = [[UINavigationController alloc]
-      initWithRootViewController:[self viewController]];
+      initWithRootViewController:viewController];
   _navigationController.delegate = self;
   _navigationController.modalInPresentation = YES;
   [self.baseViewController presentViewController:_navigationController
@@ -40,6 +48,25 @@
   [_importCoordinator stop];
 }
 
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  ios::provider::OpenSettingsToExportDataFromSafari();
+}
+
+- (void)confirmationAlertSecondaryAction {
+  CHECK(!_importCoordinator);
+  _importCoordinator = [[SafariDataImportImportCoordinator alloc]
+      initWithBaseNavigationController:_navigationController
+                               browser:self.browser];
+  _importCoordinator.delegate = self.delegate;
+  [_importCoordinator start];
+}
+
+- (void)confirmationAlertDismissAction {
+  [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
+}
+
 #pragma mark - UINavigationControllerDelegate
 
 - (void)navigationController:(UINavigationController*)navigationController
@@ -51,41 +78,6 @@
     [_importCoordinator stop];
     _importCoordinator = nil;
   }
-}
-
-#pragma mark - Private
-
-/// Retrieves the view controller to be displayed.
-/// TODO(crbug.com/420703283): Replace with the
-/// ConfirmationAlertViewController for the import data screen.
-- (UIViewController*)viewController {
-  UIViewController* viewController = [[UIViewController alloc] init];
-  viewController.view.backgroundColor = UIColor.whiteColor;
-  UIButton* primaryButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [primaryButton setTitle:@"Proceed to Import Data"
-                 forState:UIControlStateNormal];
-  [primaryButton addTarget:self
-                    action:@selector(primaryButtonTapped)
-          forControlEvents:UIControlEventTouchUpInside];
-  primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [viewController.view addSubview:primaryButton];
-  [NSLayoutConstraint activateConstraints:@[
-    [primaryButton.centerXAnchor
-        constraintEqualToAnchor:viewController.view.centerXAnchor],
-    [primaryButton.centerYAnchor
-        constraintEqualToAnchor:viewController.view.centerYAnchor]
-  ]];
-  return viewController;
-}
-
-/// TODO(crbug.com/420703283): Remove.
-- (void)primaryButtonTapped {
-  CHECK(!_importCoordinator);
-  _importCoordinator = [[SafariDataImportImportCoordinator alloc]
-      initWithBaseNavigationController:_navigationController
-                               browser:self.browser];
-  _importCoordinator.delegate = self.delegate;
-  [_importCoordinator start];
 }
 
 @end
