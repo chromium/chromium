@@ -4920,11 +4920,6 @@ if (!is_android) {
       # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
       deps += [ "//chrome/browser/ui/zoom" ]
 
-      # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
-      # target should be deleted and this line removed. See the
-      # chrome_extensions_browsertests_sources target for more.
-      deps += [ "//extensions:chrome_extensions_browsertests_sources" ]
-
       data += [
         "//chrome/test/data/extensions/",
         "//extensions/test/data/",
