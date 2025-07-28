@@ -14,6 +14,10 @@ constexpr char kWallpaperGooglePhotosFetcherName[] =
 constexpr char kWallpaperFetcherDelegateName[] = "wallpaper_fetcher_delegate";
 constexpr char kIpProtectionServiceName[] = "ip_protection_service";
 constexpr char kSanitizedImageSourceName[] = "sanitized_image_source";
+constexpr char kOptimizationGuideGetHintsName[] =
+    "optimization_guide_get_hints";
+constexpr char kOptimizationGuideModelExecutionName[] =
+    "optimization_guide_model_execution";
 }
 
 namespace signin {
@@ -56,6 +60,16 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kSanitizedImageSourceName,
           /*scopes=*/{GaiaConstants::kPhotosModuleImageOAuth2Scope});
+    case OAuthConsumerId::kOptimizationGuideGetHints:
+      return OAuthConsumer(
+          /*name=*/kOptimizationGuideGetHintsName,
+          /*scopes=*/{
+              GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope});
+    case OAuthConsumerId::kOptimizationGuideModelExecution:
+      return OAuthConsumer(
+          /*name=*/kOptimizationGuideModelExecutionName,
+          /*scopes=*/{GaiaConstants::
+                          kOptimizationGuideServiceModelExecutionOAuth2Scope});
   }
   NOTREACHED();
 }

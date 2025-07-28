@@ -350,7 +350,7 @@ void ModelExecutionFetcher::ExecuteModel(
 
   HandleTokenRequestFlow(
       /*require_token=*/true, identity_manager,
-      {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope},
+      signin::OAuthConsumerId::kOptimizationGuideModelExecution,
       base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr(), serialized_request,
                      timeout));

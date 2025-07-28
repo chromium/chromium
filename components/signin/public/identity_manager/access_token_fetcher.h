@@ -84,11 +84,6 @@ struct AccessTokenInfo;
 //     // AccessTokenFetchers directly themselves rather than introducing
 //     // wrapper API surfaces.
 //     MyClass::StartAccessTokenRequestForAccount(CoreAccountId account_id) {
-//       // Choose scopes to obtain for the access token.
-//       ScopeSet scopes;
-//       scopes.insert(GaiaConstants::kMyFirstScope);
-//       scopes.insert(GaiaConstants::kMySecondScope);
-
 //       // Choose the mode in which to fetch the access token:
 //       // see AccessTokenFetcher::Mode below for definitions.
 //       auto mode = signin::AccessTokenFetcher::Mode::kImmediate;

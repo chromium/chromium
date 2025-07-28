@@ -874,10 +874,9 @@ void HintsManager::FetchHintsForActiveTabs() {
       weak_ptr_factory_.GetWeakPtr(), top_hosts, active_tab_urls_to_refresh,
       proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
       std::move(hints_fetched_callback));
-  HandleTokenRequestFlow(
-      HasPersonalizableTypesRegistered(), identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
-      std::move(do_fetch_callback));
+  HandleTokenRequestFlow(HasPersonalizableTypesRegistered(), identity_manager_,
+                         signin::OAuthConsumerId::kOptimizationGuideGetHints,
+                         std::move(do_fetch_callback));
 }
 
 void HintsManager::FetchHintsForActiveTabsInternal(
@@ -1060,7 +1059,7 @@ void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
       target_hosts, target_urls, request_context);
   HandleTokenRequestFlow(
       HasPersonalizableTypesRegistered(), identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+      signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::FetchHintsForURLsInternal,
                      weak_ptr_factory_.GetWeakPtr(), target_hosts, target_urls,
                      request_context));
@@ -1255,8 +1254,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
   }
   HandleTokenRequestFlow(
       allowed_contexts_for_personalized_metadata_.Has(request_context),
-      identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+      identity_manager_, signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::FetchOptimizationGuideServiceBatchHints,
                      weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch,
                      urls_to_fetch, optimization_types, request_context,
@@ -1777,7 +1775,7 @@ void HintsManager::OnNavigationStartOrRedirect(
 
   HandleTokenRequestFlow(
       HasPersonalizableTypesRegistered(), identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+      signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::MaybeFetchHintsForNavigation,
                      weak_ptr_factory_.GetWeakPtr(),
                      navigation_data->GetWeakPtr()));
