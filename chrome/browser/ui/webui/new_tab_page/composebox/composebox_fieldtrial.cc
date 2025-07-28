@@ -62,7 +62,7 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   image_upload->set_mime_types_allowed("image/*");
 
   auto* attachment_upload = composebox->mutable_attachment_upload();
-  attachment_upload->set_max_size_bytes(2000000);
+  attachment_upload->set_max_size_bytes(200000000);
   attachment_upload->set_mime_types_allowed(".pdf,application/pdf");
 
   composebox->set_max_num_files(1);
