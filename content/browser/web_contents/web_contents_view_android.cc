@@ -921,14 +921,6 @@ void WebContentsViewAndroid::NotifyVirtualKeyboardOverlayRect(
     rwhv->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
 }
 
-void WebContentsViewAndroid::NotifyContextMenuInsetsObservers(
-    const gfx::Rect& safe_area) {
-  auto* rwhv = GetRenderWidgetHostViewAndroid();
-  if (rwhv) {
-    rwhv->NotifyContextMenuInsetsObservers(safe_area);
-  }
-}
-
 void WebContentsViewAndroid::ShowInterestInElement(int nodeID) {
   auto* rwhv = GetRenderWidgetHostViewAndroid();
   if (rwhv) {

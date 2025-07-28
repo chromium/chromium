@@ -273,7 +273,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       std::optional<base::TimeDelta> deadline_override) override;
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
   void ShowInterestInElement(int) override;
   void OnPointerLockRelease() override;
 

@@ -61,8 +61,6 @@ void EventHandlerAndroid::OnControlsResizeViewChanged() {}
 void EventHandlerAndroid::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {}
 
-void EventHandlerAndroid::NotifyContextMenuInsetsObservers(const gfx::Rect&) {}
-
 void EventHandlerAndroid::ShowInterestInElement(int) {}
 
 void EventHandlerAndroid::OnPointerLockRelease() {}

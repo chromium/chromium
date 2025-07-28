@@ -236,8 +236,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
 
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&);
-
   void ShowInterestInElement(int);
 
   void SetLayoutForTesting(int x, int y, int width, int height);

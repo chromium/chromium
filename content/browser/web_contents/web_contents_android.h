@@ -202,12 +202,6 @@ class CONTENT_EXPORT WebContentsAndroid {
                                 int bottom,
                                 int right);
 
-  void SetContextMenuInsets(JNIEnv* env,
-                            int top,
-                            int left,
-                            int bottom,
-                            int right);
-
   void ShowInterestInElement(JNIEnv* env, int nodeID);
 
   void NotifyRendererPreferenceUpdate(JNIEnv* env);

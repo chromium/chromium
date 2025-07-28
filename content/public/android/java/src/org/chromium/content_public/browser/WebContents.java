@@ -556,14 +556,6 @@ public interface WebContents extends Parcelable {
     void setDisplayCutoutSafeArea(Rect insets);
 
     /**
-     * Sets the context menu "safe area" of the WebContents. These are insets from each edge in
-     * physical pixels.
-     *
-     * @param insets The insets stored in a Rect.
-     */
-    void setContextMenuInsets(Rect insets);
-
-    /**
      * Instructs the web contents to "show interest" in the Element corresponding to the provided
      * nodeID.
      *

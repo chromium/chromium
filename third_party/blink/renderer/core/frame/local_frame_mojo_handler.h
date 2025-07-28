@@ -109,7 +109,6 @@ class LocalFrameMojoHandler
   void NotifyUserActivation(
       mojom::blink::UserActivationNotificationType notification_type) final;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect) final;
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&) final;
   void ShowInterestInElement(int) final;
   void AddMessageToConsole(mojom::blink::ConsoleMessageLevel level,
                            const WTF::String& message,

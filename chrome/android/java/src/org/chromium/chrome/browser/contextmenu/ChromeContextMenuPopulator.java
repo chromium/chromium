@@ -446,12 +446,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
                     }
                 }
-                if (mParams.getOpenedFromInterestFor() && mParams.getInterestForNodeID() != 0) {
-                    // This is a context menu for a link with `interestfor`. If the node ID is
-                    // valid, then we should add a context menu item to show interest in the link.
-                    // There is a static_assert in ContextMenuController::ShowContextMenu() that
-                    // ensures "zero" means invalid. This item will only be created if the
-                    // HTMLInterestForAttribute flag is enabled.
+                if (mParams.getOpenedFromInterestFor()) {
+                    // This is a context menu for a link with `interestfor`. Add a context menu
+                    // item to show interest in the link. This item will only be created if the
+                    // HTMLInterestForAttribute runtime flag is enabled.
                     linkGroup.add(createListItem(Item.SHOW_INTEREST_IN_ELEMENT));
                 }
                 if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)

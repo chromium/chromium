@@ -300,8 +300,6 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) = 0;
 
-  virtual void NotifyContextMenuInsetsObservers(const gfx::Rect&) = 0;
-
   virtual void ShowInterestInElement(int) = 0;
 
   // Returns true if this widget is a HTML popup, e.g. a <select> menu.

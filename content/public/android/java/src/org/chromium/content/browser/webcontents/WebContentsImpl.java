@@ -1146,18 +1146,6 @@ public class WebContentsImpl
     }
 
     @Override
-    public void setContextMenuInsets(Rect insets) {
-        if (mNativeWebContentsAndroid == 0) return;
-        WebContentsImplJni.get()
-                .setContextMenuInsets(
-                        mNativeWebContentsAndroid,
-                        insets.top,
-                        insets.left,
-                        insets.bottom,
-                        insets.right);
-    }
-
-    @Override
     public void showInterestInElement(int nodeID) {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().showInterestInElement(mNativeWebContentsAndroid, nodeID);
@@ -1454,9 +1442,6 @@ public class WebContentsImpl
         void setFocus(long nativeWebContentsAndroid, boolean focused);
 
         void setDisplayCutoutSafeArea(
-                long nativeWebContentsAndroid, int top, int left, int bottom, int right);
-
-        void setContextMenuInsets(
                 long nativeWebContentsAndroid, int top, int left, int bottom, int right);
 
         void showInterestInElement(long nativeWebContentsAndroid, int nodeID);

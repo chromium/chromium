@@ -2623,16 +2623,6 @@
       origin_trial_feature_name: "HTMLInterestForAttribute",
       origin_trial_allows_third_party: true,
     },
-    // Enables the "context menu item only" behavior mode for the
-    // `interestfor` API. In this mode, the context menu is displayed in the
-    // "normal" location, but an additional line item is added to the menu which
-    // allows the user to show interest. This is enabled by default, but depends
-    // on HTMLInterestForAttribute.
-    {
-      name: "HTMLInterestForContextMenuItemOnly",
-      status: "stable",
-      depends_on: ["HTMLInterestForAttribute"],
-    },
     {
       // Prevents the HTMLLinkElement processing model from being invoked when
       // attributes are processed but their value doesn't change. See

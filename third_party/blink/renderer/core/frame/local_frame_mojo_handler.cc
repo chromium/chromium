@@ -570,11 +570,6 @@ void LocalFrameMojoHandler::NotifyVirtualKeyboardOverlayRect(
   frame_->NotifyVirtualKeyboardOverlayRectObservers(scaled_rect);
 }
 
-void LocalFrameMojoHandler::NotifyContextMenuInsetsObservers(
-    const gfx::Rect& safe_area) {
-  frame_->NotifyContextMenuInsetsObservers(safe_area);
-}
-
 void LocalFrameMojoHandler::ShowInterestInElement(int nodeID) {
   frame_->ShowInterestInElement(nodeID);
 }

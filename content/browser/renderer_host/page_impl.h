@@ -214,7 +214,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // would be used in that context.
   // See https://github.com/w3c/csswg-drafts/issues/4670.
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&);
 
   // This call will "show interest" in the Element with the provided DOMNodeID,
   // which is presumed to have an `interestfor` attribute.

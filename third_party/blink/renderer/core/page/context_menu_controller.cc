@@ -512,14 +512,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         auto* context = element->GetDocument().GetExecutionContext();
         CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(context));
         data.opened_from_interest_for = true;
-        if (RuntimeEnabledFeatures::HTMLInterestForContextMenuItemOnlyEnabled(
-                context)) {
-          data.interest_for_node_id = element->NodeID();
-        } else {
-          static_assert(kInvalidDOMNodeId == 0,
-                        "The Android Java code assumes 0 === invalid");
-          data.interest_for_node_id = kInvalidDOMNodeId;
-        }
+        data.interest_for_node_id = element->NodeID();
         break;
       }
     }
