@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "net/base/features.h"
 #include "net/base/pickle.h"
 #include "net/base/pickle_base_types.h"
 #include "net/base/pickle_traits.h"
@@ -355,6 +356,12 @@ class NoVarySearchCacheStorage::Loader final {
     if (!operations_->Init()) {
       return GiveUp(Result::kOperationsInitFailed);
     }
+
+    if (features::kHttpCacheNoVarySearchFakePersistence.Get()) {
+      std::ignore = StartFromScratch(Result::kSnapshotLoadFailed);
+      return base::unexpected(LoadFailed::kCannotJournal);
+    }
+
     auto maybe_load_result = operations_->Load(kSnapshotFilename, kMaxFileSize);
     if (!maybe_load_result.has_value()) {
       base::UmaHistogramExactLinear("HttpCache.NoVarySearch.SnapshotLoadError",

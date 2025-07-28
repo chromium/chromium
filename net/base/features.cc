@@ -781,6 +781,12 @@ BASE_FEATURE_PARAM(bool,
                    "persistence_enabled",
                    true);
 
+BASE_FEATURE_PARAM(bool,
+                   kHttpCacheNoVarySearchFakePersistence,
+                   &kHttpCacheNoVarySearch,
+                   "fake_persistence",
+                   false);
+
 BASE_FEATURE(kReportingApiCorsOriginHeader,
              "ReportingApiCorsOriginHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
