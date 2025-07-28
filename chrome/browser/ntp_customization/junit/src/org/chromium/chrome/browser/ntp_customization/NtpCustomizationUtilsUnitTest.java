@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ntp_customization;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
 
@@ -17,11 +19,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 
 import java.io.File;
 
@@ -29,6 +34,7 @@ import java.io.File;
 @RunWith(BaseRobolectricTestRunner.class)
 public class NtpCustomizationUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Tab mTab;
 
     @Test
     @SmallTest
@@ -114,5 +120,22 @@ public class NtpCustomizationUtilsUnitTest {
 
         // Verifies that the bitmap read from the file matches the original bitmap.
         assertTrue(bitmap.sameAs(bitmapResult));
+    }
+
+    @Test
+    public void testSupportsEnableEdgeToEdgeOnTop() {
+        assertFalse(NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(null));
+
+        when(mTab.isNativePage()).thenReturn(false);
+        assertFalse(NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mTab));
+
+        when(mTab.isNativePage()).thenReturn(true);
+        NativePage nativePage = mock(NativePage.class);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+        assertFalse(nativePage.supportsEdgeToEdgeOnTop());
+        assertFalse(NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mTab));
+
+        when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        assertTrue(NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mTab));
     }
 }

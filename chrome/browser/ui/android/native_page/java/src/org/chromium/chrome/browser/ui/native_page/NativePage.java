@@ -88,8 +88,16 @@ public interface NativePage {
      */
     boolean needsToolbarShadow();
 
-    /** Whether the native page supports drawing edge to edge. */
+    /** Whether the native page supports drawing edge to edge into the bottom system bar insets. */
     default boolean supportsEdgeToEdge() {
+        return false;
+    }
+
+    /**
+     * Whether the native page supports drawing edge to edge into the top system bar insets e.g.
+     * status bar.
+     */
+    default boolean supportsEdgeToEdgeOnTop() {
         return false;
     }
 

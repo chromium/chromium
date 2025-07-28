@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -84,6 +85,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
     @Nullable private final ExclusiveAccessManager mExclusiveAccessManager;
     private NativePageFactory mNativePageFactory;
@@ -114,6 +116,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
             @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             StartupMetricsTracker startupMetricsTracker,
             @Nullable ExclusiveAccessManager exclusiveAccessManager) {
         mActivity = activity;
@@ -141,6 +144,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
         mExclusiveAccessManager = exclusiveAccessManager;
     }
@@ -212,6 +216,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
+                            mTopInsetCoordinatorSupplier,
                             mStartupMetricsTracker);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab, pdfInfo);

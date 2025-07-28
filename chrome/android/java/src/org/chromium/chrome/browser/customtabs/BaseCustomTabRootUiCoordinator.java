@@ -257,6 +257,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 tabContentManagerSupplier,
                 snackbarManagerSupplier,
                 edgeToEdgeControllerSupplier,
+                new ObservableSupplierImpl<>(),
                 activityType,
                 isInOverviewModeSupplier,
                 appMenuDelegate,

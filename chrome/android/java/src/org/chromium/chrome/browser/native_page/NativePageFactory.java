@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageCreationTracker;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
 import org.chromium.chrome.browser.ntp.RecentTabsPage;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,6 +79,7 @@ public class NativePageFactory {
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private NewTabPageCreationTracker mNewTabPageCreationTracker;
 
@@ -101,6 +103,7 @@ public class NativePageFactory {
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
             @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @NonNull ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             @NonNull StartupMetricsTracker startupMetricsTracker) {
         mActivity = activity;
         mBottomSheetController = sheetController;
@@ -118,6 +121,7 @@ public class NativePageFactory {
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
     }
 
@@ -142,6 +146,7 @@ public class NativePageFactory {
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
+                            mTopInsetCoordinatorSupplier,
                             mStartupMetricsTracker);
         }
         return mNativePageBuilder;
@@ -174,6 +179,7 @@ public class NativePageFactory {
         private final ObservableSupplier<Integer> mTabStripHeightSupplier;
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
         private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+        private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
         private final StartupMetricsTracker mStartupMetricsTracker;
 
         public NativePageBuilder(
@@ -194,6 +200,7 @@ public class NativePageFactory {
                 ObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
                 ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+                ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
                 StartupMetricsTracker startupMetricsTracker) {
             mActivity = activity;
             mNewTabPageCreationTracker = newTabPageCreationTracker;
@@ -212,6 +219,7 @@ public class NativePageFactory {
             mTabStripHeightSupplier = tabStripHeightSupplier;
             mModuleRegistrySupplier = moduleRegistrySupplier;
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+            mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
             mStartupMetricsTracker = startupMetricsTracker;
         }
 
@@ -250,6 +258,7 @@ public class NativePageFactory {
                     mTabStripHeightSupplier,
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,
+                    mTopInsetCoordinatorSupplier,
                     mStartupMetricsTracker);
         }
 

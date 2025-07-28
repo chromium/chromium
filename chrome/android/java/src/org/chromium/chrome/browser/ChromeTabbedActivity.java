@@ -178,6 +178,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -463,6 +464,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private final OneshotSupplierImpl<HubManager> mHubManagerSupplier = new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<TopInsetCoordinator> mTopInsetCoordinatorSupplier =
+            new ObservableSupplierImpl<>();
     private final IncognitoTabHost mIncognitoTabHost =
             new IncognitoTabHost() {
                 @Override
@@ -2714,6 +2717,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
                 mEdgeToEdgeControllerSupplier,
+                mTopInsetCoordinatorSupplier,
                 mBottomChinSupplier,
                 getActivityType(),
                 this::isInOverviewMode,
@@ -3222,6 +3226,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             getToolbarManager().getTabStripHeightSupplier(),
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
+                            mTopInsetCoordinatorSupplier,
                             getStartupMetricsTracker(),
                             mRootUiCoordinator.getExclusiveAccessManager());
         }

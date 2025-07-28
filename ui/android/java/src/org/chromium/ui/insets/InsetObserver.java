@@ -120,6 +120,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             InsetConsumerSource.TEST_SOURCE,
             InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK,
             InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION,
+            InsetConsumerSource.TOP_INSET_COORDINATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_CREATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
             InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
@@ -137,17 +138,22 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             // critical to drawing the tab strip in the caption bar area in a desktop window
             // correctly.
             int APP_HEADER_COORDINATOR_CAPTION = 2;
+
+            // The TopInsetCoordinator should be placed before EDGE_TO_EDGE_LAYOUT_COORDINATOR since
+            // it consumes the top padding (Status bar).
+            int TOP_INSET_COORDINATOR = 3;
+
             // The EdgeToEdgeControllerCreator exists only to create the EdgeToEdgeControllerImpl
             // if the current configuration (including window insets) indicate that the current
             // devices supports the bottom chin feature. This creator will remove itself as an
             // inset consumer if it creates the EdgeToEdgeControllerImpl.
-            int EDGE_TO_EDGE_CONTROLLER_CREATOR = 3;
-            int EDGE_TO_EDGE_CONTROLLER_IMPL = 4;
-            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 5;
-            int APP_HEADER_COORDINATOR_BOTTOM = 6;
+            int EDGE_TO_EDGE_CONTROLLER_CREATOR = 4;
+            int EDGE_TO_EDGE_CONTROLLER_IMPL = 5;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 6;
+            int APP_HEADER_COORDINATOR_BOTTOM = 7;
 
             // Update this whenever a consumer source is added or removed.
-            int COUNT = 7;
+            int COUNT = 8;
         }
     }
 

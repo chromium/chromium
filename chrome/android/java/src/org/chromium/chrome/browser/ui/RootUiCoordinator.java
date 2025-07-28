@@ -100,6 +100,8 @@ import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -351,6 +353,8 @@ public class RootUiCoordinator
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final boolean mIsTablet;
+    private final ObservableSupplierImpl<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private @Nullable ToolbarControlContainer mToolbarContainer;
     private final ExclusiveAccessManager mExclusiveAccessManager;
 
@@ -385,6 +389,7 @@ public class RootUiCoordinator
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController}.
+     * @param topInsetCoordinatorSupplier Suppliers an {@link TopInsetCoordinator}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param appMenuDelegate The app menu delegate.
@@ -428,6 +433,7 @@ public class RootUiCoordinator
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @NonNull ObservableSupplierImpl<TopInsetCoordinator> topInsetCoordinatorSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
@@ -458,6 +464,7 @@ public class RootUiCoordinator
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mAppMenuDelegate = appMenuDelegate;
@@ -514,13 +521,13 @@ public class RootUiCoordinator
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
         mOverviewColorSupplier = overviewColorSupplier;
 
-        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
+        mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =
                 new TopUiThemeColorProvider(
                         mActivity,
                         mActivityTabProvider,
                         activityThemeColorSupplier,
-                        isTablet,
+                        mIsTablet,
                         shouldAllowThemingInNightMode(),
                         shouldAllowBrightThemeColors(),
                         shouldAllowThemingOnTablets());
@@ -765,6 +772,10 @@ public class RootUiCoordinator
             mEdgeToEdgeBottomChin.destroy();
         }
 
+        if (mTopInsetCoordinatorSupplier.hasValue()) {
+            mTopInsetCoordinatorSupplier.get().destroy();
+        }
+
         if (mBoardingPassController != null) {
             mBoardingPassController.destroy();
             mBoardingPassController = null;
@@ -974,6 +985,15 @@ public class RootUiCoordinator
                             mFullscreenManager,
                             mCompositorViewHolderSupplier.get(),
                             mBackPressManager);
+        }
+
+        if (mWindowAndroid.getInsetObserver() != null
+                && NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                        mWindowAndroid, mIsTablet)) {
+            var topInsetCoordinator =
+                    new TopInsetCoordinator(
+                            mActivityTabProvider, mWindowAndroid.getInsetObserver());
+            mTopInsetCoordinatorSupplier.set(topInsetCoordinator);
         }
     }
 

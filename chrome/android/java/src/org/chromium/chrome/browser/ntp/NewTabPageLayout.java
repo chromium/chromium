@@ -1294,6 +1294,10 @@ public class NewTabPageLayout extends LinearLayout
         mFakeSearchBoxEditText.setHint(newHint);
     }
 
+    void onTopInsetChange(int topInsect) {
+        // TODO(https://crbug.com/432527690): Implement here.
+    }
+
     private boolean isInSingleUrlMode() {
         return mSearchProviderHasLogo || mIsOmniboxMobileParityUpdateV2Enabled;
     }
