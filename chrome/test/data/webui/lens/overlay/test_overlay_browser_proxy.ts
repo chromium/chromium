@@ -26,6 +26,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'closeRequestedByOverlayCloseButton',
       'closeRequestedByOverlayBackgroundClick',
       'addBackgroundBlur',
+      'setLiveBlur',
       'closePreselectionBubble',
       'feedbackRequestedByOverlay',
       'getOverlayInvocationSource',
@@ -63,6 +64,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   addBackgroundBlur() {
     this.methodCalled('addBackgroundBlur');
+  }
+
+  setLiveBlur() {
+    this.methodCalled('setLiveBlur');
   }
 
   closePreselectionBubble() {

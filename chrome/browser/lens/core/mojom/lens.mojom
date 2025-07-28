@@ -94,6 +94,9 @@ interface LensPageHandler {
   // tab contents.
   AddBackgroundBlur();
 
+  // Enables/disables the live blurring of the background
+  SetLiveBlur(bool enabled);
+
   // When this method is called, the C++ coordinator will show the feedback
   // dialog.
   FeedbackRequestedByOverlay();

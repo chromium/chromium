@@ -1338,6 +1338,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     this.browserProxy.handler.addBackgroundBlur();
 
+    // TODO(crbug.com/433758209): onInitialFlashAnimationEnd is currently a
+    // proxy for when to start blurring, but ideally the live blur is kept in
+    // sync with this.isResized.
+    this.browserProxy.handler.setLiveBlur(this.isResized);
+
     // Let the parent know the initial flash image animation has finished.
     this.dispatchEvent(new CustomEvent(
         'initial-flash-animation-end', {bubbles: true, composed: true}));

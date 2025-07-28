@@ -46,6 +46,8 @@ class LensOverlayBlurLayerDelegate : public ui::LayerOwner,
   // new layer size.
   void StopBackgroundImageCapture();
 
+  bool IsCapturingBackgroundImageForTesting();
+
  private:
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;

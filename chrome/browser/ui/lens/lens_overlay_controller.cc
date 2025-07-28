@@ -397,6 +397,11 @@ uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
   return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
 
+lens::LensOverlayBlurLayerDelegate*
+LensOverlayController::GetLensOverlayBlurLayerDelegateForTesting() {
+  return lens_overlay_blur_layer_delegate_.get();
+}
+
 views::View* LensOverlayController::GetOverlayViewForTesting() {
   return overlay_view_.get();
 }

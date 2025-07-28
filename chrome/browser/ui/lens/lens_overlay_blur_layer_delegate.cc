@@ -66,6 +66,10 @@ void LensOverlayBlurLayerDelegate::StopBackgroundImageCapture() {
   screenshot_timer_.Stop();
 }
 
+bool LensOverlayBlurLayerDelegate::IsCapturingBackgroundImageForTesting() {
+  return screenshot_timer_.IsRunning();
+}
+
 void LensOverlayBlurLayerDelegate::OnPaintLayer(
     const ui::PaintContext& context) {
   if (background_screenshot_.drawsNothing()) {

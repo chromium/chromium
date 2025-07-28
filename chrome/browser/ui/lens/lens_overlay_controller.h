@@ -241,6 +241,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // logging.
   uint64_t GetInvocationTimeSinceEpoch();
 
+  // Testing helper method for checking the blur layer delegate.
+  lens::LensOverlayBlurLayerDelegate*
+  GetLensOverlayBlurLayerDelegateForTesting();
+
   // Testing helper method for checking view housing our overlay.
   views::View* GetOverlayViewForTesting();
 
@@ -718,10 +722,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // the page bytes can't be uploaded.
   void SuppressGhostLoader();
 
-  // Enables/disables the background blur updating live. This should be used to
-  // save resources on blurring the background when not needed.
-  void SetLiveBlur(bool enabled);
-
   // Called when the UI needs to show the overlay via a view that is a child of
   // the tab contents view.
   void ShowOverlay();
@@ -830,6 +830,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void ActivityRequestedByOverlay(
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   void AddBackgroundBlur() override;
+  void SetLiveBlur(bool enabled) override;
   void ClosePreselectionBubble() override;
   void CloseRequestedByOverlayCloseButton() override;
   void CloseRequestedByOverlayBackgroundClick() override;
