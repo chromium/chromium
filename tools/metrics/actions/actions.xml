@@ -24884,6 +24884,15 @@ should be able to be added at any place in this file.
   <description>User pressed 'New incognito tab' in the app menu.</description>
 </action>
 
+<action name="MobileMenuNewIncognitoTab.BeforeTabRestore">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    User pressed 'New incognito tab' in the app menu before tab restore
+    completed.
+  </description>
+</action>
+
 <action name="MobileMenuNewIncognitoWindow">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -24895,6 +24904,14 @@ should be able to be added at any place in this file.
 <action name="MobileMenuNewTab">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'New tab' in the app menu.</description>
+</action>
+
+<action name="MobileMenuNewTab.BeforeTabRestore">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    User pressed 'New tab' in the app menu before tab restore completed.
+  </description>
 </action>
 
 <action name="MobileMenuNewTab.StartSurfaceFinale">
