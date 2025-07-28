@@ -85,6 +85,12 @@ export class SettingsPeoplePageIndexElement extends
               'syncControls', 'no-animation', 'no-animation');
           break;
         // <if expr="not is_chromeos">
+        case routes.SIGN_OUT:
+          // Switch to settings-people-page since the sign out dialog resides
+          // there, otherwise it will not be visible even if open.
+          this.$.viewManager.switchView(
+              'parent', 'no-animation', 'no-animation');
+          break;
         case routes.ACCOUNT:
           assert(this.shouldShowAccountSettingsPage_);
           this.$.viewManager.switchView(
