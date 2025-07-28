@@ -733,7 +733,8 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
       if (live_caption_dialog_ && live_caption_dialog_->GetVisible() &&
           !GetLiveCaptionDialogBounds().Contains(event->location()) &&
           !GetLiveCaptionButtonBounds().Contains(event->location())) {
-        live_caption_dialog_->SetVisible(false);
+        SetLiveCaptionDialogVisibility(false);
+        return;
       }
       break;
 
@@ -2375,7 +2376,8 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
   if (live_caption_dialog_ && live_caption_dialog_->GetVisible() &&
       !GetLiveCaptionDialogBounds().Contains(event->location()) &&
       !GetLiveCaptionButtonBounds().Contains(event->location())) {
-    live_caption_dialog_->SetVisible(false);
+    SetLiveCaptionDialogVisibility(false);
+    return;
   }
 
   if (GetBackToTabControlsBounds().Contains(event->location())) {
@@ -2801,7 +2803,32 @@ void VideoOverlayWindowViews::UpdateTimestampLabel(base::TimeDelta current_time,
 }
 
 void VideoOverlayWindowViews::OnLiveCaptionButtonPressed() {
-  live_caption_dialog_->SetVisible(!live_caption_dialog_->GetVisible());
+  SetLiveCaptionDialogVisibility(!live_caption_dialog_->GetVisible());
+}
+
+void VideoOverlayWindowViews::SetLiveCaptionDialogVisibility(
+    bool wanted_visibility) {
+  if (wanted_visibility == live_caption_dialog_->GetVisible()) {
+    return;
+  }
+  live_caption_dialog_->SetVisible(wanted_visibility);
+
+  views::View* controls_to_be_disabled_when_live_caption_is_open[] = {
+      minimize_button_.get(),
+      back_to_tab_button_.get(),
+      close_controls_view_.get(),
+      replay_10_seconds_button_.get(),
+      play_pause_controls_view_.get(),
+      forward_10_seconds_button_.get(),
+      previous_track_controls_view_.get(),
+      progress_view_.get(),
+      next_track_controls_view_.get(),
+      toggle_camera_button_.get(),
+      toggle_microphone_button_.get(),
+      hang_up_button_.get()};
+  for (auto* control : controls_to_be_disabled_when_live_caption_is_open) {
+    control->SetEnabled(!wanted_visibility);
+  }
 }
 
 void VideoOverlayWindowViews::OnFaviconReceived(const SkBitmap& image) {

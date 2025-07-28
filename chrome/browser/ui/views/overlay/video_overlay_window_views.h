@@ -352,6 +352,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
                             base::TimeDelta duration);
 
   void OnLiveCaptionButtonPressed();
+  void SetLiveCaptionDialogVisibility(bool wanted_visibility);
 
   void OnFaviconReceived(const SkBitmap& image);
   void UpdateFavicon(const gfx::ImageSkia& favicon);
