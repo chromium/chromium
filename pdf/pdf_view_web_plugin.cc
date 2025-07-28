@@ -2982,7 +2982,7 @@ bool PdfViewWebPlugin::FindAndHighlightTextFragments(
 
 void PdfViewWebPlugin::ScrollTextFragmentIntoView() {
   if (engine_) {
-    engine_->ScrollToFirstTextFragment(/*force_smooth_scroll=*/false);
+    engine_->ScrollToFirstTextFragment(/*force_smooth_scroll=*/true);
   }
 }
 

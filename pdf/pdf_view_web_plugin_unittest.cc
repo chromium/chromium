@@ -3564,7 +3564,8 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest,
 TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, ScrollIntoView) {
   EXPECT_CALL(*engine_ptr_, FindAndHighlightTextFragments)
       .WillOnce(Return(true));
-  EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
+  EXPECT_CALL(*engine_ptr_,
+              ScrollToFirstTextFragment(/*force_smooth_scroll=*/true));
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
   fake_annotation_agent_host_->ScrollIntoView();
 }
@@ -3575,13 +3576,15 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, ConsecutiveQueries) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*engine_ptr_, RemoveTextFragments);
   {
-    EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
+    EXPECT_CALL(*engine_ptr_,
+                ScrollToFirstTextFragment(/*force_smooth_scroll=*/true));
     CreateAgent(
         blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
     fake_annotation_agent_host_->ScrollIntoView();
   }
   {
-    EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
+    EXPECT_CALL(*engine_ptr_,
+                ScrollToFirstTextFragment(/*force_smooth_scroll=*/true));
     CreateAgent(
         blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
     fake_annotation_agent_host_->ScrollIntoView();
