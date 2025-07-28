@@ -59,7 +59,38 @@ class FreWebUiStateObserver
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FreWebUiStateObserver, kFreWebUiState);
 
-class GlicFreControllerUiTest : public test::InteractiveGlicTest {
+// Test base class for tests that need to control the FRE.
+class GlicFreControllerUiTestBase : public test::InteractiveGlicTest {
+ public:
+  void SetUp() override { test::InteractiveGlicTest::SetUp(); }
+
+  void SetUpOnMainThread() override {
+    test::InteractiveGlicTest::SetUpOnMainThread();
+    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
+    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url().spec());
+  }
+
+  GlicFreController* GetFreController() {
+    return glic_service()->window_controller().fre_controller();
+  }
+
+  net::EmbeddedTestServer& fre_server() { return fre_server_; }
+  const GURL& fre_url() { return fre_url_; }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+  net::EmbeddedTestServer fre_server_;
+  GURL fre_url_;
+  base::HistogramTester histogram_tester_;
+};
+
+class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
  public:
   void SetUp() override {
     // TODO(b/399666689): Warming chrome://glic/ seems to allow that page to
@@ -79,30 +110,7 @@ class GlicFreControllerUiTest : public test::InteractiveGlicTest {
 
     fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
 
-    InteractiveGlicTestT::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    InteractiveGlicTestT::SetUpOnMainThread();
-    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
-    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url_.spec());
-  }
-
-  net::EmbeddedTestServer& fre_server() { return fre_server_; }
-  const GURL& fre_url() { return fre_url_; }
-
-  [[nodiscard]] StepBuilder HoverButton(ElementSpecifier button);
-
-  GlicKeyedService* GetService() {
-    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-  }
-
-  GlicFreController* GetFreController() {
-    return GetService()->window_controller().fre_controller();
+    GlicFreControllerUiTestBase::SetUp();
   }
 
   auto WaitForAndInstrumentGlicFre() {
@@ -156,13 +164,7 @@ class GlicFreControllerUiTest : public test::InteractiveGlicTest {
     return steps;
   }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  base::test::ScopedFeatureList features_;
-  net::EmbeddedTestServer fre_server_;
-  GURL fre_url_;
-  base::HistogramTester histogram_tester_;
+  [[nodiscard]] StepBuilder HoverButton(ElementSpecifier button);
 };
 
 ui::test::InteractiveTestApi::StepBuilder GlicFreControllerUiTest::HoverButton(
@@ -361,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
       })));
 }
 
-class GlicFreControllerUiHttpErrorTest : public test::InteractiveGlicTest {
+class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
  public:
   void SetUp() override {
     features_.InitWithFeatures(
@@ -387,37 +389,8 @@ class GlicFreControllerUiHttpErrorTest : public test::InteractiveGlicTest {
 
     fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
 
-    InteractiveGlicTestT::SetUp();
+    GlicFreControllerUiTestBase::SetUp();
   }
-
-  void SetUpOnMainThread() override {
-    InteractiveGlicTestT::SetUpOnMainThread();
-    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
-    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url_.spec());
-  }
-
-  GlicKeyedService* GetService() {
-    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-  }
-
-  GlicFreController* GetFreController() {
-    return GetService()->window_controller().fre_controller();
-  }
-
-  net::EmbeddedTestServer& fre_server() { return fre_server_; }
-  const GURL& fre_url() { return fre_url_; }
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  base::test::ScopedFeatureList features_;
-  net::EmbeddedTestServer fre_server_;
-  GURL fre_url_;
-  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiHttpErrorTest,
@@ -444,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiHttpErrorTest,
                                          {"#errorPanel:not([hidden])"})));
 }
 
-class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
+class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTestBase {
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
@@ -458,7 +431,9 @@ class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
     // first. It's also unclear whether it ought to happen at all before FRE
     // completion. Disable that feature until that can be sorted out.
     features_.InitWithFeaturesAndParameters(
-        enabled_features, {features::kGlicWarming, features::kGlicFreWarming});
+        enabled_features,
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
 
     fre_server_.AddDefaultHandlers();
     fre_server_.ServeFilesFromDirectory(
@@ -468,37 +443,8 @@ class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
 
     fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
 
-    InteractiveGlicTestT::SetUp();
+    GlicFreControllerUiTestBase::SetUp();
   }
-
-  void SetUpOnMainThread() override {
-    InteractiveGlicTestT::SetUpOnMainThread();
-    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
-    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url_.spec());
-  }
-
-  GlicFreController* GetFreController() {
-    return GetService()->window_controller().fre_controller();
-  }
-
-  net::EmbeddedTestServer& fre_server() { return fre_server_; }
-  const GURL& fre_url() { return fre_url_; }
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  GlicKeyedService* GetService() {
-    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-  }
-
-  base::test::ScopedFeatureList features_;
-  net::EmbeddedTestServer fre_server_;
-  GURL fre_url_;
-  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
