@@ -523,21 +523,6 @@
             ]
         }
     ],
-    "AllowTabClosingUponMinimization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AllowTabClosingUponMinimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidAnimateSuggestionsListAppearance": [
         {
             "platforms": [
