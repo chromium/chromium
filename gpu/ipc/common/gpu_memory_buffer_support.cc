@@ -192,19 +192,4 @@ GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations() {
   return configurations;
 }
 
-bool GpuMemoryBufferSupport::IsConfigurationSupportedForTest(
-    gfx::GpuMemoryBufferType type,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  if (type == GetNativeGpuMemoryBufferType()) {
-    return IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
-  }
-
-  if (type == gfx::SHARED_MEMORY_BUFFER) {
-    return true;
-  }
-
-  NOTREACHED();
-}
-
 }  // namespace gpu

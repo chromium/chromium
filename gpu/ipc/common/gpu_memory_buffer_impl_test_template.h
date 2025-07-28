@@ -120,8 +120,8 @@ class GpuMemoryBufferImplTest : public testing::Test {
     // GmbImplTestNativePixmap is a no-op, we should run it on a gpu runner.
 #if BUILDFLAG(IS_OZONE)
     // TODO(329211602): Currently only wayland has a valid
-    // IsConfigurationSupportedForTest. We should implement that in X11 and
-    // other platforms either.
+    // IsNativeGpuMemoryBufferConfigurationSupportedForTesting. We should
+    // implement that in X11 and other platforms either.
     if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
       run_gpu_test_ = true;
     }
@@ -216,9 +216,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
-      if (!TestFixture::gpu_memory_buffer_support()
-               ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
-                                                 usage)) {
+      if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+          !TestFixture::gpu_memory_buffer_support()
+               ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
+                   format, usage)) {
         continue;
       }
 
@@ -255,9 +256,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
-      if (!TestFixture::gpu_memory_buffer_support()
-               ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
-                                                 usage)) {
+      if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+          !TestFixture::gpu_memory_buffer_support()
+               ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
+                   format, usage)) {
         continue;
       }
 
@@ -290,10 +292,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
   const gfx::Size kBufferSize(4, 4);
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
-    if (!TestFixture::gpu_memory_buffer_support()
-             ->IsConfigurationSupportedForTest(
-                 TypeParam::kBufferType, format,
-                 gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+    if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+        !TestFixture::gpu_memory_buffer_support()
+             ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
+                 format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -352,10 +354,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
   const gfx::Size kBufferSize(4, 4);
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
-    if (!TestFixture::gpu_memory_buffer_support()
-             ->IsConfigurationSupportedForTest(
-                 TypeParam::kBufferType, format,
-                 gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+    if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+        !TestFixture::gpu_memory_buffer_support()
+             ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
+                 format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -442,9 +444,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
-      if (!TestFixture::gpu_memory_buffer_support()
-               ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
-                                                 usage)) {
+      if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+          !TestFixture::gpu_memory_buffer_support()
+               ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
+                   format, usage)) {
         continue;
       }
 
@@ -483,9 +486,10 @@ TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
   gfx::BufferUsage usage = gfx::BufferUsage::GPU_READ;
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
-    if (!TestFixture::gpu_memory_buffer_support()
-             ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
-                                               usage)) {
+    if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
+        !TestFixture::gpu_memory_buffer_support()
+             ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
+                                                                       usage)) {
       continue;
     }
     std::unique_ptr<TypeParam> buffer(
