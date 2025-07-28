@@ -5,13 +5,14 @@
 #include "components/autofill/core/browser/autofill_type.h"
 
 #include <string_view>
+#include <variant>
 #include <vector>
 
-#include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
@@ -45,28 +46,46 @@ bool AutofillType::ServerPrediction::is_override() const {
   return server_predictions.empty() ? false : server_predictions[0].override();
 }
 
-AutofillType::AutofillType() : server_type_(NO_SERVER_DATA) {}
+AutofillType::AutofillType() = default;
 
 AutofillType::AutofillType(FieldType field_type)
-    : server_type_(ToSafeFieldType(field_type, UNKNOWN_TYPE)) {}
+    : type_(ToSafeFieldType(field_type, UNKNOWN_TYPE)) {}
 
-AutofillType::AutofillType(HtmlFieldType field_type) : html_type_(field_type) {}
+AutofillType::AutofillType(HtmlFieldType field_type) : type_(field_type) {}
+
+HtmlFieldType AutofillType::html_type() const {
+  const HtmlFieldType* html_type = std::get_if<HtmlFieldType>(&type_);
+  return html_type ? *html_type : HtmlFieldType::kUnspecified;
+}
 
 FieldTypeGroup AutofillType::group() const {
-  return server_type_ != UNKNOWN_TYPE ? GroupTypeOfFieldType(server_type_)
-                                      : GroupTypeOfHtmlFieldType(html_type_);
+  return std::visit(absl::Overload{[](FieldType field_type) {
+                                     return GroupTypeOfFieldType(field_type);
+                                   },
+                                   [](HtmlFieldType html_type) {
+                                     return GroupTypeOfHtmlFieldType(html_type);
+                                   }},
+                    type_);
 }
 
 FieldType AutofillType::GetStorableType() const {
-  return server_type_ != UNKNOWN_TYPE
-             ? server_type_
-             : HtmlFieldTypeToBestCorrespondingFieldType(html_type_);
+  return std::visit(
+      absl::Overload{[](FieldType field_type) { return field_type; },
+                     [](HtmlFieldType html_type) {
+                       return HtmlFieldTypeToBestCorrespondingFieldType(
+                           html_type);
+                     }},
+      type_);
 }
 
 std::string_view AutofillType::ToStringView() const {
-  return html_type_ != HtmlFieldType::kUnspecified
-             ? FieldTypeToStringView(html_type_)
-             : FieldTypeToStringView(server_type_);
+  return std::visit(absl::Overload{[](FieldType field_type) {
+                                     return FieldTypeToStringView(field_type);
+                                   },
+                                   [](HtmlFieldType html_type) {
+                                     return FieldTypeToStringView(html_type);
+                                   }},
+                    type_);
 }
 
 }  // namespace autofill
