@@ -888,19 +888,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Permissions.OnDevicePredictionService.Response.{PermissionType}"
-    enum="BooleanIgnored" expires_after="2026-01-11">
-  <owner>ravjit@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded whenever the permissions prediction service(on-device) responds to
-    a {PermissionType} permission request. Records whether its response was
-    ignored or not.
-  </summary>
-  <token key="PermissionType" variants="Top2PermissionTypes"/>
-</histogram>
-
-<histogram
     name="Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen"
     enum="Boolean" expires_after="2026-01-04">
   <owner>tungnh@chromium.org</owner>
@@ -991,18 +978,6 @@ chromium-metrics-reviews@google.com.
     whether the request was sent to the local on-device prediction service or
     the server side prediction service.
   </summary>
-</histogram>
-
-<histogram name="Permissions.PredictionService.Response.{PermissionType}"
-    enum="BooleanIgnored" expires_after="2026-01-18">
-  <owner>ravjit@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded whenever the permissions prediction service(server-side) responds
-    to a {PermissionType} permission request. Records whether its response was
-    ignored or not.
-  </summary>
-  <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
 <histogram name="Permissions.PredictionService.SignatureModel.Mismatch"
@@ -1865,6 +1840,20 @@ chromium-metrics-reviews@google.com.
     available model.
   </summary>
   <token key="PredictionModel" variants="RelevanceOutputPredictionModels"/>
+</histogram>
+
+<histogram name="Permissions.{PredictionModel}.Response.{PermissionType}"
+    enum="BooleanIgnored" expires_after="2026-01-11">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a {PredictionModel} responds to a {PermissionType}
+    permission request. Records whether its response was ignored or not.
+  </summary>
+  <token key="PredictionModel" variants="PredictionModels"/>
+  <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.SnapshotTaken"
