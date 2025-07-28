@@ -212,6 +212,11 @@ public class MinimizeAppAndCloseTabBackPressHandler
         }
     }
 
+    @Override
+    public boolean invokeBackActionOnEscape() {
+        return false;
+    }
+
     private Pair<Boolean, Boolean> determineBackPressAction(@Nullable Tab currentTab) {
         boolean minimizeApp;
         boolean shouldCloseTab;

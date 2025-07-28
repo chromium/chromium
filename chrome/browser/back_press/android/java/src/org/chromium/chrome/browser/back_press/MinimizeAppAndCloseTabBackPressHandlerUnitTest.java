@@ -186,6 +186,14 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         histogram.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    public void testInvokeBackActionOnEscape() {
+        Assert.assertFalse(
+                "invokeBackActionOnEscape should return false.",
+                mHandler.invokeBackActionOnEscape());
+    }
+
     private void createBackPressHandler() {
         createBackPressHandler(false, false);
     }
