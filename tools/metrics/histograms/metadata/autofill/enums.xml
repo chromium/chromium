@@ -522,11 +522,6 @@ Called by update_autofill_enums.py.-->
   <int value="3840"
       label="COMPANY_NAME: Not autofilled or autofilled value edited"/>
   <int value="3841" label="COMPANY_NAME: Autofilled value accepted"/>
-  <int value="3904"
-      label="FIELD_WITH_DEFAULT_VALUE: Not autofilled or autofilled value
-             edited"/>
-  <int value="3905"
-      label="FIELD_WITH_DEFAULT_VALUE: Autofilled value accepted"/>
   <int value="4672"
       label="MERCHANT_EMAIL_SIGNUP: Not autofilled or autofilled value edited"/>
   <int value="4673" label="MERCHANT_EMAIL_SIGNUP: Autofilled value accepted"/>
@@ -1026,8 +1021,6 @@ Called by update_autofill_enums.py.-->
   <int value="945" label="CREDIT_CARD_VERIFICATION_CODE: accepted"/>
   <int value="960" label="COMPANY_NAME: edited"/>
   <int value="961" label="COMPANY_NAME: accepted"/>
-  <int value="976" label="FIELD_WITH_DEFAULT_VALUE: edited"/>
-  <int value="977" label="FIELD_WITH_DEFAULT_VALUE: accepted"/>
   <int value="1168" label="MERCHANT_EMAIL_SIGNUP: edited"/>
   <int value="1169" label="MERCHANT_EMAIL_SIGNUP: accepted"/>
   <int value="1184" label="MERCHANT_PROMO_CODE: edited"/>
@@ -1995,7 +1988,6 @@ Called by update_autofill_enums.py.-->
   <int value="58" label="CREDIT_CARD_TYPE"/>
   <int value="59" label="CREDIT_CARD_VERIFICATION_CODE"/>
   <int value="60" label="COMPANY_NAME"/>
-  <int value="61" label="FIELD_WITH_DEFAULT_VALUE"/>
   <int value="73" label="MERCHANT_EMAIL_SIGNUP"/>
   <int value="74" label="MERCHANT_PROMO_CODE"/>
   <int value="75" label="PASSWORD"/>
@@ -3570,8 +3562,6 @@ Called by update_autofill_enums.py.-->
   <int value="237" label="CREDIT_CARD_VERIFICATION_CODE: Accepted"/>
   <int value="240" label="COMPANY_NAME: Ignored"/>
   <int value="241" label="COMPANY_NAME: Accepted"/>
-  <int value="244" label="FIELD_WITH_DEFAULT_VALUE: Ignored"/>
-  <int value="245" label="FIELD_WITH_DEFAULT_VALUE: Accepted"/>
   <int value="292" label="MERCHANT_EMAIL_SIGNUP: Ignored"/>
   <int value="293" label="MERCHANT_EMAIL_SIGNUP: Accepted"/>
   <int value="296" label="MERCHANT_PROMO_CODE: Ignored"/>

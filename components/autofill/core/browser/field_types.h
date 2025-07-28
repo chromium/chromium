@@ -183,9 +183,7 @@ enum FieldType {
 
   COMPANY_NAME = 60,
 
-  // Generic type whose default value is known.
-  FIELD_WITH_DEFAULT_VALUE = 61,
-
+  // FIELD_WITH_DEFAULT_VALUE value 61 is deprecated.
   // PHONE_BILLING values [62, 66] are deprecated.
   // NAME_BILLING values [67, 72] are deprecated.
 
@@ -627,6 +625,8 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            t == 94 ||
            // Billing addresses (values [37,43], 78, 80, 82, 84) are deprecated.
            (37 <= t && t <= 43) || t == 78 || t == 80 || t == 82 || t == 84 ||
+           // FIELD_WITH_DEFAULT_VALUE is deprecated.
+           t == 61 ||
            // Billing phone numbers (values [62,66]) are deprecated.
            (62 <= t && t <= 66) ||
            // Billing names (values [67,72]) are deprecated.
@@ -830,7 +830,6 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
     case AMBIGUOUS_TYPE:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
       return FieldTypeGroup::kNoGroup;

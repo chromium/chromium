@@ -78,7 +78,6 @@ static constexpr auto kTypeNameToFieldType =
          {"CREDIT_CARD_TYPE", CREDIT_CARD_TYPE},
          {"CREDIT_CARD_VERIFICATION_CODE", CREDIT_CARD_VERIFICATION_CODE},
          {"COMPANY_NAME", COMPANY_NAME},
-         {"FIELD_WITH_DEFAULT_VALUE", FIELD_WITH_DEFAULT_VALUE},
          {"MERCHANT_EMAIL_SIGNUP", MERCHANT_EMAIL_SIGNUP},
          {"MERCHANT_PROMO_CODE", MERCHANT_PROMO_CODE},
          {"PASSWORD", PASSWORD},
@@ -319,7 +318,6 @@ bool IsFillableFieldType(FieldType field_type) {
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
     case AMBIGUOUS_TYPE:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:
     case NUMERIC_QUANTITY:
@@ -358,7 +356,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
   switch (type) {
     case NO_SERVER_DATA:
     case UNKNOWN_TYPE:
-    case FIELD_WITH_DEFAULT_VALUE:
     case EMPTY_TYPE:
     case NOT_ACCOUNT_CREATION_PASSWORD:
     case NOT_NEW_PASSWORD:

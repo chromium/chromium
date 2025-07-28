@@ -98,7 +98,6 @@ bool IsTagType(FieldType type) {
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
     case COMPANY_NAME:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case PASSWORD:
@@ -229,7 +228,6 @@ bool IsDateFieldType(FieldType field_type) {
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
     case COMPANY_NAME:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case PASSWORD:
@@ -364,7 +362,6 @@ bool IsAffixFormatStringEnabledForType(FieldType type) {
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
     case COMPANY_NAME:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case PASSWORD:
