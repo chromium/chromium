@@ -319,9 +319,8 @@ std::vector<std::string> FindDuplicateOperations(
   // have the same URL.  This results in an average complexity of O(n log n).
   // If the entire list has entries with the same URL and different VARY
   // headers then this devolves into O(n^2).
-  for (BatchOperation* const* outer = sorted.cbegin(); outer != sorted.cend();
-       UNSAFE_TODO(++outer)) {
-    const BatchOperation* outer_op = *outer;
+  for (size_t i = 0; i < sorted.size(); ++i) {
+    const BatchOperation* outer_op = sorted[i];
 
     // Note, the spec checks CacheQueryOptions like ignoreSearch, etc, but
     // currently there is no way for script to trigger a batch operation with
@@ -338,9 +337,8 @@ std::vector<std::string> FindDuplicateOperations(
       continue;
     }
 
-    for (BatchOperation* const* inner = std::next(outer);
-         inner != sorted.cend(); UNSAFE_TODO(++inner)) {
-      const BatchOperation* inner_op = *inner;
+    for (size_t j = i + 1; j < sorted.size(); ++j) {
+      const BatchOperation* inner_op = sorted[j];
       // Since the list is sorted we can stop looking at neighbors after
       // the first different URL.
       if (outer_op->request->url != inner_op->request->url) {
