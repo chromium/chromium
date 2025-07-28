@@ -1918,11 +1918,8 @@ void Canvas2DRecorderContext::fillRect(double x,
       [rect](MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         c->drawRect(gfx::RectFToSkRect(rect), *flags);
       },
-      /*draw_covers_clip_bounds=*/
-      [rect, this](const SkIRect& clip_bounds) {
-        return RectContainsTransformedRect(rect, clip_bounds);
-      },
-      /*bounds=*/rect, CanvasRenderingContext2DState::kFillPaintType,
+      NoOverdraw, /*bounds=*/rect,
+      CanvasRenderingContext2DState::kFillPaintType,
       has_pattern ? CanvasRenderingContext2DState::kNonOpaqueImage
                   : CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kRectangle);
