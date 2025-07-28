@@ -7,15 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/renderers/win/media_foundation_renderer.h"
-
 #include <mfapi.h>
 
 #include <memory>
 
+#include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_types.h"
+#include "media/renderers/win/media_foundation_renderer.h"
 #include "media/test/pipeline_integration_test_base.h"
 #include "media/test/test_media_source.h"
 
@@ -37,7 +37,7 @@ const VideoCodecMap& GetVideoCodecsMap() {
 bool CanDecodeVideoCodec(VideoCodec codec) {
   auto codecs = GetVideoCodecsMap();
   MFT_REGISTER_TYPE_INFO input_type = {MFMediaType_Video, codecs[codec]};
-  IMFActivate** activates = nullptr;
+  base::win::ScopedCoMem<IMFActivate*> activates;
   UINT32 count = 0;
 
   if (FAILED(MFTEnumEx(MFT_CATEGORY_VIDEO_DECODER,
@@ -51,7 +51,6 @@ bool CanDecodeVideoCodec(VideoCodec codec) {
   for (UINT32 i = 0; i < count; ++i) {
     activates[i]->Release();
   }
-  CoTaskMemFree(activates);
 
   if (count == 0) {
     LOG(WARNING) << "No decoder for " << media::GetCodecName(codec);
