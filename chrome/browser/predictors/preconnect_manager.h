@@ -14,7 +14,11 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "url/gurl.h"
+
+namespace network::mojom {
+class NetworkContext;
+}
 
 namespace predictors {
 
