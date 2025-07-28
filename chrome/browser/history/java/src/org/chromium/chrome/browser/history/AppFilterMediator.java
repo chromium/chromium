@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.history;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Context;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -29,11 +27,7 @@ class AppFilterMediator {
 
     private @Nullable PropertyModel mSelectedModel;
 
-    AppFilterMediator(
-            Context context,
-            ModelList modelList,
-            List<AppInfo> appInfoList,
-            CloseCallback closeCallback) {
+    AppFilterMediator(ModelList modelList, List<AppInfo> appInfoList, CloseCallback closeCallback) {
         mModelList = modelList;
         mCloseCallback = closeCallback;
         for (AppInfo info : appInfoList) {
@@ -96,10 +90,6 @@ class AppFilterMediator {
 
     void clickItemForTesting(String appId) {
         handleClick(assertNonNull(getModelForAppId(appId)));
-    }
-
-    void setCurrentAppForTesting(String appId) {
-        mSelectedModel = getModelForAppId(appId);
     }
 
     @Nullable String getCurrentAppIdForTesting() {

@@ -129,7 +129,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         PropertyModelChangeProcessor.create(
                 mCloseButtonModel, closeButton, AppFilterViewBinder::bind);
 
-        mMediator = new AppFilterMediator(context, listItems, appInfoList, this::closeSheet);
+        mMediator = new AppFilterMediator(listItems, appInfoList, this::closeSheet);
         mAppCount = listItems.size();
     }
 
@@ -201,10 +201,6 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
 
     void clickCloseButtonForTesting() {
         mCloseButtonModel.get(AppFilterProperties.CLOSE_BUTTON_CALLBACK).onClick(null); // IN-TEST
-    }
-
-    void setCurrentAppForTesting(String appId) {
-        mMediator.setCurrentAppForTesting(appId); // IN-TEST
     }
 
     @Nullable String getCurrentAppIdForTesting() {
