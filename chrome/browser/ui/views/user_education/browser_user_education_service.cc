@@ -269,6 +269,8 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetBubbleTitleText(
+              IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_TITLE)
           .SetMetadata(136, "vidhanj@google.com",
                        "Triggered after a home/work suggestion is available to "
                        "user for filling")));
