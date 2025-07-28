@@ -10,3 +10,11 @@
 -InputBrowserTest.RenderInputRouterNotCreatedOnNonAndroid
 -PerformanceManagerBrowserTest.UsesWebRTC
 -FormAutofillUtilsTest.ExtractFormData_FormControlTypes
+
+# TODO(crbug.com/434224561): These tests have been failing since
+# https://crrev.com/c/6759170. While iOS fixed the test failures by implementing
+# GetSize() in WebContentsImpl, the tests are still failing on tvOS.
+-PageContentProtoProviderBrowserTestMediaData.UpdateVideoInMainFrame
+-PageContentProtoProviderBrowserTestMediaData.VideoInIframe
+-PageContentProtoProviderBrowserTestMediaData.VideoInMainFrame
+-PageContentProtoProviderBrowserTestScriptTools.Basic
