@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -106,7 +107,7 @@ void ActorKeyedService::ExecuteAction(
   task->Act(std::move(actions),
             base::BindOnce(&ActorKeyedService::OnActionFinished,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           task_id.value()));
+                           task_id));
 }
 
 TaskId ActorKeyedService::CreateTask() {
@@ -172,8 +173,9 @@ void ActorKeyedService::OnTabOservationResult(
 void ActorKeyedService::ConvertToBrowserActionResult(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback,
-    int task_id,
+    TaskId task_id,
     int32_t tab_id,
+    const GURL& url,
     actor::mojom::ActionResultPtr action_result,
     base::expected<std::unique_ptr<optimization_guide::proto::TabObservation>,
                    std::string> context_result) {
@@ -187,16 +189,25 @@ void ActorKeyedService::ConvertToBrowserActionResult(
   }
   auto& tab_observation = **context_result;
   if (tab_observation.has_annotated_page_content()) {
+    size_t size = tab_observation.annotated_page_content().ByteSizeLong();
+    std::vector<uint8_t> buffer(size);
+    tab_observation.annotated_page_content().SerializeToArray(buffer.data(),
+                                                              size);
+    journal_.LogAnnotatedPageContent(url, task_id, buffer);
+
     browser_action_result.mutable_annotated_page_content()->Swap(
         tab_observation.mutable_annotated_page_content());
   }
   if (tab_observation.has_screenshot()) {
+    journal_.LogScreenshot(url, task_id, tab_observation.screenshot_mime_type(),
+                           base::as_byte_span(tab_observation.screenshot()));
+
     browser_action_result.set_screenshot(tab_observation.screenshot().data(),
                                          tab_observation.screenshot().size());
     browser_action_result.set_screenshot_mime_type(
         tab_observation.screenshot_mime_type());
   }
-  browser_action_result.set_task_id(task_id);
+  browser_action_result.set_task_id(task_id.value());
   browser_action_result.set_tab_id(tab_id);
   browser_action_result.set_action_result(actor::IsOk(*action_result) ? 1 : 0);
   RunLater(
@@ -206,7 +217,7 @@ void ActorKeyedService::ConvertToBrowserActionResult(
 void ActorKeyedService::OnActionFinished(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback,
-    int task_id,
+    TaskId task_id,
     actor::mojom::ActionResultPtr action_result,
     std::optional<size_t> index_of_failed_action) {
   auto* task = GetTask(actor::TaskId(task_id));
@@ -221,9 +232,11 @@ void ActorKeyedService::OnActionFinished(
   }
   int32_t tab_id = tab->GetHandle().raw_value();
   RequestTabObservation(
-      *tab, base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           task_id, tab_id, std::move(action_result)));
+      *tab,
+      base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     task_id, tab_id, tab->GetContents()->GetLastCommittedURL(),
+                     std::move(action_result)));
 }
 
 void ActorKeyedService::PerformActions(

@@ -72,7 +72,6 @@ void PostTaskForActCallback(
 
 void OnFetchPageContext(
     const GURL& url,
-    mojo_base::ProtoWrapperBytes::PassKey proto_pass_key,
     std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
     actor::mojom::ActionResultCode result_code,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
@@ -90,25 +89,9 @@ void OnFetchPageContext(
       tab_context_result->get_tab_context()->annotated_page_data &&
       tab_context_result->get_tab_context()
           ->annotated_page_data->annotated_page_content.has_value()) {
-    auto byte_span =
-        tab_context_result->get_tab_context()
-            ->annotated_page_data->annotated_page_content->byte_span(
-                proto_pass_key);
-    if (byte_span.has_value()) {
-      journal_entry->GetJournal().LogAnnotatedPageContent(
-          url, journal_entry->GetTaskId(), byte_span.value());
-    }
-
     execution_engine->DidObserveContext(
         tab_context_result->get_tab_context()
             ->annotated_page_data->annotated_page_content.value());
-  }
-
-  if (tab_context_result->get_tab_context()->viewport_screenshot) {
-    journal_entry->GetJournal().LogScreenshot(
-        url, journal_entry->GetTaskId(),
-        tab_context_result->get_tab_context()->viewport_screenshot->mime_type,
-        tab_context_result->get_tab_context()->viewport_screenshot->data);
   }
 
   mojom::ActInFocusedTabResultPtr result =
@@ -336,7 +319,6 @@ void GlicActorController::OnActionFinished(
 
     FetchPageContext(tab, *ActionableOptions(options),
                      base::BindOnce(OnFetchPageContext, url,
-                                    mojo_base::ProtoWrapperBytes::GetPassKey(),
                                     std::move(journal_entry), result_code,
                                     std::move(callback),
                                     task->GetExecutionEngine()->GetWeakPtr()));

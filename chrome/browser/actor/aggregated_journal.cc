@@ -188,14 +188,14 @@ void AggregatedJournal::AddEndEvent(base::PassKey<AggregatedJournal> pass_key,
 void AggregatedJournal::LogScreenshot(const GURL& url,
                                       TaskId task_id,
                                       std::string_view mime_type,
-                                      const std::vector<uint8_t>& data) {
+                                      base::span<const uint8_t> data) {
   CHECK_EQ(mime_type, "image/jpeg");
   auto entry = std::make_unique<Entry>(
       url.possibly_invalid_spec(),
       mojom::JournalEntry::New(mojom::JournalEntryType::kInstant,
                                task_id.value(), /*id=*/0, base::Time::Now(),
                                "Screenshot", /*details=*/std::string()));
-  entry->jpg_screenshot.emplace(data);
+  entry->jpg_screenshot.emplace(data.begin(), data.end());
   AddEntry(std::move(entry));
 }
 

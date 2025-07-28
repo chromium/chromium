@@ -15,7 +15,7 @@ class MaskedDomainListComponentInstallerTest;
 }  // namespace component_updater
 
 namespace glic {
-class GlicActorController;
+class GlicPageContextFetcher;
 }  // namespace glic
 
 namespace paint_preview {
@@ -43,7 +43,7 @@ class ProtoWrapperBytes {
   friend class component_updater::ReadMaskedDomainListProto;
   friend class component_updater::PKIMetadataComponentInstallerService;
   friend class component_updater::MaskedDomainListComponentInstallerTest;
-  friend class glic::GlicActorController;
+  friend class glic::GlicPageContextFetcher;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ProtoWrapperTest, ToFromBytes);

@@ -22,6 +22,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/tabs/public/tab_interface.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -129,7 +130,7 @@ class ActorKeyedService : public KeyedService {
   void OnActionFinished(
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback,
-      int task_id,
+      TaskId task_id,
       actor::mojom::ActionResultPtr action_result,
       std::optional<size_t> index_of_failed_action);
 
@@ -141,8 +142,9 @@ class ActorKeyedService : public KeyedService {
   void ConvertToBrowserActionResult(
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback,
-      int task_id,
+      TaskId task_id,
       int32_t tab_id,
+      const GURL& url,
       actor::mojom::ActionResultPtr action_result,
       TabObservationResult context_result);
   void OnTabOservationResult(

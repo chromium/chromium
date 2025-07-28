@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/ring_buffer.h"
+#include "base/containers/span.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -99,7 +100,7 @@ class AggregatedJournal {
   void LogScreenshot(const GURL& url,
                      TaskId task_id,
                      std::string_view mime_type,
-                     const std::vector<uint8_t>& data);
+                     base::span<const uint8_t> data);
 
   // Log Annotated Page Content.
   void LogAnnotatedPageContent(const GURL& url,
