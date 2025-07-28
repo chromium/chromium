@@ -1,6 +1,7 @@
 include_rules = [
   "+chrome/browser/ash/crosapi",
   "+components/account_id",
+  "+components/dbus",
   "+components/onc",
   "+components/proxy_config",
   "+components/user_manager",
