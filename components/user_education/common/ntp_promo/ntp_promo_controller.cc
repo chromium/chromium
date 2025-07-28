@@ -155,7 +155,11 @@ void NtpPromoController::OnPromoShownInTopSpot(NtpPromoIdentifier id) {
       storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
   if (data.last_top_spot_session != current_session) {
     data.last_top_spot_session = current_session;
-    ++data.top_spot_session_count;
+    // If this promo is reclaiming the top spot, start a fresh count.
+    if (id != GetMostRecentTopSpotPromo()) {
+      data.top_spot_session_count = 0;
+    }
+    data.top_spot_session_count++;
     storage_service_->SaveNtpPromoData(id, data);
   }
 }
@@ -173,6 +177,20 @@ std::vector<NtpShowablePromo> NtpPromoController::MakeShowablePromos(
             spec->content().action_button_text_string_id()));
   }
   return promos;
+}
+
+NtpPromoIdentifier NtpPromoController::GetMostRecentTopSpotPromo() {
+  int most_recent_session = 0;
+  NtpPromoIdentifier most_recent_id;
+  for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
+    auto prefs =
+        storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+    if (prefs.last_top_spot_session > most_recent_session) {
+      most_recent_session = prefs.last_top_spot_session;
+      most_recent_id = id;
+    }
+  }
+  return most_recent_id;
 }
 
 }  // namespace user_education

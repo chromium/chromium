@@ -46,6 +46,12 @@ class NtpPromoControllerTest : public testing::Test {
                               /*show_after=*/{}, user_education::Metadata()));
   }
 
+  // Register a promo with empty callbacks.
+  void RegisterPromo(NtpPromoIdentifier id) {
+    RegisterPromo(id, NtpPromoSpecification::EligibilityCallback(),
+                  NtpPromoSpecification::ActionCallback());
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NtpPromoRegistry registry_;
@@ -185,14 +191,15 @@ TEST_F(NtpPromoControllerTest, PromoClicked) {
   EXPECT_EQ(prefs.value().last_clicked, base::Time::Now());
 }
 
-TEST_F(NtpPromoControllerTest, OnPromosShown_CompletedPromoOnly) {
+TEST_F(NtpPromoControllerTest, CompletedPromoShown) {
   const auto old_value = storage_service_.ReadNtpPromoData(kPromoId);
   controller_.OnPromosShown({}, {kPromoId});
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(old_value, new_value);
 }
 
-TEST_F(NtpPromoControllerTest, OnPromosShown_EligiblePromo_NoPreviousData) {
+TEST_F(NtpPromoControllerTest, TopSpotPromoShownFirstTime) {
+  RegisterPromo(kPromoId);
   const auto old_value = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(std::nullopt, old_value);
   controller_.OnPromosShown({kPromoId}, {});
@@ -201,18 +208,58 @@ TEST_F(NtpPromoControllerTest, OnPromosShown_EligiblePromo_NoPreviousData) {
   EXPECT_EQ(1, new_value->top_spot_session_count);
 }
 
-TEST_F(NtpPromoControllerTest, OnPromosShown_EligiblePromo_PreviousData) {
+// When the shown top spot promo was previously in the top spot, during the
+// same browsing session, prefs shouldn't change.
+TEST_F(NtpPromoControllerTest, TopSpotPromoShownInSameSession) {
+  RegisterPromo(kPromoId);
+  KeyedNtpPromoData old_value;
+  old_value.last_top_spot_session = kSessionNumber;
+  old_value.top_spot_session_count = 2;
+  storage_service_.SaveNtpPromoData(kPromoId, old_value);
+  controller_.OnPromosShown({kPromoId}, {});
+  const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
+  EXPECT_EQ(kSessionNumber, new_value->last_top_spot_session);
+  EXPECT_EQ(2, new_value->top_spot_session_count);
+}
+
+// When the shown top spot promo was previously in the top spot, during the
+// previous browsing session, the top spot session count should be incremented.
+TEST_F(NtpPromoControllerTest, TopSpotPromoShownInNewSession) {
+  RegisterPromo(kPromoId);
   KeyedNtpPromoData old_value;
   old_value.last_top_spot_session = kSessionNumber - 1;
   old_value.top_spot_session_count = 2;
   storage_service_.SaveNtpPromoData(kPromoId, old_value);
   controller_.OnPromosShown({kPromoId}, {});
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
-  EXPECT_EQ(10, new_value->last_top_spot_session);
+  EXPECT_EQ(kSessionNumber, new_value->last_top_spot_session);
   EXPECT_EQ(3, new_value->top_spot_session_count);
 }
 
-TEST_F(NtpPromoControllerTest, OnPromosShown_MultiplePromos) {
+// When the shown top spot promo was not previously in the top spot, it should
+// clear its top spot count to start a fresh stay at the top of the list.
+TEST_F(NtpPromoControllerTest, TopSpotPromoShownReclaimsTopSpot) {
+  RegisterPromo(kPromoId);
+  RegisterPromo(kPromo2Id);
+
+  // Have Promo2 be the most recent top-spot holder.
+  KeyedNtpPromoData old_promo_2;
+  old_promo_2.last_top_spot_session = kSessionNumber - 1;
+  storage_service_.SaveNtpPromoData(kPromo2Id, old_promo_2);
+  // Have Promo be a previous top-spot holder, before Promo2.
+  KeyedNtpPromoData old_value;
+  old_promo_2.last_top_spot_session = kSessionNumber - 2;
+  old_promo_2.top_spot_session_count = 3;
+  storage_service_.SaveNtpPromoData(kPromoId, old_value);
+
+  // Showing Promo should clear its top spot count and restart at 1.
+  controller_.OnPromosShown({kPromoId}, {});
+  const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
+  EXPECT_EQ(kSessionNumber, new_value->last_top_spot_session);
+  EXPECT_EQ(1, new_value->top_spot_session_count);
+}
+
+TEST_F(NtpPromoControllerTest, OnMultiplePromosShown) {
   const auto old_value2 = storage_service_.ReadNtpPromoData(kPromo2Id);
   controller_.OnPromosShown({kPromoId, kPromo2Id}, {});
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);

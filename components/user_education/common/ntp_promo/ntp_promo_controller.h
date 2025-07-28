@@ -88,6 +88,10 @@ class NtpPromoController {
   // Updates the data on the promo shown in the top spot.
   void OnPromoShownInTopSpot(NtpPromoIdentifier id);
 
+  // Checks which promo ID (if any) was most recently shown in the top spot.
+  // Returns an empty string if there is no recorded top-spot promo.
+  NtpPromoIdentifier GetMostRecentTopSpotPromo();
+
   // Assembles a vector of showable promo objects (ie. the presentation parts
   // of the promo) to be sent to the NTP.
   std::vector<NtpShowablePromo> MakeShowablePromos(
