@@ -187,7 +187,7 @@
 #include "chrome/browser/headless/headless_mode_metrics.h"  // nogncheck
 #include "chrome/browser/headless/headless_mode_util.h"     // nogncheck
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
-#include "chrome/browser/metrics/desktop_session_duration/touch_mode_stats_tracker.h"
+#include "chrome/browser/metrics/desktop_session_duration/touch_ui_controller_stats_tracker.h"
 #include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -1054,7 +1054,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   metrics::DesktopSessionDurationTracker::Initialize();
   ProfileActivityMetricsRecorder::Initialize();
-  TouchModeStatsTracker::Initialize(
+  TouchUIControllerStatsTracker::Initialize(
       metrics::DesktopSessionDurationTracker::Get(),
       ui::TouchUiController::Get());
 #endif

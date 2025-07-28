@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_MODE_STATS_TRACKER_H_
-#define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_MODE_STATS_TRACKER_H_
+#ifndef CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_UI_CONTROLLER_STATS_TRACKER_H_
+#define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_UI_CONTROLLER_STATS_TRACKER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -15,14 +15,14 @@
 // "Session.TotalDuration", which is managed by
 // |metrics::DesktopSessionDurationTracker|. Each sample is the time
 // spent in touch mode within the corresponding session.
-class TouchModeStatsTracker
+class TouchUIControllerStatsTracker
     : public metrics::DesktopSessionDurationTracker::Observer {
  public:
-  TouchModeStatsTracker(
+  TouchUIControllerStatsTracker(
       metrics::DesktopSessionDurationTracker* session_duration_tracker,
       ui::TouchUiController* touch_ui_controller);
 
-  ~TouchModeStatsTracker() override;
+  ~TouchUIControllerStatsTracker() override;
 
   // Creates the global instance. Any call after the first is a no-op.
   static void Initialize(
@@ -77,4 +77,4 @@ class TouchModeStatsTracker
 #endif  // BUILDFLAG(IS_WIN)
 };
 
-#endif  // CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_MODE_STATS_TRACKER_H_
+#endif  // CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_TOUCH_UI_CONTROLLER_STATS_TRACKER_H_

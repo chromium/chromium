@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/desktop_session_duration/touch_mode_stats_tracker.h"
+#include "chrome/browser/metrics/desktop_session_duration/touch_ui_controller_stats_tracker.h"
 
 #include <memory>
 
@@ -39,8 +39,9 @@ class SessionEndWaiter
 
   void Wait() {
     ASSERT_FALSE(waiting_);
-    if (!tracker_->in_session())
+    if (!tracker_->in_session()) {
       return;
+    }
 
     waiting_ = true;
     base::RunLoop run_loop;
@@ -51,8 +52,9 @@ class SessionEndWaiter
   // metrics::DesktopSessionDurationTracker::Observer:
   void OnSessionEnded(base::TimeDelta session_length,
                       base::TimeTicks session_end) override {
-    if (!waiting_)
+    if (!waiting_) {
       return;
+    }
     end_closure_.Run();
   }
 
@@ -64,13 +66,13 @@ class SessionEndWaiter
 
 }  // namespace
 
-class TouchModeStatsTrackerTest : public ::testing::Test {
+class SessionStatsTrackerTestBase : public ::testing::Test {
  public:
-  TouchModeStatsTrackerTest()
+  SessionStatsTrackerTestBase()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
   }
-  ~TouchModeStatsTrackerTest() override = default;
+  ~SessionStatsTrackerTestBase() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -79,7 +81,8 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
     metrics::DesktopSessionDurationTracker::Initialize();
     metrics::DesktopSessionDurationTracker::Get()
         ->SetInactivityTimeoutForTesting(kInactivityTimeout);
-    touch_mode_stats_tracker_ = std::make_unique<TouchModeStatsTracker>(
+
+    stats_tracker_ = std::make_unique<TouchUIControllerStatsTracker>(
         metrics::DesktopSessionDurationTracker::Get(),
         ui::TouchUiController::Get());
 
@@ -89,7 +92,7 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
 
   void TearDown() override {
     browser_.reset();
-    touch_mode_stats_tracker_.reset();
+    stats_tracker_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
   }
 
@@ -105,19 +108,23 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
     waiter.Wait();
   }
 
+ protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<Profile, DanglingUntriaged> profile_;
-  std::unique_ptr<TouchModeStatsTracker> touch_mode_stats_tracker_;
+  std::unique_ptr<TouchUIControllerStatsTracker> stats_tracker_;
 
  private:
   TestingProfileManager profile_manager_;
   std::unique_ptr<Browser> browser_;
 };
 
+class TouchModeStatsTrackerTest : public SessionStatsTrackerTestBase {};
+
 #if BUILDFLAG(IS_WIN)
-class DevicePostureModeStatsTrackerTest : public TouchModeStatsTrackerTest {};
+class DevicePostureModeStatsTrackerTest : public SessionStatsTrackerTestBase {};
 #endif  // BUILDFLAG(IS_WIN)
+
 // An entire session spent in touch mode should be logged accordingly.
 TEST_F(TouchModeStatsTrackerTest, TouchSession) {
   ui::TouchUiController::TouchUiScoperForTesting enable_touch_mode(true);
@@ -129,7 +136,7 @@ TEST_F(TouchModeStatsTrackerTest, TouchSession) {
   EndSession();
 
   histograms.ExpectUniqueTimeSample(
-      TouchModeStatsTracker::kSessionTouchDurationHistogramName,
+      TouchUIControllerStatsTracker::kSessionTouchDurationHistogramName,
       base::Minutes(1), 1);
 }
 
@@ -143,7 +150,7 @@ TEST_F(TouchModeStatsTrackerTest, NonTouchSession) {
   EndSession();
 
   histograms.ExpectUniqueTimeSample(
-      TouchModeStatsTracker::kSessionTouchDurationHistogramName,
+      TouchUIControllerStatsTracker::kSessionTouchDurationHistogramName,
       base::TimeDelta(), 1);
 }
 
@@ -169,7 +176,7 @@ TEST_F(TouchModeStatsTrackerTest, TouchChangesDuringSession) {
 
     EndSession();
     histograms.ExpectUniqueTimeSample(
-        TouchModeStatsTracker::kSessionTouchDurationHistogramName,
+        TouchUIControllerStatsTracker::kSessionTouchDurationHistogramName,
         base::Seconds(30), 1);
   }
 
@@ -189,7 +196,7 @@ TEST_F(TouchModeStatsTrackerTest, TouchChangesDuringSession) {
 
     EndSession();
     histograms.ExpectUniqueTimeSample(
-        TouchModeStatsTracker::kSessionTouchDurationHistogramName,
+        TouchUIControllerStatsTracker::kSessionTouchDurationHistogramName,
         base::Seconds(30), 1);
   }
 }
@@ -211,7 +218,7 @@ TEST_F(DevicePostureModeStatsTrackerTest, TabletSession) {
   EndSession();
 
   histograms.ExpectUniqueTimeSample(
-      TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+      TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName,
       base::Minutes(1), 1);
 }
 
@@ -231,7 +238,7 @@ TEST_F(DevicePostureModeStatsTrackerTest, NonTabletSession) {
   EndSession();
 
   histograms.ExpectUniqueTimeSample(
-      TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+      TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName,
       base::TimeDelta(), 1);
 }
 
@@ -263,7 +270,7 @@ TEST_F(DevicePostureModeStatsTrackerTest, TabletModeChangesDuringSession) {
 
     EndSession();
     histograms.ExpectUniqueTimeSample(
-        TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+        TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName,
         base::Seconds(30), 1);
   }
 
@@ -288,7 +295,7 @@ TEST_F(DevicePostureModeStatsTrackerTest, TabletModeChangesDuringSession) {
 
     EndSession();
     histograms.ExpectUniqueTimeSample(
-        TouchModeStatsTracker::kSessionTabletDurationHistogramName,
+        TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName,
         base::Seconds(30), 1);
   }
 }

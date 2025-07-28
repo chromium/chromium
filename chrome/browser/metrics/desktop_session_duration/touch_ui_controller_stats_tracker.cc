@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/desktop_session_duration/touch_mode_stats_tracker.h"
+#include "chrome/browser/metrics/desktop_session_duration/touch_ui_controller_stats_tracker.h"
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -12,14 +12,14 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 
 // static
-void TouchModeStatsTracker::Initialize(
+void TouchUIControllerStatsTracker::Initialize(
     metrics::DesktopSessionDurationTracker* session_duration_tracker,
     ui::TouchUiController* touch_ui_controller) {
-  static base::NoDestructor<TouchModeStatsTracker> stats_tracker(
+  static base::NoDestructor<TouchUIControllerStatsTracker> stats_tracker(
       session_duration_tracker, touch_ui_controller);
 }
 
-TouchModeStatsTracker::TouchModeStatsTracker(
+TouchUIControllerStatsTracker::TouchUIControllerStatsTracker(
     metrics::DesktopSessionDurationTracker* session_duration_tracker,
     ui::TouchUiController* touch_ui_controller)
     : touch_ui_controller_(touch_ui_controller) {
@@ -27,29 +27,32 @@ TouchModeStatsTracker::TouchModeStatsTracker(
 
   // If this instance is destroyed, |touch_mode_change_subscription_|'s
   // destructor will unregister the callback. Hence Unretained is safe.
-  touch_mode_change_subscription_ =
-      touch_ui_controller->RegisterCallback(base::BindRepeating(
-          &TouchModeStatsTracker::TouchModeChanged, base::Unretained(this)));
+  touch_mode_change_subscription_ = touch_ui_controller->RegisterCallback(
+      base::BindRepeating(&TouchUIControllerStatsTracker::TouchModeChanged,
+                          base::Unretained(this)));
 #if BUILDFLAG(IS_WIN)
   tablet_mode_change_subscription_ =
-      touch_ui_controller->RegisterTabletModeCallback(base::BindRepeating(
-          &TouchModeStatsTracker::TabletModeChanged, base::Unretained(this)));
+      touch_ui_controller->RegisterTabletModeCallback(
+          base::BindRepeating(&TouchUIControllerStatsTracker::TabletModeChanged,
+                              base::Unretained(this)));
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-TouchModeStatsTracker::~TouchModeStatsTracker() = default;
+TouchUIControllerStatsTracker::~TouchUIControllerStatsTracker() = default;
 
 // static
-const char TouchModeStatsTracker::kSessionTouchDurationHistogramName[] =
+const char TouchUIControllerStatsTracker::kSessionTouchDurationHistogramName[] =
     "Session.TotalDuration.TouchMode";
 #if BUILDFLAG(IS_WIN)
-const char TouchModeStatsTracker::kSessionTabletDurationHistogramName[] =
-    "Session.TotalDuration.TabletMode";
+const char
+    TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName[] =
+        "Session.TotalDuration.TabletMode";
 #endif  // BUILDFLAG(IS_WIN)
 
-void TouchModeStatsTracker::TouchModeChanged() {
-  if (session_start_time_.is_null())
+void TouchUIControllerStatsTracker::TouchModeChanged() {
+  if (session_start_time_.is_null()) {
     return;
+  }
 
   auto switch_time = base::TimeTicks::Now();
   DCHECK_GE(switch_time, last_touch_mode_switch_in_session_);
@@ -65,7 +68,7 @@ void TouchModeStatsTracker::TouchModeChanged() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void TouchModeStatsTracker::TabletModeChanged() {
+void TouchUIControllerStatsTracker::TabletModeChanged() {
   if (session_start_time_.is_null()) {
     return;
   }
@@ -84,7 +87,8 @@ void TouchModeStatsTracker::TabletModeChanged() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void TouchModeStatsTracker::OnSessionStarted(base::TimeTicks session_start) {
+void TouchUIControllerStatsTracker::OnSessionStarted(
+    base::TimeTicks session_start) {
   session_start_time_ = session_start;
   last_touch_mode_switch_in_session_ = session_start_time_;
   touch_mode_duration_in_session_ = base::TimeDelta();
@@ -94,8 +98,9 @@ void TouchModeStatsTracker::OnSessionStarted(base::TimeTicks session_start) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void TouchModeStatsTracker::OnSessionEnded(base::TimeDelta session_length,
-                                           base::TimeTicks session_end) {
+void TouchUIControllerStatsTracker::OnSessionEnded(
+    base::TimeDelta session_length,
+    base::TimeTicks session_end) {
   // If we end in touch mode, we must count the time from
   // last_touch_mode_switch_in_session_ to session_end.
   //
