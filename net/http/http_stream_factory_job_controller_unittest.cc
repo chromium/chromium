@@ -223,8 +223,9 @@ class TestProxyDelegateForIpProtection : public TestProxyDelegate {
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
     ProxyList proxy_list;
+    CHECK(proxy_chain().is_for_ip_protection());
     proxy_list.AddProxyChain(proxy_chain());
-    proxy_list.AddProxyChain(ProxyChain::Direct());
+    proxy_list.AddProxyChain(ProxyChain::ForIpProtection({}));
     result->UseProxyList(proxy_list);
   }
 };
@@ -1304,6 +1305,8 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
       ProxyChain::ForIpProtection({{kBadProxyServer1, kGoodProxyServer}});
   const ProxyChain kNestedProxyChain2 =
       ProxyChain::ForIpProtection({{kBadProxyServer2, kGoodProxyServer}});
+  const ProxyChain kDirectIpProtectionProxyChain =
+      ProxyChain::ForIpProtection({});
 
   base::HistogramTester histogram_tester;
   CreateSessionDeps();
@@ -1311,7 +1314,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain1);
   proxy_list.AddProxyChain(kNestedProxyChain2);
-  proxy_list.AddProxyChain(ProxyChain::Direct());
+  proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
@@ -1322,7 +1325,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
   if (triggers_ssl_connect_job_retry_logic) {
     proxy_list.Clear();
     proxy_list.AddProxyChain(kNestedProxyChain1);
-    proxy_list.AddProxyChain(ProxyChain::Direct());
+    proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
     ProxyConfig proxy_config2 = ProxyConfig::CreateForTesting(proxy_list);
 
     proxy_resolution_service =
@@ -1478,7 +1481,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
     // so the next loop iteration creates a new socket instead of reusing the
     // idle one.
     auto* socket_pool = session_->GetSocketPool(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
+        HttpNetworkSession::NORMAL_SOCKET_POOL, kDirectIpProtectionProxyChain);
     EXPECT_EQ(1, socket_pool->IdleSocketCount());
     socket_pool->CloseIdleSockets("Close socket reason");
   }
@@ -1545,6 +1548,8 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
       ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer1}});
   const ProxyChain kNestedProxyChain2 =
       ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer2}});
+  const ProxyChain kDirectIpProtectionProxyChain =
+      ProxyChain::ForIpProtection({});
 
   base::HistogramTester histogram_tester;
   CreateSessionDeps();
@@ -1552,7 +1557,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain1);
   proxy_list.AddProxyChain(kNestedProxyChain2);
-  proxy_list.AddProxyChain(ProxyChain::Direct());
+  proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
@@ -1563,7 +1568,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
   if (triggers_ssl_connect_job_retry_logic) {
     proxy_list.Clear();
     proxy_list.AddProxyChain(kNestedProxyChain1);
-    proxy_list.AddProxyChain(ProxyChain::Direct());
+    proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
     ProxyConfig proxy_config2 = ProxyConfig::CreateForTesting(proxy_list);
 
     proxy_resolution_service =
@@ -1740,11 +1745,12 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
     // so the next loop iteration creates a new socket instead of reusing the
     // idle one.
     auto* socket_pool = session_->GetSocketPool(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
+        HttpNetworkSession::NORMAL_SOCKET_POOL, kDirectIpProtectionProxyChain);
     EXPECT_EQ(1, socket_pool->IdleSocketCount());
     socket_pool->CloseIdleSockets("Close socket reason");
   }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+
   // Check that the errors were logged.
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -1978,7 +1984,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
           ProxyServer::SCHEME_QUIC, "bad", 99)});
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {quic_proxy_chain, ProxyChain::Direct()},
+          {quic_proxy_chain, ProxyChain::ForIpProtection({})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Before starting the test, verify that there are no proxies marked as bad.
