@@ -263,6 +263,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
     // Clear the file input.
     input.value = '';
+    this.$.input.focus();
   }
 
   protected openImageUpload_() {
