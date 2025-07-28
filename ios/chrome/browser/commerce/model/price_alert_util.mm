@@ -15,9 +15,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/web/public/web_state.h"
 
-bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
-  if (browser_state->IsOffTheRecord()) {
+bool IsPriceAlertsEligible(ProfileIOS* profile) {
+  if (profile->IsOffTheRecord()) {
     return false;
   }
 
@@ -27,7 +28,6 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
   DCHECK(authentication_service);
@@ -43,4 +43,9 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
   return true;
+}
+
+bool IsPriceAlertsEligibleForWebState(web::WebState* web_state) {
+  return IsPriceAlertsEligible(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }

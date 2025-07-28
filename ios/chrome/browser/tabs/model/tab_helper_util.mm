@@ -191,8 +191,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);
   IOSTaskTabHelper::CreateForWebState(web_state);
-  if (!for_lens_overlay &&
-      IsPriceAlertsEligible(web_state->GetBrowserState())) {
+  if (!for_lens_overlay && IsPriceAlertsEligibleForWebState(web_state)) {
     ShoppingPersistedDataTabHelper::CreateForWebState(web_state);
   }
   commerce::CommerceTabHelper::CreateForWebState(
