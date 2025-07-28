@@ -1047,13 +1047,15 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
   uint32_t options =
       GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
 
-  url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      std::move(factory), std::move(throttles), global_request_id_.request_id,
-      options, resource_request_.get(), /*client=*/this,
+  url_loader_ = blink::ThrottlingURLLoader::CreateLoader(
+      std::move(throttles), /*client=*/this,
       kNavigationUrlLoaderTrafficAnnotation,
+      /*client_receiver_delegate=*/nullptr);
+  url_loader_->Start(
+      std::move(factory), global_request_id_.request_id, options,
+      resource_request_.get(),
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}),
       /*cors_exempt_header_list=*/std::nullopt,
-      /*client_receiver_delegate=*/nullptr,
       &request_info_->common_params->initiator_origin_trial_features);
 }
 

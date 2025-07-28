@@ -259,6 +259,17 @@ ThrottlingURLLoader::PriorityInfo::PriorityInfo(
     : priority(in_priority), intra_priority_value(in_intra_priority_value) {}
 
 // static
+std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoader(
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    network::mojom::URLLoaderClient* client,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    ClientReceiverDelegate* client_receiver_delegate) {
+  return std::unique_ptr<ThrottlingURLLoader>(
+      new ThrottlingURLLoader(std::move(throttles), client, traffic_annotation,
+                              client_receiver_delegate));
+}
+
+// static
 std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
@@ -272,9 +283,9 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     ClientReceiverDelegate* client_receiver_delegate,
     const std::vector<int>* initiator_origin_trial_features) {
   DCHECK(url_request);
-  std::unique_ptr<ThrottlingURLLoader> loader(
-      new ThrottlingURLLoader(std::move(throttles), client, traffic_annotation,
-                              client_receiver_delegate));
+  std::unique_ptr<ThrottlingURLLoader> loader =
+      CreateLoader(std::move(throttles), client, traffic_annotation,
+                   client_receiver_delegate);
   loader->Start(std::move(factory), request_id, options, url_request,
                 std::move(task_runner), std::move(cors_exempt_header_list),
                 initiator_origin_trial_features);
