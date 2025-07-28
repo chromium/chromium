@@ -433,6 +433,10 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                         const SkIRect& transformed_clip_bounds,
                         SkIRect*);
 
+  // Dummy overdraw test for ops that do not support overdraw detection.
+  // To be used as `draw_covers_clip_bounds` parameter to `Draw()`.
+  static bool NoOverdraw(const SkIRect& clip_bounds) { return false; }
+
   template <OverdrawOp CurrentOverdrawOp,
             typename DrawFunc,
             typename DrawCoversClipBoundsFunc>

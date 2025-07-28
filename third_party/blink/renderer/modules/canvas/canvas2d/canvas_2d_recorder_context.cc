@@ -383,9 +383,6 @@ String LineJoinName(LineJoin join) {
 // (`Canvas2DRecorderContext::color_cache_`).
 constexpr size_t kColorCacheMaxSize = 8;
 
-// Dummy overdraw test for ops that do not support overdraw detection
-const auto kNoOverdraw = [](const SkIRect& clip_bounds) { return false; };
-
 Canvas2DRecorderContext::Canvas2DRecorderContext(float effective_zoom)
     : effective_zoom_(effective_zoom),
       path2d_use_paint_cache_(
@@ -1764,9 +1761,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
           c->drawLine(line.start.x(), line.start.y(), line.end.x(),
                       line.end.y(), *flags);
         },
-        [](const SkIRect& rect)  // overdraw test lambda
-        { return false; },
-        bounds, paint_type,
+        NoOverdraw, bounds, paint_type,
         GetState().HasPattern(paint_type)
             ? CanvasRenderingContext2DState::kNonOpaqueImage
             : CanvasRenderingContext2DState::kNoImage,
@@ -1793,9 +1788,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
           arc_paint_flags.setArcClosed(closed);
           c->drawArc(oval, start_degrees, sweep_degrees, arc_paint_flags);
         },
-        [](const SkIRect& rect)  // overdraw test lambda
-        { return false; },
-        bounds, paint_type,
+        NoOverdraw, bounds, paint_type,
         GetState().HasPattern(paint_type)
             ? CanvasRenderingContext2DState::kNonOpaqueImage
             : CanvasRenderingContext2DState::kNoImage,
@@ -1810,9 +1803,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
       [sk_path, use_paint_cache](MemoryManagedPaintCanvas* c,
                                  const cc::PaintFlags* flags)  // draw lambda
       { c->drawPath(sk_path, *flags, use_paint_cache); },
-      [](const SkIRect& rect)  // overdraw test lambda
-      { return false; },
-      bounds, paint_type,
+      NoOverdraw, bounds, paint_type,
       GetState().HasPattern(paint_type)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
@@ -1986,7 +1977,7 @@ void Canvas2DRecorderContext::strokeRect(double x,
       [rect](MemoryManagedPaintCanvas* c,
              const cc::PaintFlags* flags)  // draw lambda
       { StrokeRectOnCanvas(rect, c, flags); },
-      kNoOverdraw, bounds, CanvasRenderingContext2DState::kStrokePaintType,
+      NoOverdraw, bounds, CanvasRenderingContext2DState::kStrokePaintType,
       GetState().HasPattern(CanvasRenderingContext2DState::kStrokePaintType)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
@@ -2824,7 +2815,7 @@ void Canvas2DRecorderContext::drawMesh(
         image->ApplyShader(scoped_flags, local_matrix, src, ImageDrawOptions());
         c->drawVertices(vertex_data, uv_data, index_data, scoped_flags);
       },
-      kNoOverdraw,
+      NoOverdraw,
       gfx::RectF(bounds.x(), bounds.y(), bounds.width(), bounds.height()),
       CanvasRenderingContext2DState::PaintType::kFillPaintType,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage

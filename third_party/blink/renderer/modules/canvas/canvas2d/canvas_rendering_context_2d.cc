@@ -878,8 +878,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
         c->restoreToCount(initial_save_count);
       },
-      [](const SkIRect& rect) { return false; },  // overdraw test lambda
-      gfx::RectF(box_rect.width(), box_rect.height()),
+      NoOverdraw, gfx::RectF(box_rect.width(), box_rect.height()),
       CanvasRenderingContext2DState::kImagePaintType,
       CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kElement);

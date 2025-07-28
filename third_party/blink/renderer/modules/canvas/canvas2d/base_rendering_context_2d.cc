@@ -1205,9 +1205,7 @@ void BaseRenderingContext2D::DrawTextInternal(
                                        draw_type);
         }
       },
-      [](const SkIRect& rect)  // overdraw test lambda
-      { return false; },
-      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
+      NoOverdraw, bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
 
   if (use_max_width) {
