@@ -9,6 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
@@ -24,6 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -62,7 +65,9 @@ class StablePortabilityDataImporterTest : public testing::Test {
     return number_reading_list_imported_;
   }
 
-  int GetNumberOfHistoryImported() const { return number_history_imported_; }
+  int GetNumberOfHistoryImportedFromLastBatch() const {
+    return number_history_imported_;
+  }
 
   const std::vector<ImportedBookmarkEntry>& GetPendingBookmarks() const {
     return importer_->pending_bookmarks_;
@@ -145,13 +150,14 @@ class StablePortabilityDataImporterTest : public testing::Test {
   void ImportHistoryFile(const base::FilePath& history_file) {
     PrepareCallbacks();
 
+    const size_t default_batch_size = 10;
     importer_->ImportHistory(
         history_file,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&StablePortabilityDataImporterTest::OnHistoryConsumed,
                        base::Unretained(this)),
-        10);
+        default_batch_size);
 
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return history_callback_called_; }));
@@ -438,7 +444,7 @@ TEST_F(StablePortabilityDataImporterTest, History_Basic) {
     ]
   })";
   ImportHistory(kHistoryJson);
-  EXPECT_EQ(GetNumberOfHistoryImported(), 2);
+  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 2);
 
   ASSERT_EQ(GetPendingHistory().size(), 2u);
   const auto& entry1 = GetPendingHistory()[0];
@@ -457,7 +463,62 @@ TEST_F(StablePortabilityDataImporterTest, History_Basic) {
   EXPECT_EQ(entry2.visit_count, 1u);
   EXPECT_EQ(entry2.typed_count, 0u);
 }
-// TODO(crbug.com/431493493) Cover all the other cases in the test plan.
+
+// Tests parsing an invalid JSON file.
+TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
+  const char kHistoryJson[] = R"({
+    "metadata": {
+      "data_type": "history_visits"
+    },
+    "history_visits": [
+      {
+        "url": "https://www.google.com/",
+        "title": "Google",
+  })";  // Invalid JSON, missing closing brackets.
+  ImportHistory(kHistoryJson);
+  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 0);
+  EXPECT_THAT(GetPendingHistory(), IsEmpty());
+}
+
+// Tests parsing a valid JSON file with no history entries.
+TEST_F(StablePortabilityDataImporterTest, History_NoEntries) {
+  const char kHistoryJson[] = R"({
+    "metadata": {
+      "data_type": "history_visits"
+    },
+    "history_visits": []
+  })";
+  ImportHistory(kHistoryJson);
+  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 0);
+  EXPECT_THAT(GetPendingHistory(), IsEmpty());
+}
+
+// Tests parsing a large JSON file that is processed in chunks.
+TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
+  const int num_visits = 15;
+  std::vector<std::string> visits;
+  for (int i = 0; i < num_visits; ++i) {
+    // The chunk size is 10, so 15 items will require two chunks.
+    visits.push_back(absl::StrFormat(
+        R"({"url":"https://www.example.com/%d","title":"Title %d",)"
+        R"("visit_time_unix_epoch_usec":%d})",
+        i, i, 1674205200000000ULL + i));
+  }
+  std::string history_json =
+      R"({"metadata":{"data_type":"history_visits"},"history_visits":[)" +
+      base::JoinString(visits, ",") + "]}";
+
+  ImportHistory(history_json);
+  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 5);
+  ASSERT_EQ(GetPendingHistory().size(), static_cast<size_t>(num_visits));
+
+  for (int i = 0; i < num_visits; ++i) {
+    const auto& entry = GetPendingHistory()[i];
+    EXPECT_EQ(entry.url, "https://www.example.com/" + base::NumberToString(i));
+    EXPECT_EQ(entry.title, "Title " + base::NumberToString(i));
+    EXPECT_EQ(entry.visit_time_unix_epoch_usec, 1674205200000000ULL + i);
+  }
+}
 
 // Tests importing invalid files that do not exist.
 TEST_F(StablePortabilityDataImporterTest, CallbacksAreCalled) {
