@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.util;
 
-import android.util.Log;
-
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 

@@ -24,6 +24,7 @@ android_library("pagecontroller_utils_java") {
   ]
   deps = [
     "//base:base_java_test_support",
+    "//base:log_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
@@ -79,6 +80,7 @@ android_test_apk("baseline_profile_test_apk") {
   deps = [
     ":pagecontroller_utils_java",
     "//base:base_java_test_support",
+    "//base:log_java",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_benchmark_benchmark_junit4_java",
     "//third_party/androidx:androidx_benchmark_benchmark_macro_java",

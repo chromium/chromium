@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.omaha;
 
 import android.text.TextUtils;
-import android.util.Log;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.omaha.OmahaBase.VersionConfig;
 import org.chromium.chrome.browser.omaha.XMLParser.Node;
 

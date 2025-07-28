@@ -14,7 +14,6 @@ import android.os.SystemClock;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.InflateException;
 
 import androidx.annotation.ColorInt;
@@ -22,6 +21,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;

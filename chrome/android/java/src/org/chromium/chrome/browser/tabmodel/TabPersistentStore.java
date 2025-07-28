@@ -1506,8 +1506,7 @@ public class TabPersistentStore {
                     getStateDirectory(), state, tabId, encrypted, mCipherFactory);
             return true;
         } catch (OutOfMemoryError e) {
-            android.util.Log.e(
-                    TAG, "Out of memory error while attempting to save tab state.  Erasing.");
+            Log.e(TAG, "Out of memory error while attempting to save tab state.  Erasing.");
             deleteTabState(tabId, encrypted);
         }
         return false;

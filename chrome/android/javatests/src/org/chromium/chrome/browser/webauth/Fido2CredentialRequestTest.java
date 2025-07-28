@@ -22,7 +22,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.Base64;
-import android.util.Log;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -45,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;

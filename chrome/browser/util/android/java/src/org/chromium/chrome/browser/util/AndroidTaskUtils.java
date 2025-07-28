@@ -13,10 +13,10 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;

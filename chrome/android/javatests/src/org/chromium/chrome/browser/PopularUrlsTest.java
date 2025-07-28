@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -17,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Manual;

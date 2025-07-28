@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule;
 import androidx.test.core.app.ApplicationProvider;
@@ -24,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;

@@ -12,7 +12,8 @@ import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
+
+import org.chromium.base.Log;
 
 import java.io.File;
 import java.io.IOException;
