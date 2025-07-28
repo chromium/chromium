@@ -857,11 +857,11 @@ void Canvas2DRecorderContext::DrawInternal(
     if (ComputeDirtyRect(bounds, clip_bounds, &dirty_rect)) {
       const cc::PaintFlags* flags =
           state.GetFlags(paint_type, kDrawShadowAndForeground, image_type);
-      if (paint_type != CanvasRenderingContext2DState::kStrokePaintType &&
-          draw_covers_clip_bounds(clip_bounds)) {
-        // Because CurrentOverdrawOp is a template argument the following branch
-        // is optimized-out at compile time.
-        if (CurrentOverdrawOp != OverdrawOp::kNone) {
+      // Because CurrentOverdrawOp is a template argument the following branch
+      // is optimized-out at compile time.
+      if (CurrentOverdrawOp != OverdrawOp::kNone) {
+        if (paint_type != CanvasRenderingContext2DState::kStrokePaintType &&
+            draw_covers_clip_bounds(clip_bounds)) {
           CheckOverdraw(flags, image_type, CurrentOverdrawOp);
         }
       }
