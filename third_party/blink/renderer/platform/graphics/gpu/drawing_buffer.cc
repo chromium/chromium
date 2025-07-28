@@ -543,17 +543,13 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
 void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
   DCHECK(pixels);
   DCHECK(state_restorer_);
-  bool need_premultiply = requested_alpha_type_ == kUnpremul_SkAlphaType;
-  WebGLImageConversion::AlphaOp op =
-      need_premultiply ? WebGLImageConversion::kAlphaDoPremultiply
-                       : WebGLImageConversion::kAlphaDoNothing;
 
   // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
   const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
       size_, viz::SinglePlaneFormat::kRGBA_8888);
   ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
-                      kN32_SkColorType, op, kBottomLeft_GrSurfaceOrigin,
-                      kBackBuffer);
+                      kN32_SkColorType, kPremul_SkAlphaType,
+                      kBottomLeft_GrSurfaceOrigin, kBackBuffer);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -1792,7 +1788,7 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
 
   auto pixels = base::span<uint8_t>(
       static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
-  ReadBackFramebuffer(pixels, color_type, WebGLImageConversion::kAlphaDoNothing,
+  ReadBackFramebuffer(pixels, color_type, requested_alpha_type_,
                       kTopLeft_GrSurfaceOrigin, source_buffer);
 
   return StaticBitmapImage::Create(
@@ -1804,7 +1800,7 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
 
 void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
                                         SkColorType color_type,
-                                        WebGLImageConversion::AlphaOp op,
+                                        SkAlphaType destination_alpha_type,
                                         GrSurfaceOrigin destination_origin,
                                         SourceDrawingBuffer source_buffer) {
   DCHECK(state_restorer_);
@@ -1861,6 +1857,16 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
     for (size_t i = 0; i < pixels.size(); i += 4) {
       std::swap(pixels[i], pixels[i + 2]);
     }
+  }
+
+  WebGLImageConversion::AlphaOp op = WebGLImageConversion::kAlphaDoNothing;
+  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+      destination_alpha_type == kPremul_SkAlphaType) {
+    op = WebGLImageConversion::kAlphaDoPremultiply;
+  } else if (requested_alpha_type_ != kUnpremul_SkAlphaType &&
+             destination_alpha_type == kUnpremul_SkAlphaType) {
+    // We don't support unpremultiplication.
+    NOTREACHED();
   }
 
   if (op == WebGLImageConversion::kAlphaDoPremultiply) {
