@@ -22,8 +22,19 @@ suite('SettingsMain', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  function createSettingsMain() {
+  function createSettingsMain(overrides?: {[key: string]: any}) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues(Object.assign(
+        {
+          isGuest: false,
+          showAiPage: false,
+          showResetProfileBanner: false,
+        },
+        overrides || {}));
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+
     searchManager = new TestSearchManager();
     setSearchManagerForTesting(searchManager);
     Router.getInstance().navigateTo(routes.BASIC);
@@ -35,11 +46,6 @@ suite('SettingsMain', function() {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({
-      isGuest: false,
-      showAiPage: false,
-      showResetProfileBanner: false,
-    });
     createSettingsMain();
   });
 
@@ -144,10 +150,7 @@ suite('SettingsMain', function() {
     assertVisibilityRespected();
 
     // Case2: Guest mode
-    loadTimeData.overrideValues({isGuest: true});
-    resetPageVisibilityForTesting();
-    // Create a new instance for the visibility to have an effect.
-    createSettingsMain();
+    createSettingsMain({isGuest: true});
     assertVisibilityRespected();
   });
 
@@ -155,10 +158,7 @@ suite('SettingsMain', function() {
     assertFalse(loadTimeData.getBoolean('showAiPage'));
     assertFalse(!!queryView('ai'));
 
-    loadTimeData.overrideValues({showAiPage: true});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-    createSettingsMain();
+    createSettingsMain({showAiPage: true});
     assertTrue(!!queryView('ai'));
   });
 
@@ -173,10 +173,8 @@ suite('SettingsMain', function() {
     assertEquals('people', active.id);
 
     // Case2: Guest mode.
-    loadTimeData.overrideValues({isGuest: true});
-    resetPageVisibilityForTesting();
-    // Create a new instance for the visibility to have an effect.
-    createSettingsMain();
+    createSettingsMain({isGuest: true});
+    await flushTasks();
     active = settingsMain.$.switcher.querySelector<HTMLElement>(
         '.active[slot=view]');
     assertTrue(!!active);
@@ -184,15 +182,14 @@ suite('SettingsMain', function() {
     assertEquals('search', active.id);
     // </if>
     // <if expr="is_chromeos">
-    assertEquals('old', active.id);
+    assertEquals('privacy', active.id);
     // </if>
   });
 
   test('ResetProfileBannerShown', function() {
     assertFalse(!!settingsMain.shadowRoot!.querySelector(
         'settings-reset-profile-banner'));
-    loadTimeData.overrideValues({showResetProfileBanner: true});
-    createSettingsMain();
+    createSettingsMain({showResetProfileBanner: true});
     assertTrue(!!settingsMain.shadowRoot!.querySelector(
         'settings-reset-profile-banner'));
   });

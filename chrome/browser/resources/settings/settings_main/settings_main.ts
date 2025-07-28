@@ -182,16 +182,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
     this.lastRoute_ = effectiveRoute;
 
-    if (!effectiveRoute.hasMigratedToPlugin) {
-      // Case where the requested section still resides within the old
-      // <settings-basic-page> element. Show that element, and let it handle
-      // showing the correct content.
-      this.$.switcher.switchView('old', 'no-animation', 'no-animation');
-      return;
-    }
-
-    // Case where the requested section has migrated to the new "plugin"
-    // architecture.
     const newSection = effectiveRoute.section;
     let sectionElement = this.$.switcher.querySelector(`#${newSection}`);
     if (!sectionElement) {
