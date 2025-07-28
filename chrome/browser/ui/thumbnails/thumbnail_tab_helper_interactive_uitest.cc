@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -87,6 +88,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ThumbnailObserver, kThumbnailCreatedState);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserRemovedObserver,
                                     kBrowserRemovedState);
 
+using ::performance_manager::testing::ScopedSetAllPagesDiscardableForTesting;
 }  // anonymous namespace
 
 class ThumbnailTabHelperUpdatedInteractiveTest
@@ -107,6 +109,19 @@ class ThumbnailTabHelperUpdatedInteractiveTest
     // that also trigger the existence of the helper.
     scoped_feature_list_.InitAndEnableFeature(features::kTabHoverCardImages);
     InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    MemorySaverInteractiveTestMixin<
+        InteractiveBrowserTest>::SetUpOnMainThread();
+    unconditionally_discard_pages_ =
+        std::make_unique<ScopedSetAllPagesDiscardableForTesting>();
+  }
+
+  void TearDownOnMainThread() override {
+    unconditionally_discard_pages_.reset();
+    MemorySaverInteractiveTestMixin<
+        InteractiveBrowserTest>::TearDownOnMainThread();
   }
 
   int GetTabCount() { return browser()->tab_strip_model()->count(); }
@@ -175,6 +190,8 @@ class ThumbnailTabHelperUpdatedInteractiveTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ScopedSetAllPagesDiscardableForTesting>
+      unconditionally_discard_pages_;
 };
 
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
@@ -188,15 +205,8 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       WaitForAndVerifyThumbnail(0), CheckTabHasThumbnailData(0, true));
 }
 
-// TODO(crbug.com/434218679): Fix test on mac before re-enabling.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TabDiscardPreservesScreenshot \
-  DISABLED_TabDiscardPreservesScreenshot
-#else
-#define MAYBE_TabDiscardPreservesScreenshot TabDiscardPreservesScreenshot
-#endif
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
-                       MAYBE_TabDiscardPreservesScreenshot) {
+                       TabDiscardPreservesScreenshot) {
   RunTestSequence(
       AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
       WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
