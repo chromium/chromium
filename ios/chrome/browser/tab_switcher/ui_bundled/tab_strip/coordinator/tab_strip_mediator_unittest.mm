@@ -78,6 +78,11 @@ class TabStripFakeWebStateListDelegate : public FakeWebStateListDelegate {
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override {
     SnapshotTabHelper::CreateForWebState(web_state);
+    favicon::WebFaviconDriver::CreateForWebState(
+        web_state,
+        ios::FaviconServiceFactory::GetForProfile(
+            ProfileIOS::FromBrowserState(web_state->GetBrowserState()),
+            ServiceAccessType::IMPLICIT_ACCESS));
   }
 };
 
@@ -173,16 +178,15 @@ class TabStripMediatorTest : public PlatformTest {
     mediator_.URLLoader = loader_;
   }
 
-  void AddWebState(bool pinned = false) {
+  std::unique_ptr<web::FakeWebState> CreateWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(profile_.get());
-    favicon::WebFaviconDriver::CreateForWebState(
-        web_state.get(),
-        ios::FaviconServiceFactory::GetForProfile(
-            profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+    return web_state;
+  }
 
+  void AddWebState(bool pinned = false) {
     web_state_list_->InsertWebState(
-        std::move(web_state),
+        CreateWebState(),
         WebStateList::InsertionParams::Automatic().Activate().Pinned(pinned));
   }
 
@@ -295,7 +299,7 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
 TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c* [ 0 d e ] f [ 1 g h ]"));
+      "a b | c* [ 0 d e ] f [ 1 g h ]", browser_->GetProfile()));
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
@@ -479,7 +483,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
 TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c* [ 0 d e ] f [ 1 g h ]"));
+      "a b | c* [ 0 d e ] f [ 1 g h ]", browser_->GetProfile()));
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
@@ -610,7 +614,7 @@ TEST_F(TabStripMediatorTest, ReplacedTab) {
 
   ASSERT_EQ(1, web_state_list_->active_index());
 
-  auto web_state = std::make_unique<web::FakeWebState>();
+  auto web_state = CreateWebState();
   web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
   web_state_list_->ReplaceWebStateAt(1, std::move(web_state));
 
@@ -685,13 +689,7 @@ TEST_F(TabStripMediatorTest, AddTab) {
   EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
             consumer_.selectedItem.identifier);
 
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(profile_.get());
-  favicon::WebFaviconDriver::CreateForWebState(
-      web_state.get(), ios::FaviconServiceFactory::GetForProfile(
-                           profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
-
-  web_state_list_->InsertWebState(std::move(web_state),
+  web_state_list_->InsertWebState(CreateWebState(),
                                   WebStateList::InsertionParams::AtIndex(1));
 
   for (int index = 0; index < web_state_list_->count(); index++) {
@@ -1681,10 +1679,10 @@ TEST_F(TabStripMediatorTest, TabStripItemHasNotificationDot) {
 // Tests that `fetchTabSnapshotAndFavicon:completion:` is calling `completion`
 // once.
 TEST_F(TabStripMediatorTest, FetchTabSnapshotAndFavicon) {
-  auto fake_web_state = std::make_unique<web::FakeWebState>();
-  web::FakeWebState* web_state = fake_web_state.get();
-  SnapshotTabHelper::CreateForWebState(web_state);
-  TabStripTabItem* item = [[TabStripTabItem alloc] initWithWebState:web_state];
+  auto web_state = CreateWebState();
+  SnapshotTabHelper::CreateForWebState(web_state.get());
+  TabStripTabItem* item =
+      [[TabStripTabItem alloc] initWithWebState:web_state.get()];
   __block int completion_block_called = 0;
   auto completion_block = ^(TabSwitcherItem* inner_item,
                             TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
