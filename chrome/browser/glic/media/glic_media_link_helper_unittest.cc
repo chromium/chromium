@@ -69,7 +69,7 @@ class GlicMediaLinkHelperTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<GlicMediaLinkHelperForTest> media_link_helper_;
 };
 
-TEST_F(GlicMediaLinkHelperTest, DifferentOriginsReturnsFalse) {
+TEST_F(GlicMediaLinkHelperTest, DifferentHostsReturnsFalse) {
   auto* web_contents_tester = content::WebContentsTester::For(web_contents());
 
   // Case 1: Committed is example.com, target is youtube.com
@@ -77,15 +77,9 @@ TEST_F(GlicMediaLinkHelperTest, DifferentOriginsReturnsFalse) {
   EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
       GURL("https://www.youtube.com/watch?v=video123")));
 
-  // Case 2: Different subdomains of YouTube are considered different origins
+  // Case 2: Different subdomains of YouTube are considered different hosts.
   web_contents_tester->NavigateAndCommit(
       GURL("https://m.youtube.com/watch?v=video123"));
-  EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
-      GURL("https://www.youtube.com/watch?v=video123&t=30")));
-
-  // Case 3: Different schemes are different origins
-  web_contents_tester->NavigateAndCommit(
-      GURL("http://www.youtube.com/watch?v=video123"));
   EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
       GURL("https://www.youtube.com/watch?v=video123&t=30")));
 }
@@ -100,6 +94,26 @@ TEST_F(GlicMediaLinkHelperTest, SameOriginNoHelperReturnsFalse) {
 }
 
 // --- YouTubeHelper Specific Tests (via MaybeReplaceNavigation) ---
+
+TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_DifferentSchemeSucceeds) {
+  auto* web_contents_tester = content::WebContentsTester::For(web_contents());
+  web_contents_tester->NavigateAndCommit(
+      GURL("http://www.youtube.com/watch?v=video123"));
+
+  EXPECT_CALL(mock_media_session(), SeekTo(Eq(base::Seconds(30)))).Times(1);
+
+  EXPECT_TRUE(media_link_helper()->MaybeReplaceNavigation(
+      GURL("https://www.youtube.com/watch?v=video123&t=30")));
+}
+
+TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_MobileYouTubeIsNotHandled) {
+  auto* web_contents_tester = content::WebContentsTester::For(web_contents());
+  web_contents_tester->NavigateAndCommit(
+      GURL("https://m.youtube.com/watch?v=video123"));
+
+  EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
+      GURL("https://m.youtube.com/watch?v=video123&t=30")));
+}
 
 TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_NoVideoIdInCommittedUrl) {
   auto* web_contents_tester = content::WebContentsTester::For(web_contents());

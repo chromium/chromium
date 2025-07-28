@@ -19,18 +19,17 @@ GlicMediaLinkHelper::GlicMediaLinkHelper(content::WebContents* web_contents)
 GlicMediaLinkHelper::~GlicMediaLinkHelper() = default;
 
 bool GlicMediaLinkHelper::MaybeReplaceNavigation(const GURL& target) {
-  auto target_origin = url::Origin::Create(target);
+  const GURL& committed_url =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
 
-  // Insist that the target and the focused contents are the same origin.
-  if (target_origin !=
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()) {
+  // Insist that the target and the focused contents have the same host.
+  if (target.host() != committed_url.host()) {
     return false;
   }
 
-  if (target_origin == url::Origin::Create(GURL("https://www.youtube.com/"))) {
+  if (target.host() == "www.youtube.com") {
     return YouTubeHelper(target);
   }
-  // Add other origins here.
 
   return false;
 }
