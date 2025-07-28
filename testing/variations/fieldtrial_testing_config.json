@@ -17900,18 +17900,23 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithOTRfalse_20250319",
+                    "name": "EnabledWithOTRtrue_20250724_Stable",
                     "params": {
-                        "run_on_otPreconnectFromKeyedServicer": "false"
+                        "IdleTimeoutInSeconds": "30",
+                        "MaxPreconnectRetryInterval": "30",
+                        "MaxShortSessionThreshold": "30s",
+                        "PingIntervalInSeconds": "27",
+                        "QuicConnectionOptions": "ECCP",
+                        "run_on_otr": "true"
                     },
                     "enable_features": [
                         "PreconnectFromKeyedService"
                     ]
                 },
                 {
-                    "name": "EnabledWithOTRtrue_20250319",
+                    "name": "EnabledWithOTRfalse_20250319",
                     "params": {
-                        "run_on_otr": "true"
+                        "run_on_otr": "false"
                     },
                     "enable_features": [
                         "PreconnectFromKeyedService"
