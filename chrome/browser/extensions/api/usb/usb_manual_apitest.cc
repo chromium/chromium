@@ -7,7 +7,10 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 
-using UsbManualApiTest = extensions::ExtensionApiTest;
+namespace extensions {
+namespace {
+
+using UsbManualApiTest = ExtensionApiTest;
 
 // TODO(crbug.com/40656552): The win7 bots do not seem to recognize the MANUAL_
 // prefix, so we explicitly disable this test.
@@ -18,8 +21,11 @@ using UsbManualApiTest = extensions::ExtensionApiTest;
 #endif
 IN_PROC_BROWSER_TEST_F(UsbManualApiTest, MAYBE_MANUAL_ListInterfaces) {
   auto dialog_action_reset =
-      extensions::PermissionsRequestFunction::SetDialogActionForTests(
-          extensions::PermissionsRequestFunction::DialogAction::kAutoConfirm);
-  extensions::PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
+      PermissionsRequestFunction::SetDialogActionForTests(
+          PermissionsRequestFunction::DialogAction::kAutoConfirm);
+  PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(RunExtensionTest("usb_manual/list_interfaces"));
 }
+
+}  // namespace
+}  // namespace extensions
