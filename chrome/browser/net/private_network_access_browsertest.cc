@@ -32,7 +32,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/private_network_access_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/common/constants.h"
@@ -680,20 +679,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
-                       RecordsAddressSpaceFeatureForDeprecationTrial) {
-  WebFeatureHistogramTester feature_histogram_tester;
-  content::DeprecationTrialURLLoaderInterceptor interceptor;
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), interceptor.EnabledUrl()));
-
-  EXPECT_EQ(
-      feature_histogram_tester.GetCount(
-          WebFeature::
-              kPrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial),
-      1);
 }
 
 // This test verifies that resources proxied through a proxy on localhost can

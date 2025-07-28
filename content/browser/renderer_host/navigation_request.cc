@@ -8487,8 +8487,36 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
     return;
   }
 
+  bool lna_secure_context_override = false;
+
+  // Deprecation trial is to allow http sites to run LNA requests assuming the
+  // user grants the permission to the web site.
+  //
+  // Support for origin trial tokens in <meta> tags or programmatically are not
+  // supported, for the same reasons as in the previous PNA trial:
+  // https://developer.chrome.com/blog/private-network-access-update#register-deprecation-trial
+  if (!policies.is_web_secure_context &&
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+      // If there is no response or no headers in the response, there are
+      // definitely no trial token headers.
+      response_head_ && response_head_->headers &&
+      blink::TrialTokenValidator().RequestEnablesDeprecatedFeature(
+          common_params_->url, response_head_->headers.get(),
+          "LocalNetworkAccessNonSecureContextAllowed", base::Time::Now())) {
+    web_features_to_log_.push_back(
+        blink::mojom::WebFeature::
+            kLocalNetworkAccessNonSecureContextAllowedDeprecationTrial);
+    lna_secure_context_override = true;
+  }
+
+  // TODO(crbug.com/433300380): The lna_secure_context_overide check needs to be
+  // done in all other policy derivation points. This boolean should probably be
+  // put into PolicyContainerPolicies.
   private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
-      policies, PrivateNetworkRequestContext::kSubresource);
+      policies.ip_address_space,
+      policies.is_web_secure_context || lna_secure_context_override,
+      PrivateNetworkRequestContext::kSubresource);
 
   if (policy_override ==
       ContentBrowserClient::PrivateNetworkRequestPolicyOverride::

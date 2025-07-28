@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_TEST_PRIVATE_NETWORK_ACCESS_UTIL_H_
-#define CONTENT_PUBLIC_TEST_PRIVATE_NETWORK_ACCESS_UTIL_H_
+#ifndef CONTENT_PUBLIC_TEST_LOCAL_NETWORK_ACCESS_UTIL_H_
+#define CONTENT_PUBLIC_TEST_LOCAL_NETWORK_ACCESS_UTIL_H_
 
 #include "content/public/test/url_loader_interceptor.h"
 #include "url/gurl.h"
@@ -11,7 +11,7 @@
 namespace content {
 
 // URL loader interceptor for testing the
-// `PrivateNetworkAccessNonSecureContextsAllowed` deprecation trial.
+// `LocalNetworkAccessNonSecureContextAllowed` deprecation trial.
 //
 // Trial tokens are tied to a single origin, which precludes the use of
 // `net::EmbeddedTestServer` and its random port assignment. Instead, we resort
@@ -30,23 +30,28 @@ class DeprecationTrialURLLoaderInterceptor {
       const DeprecationTrialURLLoaderInterceptor&) = delete;
 
   // Returns the URL of a document that bears a valid trial token.
-  GURL EnabledUrl() const { return enabled_url_; }
+  GURL EnabledHttpUrl() const { return enabled_http_url_; }
+  GURL EnabledHttpsUrl() const { return enabled_https_url_; }
 
   // Returns the URL of a document that does not bear a valid trial token.
-  GURL DisabledUrl() const { return disabled_url_; }
+  GURL DisabledHttpUrl() const { return disabled_http_url_; }
+  GURL DisabledHttpsUrl() const { return disabled_https_url_; }
 
  private:
   using RequestParams = URLLoaderInterceptor::RequestParams;
 
   bool HandleRequest(RequestParams* request_params) const;
-  void HandleEnabledUrlRequest(RequestParams& request_params) const;
+  void HandleEnabledHttpUrlRequest(RequestParams& request_params) const;
+  void HandleEnabledHttpsUrlRequest(RequestParams& request_params) const;
   void HandleDisabledUrlRequest(RequestParams& request_params) const;
 
-  const GURL enabled_url_{"http://enabled.test/"};
-  const GURL disabled_url_{"http://disabled.test/"};
+  const GURL enabled_http_url_{"http://enabled.test/"};
+  const GURL disabled_http_url_{"http://disabled.test/"};
+  const GURL enabled_https_url_{"https://enabled.test/"};
+  const GURL disabled_https_url_{"https://disabled.test/"};
   URLLoaderInterceptor interceptor_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_TEST_PRIVATE_NETWORK_ACCESS_UTIL_H_
+#endif  // CONTENT_PUBLIC_TEST_LOCAL_NETWORK_ACCESS_UTIL_H_
