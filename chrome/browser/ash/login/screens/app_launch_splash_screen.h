@@ -101,11 +101,15 @@ class AppLaunchSplashScreen : public BaseScreen {
   raw_ptr<Delegate> delegate_ = nullptr;
 
  private:
+  void OnErrorScreenHidden();
+
   base::WeakPtr<AppLaunchSplashScreenView> view_;
 
   raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_;
 
   base::RepeatingClosure exit_callback_;
+
+  base::WeakPtrFactory<AppLaunchSplashScreen> weak_factory_{this};
 };
 
 }  // namespace ash
