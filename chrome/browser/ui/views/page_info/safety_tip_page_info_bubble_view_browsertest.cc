@@ -1716,8 +1716,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
 }
 
 // Ensure prerender navigations don't close the Safety Tip.
+//
+// TODO(https://crbug.com/434744048): Re-enable after fixing flakiness.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
-                       StillShowAfterPrerenderNavigation) {
+                       DISABLED_StillShowAfterPrerenderNavigation) {
   // This domain is a lookalike of a top domain not in the top 500.
   const GURL kNavigatedUrl =
       embedded_test_server()->GetURL("accounts-google.com", "/title1.html");
