@@ -18,15 +18,15 @@ const STREAM_BUFFER_SIZE: usize = 4096;
 mod ffi {
     enum FileType {
         Bookmarks,
-        History,
         Passwords,
         PaymentCards,
+        SafariHistory,
         StablePortabilityHistory,
     }
 
-    // C++ interop version of the HistoryJSONEntry structure.
-    // See HistoryJSONEntry for field documentation.
-    struct HistoryEntry {
+    // C++ interop version of the SafariHistoryJSONEntry structure.
+    // See SafariHistoryJSONEntry for field documentation.
+    struct SafariHistoryEntry {
         url: String,
         title: String,
         time_usec: u64,
@@ -63,7 +63,7 @@ mod ffi {
         #[cxx_name = "ImportHistoryEntries"]
         fn ImportHistoryEntries(
             self: Pin<&mut SafariHistoryCallbackFromRust>,
-            history_entries: Pin<&mut CxxVector<HistoryEntry>>,
+            history_entries: UniquePtr<CxxVector<SafariHistoryEntry>>,
             completed: bool,
         );
 
@@ -71,10 +71,9 @@ mod ffi {
         #[cxx_name = "ImportHistoryEntries"]
         fn ImportStablePortabilityHistoryEntries(
             self: Pin<&mut StablePortabilityHistoryCallbackFromRust>,
-            history_entries: Pin<&mut CxxVector<StablePortabilityHistoryEntry>>,
+            history_entries: UniquePtr<CxxVector<StablePortabilityHistoryEntry>>,
             completed: bool,
         );
-
     }
     extern "Rust" {
         type ResultOfZipFileArchive;
@@ -88,7 +87,7 @@ mod ffi {
             file_type: FileType,
             mut output_bytes: Pin<&mut CxxString>,
         ) -> bool;
-        fn parse_history(
+        fn parse_safari_history(
             self: &mut ZipFileArchive,
             history_callback: UniquePtr<SafariHistoryCallbackFromRust>,
             history_size_threshold: usize,
@@ -110,7 +109,7 @@ mod ffi {
 // Safari's browser history JSON format, as documented here:
 // https://developer.apple.com/documentation/safariservices/importing-data-exported-from-safari?language=objc#Import-browser-history
 #[derive(Deserialize)]
-struct HistoryJSONEntry {
+struct SafariHistoryJSONEntry {
     // A string that’s the URL of the history item.
     url: String,
 
@@ -226,8 +225,8 @@ struct Metadata {
     // UNUSED: schema_version: u64,
 }
 
-impl From<HistoryJSONEntry> for ffi::HistoryEntry {
-    fn from(entry: HistoryJSONEntry) -> Self {
+impl From<SafariHistoryJSONEntry> for ffi::SafariHistoryEntry {
+    fn from(entry: SafariHistoryJSONEntry) -> Self {
         Self {
             url: entry.url,
             title: entry.title.unwrap_or(String::new()),
@@ -268,7 +267,7 @@ impl From<PaymentCardJSONEntry> for ffi::PaymentCardEntry {
 fn expected_extension(file_type: ffi::FileType) -> Result<&'static str> {
     match file_type {
         ffi::FileType::Bookmarks => Ok("html"),
-        ffi::FileType::History => Ok("json"),
+        ffi::FileType::SafariHistory => Ok("json"),
         ffi::FileType::Passwords => Ok("csv"),
         ffi::FileType::PaymentCards => Ok("json"),
         _ => Err(anyhow!("Unknown file type")),
@@ -287,7 +286,7 @@ fn has_extension(path: &Path, file_type: ffi::FileType) -> bool {
 // Returns the expected data type for the provided file type.
 fn expected_data_type(file_type: ffi::FileType) -> Result<&'static str> {
     match file_type {
-        ffi::FileType::History => Ok("history"),
+        ffi::FileType::SafariHistory => Ok("history"),
         ffi::FileType::StablePortabilityHistory => Ok("history_visits"),
         ffi::FileType::PaymentCards => Ok("payment_cards"),
         _ => Err(anyhow!("No data type for this file type")),
@@ -297,7 +296,7 @@ fn expected_data_type(file_type: ffi::FileType) -> Result<&'static str> {
 // Returns the expected array token for the provided file type.
 fn array_token_for_data_type(file_type: ffi::FileType) -> Result<&'static str> {
     match file_type {
-        ffi::FileType::History => Ok("history"),
+        ffi::FileType::SafariHistory => Ok("history"),
         ffi::FileType::StablePortabilityHistory => Ok("history_visits"),
         ffi::FileType::PaymentCards => Ok("payment_cards"),
         _ => Err(anyhow!("No array token for this file type")),
@@ -462,11 +461,11 @@ where
 // Attempts to parse the history file. Returns whether parsing was successful.
 fn parse_history_file<'a, R: Read>(
     stream_reader: ZipEntryBufReader<'a, R>,
-    callback: impl FnMut(HistoryJSONEntry) + 'a,
+    callback: impl FnMut(SafariHistoryJSONEntry) + 'a,
 ) -> bool {
     return deserialize_top_level(
         stream_reader.inner,
-        ffi::FileType::History,
+        ffi::FileType::SafariHistory,
         callback,
         /* metadata_only= */ false,
     )
@@ -492,12 +491,12 @@ fn parse_stable_portability_history(
             |history_item| {
                 history.pin_mut().push(history_item.into());
                 if history.len() >= history_size_threshold {
-                    let mut batch_to_send = std::mem::replace(
+                    let batch_to_send = std::mem::replace(
                         &mut history,
                         CxxVector::<ffi::StablePortabilityHistoryEntry>::new(),
                     );
                     history_callback.as_mut().unwrap().ImportStablePortabilityHistoryEntries(
-                        batch_to_send.pin_mut(),
+                        batch_to_send,
                         /* completed= */ false,
                     );
                 }
@@ -507,18 +506,15 @@ fn parse_stable_portability_history(
     })();
 
     // Send final batch if any, and completion signal.
-    history_callback
-        .as_mut()
-        .unwrap()
-        .ImportStablePortabilityHistoryEntries(history.pin_mut(), true);
+    history_callback.as_mut().unwrap().ImportStablePortabilityHistoryEntries(history, true);
     return result.is_ok();
 }
 
 // Returns whether the file used by the stream reader is a history file.
 fn is_history_file<'a, R: Read>(stream_reader: ZipEntryBufReader<'a, R>) -> bool {
-    return deserialize_top_level::<HistoryJSONEntry, zip::read::ZipFile<'a, R>>(
+    return deserialize_top_level::<SafariHistoryJSONEntry, zip::read::ZipFile<'a, R>>(
         stream_reader.inner,
-        ffi::FileType::History,
+        ffi::FileType::SafariHistory,
         |_| {},
         /* metadata_only= */ true,
     )
@@ -607,7 +603,7 @@ impl ZipFileArchive {
                     // Verify the data type in the JSON file.
                     let file_size_bytes = file.size();
                     let stream_reader = ZipEntryBufReader::new(file);
-                    if file_type == ffi::FileType::History {
+                    if file_type == ffi::FileType::SafariHistory {
                         if is_history_file(stream_reader) {
                             // There could be multiple history files, so keep going.
                             total_file_size_bytes += file_size_bytes;
@@ -664,12 +660,12 @@ impl ZipFileArchive {
         false
     }
 
-    fn parse_history(
+    fn parse_safari_history(
         self: &mut ZipFileArchive,
         mut history_callback: cxx::UniquePtr<ffi::SafariHistoryCallbackFromRust>,
         history_size_threshold: usize,
     ) {
-        let mut history = CxxVector::<ffi::HistoryEntry>::new();
+        let mut history = CxxVector::<ffi::SafariHistoryEntry>::new();
         for i in 0..self.archive.len() {
             let Ok(file) = self.archive.by_index(i) else {
                 continue;
@@ -678,15 +674,19 @@ impl ZipFileArchive {
                 continue;
             };
 
-            if has_extension(&outpath.as_path(), ffi::FileType::History) {
+            if has_extension(&outpath.as_path(), ffi::FileType::SafariHistory) {
                 let stream_reader = ZipEntryBufReader::new(file);
                 parse_history_file(stream_reader, |history_item| {
                     history.as_mut().unwrap().push(history_item.into());
                     if history.len() >= history_size_threshold {
-                        history_callback.as_mut().unwrap().ImportHistoryEntries(
-                            history.as_mut().unwrap(),
-                            /* completed= */ false,
+                        let batch_to_send = std::mem::replace(
+                            &mut history,
+                            CxxVector::<ffi::SafariHistoryEntry>::new(),
                         );
+                        history_callback
+                            .as_mut()
+                            .unwrap()
+                            .ImportHistoryEntries(batch_to_send, /* completed= */ false);
                     }
                 });
             }
@@ -695,7 +695,7 @@ impl ZipFileArchive {
         history_callback
             .as_mut()
             .unwrap()
-            .ImportHistoryEntries(history.as_mut().unwrap(), /* completed= */ true);
+            .ImportHistoryEntries(history, /* completed= */ true);
     }
 
     fn parse_payment_cards(

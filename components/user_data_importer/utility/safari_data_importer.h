@@ -151,9 +151,9 @@ class SafariDataImporter {
   // contained in one or more files with total size `file_size_bytes`.
   void PrepareHistory(size_t file_size_bytes);
 
-  // Transforms the HistoryEntry objects into URLRow objects and uses the
+  // Transforms the SafariHistoryEntry objects into URLRow objects and uses the
   // history service to import them.
-  void ImportHistoryEntries(std::vector<HistoryEntry> history_entries);
+  void ImportHistoryEntries(std::vector<SafariHistoryEntry> history_entries);
 
   // Invoked once parsing of history is completed. Forwards the results to
   // `client_`.

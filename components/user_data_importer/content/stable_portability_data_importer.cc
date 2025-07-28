@@ -36,13 +36,13 @@ class RustHistoryCallbackForStablePortabilityFormat final
 
   // Called from Rust when a batch of history entries has been parsed.
   void ImportHistoryEntries(
-      std::vector<user_data_importer::StablePortabilityHistoryEntry>&
+      std::unique_ptr<std::vector<StablePortabilityHistoryEntry>>
           history_entries,
       bool completed) override {
-    transfer_history_callback_.Run(history_entries);
+    transfer_history_callback_.Run(*history_entries);
 
     if (completed && done_callback_) {
-      std::move(done_callback_).Run(history_entries.size());
+      std::move(done_callback_).Run(history_entries->size());
     }
   }
 

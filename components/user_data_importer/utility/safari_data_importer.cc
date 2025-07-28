@@ -104,7 +104,7 @@ bool IsRedirect(const GURL& source_url, const GURL& destination_url) {
 }
 
 // Returns whether to skip this history entry.
-bool IsSkippedEntry(const user_data_importer::HistoryEntry& entry) {
+bool IsSkippedEntry(const user_data_importer::SafariHistoryEntry& entry) {
   // If either source or destination URL is missing, we can't determine if this
   // entry should be skipped.
   if (entry.source_url.empty() || entry.destination_url.empty()) {
@@ -129,7 +129,7 @@ bool IsSkippedEntry(const user_data_importer::HistoryEntry& entry) {
 }
 
 std::optional<history::URLRow> ConvertToURLRow(
-    const user_data_importer::HistoryEntry& history_entry) {
+    const user_data_importer::SafariHistoryEntry& history_entry) {
   GURL gurl(RustStringToStringView(history_entry.url));
   if (!gurl.is_valid() || IsSkippedEntry(history_entry)) {
     return std::nullopt;
@@ -153,10 +153,10 @@ namespace user_data_importer {
 // Object used to allow Rust History import pipeline to communicate results
 // back to this importer.
 class RustHistoryCallback final
-    : public user_data_importer::HistoryCallbackFromRust<HistoryEntry> {
+    : public user_data_importer::HistoryCallbackFromRust<SafariHistoryEntry> {
  public:
   using ParseHistoryCallback = base::RepeatingCallback<void(
-      std::vector<user_data_importer::HistoryEntry>)>;
+      std::vector<user_data_importer::SafariHistoryEntry>)>;
 
   explicit RustHistoryCallback(ParseHistoryCallback parse_history_callback,
                                base::OnceClosure done_closure)
@@ -167,13 +167,9 @@ class RustHistoryCallback final
 
   // Callback called while parsing the history file.
   void ImportHistoryEntries(
-      std::vector<user_data_importer::HistoryEntry>& history_entries,
+      std::unique_ptr<std::vector<SafariHistoryEntry>> history_entries,
       bool completed) override {
-    parse_history_callback_.Run(std::move(history_entries));
-
-    // "history_entries" should be empty after std::move, but make sure it is in
-    // a valid state by explicitly calling "clear" on it.
-    history_entries.clear();
+    parse_history_callback_.Run(std::move(*history_entries));
 
     if (completed) {
       std::move(done_closure_).Run();
@@ -350,7 +346,7 @@ void SafariDataImporter::BlockingWorker::ImportHistory(
   }
 
   (*zip_file_archive_)
-      ->parse_history(std::move(callback), history_size_threshold);
+      ->parse_safari_history(std::move(callback), history_size_threshold);
 
   CloseZipFileArchive();
 }
@@ -377,7 +373,7 @@ void SafariDataImporter::OnZipArchiveReady(bool success) {
                            weak_factory_.GetWeakPtr()));
 
   blocking_worker_.AsyncCall(&BlockingWorker::GetUncompressedFileSizeInBytes)
-      .WithArgs(FileType::History)
+      .WithArgs(FileType::SafariHistory)
       .Then(base::BindOnce(&SafariDataImporter::PrepareHistory,
                            weak_factory_.GetWeakPtr()));
 }
@@ -453,7 +449,7 @@ void SafariDataImporter::PrepareHistory(size_t file_size_bytes) {
 }
 
 void SafariDataImporter::ImportHistoryEntries(
-    std::vector<HistoryEntry> history_entries) {
+    std::vector<SafariHistoryEntry> history_entries) {
   history::URLRows url_rows;
   url_rows.reserve(history_entries.size());
   for (auto history_entry : history_entries) {
