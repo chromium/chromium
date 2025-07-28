@@ -75,6 +75,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -319,10 +320,18 @@ IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
 }
 
 IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
+  base::HistogramTester histogram_tester;
   chromevox_test_utils()->EnableChromeVox(/*check_for_intro=*/false);
   sm()->ExpectSpeech("ChromeVox spoken feedback is ready");
   sm()->Replay();
-  HistogramWaiter("Accessibility.ChromeVox.StartUpSpeechDelay").Wait();
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  if (histogram_tester
+          .GetAllSamples("Accessibility.ChromeVox.StartUpSpeechDelay")
+          .size() == 0) {
+    HistogramWaiter("Accessibility.ChromeVox.StartUpSpeechDelay").Wait();
+  }
 }
 
 // Test Learn Mode by pressing a few keys in Learn Mode. Only available while
