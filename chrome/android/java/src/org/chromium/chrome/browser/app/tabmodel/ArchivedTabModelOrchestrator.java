@@ -117,7 +117,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             new TabArchiver.Observer() {
                 @Override
                 public void onDeclutterPassCompleted() {
-                    saveState();
+                    if (!ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
+                        saveState();
+                    }
                 }
 
                 @Override
