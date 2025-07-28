@@ -40,7 +40,6 @@ source_set("ui") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser/actor",
-    "//chrome/browser/actor:variant_visitor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/actor_overlay:resources",
     "//chrome/browser/ui/browser_window",
@@ -50,6 +49,7 @@ source_set("ui") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",
+    "//third_party/abseil-cpp:absl",
     "//ui/views",
     "//ui/views/controls/webview",
     "//ui/webui",
@@ -88,8 +88,8 @@ source_set("event_dispatcher") {
     ":ui_event_types",
     ":ui_event_utils",
     "//chrome/browser/actor",
-    "//chrome/browser/actor:variant_visitor",
     "//chrome/browser/actor/ui",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -154,7 +154,6 @@ source_set("ui_event_utils") {
   deps = [
     ":ui_event_types",
     "//base",
-    "//chrome/browser/actor:variant_visitor",
     "//third_party/abseil-cpp:absl",
   ]
 }

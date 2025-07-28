@@ -9,13 +9,13 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/shared_types.h"
-#include "chrome/browser/actor/variant_visitor.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor::ui {
 namespace {
 
-constexpr Visitor UiEventToDebugStringFn{
+constexpr absl::Overload UiEventToDebugStringFn{
     [](const StartTask& e) -> std::string {
       return absl::StrFormat("StartTask[id=%d]", e.task_id.value());
     },

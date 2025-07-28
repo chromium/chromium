@@ -110,7 +110,6 @@ source_set("impl") {
 
   deps = [
     ":actor",
-    ":variant_visitor",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:event_dispatcher",
@@ -129,6 +128,7 @@ source_set("impl") {
     "//components/variations/service",
     "//content/public/browser",
     "//net",
+    "//third_party/abseil-cpp:absl",
     "//third_party/perfetto:libperfetto",
     "//third_party/perfetto/protos/perfetto/config:zero_gen",
     "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
@@ -160,10 +160,6 @@ source_set("types") {
     "//ui/gfx/geometry",
   ]
   deps = [ "//third_party/abseil-cpp:absl" ]
-}
-
-source_set("variant_visitor") {
-  sources = [ "variant_visitor.h" ]
 }
 
 source_set("test_support") {

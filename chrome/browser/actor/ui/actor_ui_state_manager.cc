@@ -10,7 +10,6 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
-#include "chrome/browser/actor/variant_visitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace actor::ui {
 namespace {
@@ -68,23 +68,24 @@ struct TabUiUpdate {
 };
 
 auto GetNewUiStateFn(ActorUiStateManager& manager) {
-  return Visitor{[&manager](const StartingToActOnTab& e) -> TabUiUpdate {
-                   auto* tab = e.tab_handle.Get();
-                   if (auto* tab_controller = manager.GetUiTabController(tab)) {
-                     tab_controller->SetActiveTaskId(e.task_id);
-                   }
-                   return TabUiUpdate{tab, GetAgentControlledUiTabState()};
-                 },
-                 [](const MouseClick& e) -> TabUiUpdate {
-                   UiTabState ui_tab_state = GetAgentControlledUiTabState();
-                   ui_tab_state.actor_overlay.mouse_down = true;
-                   return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-                 },
-                 [](const MouseMove& e) -> TabUiUpdate {
-                   UiTabState ui_tab_state = GetAgentControlledUiTabState();
-                   ui_tab_state.actor_overlay.mouse_target = e.target;
-                   return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-                 }};
+  return absl::Overload{
+      [&manager](const StartingToActOnTab& e) -> TabUiUpdate {
+        auto* tab = e.tab_handle.Get();
+        if (auto* tab_controller = manager.GetUiTabController(tab)) {
+          tab_controller->SetActiveTaskId(e.task_id);
+        }
+        return TabUiUpdate{tab, GetAgentControlledUiTabState()};
+      },
+      [](const MouseClick& e) -> TabUiUpdate {
+        UiTabState ui_tab_state = GetAgentControlledUiTabState();
+        ui_tab_state.actor_overlay.mouse_down = true;
+        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+      },
+      [](const MouseMove& e) -> TabUiUpdate {
+        UiTabState ui_tab_state = GetAgentControlledUiTabState();
+        ui_tab_state.actor_overlay.mouse_target = e.target;
+        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+      }};
 }
 
 // TODO(crbug.com/424495020): Bool may be converted to a map of ui
@@ -212,7 +213,8 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
   if (!base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     return;
   }
-  std::visit(Visitor{[this](const StartTask& e) {
+  std::visit(
+      absl::Overload{[this](const StartTask& e) {
                        this->MaybeUpdateProfileScopedUiState();
                      },
                      [this](const TaskStateChanged& e) {
@@ -227,7 +229,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                              base::BindOnce(&LogUiChangeError));
                        }
                      }},
-             event);
+      event);
 }
 
 #if BUILDFLAG(ENABLE_GLIC)

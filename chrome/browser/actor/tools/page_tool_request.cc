@@ -5,7 +5,6 @@
 #include "chrome/browser/actor/tools/page_tool_request.h"
 
 #include "chrome/browser/actor/tools/page_tool.h"
-#include "chrome/browser/actor/variant_visitor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
@@ -13,6 +12,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace actor {
 
@@ -22,7 +22,7 @@ using optimization_guide::DocumentIdentifierUserData;
 using tabs::TabHandle;
 
 namespace {
-constexpr Visitor ToMojoFn{
+constexpr absl::Overload ToMojoFn{
     [](const gfx::Point& pt) -> mojom::ToolTargetPtr {
       return actor::mojom::ToolTarget::NewCoordinate(pt);
     },
