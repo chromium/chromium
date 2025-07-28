@@ -79,6 +79,15 @@ struct OmniboxTextModel;
             timestamp:(base::TimeTicks)timestamp
           disposition:(WindowOpenDisposition)disposition;
 
+/// Opens the provided autocomplete `match` using a `customDestinationURL`.
+/// This method handles the logic for navigating to the specified URL.
+/// It is used when the user explicitly chooses to open a match with a URL
+/// different from its default destination.
+- (void)selectMatchForOpening:(AutocompleteMatch&)match
+     withCustomDestinationURL:(GURL)destinationURL
+                        inRow:(NSUInteger)row
+                       openIn:(WindowOpenDisposition)disposition;
+
 /// A simplified version of OpenSelection that opens the model's current
 /// selection.
 - (void)openCurrentSelectionWithDisposition:(WindowOpenDisposition)disposition

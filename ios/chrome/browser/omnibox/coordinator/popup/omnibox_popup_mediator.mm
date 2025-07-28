@@ -256,11 +256,11 @@ const std::string kShortcutEntrypointAimID = "62";
       GURL aimURL =
           GetUrlForAim(self.templateURLService, kShortcutEntrypointAimID,
                        /*query_start_time=*/base::Time::Now(), match.contents);
-      aimMatch.destination_url = aimURL;
       [self.omniboxAutocompleteController
-          selectMatchForOpening:aimMatch
-                          inRow:row
-                         openIn:WindowOpenDisposition::CURRENT_TAB];
+             selectMatchForOpening:aimMatch
+          withCustomDestinationURL:aimURL
+                             inRow:row
+                            openIn:WindowOpenDisposition::CURRENT_TAB];
     } else if (match.has_tab_match.value_or(false)) {
       [self.omniboxAutocompleteController
           selectMatchForOpening:match

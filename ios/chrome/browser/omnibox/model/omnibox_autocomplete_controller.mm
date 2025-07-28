@@ -281,6 +281,21 @@ using base::UserMetricsAction;
   [self updateWithSortedResults:_autocompleteController->result()];
 }
 
+- (void)selectMatchForOpening:(AutocompleteMatch&)match
+     withCustomDestinationURL:(GURL)destinationURL
+                        inRow:(NSUInteger)row
+                       openIn:(WindowOpenDisposition)disposition {
+  const auto matchSelectionTimestamp = base::TimeTicks();
+  match.destination_url = destinationURL;
+
+  [self openMatch:match
+               popupSelection:OmniboxPopupSelection(OmniboxPopupSelection(row))
+        windowOpenDisposition:disposition
+              alternateNavURL:GURL()
+                   pastedText:u""
+      matchSelectionTimestamp:matchSelectionTimestamp];
+}
+
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
                         inRow:(NSUInteger)row
                        openIn:(WindowOpenDisposition)disposition {
