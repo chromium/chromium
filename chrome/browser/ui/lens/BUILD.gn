@@ -248,6 +248,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/hats:test_support",
+    "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/side_panel",

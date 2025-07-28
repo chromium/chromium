@@ -183,7 +183,10 @@ source_set("content_settings_util_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+    deps += [
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
   }
 }
 

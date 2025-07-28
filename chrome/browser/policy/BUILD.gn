@@ -199,6 +199,7 @@ source_set("test_support") {
     deps += [
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/location_bar",
       "//chrome/common:constants",
       "//chrome/common/net",
       "//components/omnibox/browser",

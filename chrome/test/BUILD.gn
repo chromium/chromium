@@ -779,6 +779,7 @@ static_library("test_support") {
       ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
+      "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/profiles:test_support",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/translate",
@@ -1490,6 +1491,10 @@ source_set("platform_browser_tests") {
     "//ui/base",
     "//url",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/location_bar" ]
+  }
 
   public_deps = [ "//components/browsing_data/content" ]
 
@@ -3945,6 +3950,7 @@ if (!is_android) {
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search",
@@ -10824,6 +10830,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/autofill/payments:test_support_ui",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
@@ -11427,6 +11434,7 @@ if (!is_android && !is_chromeos_device) {
     deps += [
       "//chrome/browser:flags",
       "//chrome/browser/privacy_sandbox:test_support",
+      "//chrome/browser/ui/location_bar",
     ]
 
     if (!is_chrome_for_testing) {

@@ -166,7 +166,10 @@ source_set("impl") {
       "save_card_bubble_controller_impl.cc",
       "save_payment_icon_controller.cc",
     ]
-    deps += [ "//chrome/browser/ui/hats" ]
+    deps += [
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/location_bar",
+    ]
   }
 }
 
