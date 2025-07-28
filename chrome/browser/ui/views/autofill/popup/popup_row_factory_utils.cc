@@ -133,6 +133,7 @@ std::unique_ptr<views::BoxLayoutView> GetBadgeView(std::u16string_view label) {
   return views::Builder<views::BoxLayoutView>()
       .AddChildren(views::Builder<views::Label>()
                        .SetText(std::u16string(label))
+                       .SetAccessibleName(std::u16string(label))
                        .SetTextStyle(kBadgeTextStyle)
                        .SetBorder(views::CreateRoundedRectBorder(
                            /*thickness=*/0, /*corner_radius=*/100,
