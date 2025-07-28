@@ -18,10 +18,14 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/share_extension/model/bookmark_adder.h"
 #import "ios/chrome/browser/share_extension/model/parsed_share_extension_entry.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -68,6 +72,15 @@ ShareExtensionSource SourceIDFromSource(NSString* source) {
     return SHARE_EXTENSION;
   }
   return UNKNOWN_SOURCE;
+}
+
+void OnProfileLoaded(std::unique_ptr<BookmarkAdder> adder,
+                     ScopedProfileKeepAliveIOS keep_alive) {
+  BookmarkAdder* adder_ptr = adder.get();
+  adder_ptr->OnProfileLoaded(
+      std::move(keep_alive),
+      base::BindOnce([](std::unique_ptr<BookmarkAdder> adder) {},
+                     std::move(adder)));
 }
 
 }  // namespace
@@ -159,9 +172,11 @@ ShareExtensionSource SourceIDFromSource(NSString* source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   CHECK(!_shutdownCalled);
   if (!_isObservingReadingListFolder) {
+    // Process the existing files first then start observing the folder for any
+    // new added file.
+    [self processExistingFiles];
     _isObservingReadingListFolder = YES;
     [NSFileCoordinator addFilePresenter:self];
-    [self processExistingFiles];
   }
 }
 
@@ -201,9 +216,9 @@ ShareExtensionSource SourceIDFromSource(NSString* source) {
     return;
   }
 
-  [self startObservingReadingListFolder];
-  // There may already be files. Process them.
-  [self processExistingFiles];
+  if (!_isObservingReadingListFolder) {
+    [self startObservingReadingListFolder];
+  }
 }
 
 - (void)applicationWillResignActive {
@@ -253,7 +268,7 @@ ShareExtensionSource SourceIDFromSource(NSString* source) {
 
 - (void)handleFileAtURL:(NSURL*)url {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  CHECK(_shutdownCalled);
+  CHECK(!_shutdownCalled);
 
   __weak ShareExtensionController* weakSelf = self;
 
@@ -302,20 +317,48 @@ ShareExtensionSource SourceIDFromSource(NSString* source) {
 
   [self processEntryWithType:parsedEntry.type
                        title:parsedEntry.title
+                      gaiaID:parsedEntry.gaiaID
                          URL:parsedEntry.url
                   completion:completion];
 }
 
 - (void)processEntryWithType:(app_group::ShareExtensionItemType)entryType
                        title:(NSString*)entryTitle
+                      gaiaID:(NSString*)gaiaID
                          URL:(NSURL*)entryURL
                   completion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  // TODO(crbug.com/40260909): Bookmark the URL or add it to reading list.
+  if (entryType == app_group::BOOKMARK_ITEM) {
+    [self addBookmarkToProfileByGaiaID:gaiaID
+                                   URL:entryURL
+                         bookmarkTitle:entryTitle];
+  }
+
+  // TODO(crbug.com/40260909): Handle adding the URL to reading list
 
   if (completion) {
     completion();
+  }
+}
+
+- (void)addBookmarkToProfileByGaiaID:(NSString*)gaiaID
+                                 URL:(NSURL*)URL
+                       bookmarkTitle:(NSString*)bookmarkTitle {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  std::optional<std::string> profileName =
+      GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
+
+  if (profileName.has_value()) {
+    std::string title = base::SysNSStringToUTF8(bookmarkTitle);
+    ProfileManagerIOS* profileManager =
+        GetApplicationContext()->GetProfileManager();
+    std::unique_ptr<BookmarkAdder> adder = std::make_unique<BookmarkAdder>(
+        net::GURLWithNSURL(URL), std::move(title));
+    profileManager->LoadProfileAsync(
+        *profileName, base::BindOnce(&OnProfileLoaded, std::move(adder)));
   }
 }
 

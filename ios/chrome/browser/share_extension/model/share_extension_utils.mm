@@ -114,5 +114,12 @@ ParsedShareExtensionEntry* PerformBlockingFileReadAndParse(NSURL* file_url) {
     result.source = entrySource;
   }
 
+  NSString* gaiaID = base::apple::ObjCCast<NSString>(
+      [entry objectForKey:app_group::kShareItemGaiaID]);
+
+  if (gaiaID) {
+    result.gaiaID = gaiaID;
+  }
+
   return result;
 }

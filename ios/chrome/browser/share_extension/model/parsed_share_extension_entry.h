@@ -18,6 +18,7 @@
 @property(nonatomic, strong) NSDate* date;
 @property(nonatomic, assign) app_group::ShareExtensionItemType type;
 @property(nonatomic, copy) NSString* source;
+@property(nonatomic, copy) NSString* gaiaID;
 
 // Check whether a parsed entry is valid. An entry is considered valid if it has
 // a source, a date and a type, if it represents a URL, the URL should be valid

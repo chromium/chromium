@@ -35,10 +35,14 @@ source_set("controller") {
     "share_extension_controller.mm",
   ]
   deps = [
+    ":bookmark_adder",
     ":utils",
     "//base",
+    "//google_apis",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/common/app_group",
     "//ios/web",
     "//ios/web/public/thread",
@@ -58,6 +62,25 @@ source_set("utils") {
     "//base",
     "//ios/chrome/common/app_group",
     "//net",
+    "//url",
+  ]
+}
+
+source_set("bookmark_adder") {
+  sources = [
+    "bookmark_adder.h",
+    "bookmark_adder.mm",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common/app_group",
     "//url",
   ]
 }

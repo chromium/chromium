@@ -27,8 +27,7 @@ bool IsEntryURL(app_group::ShareExtensionItemType type) {
   BOOL isURL = IsEntryURL(self.type);
   BOOL isURLValid = gurl.is_valid() && gurl.SchemeIsHTTPOrHTTPS();
 
-  return self.source && self.date && self.type &&
-         ((isURL && isURLValid) || !isURL);
+  return self.source && self.date && ((isURL && isURLValid) || !isURL);
 }
 
 @end
