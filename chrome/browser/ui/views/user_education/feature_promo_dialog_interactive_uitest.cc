@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -203,8 +202,10 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
       webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
   app_banner_manager->WaitForInstallableCheck();
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->toolbar_button_provider()
-                  ->GetPageActionView(kActionInstallPwa)
+                  ->toolbar()
+                  ->location_bar()
+                  ->page_action_icon_controller()
+                  ->GetIconView(PageActionIconType::kPwaInstall)
                   ->GetVisible());
   browser()->window()->Activate();
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();

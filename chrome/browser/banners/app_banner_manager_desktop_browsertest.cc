@@ -21,7 +21,6 @@
 #include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -259,13 +258,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Install the app via the menu instead of the banner.
-  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
-    actions::ActionManager::Get().FindAction(kActionInstallPwa)->InvokeAction();
-  } else {
-    browser()->window()->ExecutePageActionIconForTesting(
-        PageActionIconType::kPwaInstall);
-  }
-
+  browser()->window()->ExecutePageActionIconForTesting(
+      PageActionIconType::kPwaInstall);
   manager->AwaitAppInstall();
 
   EXPECT_FALSE(manager->IsPromptAvailableForTesting());

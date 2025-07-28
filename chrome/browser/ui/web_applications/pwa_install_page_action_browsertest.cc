@@ -188,10 +188,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
       enabled_features.push_back(
           {features::kPageActionsMigration,
            {{features::kPageActionsMigrationPwaInstall.name, "true"}}});
-    } else {
-      enabled_features.push_back(
-          {features::kPageActionsMigration,
-           {{features::kPageActionsMigrationPwaInstall.name, "false"}}});
     }
 
     features_.InitAndEnableFeaturesWithParameters(enabled_features, {});

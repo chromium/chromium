@@ -16563,7 +16563,6 @@
                         "offer_notification": "true",
                         "price_insights": "true",
                         "product_specifications": "true",
-                        "pwa_install": "true",
                         "translate": "true",
                         "zoom": "true"
                     },
