@@ -45,7 +45,7 @@ source_set("views") {
     ]
     deps += [
       "//ui/aura",
-      "//ui/wm:wm",
+      "//ui/wm",
     ]
   }
   if (is_mac) {
@@ -85,7 +85,7 @@ source_set("unit_tests") {
     deps += [
       "//ui/aura",
       "//ui/aura:test_support",
-      "//ui/wm:wm",
+      "//ui/wm",
     ]
   }
 

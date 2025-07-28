@@ -130,7 +130,7 @@ if (build_with_tflite_lib) {
     sources = [ "page_visibility_model_fuzzer.cc" ]
     deps = [
       ":core",
-      "//base:base",
+      "//base",
       "//base/test:test_support",
     ]
   }

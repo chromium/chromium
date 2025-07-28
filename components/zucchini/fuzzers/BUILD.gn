@@ -101,7 +101,7 @@ if (current_toolchain == host_toolchain && !is_win) {
     outputs =
         [ "$target_gen_dir/testdata/apply_fuzzer/raw_apply_seed_proto.bin" ]
     deps = [
-      "//components/zucchini:zucchini",
+      "//components/zucchini",
       "//third_party/protobuf:protoc",
     ]
   }
@@ -136,7 +136,7 @@ if (current_toolchain == host_toolchain && !is_win) {
     outputs =
         [ "$target_gen_dir/testdata/apply_fuzzer/ztf_apply_seed_proto.bin" ]
     deps = [
-      "//components/zucchini:zucchini",
+      "//components/zucchini",
       "//third_party/protobuf:protoc",
     ]
   }

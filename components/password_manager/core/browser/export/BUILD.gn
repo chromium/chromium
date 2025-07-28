@@ -34,8 +34,8 @@ source_set("export") {
     deps += [
       "//components/password_manager/core/browser/features:password_features",
       "//components/password_manager/core/browser/password_store:password_store_interface",
-      "//components/password_manager/core/common:common",
-      "//components/prefs:prefs",
+      "//components/password_manager/core/common",
+      "//components/prefs",
     ]
   }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

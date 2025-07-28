@@ -29,7 +29,7 @@ source_set("prediction_service") {
     "//components/permissions:permissions_common",
     "//components/version_info",
     "//content/public/browser",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/protobuf:protobuf_lite",
   ]
   public_deps = [
@@ -90,7 +90,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/permissions:permissions_common",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
     "//ui/gfx",

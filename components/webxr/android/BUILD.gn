@@ -81,7 +81,7 @@ source_set("android") {
       "//components/messages/android",
       "//components/resources:android_resources",
       "//components/strings",
-      "//components/webxr:webxr",
+      "//components/webxr",
       "//content/public/browser",
       "//device/vr/android:vr_android",
       "//ui/android",
@@ -100,7 +100,7 @@ source_set("android") {
       deps += [
         "//components/webxr:test_support",
         "//device/vr",
-        "//third_party/openxr:openxr",
+        "//third_party/openxr",
       ]
 
       public_configs = [ "//third_party/openxr:config" ]

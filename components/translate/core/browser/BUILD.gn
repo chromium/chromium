@@ -69,7 +69,7 @@ static_library("browser") {
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/icu",
     "//third_party/metrics_proto",
     "//ui/base",
@@ -116,9 +116,9 @@ source_set("unit_tests") {
     "//components/infobars/core",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
-    "//components/language/core/common:common",
+    "//components/language/core/common",
     "//components/language_detection/core",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
@@ -131,7 +131,7 @@ source_set("unit_tests") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//ui/base",
   ]
 
@@ -163,7 +163,7 @@ source_set("test_support") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
     "//url",
   ]
 

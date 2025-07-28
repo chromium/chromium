@@ -80,7 +80,7 @@ static_library("content") {
     "//components/url_formatter",
     "//components/webauthn/core/browser",
     "//components/webdata/common",
-    "//components/webdata_services:webdata_services",
+    "//components/webdata_services",
     "//content/public/browser",
     "//crypto",
     "//device/fido",

@@ -109,7 +109,7 @@ static_library("test_support") {
     "//components/prefs",
 
     # TODO(b/309104936): Remove this unwanted dependency.
-    "//components/signin/public/identity_manager:identity_manager",
+    "//components/signin/public/identity_manager",
     "//crypto",
     "//google_apis:test_support",
   ]

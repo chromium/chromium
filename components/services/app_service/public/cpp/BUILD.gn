@@ -204,7 +204,7 @@ component("app_update") {
 
   defines = [ "IS_APP_UPDATE_IMPL" ]
 
-  public_deps = [ "//components/account_id:account_id" ]
+  public_deps = [ "//components/account_id" ]
 
   deps = [
     ":app_types",
@@ -228,7 +228,7 @@ source_set("icon_loader") {
 
   deps = [
     ":app_types",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
   ]
 
   visibility = [ "//components/services/app_service/*" ]

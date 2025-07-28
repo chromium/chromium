@@ -226,7 +226,7 @@ source_set("tests") {
     "//net:test_support",
     "//sql",
     "//sql:test_support",
-    "//storage/browser:browser",
+    "//storage/browser",
     "//storage/browser:test_support",
     "//storage/common:database_status",
     "//testing/gmock",

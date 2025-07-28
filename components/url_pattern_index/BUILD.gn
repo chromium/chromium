@@ -26,7 +26,7 @@ static_library("url_pattern_index") {
 
   deps = [
     "//base",
-    "//third_party/flatbuffers:flatbuffers",
+    "//third_party/flatbuffers",
     "//third_party/protobuf:protobuf_lite",
     "//url",
   ]

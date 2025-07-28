@@ -36,7 +36,7 @@ fuzzer_test("query_parser_fuzzer") {
   sources = [ "query_parser_fuzzer.cc" ]
   deps = [
     ":query_parser",
-    "//base:base",
+    "//base",
     "//base:i18n",
   ]
 }

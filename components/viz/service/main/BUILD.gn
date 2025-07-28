@@ -40,7 +40,7 @@ source_set("main") {
   public_deps = [ "//services/network/public/mojom" ]
 
   if (use_ozone) {
-    deps += [ "//ui/ozone:ozone" ]
+    deps += [ "//ui/ozone" ]
   }
 
   if (is_chromeos) {

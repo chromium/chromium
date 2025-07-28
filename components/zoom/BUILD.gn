@@ -40,7 +40,7 @@ static_library("test_support") {
   ]
   deps = [
     ":zoom",
-    "//base:base",
+    "//base",
     "//content/test:test_support",
   ]
 }

@@ -305,9 +305,9 @@ static_library("performance_manager") {
     "//components/guest_view/buildflags",
     "//components/metrics",
     "//components/performance_manager/scenario_api",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
-    "//components/system_cpu:system_cpu",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/system_cpu",
     "//third_party/blink/public/common:headers",
   ]
 
@@ -438,7 +438,7 @@ source_set("unit_tests") {
 
   deps = [
     ":performance_manager",
-    "test_support:test_support",
+    "test_support",
     "test_support:test_support_common",
     "//base/test:test_support",
     "//components/input",

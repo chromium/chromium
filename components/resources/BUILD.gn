@@ -34,8 +34,8 @@ group("resources") {
     ":components_scaled_resources",
     ":dev_ui_components_resources",
     "../autofill/core/browser/autofill_and_password_manager_internals:resources",
-    "../crash/core/browser/resources:resources",
-    "../gcm_driver/resources:resources",
+    "../crash/core/browser/resources",
+    "../gcm_driver/resources",
     "../net_log/resources",
     "../signin/core/browser/resources",
     "../translate/translate_internals:resources",
@@ -43,7 +43,7 @@ group("resources") {
   ]
 
   if (is_ios) {
-    public_deps += [ "../management/resources:resources" ]
+    public_deps += [ "../management/resources" ]
   }
 }
 

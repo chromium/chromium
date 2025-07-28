@@ -47,7 +47,7 @@ static_library("browser") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
@@ -55,7 +55,7 @@ static_library("browser") {
     "//components/subresource_filter/content/shared/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
-    "//components/ukm:ukm",
+    "//components/ukm",
     "//content/public/browser",
     "//content/public/common",
     "//ipc",
@@ -65,7 +65,7 @@ static_library("browser") {
   ]
   public_deps = [
     "//components/subresource_filter/content/mojom",
-    "//third_party/flatbuffers:flatbuffers",
+    "//third_party/flatbuffers",
     "//ui/base",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -79,7 +79,7 @@ static_library("browser") {
       "//components/messages/android:feature_flags",
       "//components/resources:android_resources",
       "//components/strings:components_strings_grit",
-      "//components/subresource_filter/android:android",
+      "//components/subresource_filter/android",
       "//components/subresource_filter/android:subresource_filter_jni_headers",
     ]
   }
@@ -124,7 +124,7 @@ static_library("test_support") {
     "//content/test:test_support",
     "//net",
     "//services/network/public/mojom",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
     "//url",
   ]
   public_deps = [
@@ -171,7 +171,7 @@ source_set("unit_tests") {
     "//components/subresource_filter/core/mojom",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
-    "//components/ukm/content:content",
+    "//components/ukm/content",
     "//content/public/browser",
     "//content/test:test_support",
     "//ipc",

@@ -49,7 +49,7 @@ source_set("ui") {
 
   deps = [
     "//components/affiliations/core/browser:affiliations",
-    "//components/autofill/core/common:common",
+    "//components/autofill/core/common",
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:passkey_credential",
     "//components/password_manager/core/browser:password_form",

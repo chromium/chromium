@@ -42,7 +42,7 @@ static_library("sync_bookmarks") {
     "//base",
     "//components/bookmarks/browser",
     "//components/favicon/core",
-    "//components/keyed_service/core:core",
+    "//components/keyed_service/core",
     "//components/strings:components_strings_grit",
     "//components/sync",
     "//components/undo",

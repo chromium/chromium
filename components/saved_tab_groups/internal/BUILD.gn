@@ -190,7 +190,7 @@ source_set("unit_tests") {
     "//components/data_sharing/public:logger",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/saved_tab_groups/delegate",
     "//components/saved_tab_groups/proto",
@@ -258,12 +258,12 @@ source_set("tab_group_sync_bridge") {
     "//components/data_sharing/public:logger",
     "//components/saved_tab_groups/proto",
     "//components/saved_tab_groups/public",
-    "//components/tab_groups:tab_groups",
+    "//components/tab_groups",
   ]
 
   public_deps = [
     "//base",
-    "//components/saved_tab_groups/proto:proto",
+    "//components/saved_tab_groups/proto",
     "//components/sync/base",
     "//components/sync/model",
   ]

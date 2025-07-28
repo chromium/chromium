@@ -28,7 +28,7 @@ source_set("webapps_client") {
     "//components/security_state/core",
     "//components/webapps/common",
   ]
-  deps = [ "//components/segmentation_platform/public:public" ]
+  deps = [ "//components/segmentation_platform/public" ]
 }
 
 source_set("browser") {
@@ -103,7 +103,7 @@ source_set("browser") {
     "//components/password_manager/content/common",
     "//components/permissions",
     "//components/security_state/core",
-    "//components/segmentation_platform/public:public",
+    "//components/segmentation_platform/public",
     "//components/site_engagement/content",
     "//components/variations",
     "//components/webapps/common",
@@ -173,7 +173,7 @@ source_set("browser") {
       "//components/feature_engagement",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
-      "//components/prefs:prefs",
+      "//components/prefs",
       "//components/strings",
       "//components/url_formatter",
       "//components/version_info",
@@ -182,7 +182,7 @@ source_set("browser") {
       "//components/webapps/common:mojo_bindings",
       "//services/device/public/mojom",
       "//third_party/smhasher:murmurhash2",
-      "//ui/android:android",
+      "//ui/android",
       "//ui/base",
       "//ui/gfx",
     ]

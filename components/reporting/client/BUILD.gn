@@ -38,7 +38,7 @@ static_library("report_queue_factory") {
     "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:wrapped_rate_limiter",
-    "//net:net",
+    "//net",
   ]
 }
 

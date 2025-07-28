@@ -82,18 +82,18 @@ static_library("test_support") {
     "//components/policy/proto",
     "//crypto",
     "//crypto:test_support",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//net:test_support",
     "//third_party/private_membership:private_membership_proto",
-    "//third_party/re2:re2",
+    "//third_party/re2",
   ]
 
   if (is_chromeos) {
     public_deps += [ "//third_party/private_membership" ]
     deps += [
       ":remote_commands_service_castcore",
-      "//chromecast/cast_core/grpc:grpc",
+      "//chromecast/cast_core/grpc",
     ]
     data = [
       # TODO(crbug.com/40248354): Script should create binarypb from textpb.

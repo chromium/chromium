@@ -32,7 +32,7 @@ source_set("embedder") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/sessions:session_id",
-    "//components/sync_sessions:sync_sessions",
+    "//components/sync_sessions",
     "//url",
   ]
   public_deps = [ "//components/segmentation_platform/embedder/home_modules" ]
@@ -66,7 +66,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
-    "//components/sync_sessions:sync_sessions",
+    "//components/sync_sessions",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

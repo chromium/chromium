@@ -17,7 +17,7 @@ static_library("android") {
     ":jni_headers",
     "//components/security_state/content",
     "//components/security_state/core",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 }
 

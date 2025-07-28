@@ -18,7 +18,7 @@ static_library("common") {
   deps = [
     ":mojo_interfaces",
     "//base",
-    "//components/cloud_devices/common:common",
+    "//components/cloud_devices/common",
     "//printing",
     "//printing/backend",
     "//printing/common",
@@ -51,7 +51,7 @@ source_set("unit_tests") {
     "//printing/backend",
     "//printing/backend:test_support",
     "//testing/gtest",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
 
   if (is_chromeos) {

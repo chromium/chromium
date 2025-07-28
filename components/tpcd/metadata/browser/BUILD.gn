@@ -9,7 +9,7 @@ static_library("prefs") {
   ]
 
   deps = [
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
   ]
 

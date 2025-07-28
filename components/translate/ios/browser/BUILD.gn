@@ -31,7 +31,7 @@ source_set("browser") {
     "//ios/web/public/annotations",
     "//ios/web/public/js_messaging",
     "//net",
-    "//net/traffic_annotation:traffic_annotation",
+    "//net/traffic_annotation",
     "//services/network/public/cpp:cpp_base",
     "//ui/base",
     "//url",

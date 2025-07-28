@@ -40,7 +40,7 @@ component("tracing_config") {
     "//base",
     "//components/prefs",
     "//third_party/perfetto:libperfetto",
-    "//third_party/snappy:snappy",
+    "//third_party/snappy",
   ]
 }
 
@@ -86,7 +86,7 @@ component("tracing_metrics") {
     "//base",
     "//components/metrics:content",
     "//content/public/browser",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
   ]
 }
 
@@ -110,9 +110,9 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
     "//testing/gtest",
-    "//third_party/snappy:snappy",
+    "//third_party/snappy",
   ]
 
   sources = [
@@ -146,7 +146,7 @@ source_set("unit_tests") {
     ":background_tracing_utils",
     ":tracing_config",
     "//base/test:proto_test_support",
-    "//components/metrics:metrics",
+    "//components/metrics",
     "//components/prefs:test_support",
     "//content/public/browser",
     "//content/test:test_support",
@@ -160,7 +160,7 @@ test("tracing_perftests") {
     "test/trace_event_perftest.cc",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//base/test:test_support_perf",
     "//testing/gtest",

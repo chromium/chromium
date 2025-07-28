@@ -32,10 +32,10 @@ static_library("core") {
     "//base:i18n",
     "//components/bookmarks/browser",
     "//components/commerce/core:proto",
-    "//components/keyed_service/core:core",
+    "//components/keyed_service/core",
     "//components/power_bookmarks/common",
     "//components/power_bookmarks/storage",
-    "//components/sync/model:model",
+    "//components/sync/model",
     "//ui/base",
     "//url",
   ]

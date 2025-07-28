@@ -62,7 +62,7 @@ source_set("unit_tests") {
     "//components/permissions:test_support",
     "//components/prefs:test_support",
     "//components/site_engagement/core/mojom:mojo_bindings",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/test:test_support",
     "//testing/gtest",
   ]

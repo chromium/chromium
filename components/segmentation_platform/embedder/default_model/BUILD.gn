@@ -52,7 +52,7 @@ static_library("default_model") {
   deps = [
     "//base",
     "//components/compose:buildflags",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
@@ -82,7 +82,7 @@ static_library("default_model") {
       "compose_promotion.cc",
       "compose_promotion.h",
     ]
-    deps += [ "//components/compose/core/browser:browser" ]
+    deps += [ "//components/compose/core/browser" ]
   }
 }
 
@@ -133,7 +133,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
-    "//components/segmentation_platform/public:public",
+    "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/segmentation_platform/public/proto",
     "//components/sync:test_support",
@@ -145,7 +145,7 @@ source_set("unit_tests") {
 
   if (enable_compose) {
     sources += [ "compose_promotion_unittest.cc" ]
-    deps += [ "//components/compose/core/browser:browser" ]
+    deps += [ "//components/compose/core/browser" ]
   }
 }
 

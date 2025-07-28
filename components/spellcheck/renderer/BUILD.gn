@@ -90,7 +90,7 @@ source_set("unit_tests") {
     "//base:i18n",
     "//base/test:test_support",
     "//components/spellcheck/common",
-    "//ipc:ipc",
+    "//ipc",
     "//testing/gtest",
     "//third_party/blink/public:blink",
     "//third_party/icu",

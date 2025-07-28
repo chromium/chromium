@@ -30,7 +30,7 @@ executable("top_domain_generator") {
     "//base",
     "//base:i18n",
     "//net/tools/huffman_trie:huffman_trie_generator_sources",
-    "//url:url",
+    "//url",
   ]
   if (is_ios) {
     frameworks = [ "UIKit.framework" ]

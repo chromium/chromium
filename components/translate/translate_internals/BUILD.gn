@@ -16,7 +16,7 @@ source_set("translate_internals") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/variations/service",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//ui/base",
   ]
 }

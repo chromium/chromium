@@ -19,7 +19,7 @@ source_set("safe_sites_navigation_throttle") {
 
   deps = [
     "//base",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
@@ -44,10 +44,10 @@ source_set("content") {
   }
   deps = [
     ":safe_sites_navigation_throttle",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/prefs",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/public/browser",
   ]
 }
@@ -69,7 +69,7 @@ source_set("unit_tests") {
     "//components/safe_search_api:safe_search_client",
     "//components/safe_search_api:test_support",
     "//components/sync_preferences:test_support",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

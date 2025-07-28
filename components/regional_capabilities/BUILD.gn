@@ -49,8 +49,8 @@ source_set("country_access_reason") {
   visibility = [
     ":*",
     "//chrome/browser/search_engine_choice:impl",
-    "//chrome/browser/ui:ui",
-    "//components/search_engines:search_engines",
+    "//chrome/browser/ui",
+    "//components/search_engines",
   ]
 
   sources = [ "access/country_access_reason.h" ]
@@ -73,7 +73,7 @@ static_library("country_id") {
 source_set("data") {
   visibility = [
     ":*",
-    "//components/search_engines:search_engines",
+    "//components/search_engines",
     "//components/search_engines:unit_tests",
   ]
 

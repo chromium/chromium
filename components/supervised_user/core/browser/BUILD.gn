@@ -12,7 +12,7 @@ static_library("fetcher_config") {
     "fetcher_config.h",
   ]
   deps = [
-    "//components/signin/public/identity_manager:identity_manager",
+    "//components/signin/public/identity_manager",
     "//google_apis",
     "//net/traffic_annotation",
   ]
@@ -165,8 +165,8 @@ static_library("browser") {
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/common",
     "//components/sync",
-    "//components/url_matcher:url_matcher",
-    "//components/user_manager:user_manager",
+    "//components/url_matcher",
+    "//components/user_manager",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",

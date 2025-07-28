@@ -21,19 +21,21 @@ if (use_blink) {
       ":metrics",
       "//components/privacy_sandbox:features",
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",
-      "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
       "//content/public/browser",
     ]
 
     if (is_android) {
-      deps += [ "//components/privacy_sandbox/privacy_sandbox_attestations/preload:preload" ]
+      deps += [
+        "//components/privacy_sandbox/privacy_sandbox_attestations/preload",
+      ]
     }
 
     public_deps = [
       "//base",
       "//build:buildflag_header_h",
       "//components/startup_metric_utils",
-      "//net:net",
+      "//net",
     ]
   }
 
@@ -51,12 +53,11 @@ if (use_blink) {
       "//base/test:test_support",
       "//components/privacy_sandbox:features",
       "//components/privacy_sandbox:test_support",
-      "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
       "//content/test:test_support",
       "//net",
       "//testing/gtest",
-      "//testing/gtest:gtest",
-      "//url:url",
+      "//url",
     ]
   }
 
@@ -80,7 +81,7 @@ if (use_blink) {
         ":privacy_sandbox_attestations",
         "//base",
         "//base:i18n",
-        "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+        "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
         "//third_party/libprotobuf-mutator",
       ]
     }

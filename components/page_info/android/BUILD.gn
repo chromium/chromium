@@ -26,13 +26,13 @@ static_library("android") {
     "//components/page_info/android:jni_headers",
     "//components/page_info/core",
     "//components/permissions:permissions_common",
-    "//components/security_state/core:core",
+    "//components/security_state/core",
     "//components/strings:components_strings_grit",
-    "//content/public/browser:browser",
-    "//net:net",
+    "//content/public/browser",
+    "//net",
     "//third_party/boringssl",
-    "//ui/android:android",
-    "//ui/base:base",
+    "//ui/android",
+    "//ui/base",
   ]
 }
 

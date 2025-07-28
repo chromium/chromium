@@ -83,8 +83,8 @@ source_set("unit_tests") {
     sources += [ "android/input_context_android_unittest.cc" ]
 
     deps += [
-      "//base:base",
-      "//url:url",
+      "//base",
+      "//url",
     ]
   }
 }

@@ -78,7 +78,7 @@ static_library("trusted_vault") {
       "//crypto",
       "//google_apis",
       "//net",
-      "//services/network/public/cpp:cpp",
+      "//services/network/public/cpp",
       "//third_party/boringssl",
       "//third_party/libxml:xml_reader",
     ]

@@ -127,7 +127,7 @@ static_library("test_support") {
     "//base",
     "//components/metrics:test_support",
     "//components/prefs:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 

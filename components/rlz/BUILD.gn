@@ -30,7 +30,7 @@ static_library("rlz") {
     "//components/google/core/common",
     "//net",
     "//rlz:rlz_lib",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 
   if (is_ios) {
@@ -47,7 +47,7 @@ source_set("test_support") {
   public_deps = [ "//testing/gmock" ]
   deps = [
     ":rlz",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -59,7 +59,7 @@ source_set("unit_tests") {
     ":rlz",
     "//net:test_support",
     "//rlz:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//ui/base",
   ]
 

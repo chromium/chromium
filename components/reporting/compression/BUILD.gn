@@ -18,7 +18,7 @@ static_library("compression_module") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/resources:resource_manager",
     "//components/reporting/util:status",
-    "//third_party/snappy:snappy",
+    "//third_party/snappy",
   ]
 }
 
@@ -40,7 +40,7 @@ static_library("test_support") {
     "//components/reporting/util:status_macros",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/snappy:snappy",
+    "//third_party/snappy",
   ]
 }
 
@@ -60,6 +60,6 @@ source_set("unit_tests") {
     "//components/reporting/util:test_callbacks_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/snappy:snappy",
+    "//third_party/snappy",
   ]
 }

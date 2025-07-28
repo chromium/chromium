@@ -95,7 +95,7 @@ source_set("affiliation_fetching_unittests") {
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/affiliations/core/browser:test_support",
-    "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//services/network:test_support",
     "//testing/gmock",
