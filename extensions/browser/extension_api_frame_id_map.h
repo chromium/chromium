@@ -9,7 +9,7 @@
 #include <memory>
 #include <set>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "content/public/browser/document_user_data.h"
@@ -175,7 +175,8 @@ class ExtensionApiFrameIdMap {
   void OnRenderFrameDeleted(content::RenderFrameHost* render_frame_host);
 
  protected:
-  friend struct base::LazyInstanceTraitsBase<ExtensionApiFrameIdMap>;
+  friend class base::NoDestructor<ExtensionApiFrameIdMap>;
+
   class ExtensionDocumentUserData
       : public content::DocumentUserData<ExtensionDocumentUserData> {
    public:

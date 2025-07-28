@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -47,10 +48,13 @@ struct AllowlistInfo {
   }
   std::string hashed_id;
 };
+
 // A singleton copy of the --allowlisted-extension-id so that we don't need to
 // copy it from the CommandLine each time.
-base::LazyInstance<AllowlistInfo>::Leaky g_allowlist_info =
-    LAZY_INSTANCE_INITIALIZER;
+AllowlistInfo& GetAllowlistInfo() {
+  static base::NoDestructor<AllowlistInfo> instance;
+  return *instance;
+}
 
 Feature::Availability IsAvailableToManifestForBind(
     const HashedExtensionId& hashed_id,
@@ -179,7 +183,7 @@ bool IsCommandLineSwitchEnabled(base::CommandLine* command_line,
 }
 
 bool IsAllowlistedForTest(const HashedExtensionId& hashed_id) {
-  const std::string& allowlisted_id = g_allowlist_info.Get().hashed_id;
+  const std::string& allowlisted_id = GetAllowlistInfo().hashed_id;
   return !allowlisted_id.empty() && allowlisted_id == hashed_id.value();
 }
 
@@ -187,13 +191,13 @@ bool IsAllowlistedForTest(const HashedExtensionId& hashed_id) {
 
 SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
     ScopedThreadUnsafeAllowlistForTest(const std::string& id)
-    : previous_id_(g_allowlist_info.Get().hashed_id) {
-  g_allowlist_info.Get().hashed_id = HashedIdInHex(id);
+    : previous_id_(GetAllowlistInfo().hashed_id) {
+  GetAllowlistInfo().hashed_id = HashedIdInHex(id);
 }
 
 SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
     ~ScopedThreadUnsafeAllowlistForTest() {
-  g_allowlist_info.Get().hashed_id = previous_id_;
+  GetAllowlistInfo().hashed_id = previous_id_;
 }
 
 SimpleFeature::SimpleFeature()

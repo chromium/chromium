@@ -8,11 +8,11 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,13 +29,10 @@ namespace {
 
 bool g_ignore_verification_for_tests = false;
 
-base::LazyInstance<scoped_refptr<ContentVerifyJob::TestObserver>>::Leaky
-    g_content_verify_job_test_observer = LAZY_INSTANCE_INITIALIZER;
-
-scoped_refptr<ContentVerifyJob::TestObserver> GetTestObserver() {
-  if (!g_content_verify_job_test_observer.IsCreated())
-    return nullptr;
-  return g_content_verify_job_test_observer.Get();
+scoped_refptr<ContentVerifyJob::TestObserver>& GetTestObserver() {
+  static base::NoDestructor<scoped_refptr<ContentVerifyJob::TestObserver>>
+      instance;
+  return *instance;
 }
 
 class ScopedElapsedTimer {
@@ -321,11 +318,10 @@ void ContentVerifyJob::SetIgnoreVerificationForTests(bool value) {
 // static
 void ContentVerifyJob::SetObserverForTests(
     scoped_refptr<TestObserver> observer) {
-  DCHECK(observer == nullptr ||
-         g_content_verify_job_test_observer.Get() == nullptr)
+  DCHECK(observer == nullptr || GetTestObserver() == nullptr)
       << "SetObserverForTests does not support interleaving. Observers should "
       << "be set and then cleared one at a time.";
-  g_content_verify_job_test_observer.Get() = std::move(observer);
+  GetTestObserver() = std::move(observer);
 }
 
 void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {

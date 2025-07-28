@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -424,8 +424,10 @@ struct WebRequestActionFactory {
   }
 };
 
-base::LazyInstance<WebRequestActionFactory>::Leaky
-    g_web_request_action_factory = LAZY_INSTANCE_INITIALIZER;
+WebRequestActionFactory& GetWebRequestActionFactory() {
+  static base::NoDestructor<WebRequestActionFactory> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -490,7 +492,7 @@ scoped_refptr<const WebRequestAction> WebRequestAction::Create(
       json_action.FindString(keys::kInstanceTypeKey);
   INPUT_FORMAT_VALIDATE(instance_type);
 
-  WebRequestActionFactory& factory = g_web_request_action_factory.Get();
+  WebRequestActionFactory& factory = GetWebRequestActionFactory();
   return factory.factory.Instantiate(*instance_type, json_action, error,
                                      bad_message);
 }

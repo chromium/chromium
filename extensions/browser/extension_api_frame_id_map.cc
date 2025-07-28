@@ -25,15 +25,6 @@
 
 namespace extensions {
 
-namespace {
-
-// The map is accessed on the IO and UI thread, so construct it once and never
-// delete it.
-base::LazyInstance<ExtensionApiFrameIdMap>::Leaky g_map_instance =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
 const int ExtensionApiFrameIdMap::kInvalidFrameId = -1;
 const int ExtensionApiFrameIdMap::kTopFrameId = 0;
 
@@ -76,7 +67,10 @@ ExtensionApiFrameIdMap::~ExtensionApiFrameIdMap() = default;
 
 // static
 ExtensionApiFrameIdMap* ExtensionApiFrameIdMap::Get() {
-  return g_map_instance.Pointer();
+  // The map is accessed on the IO and UI thread, so construct it once and never
+  // delete it.
+  static base::NoDestructor<ExtensionApiFrameIdMap> instance;
+  return instance.get();
 }
 
 // static
