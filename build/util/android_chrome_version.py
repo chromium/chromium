@@ -141,6 +141,9 @@ _APKS = {
         ('WEBVIEW_64_STABLE', 'WEBVIEW_STABLE', '64'),
         ('WEBVIEW_64_BETA', 'WEBVIEW_BETA', '64'),
         ('WEBVIEW_64_DEV', 'WEBVIEW_DEV', '64'),
+        ('WEBVIEW_32_64_STABLE', 'WEBVIEW_STABLE', '32_64'),
+        ('WEBVIEW_64_32_STABLE', 'WEBVIEW_STABLE', '64_32'),
+        ('WEBVIEW_64_32_HIGH_STABLE', 'WEBVIEW_STABLE', '64_32_high'),
     ]
 }
 
