@@ -227,21 +227,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
-    expires_after="2025-08-31">
-  <expired_intentionally>
-    Deprecated. Replaced by UserEducation.RotatingPromoIndex.{IPHFeature}.
-  </expired_intentionally>
-  <owner>dfried@chromium.org</owner>
-  <owner>frizzle-team@google.com</owner>
-  <summary>
-    Record the index of a rotating promo when it is shown to the user. This can
-    be used to determine how deep in the rotation of rotating promos users are
-    going, and also what proportion of users have seen a particular promo from a
-    rotating promo set.
-  </summary>
-</histogram>
-
 <!-- expires-never: this histogram provides general telemetry about the
      performance of active promos in the User Education system. Because the
      roster of promos changes from release to release this metric must be
