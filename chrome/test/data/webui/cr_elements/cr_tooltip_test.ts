@@ -103,6 +103,36 @@ suite('cr-tooltip', function() {
     assertTrue(tooltip.$.tooltip.hidden);
   });
 
+  test('can hover over tooltip', async () => {
+    const text = parent.shadowRoot.querySelector<HTMLElement>('#tooltip-text');
+    assertTrue(!!text);
+    text.textContent = 'test';
+    tooltip.show();
+    await eventToPromise('animationend', tooltip.$.tooltip);
+    assertFalse(tooltip.$.tooltip.hidden);
+
+    // Pointer leaves the target, but not enough time has passed to hide the
+    // tooltip.
+    const hideDelayMs = 100;
+    tooltip.hideDelay = hideDelayMs;
+    parent.dispatchEvent(
+        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
+    await new Promise(resolve => setTimeout(resolve, hideDelayMs / 2));
+    assertFalse(tooltip.$.tooltip.hidden);
+
+    // Pointer enters the tooltip, which cancels the hide.
+    tooltip.dispatchEvent(
+        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
+    await new Promise(resolve => setTimeout(resolve, hideDelayMs));
+    assertFalse(tooltip.$.tooltip.hidden);
+
+    // Pointer leaves tooltip, which should eventually hide the tooltip.
+    tooltip.dispatchEvent(
+        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
+    await eventToPromise('animationend', tooltip.$.tooltip);
+    assertTrue(tooltip.$.tooltip.hidden);
+  });
+
   test('positioning', async () => {
     const text = parent.shadowRoot.querySelector<HTMLElement>('#tooltip-text');
     assertTrue(!!text);
