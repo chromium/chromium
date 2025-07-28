@@ -54,8 +54,6 @@
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/content_verify_job.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
