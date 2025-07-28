@@ -1145,13 +1145,15 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
           [&](const AugmentedFillingPayload::EntityPayload&
                   entity_and_fields_and_types)
               -> std::pair<std::u16string, std::optional<FieldType>> {
-            // TODO(crbug.com/397620383): Which type should we return here?
+            const EntityInstance& entity =
+                CHECK_DEREF(entity_and_fields_and_types.first);
+            const std::vector<AutofillFieldWithAttributeType>& fields =
+                entity_and_fields_and_types.second;
             return {GetFillValueForEntity(
-                        CHECK_DEREF(entity_and_fields_and_types.first),
-                        entity_and_fields_and_types.second, autofill_field,
-                        action_persistence, manager_->client().GetAppLocale(),
+                        entity, fields, autofill_field, action_persistence,
+                        manager_->client().GetAppLocale(),
                         manager_->client().GetAddressNormalizer()),
-                    std::nullopt};
+                    autofill_field.Type().GetStorableType()};
           },
           [&](const VerifiedProfile* profile)
               -> std::pair<std::u16string, std::optional<FieldType>> {
