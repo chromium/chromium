@@ -115,11 +115,18 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
     CHECK_EQ(filtered_page_contexts.size(), 1u);
     *pending_base_request_.mutable_page_context() =
         filtered_page_contexts.front().page_context();
-  } else if (pending_base_request_.has_page_context_list()) {
+  } else if (pending_base_request_.has_page_context_list() &&
+             filtered_page_contexts.size() > 1) {
     pending_base_request_.mutable_page_context()->Clear();
     *pending_base_request_.mutable_page_context_list()
          ->mutable_page_contexts() = {filtered_page_contexts.begin(),
                                       filtered_page_contexts.end()};
+  } else if (pending_base_request_.has_page_context_list() &&
+             filtered_page_contexts.size() == 1) {
+    // If it's a pinned tabs request with a single tab, pass up context as if it
+    // were for a focused tab request.
+    *pending_base_request_.mutable_page_context() =
+        filtered_page_contexts.front().page_context();
   }
 
   // Initiate model execution fetch.
