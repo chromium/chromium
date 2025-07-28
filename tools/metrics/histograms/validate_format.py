@@ -6,6 +6,7 @@
 
 import argparse
 import logging
+import os
 import re
 import sys
 from typing import List
@@ -14,6 +15,8 @@ import xml.dom.minidom
 import extract_histograms
 import histogram_paths
 import merge_xml
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import xml_utils
 
 # The allowlist of namespaces (histogram prefixes, case insensitive) that are

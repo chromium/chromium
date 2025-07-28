@@ -14,6 +14,8 @@ import expand_owners
 import histogram_configuration_model
 import histogram_paths
 import populate_enums
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import xml_utils
 
 

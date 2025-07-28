@@ -9,6 +9,7 @@ import os
 import sys
 import xml.dom.minidom
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import xml_utils
 
 

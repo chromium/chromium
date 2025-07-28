@@ -66,10 +66,14 @@ except ImportError:  # For Py3 compatibility
   import html
 
 import logging
+import os
 import re
+import sys
 import xml.dom.minidom
 
 import histogram_configuration_model
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import xml_utils
 
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'

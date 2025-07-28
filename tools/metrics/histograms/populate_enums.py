@@ -9,11 +9,9 @@ import os
 import sys
 import xml.dom.minidom
 
-import xml_utils
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import codegen_shared
-
+import xml_utils
 
 EventDetails = namedtuple("EventDetails", "name hash is_obsolete")
 
