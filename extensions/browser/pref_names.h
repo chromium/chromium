@@ -123,19 +123,21 @@ inline constexpr char kExtensionInstallTypeBlocklist[] =
 // Properties in kExtensions dictionaries --------------------------------------
 
 // Extension-controlled preferences.
-extern const char kPrefPreferences[];
+inline constexpr char kPrefPreferences[] = "preferences";
 
 // Extension-controlled incognito preferences.
-extern const char kPrefIncognitoPreferences[];
+inline constexpr char kPrefIncognitoPreferences[] = "incognito_preferences";
 
 // Extension-controlled regular-only preferences.
-extern const char kPrefRegularOnlyPreferences[];
+inline constexpr char kPrefRegularOnlyPreferences[] =
+    "regular_only_preferences";
 
 // Extension-set content settings.
-extern const char kPrefContentSettings[];
+inline constexpr char kPrefContentSettings[] = "content_settings";
 
 // Extension-set incognito content settings.
-extern const char kPrefIncognitoContentSettings[];
+inline constexpr char kPrefIncognitoContentSettings[] =
+    "incognito_content_settings";
 
 // Per-profile UUID to distinguish global shortcut sessions for
 // org.freedesktop.portal.GlobalShortcuts.
