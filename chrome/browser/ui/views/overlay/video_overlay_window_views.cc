@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_controls_fade_animation.h"
+#include "chrome/browser/ui/views/overlay/overlay_window_live_caption_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_live_caption_dialog.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
@@ -1109,7 +1110,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   std::unique_ptr<global_media_controls::MediaProgressView> progress_view;
   std::unique_ptr<views::Label> timestamp;
   std::unique_ptr<views::Label> live_status;
-  std::unique_ptr<SimpleOverlayWindowImageButton> live_caption_button;
+  std::unique_ptr<OverlayWindowLiveCaptionButton> live_caption_button;
   std::unique_ptr<OverlayWindowLiveCaptionDialog> live_caption_dialog;
 
   if (Use2024UI()) {
@@ -1241,14 +1242,12 @@ void VideoOverlayWindowViews::SetUpViews() {
     live_status->SetBackground(
         views::CreateRoundedRectBackground(ui::kColorSysOnTonalContainer, 4));
     live_status->SetVisible(false);
-    live_caption_button = std::make_unique<SimpleOverlayWindowImageButton>(
-        base::BindRepeating(
+    live_caption_button =
+        std::make_unique<OverlayWindowLiveCaptionButton>(base::BindRepeating(
             &VideoOverlayWindowViews::OnLiveCaptionButtonPressed,
-            base::Unretained(this)),
-        vector_icons::kLiveCaptionOnIcon,
-        l10n_util::GetStringUTF16(
-            IDS_PICTURE_IN_PICTURE_LIVE_CAPTION_CONTROL_TEXT));
+            base::Unretained(this)));
     live_caption_button->SetSize(kActionButtonSize);
+    live_caption_button->SetIsLiveCaptionDialogOpen(false);
     live_caption_dialog = std::make_unique<OverlayWindowLiveCaptionDialog>(
         Profile::FromBrowserContext(
             controller_->GetWebContents()->GetBrowserContext()));
@@ -2676,7 +2675,7 @@ views::Label* VideoOverlayWindowViews::live_status_for_testing() const {
   return live_status_;
 }
 
-SimpleOverlayWindowImageButton*
+OverlayWindowLiveCaptionButton*
 VideoOverlayWindowViews::live_caption_button_for_testing() const {
   return live_caption_button_;
 }
@@ -2825,6 +2824,7 @@ void VideoOverlayWindowViews::SetLiveCaptionDialogVisibility(
     return;
   }
   live_caption_dialog_->SetVisible(wanted_visibility);
+  live_caption_button_->SetIsLiveCaptionDialogOpen(wanted_visibility);
 
   views::View* controls_to_be_disabled_when_live_caption_is_open[] = {
       minimize_button_.get(),

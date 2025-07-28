@@ -4125,6 +4125,8 @@ static_library("ui") {
       "views/overlay/overlay_controls_fade_animation.h",
       "views/overlay/overlay_window_image_button.cc",
       "views/overlay/overlay_window_image_button.h",
+      "views/overlay/overlay_window_live_caption_button.cc",
+      "views/overlay/overlay_window_live_caption_button.h",
       "views/overlay/overlay_window_live_caption_dialog.cc",
       "views/overlay/overlay_window_live_caption_dialog.h",
       "views/overlay/playback_image_button.cc",

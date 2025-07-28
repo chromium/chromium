@@ -40,6 +40,7 @@ class CloseImageButton;
 class HangUpButton;
 class OverlayControlsFadeAnimation;
 class OverlayWindowBackToTabButton;
+class OverlayWindowLiveCaptionButton;
 class OverlayWindowLiveCaptionDialog;
 class OverlayWindowMinimizeButton;
 class PictureInPictureTucker;
@@ -207,7 +208,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
   views::Label* timestamp_for_testing() const;
   views::Label* live_status_for_testing() const;
-  SimpleOverlayWindowImageButton* live_caption_button_for_testing() const;
+  OverlayWindowLiveCaptionButton* live_caption_button_for_testing() const;
   OverlayWindowLiveCaptionDialog* live_caption_dialog_for_testing() const;
   views::ImageView* favicon_view_for_testing() const;
   views::Label* origin_for_testing() const;
@@ -469,7 +470,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<global_media_controls::MediaProgressView> progress_view_ = nullptr;
   raw_ptr<views::Label> timestamp_ = nullptr;
   raw_ptr<views::Label> live_status_ = nullptr;
-  raw_ptr<SimpleOverlayWindowImageButton> live_caption_button_ = nullptr;
+  raw_ptr<OverlayWindowLiveCaptionButton> live_caption_button_ = nullptr;
   raw_ptr<OverlayWindowLiveCaptionDialog> live_caption_dialog_ = nullptr;
   raw_ptr<AutoPipSettingOverlayView> overlay_view_ = nullptr;
   raw_ptr<views::View> title_view_ = nullptr;
