@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
@@ -400,8 +399,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
 
   const GURL kExternalURL{"https://example.com"};
   const GURL kGaiaURL{"https://accounts.google.com"};
-  const GURL kPasswordsManagerURL{base::StrCat(
-      {"chrome://", password_manager::kChromeUIPasswordManagerHost})};
+  const GURL kPasswordsManagerURL{"chrome://password-manager"};
 
  private:
   gfx::Image favicon_;

@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -43,6 +42,9 @@ namespace password_manager {
 
 const char kReauthPromoHistogramName[] =
     "PasswordManager.PasswordFilling.ReauthPromo";
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const char kPasswordManagerHost[] = "password-manager";
+#endif
 
 namespace {
 
@@ -369,7 +371,7 @@ bool CanShowPendingStatePromo(const PasswordManagerClient& password_client) {
   const bool is_external_url =
       !gaia::HasGaiaSchemeHostPort(password_client.GetLastCommittedURL()) &&
       password_client.GetLastCommittedURL().host_piece() !=
-          password_manager::kChromeUIPasswordManagerHost;
+          kPasswordManagerHost;
 
   return password_client.GetIdentityManager()
              ->HasAccountWithRefreshTokenInPersistentErrorState(
