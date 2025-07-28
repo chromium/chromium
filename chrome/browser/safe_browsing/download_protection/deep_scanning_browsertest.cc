@@ -858,8 +858,10 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
+// TODO(https://crbug.com/414822762): Reenable the test once the flakiness is
+// fixed.
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
-                       DlpAndMalwareViolations) {
+                       DISABLED_DlpAndMalwareViolations) {
   // This allows the blocking DM token reads happening on profile-Connector
   // triggers.
   base::ScopedAllowBlockingForTesting allow_blocking;
