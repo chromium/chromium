@@ -112,7 +112,14 @@ export async function initiateEditing(
 
   // Open menu and click the Edit button.
   menu.click();
-  section.$.menuEditAddress.click();
+  // Wait for the menu's items to render.
+  flush();
+
+  // Find and click the Edit button.
+  const editButton =
+      section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+  assertTrue(!!editButton, 'Edit button not found');
+  editButton.click();
 
   flush();
 
@@ -151,7 +158,11 @@ export function initiateRemoving(
 
   // Open menu and click the Delete button.
   menu.click();
-  section.$.menuRemoveAddress.click();
+  flush();
+  const removeButton =
+      section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveAddress');
+  assertTrue(!!removeButton, 'Remove button not found');
+  removeButton.click();
 
   flush();
 
