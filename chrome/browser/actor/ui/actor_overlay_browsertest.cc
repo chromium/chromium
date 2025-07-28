@@ -9,6 +9,8 @@
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -224,6 +226,130 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
                   .GetActorOverlayView()
                   ->children()[0]
                   ->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
+  Profile* const profile = browser()->profile();
+  actor::ui::ActorUiStateManagerInterface* state_manager =
+      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  ASSERT_NE(state_manager, nullptr);
+  // Initial tab setup: Create 3 tabs in the starting browser window.
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  tabs::TabInterface* tab_1 = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_NE(tab_1, nullptr);
+  tabs::TabInterface* tab_2 =
+      tabs::TabInterface::GetFromContents(&chrome::NewTab(browser()));
+  ASSERT_NE(tab_2, nullptr);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  tabs::TabInterface* tab_3 =
+      tabs::TabInterface::GetFromContents(&chrome::NewTab(browser()));
+  ASSERT_NE(tab_3, nullptr);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  // We have 3 tabs {0, 1, 2}, so we're moving the last tab to a new window
+  chrome::MoveTabsToNewWindow(browser(), {2});
+  // Get references to both browser windows after the move.
+  Browser* browser_1 =
+      BrowserWindow::FindBrowserWindowWithWebContents(tab_1->GetContents())
+          ->AsBrowserView()
+          ->browser();
+  Browser* browser_2 =
+      BrowserWindow::FindBrowserWindowWithWebContents(tab_3->GetContents())
+          ->AsBrowserView()
+          ->browser();
+  ASSERT_EQ(browser_1->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser_2->tab_strip_model()->count(), 1);
+  // Start actor actuation on tab_2, which is in browser_1.
+  // This should make the Actor Overlay visible in browser_1.
+  state_manager->OnUiEvent(
+      actor::ui::StartingToActOnTab(tab_2->GetHandle(), actor::TaskId(1)),
+      base::DoNothing());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser_1->GetBrowserView().GetActorOverlayView()->GetVisible();
+  }));
+  // Loop to repeatedly move the actuated tab between the two windows.
+  // This verifies the overlay's persistence and correct re-parenting across
+  // window changes. The number of iterations (10) is arbitrary and can be
+  // adjusted.
+  Browser* source_browser;
+  Browser* target_browser;
+  for (int i = 0; i < 10; ++i) {
+    // Determine current source and target browsers for the move.
+    source_browser = (i % 2 == 0) ? browser_1 : browser_2;
+    target_browser = (i % 2 == 0) ? browser_2 : browser_1;
+    // Move tab_2, which is always added to the last index of the target
+    // browser. In this test, it consistently moves from index 1 to index 1 in
+    // the new browser.
+    chrome::MoveTabsToExistingWindow(source_browser, target_browser, {1});
+    // Verify the overlay is visible in the *new* browser holding tab_2.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return target_browser->GetBrowserView()
+          .GetActorOverlayView()
+          ->GetVisible();
+    }));
+    // Verify tab counts after each move.
+    ASSERT_EQ(source_browser->tab_strip_model()->count(),
+              1);  // The browser tab_2 moved FROM
+    ASSERT_EQ(target_browser->tab_strip_model()->count(),
+              2);  // The browser tab_2 moved TO
+  }
+  // Stop acting on the tab at the end of the test
+  state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_2->GetHandle()));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    // Overlay should become invisible in the browser that currently holds tab_1
+    return !target_browser->GetBrowserView()
+                .GetActorOverlayView()
+                ->GetVisible();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
+  Profile* const profile = browser()->profile();
+  actor::ui::ActorUiStateManagerInterface* state_manager =
+      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  ASSERT_NE(state_manager, nullptr);
+  // Initial tab setup: Start with one tab.
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  tabs::TabInterface* tab_1 = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_NE(tab_1, nullptr);
+  // Start actor actuation on tab_1.
+  state_manager->OnUiEvent(
+      actor::ui::StartingToActOnTab(tab_1->GetHandle(), actor::TaskId(1)),
+      base::DoNothing());
+  Browser* browser_with_actuated_tab;
+  // Loop to repeatedly move the actuated tab to new browser windows. This
+  // verifies the overlay's persistence and re-parenting across window changes.
+  // The number of iterations (5) is arbitrary and can be adjusted.
+  for (int i = 0; i < 5; ++i) {
+    // Get the current browser holding the actuated tab.
+    browser_with_actuated_tab =
+        BrowserWindow::FindBrowserWindowWithWebContents(tab_1->GetContents())
+            ->AsBrowserView()
+            ->browser();
+    ASSERT_NE(browser_with_actuated_tab, nullptr);
+    // Verify the overlay is visible in the current browser.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return browser_with_actuated_tab->GetBrowserView()
+          .GetActorOverlayView()
+          ->GetVisible();
+    }));
+    // Add a new tab to ensure the source window always has at least two tabs
+    // before moving one to a new window (simulates user behavior).
+    tabs::TabInterface* new_tab = tabs::TabInterface::GetFromContents(
+        &chrome::NewTab(browser_with_actuated_tab));
+    ASSERT_NE(new_tab, nullptr);
+    ASSERT_EQ(browser_with_actuated_tab->tab_strip_model()->count(), 2);
+    // Move the actuated tab (at index 0) to a new browser window.
+    chrome::MoveTabsToNewWindow(browser_with_actuated_tab, {0});
+  }
+  // Stop acting on the tab at the end of the test.
+  state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_1->GetHandle()));
+  // Overlay should become invisible in the browser that currently holds the
+  // actuated tab.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !browser_with_actuated_tab->GetBrowserView()
+                .GetActorOverlayView()
+                ->GetVisible();
+  }));
 }
 
 class ActorOverlayDisabledTest : public InProcessBrowserTest {
