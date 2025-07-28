@@ -180,6 +180,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
   // CanvasRenderingContext implementation
+  scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason) override;
   bool IsCanvas2DResourceProviderValid() override;
   const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() override;
   int AllocatedBufferCountPerPixel() override {

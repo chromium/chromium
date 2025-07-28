@@ -104,6 +104,7 @@
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -645,6 +646,14 @@ int CanvasRenderingContext2D::Width() const {
 
 int CanvasRenderingContext2D::Height() const {
   return Host()->Size().height();
+}
+
+scoped_refptr<CanvasResource>
+CanvasRenderingContext2D::PaintRenderingResultsToResource(
+    SourceDrawingBuffer source_buffer,
+    FlushReason reason) {
+  CHECK(IsCanvas2DResourceProviderValid());
+  return resource_provider_->ProduceCanvasResource(reason);
 }
 
 bool CanvasRenderingContext2D::IsCanvas2DResourceProviderValid() {
