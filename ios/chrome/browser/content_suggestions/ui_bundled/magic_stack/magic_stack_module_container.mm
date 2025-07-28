@@ -211,9 +211,7 @@ const CGFloat kSeparatorHeight = 0.5;
                          withAction:@selector(updateCardSizing)];
 
       if (IsNTPBackgroundCustomizationEnabled()) {
-        NSArray<UITrait>* colorTraits =
-            TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
-        [self registerForTraitChanges:colorTraits
+        [self registerForTraitChanges:@[ NewTabPageTrait.class ]
                            withAction:@selector(applyBackgroundColors)];
         [self applyBackgroundColors];
       }

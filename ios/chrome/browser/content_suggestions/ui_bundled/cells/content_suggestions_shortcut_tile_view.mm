@@ -178,9 +178,7 @@ const CGFloat kCountBorderWidth = 24;
   [self registerForTraitChanges:traits
                      withAction:@selector(updateTitleLabelFontOnTraitChange)];
   if (IsNTPBackgroundCustomizationEnabled()) {
-    NSArray<UITrait>* colorTraits =
-        TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
-    [self registerForTraitChanges:colorTraits
+    [self registerForTraitChanges:@[ NewTabPageTrait.class ]
                        withAction:@selector(applyBackgroundColors)];
   }
 }
