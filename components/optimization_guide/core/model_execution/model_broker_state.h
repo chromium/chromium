@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 
 namespace optimization_guide {
 
@@ -26,6 +27,10 @@ class ModelBrokerState {
 
   ModelBrokerState(const ModelBrokerState&) = delete;
   ModelBrokerState& operator=(const ModelBrokerState&) = delete;
+
+  PerformanceClassifier& performance_classifier() {
+    return performance_classifier_;
+  }
 
   OnDeviceModelComponentStateManager& component_state_manager() {
     return component_state_manager_;
@@ -48,6 +53,7 @@ class ModelBrokerState {
   raw_ptr<PrefService> local_state_;
   on_device_model::ServiceClient service_client_;
   OnDeviceModelComponentStateManager component_state_manager_;
+  PerformanceClassifier performance_classifier_;
   std::unique_ptr<OnDeviceModelServiceController> service_controller_;
 };
 

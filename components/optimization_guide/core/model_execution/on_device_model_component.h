@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -262,6 +263,9 @@ class OnDeviceModelComponentStateManager final {
 
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+  base::SafeRef<OnDeviceModelComponentStateManager> GetSafeRef() {
+    return weak_ptr_factory_.GetSafeRef();
   }
 
  private:

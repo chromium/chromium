@@ -13,8 +13,10 @@
 #include "base/version_info/version_info.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trials.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace optimization_guide {
 
@@ -93,12 +95,84 @@ OnDeviceModelPerformanceClass PerformanceClassFromPref(
 void UpdatePerformanceClassPref(
     PrefService* local_state,
     OnDeviceModelPerformanceClass performance_class) {
-   local_state->SetInteger(
+  local_state->SetInteger(
       model_execution::prefs::localstate::kOnDevicePerformanceClass,
       base::to_underlying(performance_class));
-   local_state->SetString(
-       model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
-       version_info::GetVersionNumber());
+  local_state->SetString(
+      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
+      version_info::GetVersionNumber());
+}
+
+PerformanceClassifier::PerformanceClassifier(
+    base::SafeRef<OnDeviceModelComponentStateManager>
+        on_device_component_state_manager,
+    base::SafeRef<on_device_model::ServiceClient> service_client)
+    : on_device_component_state_manager_(
+          std::move(on_device_component_state_manager)),
+      service_client_(std::move(service_client)) {}
+PerformanceClassifier::~PerformanceClassifier() = default;
+
+void PerformanceClassifier::EnsurePerformanceClassAvailable(
+    base::OnceClosure complete) {
+  if (!features::CanLaunchOnDeviceModelService()) {
+    std::move(complete).Run();
+    return;
+  }
+
+  if (ListenForPerformanceClassAvailable(std::move(complete))) {
+    return;
+  }
+
+  if (performance_class_state_ == PerformanceClassState::kComputing) {
+    return;
+  }
+
+  performance_class_state_ = PerformanceClassState::kComputing;
+  service_client_->Get()->GetDevicePerformanceInfo(
+      base::BindOnce([](on_device_model::mojom::DevicePerformanceInfoPtr info) {
+        return info->performance_class;
+      })
+          .Then(base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
+                    .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                        base::BindOnce(
+                            &PerformanceClassifier::PerformanceClassUpdated,
+                            weak_ptr_factory_.GetWeakPtr()),
+                        OnDeviceModelPerformanceClass::kServiceCrash))));
+}
+
+bool PerformanceClassifier::ListenForPerformanceClassAvailable(
+    base::OnceClosure available) {
+  if (!on_device_component_state_manager_->NeedsPerformanceClassUpdate()) {
+    std::move(available).Run();
+    return true;
+  }
+
+  if (performance_class_state_ == PerformanceClassState::kComplete) {
+    std::move(available).Run();
+    return true;
+  }
+
+  // Use unsafe because cancellation isn't needed.
+  performance_class_callbacks_.AddUnsafe(std::move(available));
+  return false;
+}
+
+void PerformanceClassifier::PerformanceClassUpdated(
+    OnDeviceModelPerformanceClass perf_class) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      perf_class);
+
+  auto complete =
+      base::BindOnce(&PerformanceClassifier::NotifyPerformanceClassAvailable,
+                     weak_ptr_factory_.GetWeakPtr());
+  on_device_component_state_manager_->DevicePerformanceClassChanged(
+      std::move(complete), perf_class);
+}
+
+void PerformanceClassifier::NotifyPerformanceClassAvailable() {
+  performance_class_state_ = PerformanceClassState::kComplete;
+  performance_class_callbacks_.Notify();
 }
 
 }  // namespace optimization_guide

@@ -114,9 +114,10 @@ ChromeModelBrokerState::ChromeModelBrokerState()
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
           base::BindRepeating(&LaunchService)) {
   model_broker_state_.Init();
-  service_controller().ListenForPerformanceClassAvailable(
-      base::BindOnce(&ChromeOnDeviceModelServiceController::
-                         RegisterPerformanceClassSyntheticTrial));
+  model_broker_state_.performance_classifier()
+      .ListenForPerformanceClassAvailable(
+          base::BindOnce(&ChromeOnDeviceModelServiceController::
+                             RegisterPerformanceClassSyntheticTrial));
   if ((base::FeatureList::IsEnabled(
            optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
        optimization_guide::features::IsOnDeviceExecutionEnabled()) &&
@@ -124,8 +125,9 @@ ChromeModelBrokerState::ChromeModelBrokerState()
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
-            &OnDeviceModelServiceController::EnsurePerformanceClassAvailable,
-            service_controller().GetWeakPtr(), base::DoNothing()),
+            &PerformanceClassifier::EnsurePerformanceClassAvailable,
+            model_broker_state_.performance_classifier().GetWeakPtr(),
+            base::DoNothing()),
         optimization_guide::features::GetOnDeviceStartupMetricDelay());
   }
 }

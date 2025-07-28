@@ -143,10 +143,12 @@ void RecordRankUpdateEviction(bool evicted) {
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
     std::unique_ptr<OnDeviceModelAccessController> access_controller,
+    base::SafeRef<PerformanceClassifier> performance_classifier,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
     base::SafeRef<on_device_model::ServiceClient> service_client)
     : access_controller_(std::move(access_controller)),
+      performance_classifier_(std::move(performance_classifier)),
       on_device_component_state_manager_(
           std::move(on_device_component_state_manager)),
       service_client_(std::move(service_client)),
@@ -421,7 +423,7 @@ void OnDeviceModelServiceController::UpdateSolutionProvider(
 void OnDeviceModelServiceController::Subscribe(
     mojom::ModelSubscriptionOptionsPtr opts,
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
-  EnsurePerformanceClassAvailable(base::BindOnce(
+  performance_classifier_->EnsurePerformanceClassAvailable(base::BindOnce(
       &OnDeviceModelServiceController::SubscribeInternal,
       weak_ptr_factory_.GetWeakPtr(), std::move(opts), std::move(subscriber)));
 }
@@ -784,74 +786,6 @@ void OnDeviceModelServiceController::Solution::CreateTextSafetySession(
 
 void OnDeviceModelServiceController::Solution::ReportHealthyCompletion() {
   controller_->access_controller_->OnResponseCompleted();
-}
-
-void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
-    base::OnceClosure complete) {
-  if (!features::CanLaunchOnDeviceModelService()) {
-    std::move(complete).Run();
-    return;
-  }
-
-  if (ListenForPerformanceClassAvailable(std::move(complete))) {
-    return;
-  }
-
-  if (performance_class_state_ == PerformanceClassState::kComputing) {
-    return;
-  }
-
-  performance_class_state_ = PerformanceClassState::kComputing;
-  service_client_->Get()->GetDevicePerformanceInfo(
-      base::BindOnce([](on_device_model::mojom::DevicePerformanceInfoPtr info) {
-        return info->performance_class;
-      })
-          .Then(base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
-                    .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                        base::BindOnce(&OnDeviceModelServiceController::
-                                           PerformanceClassUpdated,
-                                       weak_ptr_factory_.GetWeakPtr()),
-                        OnDeviceModelPerformanceClass::kServiceCrash))));
-}
-
-bool OnDeviceModelServiceController::ListenForPerformanceClassAvailable(
-    base::OnceClosure available) {
-  if (!on_device_component_state_manager_ ||
-      !on_device_component_state_manager_->NeedsPerformanceClassUpdate()) {
-    std::move(available).Run();
-    return true;
-  }
-
-  if (performance_class_state_ == PerformanceClassState::kComplete) {
-    std::move(available).Run();
-    return true;
-  }
-
-  // Use unsafe because cancellation isn't needed.
-  performance_class_callbacks_.AddUnsafe(std::move(available));
-  return false;
-}
-
-void OnDeviceModelServiceController::PerformanceClassUpdated(
-    OnDeviceModelPerformanceClass perf_class) {
-  base::UmaHistogramEnumeration(
-      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-      perf_class);
-
-  auto complete = base::BindOnce(
-      &OnDeviceModelServiceController::NotifyPerformanceClassAvailable,
-      weak_ptr_factory_.GetWeakPtr());
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->DevicePerformanceClassChanged(
-        std::move(complete), perf_class);
-  } else {
-    std::move(complete).Run();
-  }
-}
-
-void OnDeviceModelServiceController::NotifyPerformanceClassAvailable() {
-  performance_class_state_ = PerformanceClassState::kComplete;
-  performance_class_callbacks_.Notify();
 }
 
 }  // namespace optimization_guide

@@ -46,6 +46,11 @@ class ChromeModelBrokerState final
     return model_broker_state_.CreateAssetManager(provider);
   }
 
+  void EnsurePerformanceClassAvailable(base::OnceClosure complete) {
+    model_broker_state_.performance_classifier()
+        .EnsurePerformanceClassAvailable(std::move(complete));
+  }
+
  private:
   friend base::RefCounted<ChromeModelBrokerState>;
   ChromeModelBrokerState();

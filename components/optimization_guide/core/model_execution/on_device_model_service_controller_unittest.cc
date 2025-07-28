@@ -2040,7 +2040,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize(standard_assets_);
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
-  controller().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  model_broker_state_->performance_classifier().EnsurePerformanceClassAvailable(
+      run_loop.QuitClosure());
   run_loop.Run();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
@@ -3172,7 +3173,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
 
   base::RunLoop run_loop;
-  controller().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  model_broker_state_->performance_classifier().EnsurePerformanceClassAvailable(
+      run_loop.QuitClosure());
   run_loop.Run();
   task_environment_.RunUntilIdle();
 
@@ -3203,7 +3205,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
 
   base::RunLoop run_loop;
-  controller().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  model_broker_state_->performance_classifier().EnsurePerformanceClassAvailable(
+      run_loop.QuitClosure());
 
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();

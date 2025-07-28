@@ -37,7 +37,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
-#include "feature_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -57,6 +56,7 @@ class OnDeviceModelAdaptationMetadata;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelMetadata;
 class OnDeviceModelAdaptationController;
+class PerformanceClassifier;
 
 class ModelController {
  public:
@@ -77,6 +77,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
  public:
   OnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
+      base::SafeRef<PerformanceClassifier> performance_classifier,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager,
       base::SafeRef<on_device_model::ServiceClient> service_client);
@@ -136,15 +137,6 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
     receivers_.Add(this, std::move(receiver));
   }
-
-  // Ensures the performance class will be up to date and available when
-  // `complete` runs.
-  void EnsurePerformanceClassAvailable(base::OnceClosure complete);
-
-  // Registers a callback to be called once performance class is available,
-  // but does not trigger the computation. Returns true if it was already
-  // available.
-  bool ListenForPerformanceClassAvailable(base::OnceClosure available);
 
   const SafetyClient& GetSafetyClientForTesting() const {
     return safety_client_;
@@ -354,15 +346,9 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   void SubscribeInternal(mojom::ModelSubscriptionOptionsPtr opts,
                          mojo::PendingRemote<mojom::ModelSubscriber> client);
 
-  // Called when performance class has finished updating.
-  void PerformanceClassUpdated(OnDeviceModelPerformanceClass perf_class);
-
-  // Notify observers that the performance class is available.
-  void NotifyPerformanceClassAvailable();
-
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
-  std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
+  base::SafeRef<PerformanceClassifier> performance_classifier_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
 
@@ -374,6 +360,7 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   // model adaptation, but they have not been loaded yet.
   base::flat_map<ModelBasedCapabilityKey, MaybeAdaptationMetadata>
       model_adaptation_metadata_;
+  std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
 
   std::map<ModelBasedCapabilityKey, SolutionProvider> solution_providers_;
 
@@ -382,17 +369,6 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
   std::optional<BaseModelController> base_model_controller_;
 
   mojo::ReceiverSet<mojom::ModelBroker> receivers_;
-
-  enum class PerformanceClassState {
-    kNotSet,
-    kComputing,
-    kComplete,
-  };
-  PerformanceClassState performance_class_state_ =
-      PerformanceClassState::kNotSet;
-
-  // Callbacks waiting for performance class to finish computing.
-  base::OnceClosureList performance_class_callbacks_;
 
   // Used to get `weak_ptr_` to self.
   base::WeakPtrFactory<OnDeviceModelServiceController> weak_ptr_factory_{this};

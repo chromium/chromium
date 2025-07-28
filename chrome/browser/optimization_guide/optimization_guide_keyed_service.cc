@@ -733,8 +733,8 @@ OptimizationGuideKeyedService::GetFeatureMetadata(
 
 void OptimizationGuideKeyedService::EnsurePerformanceClassAvailable(
     base::OnceClosure complete) {
-  chrome_model_broker_state_->service_controller()
-      .EnsurePerformanceClassAvailable(std::move(complete));
+  chrome_model_broker_state_->EnsurePerformanceClassAvailable(
+      std::move(complete));
 }
 
 void OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility(
