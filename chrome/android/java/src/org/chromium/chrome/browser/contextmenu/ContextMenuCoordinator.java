@@ -79,6 +79,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
     private final ContextMenuNativeDelegate mNativeDelegate;
+    private final boolean mIsCustomItemPresent;
 
     /**
      * Constructor that also sets the content offset.
@@ -88,8 +89,22 @@ public class ContextMenuCoordinator implements ContextMenuUi {
      *     native.
      */
     ContextMenuCoordinator(float topContentOffsetPx, ContextMenuNativeDelegate nativeDelegate) {
+        this(topContentOffsetPx, nativeDelegate, false);
+    }
+
+    /**
+     * @param topContentOffsetPx content offset from the top.
+     * @param nativeDelegate The {@link ContextMenuNativeDelegate} to retrieve the thumbnail from
+     *     native.
+     * @param isCustomItemPresent Whether a custom item is present in the context menu.
+     */
+    ContextMenuCoordinator(
+            float topContentOffsetPx,
+            ContextMenuNativeDelegate nativeDelegate,
+            boolean isCustomItemPresent) {
         mTopContentOffsetPx = topContentOffsetPx;
         mNativeDelegate = nativeDelegate;
+        mIsCustomItemPresent = isCustomItemPresent;
     }
 
     @Override
@@ -279,7 +294,11 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mWebContents = webContents;
         mHeaderCoordinator =
                 new ContextMenuHeaderCoordinator(
-                        activity, params, Profile.fromWebContents(mWebContents), mNativeDelegate);
+                        activity,
+                        params,
+                        Profile.fromWebContents(mWebContents),
+                        mNativeDelegate,
+                        mIsCustomItemPresent);
         ContextMenuMediator mediator =
                 new ContextMenuMediator(activity, mHeaderCoordinator, onItemClicked, this::dismiss);
 

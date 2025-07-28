@@ -366,18 +366,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      *
      * @return A string with the link or an empty string.
      */
-    public static String createUrlText(ContextMenuParams params) {
-        if (!isEmptyUrl(params.getLinkUrl())) {
-            return getUrlText(params);
+    public static String createUrlText(GURL url) {
+        if (!isEmptyUrl(url)) {
+            return getUrlText(url);
         }
         return "";
     }
 
-    private static String getUrlText(ContextMenuParams params) {
+    private static String getUrlText(GURL url) {
         // ContextMenuParams can only be created after the browser has started.
         assert BrowserStartupController.getInstance().isFullBrowserStarted();
-        return UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
-                params.getLinkUrl().getSpec());
+        return UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(url.getSpec());
     }
 
     @VisibleForTesting
@@ -1036,6 +1035,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
             if (tracker.isInitialized()) tracker.dismissed(FeatureConstants.EPHEMERAL_TAB_FEATURE);
         }
+    }
+
+    @Override
+    public boolean hasCustomItems() {
+        if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
+            return !mCustomContentActions.isEmpty();
+        }
+        return false;
     }
 
     private WindowAndroid getWindow() {

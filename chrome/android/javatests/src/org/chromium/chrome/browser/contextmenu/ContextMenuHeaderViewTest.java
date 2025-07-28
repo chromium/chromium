@@ -41,6 +41,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 public class ContextMenuHeaderViewTest {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
+    private static final String SECONDARY_URL_STRING = "cct.website.com";
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -51,6 +52,7 @@ public class ContextMenuHeaderViewTest {
     private View mHeaderView;
     private TextView mTitle;
     private TextView mUrl;
+    private TextView mSecondaryUrl;
     private View mTitleAndUrl;
     private ImageView mImage;
     private View mCircleBg;
@@ -71,6 +73,7 @@ public class ContextMenuHeaderViewTest {
                     mHeaderView = sActivity.findViewById(android.R.id.content);
                     mTitle = mHeaderView.findViewById(R.id.menu_header_title);
                     mUrl = mHeaderView.findViewById(R.id.menu_header_url);
+                    mSecondaryUrl = mHeaderView.findViewById(R.id.menu_header_secondary_url);
                     mTitleAndUrl = mHeaderView.findViewById(R.id.title_and_url);
                     mImage = mHeaderView.findViewById(R.id.menu_header_image);
                     mCircleBg = mHeaderView.findViewById(R.id.circle_background);
@@ -79,6 +82,7 @@ public class ContextMenuHeaderViewTest {
                             new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                                     .with(ContextMenuHeaderProperties.TITLE, "")
                                     .with(ContextMenuHeaderProperties.URL, "")
+                                    .with(ContextMenuHeaderProperties.SECONDARY_URL, "")
                                     .with(
                                             ContextMenuHeaderProperties
                                                     .TITLE_AND_URL_CLICK_LISTENER,
@@ -146,6 +150,60 @@ public class ContextMenuHeaderViewTest {
                 mUrl.getMaxLines(),
                 equalTo(Integer.MAX_VALUE));
         assertNull("URL is ellipsized when it shouldn't be.", mUrl.getEllipsize());
+    }
+
+    @Test
+    @SmallTest
+    public void testSecondaryUrl() {
+        assertThat(
+                "Incorrect initial secondary URL visibility.",
+                mSecondaryUrl.getVisibility(),
+                equalTo(View.GONE));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ContextMenuHeaderProperties.SECONDARY_URL, SECONDARY_URL_STRING);
+                    mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, 1);
+                });
+
+        assertThat(
+                "Incorrect secondary URL visibility.",
+                mSecondaryUrl.getVisibility(),
+                equalTo(View.VISIBLE));
+        assertThat(
+                "Incorrect secondary URL string.",
+                mSecondaryUrl.getText(),
+                equalTo(SECONDARY_URL_STRING));
+        assertThat(
+                "Incorrect max line count for secondary URL.",
+                mSecondaryUrl.getMaxLines(),
+                equalTo(1));
+        assertThat(
+                "Incorrect secondary URL ellipsize mode.",
+                mSecondaryUrl.getEllipsize(),
+                equalTo(TextUtils.TruncateAt.END));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mModel.set(
+                                ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES,
+                                Integer.MAX_VALUE));
+
+        assertThat(
+                "Incorrect max line count for secondary URL.",
+                mSecondaryUrl.getMaxLines(),
+                equalTo(Integer.MAX_VALUE));
+        assertNull(
+                "Secondary URL is ellipsized when it shouldn't be.", mSecondaryUrl.getEllipsize());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ContextMenuHeaderProperties.SECONDARY_URL, "");
+                });
+        assertThat(
+                "Secondary URL should be GONE when text is empty.",
+                mSecondaryUrl.getVisibility(),
+                equalTo(View.GONE));
     }
 
     @Test

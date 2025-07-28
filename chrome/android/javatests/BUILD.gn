@@ -1467,6 +1467,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/content_settings/ContentSettingsObserverTest.java",
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuTabPTTest.java",
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuTest.java",
+    "src/org/chromium/chrome/browser/contextmenu/CustomTabContextMenuTest.java",
     "src/org/chromium/chrome/browser/desktop_windowing/AppHeaderCoordinatorBrowserTest.java",
     "src/org/chromium/chrome/browser/device_lock/DeviceLockActivityLauncherImplTest.java",
     "src/org/chromium/chrome/browser/device_lock/DeviceLockActivityTest.java",

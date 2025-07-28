@@ -41,6 +41,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils.HeaderInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -57,6 +58,9 @@ public class ContextMenuUtilsUnitTest {
     private static final String sTitleText = "titleText";
     private static final String sLinkText = "linkText";
     private static final String sSrcUrl = "https://www.google.com/";
+    private static final GURL sPageGUrl = new GURL("https://www.youtube.com/");
+    private static final GURL sSrcGUrl = new GURL("https://www.google.com/");
+    private static final GURL sLinkGUrl = new GURL("https://www.wikipedia.org/");
 
     @Mock private MenuModelBridge mMenuModelBridge;
 
@@ -71,6 +75,153 @@ public class ContextMenuUtilsUnitTest {
     @After
     public void tearDown() {
         mActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHeaderInfo_noCustomItemPresent() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        sPageGUrl,
+                        sLinkGUrl,
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        true,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        false);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals("URL should be the link URL.", sLinkGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be empty.", GURL.emptyGURL(), headerInfo.getSecondaryUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHeaderInfo_customItemPresent_notImage() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.VIDEO,
+                        sPageGUrl,
+                        sLinkGUrl,
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        true,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        true);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals(
+                "URL should be the link URL as it's not an image.", sLinkGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be empty as it's not an image.",
+                GURL.emptyGURL(),
+                headerInfo.getSecondaryUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHeaderInfo_customItemPresent_isImageLink() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        sPageGUrl,
+                        sLinkGUrl,
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        true,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        true);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be the link URL.", sLinkGUrl, headerInfo.getSecondaryUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHeaderInfo_customItemPresent_isImageNotAnchor() {
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        sPageGUrl,
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        sSrcGUrl,
+                        sTitleText,
+                        null,
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        HeaderInfo headerInfo =
+                ContextMenuUtils.getHeaderInfo(
+                        params,
+                        /** isCustomContextMenuItemPresent= */
+                        true);
+
+        assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
+        assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
+        assertEquals(
+                "Secondary URL should be the page URL.", sPageGUrl, headerInfo.getSecondaryUrl());
     }
 
     @Test
