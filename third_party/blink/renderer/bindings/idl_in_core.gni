@@ -774,6 +774,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/preferences/preference_manager.idl",
   "//third_party/blink/renderer/core/preferences/preference_object.idl",
   "//third_party/blink/renderer/core/preferences/navigator_preferences.idl",
+  "//third_party/blink/renderer/core/url/origin.idl",
   "//third_party/blink/renderer/core/url/url.idl",
   "//third_party/blink/renderer/core/url/url_search_params.idl",
   "//third_party/blink/renderer/core/url_pattern/url_pattern.idl",

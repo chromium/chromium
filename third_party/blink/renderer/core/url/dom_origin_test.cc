@@ -1,0 +1,156 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/url/dom_origin.h"
+
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+
+namespace blink {
+
+namespace {
+
+using DOMOriginTest = testing::Test;
+
+//
+// Construction and parsing:
+//
+TEST_F(DOMOriginTest, BuildOpaqueOrigins) {
+  DummyExceptionStateForTesting exception_state;
+
+  {
+    DOMOrigin* origin = DOMOrigin::Create();
+    ASSERT_TRUE(origin);
+    EXPECT_TRUE(origin->opaque());
+    EXPECT_EQ(origin->toJSON(), "null");
+  }
+
+  {
+    DOMOrigin* origin = DOMOrigin::Create("null", exception_state);
+    ASSERT_TRUE(origin);
+    EXPECT_TRUE(origin->opaque());
+    EXPECT_FALSE(exception_state.HadException());
+    EXPECT_EQ(origin->toJSON(), "null");
+  }
+
+  {
+    DOMOrigin* origin = DOMOrigin::parse("null");
+    ASSERT_TRUE(origin);
+    EXPECT_TRUE(origin->opaque());
+    EXPECT_EQ(origin->toJSON(), "null");
+  }
+}
+
+TEST_F(DOMOriginTest, BuildTupleOrigins) {
+  const char* test_cases[] = {
+      "http://site.example",      "https://site.example",
+      "https://site.example:123", "http://sub.site.example",
+      "https://sub.site.example", "https://sub.site.example:123",
+  };
+
+  for (const char* test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "Construction(" << test << ")");
+
+    DummyExceptionStateForTesting exception_state;
+    DOMOrigin* origin = DOMOrigin::Create(test, exception_state);
+    ASSERT_TRUE(origin);
+    EXPECT_FALSE(exception_state.HadException());
+    EXPECT_EQ(origin->toJSON(), test);
+  }
+
+  for (const char* test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "Parsing(" << test << ")");
+
+    DummyExceptionStateForTesting exception_state;
+    DOMOrigin* origin = DOMOrigin::parse(test);
+    ASSERT_TRUE(origin);
+    EXPECT_EQ(origin->toJSON(), test);
+  }
+}
+
+//
+// Comparison
+//
+TEST_F(DOMOriginTest, CompareOpaqueOrigins) {
+  DummyExceptionStateForTesting exception_state;
+
+  DOMOrigin* opaque_a = DOMOrigin::Create("null", exception_state);
+  DOMOrigin* opaque_b = DOMOrigin::Create("null", exception_state);
+
+  EXPECT_TRUE(opaque_a->isSameOrigin(opaque_a));
+  EXPECT_TRUE(opaque_a->isSameSite(opaque_a));
+  EXPECT_FALSE(opaque_a->isSameOrigin(opaque_b));
+  EXPECT_FALSE(opaque_a->isSameSite(opaque_b));
+  EXPECT_FALSE(opaque_b->isSameOrigin(opaque_a));
+  EXPECT_FALSE(opaque_b->isSameSite(opaque_a));
+}
+
+TEST_F(DOMOriginTest, CompareTupleOrigins) {
+  DummyExceptionStateForTesting exception_state;
+
+  DOMOrigin* a = DOMOrigin::Create("https://a.example", exception_state);
+  DOMOrigin* a_a = DOMOrigin::Create("https://a.a.example", exception_state);
+  DOMOrigin* b_a = DOMOrigin::Create("https://b.a.example", exception_state);
+  DOMOrigin* b = DOMOrigin::Create("https://b.example", exception_state);
+  DOMOrigin* b_b = DOMOrigin::Create("https://b.b.example", exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  EXPECT_TRUE(a->isSameOrigin(a));
+  EXPECT_FALSE(a->isSameOrigin(a_a));
+  EXPECT_FALSE(a->isSameOrigin(b_a));
+  EXPECT_FALSE(a->isSameOrigin(b));
+  EXPECT_FALSE(a->isSameOrigin(b_b));
+
+  EXPECT_TRUE(a->isSameSite(a));
+  EXPECT_TRUE(a->isSameSite(a_a));
+  EXPECT_TRUE(a->isSameSite(b_a));
+  EXPECT_FALSE(a->isSameSite(b));
+  EXPECT_FALSE(a->isSameSite(b_b));
+
+  EXPECT_TRUE(a_a->isSameSite(a));
+  EXPECT_TRUE(a_a->isSameSite(a_a));
+  EXPECT_TRUE(a_a->isSameSite(b_a));
+  EXPECT_FALSE(a_a->isSameSite(b));
+  EXPECT_FALSE(a_a->isSameSite(b_b));
+}
+
+//
+// Invalid
+//
+TEST_F(DOMOriginTest, InvalidOrigins) {
+  const char* test_cases[] = {
+      "",
+      "invalid",
+      "about:blank",
+      "https://trailing.slash/",
+      "https://user:pass@site.example",
+      "https://very.long.port:123456789",
+  };
+
+  for (auto* test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "Construction(" << test << ")");
+
+    DummyExceptionStateForTesting exception_state;
+    DOMOrigin* origin = DOMOrigin::Create(test, exception_state);
+    EXPECT_EQ(origin, nullptr);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.Code(), ToExceptionCode(ESErrorType::kTypeError));
+    EXPECT_EQ(exception_state.Message(), "Invalid serialized origin");
+  }
+
+  for (auto* test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "Parsing(" << test << ")");
+
+    DummyExceptionStateForTesting exception_state;
+    DOMOrigin* origin = DOMOrigin::parse(test);
+    EXPECT_EQ(origin, nullptr);
+  }
+}
+
+}  // namespace
+
+}  // namespace blink

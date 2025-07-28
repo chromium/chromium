@@ -1479,6 +1479,15 @@ interface OffscreenCanvasRenderingContext2D
     setter textBaseline
     setter textRendering
     setter wordSpacing
+interface Origin
+    static method parse
+    attribute @@toStringTag
+    getter opaque
+    method constructor
+    method isSameOrigin
+    method isSameSite
+    method toJSON
+    method toString
 interface Path2D
     attribute @@toStringTag
     method addPath
