@@ -407,7 +407,9 @@ DrawingBuffer::CreateOrRecycleSoftwareResource() {
   if (!shared_image_interface) {
     return SoftwareResource();
   }
-  // ReadFramebufferIntoBitmapPixels always produced bottom-Left origin.
+  // glReadPixels always read with bottom-Left origin regardless of framebuffer
+  // flip extension, so keep shared image the same so we don't need to flip
+  // here.
   auto shared_image =
       shared_image_interface->CreateSharedImageForSoftwareCompositor(
           {format, size_, color_space, kBottomLeft_GrSurfaceOrigin,
@@ -455,8 +457,11 @@ bool DrawingBuffer::PrepareTransferableResource(
     }
 
     auto mapping = resource.shared_image->Map();
-    ReadFramebufferIntoBitmapPixels(
-        static_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data()));
+
+    // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
+    ReadBackFramebuffer(mapping->GetMemoryForPlane(0), kN32_SkColorType,
+                        kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin,
+                        kBackBuffer);
 
     *out_resource = viz::TransferableResource::Make(
         resource.shared_image,
@@ -529,7 +534,14 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
   SkBitmap bitmap;
   if (!bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
     return nullptr;
-  ReadFramebufferIntoBitmapPixels(static_cast<uint8_t*>(bitmap.getPixels()));
+  const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+      size_, viz::SinglePlaneFormat::kRGBA_8888);
+  ReadBackFramebuffer(
+      base::span<uint8_t>(reinterpret_cast<uint8_t*>(bitmap.getPixels()),
+                          buffer_size),
+      kN32_SkColorType, kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin,
+      kBackBuffer);
+
   auto sk_image = SkImages::RasterFromBitmap(bitmap);
 
   // GL Framebuffer is bottom-left origin by default and the
@@ -538,18 +550,6 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
   return sk_image ? UnacceleratedStaticBitmapImage::Create(
                         sk_image, ImageOrientationEnum::kOriginBottomLeft)
                   : nullptr;
-}
-
-void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
-  DCHECK(pixels);
-  DCHECK(state_restorer_);
-
-  // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
-  const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-      size_, viz::SinglePlaneFormat::kRGBA_8888);
-  ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
-                      kN32_SkColorType, kPremul_SkAlphaType,
-                      kBottomLeft_GrSurfaceOrigin, kBackBuffer);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
