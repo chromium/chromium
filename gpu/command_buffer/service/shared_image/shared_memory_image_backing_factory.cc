@@ -18,6 +18,28 @@
 namespace gpu {
 
 // static
+bool SharedMemoryImageBackingFactory::IsBufferUsageSupported(
+    gfx::BufferUsage buffer_usage) {
+  switch (buffer_usage) {
+    case gfx::BufferUsage::GPU_READ:
+    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
+    case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
+      return true;
+    case gfx::BufferUsage::SCANOUT:
+    case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
+    case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::SCANOUT_VDA_WRITE:
+    case gfx::BufferUsage::PROTECTED_SCANOUT:
+    case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
+    case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+      return false;
+  }
+  NOTREACHED();
+}
+
+// static
 bool SharedMemoryImageBackingFactory::IsSizeValidForFormat(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
@@ -126,7 +148,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     gfx::BufferUsage buffer_usage) {
   auto buffer_format = ToBufferFormat(format);
   gfx::GpuMemoryBufferHandle handle;
-  if (GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage)) {
+  if (IsBufferUsageSupported(buffer_usage)) {
     handle = CreateGpuMemoryBufferHandle(size, buffer_format, buffer_usage);
   }
   SharedMemoryRegionWrapper shm_wrapper;

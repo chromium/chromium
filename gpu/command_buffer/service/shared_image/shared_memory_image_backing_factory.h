@@ -20,6 +20,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBackingFactory
 
   ~SharedMemoryImageBackingFactory() override;
 
+  static bool IsBufferUsageSupported(gfx::BufferUsage usage);
   static bool IsSizeValidForFormat(const gfx::Size& size,
                                    viz::SharedImageFormat format);
 

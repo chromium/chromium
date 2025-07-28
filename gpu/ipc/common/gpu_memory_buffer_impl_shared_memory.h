@@ -43,8 +43,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
 
-  static bool IsUsageSupported(gfx::BufferUsage usage);
-
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
       gfx::BufferFormat format,

@@ -113,27 +113,6 @@ GpuMemoryBufferImplSharedMemory::CreateFromHandle(
 }
 
 // static
-bool GpuMemoryBufferImplSharedMemory::IsUsageSupported(gfx::BufferUsage usage) {
-  switch (usage) {
-    case gfx::BufferUsage::GPU_READ:
-    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-    case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
-    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
-      return true;
-    case gfx::BufferUsage::SCANOUT:
-    case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
-    case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
-    case gfx::BufferUsage::SCANOUT_VDA_WRITE:
-    case gfx::BufferUsage::PROTECTED_SCANOUT:
-    case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
-    case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
-    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
-      return false;
-  }
-  NOTREACHED();
-}
-
-// static
 base::OnceClosure GpuMemoryBufferImplSharedMemory::AllocateForTesting(
     const gfx::Size& size,
     gfx::BufferFormat format,
