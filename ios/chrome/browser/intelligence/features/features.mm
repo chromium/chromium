@@ -31,6 +31,17 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
+BASE_FEATURE(kGeminiCrossTab,
+             "GeminiCrossTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiCrossTabEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kGeminiCrossTab);
+}
+
 bool IsDirectBWGEntryPoint() {
   CHECK(IsPageActionMenuEnabled());
   return base::GetFieldTrialParamByFeatureAsBool(

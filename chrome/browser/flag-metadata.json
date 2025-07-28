@@ -5313,6 +5313,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "gemini-cross-tab",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "geolocation-element",
     "owners": [
       "andy@chromium.org",

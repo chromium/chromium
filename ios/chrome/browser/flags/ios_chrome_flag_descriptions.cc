@@ -1253,6 +1253,10 @@ const char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "
     "for actions relating to the web page.";
 
+const char kGeminiCrossTabName[] = "Gemini Cross Tab";
+const char kGeminiCrossTabDescription[] =
+    "When enabled, the Gemini floaty conversation persists across all tabs.";
+
 const char kBWGPromoConsentName[] = "BWG Promo Consent";
 const char kBWGPromoConsentDescription[] =
     "Whether the promo consent flow is composed of a single or a double screen "

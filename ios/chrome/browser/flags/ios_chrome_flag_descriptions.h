@@ -730,6 +730,9 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kPageActionMenuName[];
 extern const char kPageActionMenuDescription[];
 
+extern const char kGeminiCrossTabName[];
+extern const char kGeminiCrossTabDescription[];
+
 extern const char kBWGPromoConsentName[];
 extern const char kBWGPromoConsentDescription[];
 
