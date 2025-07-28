@@ -52,15 +52,22 @@ def __step_config(ctx, step_config, use_windows_worker = None):
             "name": "slow_compile",
             "action_outs": [
                 # keep-sorted start
+                "./obj/content/test/content_browsertests/interest_group_browsertest.o",
+                "./obj/content/test/content_browsertests/navigation_controller_impl_browsertest.o",
+                "./obj/content/test/content_browsertests/site_per_process_browsertest.o",
                 "./obj/content/test/content_unittests/auction_runner_unittest.o",
                 "./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o",
                 "./obj/third_party/highway/highway_tests/convert_test.o",
                 "./obj/third_party/highway/highway_tests/demote_test.o",
+                "./obj/third_party/highway/highway_tests/div_test.o",
+                "./obj/third_party/highway/highway_tests/if_test.o",
                 "./obj/third_party/highway/highway_tests/interleaved_test.o",
                 "./obj/third_party/highway/highway_tests/mask_mem_test.o",
                 "./obj/third_party/highway/highway_tests/mask_test.o",
                 "./obj/third_party/highway/highway_tests/masked_arithmetic_test.o",
                 "./obj/third_party/highway/highway_tests/memory_test.o",
+                "./obj/third_party/highway/highway_tests/rotate_test.o",
+                "./obj/third_party/highway/highway_tests/shift_test.o",
                 "./obj/third_party/highway/highway_tests/shuffle4_test.o",
                 "./obj/third_party/highway/highway_tests/widen_mul_test.o",
                 # keep-sorted end
