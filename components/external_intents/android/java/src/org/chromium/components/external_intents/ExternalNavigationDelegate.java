@@ -137,14 +137,14 @@ public interface ExternalNavigationDelegate {
     /**
      * Returns whether the url should be returned as the result of the current activity.
      *
-     * @param url The {@link GURL} to return as activtiy result.
+     * @param url The {@link GURL} to return as activity result.
      */
     boolean shouldReturnAsActivityResult(GURL url);
 
     /**
      * Sets the url as the result of the current activity and finishes it if conditions are met.
      *
-     * @param url The {@link GURL} to return as activtiy result.
+     * @param url The {@link GURL} to return as activity result.
      */
     void returnAsActivityResult(GURL url);
 
