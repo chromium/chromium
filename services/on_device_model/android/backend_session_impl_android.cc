@@ -22,41 +22,9 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/on_device_model/android/jni_headers/AiCoreSession_jni.h"
-#include "services/on_device_model/android/jni_headers/InputPiece_jni.h"
+#include "services/on_device_model/android/jni_headers/InputPieceHelper_jni.h"
 
 namespace on_device_model {
-
-namespace {
-
-base::android::ScopedJavaLocalRef<jobject> ToJavaInputPiece(
-    JNIEnv* env,
-    const ml::InputPiece& input) {
-  if (std::holds_alternative<std::string>(input)) {
-    return Java_InputPiece_createText(env,
-                                      base::android::ConvertUTF8ToJavaString(
-                                          env, std::get<std::string>(input)));
-  } else if (std::holds_alternative<ml::Token>(input)) {
-    return Java_InputPiece_createToken(
-        env, static_cast<int>(std::get<ml::Token>(input)));
-  }
-  // TODO(crbug.com/425408635): Support bitmap and audio.
-  NOTREACHED();
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray> ToJavaInputPieceArray(
-    JNIEnv* env,
-    const std::vector<ml::InputPiece>& inputs) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs(
-      inputs.size());
-  std::transform(inputs.begin(), inputs.end(), java_inputs.begin(),
-                 [&](const ml::InputPiece& input) {
-                   return ToJavaInputPiece(env, input);
-                 });
-  return base::android::ToTypedJavaArrayOfObjects(
-      env, java_inputs, org_chromium_on_1device_1model_InputPiece_clazz(env));
-}
-
-}  // namespace
 
 BackendSessionImplAndroid::BackendSessionImplAndroid(
     on_device_model::mojom::SessionParamsPtr params)
@@ -86,9 +54,24 @@ void BackendSessionImplAndroid::Generate(
   responder_.Bind(std::move(response));
 
   JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs;
+  for (const auto& piece : context_input_pieces_) {
+    if (std::holds_alternative<ml::Token>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromToken(
+          env, static_cast<int>(std::get<ml::Token>(piece))));
+    } else if (std::holds_alternative<std::string>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromText(
+          env, base::android::ConvertUTF8ToJavaString(
+                   env, std::get<std::string>(piece))));
+    } else {
+      // TODO(crbug.com/425408635): Support image and audio input.
+      NOTREACHED();
+    }
+  }
+
   Java_AiCoreSession_generate(
       env, java_session_, reinterpret_cast<intptr_t>(this),
-      ToJavaInputPieceArray(env, context_input_pieces_));
+      base::android::ToJavaArrayOfObjects(env, java_inputs));
   std::move(on_complete).Run();
 }
 
