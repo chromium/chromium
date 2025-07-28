@@ -3791,7 +3791,7 @@ void WebAppIntegrationTestDriver::CheckHasSubApp(Site parent_app,
   const content::EvalJsResult list_result =
       content::EvalJs(web_contents, "navigator.subApps.list()");
 
-  const base::Value::Dict list_result_dict = list_result.ExtractDict();
+  const base::Value::Dict& list_result_dict = list_result.ExtractDict();
 
   // Check that list() contained the sub_app_url key.
   EXPECT_NE(nullptr, list_result_dict.FindDict(sub_app_url));

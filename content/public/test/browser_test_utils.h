@@ -881,7 +881,7 @@ class EvalJsResult {
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
   [[nodiscard]] base::Value::List ExtractList() const;
-  [[nodiscard]] base::Value::Dict ExtractDict() const;
+  [[nodiscard]] const base::Value::Dict& ExtractDict() const;
   [[nodiscard]] const std::string& ExtractError() const;
 
   bool is_ok() const { return std::holds_alternative<base::Value>(data_); }

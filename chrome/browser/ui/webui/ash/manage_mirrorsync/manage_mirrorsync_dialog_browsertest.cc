@@ -265,8 +265,9 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
         "const handler = BrowserProxy.getInstance().handler;"
         "const response = await handler.getSyncingPaths();"
         "return response; })())";
-    auto response = content::EvalJs(dialog_contents_.get(), js_expression);
-    return response.ExtractDict();
+    return content::EvalJs(dialog_contents_.get(), js_expression)
+        .TakeValue()
+        .TakeDict();
   }
 
   void TearDown() override {

@@ -1671,14 +1671,14 @@ base::Value::List EvalJsResult::ExtractList() const {
   return value()->GetList().Clone();
 }
 
-base::Value::Dict EvalJsResult::ExtractDict() const {
+const base::Value::Dict& EvalJsResult::ExtractDict() const {
   CHECK(is_ok())
       << "Can't ExtractDict() because the script encountered a problem: "
       << *error();
   CHECK(value()->is_dict())
       << "Can't ExtractDict() because script result: " << *value()
       << "is not a dictionary.";
-  return value()->GetDict().Clone();
+  return value()->GetDict();
 }
 
 const std::string& EvalJsResult::ExtractError() const {

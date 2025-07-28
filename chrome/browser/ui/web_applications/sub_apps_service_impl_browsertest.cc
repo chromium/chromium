@@ -1101,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   // Check List results for the main app contains 3 sub-apps.
   auto list_result_1 = ListSubAppsJS(iwa_frame_1);
 
-  auto dict_1 = list_result_1.ExtractDict();
+  const auto& dict_1 = list_result_1.ExtractDict();
   EXPECT_EQ(3ul, dict_1.size());
   EXPECT_TRUE(dict_1.contains(kSubAppPath));
   EXPECT_TRUE(dict_1.contains(kSubAppPath2));

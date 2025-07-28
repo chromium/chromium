@@ -3874,7 +3874,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
         });
       })();
     )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   EXPECT_TRUE(*result.FindBool("isSyncActive"));
   EXPECT_TRUE(*result.FindBool("arePreferencesSynced"));
   EXPECT_EQ(*result.FindString("accountEmail"), "user1@gmail.com");
@@ -4116,7 +4117,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, NotBeBlockedByFeatureFlag) {
       });
     })();
   )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   auto* configAidaAvailability = result.FindDict("aidaAvailability");
   auto* configConsoleInsights = result.FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -4149,7 +4151,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
       });
     })();
   )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   auto* configAidaAvailability = result.FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
@@ -4181,7 +4184,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsBlockedByGeo) {
       });
     })();
   )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   auto* configAidaAvailability = result.FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
@@ -4211,7 +4215,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
       });
     })();
   )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   auto* configAidaAvailability = result.FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
@@ -4259,7 +4264,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
       });
     })();
   )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   auto* configAidaAvailability = result.FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
@@ -4294,7 +4300,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
       });
     })();
   )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   auto* configAidaAvailability = result.FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
@@ -4330,7 +4337,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
       });
     })();
   )"))
-                          .ExtractDict();
+                          .TakeValue()
+                          .TakeDict();
   auto* configAidaAvailability = result.FindDict("aidaAvailability");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
