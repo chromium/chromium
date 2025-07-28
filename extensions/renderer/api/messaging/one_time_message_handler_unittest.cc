@@ -11,10 +11,12 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/with_feature_override.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
@@ -749,67 +751,6 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host1);
 }
 
-TEST_F(OneTimeMessageHandlerTest,
-       SendResponseAndPromiseRejectCallbacksGarbageCollected) {
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-
-  constexpr char kRegisterListener[] =
-      "(function() {\n"
-      "  chrome.runtime.onMessage.addListener(\n"
-      "      function(message, sender, reply) {\n"
-      "        return true;  // Reply later\n"
-      "      });\n"
-      "})";
-  v8::Local<v8::Function> add_listener =
-      FunctionFromString(context, kRegisterListener);
-  RunFunctionOnGlobal(add_listener, context, 0, nullptr);
-
-  base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false,
-                       mojom::SerializationFormat::kJson);
-  mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
-  mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
-      message_port_host_receiver;
-  MockMessagePortHost mock_message_port_host;
-
-  v8::Local<v8::Object> sender = v8::Object::New(isolate());
-  message_handler()->AddReceiverForTesting(
-      script_context(), port_id, sender, messaging_util::kOnMessageEvent,
-      message_port_remote, message_port_host_receiver);
-  message_port_remote.EnableUnassociatedUsage();
-  message_port_host_receiver.EnableUnassociatedUsage();
-  mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
-
-  const Message message("\"Hi\"", mojom::SerializationFormat::kJson, false);
-  base::RunLoop run_loop;
-
-  EXPECT_CALL(mock_message_port_host, ResponsePending());
-  EXPECT_CALL(mock_message_port_host,
-              ClosePort(
-                  /*close_channel=*/false,
-                  /*error_message=*/testing::Eq(std::nullopt)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  message_handler()->DeliverMessage(script_context(), message, port_id);
-  EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
-  // One callback is for the response function, the second is for the promise
-  // reject function.
-  EXPECT_EQ(
-      2, message_handler()->GetPendingCallbackCountForTest(script_context()));
-
-  // The listener didn't retain the reply callback and the listener didn't
-  // return a promise that could reject, so the JS callbacks should be garbage
-  // collected and the related pending callbacks for them should have been
-  // cleared as well so we don't leak them after the port closes.
-  RunGarbageCollection();
-  run_loop.Run();
-  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
-  ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
-  EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
-  EXPECT_EQ(
-      0, message_handler()->GetPendingCallbackCountForTest(script_context()));
-}
-
 // runtime.onMessage requires that a listener return `true` if they intend to
 // respond to the message asynchronously. Verify that we close the port if no
 // listener does so.
@@ -892,5 +833,85 @@ TEST_F(OneTimeMessageHandlerTest, ChannelClosedIfTrueNotReturned) {
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
 }
+
+class OneTimeMessageHandlerGarbageCollectionTest
+    : public base::test::WithFeatureOverride,
+      public OneTimeMessageHandlerTest {
+ public:
+  OneTimeMessageHandlerGarbageCollectionTest()
+      : WithFeatureOverride(
+            extensions_features::kRuntimeOnMessagePromiseReturnSupport) {}
+
+  OneTimeMessageHandlerGarbageCollectionTest(
+      const OneTimeMessageHandlerGarbageCollectionTest&) = delete;
+  OneTimeMessageHandlerGarbageCollectionTest& operator=(
+      const OneTimeMessageHandlerGarbageCollectionTest&) = delete;
+  ~OneTimeMessageHandlerGarbageCollectionTest() override = default;
+};
+
+TEST_P(OneTimeMessageHandlerGarbageCollectionTest,
+       SendResponseAndPromiseRejectCallbacksGarbageCollected) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  constexpr char kRegisterListener[] =
+      "(function() {\n"
+      "  chrome.runtime.onMessage.addListener(\n"
+      "      function(message, sender, reply) {\n"
+      "        return true;  // Reply later\n"
+      "      });\n"
+      "})";
+  v8::Local<v8::Function> add_listener =
+      FunctionFromString(context, kRegisterListener);
+  RunFunctionOnGlobal(add_listener, context, 0, nullptr);
+
+  base::UnguessableToken other_context_id = base::UnguessableToken::Create();
+  const PortId port_id(other_context_id, 0, false,
+                       mojom::SerializationFormat::kJson);
+  mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
+  mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+      message_port_host_receiver;
+  MockMessagePortHost mock_message_port_host;
+
+  v8::Local<v8::Object> sender = v8::Object::New(isolate());
+  message_handler()->AddReceiverForTesting(
+      script_context(), port_id, sender, messaging_util::kOnMessageEvent,
+      message_port_remote, message_port_host_receiver);
+  message_port_remote.EnableUnassociatedUsage();
+  message_port_host_receiver.EnableUnassociatedUsage();
+  mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
+
+  const Message message("\"Hi\"", mojom::SerializationFormat::kJson, false);
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_message_port_host, ResponsePending());
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/false,
+                  /*error_message=*/testing::Eq(std::nullopt)))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  message_handler()->DeliverMessage(script_context(), message, port_id);
+  EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
+  // One callback is for the response function, the second is for the promise
+  // reject function (when the feature is enabled).
+  EXPECT_EQ(
+      IsParamFeatureEnabled() ? 2 : 1,
+      message_handler()->GetPendingCallbackCountForTest(script_context()));
+
+  // The listener didn't retain the reply callback and the listener didn't
+  // return a promise that could reject, so the JS callbacks should be garbage
+  // collected and the related pending callbacks for them should have been
+  // cleared as well so we don't leak them after the port closes.
+  RunGarbageCollection();
+  run_loop.Run();
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
+  EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
+  EXPECT_EQ(
+      0, message_handler()->GetPendingCallbackCountForTest(script_context()));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    OneTimeMessageHandlerGarbageCollectionTest);
 
 }  // namespace extensions

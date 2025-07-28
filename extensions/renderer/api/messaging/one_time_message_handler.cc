@@ -79,6 +79,11 @@ struct OneTimeMessageContextData : public base::SupportsUserData::Data {
 
 constexpr char OneTimeMessageContextData::kPerContextDataKey[];
 
+bool OnMessagePromisesSupported() {
+  return base::FeatureList::IsEnabled(
+      extensions_features::kRuntimeOnMessagePromiseReturnSupport);
+}
+
 void DelayedOneTimeMessageCallbackHelper(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   CHECK(info.Data()->IsExternal());
@@ -140,8 +145,6 @@ bool CheckAndHandleAsyncListenerReply(
   v8::Local<v8::Array> results_array = results_value.As<v8::Array>();
   uint32_t results_count = results_array->Length();
 
-  bool promise_return_support_enabled = base::FeatureList::IsEnabled(
-      extensions_features::kRuntimeOnMessagePromiseReturnSupport);
   for (uint32_t i = 0; i < results_count; ++i) {
     v8::MaybeLocal<v8::Value> maybe_result = results_array->Get(context, i);
     v8::Local<v8::Value> listener_return;
@@ -161,7 +164,7 @@ bool CheckAndHandleAsyncListenerReply(
     // Check if any of the returns are a promise -- indicating the listener
     // will reply async. If they do, handle both the promise resolving or
     // rejecting.
-    if (listener_return->IsPromise() && promise_return_support_enabled) {
+    if (OnMessagePromisesSupported() && listener_return->IsPromise()) {
       std::ignore = listener_return.As<v8::Promise>()->Then(
           context, promise_resolved_function, promise_rejected_function);
       // TODO(crbug.com/40753031): Consider setting lastError for caller when
@@ -411,7 +414,10 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
       CreateDelayedOneTimeMessageCallback(isolate, context, target_port_id,
                                           callback.get(), script_context);
 
-  port.response_function = v8::Global<v8::Function>(isolate, response_function);
+  if (OnMessagePromisesSupported()) {
+    port.response_function =
+        v8::Global<v8::Function>(isolate, response_function);
+  }
 
   v8::HandleScope handle_scope(isolate);
 
@@ -698,6 +704,12 @@ void OneTimeMessageHandler::OnDelayedOneTimeMessageCallbackCollected(
         return reinterpret_cast<CallbackID>(callback.get()) == raw_callback;
       });
 
+  // TODO(crbug.com/40753031): When the promise support feature is on this needs
+  // to take into account if there are any other pending_callbacks that could be
+  // run and not close the port if that is true. Otherwise, as-is, the
+  // collection logic can close the port too early and prevent the message
+  // response from being sent back to the sender.
+
   auto iter = data->receivers.find(port_id);
   // The channel may already be closed (if the receiver replied before the reply
   // callback was collected).
@@ -766,8 +778,7 @@ void OneTimeMessageHandler::PromiseRejectedResponse(const PortId& port_id,
   }
 
   debug::ScopedPromiseRejectedResponseCrashKeys promise_rejected_crash_keys(
-      base::FeatureList::IsEnabled(
-          extensions_features::kRuntimeOnMessagePromiseReturnSupport));
+      /*promise_support_feature_enabled=*/OnMessagePromisesSupported());
   v8::Local<v8::Value> promise_reject_reason;
   // This is safe to CHECK() because when a promise rejects it always provides a
   // value. Even if `reject()` (with no argument) is called we see `undefined`
@@ -838,16 +849,21 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   NativeRendererMessagingService* messaging_service =
       bindings_system_->messaging_service();
 
-  v8::Local<v8::Function> promise_resolved_function =
-      port.response_function.Get(isolate);
-  v8::Local<v8::Function> promise_rejected_function =
-      CreatePromiseRejectedFunction(isolate, context, port_id);
+  v8::Local<v8::Function> promise_resolved_function;
+  v8::Local<v8::Function> promise_rejected_function;
+  if (OnMessagePromisesSupported()) {
+    promise_resolved_function = port.response_function.Get(isolate);
+    promise_rejected_function =
+        CreatePromiseRejectedFunction(isolate, context, port_id);
+  }
 
   if (CheckAndHandleAsyncListenerReply(isolate, context, result,
                                        promise_resolved_function,
                                        promise_rejected_function)) {
-    // Ensure the global function doesn't outlive port closing.
-    port.response_function.SetWeak();
+    if (OnMessagePromisesSupported()) {
+      // Ensure the global function doesn't outlive port closing.
+      port.response_function.SetWeak();
+    }
     // Inform the browser that one of the listeners said they would be replying
     // later and leave the channel open.
     ScriptContext* script_context = GetScriptContextFromV8Context(context);
