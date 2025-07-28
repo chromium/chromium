@@ -721,6 +721,15 @@ inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
     &omnibox::kOmniboxMobileParityUpdate, "enable_feed_for_google_only", true};
 // <-- Mobile Parity update
 
+// Aim shortcut for typed state ->
+
+constexpr base::FeatureParam<int> kMinimumTypedCharactersToInvokeAimShortcut(
+    &omnibox::kOmniboxAimShortcutTypedState,
+    "MinimumTypedCharactersToInvokeAimShortcut",
+    1);
+
+// <- Aim shortcut for typed state
+
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
 // - Short comment categorizing the relevant features & params.

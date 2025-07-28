@@ -11,9 +11,6 @@
 const base::NotFatalUntil kOmniboxRefactoringNotFatalUntil =
     base::NotFatalUntil::M200;
 
-// Aim shortcut feature.
-BASE_DECLARE_FEATURE(kIOSOmniboxAimShortcut);
-
 // A tentative fix for crbug.com/361003475.
 BASE_DECLARE_FEATURE(kBeginCursorAtPointTentativeFix);
 

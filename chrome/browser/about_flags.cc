@@ -2064,7 +2064,9 @@ const FeatureEntry::FeatureVariation kOmniboxMiaZpsVariations[] = {
 #endif
 
 const FeatureEntry::FeatureParam
-    kOmniboxAimShortcutTypedStateEnabledForTypedLength15[] = {{"chars", "15"}};
+    kOmniboxAimShortcutTypedStateEnabledForTypedLength15[] = {
+        {OmniboxFieldTrial::kMinimumTypedCharactersToInvokeAimShortcut.name,
+         "15"}};
 const FeatureEntry::FeatureVariation kOmniboxAimShortcutTypedStateVariations[] =
     {{"for 15+ chars", kOmniboxAimShortcutTypedStateEnabledForTypedLength15,
       std::size(kOmniboxAimShortcutTypedStateEnabledForTypedLength15),

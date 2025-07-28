@@ -117,7 +117,7 @@
   if (self.profilePrefService) {
     _aimShortcutAvailable =
         !self.isLensOverlay &&
-        base::FeatureList::IsEnabled(kIOSOmniboxAimShortcut) &&
+        base::FeatureList::IsEnabled(omnibox::kOmniboxAimShortcutTypedState) &&
         IsAIMAvailable(self.profilePrefService, templateURLService);
   }
 }

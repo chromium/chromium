@@ -17,6 +17,7 @@
 #import "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
+#import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/omnibox/browser/suggestion_answer.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -389,7 +390,11 @@ UIColor* DimColorIncognito() {
 
 - (BOOL)isSearchWithAim {
   return self.aimShortcutAvailable && _match.IsVerbatimType() &&
-         !_match.IsVerbatimUrlSuggestion();
+         !_match.IsVerbatimUrlSuggestion() &&
+         _match.contents.length() >=
+             size_t(
+                 OmniboxFieldTrial::kMinimumTypedCharactersToInvokeAimShortcut
+                     .Get());
 }
 
 - (id<OmniboxPedal>)pedal {

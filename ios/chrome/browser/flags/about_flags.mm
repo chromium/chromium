@@ -1411,6 +1411,15 @@ const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
 };
 // LINT.ThenChange(//chrome/browser/about_flags.cc:DataSharingVersioningChoices)
 
+const FeatureEntry::FeatureParam
+    kOmniboxAimShortcutTypedStateEnabledForTypedLength15[] = {
+        {OmniboxFieldTrial::kMinimumTypedCharactersToInvokeAimShortcut.name,
+         "15"}};
+const FeatureEntry::FeatureVariation kOmniboxAimShortcutTypedStateVariations[] =
+    {{"for 15+ chars", kOmniboxAimShortcutTypedStateEnabledForTypedLength15,
+      std::size(kOmniboxAimShortcutTypedStateEnabledForTypedLength15),
+      nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1508,6 +1517,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"webpage-text-zoom-ipad", flag_descriptions::kWebPageTextZoomIPadName,
      flag_descriptions::kWebPageTextZoomIPadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::kWebPageTextZoomIPad)},
+    {"omnibox-aim-shortcut-typed-state",
+     flag_descriptions::kIOSOmniboxAimShortcutName,
+     flag_descriptions::kIOSOmniboxAimShortcutDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxAimShortcutTypedState,
+                                    kOmniboxAimShortcutTypedStateVariations,
+                                    "OmniboxAimShortcutTypedState")},
     {"omnibox-ui-max-autocomplete-matches",
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesName,
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesDescription,
@@ -2770,10 +2785,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"omnibox-drs-prototype", flag_descriptions::kOmniboxDRSPrototypeName,
      flag_descriptions::kOmniboxDRSPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxDRSPrototype)},
-
-    {"ios-omnibox-aim-shortcut", flag_descriptions::kIOSOmniboxAimShortcutName,
-     flag_descriptions::kIOSOmniboxAimShortcutDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSOmniboxAimShortcut)},
     {"sync-autofill-wallet-credential-data",
      flag_descriptions::kSyncAutofillWalletCredentialDataName,
      flag_descriptions::kSyncAutofillWalletCredentialDataDescription,
