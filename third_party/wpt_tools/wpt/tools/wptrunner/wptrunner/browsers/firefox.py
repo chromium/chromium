@@ -259,6 +259,7 @@ def update_properties():
         "debug",
         "display",
         "fission",
+        "isolated_process",
         "processor",
         "swgl",
         "asan",
@@ -768,6 +769,9 @@ class ProfileCreator:
             profile.set_preferences({
                 "geo.provider.network.url": "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py"
             })
+        else:
+            # Except for wdspec dispatch wheel scroll as widget event by default.
+            profile.set_preferences({"remote.events.async.wheel.enabled": True})
 
         if self.debug_test:
             profile.set_preferences({"devtools.console.stdout.content": True})

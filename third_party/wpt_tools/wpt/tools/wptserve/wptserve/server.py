@@ -3,8 +3,11 @@
 import errno
 import http
 import http.server
+import ipaddress
 import os
+import platform
 import socket
+import socketserver
 import ssl
 import sys
 import threading
@@ -227,6 +230,25 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                                                       do_handshake_on_connect=False,
                                                       server_side=True)
 
+    def server_bind(self):
+        if platform.system() != "Darwin":
+            super().server_bind()
+        else:
+            # We override this on macOS to workaround gethostbyaddr triggering the local
+            # network alert even when passed "localhost" (rdar://153097791); this should
+            # be the same as the superclass implementation except for the addition of
+            # our check.
+            socketserver.TCPServer.server_bind(self)
+            host, port = self.server_address[:2]
+            if (
+                ipaddress.ip_address(host).is_loopback and
+                ipaddress.ip_address(socket.gethostbyname("localhost")).is_loopback
+            ):
+                self.server_name = "localhost"
+            else:
+                self.server_name = socket.getfqdn(host)
+            self.server_port = port
+
     def finish_request(self, request, client_address):
         if isinstance(self.socket, ssl.SSLSocket):
             request.do_handshake()
@@ -377,10 +399,10 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
     def handle_one_request(self):
         """
-        This is the main HTTP/2.0 Handler.
+        This is the main HTTP/2 Handler.
 
         When a browser opens a connection to the server
-        on the HTTP/2.0 port, the server enters this which will initiate the h2 connection
+        on the HTTP/2 port, the server enters this which will initiate the h2 connection
         and keep running throughout the duration of the interaction, and will read/write directly
         from the socket.
 

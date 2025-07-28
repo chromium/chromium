@@ -565,6 +565,14 @@ class BidiEventsProtocolPart(ProtocolPart):
         pass
 
     @abstractmethod
+    async def unsubscribe(self, subscriptions: List[str]) -> Mapping[str, Any]:
+        """
+        Unsubscribes from the subscriptions with the given IDs.
+        :param subscriptions: The list of subscription ids to unsubscribe from.
+        """
+        pass
+
+    @abstractmethod
     async def unsubscribe_all(self):
         """Cleans up the subscription state. Removes all the previously added subscriptions."""
         pass
@@ -602,6 +610,17 @@ class BidiEmulationProtocolPart(ProtocolPart):
     async def set_geolocation_override(self,
             coordinates: Optional[Union[Mapping[str, Any], "Undefined"]],
             error: Optional[Mapping[str, Any]],
+            contexts: List[str]) -> None:
+        pass
+
+    @abstractmethod
+    async def set_locale_override(self, locale: Optional[str],
+            contexts: List[str]) -> None:
+        pass
+
+    @abstractmethod
+    async def set_screen_orientation_override(self,
+            screen_orientation: Optional[Mapping[str, Any]],
             contexts: List[str]) -> None:
         pass
 
