@@ -23,6 +23,7 @@ source_set("payments") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/autofill/core/browser",
     "//content/public/browser",
     "//ui/base",
@@ -145,6 +146,7 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_action",
       "//chrome/common",
       "//components/autofill/core/common:credit_card_number_validation",

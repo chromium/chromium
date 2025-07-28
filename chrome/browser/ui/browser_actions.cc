@@ -435,6 +435,20 @@ void BrowserActions::InitializeBrowserActions() {
               omnibox::kProductSpecificationsAddIcon))
           .Build());
 
+  // Clicking the Mandatory Reauth page action is a no-op. This is because the
+  // icon is always shown with a dialog bubble. The expected behavior is to
+  // simply close this bubble, which happens automatically due to focus change
+  // when the user clicks the icon. Therefore, a `base::DoNothing()` callback is
+  // used.
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(base::DoNothing())
+          .SetActionId(kActionAutofillMandatoryReauth)
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
+          .Build());
+
   //------- Chrome Menu Actions --------//
   root_action_item_->AddChild(
       ChromeMenuAction(base::BindRepeating(

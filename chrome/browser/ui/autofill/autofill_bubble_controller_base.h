@@ -46,9 +46,9 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
   // potentially log metrics.
   virtual void DoShowBubble() = 0;
 
-  void Show();
+  virtual void UpdatePageActionIcon();
 
-  void UpdatePageActionIcon();
+  void Show();
 
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
   void set_bubble_view(AutofillBubbleBase* bubble_view) {

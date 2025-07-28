@@ -55,6 +55,7 @@ class MandatoryReauthBubbleControllerImpl
   // AutofillBubbleControllerBase:
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
+  void UpdatePageActionIcon() override;
 
  private:
   friend class content::WebContentsUserData<

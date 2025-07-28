@@ -301,14 +301,11 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
     MandatoryReauthBubbleController* controller,
     bool is_user_gesture,
     MandatoryReauthBubbleType bubble_type) {
-  PageActionIconView* icon_view =
-      toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kMandatoryReauth);
-  DCHECK(icon_view);
-  // TODO(crbug.com/376283953): An action ID should be created and used here
-  // when Mandatory Reauth is migrated to the new page actions framework.
+  IconLabelBubbleView* icon_view = toolbar_button_provider_->GetPageActionView(
+      kActionAutofillMandatoryReauth);
+
   views::View* anchor_view =
-      toolbar_button_provider_->GetAnchorView(std::nullopt);
+      toolbar_button_provider_->GetAnchorView(kActionAutofillMandatoryReauth);
 
   switch (bubble_type) {
     case MandatoryReauthBubbleType::kOptIn: {

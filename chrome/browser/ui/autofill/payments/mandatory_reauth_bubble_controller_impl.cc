@@ -18,9 +18,13 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/mandatory_reauth/android/internal/jni/MandatoryReauthOptInBottomSheetControllerBridge_jni.h"
 #else
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "components/tabs/public/tab_interface.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -246,6 +250,36 @@ MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {
   return base::android::ScopedJavaLocalRef<jobject>(java_controller_bridge_);
 }
 #endif
+
+void MandatoryReauthBubbleControllerImpl::UpdatePageActionIcon() {
+// Page action icons do not exist for Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (!IsPageActionMigrated(PageActionIconType::kMandatoryReauth)) {
+    AutofillBubbleControllerBase::UpdatePageActionIcon();
+  }
+
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+
+  if (!tab_interface) {
+    return;
+  }
+
+  // NOTE: Consider creating a separate page action view controller file when
+  // the logic to show the page action become complex.
+  page_actions::PageActionController* page_action_controller =
+      tab_interface->GetTabFeatures()->page_action_controller();
+  if (!page_action_controller) {
+    return;
+  }
+
+  if (IsIconVisible()) {
+    page_action_controller->Show(kActionAutofillMandatoryReauth);
+  } else {
+    page_action_controller->Hide(kActionAutofillMandatoryReauth);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MandatoryReauthBubbleControllerImpl);
 

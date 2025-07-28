@@ -114,6 +114,13 @@ constexpr auto kPageActionProperties =
                     kCollaborationMessagingPageActionIconElementId,
             },
         },
+        {
+            kActionAutofillMandatoryReauth,
+            {
+                .histogram_name = "MandatoryReauth",
+                .type = PageActionIconType::kMandatoryReauth,
+            },
+        },
     });
 }  // namespace
 
