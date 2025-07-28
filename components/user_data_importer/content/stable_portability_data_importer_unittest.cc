@@ -48,7 +48,8 @@ class StablePortabilityDataImporterTest : public testing::Test {
         base::DefaultClock::GetInstance());
 
     importer_ = std::make_unique<StablePortabilityDataImporter>(
-        *history_service_, *bookmark_model_, *reading_list_model_);
+        *history_service_, *bookmark_model_, *reading_list_model_,
+        std::make_unique<ContentBookmarkParser>());
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }

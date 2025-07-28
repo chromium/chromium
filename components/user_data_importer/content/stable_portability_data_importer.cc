@@ -10,22 +10,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
-#include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 #include "content/public/browser/browser_thread.h"
-
-namespace {
-
-// Parses bookmarks from the given `file`.
-void ParseBookmarks(base::File file,
-                    user_data_importer::BookmarkParser::BookmarkParsingCallback
-                        bookmarks_callback) {
-  user_data_importer::ContentBookmarkParser bookmark_parser;
-  bookmark_parser.Parse(std::move(file), std::move(bookmarks_callback));
-}
-
-}  // namespace
 
 namespace user_data_importer {
 
@@ -75,13 +62,18 @@ class RustHistoryCallbackForStablePortabilityFormat final
 StablePortabilityDataImporter::StablePortabilityDataImporter(
     history::HistoryService& history_service,
     bookmarks::BookmarkModel& bookmark_model,
-    ReadingListModel& reading_list_model)
+    ReadingListModel& reading_list_model,
+    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
     : history_service_(history_service),
       bookmark_model_(bookmark_model),
       reading_list_model_(reading_list_model),
-      origin_sequence_task_runner(
-          base::SequencedTaskRunner::GetCurrentDefault()) {
+      origin_sequence_task_runner_(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  background_worker_ = base::SequenceBound<BackgroundWorker>(
+      background_task_runner_, std::move(bookmark_parser));
 }
 
 StablePortabilityDataImporter::~StablePortabilityDataImporter() = default;
@@ -102,16 +94,15 @@ void StablePortabilityDataImporter::ImportBookmarks(
       base::BindOnce(&StablePortabilityDataImporter::OnBookmarksParsed,
                      weak_factory_.GetWeakPtr(), std::move(bookmarks_callback));
   auto bookmarks_parser_callback_on_thread = base::BindPostTask(
-      origin_sequence_task_runner, std::move(bookmarks_parser_callback));
+      origin_sequence_task_runner_, std::move(bookmarks_parser_callback));
 
   // Post to the thread pool the task for parsing the file. Adding the actual
   // data to the user's storage should still be done on the origin sequence by
   // `OnBookmarksParsed`, as that's where the `bookmark_model_` lives.
   // TODO(crnug.com/432010608): Sandbox parsing the bookmarks file.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ParseBookmarks, std::move(file),
-                     std::move(bookmarks_parser_callback_on_thread)));
+  background_worker_.AsyncCall(&BackgroundWorker::ParseBookmarks)
+      .WithArgs(std::move(file),
+                std::move(bookmarks_parser_callback_on_thread));
 }
 
 void StablePortabilityDataImporter::OnBookmarksParsed(
@@ -148,16 +139,15 @@ void StablePortabilityDataImporter::ImportReadingList(
       &StablePortabilityDataImporter::OnReadingListParsed,
       weak_factory_.GetWeakPtr(), std::move(reading_list_callback));
   auto reading_list_parser_callback_on_thread = base::BindPostTask(
-      origin_sequence_task_runner, std::move(reading_list_parser_callback));
+      origin_sequence_task_runner_, std::move(reading_list_parser_callback));
 
   // Post to the thread pool the task for parsing the file. Adding the actual
   // data to the user's storage should still be done on the origin sequence by
   // `OnBookmarksParsed`, as that's where the `reading_list_model_` lives.
   // TODO(crnug.com/432010608): Sandbox parsing the reading list file.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ParseBookmarks, std::move(file),
-                     std::move(reading_list_parser_callback_on_thread)));
+  background_worker_.AsyncCall(&BackgroundWorker::ParseBookmarks)
+      .WithArgs(std::move(file),
+                std::move(reading_list_parser_callback_on_thread));
 }
 
 void StablePortabilityDataImporter::OnReadingListParsed(
@@ -202,14 +192,14 @@ void StablePortabilityDataImporter::ImportHistory(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto transfer_history_entries_callback = base::BindPostTask(
-      origin_sequence_task_runner,
+      origin_sequence_task_runner_,
       base::BindRepeating(
           &StablePortabilityDataImporter::TransferHistoryEntries,
           weak_factory_.GetWeakPtr()));
   auto callback =
       std::make_unique<RustHistoryCallbackForStablePortabilityFormat>(
           std::move(transfer_history_entries_callback),
-          base::BindPostTask(origin_sequence_task_runner,
+          base::BindPostTask(origin_sequence_task_runner_,
                              std::move(history_callback)));
   if (history_filename.empty()) {
     callback->Fail();
@@ -222,13 +212,26 @@ void StablePortabilityDataImporter::ImportHistory(
       reinterpret_cast<const uint8_t*>(history_filename_utf8.data()),
       history_filename_utf8.length());
 
+  // TODO(crbug.com/430253028): Move history parsing to the background thread.
   user_data_importer::parse_stable_portability_history(
       history_filename_slice, std::move(callback), import_batch_size);
 }
 
 void StablePortabilityDataImporter::PostCallback(auto callback, auto results) {
-  origin_sequence_task_runner->PostTask(
+  origin_sequence_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
+}
+
+StablePortabilityDataImporter::BackgroundWorker::BackgroundWorker(
+    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
+    : bookmark_parser_(std::move(bookmark_parser)) {}
+
+StablePortabilityDataImporter::BackgroundWorker::~BackgroundWorker() = default;
+
+void StablePortabilityDataImporter::BackgroundWorker::ParseBookmarks(
+    base::File file,
+    BookmarkParser::BookmarkParsingCallback bookmarks_callback) {
+  bookmark_parser_->Parse(std::move(file), std::move(bookmarks_callback));
 }
 
 }  // namespace user_data_importer

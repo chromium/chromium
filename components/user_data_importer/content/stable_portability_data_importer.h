@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_CONTENT_STABLE_PORTABILITY_DATA_IMPORTER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_CONTENT_STABLE_PORTABILITY_DATA_IMPORTER_H_
 
+#include "base/threading/sequence_bound.h"
+#include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 
 namespace base {
@@ -36,9 +38,11 @@ class StablePortabilityDataImporter {
   // bookmarks, reading list items, or urls (for history import).
   using ImportCallback = base::OnceCallback<void(int)>;
 
-  StablePortabilityDataImporter(history::HistoryService& history_service,
-                                bookmarks::BookmarkModel& bookmark_model,
-                                ReadingListModel& reading_list_model);
+  StablePortabilityDataImporter(
+      history::HistoryService& history_service,
+      bookmarks::BookmarkModel& bookmark_model,
+      ReadingListModel& reading_list_model,
+      std::unique_ptr<ContentBookmarkParser> bookmark_parser);
   ~StablePortabilityDataImporter();
 
   // Attempts to import bookmarks from the given `file`. `bookmarks_callback` is
@@ -59,6 +63,22 @@ class StablePortabilityDataImporter {
                      const size_t import_batch_size);
 
  private:
+  // Encapsulates work which must occur in the background thread.
+  class BackgroundWorker {
+   public:
+    explicit BackgroundWorker(
+        std::unique_ptr<ContentBookmarkParser> bookmark_parser);
+    ~BackgroundWorker();
+
+    void ParseBookmarks(
+        base::File file,
+        user_data_importer::BookmarkParser::BookmarkParsingCallback
+            bookmarks_callback);
+
+   private:
+    std::unique_ptr<ContentBookmarkParser> bookmark_parser_;
+  };
+
   friend class StablePortabilityDataImporterTest;
 
   // Transfers the history entries to the importer. This is used by the Rust
@@ -110,7 +130,14 @@ class StablePortabilityDataImporter {
   // The task runner from which the import task was launched. The purpose of
   // this task runner is to post tasks on the thread where the importer lives,
   // which we have to do for all import callbacks.
-  scoped_refptr<base::SequencedTaskRunner> origin_sequence_task_runner;
+  scoped_refptr<base::SequencedTaskRunner> origin_sequence_task_runner_;
+
+  // A queue for tasks which run on the background thread and may block.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // An instance of BackgroundWorker which is bound to
+  // `background_task_runner_`.
+  base::SequenceBound<BackgroundWorker> background_worker_;
 
   // Creates WeakPtr to this. Use with caution across sequence boundaries.
   base::WeakPtrFactory<StablePortabilityDataImporter> weak_factory_{this};
