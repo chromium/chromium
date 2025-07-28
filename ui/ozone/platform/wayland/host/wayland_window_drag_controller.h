@@ -201,7 +201,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // pointer focus when the session was initiated.
   raw_ptr<WaylandWindow> origin_window_ = nullptr;
 
-  raw_ptr<WaylandWindow, DanglingUntriaged> drag_target_window_ = nullptr;
+  // The window the pointer last entered. Null if we received a leave event,
+  // and no new enter event yet.
+  raw_ptr<WaylandWindow> drag_target_window_ = nullptr;
 
   // The |origin_window_| can be destroyed during the DND session. If this
   // happens, |origin_surface_| takes ownership of its surface and ensure it

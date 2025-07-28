@@ -508,6 +508,7 @@ void WaylandWindowDragController::HandleDragEnd(bool completed,
   xdg_toplevel_drag_.reset();
   origin_surface_.reset();
   origin_window_ = nullptr;
+  drag_target_window_ = nullptr;
   has_received_enter_ = false;
 
   // Transition to |kDropped| state and determine the next action to take. If
