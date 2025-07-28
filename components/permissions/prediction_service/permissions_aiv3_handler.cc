@@ -17,6 +17,11 @@ namespace permissions {
 namespace {
 using ModelInput = PermissionsAiv3Encoder::ModelInput;
 using ModelOutput = PermissionsAiv3Encoder::ModelOutput;
+
+// This is the timeout for the model execution. If the model execution takes
+// longer than this timeout, the callback will be called with a nullopt result.
+constexpr auto kModelExecutionTimeoutSeconds =
+    base::Seconds(PermissionsAiv3Handler::kModelExecutionTimeout);
 }  // namespace
 
 PermissionsAiv3Handler::PermissionsAiv3Handler(
@@ -89,23 +94,50 @@ void PermissionsAiv3Handler::ExecuteModel(ExecutionCallback callback,
     input.snapshot = *snapshot;
     input.metadata = model_metadata_;
 
+    current_callback_ = std::move(callback);
     ExecutionCallback on_complete_callback =
         base::BindOnce(&PermissionsAiv3Handler::OnModelExecutionComplete,
-                       weak_factory_.GetWeakPtr(), std::move(callback));
+                       weak_factory_.GetWeakPtr());
 
     ExecuteModelWithInput(std::move(on_complete_callback), input);
+
+    // In parallel with the model execution, we will start a timer that will
+    // call `OnModelExecutionTimeout` with a nullopt result if the model
+    // execution takes longer than the timeout.
+    timeout_timer_.Start(
+        FROM_HERE, kModelExecutionTimeoutSeconds,
+        base::BindOnce(&PermissionsAiv3Handler::OnModelExecutionTimeout,
+                       weak_factory_.GetWeakPtr(), std::nullopt));
   } else {
     std::move(callback).Run(std::nullopt);
   }
 }
 
-void PermissionsAiv3Handler::OnModelExecutionComplete(
-    ExecutionCallback original_callback,
+void PermissionsAiv3Handler::OnModelExecutionTimeout(
     const std::optional<PermissionRequestRelevance>& relevance) {
+  VLOG(1) << "[PermissionsAIv3] OnModelExecutionTimeout: Model execution took "
+             "longer than the timeout. Returning empty response.";
+  base::UmaHistogramBoolean("Permissions.AIv3.ModelExecutionTimeout", true);
+  std::move(current_callback_).Run(std::nullopt);
+}
+
+void PermissionsAiv3Handler::OnModelExecutionComplete(
+    const std::optional<PermissionRequestRelevance>& relevance) {
+  timeout_timer_.Stop();
   is_execution_in_progress_ = false;
 
+  if (!current_callback_) {
+    // The callback was executed in `OnModelExecutionTimeout` before the model
+    // execution completed.
+    // The timeout logic does not reset
+    // `is_execution_in_progress_` flag, so in the case of a new request we will
+    // not save a new callback to avoid delivering a stale model execution
+    // result to a new permission prompt.
+    return;
+  }
+
   if (is_callback_valid_) {
-    std::move(original_callback).Run(relevance);
+    std::move(current_callback_).Run(relevance);
   } else {
     VLOG(1) << "[PermissionsAIv3] OnModelExecutionComplete: Callback is no "
                "longer valid. Ignoring the result.";
@@ -113,7 +145,7 @@ void PermissionsAiv3Handler::OnModelExecutionComplete(
     // while the previous one was still in progress. We will return an empty
     // response to the callback because there is no UI to which the relevance
     // can be applied.
-    std::move(original_callback).Run(std::nullopt);
+    std::move(current_callback_).Run(std::nullopt);
   }
 }
 
