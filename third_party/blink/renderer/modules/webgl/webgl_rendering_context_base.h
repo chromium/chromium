@@ -710,7 +710,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
   bool IsAccelerated() const override;
-  bool UsingSwapChain() const override;
   bool CanUseDrawingBufferSIWithoutCopyForLowLatency();
   void PageVisibilityChanged() override;
   void SizeChanged() override;

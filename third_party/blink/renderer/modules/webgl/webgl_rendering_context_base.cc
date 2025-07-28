@@ -1859,7 +1859,9 @@ bool WebGLRenderingContextBase::
       SharedGpuContext::MaySupportImageChromium() &&
       (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
        base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium));
-  if (!UsingSwapChain() && !using_webgl_image_chromium) {
+  bool using_swap_chain =
+      GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
+  if (!using_swap_chain && !using_webgl_image_chromium) {
     return false;
   }
 
@@ -1894,10 +1896,6 @@ bool WebGLRenderingContextBase::
   }
 
   return true;
-}
-
-bool WebGLRenderingContextBase::UsingSwapChain() const {
-  return GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
 }
 
 void WebGLRenderingContextBase::PageVisibilityChanged() {

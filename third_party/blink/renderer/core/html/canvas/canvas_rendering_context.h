@@ -301,7 +301,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
 
   // WebGL-specific interface
-  virtual bool UsingSwapChain() const { return false; }
   virtual void MarkLayerComposited() { NOTREACHED(); }
   virtual scoped_refptr<StaticBitmapImage>
   GetRGBAUnacceleratedStaticBitmapImage(SourceDrawingBuffer source_buffer) {
