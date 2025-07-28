@@ -19,14 +19,6 @@ class PrefService;
 @class SetUpListItem;
 @class SetUpListItemViewData;
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 // Interface for listening to events occurring in SetUpListMediator.
 @protocol SetUpListConsumer
 @optional
@@ -71,8 +63,6 @@ class SyncService;
 
 // Default initializer.
 - (instancetype)initWithPrefService:(PrefService*)prefService
-                        syncService:(syncer::SyncService*)syncService
-                    identityManager:(signin::IdentityManager*)identityManager
               authenticationService:(AuthenticationService*)authService
                          sceneState:(SceneState*)sceneState
               isDefaultSearchEngine:(BOOL)isDefaultSearchEngine

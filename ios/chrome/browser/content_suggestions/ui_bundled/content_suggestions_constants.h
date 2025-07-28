@@ -18,7 +18,7 @@ enum class ContentSuggestionsModuleType {
   kInvalid = -1,
   kMostVisited = 0,
   kShortcuts = 1,
-  kSetUpListSync = 2,
+  // Removed: kSetUpListSync = 2,
   kSetUpListDefaultBrowser = 3,
   kSetUpListAutofill = 4,
   kCompactedSetUpList = 5,

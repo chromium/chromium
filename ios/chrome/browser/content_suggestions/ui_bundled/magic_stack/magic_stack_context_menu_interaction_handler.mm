@@ -31,7 +31,6 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
   switch (type) {
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
@@ -76,7 +75,6 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
     }
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_TITLE);
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
@@ -131,7 +129,6 @@ NSString* GetContextMenuHideDescriptionForType(
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(
           IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_DESCRIPTION);
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:

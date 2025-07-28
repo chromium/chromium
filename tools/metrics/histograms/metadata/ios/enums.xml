@@ -654,7 +654,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1" label="Invalid"/>
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>
-  <int value="2" label="Set Up List Sync"/>
+  <int value="2" label="Obsolete - Set Up List Sync"/>
   <int value="3" label="Set Up List Default Browser"/>
   <int value="4" label="Set Up List Autofill"/>
   <int value="5" label="Set Up List Compacted"/>
@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="IOSSetUpListItemType">
-  <int value="1" label="SignIn Sync"/>
+  <int value="1" label="Obsolete - SignIn Sync"/>
   <int value="2" label="Default Browser"/>
   <int value="3" label="Autofill"/>
   <int value="4" label="Follow"/>

@@ -39,8 +39,6 @@ const CGFloat kMagicStackFaviconWidth = 28;
 ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
     SetUpListItemType type) {
   switch (type) {
-    case SetUpListItemType::kSignInSync:
-      return ContentSuggestionsModuleType::kSetUpListSync;
     case SetUpListItemType::kDefaultBrowser:
       return ContentSuggestionsModuleType::kSetUpListDefaultBrowser;
     case SetUpListItemType::kAutofill:
@@ -69,7 +67,6 @@ bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kShopCard:
       return false;
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
@@ -92,7 +89,6 @@ bool IsTipsModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:

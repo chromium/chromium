@@ -129,8 +129,6 @@ void TapMagicStackEditButton() {
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
-    config.features_disabled.push_back(
-        set_up_list::kSetUpListWithoutSignInItem);
   }
   return config;
 }
@@ -340,14 +338,6 @@ void TapMagicStackEditButton() {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // The fake signin UI appears. Dismiss it.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
-      performAction:grey_tap()];
 
   // Tap the notification item.
   TapView(set_up_list::kContentNotificationItemID);

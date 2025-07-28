@@ -1476,11 +1476,6 @@ const char kSetUpListShortenedDurationName[] = "Set Up List Shortened Duration";
 const char kSetUpListShortenedDurationDescription[] =
     "Reduces the Set Up List duration in the NTP to the selected parameter.";
 
-const char kSetUpListWithoutSignInItemName[] =
-    "Set Up List without sign-in item";
-const char kSetUpListWithoutSignInItemDescription[] =
-    "Removes the sign-in item from the Set Up List.";
-
 const char kShareInWebContextMenuIOSName[] = "Share in web context menu";
 const char kShareInWebContextMenuIOSDescription[] =
     "Enables the Share button in the web context menu in iOS 16.0 and above.";

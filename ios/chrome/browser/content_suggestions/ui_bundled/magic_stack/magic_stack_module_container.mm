@@ -400,7 +400,6 @@ const CGFloat kSeparatorHeight = 0.5;
       }
       return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_TITLE);
     }
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
@@ -578,7 +577,6 @@ const CGFloat kSeparatorHeight = 0.5;
 // the module.
 - (BOOL)shouldShowSeparator {
   switch (_type) {
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListAllSet:

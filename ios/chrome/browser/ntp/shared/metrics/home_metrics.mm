@@ -187,7 +187,6 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type,
       }
       break;
     }
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:

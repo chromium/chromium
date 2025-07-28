@@ -13,7 +13,6 @@
 
 namespace set_up_list_prefs {
 
-const char kSigninSyncItemState[] = "set_up_list.signin_sync_item.state";
 const char kDefaultBrowserItemState[] =
     "set_up_list.default_browser_item.state";
 const char kAutofillItemState[] = "set_up_list.autofill_item.state";
@@ -26,7 +25,6 @@ const char kLastInteraction[] = "set_up_list.last_interaction";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   int unknown = static_cast<int>(SetUpListItemState::kUnknown);
-  registry->RegisterIntegerPref(kSigninSyncItemState, unknown);
   registry->RegisterIntegerPref(kDefaultBrowserItemState, unknown);
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
   registry->RegisterIntegerPref(kFollowItemState, unknown);
@@ -38,8 +36,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 const char* PrefNameForItem(SetUpListItemType type) {
   switch (type) {
-    case SetUpListItemType::kSignInSync:
-      return kSigninSyncItemState;
     case SetUpListItemType::kDefaultBrowser:
       return kDefaultBrowserItemState;
     case SetUpListItemType::kAutofill:

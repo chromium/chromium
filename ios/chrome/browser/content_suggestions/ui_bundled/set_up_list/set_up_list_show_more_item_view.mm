@@ -190,9 +190,6 @@ NSAttributedString* Strikethrough(NSString* text) {
 // Returns the text for the title label.
 - (NSString*)titleText {
   switch (_data.type) {
-    case SetUpListItemType::kSignInSync:
-      return l10n_util::GetNSString(
-          IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
     case SetUpListItemType::kDefaultBrowser:
       return l10n_util::GetNSString(
           ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
@@ -233,8 +230,6 @@ NSAttributedString* Strikethrough(NSString* text) {
 // Returns the text for the description label.
 - (NSString*)descriptionText {
   switch (_data.type) {
-    case SetUpListItemType::kSignInSync:
-      return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case SetUpListItemType::kDefaultBrowser:
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SEE_MORE_DESCRIPTION);

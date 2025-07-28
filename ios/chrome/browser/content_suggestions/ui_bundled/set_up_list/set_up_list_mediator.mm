@@ -9,10 +9,10 @@
 #import "base/ios/crb_protocol_observers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
-#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 using credential_provider_promo::IOSCredentialProviderPromoAction;
 
@@ -80,13 +79,10 @@ bool DefaultBrowserPromoCompleted() {
 @implementation SetUpListConsumerList
 @end
 
-@interface SetUpListMediator () <AuthenticationServiceObserving,
-                                 IdentityManagerObserverBridgeDelegate,
-                                 PrefObserverDelegate,
+@interface SetUpListMediator () <PrefObserverDelegate,
                                  SceneStateObserver,
                                  SetUpListDelegate,
-                                 SetUpListConsumerSource,
-                                 SyncObserverModelBridge>
+                                 SetUpListConsumerSource>
 
 @end
 
@@ -94,18 +90,8 @@ bool DefaultBrowserPromoCompleted() {
   SetUpList* _setUpList;
   raw_ptr<PrefService> _localState;
   raw_ptr<PrefService> _prefService;
-  // Used by SetUpList to get the sync status.
-  raw_ptr<syncer::SyncService> _syncService;
-  // Observer for sync service status changes.
-  std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
-  // Observes changes to signed-in status.
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityObserverBridge;
   // Used by SetUpList to get signed-in status.
   raw_ptr<AuthenticationService> _authenticationService;
-  // Observer for auth service status changes.
-  std::unique_ptr<AuthenticationServiceObserverBridge>
-      _authServiceObserverBridge;
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrars for pref changes notifications.
@@ -121,8 +107,6 @@ bool DefaultBrowserPromoCompleted() {
 #pragma mark - Public
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
-                        syncService:(syncer::SyncService*)syncService
-                    identityManager:(signin::IdentityManager*)identityManager
               authenticationService:(AuthenticationService*)authService
                          sceneState:(SceneState*)sceneState
               isDefaultSearchEngine:(BOOL)isDefaultSearchEngine
@@ -131,16 +115,7 @@ bool DefaultBrowserPromoCompleted() {
   if (self) {
     _prefService = prefService;
     _localState = GetApplicationContext()->GetLocalState();
-    _syncService = syncService;
-    _syncObserverBridge =
-        std::make_unique<SyncObserverBridge>(self, syncService);
-    _identityObserverBridge =
-        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
-                                                                self);
     _authenticationService = authService;
-    _authServiceObserverBridge =
-        std::make_unique<AuthenticationServiceObserverBridge>(authService,
-                                                              self);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     _localStatePrefChangeRegistrar.Init(_localState);
     _prefChangeRegistrar.Init(prefService);
@@ -176,17 +151,9 @@ bool DefaultBrowserPromoCompleted() {
     _sceneState = sceneState;
     [_sceneState addObserver:self];
 
-    BOOL isContentNotificationEnabled =
-        IsContentNotificationExperimentEnabled() &&
-        IsContentNotificationSetUpListEnabled(
-            identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-            isDefaultSearchEngine, prefService);
-
     _setUpList = [SetUpList buildFromPrefs:prefService
-                                localState:_localState
-                               syncService:syncService
                      authenticationService:authService
-                contentNotificationEnabled:isContentNotificationEnabled];
+                                localState:_localState];
     _setUpList.delegate = self;
 
     _consumers = [SetUpListConsumerList
@@ -198,9 +165,6 @@ bool DefaultBrowserPromoCompleted() {
 
 - (void)disconnect {
   _authenticationService = nullptr;
-  _authServiceObserverBridge.reset();
-  _syncObserverBridge.reset();
-  _identityObserverBridge.reset();
   if (_prefObserverBridge) {
     _localStatePrefChangeRegistrar.RemoveAll();
     _prefChangeRegistrar.RemoveAll();
@@ -333,31 +297,6 @@ bool DefaultBrowserPromoCompleted() {
                      allItemsCompleted:completed
                             completion:completion];
 }
-
-#pragma mark - IdentityManagerObserverBridgeDelegate
-
-// Called when a user changes the syncing state.
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      // User has signed in, mark SetUpList item complete. Delayed to allow
-      // Signin UI flow to be fully dismissed before starting SetUpList
-      // completion animation.
-      __weak __typeof(self) weakSelf = self;
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, base::BindOnce(^{
-            [weakSelf
-                markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
-          }),
-          base::Seconds(0.5));
-    } break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-}
-
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
@@ -377,32 +316,6 @@ bool DefaultBrowserPromoCompleted() {
              !_prefService->GetBoolean(
                  prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
     [self hideSetUpList];
-  }
-}
-
-#pragma mark - SyncObserverModelBridge
-
-- (void)onSyncStateChanged {
-  if (_setUpList) {
-    if (_syncService->HasDisableReason(
-            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-        HasManagedSyncDataType(_syncService)) {
-      // Sync is now disabled, so mark the SetUpList item complete so that it
-      // cannot be used again.
-      [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
-    }
-  }
-}
-
-#pragma mark - AuthenticationServiceObserving
-
-- (void)onServiceStatusChanged {
-  if (_setUpList) {
-    if (!_authenticationService->SigninEnabled()) {
-      // Signin is now disabled, so mark the SetUpList item complete so that
-      // it cannot be used again.
-      [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
-    }
   }
 }
 

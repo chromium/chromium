@@ -10,7 +10,6 @@
 namespace set_up_list {
 
 // Accessibility IDs used for various UI items.
-extern NSString* const kSignInItemID;
 extern NSString* const kDefaultBrowserItemID;
 extern NSString* const kAutofillItemID;
 extern NSString* const kContentNotificationItemID;

@@ -72,13 +72,9 @@ class SetUpListTest : public PlatformTest {
   // Builds a new instance of SetUpList.
   void BuildSetUpList() {
     [set_up_list_ disconnect];
-    set_up_list_ =
-        [SetUpList buildFromPrefs:prefs_
-                            localState:GetLocalState()
-                           syncService:SyncServiceFactory::GetForProfile(
-                                           GetProfile())
-                 authenticationService:auth_service_
-            contentNotificationEnabled:content_notification_feature_enabled_];
+    set_up_list_ = [SetUpList buildFromPrefs:prefs_
+                       authenticationService:auth_service_
+                                  localState:GetLocalState()];
   }
 
   // Fakes a sign-in with a fake identity.
@@ -306,8 +302,6 @@ TEST_F(SetUpListTest, AllItemsComplete) {
                                      0);
 
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
-                                      SetUpListItemType::kSignInSync);
-  set_up_list_prefs::MarkItemComplete(GetLocalState(),
                                       SetUpListItemType::kDefaultBrowser);
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
                                       SetUpListItemType::kAutofill);
@@ -325,8 +319,6 @@ TEST_F(SetUpListTest, RecordsAllItemsCompleteOnce) {
   histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
                                      0);
 
-  set_up_list_prefs::MarkItemComplete(GetLocalState(),
-                                      SetUpListItemType::kSignInSync);
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
                                       SetUpListItemType::kDefaultBrowser);
   set_up_list_prefs::MarkItemComplete(GetLocalState(),

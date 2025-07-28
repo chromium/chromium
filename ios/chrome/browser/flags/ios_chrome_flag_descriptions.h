@@ -868,9 +868,6 @@ extern const char kShopCardImpressionLimitsDescription[];
 extern const char kSetUpListShortenedDurationName[];
 extern const char kSetUpListShortenedDurationDescription[];
 
-extern const char kSetUpListWithoutSignInItemName[];
-extern const char kSetUpListWithoutSignInItemDescription[];
-
 extern const char kShareInWebContextMenuIOSName[];
 extern const char kShareInWebContextMenuIOSDescription[];
 

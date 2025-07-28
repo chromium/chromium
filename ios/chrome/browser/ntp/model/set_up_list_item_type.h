@@ -10,7 +10,7 @@
 //
 // LINT.IfChange
 enum class SetUpListItemType {
-  kSignInSync = 1,
+  // Removed: kSignInSync = 1,
   kDefaultBrowser = 2,
   kAutofill = 3,
   kFollow = 4,

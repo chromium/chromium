@@ -85,7 +85,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:

@@ -90,7 +90,6 @@
       SendTabPromoItem* item = static_cast<SendTabPromoItem*>(config);
       return [self sendTabPromoViewForConfig:item];
     }
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:

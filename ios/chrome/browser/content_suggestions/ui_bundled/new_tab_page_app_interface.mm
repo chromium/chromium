@@ -66,8 +66,6 @@ using set_up_list_prefs::SetUpListItemState;
   prefService->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled,
                           true);
   SetUpListItemState unknown = SetUpListItemState::kUnknown;
-  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kSignInSync,
-                                  unknown);
   set_up_list_prefs::SetItemState(localState,
                                   SetUpListItemType::kDefaultBrowser, unknown);
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kAutofill,

@@ -501,7 +501,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
