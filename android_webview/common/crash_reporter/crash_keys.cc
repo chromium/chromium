@@ -170,7 +170,6 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // sandbox/linux
     "seccomp-sigsys",
-    "seccomp-sigsys-ioctl",
 
     kWeblayerWebViewCompatMode,
 

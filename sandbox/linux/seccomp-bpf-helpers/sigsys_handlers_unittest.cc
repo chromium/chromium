@@ -9,26 +9,15 @@
 
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 
-#include <fcntl.h>
 #include <linux/net.h>
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
-#include <sys/types.h>
-#include <termios.h>
-#include <unistd.h>
-
-#include <utility>
 
 #include "base/check_op.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/strings/safe_sprintf.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
-#include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
-#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/tests/unit_tests.h"
 
@@ -128,41 +117,6 @@ BPF_DEATH_TEST_C(
 #pragma GCC diagnostic ignored "-Wnonnull"
   getsockopt(0, 0, 0, nullptr, nullptr);
 #pragma GCC diagnostic pop
-}
-
-class CrashIoctlPolicy : public bpf_dsl::Policy {
- public:
-  CrashIoctlPolicy() = default;
-  ~CrashIoctlPolicy() override = default;
-
-  ResultExpr EvaluateSyscall(int sysno) const override {
-    switch (sysno) {
-      case __NR_ioctl:
-        return CrashSIGSYSIoctl();
-      // The handler needs write() and fstat() for logging.
-      case __NR_write:
-      case __NR_fstat_default:
-        return Allow();
-      default:
-        return Allow();
-    }
-  }
-};
-
-BPF_DEATH_TEST_C(
-    SigsysHandlers,
-    SIGSYSIoctlFailureLogsFdInfo,
-    DEATH_SEGV_MESSAGE_PATTERN(
-        "*dev=0x*,ino=*,mode=0*,nlink=*,uid=*,gid=*,rdev=0x*,size=*,"
-        "blksize=*,blocks=*"),
-    CrashIoctlPolicy) {
-  base::FilePath temp_path;
-  CHECK(base::CreateTemporaryFile(&temp_path));
-  base::ScopedFD fd(open(temp_path.value().c_str(), O_RDONLY));
-  CHECK(fd.is_valid());
-
-  // This ioctl should be trapped and cause a crash.
-  ioctl(fd.get(), 0, 0);
 }
 
 const char kSigsysMessage[] =
