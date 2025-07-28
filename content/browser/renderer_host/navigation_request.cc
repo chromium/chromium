@@ -6558,18 +6558,31 @@ void NavigationRequest::CommitNavigation() {
   }
 
   // Sticky user activation should only be preserved for same-site subframe
-  // navigations. This is done to prevent newly navigated documents from
-  // re-using the sticky user activation state from the previously navigated
-  // document in the frame. We persist user activation across same-site
-  // navigations for compatibility reasons, and this does not need to match the
-  // same-site checks used in the process model. See: crbug.com/736415.
-  // TODO(crbug.com/40228985): Remove this once we find a way to reset
-  // activation unconditionally without breaking sites in practice.
+  // navigations, and same-origin top-frame navigations behind the feature flag
+  // StickyUserActivationAcrossSameOriginNavigation. These checks limit newly
+  // navigated documents from reusing the sticky user activation state from the
+  // previously navigated document in the frame.
+  //
+  // - We persist user activation across same-site navigations for compatibility
+  //   reasons, and this does not need to match the same-site checks used in the
+  //   process model. See https://crbug.com/40527366.
+  //
+  //   TODO(crbug.com/40228985): Remove this once we find a way to reset
+  //   activation unconditionally without breaking sites in practice.
+  //
+  // - The feature flag StickyUserActivationAcrossSameOriginNavigation relaxes
+  //   the preservation of sticky activation to include same-origin navigations
+  //   to ease multi-page app development which currently face problem with, for
+  //   example, virtual keyboards.  See https://crbug.com/433729626.
   commit_params_->should_have_sticky_user_activation =
-      !frame_tree_node_->IsMainFrame() &&
       old_frame_host->HasStickyUserActivation() &&
-      net::SchemefulSite::IsSameSite(old_frame_host->GetLastCommittedOrigin(),
-                                     origin_to_commit);
+      ((!frame_tree_node_->IsMainFrame() &&
+        net::SchemefulSite::IsSameSite(old_frame_host->GetLastCommittedOrigin(),
+                                       origin_to_commit)) ||
+       (base::FeatureList::IsEnabled(
+            blink::features::kStickyUserActivationAcrossSameOriginNavigation) &&
+        frame_tree_node_->IsMainFrame() &&
+        old_frame_host->GetLastCommittedOrigin() == origin_to_commit));
 
   // Generate a UKM source and track it on NavigationRequest. This will be
   // passed down to the blink::Document to be created, if any, and used for UKM
