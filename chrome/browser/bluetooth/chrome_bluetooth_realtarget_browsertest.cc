@@ -130,14 +130,7 @@ class BluetoothRealTargetTest : public InProcessBrowserTest {
   TestBluetoothContentBrowserClient test_content_browser_client_;
 };
 
-// TODO(432549077): MacOS can not run on testers because of system permission.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ConnectAndDisconnectDevice DISABLED_ConnectAndDisconnectDevice
-#else
-#define MAYBE_ConnectAndDisconnectDevice ConnectAndDisconnectDevice
-#endif
-IN_PROC_BROWSER_TEST_F(BluetoothRealTargetTest,
-                       MAYBE_ConnectAndDisconnectDevice) {
+IN_PROC_BROWSER_TEST_F(BluetoothRealTargetTest, ConnectAndDisconnectDevice) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto test_script = base::StringPrintf(

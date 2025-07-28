@@ -176,15 +176,7 @@ IN_PROC_BROWSER_TEST_F(SerialRealTargetTest, SerialOpenAndClosePort) {
   EXPECT_EQ(true, EvalJs(web_contents, test_script));
 }
 
-// TODO(432549077): MacOS can not run because of system permission.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BluetoothSerialOpenAndClosePort \
-  DISABLED_BluetoothSerialOpenAndClosePort
-#else
-#define MAYBE_BluetoothSerialOpenAndClosePort BluetoothSerialOpenAndClosePort
-#endif
-IN_PROC_BROWSER_TEST_F(SerialRealTargetTest,
-                       MAYBE_BluetoothSerialOpenAndClosePort) {
+IN_PROC_BROWSER_TEST_F(SerialRealTargetTest, BluetoothSerialOpenAndClosePort) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto test_script = base::StringPrintf(
