@@ -638,6 +638,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PHONE_HOME_WHOLE_NUMBER"/>
 </variants>
 
+<variants name="AutofillProfileCategory">
+  <variant name="AccountChrome"
+      summary="kAccount profiles originating from Chrome"/>
+  <variant name="AccountHome" summary="kAccountHome profile"/>
+  <variant name="AccountNonChrome"
+      summary="kAccount profiles originating from outside Chrome"/>
+  <variant name="AccountWork" summary="kAccountWork profile"/>
+  <variant name="Legacy" summary="kLegacyOrSyncable profiles"/>
+</variants>
+
+<variants name="AutofillSaveCardDestination">
+  <variant name="Local" summary="local"/>
+  <variant name="Server" summary="server"/>
+</variants>
+
+<variants name="AutofillSaveCardSituation">
+  <variant name="RequestingCardHolderName"
+      summary="explicitly requesting cardholder name"/>
+  <variant name="RequestingExpirationDate"
+      summary="explicitly requesting expiration date"/>
+  <variant name="SavingWithCvc"
+      summary="saving security code at the same time"/>
+</variants>
+
+<!-- TODO(crbug.com/430588721): Replace use of AutofillSaveCreditCardPromptDestination with AutofillSaveCardDestination. -->
+
 <variants name="AutofillSaveCreditCardPromptDestination">
   <variant name="Local" summary="locally"/>
   <variant name="Upload" summary="to server"/>
@@ -670,6 +696,14 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name=".Visible"
       summary="Recorded only for fields that are visible to the user as per
                Autofill's visibility detection (IsWebElementVisible())."/>
+</variants>
+
+<variants name="AutofillServerSaveCardSituation">
+  <variant name="WithMultipleLegalLines"
+      summary="has a legal message with multiple lines"/>
+  <variant name="WithSameLastFourButDifferentExpiration"
+      summary="has the same last four digits as an existing server card but
+               different expiratation date"/>
 </variants>
 
 <variants name="AutofillStrikeDatabaseProjectType">
@@ -5814,6 +5848,48 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.SaveCreditCardPromptOffer.Android.Server.{ServerSaveSituation}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt on android is shown or not shown
+    for a card to be saved as a server card, which {ServerSaveSituation}. Is
+    emitted whenever card save is offered or decision to not offer is made.
+  </summary>
+  <token key="ServerSaveSituation" variants="AutofillServerSaveCardSituation"/>
+</histogram>
+
+<histogram name="Autofill.SaveCreditCardPromptOffer.Android.{SaveDestination}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt on android is shown or not shown
+    for a card to be saved as a {SaveDestination} card. Is emitted whenever card
+    save is offered or decision to not offer is made.
+  </summary>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptOffer.Android.{SaveDestination}.{SaveSituation}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the save credit card prompt on android is shown or not shown
+    for a card to be saved as a {SaveDestination} card, when {SaveSituation}. Is
+    emitted whenever card save is offered or decision to not offer is made.
+  </summary>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+  <token key="SaveSituation" variants="AutofillSaveCardSituation"/>
+</histogram>
+
+<histogram
     name="Autofill.SaveCreditCardPromptOffer.Desktop.Server.{ServerSaveSituation}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
   <owner>kavitasoni@google.com</owner>
@@ -5826,13 +5902,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     logged for prompt re-shows (e.g., prompt reshown from the omnibox icon on
     desktop).
   </summary>
-  <token key="ServerSaveSituation">
-    <variant name="WithMultipleLegalLines"
-        summary="has a legal message with multiple lines"/>
-    <variant name="WithSameLastFourButDifferentExpiration"
-        summary="has the same last four digits as an existing server card but
-                 different expiratation date"/>
-  </token>
+  <token key="ServerSaveSituation" variants="AutofillServerSaveCardSituation"/>
 </histogram>
 
 <histogram name="Autofill.SaveCreditCardPromptOffer.Desktop.{SaveDestination}"
@@ -5846,10 +5916,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     save is offered or decision to not offer is made. Not logged for prompt
     re-shows (e.g., prompt reshown from the omnibox icon on desktop).
   </summary>
-  <token key="SaveDestination">
-    <variant name="Local" summary="local"/>
-    <variant name="Server" summary="server"/>
-  </token>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
 </histogram>
 
 <histogram
@@ -5865,18 +5932,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     logged for prompt re-shows (e.g., prompt reshown from the omnibox icon on
     desktop).
   </summary>
-  <token key="SaveDestination">
-    <variant name="Local" summary="local"/>
-    <variant name="Server" summary="server"/>
-  </token>
-  <token key="SaveSituation">
-    <variant name="RequestingCardHolderName"
-        summary="explicitly requesting cardholder name"/>
-    <variant name="RequestingExpirationDate"
-        summary="explicitly requesting expiration date"/>
-    <variant name="SavingWithCvc"
-        summary="saving security code at the same time"/>
-  </token>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+  <token key="SaveSituation" variants="AutofillSaveCardSituation"/>
 </histogram>
 
 <histogram name="Autofill.SaveCreditCardPromptOffer.{SaveDestination}"
@@ -5890,10 +5947,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     offered or decision to not offer is made. Not logged for prompt re-shows
     (e.g., prompt reshown from the omnibox icon on desktop).
   </summary>
-  <token key="SaveDestination">
-    <variant name="Local" summary="local"/>
-    <variant name="Server" summary="server"/>
-  </token>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
 </histogram>
 
 <histogram

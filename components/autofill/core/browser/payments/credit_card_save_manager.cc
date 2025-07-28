@@ -62,7 +62,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_android.h"
+#elif !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_desktop.h"
 #endif
 
@@ -142,7 +144,8 @@ void LogPromptOfferMetricForCreditCardSave(
     case SaveCardPromptOffer::kNotShownMaxStrikesReached:
     case SaveCardPromptOffer::kCvcMissingForPotentialUpdate: {
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/430588721): Log android-specific metric.
+      autofill_metrics::LogSaveCreditCardPromptOfferMetricAndroid(
+          metric, is_upload_save, /*save_credit_card_options=*/options);
 #elif BUILDFLAG(IS_IOS)
 // TODO(crbug.com/430588721): Log ios-specific metric.
 #else
@@ -792,29 +795,33 @@ void CreditCardSaveManager::OfferCardLocalSave() {
   bool is_mobile_build = false;
 #endif  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+  payments::PaymentsAutofillClient::CardSaveType card_save_type =
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
+  // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
+  if (!card_save_candidate_.cvc().empty() &&
+      payments_data_manager().IsPaymentCvcStorageEnabled()) {
+    card_save_type =
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
+  }
+
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options =
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          // TODO(crbug.com/40280819): Refactor SaveCreditCardOptions.
+          .with_show_prompt(show_save_prompt_.value_or(true))
+          .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
+              base::UTF16ToUTF8(card_save_candidate_.LastFourDigits())))
+          .with_card_save_type(card_save_type);
+
   // If |show_save_prompt_|'s value is false, desktop builds will still offer
-  // save in the omnibox without popping-up the bubble. Mobile builds, however,
-  // should not display the offer-to-save infobar at all.
+  // save in the omnibox without popping-up the bubble. Mobile builds,
+  // however, should not display the offer-to-save infobar at all.
   if (!is_mobile_build || show_save_prompt_.value_or(true)) {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferLocalSave();
     }
-    payments::PaymentsAutofillClient::CardSaveType card_save_type =
-        payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
-    // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
-    if (!card_save_candidate_.cvc().empty() &&
-        payments_data_manager().IsPaymentCvcStorageEnabled()) {
-      card_save_type =
-          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
-    }
+
     client_->GetPaymentsAutofillClient()->ShowSaveCreditCardLocally(
-        card_save_candidate_,
-        payments::PaymentsAutofillClient::SaveCreditCardOptions()
-            // TODO(crbug.com/40280819): Refactor SaveCreditCardOptions.
-            .with_show_prompt(show_save_prompt_.value_or(true))
-            .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
-                base::UTF16ToUTF8(card_save_candidate_.LastFourDigits())))
-            .with_card_save_type(card_save_type),
+        card_save_candidate_, options,
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -827,7 +834,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
           AutofillMetrics::SaveTypeMetric::LOCAL);
       LogPromptOfferMetricForCreditCardSave(
           SaveCardPromptOffer::kNotShownMaxStrikesReached,
-          /*is_upload_save=*/false);
+          /*is_upload_save=*/false, options);
     }
   }
 }
@@ -849,6 +856,41 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
 #else
   bool is_mobile_build = false;
 #endif  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  payments::PaymentsAutofillClient::CardSaveType card_save_type =
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
+  // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
+  if (!upload_request_.card.cvc().empty() &&
+      payments_data_manager().IsPaymentCvcStorageEnabled()) {
+    card_save_type =
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
+  }
+
+  std::vector<const CreditCard*> server_cards =
+      payments_data_manager().GetServerCreditCards();
+  // At this point of the flow, we know there are no masked server cards with
+  // the same last four digits and expiration date as the card we are
+  // attempting to save, since if there were any we would have matched it and
+  // not be saving this card.
+  bool found_server_card_with_same_last_four_but_different_expiration =
+      std::ranges::any_of(server_cards, [&](const CreditCard* server_card) {
+        return server_card->HasSameNumberAs(upload_request_.card) &&
+               !server_card->HasSameExpirationDateAs(upload_request_.card);
+      });
+
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options =
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)
+          .with_should_request_name_from_user(should_request_name_from_user_)
+          .with_should_request_expiration_date_from_user(
+              should_request_expiration_date_from_user_)
+          .with_show_prompt(show_save_prompt_.value_or(true))
+          .with_same_last_four_as_server_card_but_different_expiration_date(
+              found_server_card_with_same_last_four_but_different_expiration)
+          .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
+              base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
+          .with_card_save_type(card_save_type);
+
   // If |show_save_prompt_|'s value is false, desktop builds will still offer
   // save in the omnibox without popping-up the bubble. Mobile builds, however,
   // should not display the offer-to-save infobar at all.
@@ -857,38 +899,8 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferUploadSave();
     }
-    std::vector<const CreditCard*> server_cards =
-        payments_data_manager().GetServerCreditCards();
-    // At this point of the flow, we know there are no masked server cards with
-    // the same last four digits and expiration date as the card we are
-    // attempting to save, since if there were any we would have matched it and
-    // not be saving this card.
-    bool found_server_card_with_same_last_four_but_different_expiration =
-        std::ranges::any_of(server_cards, [&](const CreditCard* server_card) {
-          return server_card->HasSameNumberAs(upload_request_.card) &&
-                 !server_card->HasSameExpirationDateAs(upload_request_.card);
-        });
-    payments::PaymentsAutofillClient::CardSaveType card_save_type =
-        payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
-    // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
-    if (!upload_request_.card.cvc().empty() &&
-        payments_data_manager().IsPaymentCvcStorageEnabled()) {
-      card_save_type =
-          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
-    }
     client_->GetPaymentsAutofillClient()->ShowSaveCreditCardToCloud(
-        upload_request_.card, legal_message_lines_,
-        payments::PaymentsAutofillClient::SaveCreditCardOptions()
-            .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)
-            .with_should_request_name_from_user(should_request_name_from_user_)
-            .with_should_request_expiration_date_from_user(
-                should_request_expiration_date_from_user_)
-            .with_show_prompt(show_save_prompt_.value_or(true))
-            .with_same_last_four_as_server_card_but_different_expiration_date(
-                found_server_card_with_same_last_four_but_different_expiration)
-            .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
-                base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
-            .with_card_save_type(card_save_type),
+        upload_request_.card, legal_message_lines_, options,
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnUploadSave,
                        weak_ptr_factory_.GetWeakPtr()));
     client_->GetPaymentsAutofillClient()->LoadRiskData(
@@ -918,7 +930,7 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
           AutofillMetrics::SaveTypeMetric::SERVER);
       LogPromptOfferMetricForCreditCardSave(
           SaveCardPromptOffer::kNotShownMaxStrikesReached,
-          /*is_upload_save=*/true);
+          /*is_upload_save=*/true, options);
     }
   }
 }

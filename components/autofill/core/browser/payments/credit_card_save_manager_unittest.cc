@@ -17,6 +17,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -4115,16 +4116,25 @@ TEST_F(CreditCardSaveManagerTest,
       "Autofill.SaveCreditCardPromptOffer.Server",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
 
-// TODO(crbug.com/430588721): Verify android and ios specific metrics
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/430588721): Verify ios specific metrics
+  std::string platform_name;
+#if BUILDFLAG(IS_ANDROID)
+  platform_name = ".Android";
+#elif !BUILDFLAG(IS_IOS)
+  platform_name = ".Desktop";
+#endif
+
+#if !BUILDFLAG(IS_IOS)
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPromptOffer.Desktop.Server",
+      base::StrCat(
+          {"Autofill.SaveCreditCardPromptOffer", platform_name, ".Server"}),
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPromptOffer.Desktop.Server."
-      "WithSameLastFourButDifferentExpiration",
+      base::StrCat({"Autofill.SaveCreditCardPromptOffer", platform_name,
+                    ".Server.WithSameLastFourButDifferentExpiration"}),
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
 #endif
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
@@ -5604,6 +5614,12 @@ TEST_F(CreditCardSaveManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Local",
       autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+
+#if BUILDFLAG(IS_ANDROID)
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Android.Local",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+#endif
 }
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
@@ -5663,9 +5679,70 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesDisallowsSave) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Server",
       autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Android.Server",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
   // Verify that the correct UKM was logged.
   ExpectCardUploadDecisionUkm(
       autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE);
+}
+
+TEST_F(CreditCardSaveManagerTest,
+       SaveCreditCard_RequestingMissingData_MaxStrikesDisallowsSave) {
+  TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
+      TestCreditCardSaveStrikeDatabase(&strike_database());
+
+  // Max out strikes for the card to be added.
+  credit_card_save_strike_database.AddStrike("1111");
+  credit_card_save_strike_database.AddStrike("1111");
+  credit_card_save_strike_database.AddStrike("1111");
+  EXPECT_EQ(3, credit_card_save_strike_database.GetStrikes("1111"));
+
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  ExpectUniqueFillableFormParsedUkm();
+
+  ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
+
+  // Edit the credit card data without expiration month, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form).field(2).set_value(u"");
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
+
+  // Verify that the correct histogram entries for card save not offered due to
+  // max strikes were logged.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
+      AutofillMetrics::SaveTypeMetric::SERVER, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Server",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Android.Server",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Android.Server."
+      "RequestingExpirationDate",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
 }
 #endif
 
