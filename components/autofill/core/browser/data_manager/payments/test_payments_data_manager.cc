@@ -256,6 +256,13 @@ bool TestPaymentsDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics()
   return false;
 }
 
+bool TestPaymentsDataManager::IsAutofillBnplPrefEnabled() const {
+  if (autofill_bnpl_enabled_.has_value()) {
+    return autofill_bnpl_enabled_.value();
+  }
+  return PaymentsDataManager::IsAutofillBnplPrefEnabled();
+}
+
 CoreAccountInfo TestPaymentsDataManager::GetAccountInfoForPaymentsServer()
     const {
   return account_info_;

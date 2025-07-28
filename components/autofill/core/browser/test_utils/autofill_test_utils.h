@@ -495,7 +495,9 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
 // Returns a linked BNPL issuer with fake data.
 BnplIssuer GetTestLinkedBnplIssuer(
     autofill::BnplIssuer::IssuerId issuer_id =
-        autofill::BnplIssuer::IssuerId::kBnplAffirm);
+        autofill::BnplIssuer::IssuerId::kBnplAffirm,
+    DenseSet<PaymentInstrument::ActionRequired> action_required =
+        DenseSet<PaymentInstrument::ActionRequired>());
 
 // Returns an unlinked BNPL issuer with fake data.
 BnplIssuer GetTestUnlinkedBnplIssuer();

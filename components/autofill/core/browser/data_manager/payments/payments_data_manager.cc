@@ -1009,6 +1009,10 @@ void PaymentsDataManager::SetPrefService(PrefService* pref_service) {
         // BUILDFLAG(IS_CHROMEOS)
 }
 
+bool PaymentsDataManager::IsAutofillBnplPrefEnabled() const {
+  return prefs::IsAutofillBnplEnabled(pref_service_);
+}
+
 void PaymentsDataManager::NotifyObservers() {
   if (!HasPendingPaymentQueries()) {
     for (Observer& o : observers_) {
@@ -1055,10 +1059,6 @@ bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
 bool PaymentsDataManager::IsCardBenefitsSyncEnabled() const {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableCardBenefitsSync);
-}
-
-bool PaymentsDataManager::IsAutofillBnplPrefEnabled() const {
-  return prefs::IsAutofillBnplEnabled(pref_service_);
 }
 
 bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
