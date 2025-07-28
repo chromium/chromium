@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
+#include "chrome/common/chrome_features.h"
 #include "components/search/ntp_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -75,6 +77,14 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
     inactive_split_scrim_view_ =
         AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
     inactive_split_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
+  }
+
+  if (features::kGlicActorUiOverlay.Get()) {
+    auto actor_overlay_view = std::make_unique<views::View>();
+    actor_overlay_view->SetID(VIEW_ID_ACTOR_OVERLAY);
+    actor_overlay_view->SetVisible(false);
+    actor_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+    actor_overlay_view_ = AddChildView(std::move(actor_overlay_view));
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -228,6 +238,13 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
     layouts.child_layouts.emplace_back(inactive_split_scrim_view_.get(),
                                        inactive_split_scrim_view_->GetVisible(),
                                        contents_bounds);
+  }
+
+  // Actor Overlay view bounds are the same as the contents view.
+  if (actor_overlay_view_) {
+    layouts.child_layouts.emplace_back(actor_overlay_view_.get(),
+                                       actor_overlay_view_->GetVisible(),
+                                       contents_rect, size_bounds);
   }
 
   if (mini_toolbar_) {

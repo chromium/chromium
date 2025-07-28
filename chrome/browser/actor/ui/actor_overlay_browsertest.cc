@@ -110,9 +110,18 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
 
   // The main actor_overlay_view container should initially be hidden. It should
   // also have no children.
-  EXPECT_FALSE(browser()->GetBrowserView().GetActorOverlayView()->GetVisible());
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 0u);
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .GetActiveContentsContainerView()
+                   ->GetActorOverlayView()
+                   ->GetVisible());
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            0u);
   content::BrowserContext* browser_context =
       browser()->tab_strip_model()->GetActiveWebContents()->GetBrowserContext();
 
@@ -125,16 +134,29 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
 
   // Verify container size and that it remains hidden because the child is
   // hidden.
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 1u);
-  EXPECT_FALSE(browser()->GetBrowserView().GetActorOverlayView()->GetVisible());
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .GetActiveContentsContainerView()
+                   ->GetActorOverlayView()
+                   ->GetVisible());
 
   // Make the added WebView visible, and update the container's visibility.
   overlay_web_view->SetVisible(true);
   window_controller->MaybeUpdateContainerVisibility();
 
   // Container view should now be visible.
-  EXPECT_TRUE(browser()->GetBrowserView().GetActorOverlayView()->GetVisible());
+  EXPECT_TRUE(browser()
+                  ->GetBrowserView()
+                  .GetActiveContentsContainerView()
+                  ->GetActorOverlayView()
+                  ->GetVisible());
   std::unique_ptr<views::WebView> managed_overlay_web_view =
       window_controller->RemoveChildWebView(overlay_web_view);
   // The raw_ptr to the removed view is now invalid, so set it to nullptr.
@@ -143,9 +165,18 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
   // Confirm managed WebView is not null and the container should become hidden
   // again
   ASSERT_NE(managed_overlay_web_view, nullptr);
-  EXPECT_FALSE(browser()->GetBrowserView().GetActorOverlayView()->GetVisible());
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 0u);
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .GetActiveContentsContainerView()
+                   ->GetActorOverlayView()
+                   ->GetVisible());
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            0u);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
@@ -160,24 +191,44 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
       actor::ui::StartingToActOnTab(tab_handle, actor::TaskId(1)),
       base::DoNothing());
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetBrowserView().GetActorOverlayView()->GetVisible();
+    return browser()
+        ->GetBrowserView()
+        .GetActiveContentsContainerView()
+        ->GetActorOverlayView()
+        ->GetVisible();
   }));
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 1u);
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
   EXPECT_TRUE(browser()
                   ->GetBrowserView()
-                  .GetActorOverlayView()
+                  .GetActiveContentsContainerView()
+                  ->GetActorOverlayView()
                   ->children()[0]
                   ->GetVisible());
   state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_handle));
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !browser()->GetBrowserView().GetActorOverlayView()->GetVisible();
+    return !browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->GetVisible();
   }));
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 1u);
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
   EXPECT_FALSE(browser()
                    ->GetBrowserView()
-                   .GetActorOverlayView()
+                   .GetActiveContentsContainerView()
+                   ->GetActorOverlayView()
                    ->children()[0]
                    ->GetVisible());
 }
@@ -193,37 +244,67 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
       actor::ui::StartingToActOnTab(tab_handle, actor::TaskId(1)),
       base::DoNothing());
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetBrowserView().GetActorOverlayView()->GetVisible();
+    return browser()
+        ->GetBrowserView()
+        .GetActiveContentsContainerView()
+        ->GetActorOverlayView()
+        ->GetVisible();
   }));
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 1u);
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
   EXPECT_TRUE(browser()
                   ->GetBrowserView()
-                  .GetActorOverlayView()
+                  .GetActiveContentsContainerView()
+                  ->GetActorOverlayView()
                   ->children()[0]
                   ->GetVisible());
   browser()->tab_strip_model()->AppendWebContents(
       content::WebContents::Create(content::WebContents::CreateParams(profile)),
       /*foreground=*/true);
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !browser()->GetBrowserView().GetActorOverlayView()->GetVisible();
+    return !browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->GetVisible();
   }));
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 1u);
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
   EXPECT_FALSE(browser()
                    ->GetBrowserView()
-                   .GetActorOverlayView()
+                   .GetActiveContentsContainerView()
+                   ->GetActorOverlayView()
                    ->children()[0]
                    ->GetVisible());
   browser()->tab_strip_model()->ActivateTabAt(0);
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetBrowserView().GetActorOverlayView()->GetVisible();
+    return browser()
+        ->GetBrowserView()
+        .GetActiveContentsContainerView()
+        ->GetActorOverlayView()
+        ->GetVisible();
   }));
-  EXPECT_EQ(
-      browser()->GetBrowserView().GetActorOverlayView()->children().size(), 1u);
+  EXPECT_EQ(browser()
+                ->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
   EXPECT_TRUE(browser()
                   ->GetBrowserView()
-                  .GetActorOverlayView()
+                  .GetActiveContentsContainerView()
+                  ->GetActorOverlayView()
                   ->children()[0]
                   ->GetVisible());
 }
@@ -264,7 +345,10 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
       actor::ui::StartingToActOnTab(tab_2->GetHandle(), actor::TaskId(1)),
       base::DoNothing());
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser_1->GetBrowserView().GetActorOverlayView()->GetVisible();
+    return browser_1->GetBrowserView()
+        .GetActiveContentsContainerView()
+        ->GetActorOverlayView()
+        ->GetVisible();
   }));
   // Loop to repeatedly move the actuated tab between the two windows.
   // This verifies the overlay's persistence and correct re-parenting across
@@ -283,7 +367,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
     // Verify the overlay is visible in the *new* browser holding tab_2.
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return target_browser->GetBrowserView()
-          .GetActorOverlayView()
+          .GetActiveContentsContainerView()
+          ->GetActorOverlayView()
           ->GetVisible();
     }));
     // Verify tab counts after each move.
@@ -297,7 +382,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
   ASSERT_TRUE(base::test::RunUntil([&]() {
     // Overlay should become invisible in the browser that currently holds tab_1
     return !target_browser->GetBrowserView()
-                .GetActorOverlayView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
                 ->GetVisible();
   }));
 }
@@ -329,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
     // Verify the overlay is visible in the current browser.
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return browser_with_actuated_tab->GetBrowserView()
-          .GetActorOverlayView()
+          .GetActiveContentsContainerView()
+          ->GetActorOverlayView()
           ->GetVisible();
     }));
     // Add a new tab to ensure the source window always has at least two tabs
@@ -347,7 +434,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   // actuated tab.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !browser_with_actuated_tab->GetBrowserView()
-                .GetActorOverlayView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
                 ->GetVisible();
   }));
 }
