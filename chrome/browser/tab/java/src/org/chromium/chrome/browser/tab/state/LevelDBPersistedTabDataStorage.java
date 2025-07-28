@@ -26,7 +26,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     // In a mock environment, the native code will not be running so we should not
     // make assertions about mNativePersistedStateDB
     // LevelDBPersistedTabDataStorage needs to have an empty namespace for backwards compatibility.
-    // LevelDBPersitsedDataStorage is a generalization of the original
+    // LevelDBPersistedDataStorage is a generalization of the original
     // LevelDBPersistedTabDataStorage which introduced namespaces to avoid collisions between
     // clients.
     private static final String NAMESPACE = "";

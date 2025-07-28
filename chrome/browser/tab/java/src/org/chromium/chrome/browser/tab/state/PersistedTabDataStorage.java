@@ -36,14 +36,14 @@ public interface PersistedTabDataStorage {
     /**
      * @param tabId identifier for the {@link Tab}
      * @param tabDataId unique identifier representing the type of {@link PersistedTabData}
-     * @param callback to pass back the seraizliaed {@link PersistedTabData} in
+     * @param callback to pass back the serialized {@link PersistedTabData} in
      */
     void restore(int tabId, String tabDataId, Callback<@Nullable ByteBuffer> callback);
 
     /**
      * @param tabId identifier for the {@link Tab}
      * @param tabDataId unique identifier representing the type of {@link PersistedTabData}
-     * @return serialized {@link PersitsedTabData}
+     * @return serialized {@link PersistedTabData}
      */
     @Nullable ByteBuffer restore(int tabId, String tabDataId);
 
@@ -61,7 +61,7 @@ public interface PersistedTabDataStorage {
      * @param <U> a {@link PersistedTabDataResult}
      * @param tabId identifier for the {@link Tab}
      * @param dataId unique identifier representing the type of {@link PersistedTabData}
-     * @param callback {@link Callback} thhe {@link PersistedTabDataResult} is passed back in
+     * @param callback {@link Callback} the {@link PersistedTabDataResult} is passed back in
      * @param mapper converts a raw result from storage to a {@link PersistedTabDataResult}
      */
     <U extends PersistedTabDataResult> void restore(

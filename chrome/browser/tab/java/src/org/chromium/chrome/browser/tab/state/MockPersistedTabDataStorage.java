@@ -66,14 +66,14 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     @Override
     public <U extends PersistedTabDataResult> @Nullable U restore(
             int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
-        assert false : "Restore with maapper currently unused in MockPersistedTabDataStorage";
+        assert false : "Restore with mapper currently unused in MockPersistedTabDataStorage";
         return null;
     }
 
     @Override
     public <U extends PersistedTabDataResult> void restore(
             int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
-        assert false : "Restore with maapper currently unused in MockPersistedTabDataStorage";
+        assert false : "Restore with mapper currently unused in MockPersistedTabDataStorage";
     }
 
     @Override
@@ -86,7 +86,7 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @Override
     public void performMaintenance(List<Integer> tabIds, String dataId) {
-        assert false : "perforMaintenance is not available in MockPersistedTabDataStorage";
+        assert false : "performMaintenance is not available in MockPersistedTabDataStorage";
     }
 
     private static String getKey(int tabId) {
