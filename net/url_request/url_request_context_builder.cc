@@ -585,7 +585,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           DISK_CACHE, backend_type, http_cache_params_.file_operations_factory,
           http_cache_params_.path, http_cache_params_.max_size,
           http_cache_params_.reset_cache);
-      if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
+      if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch) &&
+          features::kHttpCacheNoVarySearchPersistenceEnabled.Get()) {
         file_operations = NoVarySearchCacheStorageFileOperations::Create(
             http_cache_params_.path);
       }

@@ -775,6 +775,12 @@ BASE_FEATURE_PARAM(bool,
                    "apply_to_external_hits",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kHttpCacheNoVarySearchPersistenceEnabled,
+                   &kHttpCacheNoVarySearch,
+                   "persistence_enabled",
+                   true);
+
 BASE_FEATURE(kReportingApiCorsOriginHeader,
              "ReportingApiCorsOriginHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
