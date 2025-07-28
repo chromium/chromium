@@ -200,7 +200,6 @@
 #include "chrome/browser/policy/device_login_screen_geolocation_access_level_policy_handler.h"
 #include "chrome/browser/policy/os_color_mode_policy_handler.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "chromeos/ash/components/quickoffice/quickoffice_prefs.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -1792,9 +1791,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::INTEGER },
   { key::kLocalUserFilesAllowed,
     prefs::kLocalUserFilesAllowed,
-    base::Value::Type::BOOLEAN },
-  { key::kKioskVisionTelemetryEnabled,
-    ash::prefs::kKioskVisionTelemetryEnabled,
     base::Value::Type::BOOLEAN },
   { key::kGenAIWallpaperSettings,
     ash::prefs::kGenAIWallpaperSettings,

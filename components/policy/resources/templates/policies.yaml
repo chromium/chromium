@@ -1260,7 +1260,7 @@ policies:
   1259: ExtensibleEnterpriseSSOBlocklist
   1260: CSSCustomStateDeprecatedSyntaxEnabled
   1261: MemorySaverModeSavings
-  1262: KioskVisionTelemetryEnabled
+  1262: ''
   1263: GenAIWallpaperSettings
   1264: GenAIVcBackgroundSettings
   1265: DynamicCodeSettings

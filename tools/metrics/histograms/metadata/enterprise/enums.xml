@@ -2134,7 +2134,6 @@ chromium-metrics-reviews@google.com.
   <int value="1259" label="ExtensibleEnterpriseSSOBlocklist"/>
   <int value="1260" label="CSSCustomStateDeprecatedSyntaxEnabled"/>
   <int value="1261" label="MemorySaverModeSavings"/>
-  <int value="1262" label="KioskVisionTelemetryEnabled"/>
   <int value="1263" label="GenAIWallpaperSettings"/>
   <int value="1264" label="GenAIVcBackgroundSettings"/>
   <int value="1265" label="DynamicCodeSettings"/>
