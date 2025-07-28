@@ -1,7 +1,7 @@
 Name: io.grpc:grpc-core
 Short Name: grpc-core
 URL: https://github.com/grpc/grpc-java
-Version: 1.73.0
+Version: 1.74.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

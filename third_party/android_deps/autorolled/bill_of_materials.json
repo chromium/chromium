@@ -527,7 +527,7 @@
     {
         "name": "graphics-path",
         "group": "androidx.graphics",
-        "version": "1.0.1"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "graphics-shapes",
@@ -1522,32 +1522,32 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.73.0"
+        "version": "1.74.0"
     },
     {
         "name": "grpc-binder",
         "group": "io.grpc",
-        "version": "1.73.0"
+        "version": "1.74.0"
     },
     {
         "name": "grpc-context",
         "group": "io.grpc",
-        "version": "1.73.0"
+        "version": "1.74.0"
     },
     {
         "name": "grpc-core",
         "group": "io.grpc",
-        "version": "1.73.0"
+        "version": "1.74.0"
     },
     {
         "name": "grpc-protobuf-lite",
         "group": "io.grpc",
-        "version": "1.73.0"
+        "version": "1.74.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.73.0"
+        "version": "1.74.0"
     },
     {
         "name": "perfmark-api",
