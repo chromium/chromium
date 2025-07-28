@@ -86,6 +86,19 @@ static_library("internal") {
   }
 }
 
+static_library("personal_collaboration_data_internal") {
+  sources = [
+    "personal_collaboration_data/personal_collaboration_data_service_impl.cc",
+    "personal_collaboration_data/personal_collaboration_data_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//components/keyed_service/core",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -101,6 +114,7 @@ source_set("unit_tests") {
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
     "logger_impl_unittest.cc",
+    "personal_collaboration_data/personal_collaboration_data_service_impl_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
 
@@ -114,6 +128,7 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
+    ":personal_collaboration_data_internal",
     "//base",
     "//base/test:test_support",
     "//components/data_sharing:test_support",
