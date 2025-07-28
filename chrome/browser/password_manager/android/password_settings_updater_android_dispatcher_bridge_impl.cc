@@ -37,14 +37,12 @@ base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
 // static
 std::unique_ptr<PasswordSettingsUpdaterAndroidDispatcherBridge>
 PasswordSettingsUpdaterAndroidDispatcherBridge::Create() {
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
   return std::make_unique<PasswordSettingsUpdaterAndroidDispatcherBridgeImpl>();
 }
 
 PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
     PasswordSettingsUpdaterAndroidDispatcherBridgeImpl() {
   DETACH_FROM_THREAD(thread_checker_);
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
 }
 
 PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::

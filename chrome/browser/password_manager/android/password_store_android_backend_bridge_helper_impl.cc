@@ -35,7 +35,6 @@ PasswordStoreAndroidBackendBridgeHelper::Create(
     password_manager::IsAccountStore is_account_store) {
   // The bridge is not supposed to be created when UPM is completely unusable.
   // But it should be created for non-syncing users if sync is enabled later.
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
   return std::make_unique<PasswordStoreAndroidBackendBridgeHelperImpl>(
       is_account_store);
 }

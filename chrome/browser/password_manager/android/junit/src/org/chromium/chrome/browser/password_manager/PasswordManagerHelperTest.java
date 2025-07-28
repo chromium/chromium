@@ -158,7 +158,6 @@ public class PasswordManagerHelperTest {
                 .addObserver(any(LoadingModalDialogCoordinator.Observer.class));
         PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.areMinUpmRequirementsMet()).thenReturn(true);
 
         when(mCredentialManagerLauncherFactoryMock.createLauncher())
                 .thenReturn(mCredentialManagerLauncherMock);

@@ -66,14 +66,6 @@ public class PasswordManagerUtilBridge {
                 && PasswordManagerUtilBridge.isPlayStoreAppPresent();
     }
 
-    /**
-     * Returns whether Chrome's internal backend is available and the minimum GMS Core requirements
-     * for UPM are met.
-     */
-    public static boolean areMinUpmRequirementsMet() {
-        return PasswordManagerUtilBridgeJni.get().areMinUpmRequirementsMet();
-    }
-
     @NativeMethods
     public interface Natives {
         boolean isPasswordManagerAvailable(
@@ -81,7 +73,5 @@ public class PasswordManagerUtilBridge {
 
         boolean isGmsCoreUpdateRequired(
                 @JniType("syncer::SyncService*") @Nullable SyncService syncService);
-
-        boolean areMinUpmRequirementsMet();
     }
 }

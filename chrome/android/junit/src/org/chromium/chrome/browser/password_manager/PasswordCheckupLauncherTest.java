@@ -104,7 +104,6 @@ public class PasswordCheckupLauncherTest {
     public void setUp() throws PasswordCheckBackendException {
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mMockPasswordManagerUtilBridgeJni);
-        when(mMockPasswordManagerUtilBridgeJni.areMinUpmRequirementsMet()).thenReturn(true);
 
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mMockUserPrefsJni.get(mProfile)).thenReturn(mPrefService);

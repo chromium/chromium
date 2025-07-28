@@ -180,7 +180,7 @@ public class PasswordManagerCheckupHelperTest {
         chooseToSyncPasswords();
 
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.areMinUpmRequirementsMet()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any())).thenReturn(true);
 
         when(mPasswordCheckupClientHelperFactoryMock.createHelper())
                 .thenThrow(
@@ -203,7 +203,7 @@ public class PasswordManagerCheckupHelperTest {
         chooseToSyncPasswords();
 
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.areMinUpmRequirementsMet()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any())).thenReturn(true);
 
         when(mPasswordCheckupClientHelperFactoryMock.createHelper())
                 .thenThrow(

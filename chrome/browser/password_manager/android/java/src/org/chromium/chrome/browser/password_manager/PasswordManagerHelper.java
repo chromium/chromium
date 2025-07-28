@@ -780,15 +780,11 @@ public class PasswordManagerHelper {
     // TODO(crbug.com/40854052): Exceptions should be thrown by factory, remove this method.
     private CredentialManagerLauncher getCredentialManagerLauncher()
             throws CredentialManagerBackendException {
+        // TODO(crbug.com/434662359): Make preconditions consistent with checkup launcher.
         if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
             throw new CredentialManagerBackendException(
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
-        }
-        if (!PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
-            throw new CredentialManagerBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
         }
         // This checks against the account store GMSCore version if the user is syncing and against
         // the local version if the user is not syncing.

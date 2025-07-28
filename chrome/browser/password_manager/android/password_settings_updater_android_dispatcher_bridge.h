@@ -40,9 +40,7 @@ class PasswordSettingsUpdaterAndroidDispatcherBridge {
                                        PasswordManagerSetting setting,
                                        bool value) = 0;
 
-  // Factory function for creating the bridge. Before calling create, ensure
-  // that `password_manager_android_util::AreMinUpmRequirementsMet`
-  // returns true.
+  // Factory function for creating the bridge.
   static std::unique_ptr<PasswordSettingsUpdaterAndroidDispatcherBridge>
   Create();
 };

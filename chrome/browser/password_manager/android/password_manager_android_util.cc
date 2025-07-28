@@ -191,24 +191,6 @@ bool LoginDbDeprecationReady(PrefService* prefs) {
   return upm_already_active || exported_umigrated_passwords;
 }
 
-bool AreMinUpmRequirementsMet() {
-  PasswordManagerUtilBridge util_bridge;
-  if (!util_bridge.IsInternalBackendPresent()) {
-    return false;
-  }
-
-  int gms_version = 0;
-  // GMSCore version could not be parsed, probably no GMSCore installed.
-  if (!base::StringToInt(
-          base::android::BuildInfo::GetInstance()->gms_version_code(),
-          &gms_version)) {
-    return false;
-  }
-
-  // If the GMSCore version is pre-UPM an update is required.
-  return gms_version >= password_manager::kAccountUpmMinGmsVersion;
-}
-
 void MaybeDeleteLoginDatabases(
     PrefService* pref_service,
     const base::FilePath& login_db_directory,

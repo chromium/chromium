@@ -37,10 +37,6 @@ jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(
   return IsGmsCoreUpdateRequired(sync_service);
 }
 
-jboolean JNI_PasswordManagerUtilBridge_AreMinUpmRequirementsMet(JNIEnv* env) {
-  return password_manager_android_util::AreMinUpmRequirementsMet();
-}
-
 base::android::ScopedJavaLocalRef<jstring>
 JNI_PasswordManagerUtilBridge_GetAutoExportCsvFilePath(JNIEnv* env,
                                                        Profile* profile) {

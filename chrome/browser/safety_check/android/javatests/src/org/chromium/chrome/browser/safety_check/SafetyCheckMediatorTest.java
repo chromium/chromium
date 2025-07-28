@@ -267,7 +267,6 @@ public class SafetyCheckMediatorTest {
 
         PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeNativeMock.areMinUpmRequirementsMet()).thenReturn(true);
 
         SafetyCheckBridgeJni.setInstanceForTesting(mSafetyCheckBridge);
 

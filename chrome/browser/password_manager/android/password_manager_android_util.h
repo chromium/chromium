@@ -63,13 +63,6 @@ bool IsPasswordManagerAvailable(const PrefService* prefs,
 // the correct util to check.
 bool LoginDbDeprecationReady(PrefService* pref_service);
 
-// Used to decide whether using UPM as backend is possible. The check is based
-// on whether the GMSCore is installed and the internal wiring is present, and
-// whether the requirement for the minimum version is met.
-// TODO(crbug.com/391829891): This becomes obsolete after login db migration,
-// when the only accepted UPM version is the one offering full support.
-bool AreMinUpmRequirementsMet();
-
 // The login database is deprecated on Android. This function deletes the data
 // if the user already exported any leftover data.
 void MaybeDeleteLoginDatabases(
