@@ -2520,7 +2520,6 @@ static_library("browser") {
     "//components/variations/net",
     "//components/variations/proto",
     "//components/variations/service",
-    "//components/variations/service",
     "//components/vector_icons",
     "//components/version_info",
     "//components/visited_url_ranking/internal",
