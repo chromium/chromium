@@ -213,6 +213,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return false;
   }
 
+  // Return true if changes to transforms may require layout.
+  //
+  // This is the case for anchors that are affected by transforms, as that may
+  // affect anything that is anchored to it.
+  bool TransformsChangeMayRequireLayout() const;
+
   // Use this with caution! No type checking is done!
   LayoutBox* FirstChildBox() const;
   LayoutBox* LastChildBox() const;
