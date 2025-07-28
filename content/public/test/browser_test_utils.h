@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -844,24 +845,29 @@ std::string JsReplace(std::string_view script_template, Args&&... args) {
 //      of result, or if an exception was thrown.
 class EvalJsResult {
  public:
-
   // Creates an EvalJs result. If |error| is non-empty, |value| will be
   // ignored.
   EvalJsResult(base::Value value, std::string_view error);
 
-  // Copy ctor.
   EvalJsResult(const EvalJsResult& value);
+  EvalJsResult& operator=(const EvalJsResult&);
+  EvalJsResult(EvalJsResult&&);
+  EvalJsResult& operator=(EvalJsResult&&);
+
+  ~EvalJsResult();
 
   // Matchers for successful & unsuccessful runs.
   static auto IsOk() { return testing::Property(&EvalJsResult::is_ok, true); }
   template <typename M>
   static auto IsOkAndHolds(M m) {
-    return testing::AllOf(IsOk(), testing::Field(&EvalJsResult::value_, m));
+    return testing::Field("data_", &EvalJsResult::data_,
+                          testing::VariantWith<base::Value>(m));
   }
   static auto IsError() { return testing::Not(IsOk()); }
   template <typename M>
   static auto ErrorIs(M m) {
-    return testing::AllOf(IsError(), testing::Field(&EvalJsResult::error, m));
+    return testing::Field("data_", &EvalJsResult::data_,
+                          testing::VariantWith<std::string>(m));
   }
 
   // Extract a result value of the requested type, or die trying.
@@ -878,12 +884,12 @@ class EvalJsResult {
   [[nodiscard]] base::Value::Dict ExtractDict() const;
   [[nodiscard]] const std::string& ExtractError() const;
 
-  bool is_ok() const { return error.empty(); }
+  bool is_ok() const { return std::holds_alternative<base::Value>(data_); }
 
-  bool is_string() const { return is_ok() && value_.is_string(); }
-  bool is_bool() const { return is_ok() && value_.is_bool(); }
-  bool is_list() const { return is_ok() && value_.is_list(); }
-  bool is_dict() const { return is_ok() && value_.is_dict(); }
+  bool is_string() const { return is_ok() && value()->is_string(); }
+  bool is_bool() const { return is_ok() && value()->is_bool(); }
+  bool is_list() const { return is_ok() && value()->is_list(); }
+  bool is_dict() const { return is_ok() && value()->is_dict(); }
 
   // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
   //
@@ -894,7 +900,7 @@ class EvalJsResult {
   // Error values are incomparable to other values (including other errors).
   template <typename T>
   bool operator==(const T& t) const {
-    return is_ok() && (JsLiteralHelper<T>::Convert(t) == value_);
+    return JsLiteralHelper<T>::Convert(t) == value();
   }
 
   template <typename T>
@@ -902,27 +908,30 @@ class EvalJsResult {
     if (!is_ok()) {
       return std::partial_ordering::unordered;
     }
-    return value_ <=> JsLiteralHelper<T>::Convert(t);
+    return value() <=> JsLiteralHelper<T>::Convert(t);
   }
 
   // Takes the underlying `base::Value`, presuming no error occurred.
   [[nodiscard]] base::Value TakeValue() && {
     CHECK(is_ok());
-    return std::move(value_);
+    return std::get<base::Value>(std::move(data_));
   }
 
  private:
-  // TODO(https://crbug.com/431787497): rename the `error` field, per style
-  // guide rules.
-  // Error; if things went badly.
-  const std::string error;
+  base::optional_ref<const base::Value> value() const {
+    return std::get_if<base::Value>(&data_);
+  }
+
+  base::optional_ref<const std::string> error() const {
+    return std::get_if<std::string>(&data_);
+  }
+
   // Provides informative failure messages when the result of EvalJs() is
   // used in a failing ASSERT_EQ or EXPECT_EQ.
   friend std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);
 
-  // Value; if things went well. (If an error occurred, `value_.is_none()` is
-  // true.)
-  base::Value value_;
+  // Either the error that occurred, or the result value of the script.
+  std::variant<std::string, base::Value> data_;
 };
 
 enum EvalJsOptions {

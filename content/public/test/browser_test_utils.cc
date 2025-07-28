@@ -127,6 +127,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -1582,78 +1583,115 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
 
 // EvalJsResult methods.
 EvalJsResult::EvalJsResult(base::Value value, std::string_view error)
-    : error(error), value_(error.empty() ? std::move(value) : base::Value()) {}
+    : data_(error.empty() ? std::variant<std::string, base::Value>(
+                                std::in_place_type_t<base::Value>(),
+                                std::move(value))
+                          : std::variant<std::string, base::Value>(
+                                std::in_place_type_t<std::string>(),
+                                error)) {}
 
 EvalJsResult::EvalJsResult(const EvalJsResult& other)
-    : error(other.error), value_(other.value_.Clone()) {}
+    : data_(std::visit(
+          absl::Overload{
+              [](const std::string& error)
+                  -> std::variant<std::string, base::Value> { return error; },
+              [](const base::Value& value)
+                  -> std::variant<std::string, base::Value> {
+                return value.Clone();
+              },
+          },
+          other.data_)) {}
+
+EvalJsResult& EvalJsResult::operator=(const EvalJsResult& other) {
+  data_ = std::visit(
+      absl::Overload{
+          [](const std::string& error)
+              -> std::variant<std::string, base::Value> { return error; },
+          [](const base::Value& value)
+              -> std::variant<std::string, base::Value> {
+            return value.Clone();
+          },
+      },
+      other.data_);
+  return *this;
+}
+
+EvalJsResult::EvalJsResult(EvalJsResult&&) = default;
+
+EvalJsResult& EvalJsResult::operator=(EvalJsResult&&) = default;
+
+EvalJsResult::~EvalJsResult() = default;
 
 const std::string& EvalJsResult::ExtractString() const {
   CHECK(is_ok())
       << "Can't ExtractString() because the script encountered a problem: "
-      << error;
-  CHECK(value_.is_string())
-      << "Can't ExtractString() because script result: " << value_
+      << *error();
+  CHECK(value()->is_string())
+      << "Can't ExtractString() because script result: " << *value()
       << "is not a string.";
-  return value_.GetString();
+  return value()->GetString();
 }
 
 int EvalJsResult::ExtractInt() const {
   CHECK(is_ok())
       << "Can't ExtractInt() because the script encountered a problem: "
-      << error;
-  CHECK(value_.is_int()) << "Can't ExtractInt() because script result: "
-                         << value_ << "is not an int.";
-  return value_.GetInt();
+      << *error();
+  CHECK(value()->is_int()) << "Can't ExtractInt() because script result: "
+                           << *value() << "is not an int.";
+  return value()->GetInt();
 }
 
 bool EvalJsResult::ExtractBool() const {
   CHECK(is_ok())
       << "Can't ExtractBool() because the script encountered a problem: "
-      << error;
-  CHECK(value_.is_bool()) << "Can't ExtractBool() because script result: "
-                          << value_ << "is not a bool.";
-  return value_.GetBool();
+      << *error();
+  CHECK(value()->is_bool())
+      << "Can't ExtractBool() because script result: " << *value()
+      << "is not a bool.";
+  return value()->GetBool();
 }
 
 double EvalJsResult::ExtractDouble() const {
   CHECK(is_ok())
       << "Can't ExtractDouble() because the script encountered a problem: "
-      << error;
-  CHECK(value_.is_double() || value_.is_int())
-      << "Can't ExtractDouble() because script result: " << value_
+      << *error();
+  CHECK(value()->is_double() || value()->is_int())
+      << "Can't ExtractDouble() because script result: " << *value()
       << "is not a double or int.";
-  return value_.GetDouble();
+  return value()->GetDouble();
 }
 
 base::Value::List EvalJsResult::ExtractList() const {
   CHECK(is_ok())
       << "Can't ExtractList() because the script encountered a problem: "
-      << error;
-  CHECK(value_.is_list()) << "Can't ExtractList() because script result: "
-                          << value_ << "is not a list.";
-  return value_.GetList().Clone();
+      << *error();
+  CHECK(value()->is_list())
+      << "Can't ExtractList() because script result: " << *value()
+      << "is not a list.";
+  return value()->GetList().Clone();
 }
 
 base::Value::Dict EvalJsResult::ExtractDict() const {
   CHECK(is_ok())
       << "Can't ExtractDict() because the script encountered a problem: "
-      << error;
-  CHECK(value_.is_dict()) << "Can't ExtractDict() because script result: "
-                          << value_ << "is not a dictionary.";
-  return value_.GetDict().Clone();
+      << *error();
+  CHECK(value()->is_dict())
+      << "Can't ExtractDict() because script result: " << *value()
+      << "is not a dictionary.";
+  return value()->GetDict().Clone();
 }
 
 const std::string& EvalJsResult::ExtractError() const {
   CHECK(!is_ok()) << "Can't ExtractError() because the script did not fail: "
-                  << value_;
-  return error;
+                  << *value();
+  return error().value();
 }
 
 std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar) {
   if (!bar.is_ok()) {
-    os << bar.error;
+    os << bar.ExtractError();
   } else {
-    os << bar.value_;
+    os << *bar.value();
   }
   return os;
 }
@@ -1977,13 +2015,15 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
       base::StartsWith(result.ExtractError(),
                        "a JavaScript error: \"EvalError: Refused",
                        base::CompareCase::SENSITIVE)) {
-    return EvalJsResult(
-        base::Value(),
-        "EvalJsAfterLifecycleUpdate encountered an EvalError, because eval() "
-        "is blocked by the document's CSP on this page. To test content that "
-        "is protected by CSP, consider using EvalJsAfterLifecycleUpdate in an "
-        "isolated world. Details: " +
-            result.ExtractError());
+    return EvalJsResult(base::Value(),
+                        base::StrCat({"EvalJsAfterLifecycleUpdate encountered "
+                                      "an EvalError, because eval() "
+                                      "is blocked by the document's CSP on "
+                                      "this page. To test content that "
+                                      "is protected by CSP, consider using "
+                                      "EvalJsAfterLifecycleUpdate in an "
+                                      "isolated world. Details: ",
+                                      result.ExtractError()}));
   }
   return result;
 }
