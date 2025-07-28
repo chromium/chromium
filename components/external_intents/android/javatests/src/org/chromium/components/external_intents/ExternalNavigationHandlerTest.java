@@ -3350,11 +3350,6 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean canLoadUrlInCurrentTab() {
-            return mCanLoadUrlInTab;
-        }
-
-        @Override
         public void closeTab() {}
 
         @Override

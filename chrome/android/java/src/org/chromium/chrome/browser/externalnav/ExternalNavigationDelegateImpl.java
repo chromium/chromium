@@ -117,11 +117,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean canLoadUrlInCurrentTab() {
-        return !(mTab == null || mTab.isClosing() || !mTab.isInitialized());
-    }
-
-    @Override
     public boolean isApplicationInForeground() {
         return ApplicationStatus.getStateForApplication()
                 == ApplicationState.HAS_RUNNING_ACTIVITIES;
