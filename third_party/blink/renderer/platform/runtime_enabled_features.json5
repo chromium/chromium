@@ -4430,8 +4430,7 @@
     },
     {
       name: "ServiceWorkerStaticRouterTimingInfo",
-      origin_trial_allows_third_party: true,
-      origin_trial_feature_name: "ServiceWorkerStaticRouterTimingInfo",
+      status: "stable",
     },
     {
       name: "SetSequentialFocusStartingPoint",
