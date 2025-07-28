@@ -64,11 +64,6 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
                    int number_of_channels,
                    float sample_rate);
 
-  // Sets the audio format (number of channels and sample rate) for the
-  // associated MediaStreamSource. This method can be called from either the
-  // main thread or the WebAudio rendering thread.
-  void SetConsumerFormat(int number_of_channels, float sample_rate);
-
   // Pushes rendered WebAudio data to the WebAudioDestinationConsumer.
   // Must be called on the WebAudio rendering thread.
   void ConsumeAudio(const AudioBus* const bus, int number_of_frames);
