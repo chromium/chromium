@@ -31,7 +31,6 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
@@ -49,6 +48,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
@@ -1584,7 +1584,7 @@ void SignSymWithDB(std::unique_ptr<SignSymState> state,
       base::BindOnce(&SignSymOnWorkerThread, std::move(state)));
 }
 
-// Called when `ClientCertStoreAsh::GetClientCerts` is done. Builds the list of
+// Called when `ClientCertStoreKcer::GetClientCerts` is done. Builds the list of
 // `net::CertificateList` and calls back. Used by `SelectCertificates()`.
 void DidSelectCertificates(std::unique_ptr<SelectCertificatesState> state,
                            net::ClientCertIdentityList identities) {

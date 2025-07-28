@@ -103,7 +103,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
-#include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
@@ -1200,41 +1199,9 @@ ProfileNetworkContextService::CreateClientCertStore() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  bool use_system_key_slot = false;
-  // Enable client certificates for the Chrome OS sign-in frame, if this feature
-  // is not disabled by a flag.
-  // Note that while this applies to the whole sign-in profile / lock screen
-  // profile, client certificates will only be selected for the StoragePartition
-  // currently used in the sign-in frame (see SigninPartitionManager).
-  if (ash::ProfileHelper::IsSigninProfile(profile_) ||
-      ash::ProfileHelper::IsLockScreenProfile(profile_)) {
-    use_system_key_slot = true;
-  }
-
-  if (ash::features::ShouldUseKcerClientCertStore()) {
-    return std::make_unique<ash::ClientCertStoreKcer>(
-        std::move(certificate_provider),
-        kcer::KcerFactoryAsh::GetKcer(profile_),
-        GetClientCertIssuerSourceFactory());
-  } else {
-    std::string username_hash;
-    const user_manager::User* user =
-        ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-    if (user && !user->username_hash().empty()) {
-      username_hash = user->username_hash();
-
-      // Use the device-wide system key slot only if the user is affiliated on
-      // the device.
-      if (user->IsAffiliated()) {
-        use_system_key_slot = true;
-      }
-    }
-
-    return std::make_unique<ash::ClientCertStoreAsh>(
-        std::move(certificate_provider), use_system_key_slot, username_hash,
-        base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
-                            kCryptoModulePasswordClientAuth));
-  }
+  return std::make_unique<ash::ClientCertStoreKcer>(
+      std::move(certificate_provider), kcer::KcerFactoryAsh::GetKcer(profile_),
+      GetClientCertIssuerSourceFactory());
 
 #elif BUILDFLAG(USE_NSS_CERTS)
   std::unique_ptr<net::ClientCertStore> store =

@@ -20,10 +20,6 @@ static_library("net") {
     "ash_proxy_monitor.h",
     "bluetooth_pref_state_observer.cc",
     "bluetooth_pref_state_observer.h",
-    "client_cert_filter.cc",
-    "client_cert_filter.h",
-    "client_cert_store_ash.cc",
-    "client_cert_store_ash.h",
     "client_cert_store_kcer.cc",
     "client_cert_store_kcer.h",
     "delay_network_call.cc",
@@ -125,7 +121,6 @@ source_set("unit_tests") {
 
   sources = [
     "apn_migrator_unittest.cc",
-    "client_cert_store_ash_unittest.cc",
     "client_cert_store_kcer_unittest.cc",
     "network_pref_state_observer_unittest.cc",
     "network_throttling_observer_unittest.cc",

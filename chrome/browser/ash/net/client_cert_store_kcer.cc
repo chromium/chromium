@@ -16,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/ash/net/client_cert_filter.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chromeos/ash/components/kcer/client_cert_identity_kcer.h"
 #include "chromeos/ash/components/kcer/kcer.h"
