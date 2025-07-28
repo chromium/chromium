@@ -57,8 +57,6 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
       .prefersEdgeAttachedInCompactHeight = YES;
   _navigationController.sheetPresentationController.detents =
       @[ contentDetent ];
-  _navigationController.sheetPresentationController
-      .largestUndimmedDetentIdentifier = contentDetent.identifier;
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
