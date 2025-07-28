@@ -4,6 +4,7 @@
 
 #include "gpu/vulkan/vulkan_info.h"
 
+#include <cstring>
 #include <string_view>
 
 #include "base/compiler_specific.h"
