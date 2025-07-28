@@ -645,6 +645,12 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         # suffer" infobar caused by --enable-gpu-benchmarking which can
         # interfere with these tests.
         cba.TEST_TYPE_GPU,
+        # Disable DSE Prewarm feature as this causes timeout as the
+        # prewarm page inserted behind the test scenario makes the
+        # existing tests' expectations confused.
+        # TODO(https://crbug.com/431928370): Fix the tests to work with
+        # the feature enabled once the proper CDP support is introduced.
+        cba.DISABLE_DIRECT_SEARCH_ENGINE_PREWARM,
     ])
     return default_args
 
