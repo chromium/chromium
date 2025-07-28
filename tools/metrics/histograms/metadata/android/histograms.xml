@@ -8694,6 +8694,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.IsUiThreadMainLooper" enum="Boolean"
+    expires_after="2026-05-26">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports whether or not the Chromium UI thread is the Android main looper.
+    Recorded once during WebView process global startup.
+
+    Only recorded on Android WebView.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.Startup.NonblockingServiceConnectionDelay.{ServiceName}"
     units="ms" expires_after="2023-09-01">

@@ -871,12 +871,15 @@ public class WebViewChromiumAwInit {
             // thread, then by definition the current thread is the UI thread whether it's the
             // main looper or not.
             Looper looper = fromThreadSafeFunction ? Looper.getMainLooper() : Looper.myLooper();
+            boolean isUiThreadMainLooper = Looper.getMainLooper().equals(looper);
             Log.v(
                     TAG,
                     "Binding Chromium to "
-                            + (Looper.getMainLooper().equals(looper) ? "main" : "background")
+                            + (isUiThreadMainLooper ? "main" : "background")
                             + " looper "
                             + looper);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.Startup.IsUiThreadMainLooper", isUiThreadMainLooper);
             ThreadUtils.setUiThread(looper);
             mThreadIsSet = true;
         }
