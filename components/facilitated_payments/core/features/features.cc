@@ -36,7 +36,7 @@ BASE_FEATURE(kEwalletPayments,
 // When enabled, Pix will be able to send multiple server request at a time.
 BASE_FEATURE(kSupportMultipleServerRequestsForPixPayments,
              "SupportMultipleServerRequestsForPixPayments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Chrome will offer an app list when a supported payment link is
