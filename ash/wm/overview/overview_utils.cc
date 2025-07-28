@@ -292,19 +292,14 @@ gfx::Rect GetGridBoundsInScreen(
     const HotseatState hotseat_state =
         Shelf::ForWindow(target_root)->shelf_layout_manager()->hotseat_state();
 
-    const bool hotseat_extended = hotseat_state == HotseatState::kExtended;
     const bool show_home_launcher =
         hotseat_state == HotseatState::kShownHomeLauncher;
-
-    const bool forest_enabled = features::IsForestFeatureEnabled();
 
     const int hotseat_bottom_inset =
         ShelfConfig::Get()->GetHotseatSize(HotseatDensity::kNormal) +
         ShelfConfig::Get()->hotseat_bottom_padding();
 
-    if (!forest_enabled && hotseat_extended) {
-      bounds.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
-    } else if (forest_enabled && show_home_launcher) {
+    if (show_home_launcher) {
       // If the home launcher is shown, add some extra spacing between the birch
       // bar and the hotseat. Subtract the in app shelf size since it is already
       // factored in the work area calculations.

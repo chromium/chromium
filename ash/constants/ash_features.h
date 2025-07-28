@@ -1169,7 +1169,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldForceEnableServerSideSpeechRecognition();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsForestFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherListViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheNetworkConnectionStateEnabled();

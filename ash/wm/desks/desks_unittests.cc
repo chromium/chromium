@@ -1407,16 +1407,11 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   TestDeskObserver desk_1_observer;
   desk_1->AddObserver(&desk_1_observer);
 
-  if (features::IsForestFeatureEnabled()) {
-    views::MenuItemView* menu_item =
-        DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-            Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
-            /*index=*/0u, DeskActionContextMenu::CommandId::kCombineDesks);
-    LeftClickOn(menu_item);
-  } else {
-    // This will combine `desk_1` into `desk_4`.
-    CloseDeskFromMiniView(mini_view, GetEventGenerator());
-  }
+  views::MenuItemView* menu_item =
+      DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+          Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+          /*index=*/0u, DeskActionContextMenu::CommandId::kCombineDesks);
+  LeftClickOn(menu_item);
 
   EXPECT_EQ(0, desk_1_observer.notify_counts());
   EXPECT_EQ(1, desk_4_observer.notify_counts());
@@ -1513,16 +1508,11 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   TestDeskObserver desk_2_observer;
   desk_2->AddObserver(&desk_2_observer);
 
-  if (features::IsForestFeatureEnabled()) {
-    views::MenuItemView* menu_item =
-        DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-            Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
-            /*index=*/1u, DeskActionContextMenu::CommandId::kCombineDesks);
-    LeftClickOn(menu_item);
-  } else {
-    // This will combine `desk_2` into `desk_1`.
-    CloseDeskFromMiniView(mini_view, GetEventGenerator());
-  }
+  views::MenuItemView* menu_item =
+      DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+          Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+          /*index=*/1u, DeskActionContextMenu::CommandId::kCombineDesks);
+  LeftClickOn(menu_item);
 
   EXPECT_EQ(1, desk_1_observer.notify_counts());
   EXPECT_EQ(0, desk_2_observer.notify_counts());
@@ -8357,16 +8347,7 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   EnterOverview();
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
-  DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
   auto* event_generator = GetEventGenerator();
-  if (!features::IsForestFeatureEnabled()) {
-    // We need to hover over the desk preview to properly check the combine
-    // desks button's visibility.
-    event_generator->MoveMouseTo(
-        mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
-    EXPECT_FALSE(
-        mini_view->desk_action_view()->combine_desks_button()->GetVisible());
-  }
 
   // We need to open the context menu to trigger its creation.
   OpenContextMenuForMiniView(0);
@@ -8383,27 +8364,14 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   DesksController::Get()->SendToDeskAtIndex(window.get(), 0);
   EnterOverview();
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
-  mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
 
-  if (!features::IsForestFeatureEnabled()) {
-    event_generator->MoveMouseTo(
-        mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
-    EXPECT_TRUE(
-        mini_view->desk_action_view()->combine_desks_button()->GetVisible());
-  }
   OpenContextMenuForMiniView(0);
 
-  if (features::IsForestFeatureEnabled()) {
-    // The saved desk is part of the context menu with this feature on, although
-    // it may be disabled.
-    EXPECT_EQ(3u, DesksTestApi::GetContextMenuModelForDesk(
-                      DeskBarViewBase::Type::kOverview, 0)
-                      .GetItemCount());
-  } else {
-    EXPECT_EQ(2u, DesksTestApi::GetContextMenuModelForDesk(
-                      DeskBarViewBase::Type::kOverview, 0)
-                      .GetItemCount());
-  }
+  // The saved desk is part of the context menu with this feature on, although
+  // it may be disabled.
+  EXPECT_EQ(3u, DesksTestApi::GetContextMenuModelForDesk(
+                    DeskBarViewBase::Type::kOverview, 0)
+                    .GetItemCount());
 }
 
 TEST_P(DesksCloseAllTest, AccessibleName) {
@@ -8587,148 +8555,6 @@ TEST_P(DesksCloseAllTest, DeskPreviewHighlightShowsWhenContextMenuIsOpen) {
   // `SimpleMenuModel::MenuWillClose()` runs post tasks asynchronously.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(highlight_overlay->GetVisible());
-}
-
-// Checks that the combine desks tooltip's validity is maintained whenever the
-// user adds a desk, closes a desk, moves a desk, or changes the name of a desk.
-TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
-  if (features::IsForestFeatureEnabled()) {
-    GTEST_SKIP()
-        << "Save desk buttons have been moved to the desk context menu. The "
-           "associated context menu item has text so it doesn't need a tooltip";
-  }
-  // Possible sources for tooltip updates.
-  enum class UpdateSource {
-    kAddDesk,
-    kCloseDesk,
-    kMoveActiveDesk,
-    kMoveNonActiveDesk,
-    kChangeActiveDeskName,
-    kChangeNonActiveDeskName,
-  };
-
-  struct {
-    const std::string scope_trace;
-    const UpdateSource source;
-
-    // The desk name that we expect `desk_1` in the test case to point to as the
-    // target for its combine desks operation after the test is performed.
-    const std::u16string expected_target_1;
-
-    // The desk name that we expect `desk_2` in the test case to point to as the
-    // target for its combine desks operation after the test is performed.
-    const std::u16string expected_target_2;
-  } kTestCases[] = {
-      {"Adding desk", UpdateSource::kAddDesk, u"Desk 2", u"Desk 1"},
-      {"Closing desk", UpdateSource::kCloseDesk, u"Desk 2", u"Desk 1"},
-      {"Moving active desk", UpdateSource::kMoveActiveDesk, u"Desk 1",
-       u"Desk 2"},
-      {"Moving non-active desk", UpdateSource::kMoveNonActiveDesk, u"Desk 2",
-       u"Desk 1"},
-      {"Changing active desk name", UpdateSource::kChangeActiveDeskName,
-       u"Desk 2", u"goo"},
-      {"Changing non-active desk name", UpdateSource::kChangeNonActiveDeskName,
-       u"gle", u"goo"},
-  };
-
-  // We need to make the display this large so that the mini views are
-  // draggable.
-  UpdateDisplay("1366x768");
-  auto* controller = DesksController::Get();
-
-  // Create two initial desks with one window each.
-  NewDesk();
-  ASSERT_EQ(2u, controller->desks().size());
-  Desk* desk_1 = controller->GetDeskAtIndex(0);
-  Desk* desk_2 = controller->GetDeskAtIndex(1);
-
-  WindowHolder win1(CreateAppWindow());
-  WindowHolder win2(CreateAppWindow());
-  controller->SendToDeskAtIndex(win1.window(), 0);
-  controller->SendToDeskAtIndex(win2.window(), 1);
-  ASSERT_EQ(1u, desk_1->windows().size());
-  ASSERT_EQ(1u, desk_2->windows().size());
-
-  EnterOverview();
-  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
-
-  const DeskBarViewBase* desks_bar_view = GetPrimaryRootDesksBarView();
-
-  // Cache the mini views and their name views and combine desks buttons.
-  DeskMiniView* mini_view_1 = desks_bar_view->mini_views()[0];
-  DeskMiniView* mini_view_2 = desks_bar_view->mini_views()[1];
-  DeskNameView* desk_name_view_1 = mini_view_1->desk_name_view();
-  DeskNameView* desk_name_view_2 = mini_view_2->desk_name_view();
-  const CloseButton* combine_desks_button_1 =
-      mini_view_1->desk_action_view()->combine_desks_button();
-  const CloseButton* combine_desks_button_2 =
-      mini_view_2->desk_action_view()->combine_desks_button();
-
-  const std::u16string tooltip_prefix = u"Combine with ";
-  auto* event_generator = GetEventGenerator();
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.scope_trace);
-
-    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
-    ASSERT_EQ(tooltip_prefix + controller->GetCombineDesksTargetName(desk_1),
-              combine_desks_button_1->GetTooltipText());
-    ASSERT_EQ(tooltip_prefix + controller->GetCombineDesksTargetName(desk_2),
-              combine_desks_button_2->GetTooltipText());
-
-    switch (test_case.source) {
-      case UpdateSource::kAddDesk:
-        NewDesk();
-        break;
-      case UpdateSource::kCloseDesk:
-        ASSERT_EQ(3u, controller->desks().size());
-        RemoveDesk(controller->GetDeskAtIndex(2));
-        break;
-      case UpdateSource::kMoveActiveDesk:
-        ASSERT_TRUE(controller->GetDeskAtIndex(0)->is_active());
-        StartDragDeskPreview(mini_view_1, event_generator);
-        ASSERT_TRUE(desks_bar_view->IsDraggingDesk());
-        event_generator->MoveMouseTo(
-            mini_view_2->GetPreviewBoundsInScreen().CenterPoint());
-        event_generator->ReleaseLeftButton();
-        RunScheduledLayoutForAllOverviewDeskBars();
-        break;
-      case UpdateSource::kMoveNonActiveDesk:
-        ASSERT_FALSE(controller->GetDeskAtIndex(0)->is_active());
-        StartDragDeskPreview(mini_view_2, event_generator);
-        EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
-        event_generator->MoveMouseTo(
-            mini_view_1->GetPreviewBoundsInScreen().CenterPoint());
-        event_generator->ReleaseLeftButton();
-        RunScheduledLayoutForAllOverviewDeskBars();
-        break;
-      case UpdateSource::kChangeActiveDeskName:
-        ASSERT_TRUE(controller->GetDeskAtIndex(0)->is_active());
-        event_generator->MoveMouseTo(
-            desk_name_view_1->GetBoundsInScreen().CenterPoint());
-        event_generator->ClickLeftButton();
-        PressAndReleaseKey(ui::VKEY_G);
-        PressAndReleaseKey(ui::VKEY_O);
-        PressAndReleaseKey(ui::VKEY_O);
-        PressAndReleaseKey(ui::VKEY_RETURN);
-        RunScheduledLayoutForAllOverviewDeskBars();
-        break;
-      case UpdateSource::kChangeNonActiveDeskName:
-        ASSERT_EQ(u"goo", mini_view_1->desk()->name());
-        ASSERT_FALSE(controller->GetDeskAtIndex(1)->is_active());
-        LeftClickOn(desk_name_view_2);
-        PressAndReleaseKey(ui::VKEY_G);
-        PressAndReleaseKey(ui::VKEY_L);
-        PressAndReleaseKey(ui::VKEY_E);
-        PressAndReleaseKey(ui::VKEY_RETURN);
-        RunScheduledLayoutForAllOverviewDeskBars();
-        break;
-    }
-
-    EXPECT_EQ(tooltip_prefix + test_case.expected_target_1,
-              combine_desks_button_1->GetTooltipText());
-    EXPECT_EQ(tooltip_prefix + test_case.expected_target_2,
-              combine_desks_button_2->GetTooltipText());
-  }
 }
 
 // Test metrics are being recorded in close all case.
@@ -9385,8 +9211,6 @@ class DeskBarTest : public AshTestBase,
   void CombineDeskWithMenu(size_t index,
                            aura::Window* root,
                            DeskBarViewBase::Type bar_type) {
-    CHECK(features::IsForestFeatureEnabled());
-
     // Get the menu option to save the desk as a template and click it.
     views::MenuItemView* menu_item =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
@@ -9480,8 +9304,7 @@ struct DeskBarTestBasicCase {
 TEST_P(DeskBarTest, Basic) {
   UpdateDisplay("800x600");
 
-  const int expected_expanded_overview_height =
-      features::IsForestFeatureEnabled() ? 114 : 98;
+  const int expected_expanded_overview_height = 114;
 
   const DeskBarTestBasicCase tests[] = {
       {.test_name = "single desk + bottom shelf + saved desks",
@@ -9618,8 +9441,7 @@ TEST_P(DeskBarTest, BasicSecondaryDisplay) {
   auto* desk_bar_widget = desk_bar_view->GetWidget();
   ASSERT_TRUE(desk_bar_widget);
 
-  const int expected_expanded_overview_height =
-      features::IsForestFeatureEnabled() ? 114 : 98;
+  const int expected_expanded_overview_height = 114;
 
   if (bar_type_ == DeskBarViewBase::Type::kOverview) {
     EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
@@ -9691,15 +9513,9 @@ TEST_P(DeskBarTest, HoverBasic) {
     event_generator->MoveMouseTo(
         mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
 
-    if (features::IsForestFeatureEnabled()) {
-      EXPECT_TRUE(mini_view->desk_action_view()->context_menu_button());
-      EXPECT_TRUE(
-          mini_view->desk_action_view()->context_menu_button()->GetVisible());
-    } else {
-      EXPECT_TRUE(mini_view->desk_action_view()->combine_desks_button());
-      EXPECT_TRUE(
-          mini_view->desk_action_view()->combine_desks_button()->GetVisible());
-    }
+    EXPECT_TRUE(mini_view->desk_action_view()->context_menu_button());
+    EXPECT_TRUE(
+        mini_view->desk_action_view()->context_menu_button()->GetVisible());
 
     EXPECT_TRUE(
         mini_view->desk_action_view()->close_all_button()->GetVisible());
@@ -10215,15 +10031,9 @@ TEST_P(DeskBarTest, ForwardTabbing) {
     if (i == 0) {
       PressAndReleaseKey(ui::VKEY_TAB);
 
-      if (features::IsForestFeatureEnabled()) {
-        ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
-        ASSERT_TRUE(
-            mini_view->desk_action_view()->context_menu_button()->HasFocus());
-      } else {
-        ASSERT_TRUE(mini_view->desk_action_view()->combine_desks_button());
-        ASSERT_TRUE(
-            mini_view->desk_action_view()->combine_desks_button()->HasFocus());
-      }
+      ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
+      ASSERT_TRUE(
+          mini_view->desk_action_view()->context_menu_button()->HasFocus());
     }
 
     PressAndReleaseKey(ui::VKEY_TAB);
@@ -10301,15 +10111,9 @@ TEST_P(DeskBarTest, ReverseTabbing) {
     if (i == 0) {
       PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
 
-      if (features::IsForestFeatureEnabled()) {
-        ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
-        ASSERT_TRUE(
-            mini_view->desk_action_view()->context_menu_button()->HasFocus());
-      } else {
-        ASSERT_TRUE(mini_view->desk_action_view()->combine_desks_button());
-        ASSERT_TRUE(
-            mini_view->desk_action_view()->combine_desks_button()->HasFocus());
-      }
+      ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
+      ASSERT_TRUE(
+          mini_view->desk_action_view()->context_menu_button()->HasFocus());
     }
 
     // The shortcut view only appears on the first 8 desks in the desk button
@@ -10559,12 +10363,7 @@ TEST_P(DeskBarTest, DeskBarActionMetrics) {
 
   // Combine desks.
   auto* root_window = Shell::Get()->GetPrimaryRootWindow();
-  if (features::IsForestFeatureEnabled()) {
-    CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
-  } else {
-    CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
-                        bar_type_);
-  }
+  CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
 
   histogram_tester.ExpectTotalCount(
       bar_type_ == DeskBarViewBase::Type::kDeskButton
@@ -10629,12 +10428,7 @@ TEST_P(DeskBarTest, DeskBarSwitchMetrics) {
   OpenDeskBar();
 
   // Combine desks.
-  if (features::IsForestFeatureEnabled()) {
-    CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
-  } else {
-    CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
-                        bar_type_);
-  }
+  CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
 
   histogram_tester.ExpectBucketCount(
       kDeskSwitchHistogramName,
@@ -10677,18 +10471,12 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
 
   // Long press doesn't register if there have been touch events on the desk bar
   // prior to trying to long press. Close and reopen the desk bar.
-  if (features::IsForestFeatureEnabled()) {
-    CloseDeskBar();
-  }
+  CloseDeskBar();
+
   OpenDeskBar();
 
   // Combine desks.
-  if (features::IsForestFeatureEnabled()) {
-    CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
-  } else {
-    CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
-                        bar_type_);
-  }
+  CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
 
   histogram_tester.ExpectBucketCount(
       kRemoveDeskHistogramName,
@@ -10829,15 +10617,9 @@ TEST_P(DeskBarTest, DeskActionButtonTooltipForNewDesk) {
   views::test::RunScheduledLayout(desk_bar_view);
   auto* desk_action_view = desk_bar_view->mini_views()[1]->desk_action_view();
 
-  if (features::IsForestFeatureEnabled()) {
-    EXPECT_TRUE(desk_action_view->context_menu_button());
-    EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
-                u"Open context menu");
-  } else {
-    EXPECT_TRUE(desk_action_view->combine_desks_button());
-    EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
-                u"Combine with Desk 1");
-  }
+  EXPECT_TRUE(desk_action_view->context_menu_button());
+  EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
+              u"Open context menu");
 
   EXPECT_THAT(desk_action_view->close_all_button()->GetTooltipText(),
               u"Close Desk 2 and windows");
@@ -10848,15 +10630,9 @@ TEST_P(DeskBarTest, DeskActionButtonTooltipForNewDesk) {
   PressAndReleaseKey(ui::VKEY_RETURN);
   views::test::RunScheduledLayout(desk_bar_view);
 
-  if (features::IsForestFeatureEnabled()) {
-    EXPECT_TRUE(desk_action_view->context_menu_button());
-    EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
-                u"Open context menu");
-  } else {
-    EXPECT_TRUE(desk_action_view->combine_desks_button());
-    EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
-                u"Combine with Desk 1");
-  }
+  EXPECT_TRUE(desk_action_view->context_menu_button());
+  EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
+              u"Open context menu");
 
   EXPECT_THAT(desk_action_view->close_all_button()->GetTooltipText(),
               u"Close D2 and windows");

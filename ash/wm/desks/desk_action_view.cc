@@ -40,19 +40,12 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
   // merged into the desk action context menu, behind the a feature flag. Thus,
   // we replace the combine desks button with a button to open the context menu
   // if the feature is enabled.
-  if (features::IsForestFeatureEnabled()) {
-    context_menu_button_ = AddChildView(std::make_unique<DeskActionButton>(
-        // The tooltip for the context menu button will be set by the button
-        // itself, as its tooltip is constant.
-        std::u16string(), DeskActionButton::Type::kContextMenu,
-        std::move(context_menu_callback), this));
-    context_menu_button_->AddObserver(this);
-  } else {
-    combine_desks_button_ = AddChildView(std::make_unique<DeskActionButton>(
-        combine_desks_target_name, DeskActionButton::Type::kCombineDesk,
-        std::move(combine_desks_callback), this));
-    combine_desks_button_->AddObserver(this);
-  }
+  context_menu_button_ = AddChildView(std::make_unique<DeskActionButton>(
+      // The tooltip for the context menu button will be set by the button
+      // itself, as its tooltip is constant.
+      std::u16string(), DeskActionButton::Type::kContextMenu,
+      std::move(context_menu_callback), this));
+  context_menu_button_->AddObserver(this);
 
   close_all_button_ = AddChildView(std::make_unique<DeskActionButton>(
       close_all_target_name, DeskActionButton::Type::kCloseDesk,
@@ -61,19 +54,12 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
 }
 
 DeskActionView::~DeskActionView() {
-  if (features::IsForestFeatureEnabled()) {
-    context_menu_button_->RemoveObserver(this);
-  } else {
-    combine_desks_button_->RemoveObserver(this);
-  }
+  context_menu_button_->RemoveObserver(this);
   close_all_button_->RemoveObserver(this);
 }
 
 bool DeskActionView::ChildHasFocus() const {
-  return (features::IsForestFeatureEnabled()
-              ? context_menu_button_->HasFocus()
-              : combine_desks_button_->HasFocus()) ||
-         close_all_button_->HasFocus();
+  return context_menu_button_->HasFocus() || close_all_button_->HasFocus();
 }
 
 void DeskActionView::OnViewFocused(views::View* observed) {

@@ -119,7 +119,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   auto* layer = view->layer();
   layer->SetFillsBoundsOpaquely(false);
 
-  if (features::IsForestFeatureEnabled() && !type_is_desk_button) {
+  if (!type_is_desk_button) {
     // Forest feature needs a transparent desks bar background. Still needs the
     // view layer to perform animations.
     return;
@@ -819,10 +819,7 @@ int DeskBarViewBase::GetPreferredBarHeight(aura::Window* root,
       if (state == State::kZero) {
         height = kDeskBarZeroStateHeight;
       } else {
-        height = DeskPreviewView::GetHeight(root) +
-                 (features::IsForestFeatureEnabled()
-                      ? kExpandedDeskBarHeight
-                      : kDeskBarNonPreviewAllocatedHeight);
+        height = DeskPreviewView::GetHeight(root) + kExpandedDeskBarHeight;
       }
       break;
   }
@@ -1924,19 +1921,10 @@ void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
 
     int desk_index = desk_controller->GetDeskIndex(desk);
     auto* desk_action_view = mini_view->desk_action_view();
-    const std::u16string combine_desk_tooltip =
-        desk_controller->GetCombineDesksTargetName(desk);
     const std::u16string close_desk_tooltip =
         desk->name().empty() && desk_index != -1
             ? desk_controller->GetDeskDefaultName(desk_index)
             : desk->name();
-    // The combine desks button only exists if the feature is disabled. The
-    // context menu button that would appear in its place does not need to
-    // update its tooltip as it doesn't use a formatted string.
-    if (!features::IsForestFeatureEnabled()) {
-      desk_action_view->combine_desks_button()->UpdateTooltip(
-          combine_desk_tooltip);
-    }
     desk_action_view->close_all_button()->UpdateTooltip(close_desk_tooltip);
   }
 }

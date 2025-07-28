@@ -88,10 +88,6 @@ bool ShouldShowSavedDesksOptions() {
 }
 
 bool ShouldShowSavedDesksOptionsForDesk(Desk* desk, DeskBarViewBase* bar_view) {
-  if (!features::IsForestFeatureEnabled()) {
-    return false;
-  }
-
   if (display::Screen::GetScreen()->InTabletMode()) {
     return false;
   }

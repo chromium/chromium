@@ -380,58 +380,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesMetrics) {
 #endif
 }
 
-// Test that clicking the release notes notification opens Help App.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       HelpAppV2LaunchReleaseNotesFromNotification) {
-  // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
-  if (ash::features::IsForestFeatureEnabled()) {
-    GTEST_SKIP() << "Skipping test body for Forest Feature.";
-  }
-
-  WaitForTestSystemAppInstall();
-  base::UserActionTester user_action_tester;
-  auto display_service =
-      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
-  auto release_notes_notification =
-      std::make_unique<ReleaseNotesNotification>(profile());
-  auto release_notes_storage = std::make_unique<ReleaseNotesStorage>(profile());
-
-  // Force the release notes notification to show up.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
-  release_notes_notification->MaybeShowReleaseNotes();
-  // Assert that the notification really is there.
-  auto notifications = display_service->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::TRANSIENT);
-  ASSERT_EQ(1u, notifications.size());
-  ASSERT_EQ("show_release_notes_notification", notifications[0].id());
-
-  GURL expected_url = GURL("chrome://help-app/updates");
-  content::TestNavigationObserver navigation_observer(expected_url);
-  navigation_observer.StartWatchingNewWebContents();
-  // Then click.
-  display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                 "show_release_notes_notification",
-                                 std::nullopt, std::nullopt);
-
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("ReleaseNotes.NotificationShown"));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "ReleaseNotes.LaunchedNotification"));
-#if BUILDFLAG(ENABLE_CROS_HELP_APP)
-  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
-  // Help app should have opened at the expected page.
-  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
-  EXPECT_EQ(1,
-            user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
-#else
-  // We just have the original browser. No new app opens.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(0,
-            user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
-#endif
-}
-
 // Test that the background page can trigger the release notes notification.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2ReleaseNotesNotificationFromBackground) {

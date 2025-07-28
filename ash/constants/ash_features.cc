@@ -3732,10 +3732,6 @@ bool ShouldForceEnableServerSideSpeechRecognition() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING);
 }
 
-bool IsForestFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kForestFeature);
-}
-
 bool IsFullscreenAfterUnlockAllowed() {
   return base::FeatureList::IsEnabled(kFullscreenAfterUnlockAllowed);
 }

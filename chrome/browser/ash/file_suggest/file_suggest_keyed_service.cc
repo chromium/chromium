@@ -36,21 +36,11 @@ FileSuggestKeyedService::FileSuggestKeyedService(
 
   proto_.Init();
 
-  if (features::IsLauncherContinueSectionWithRecentsEnabled() ||
-      features::IsForestFeatureEnabled()) {
-    drive_file_suggestion_provider_ =
-        std::make_unique<DriveRecentFileSuggestionProvider>(
-            profile, base::BindRepeating(
-                         &FileSuggestKeyedService::OnSuggestionProviderUpdated,
-                         weak_factory_.GetWeakPtr()));
-  } else {
-    drive_file_suggestion_provider_ =
-        std::make_unique<DriveFileSuggestionProvider>(
-            application_locale_storage, profile,
-            base::BindRepeating(
-                &FileSuggestKeyedService::OnSuggestionProviderUpdated,
-                weak_factory_.GetWeakPtr()));
-  }
+  drive_file_suggestion_provider_ =
+      std::make_unique<DriveRecentFileSuggestionProvider>(
+          profile, base::BindRepeating(
+                       &FileSuggestKeyedService::OnSuggestionProviderUpdated,
+                       weak_factory_.GetWeakPtr()));
 
   local_file_suggestion_provider_ =
       std::make_unique<LocalFileSuggestionProvider>(
