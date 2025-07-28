@@ -1239,6 +1239,9 @@
                   'ash/webui/file_manager|' \
                   'ui/file_manager'
     },
+    'fingerprinting_protection': {
+      'filepath': 'fingerprinting_protection',
+    },
     'firmware_update': {
       'filepath': 'ash/webui/firmware_update_ui/|' \
                   'chromeos/ash/components/dbus/fwupd/|' \
@@ -2969,6 +2972,10 @@
     'fileapi': ['kinuko+fileapi@chromium.org'],
     'filebrowse': ['rginda+watch@chromium.org'],
     'filesapp': ['filesapp-reviews@chromium.org'],
+    'fingerprinting_protection': ['johnykim+watch@google.com',
+                                  'ortuno+watch@chromium.org',
+                                  'rizvis+watch@google.com',
+                                  'thesalsa+watch@google.com'],
     'firmware_update': ['jimmyxgong+firmware-watch@chromium.org',
                         'michaelcheco+firmware-watch@google.com'],
     'float': ['toshikikikuchi+watch-float@chromium.org'],
