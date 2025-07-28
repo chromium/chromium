@@ -31,7 +31,19 @@ found in the LICENSE file.
     <style name="ToolbarHoverableButton" parent="ToolbarButton">
         <item name="android:background">@drawable/default_icon_background</item>
     </style>
-    <style name="ToolbarMenuButton" parent="ToolbarButton">
+    <!-- This desktop style adjusts dimensions based on is_desktop: buttons are smaller on desktop and include margins for maintaining the same visual spacing. -->
+    <style name="ToolbarHoverableButton.AdaptiveDensity" parent="ToolbarHoverableButton">
+        <item name="android:layout_width">?attr/toolbarButtonWidth</item>
+        <item name="android:layout_height">?attr/toolbarButtonHeight</item>
+        <item name="android:layout_marginVertical">?attr/toolbarButtonMarginVertical</item>
+        <item name="android:layout_marginHorizontal">?attr/toolbarButtonMarginHorizontal</item>
+    </style>
+    <style name="ToolbarHoverableMenuButton.AdaptiveDensity" parent="ToolbarHoverableButton.AdaptiveDensity">
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingEnd">@dimen/button_end_padding</item>
+        <item name="android:background">@drawable/toolbar_menu_button_ripple</item>
+    </style>
+    <style name="ToolbarMenuButton" parent="ToolbarHoverableButton">
         <item name="android:layout_gravity">top</item>
         <item name="android:paddingEnd">@dimen/button_end_padding</item>
         <item name="android:background">@drawable/toolbar_menu_button_ripple</item>

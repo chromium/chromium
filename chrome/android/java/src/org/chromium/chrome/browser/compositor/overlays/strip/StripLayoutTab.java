@@ -857,7 +857,7 @@ public class StripLayoutTab extends StripLayoutView {
         float dpToPx = getDpToPx();
         TypedArray closeAttributes =
                 mContext.obtainStyledAttributes(
-                        new int[] {R.attr.toolbarButtonWidth, R.attr.toolbarButtonHeight});
+                        new int[] {R.attr.closeButtonWidth, R.attr.closeButtonHeight});
         int widthPx = closeAttributes.getDimensionPixelSize(0, 0);
         int heightPx = closeAttributes.getDimensionPixelSize(1, 0);
         closeAttributes.recycle();

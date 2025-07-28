@@ -10,4 +10,8 @@ found in the LICENSE file.
   <attr name="defaultMediumFontFamily" format="reference|string" />
   <attr name="toolbarButtonWidth" format="dimension" />
   <attr name="toolbarButtonHeight" format="dimension" />
+  <attr name="toolbarButtonMarginHorizontal" format="dimension" />
+  <attr name="toolbarButtonMarginVertical" format="dimension" />
+  <attr name="closeButtonWidth" format="dimension" />
+  <attr name="closeButtonHeight" format="dimension" />
 </resources>

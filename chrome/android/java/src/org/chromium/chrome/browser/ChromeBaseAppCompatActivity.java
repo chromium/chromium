@@ -519,7 +519,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         }
 
         if (StripLayoutUtils.shouldApplyMoreDensity()) {
-            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_ToolbarButtonSizeDesktop);
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_DesktopDensity);
         }
     }
 

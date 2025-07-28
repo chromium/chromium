@@ -37,6 +37,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for MenuButton. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -51,8 +52,7 @@ public class MenuButtonTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Theme_MaterialComponents);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mMenuButton =
                 (MenuButton)
                         ((ViewGroup)

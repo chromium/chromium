@@ -8,12 +8,24 @@ found in the LICENSE file.
     <!-- Toolbar dimensions -->
     <dimen name="toolbar_height_no_shadow">@dimen/default_action_bar_height</dimen>
     <dimen name="toolbar_url_focus_height_increase">8dp</dimen>
-    <dimen name="toolbar_button_width">48dp</dimen>
-    <dimen name="toolbar_button_height">56dp</dimen>
-    <dimen name="toolbar_button_width_desktop">24dp</dimen>
-    <dimen name="toolbar_button_height_desktop">24dp</dimen>
     <dimen name="toolbar_identity_disc_size">24dp</dimen>
     <dimen name="toolbar_url_focus_translation_x">10dp</dimen>
+    <dimen name="toolbar_button_width">48dp</dimen>
+    <dimen name="toolbar_button_height">56dp</dimen>
+    <dimen name="toolbar_button_margin_horizontal">0dp</dimen>
+    <dimen name="toolbar_button_margin_vertical">0dp</dimen>
+    <dimen name="toolbar_button_margin_horizontal_desktop">4dp</dimen>
+    <dimen name="toolbar_button_margin_vertical_desktop">8dp</dimen>
+
+    <!-- Desktop toolbar button dimensions should align with the hover background size -->
+    <dimen name="toolbar_button_width_desktop">@dimen/large_icon_background_size</dimen>
+    <dimen name="toolbar_button_height_desktop">@dimen/large_icon_background_size</dimen>
+
+    <!-- Close button dimensions -->
+    <dimen name="close_button_width">48dp</dimen>
+    <dimen name="close_button_height">48dp</dimen>
+    <dimen name="close_button_width_desktop">24dp</dimen>
+    <dimen name="close_button_height_desktop">24dp</dimen>
 
     <!-- URL bar -->
     <dimen name="url_bar_vertical_padding">@dimen/location_bar_vertical_margin</dimen>
