@@ -30,7 +30,7 @@ public interface ExternalNavigationDelegate {
      * resource fetching via special logic in the ContextWrapper object that is wrapping the
      * Activity.
      */
-    Context getContext();
+    @Nullable Context getContext();
 
     /**
      * Determine if this app is the default or only handler for a given intent. If true, this app
@@ -63,13 +63,19 @@ public interface ExternalNavigationDelegate {
     /** Determine if the application of the embedder is in the foreground. */
     boolean isApplicationInForeground();
 
-    /** @return The WindowAndroid instance associated with this delegate instance. */
-    WindowAndroid getWindowAndroid();
+    /**
+     * @return The WindowAndroid instance associated with this delegate instance.
+     */
+    @Nullable WindowAndroid getWindowAndroid();
 
-    /** @return The WebContents instance associated with this delegate instance. */
-    WebContents getWebContents();
+    /**
+     * @return The WebContents instance associated with this delegate instance.
+     */
+    @Nullable WebContents getWebContents();
 
-    /** @return Whether this delegate has a valid tab available. */
+    /**
+     * @return Whether this delegate has a valid tab available.
+     */
     boolean hasValidTab();
 
     /**
@@ -168,5 +174,5 @@ public interface ExternalNavigationDelegate {
      * Returns an intent that targets the embedder application if opening the url in incognito
      * should be prevented. Returns null otherwise.
      */
-    Intent createIntentToPreventIncognitoAccess(GURL url);
+    @Nullable Intent createIntentToPreventIncognitoAccess(GURL url);
 }

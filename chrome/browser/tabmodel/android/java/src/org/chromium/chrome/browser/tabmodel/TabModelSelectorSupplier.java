@@ -25,8 +25,10 @@ public class TabModelSelectorSupplier extends UnownedUserDataSupplier<TabModelSe
     private static @Nullable ObservableSupplierImpl<TabModelSelector> sInstanceForTesting;
 
     /** Return {@link TabModelSelector} supplier associated with the given {@link WindowAndroid}. */
-    public static @Nullable ObservableSupplier<TabModelSelector> from(WindowAndroid windowAndroid) {
+    public static @Nullable ObservableSupplier<TabModelSelector> from(
+            @Nullable WindowAndroid windowAndroid) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
+        if (windowAndroid == null) return null;
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
@@ -34,14 +36,14 @@ public class TabModelSelectorSupplier extends UnownedUserDataSupplier<TabModelSe
      * Return {@link TabModelSelector} associated with the given {@link WindowAndroid} or null if
      * none exists.
      */
-    public static @Nullable TabModelSelector getValueOrNullFrom(WindowAndroid windowAndroid) {
+    public static @Nullable TabModelSelector getValueOrNullFrom(
+            @Nullable WindowAndroid windowAndroid) {
         ObservableSupplier<TabModelSelector> supplier = from(windowAndroid);
-        if (supplier == null) return null;
-        return supplier.get();
+        return supplier == null ? null : supplier.get();
     }
 
     /** Return the current {@link Tab} associated with {@link WindowAndroid} or null. */
-    public static @Nullable Tab getCurrentTabFrom(WindowAndroid windowAndroid) {
+    public static @Nullable Tab getCurrentTabFrom(@Nullable WindowAndroid windowAndroid) {
         ObservableSupplier<TabModelSelector> supplier = from(windowAndroid);
         return supplier == null || !supplier.hasValue() ? null : supplier.get().getCurrentTab();
     }
@@ -53,8 +55,7 @@ public class TabModelSelectorSupplier extends UnownedUserDataSupplier<TabModelSe
 
     /** Sets an instance for testing. */
     public static void setInstanceForTesting(TabModelSelector tabModelSelector) {
-        sInstanceForTesting = new ObservableSupplierImpl<>();
-        sInstanceForTesting.set(tabModelSelector);
+        sInstanceForTesting = new ObservableSupplierImpl<>(tabModelSelector);
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 }

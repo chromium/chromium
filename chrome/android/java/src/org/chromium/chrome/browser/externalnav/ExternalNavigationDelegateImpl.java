@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.externalnav;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +14,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-
-import androidx.annotation.NonNull;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -22,6 +23,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -43,11 +46,12 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** The main implementation of the {@link ExternalNavigationDelegate}. */
+@NullMarked
 public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegate {
     protected final Context mApplicationContext;
     private final Tab mTab;
     private final TabObserver mTabObserver;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final @Nullable Supplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private boolean mIsTabDestroyed;
 
@@ -66,7 +70,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public Context getContext() {
+    public @Nullable Context getContext() {
         if (mTab.getWindowAndroid() == null) return null;
         return mTab.getWindowAndroid().getContext().get();
     }
@@ -132,7 +136,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public void closeTab() {
         if (!hasValidTab()) return;
-        if (!mTabModelSelectorSupplier.hasValue()) return;
+        if (mTabModelSelectorSupplier == null || !mTabModelSelectorSupplier.hasValue()) return;
         mTabModelSelectorSupplier
                 .get()
                 .tryCloseTab(
@@ -182,13 +186,13 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public WindowAndroid getWindowAndroid() {
+    public @Nullable WindowAndroid getWindowAndroid() {
         if (mTab == null) return null;
         return mTab.getWindowAndroid();
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         if (mTab == null) return null;
         return mTab.getWebContents();
     }
@@ -258,9 +262,10 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public void notifyCctPasswordSavingRecorderOfExternalNavigation() {
+        WindowAndroid windowAndroid = assumeNonNull(getWindowAndroid());
         CctPasswordSavingMetricsRecorderBridge cctSavingMetricsRecorder =
                 CctPasswordSavingMetricsRecorderBridge.KEY.retrieveDataFromHost(
-                        getWindowAndroid().getUnownedUserDataHost());
+                        windowAndroid.getUnownedUserDataHost());
         if (cctSavingMetricsRecorder != null) {
             cctSavingMetricsRecorder.onExternalNavigation();
         }
@@ -268,11 +273,11 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public void reportIntentToSafeBrowsing(Intent intent) {
-        SafeBrowsingBridge.reportIntent(mTab.getWebContents(), intent);
+        SafeBrowsingBridge.reportIntent(assertNonNull(mTab.getWebContents()), intent);
     }
 
     @Override
-    public Intent createIntentToPreventIncognitoAccess(@NonNull GURL url) {
+    public @Nullable Intent createIntentToPreventIncognitoAccess(GURL url) {
         if (!url.getSpec().startsWith(UrlConstants.CHROME_EXTENSIONS_URL)) {
             return null;
         }

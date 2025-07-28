@@ -540,7 +540,8 @@ public class ExternalNavigationHandler {
      */
     public ExternalNavigationHandler(ExternalNavigationDelegate delegate) {
         mDelegate = delegate;
-        mModalDialogManager = assumeNonNull(mDelegate.getWindowAndroid().getModalDialogManager());
+        WindowAndroid windowAndroid = assumeNonNull(mDelegate.getWindowAndroid());
+        mModalDialogManager = assumeNonNull(windowAndroid.getModalDialogManager());
     }
 
     private static boolean debug() {
@@ -819,9 +820,8 @@ public class ExternalNavigationHandler {
                     }
                 };
         if (!mDelegate.hasValidTab()) return;
-        mDelegate
-                .getWindowAndroid()
-                .requestPermissions(new String[] {permissionNeeded}, permissionCallback);
+        WindowAndroid windowAndroid = assumeNonNull(mDelegate.getWindowAndroid());
+        windowAndroid.requestPermissions(new String[] {permissionNeeded}, permissionCallback);
     }
 
     // https://crbug.com/1232514: On Android S, since WebAPKs aren't verified apps they are
@@ -1219,9 +1219,12 @@ public class ExternalNavigationHandler {
         if (intentResolveInfo == null) return false;
 
         ActivityInfo info = intentResolveInfo.activityInfo;
-        if (info != null && mDelegate.getContext().getPackageName().equals(info.packageName)) {
-            if (debug()) Log.i(TAG, "Navigation to self.");
-            return true;
+        if (info != null) {
+            Context context = mDelegate.getContext();
+            if (context != null && context.getPackageName().equals(info.packageName)) {
+                if (debug()) Log.i(TAG, "Navigation to self.");
+                return true;
+            }
         }
 
         // We don't want the user seeing the chooser and choosing the browser, but resolving to
@@ -1256,7 +1259,7 @@ public class ExternalNavigationHandler {
             return false;
         }
 
-        String selfPackageName = mDelegate.getContext().getPackageName();
+        String selfPackageName = assumeNonNull(mDelegate.getContext()).getPackageName();
         boolean matchesOtherPackage = false;
         for (ResolveInfo resolveInfo : resolveInfos.get()) {
             ActivityInfo info = resolveInfo.activityInfo;
@@ -1420,6 +1423,7 @@ public class ExternalNavigationHandler {
             ExternalNavigationParams params, Intent intent, GURL fallbackUrl) {
         Context context = mDelegate.getContext();
         if (!canLaunchIncognitoIntent(intent, context)) return false;
+        assumeNonNull(context);
 
         if (mDelegate.hasCustomLeavingIncognitoDialog()) {
             mDelegate.presentLeavingIncognitoModalDialog(
@@ -1437,7 +1441,7 @@ public class ExternalNavigationHandler {
     }
 
     @VisibleForTesting
-    protected boolean canLaunchIncognitoIntent(Intent intent, Context context) {
+    protected boolean canLaunchIncognitoIntent(Intent intent, @Nullable Context context) {
         if (!mDelegate.hasValidTab()) return false;
         if (ContextUtils.activityFromContext(context) == null) return false;
         return true;
@@ -1782,14 +1786,13 @@ public class ExternalNavigationHandler {
     private boolean resolvesToNonExportedActivity(List<ResolveInfo> infos) {
         for (ResolveInfo info : infos) {
             // Android will prevent launching non-exported Activities in other packages.
-            if (info.activityInfo != null
-                    && !info.activityInfo.exported
-                    && mDelegate
-                            .getContext()
-                            .getPackageName()
-                            .equals(info.activityInfo.packageName)) {
-                Log.w(TAG, "Web Intent resolves to non-exported Activity.");
-                return true;
+            if (info.activityInfo != null && !info.activityInfo.exported) {
+                Context context = mDelegate.getContext();
+                if (context != null
+                        && context.getPackageName().equals(info.activityInfo.packageName)) {
+                    Log.w(TAG, "Web Intent resolves to non-exported Activity.");
+                    return true;
+                }
             }
         }
 
@@ -2276,67 +2279,63 @@ public class ExternalNavigationHandler {
 
         // Call startActivityForResult on the PICK_ACTIVITY intent, which will set the component of
         // the data result to the component of the chosen app.
-        mDelegate
-                .getWindowAndroid()
-                .showCancelableIntent(
-                        pickerIntent,
-                        new WindowAndroid.IntentCallback() {
-                            @Override
-                            public void onIntentCompleted(int resultCode, Intent data) {
-                                RequiredCallback<AsyncActionTakenParams> callback =
-                                        params.getRequiredAsyncActionTakenCallback();
-                                assert callback != null;
-                                // If |data| is null, the user backed out of the intent chooser.
-                                if (data == null) {
-                                    callback.onResult(AsyncActionTakenParams.forNoAction());
-                                    return;
-                                }
+        WindowAndroid windowAndroid = assumeNonNull(mDelegate.getWindowAndroid());
+        windowAndroid.showCancelableIntent(
+                pickerIntent,
+                new WindowAndroid.IntentCallback() {
+                    @Override
+                    public void onIntentCompleted(int resultCode, Intent data) {
+                        RequiredCallback<AsyncActionTakenParams> callback =
+                                params.getRequiredAsyncActionTakenCallback();
+                        assert callback != null;
+                        // If |data| is null, the user backed out of the intent chooser.
+                        if (data == null) {
+                            callback.onResult(AsyncActionTakenParams.forNoAction());
+                            return;
+                        }
 
-                                // Quirk of how we use the ActivityChooser - if the embedding app is
-                                // chosen we get an intent back with ACTION_CREATE_SHORTCUT.
-                                if (assumeNonNull(data.getAction())
-                                        .equals(Intent.ACTION_CREATE_SHORTCUT)) {
-                                    // Ensure we don't loop asking the user to choose an app, then
-                                    // re-asking when we navigate to the same URL.
-                                    if (params.getRedirectHandler().isOnNavigation()) {
-                                        params.getRedirectHandler()
-                                                .setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
-                                    }
-
-                                    // It's pretty arbitrary whether to prefer the data URL or the
-                                    // fallback URL here. We could consider preferring the
-                                    // fallback URL, as the URL was probably intending to leave
-                                    // Chrome, but loading the URL the site was trying to load in
-                                    // a browser seems like the better choice
-                                    // and matches what would have happened had the regular
-                                    // chooser dialog shown up and the user selected this app.
-                                    if (UrlUtilities.isAcceptedScheme(intentTargetUrl)) {
-                                        callback.onResult(
-                                                AsyncActionTakenParams.forNavigate(
-                                                        intentTargetUrl, params));
-                                    } else if (!assumeNonNull(browserFallbackUrl).isEmpty()) {
-                                        callback.onResult(
-                                                AsyncActionTakenParams.forNavigate(
-                                                        browserFallbackUrl, params));
-                                    } else {
-                                        callback.onResult(AsyncActionTakenParams.forNoAction());
-                                    }
-                                    return;
-                                }
-
-                                // Set the package for the original intent to the chosen app and
-                                // start it. Note that a selector cannot be set at the same time
-                                // as a package.
-                                intent.setSelector(null);
-                                intent.setPackage(
-                                        assumeNonNull(data.getComponent()).getPackageName());
-                                startActivity(intent, params);
-                                callback.onResult(
-                                        AsyncActionTakenParams.forExternalIntentLaunched(
-                                                true, params));
+                        // Quirk of how we use the ActivityChooser - if the embedding app is
+                        // chosen we get an intent back with ACTION_CREATE_SHORTCUT.
+                        if (assumeNonNull(data.getAction()).equals(Intent.ACTION_CREATE_SHORTCUT)) {
+                            // Ensure we don't loop asking the user to choose an app, then
+                            // re-asking when we navigate to the same URL.
+                            if (params.getRedirectHandler().isOnNavigation()) {
+                                params.getRedirectHandler()
+                                        .setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
                             }
-                        },
-                        null);
+
+                            // It's pretty arbitrary whether to prefer the data URL or the
+                            // fallback URL here. We could consider preferring the
+                            // fallback URL, as the URL was probably intending to leave
+                            // Chrome, but loading the URL the site was trying to load in
+                            // a browser seems like the better choice
+                            // and matches what would have happened had the regular
+                            // chooser dialog shown up and the user selected this app.
+                            if (UrlUtilities.isAcceptedScheme(intentTargetUrl)) {
+                                callback.onResult(
+                                        AsyncActionTakenParams.forNavigate(
+                                                intentTargetUrl, params));
+                            } else if (!assumeNonNull(browserFallbackUrl).isEmpty()) {
+                                callback.onResult(
+                                        AsyncActionTakenParams.forNavigate(
+                                                browserFallbackUrl, params));
+                            } else {
+                                callback.onResult(AsyncActionTakenParams.forNoAction());
+                            }
+                            return;
+                        }
+
+                        // Set the package for the original intent to the chosen app and
+                        // start it. Note that a selector cannot be set at the same time
+                        // as a package.
+                        intent.setSelector(null);
+                        intent.setPackage(assumeNonNull(data.getComponent()).getPackageName());
+                        startActivity(intent, params);
+                        callback.onResult(
+                                AsyncActionTakenParams.forExternalIntentLaunched(true, params));
+                    }
+                },
+                null);
         return OverrideUrlLoadingResult.forAsyncAction();
     }
 
@@ -2384,8 +2383,8 @@ public class ExternalNavigationHandler {
         }
 
         String packageName = intentResolveInfo.activityInfo.packageName;
-        PackageManager pm = mDelegate.getContext().getPackageManager();
-        ApplicationInfo applicationInfo = null;
+        PackageManager pm = assumeNonNull(mDelegate.getContext()).getPackageManager();
+        ApplicationInfo applicationInfo;
         try {
             applicationInfo = pm.getApplicationInfo(packageName, 0);
         } catch (NameNotFoundException e) {
@@ -2519,7 +2518,8 @@ public class ExternalNavigationHandler {
     }
 
     protected boolean resolveInfoContainsSelf(List<ResolveInfo> resolveInfos) {
-        return resolveInfoContainsPackage(resolveInfos, mDelegate.getContext().getPackageName());
+        return resolveInfoContainsPackage(
+                resolveInfos, assumeNonNull(mDelegate.getContext()).getPackageName());
     }
 
     public static boolean resolveInfoContainsPackage(
@@ -2574,8 +2574,9 @@ public class ExternalNavigationHandler {
         // This is required to prevent permission prompt when uses wants to access offline pages.
         if (url.getPath().startsWith(PathUtils.getDataDirectory())) return false;
 
-        return !mDelegate.getWindowAndroid().hasPermission(permissionNeeded)
-                && mDelegate.getWindowAndroid().canRequestPermission(permissionNeeded);
+        WindowAndroid windowAndroid = assumeNonNull(mDelegate.getWindowAndroid());
+        return !windowAndroid.hasPermission(permissionNeeded)
+                && windowAndroid.canRequestPermission(permissionNeeded);
     }
 
     /** @return whether this navigation is from the search results page. */
