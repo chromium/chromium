@@ -14,10 +14,6 @@
 
 class Profile;
 
-namespace base {
-class Value;
-}
-
 struct RegisterOptions {
   enum class SyncMode {
     kSync,

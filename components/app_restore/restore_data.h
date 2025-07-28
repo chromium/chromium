@@ -14,10 +14,6 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_info.h"
 
-namespace base {
-class Value;
-}
-
 namespace app_restore {
 
 struct AppLaunchInfo;

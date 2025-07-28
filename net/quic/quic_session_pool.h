@@ -70,10 +70,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/scheme_host_port.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace quic {
 class QuicAlarmFactory;
 class QuicClock;

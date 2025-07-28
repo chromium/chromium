@@ -22,7 +22,6 @@ class GURL;
 namespace base {
 class FilePath;
 class TimeDelta;
-class Value;
 }  // namespace base
 
 namespace crx_file {

@@ -12,10 +12,6 @@
 // the following spec:
 // https://w3c.github.io/browser-payment-api/#dom-paymentcurrencyamount
 
-namespace base {
-class Value;
-}
-
 namespace payments {
 
 // Populates the properties of |amount| from |dictionary_value|.

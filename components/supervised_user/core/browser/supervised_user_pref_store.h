@@ -17,10 +17,6 @@
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "base/memory/weak_ptr.h"
 
-namespace base {
-class Value;
-}
-
 class PrefValueMap;
 
 namespace supervised_user {

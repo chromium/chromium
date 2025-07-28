@@ -26,10 +26,6 @@
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 
-namespace base {
-class Value;
-}
-
 namespace sync_pb {
 class EntitySpecifics;
 class PreferenceSpecifics;

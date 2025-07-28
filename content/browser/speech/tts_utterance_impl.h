@@ -16,10 +16,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_utterance.h"
 
-namespace base {
-class Value;
-}
-
 namespace content {
 class BrowserContext;
 class WebContents;

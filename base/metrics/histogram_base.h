@@ -22,7 +22,6 @@
 
 namespace base {
 
-class Value;
 class HistogramBase;
 class HistogramSamples;
 class Pickle;

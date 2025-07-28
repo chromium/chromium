@@ -36,7 +36,6 @@ class GURL;
 namespace base {
 class CommandLine;
 class TimeDelta;
-class Value;
 }  // namespace base
 
 namespace updater {

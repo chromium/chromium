@@ -13,10 +13,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace web_app {
 
 namespace proto {

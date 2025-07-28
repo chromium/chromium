@@ -16,10 +16,6 @@ namespace enterprise_management {
 class ChromeDeviceSettingsProto;
 }
 
-namespace base {
-class Value;
-}
-
 namespace policy {
 
 class ExternalDataManager;

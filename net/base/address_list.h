@@ -18,10 +18,6 @@
 
 struct addrinfo;
 
-namespace base {
-class Value;
-}
-
 namespace net {
 
 class IPAddress;
