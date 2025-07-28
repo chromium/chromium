@@ -388,9 +388,9 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   EXPECT_EQ(GetStaticConditions(),
             IfSupported(SearchEngineChoiceScreenConditions::kEligible));
-  EXPECT_EQ(GetDynamicConditions(),
-            IfSupported(
-                SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine));
+  EXPECT_EQ(
+      GetDynamicConditions(),
+      IfSupported(SearchEngineChoiceScreenConditions::kHasCustomSearchEngine));
 }
 
 // Specs for a multi-run test. Defines changes to on-device prefs, actions on

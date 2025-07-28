@@ -143,6 +143,6 @@ TEST_F(SearchEngineChoiceUtilTest,
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
       search_engines::SearchEngineChoiceScreenConditions::
-          kHasNonGoogleSearchEngine,
+          kHasCustomSearchEngine,
       1);
 }

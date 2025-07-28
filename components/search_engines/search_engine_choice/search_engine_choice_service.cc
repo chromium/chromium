@@ -81,17 +81,6 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
   }
   return false;
 }
-
-bool IsSetOrBlockedByPolicy(const TemplateURL* default_search_engine) {
-  return !default_search_engine ||
-         default_search_engine->CreatedByDefaultSearchProviderPolicy();
-}
-
-bool IsDefaultSearchProviderSetOrBlockedByPolicy(
-    const TemplateURLService& template_url_service) {
-  return IsSetOrBlockedByPolicy(
-      template_url_service.GetDefaultSearchProvider());
-}
 #endif
 
 SearchEngineType GetDefaultSearchEngineType(
@@ -302,7 +291,6 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     const TemplateURLService& template_url_service) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
-  // TODO(b/319050536): Remove the function declaration on these platforms.
   return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
   base::CommandLine* const command_line =
@@ -313,7 +301,8 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
-  if (IsSearchEngineChoiceCompleted(*profile_prefs_)) {
+  ChoiceStatus status = EvaluateSearchProviderChoice(template_url_service);
+  if (status == ChoiceStatus::kValid) {
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
@@ -328,7 +317,7 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
   }
 
   if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service) ||
-      IsDefaultSearchProviderSetOrBlockedByPolicy(template_url_service)) {
+      status == ChoiceStatus::kCurrentIsSetByPolicy) {
     return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
 
@@ -341,11 +330,10 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     const TemplateURLService& template_url_service) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
-  // TODO(b/319050536): Remove the function declaration on these platforms.
   return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
-  // Don't show the dialog if the choice has already been made.
-  if (IsSearchEngineChoiceCompleted(*profile_prefs_)) {
+  ChoiceStatus status = EvaluateSearchProviderChoice(template_url_service);
+  if (status == ChoiceStatus::kValid) {
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
@@ -354,50 +342,32 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kExtensionControlled;
   }
 
-  const TemplateURL* default_search_engine =
-      template_url_service.GetDefaultSearchProvider();
-  if (IsSetOrBlockedByPolicy(default_search_engine)) {
-    // It is possible that between the static checks at service creation (around
-    // the time the profile was loaded) and the moment a compatible URL is
-    // loaded to show the search engine choice dialog, some new policies come in
-    // and take control of the default search provider. If we proceeded here,
-    // the choice screen could be shown and we might attempt to set a DSE based
-    // on the user selection, but that would be ignored.
-    return SearchEngineChoiceScreenConditions::kControlledByPolicy;
+  switch (status) {
+    case ChoiceStatus::kValid:
+      NOTREACHED();  // Already checked above.
+    case ChoiceStatus::kDefaultSearchDisabled:
+    case ChoiceStatus::kCurrentIsSetByPolicy:
+      // It is possible that between the static checks at service creation
+      // (around the time the profile was loaded) and the moment a compatible
+      // URL is loaded to show the search engine choice dialog, some new
+      // policies come in and take control of the default search provider. If we
+      // proceeded here, the choice screen could be shown and we might attempt
+      // to set a DSE based on the user selection, but that would be ignored.
+      return SearchEngineChoiceScreenConditions::kControlledByPolicy;
+    case ChoiceStatus::kCurrentIsDistributionCustom:
+      return SearchEngineChoiceScreenConditions::
+          kHasDistributionCustomSearchEngine;
+    case ChoiceStatus::kCurrentIsUnknownPrepopulated:
+      return SearchEngineChoiceScreenConditions::
+          kHasRemovedPrepopulatedSearchEngine;
+    case ChoiceStatus::kCurrentIsNotPrepopulated:
+      return SearchEngineChoiceScreenConditions::kHasCustomSearchEngine;
+    case ChoiceStatus::kCurrentIsNonGooglePrepopulated:
+      return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
+    case ChoiceStatus::kNotMade:
+    case ChoiceStatus::kFromRestoredDevice:
+      return SearchEngineChoiceScreenConditions::kEligible;
   }
-  CHECK(default_search_engine);
-
-  if (!IsSearchEngineChoiceInvalid(profile_prefs_.get()) &&
-      default_search_engine->GetEngineType(
-          template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
-    return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
-  }
-
-  if (!template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
-          default_search_engine)) {
-    return SearchEngineChoiceScreenConditions::kHasCustomSearchEngine;
-  }
-
-  if (default_search_engine->prepopulate_id() >
-      TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
-    // Don't show a choice screen when the user has a distribution custom search
-    // engine as default (they have prepopulate ID > 1000).
-    // TODO(crbug.com/324880292): Revisit how those are handled.
-    return SearchEngineChoiceScreenConditions::
-        kHasDistributionCustomSearchEngine;
-  }
-
-  if (!prepopulate_data_resolver_->GetEngineFromFullList(
-          default_search_engine->prepopulate_id())) {
-    // The current default search engine was at some point part of the
-    // prepopulated data (it has a "normal"-looking ID), but it has since been
-    // removed. Follow what we do for custom search engines, don't show the
-    // choice screen.
-    return SearchEngineChoiceScreenConditions::
-        kHasRemovedPrepopulatedSearchEngine;
-  }
-
-  return SearchEngineChoiceScreenConditions::kEligible;
 #endif
 }
 
@@ -658,6 +628,60 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
 
   MaybeRecordChoiceScreenDisplayState(display_state.value(),
                                       /*is_from_cached_state=*/true);
+}
+
+SearchEngineChoiceService::ChoiceStatus
+SearchEngineChoiceService::EvaluateSearchProviderChoice(
+    const TemplateURLService& template_url_service) {
+  if (GetChoiceCompletionMetadata(*profile_prefs_).has_value()) {
+    return ChoiceStatus::kValid;
+  }
+
+  const TemplateURL* default_search_provider =
+      template_url_service.GetDefaultSearchProvider();
+  if (!default_search_provider) {
+    return ChoiceStatus::kDefaultSearchDisabled;
+  }
+
+  if (default_search_provider->CreatedByDefaultSearchProviderPolicy()) {
+    return ChoiceStatus::kCurrentIsSetByPolicy;
+  }
+
+  if (!template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
+          default_search_provider)) {
+    return ChoiceStatus::kCurrentIsNotPrepopulated;
+  }
+
+  if (default_search_provider->prepopulate_id() >
+      TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
+    // Don't show a choice screen when the user has a distribution custom
+    // search engine as default (they have prepopulate ID > 1000).
+    // TODO(crbug.com/324880292): Revisit how those are handled.
+    return ChoiceStatus::kCurrentIsDistributionCustom;
+  }
+
+  if (prepopulate_data_resolver_->GetEngineFromFullList(
+          default_search_provider->prepopulate_id()) == nullptr) {
+    // The current default search engine was at some point part of the
+    // prepopulated data (it has a "normal"-looking ID), but it has since been
+    // removed.
+    return ChoiceStatus::kCurrentIsUnknownPrepopulated;
+  }
+
+  if (IsSearchEngineChoiceInvalid(profile_prefs_.get())) {
+    // Potentially eligible for choice screens
+    return ChoiceStatus::kFromRestoredDevice;
+  }
+
+  if (default_search_provider->GetEngineType(
+          template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
+    return ChoiceStatus::kCurrentIsNonGooglePrepopulated;
+  }
+
+  // We don't have a good way for now to distinguish explicit Google selections
+  // from the settings, so we consider Google DSP as "user didn't choose and
+  // still has the factory default".
+  return ChoiceStatus::kNotMade;  // Potentially eligible for choice screens
 }
 
 void SearchEngineChoiceService::ResetState() {
