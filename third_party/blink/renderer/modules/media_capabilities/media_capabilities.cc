@@ -96,15 +96,6 @@ constexpr const char* kApplicationMimeTypePrefix = "application/";
 constexpr const char* kAudioMimeTypePrefix = "audio/";
 constexpr const char* kVideoMimeTypePrefix = "video/";
 constexpr const char* kCodecsMimeTypeParam = "codecs";
-constexpr const char* kSmpteSt2086HdrMetadataType = "smpteSt2086";
-constexpr const char* kSmpteSt209410HdrMetadataType = "smpteSt2094-10";
-constexpr const char* kSmpteSt209440HdrMetadataType = "smpteSt2094-40";
-constexpr const char* kSrgbColorGamut = "srgb";
-constexpr const char* kP3ColorGamut = "p3";
-constexpr const char* kRec2020ColorGamut = "rec2020";
-constexpr const char* kSrgbTransferFunction = "srgb";
-constexpr const char* kPqTransferFunction = "pq";
-constexpr const char* kHlgTransferFunction = "hlg";
 
 // Gets parameters for kMediaLearningSmoothnessExperiment field trial. Will
 // provide sane defaults when field trial not enabled. Values of -1 indicate
@@ -474,10 +465,12 @@ WebMediaConfiguration ToWebMediaConfiguration(
 
   // |type| is required.
   DCHECK(configuration->hasType());
-  if (configuration->type() == "record") {
-    web_configuration.type = MediaConfigurationType::kRecord;
-  } else {
-    NOTREACHED();
+  switch (configuration->type().AsEnum()) {
+    case V8MediaEncodingType::Enum::kRecord:
+      web_configuration.type = MediaConfigurationType::kRecord;
+      break;
+    case V8MediaEncodingType::Enum::kWebrtc:
+      NOTREACHED();
   }
 
   if (configuration->hasAudio()) {
@@ -561,46 +554,48 @@ void ParseDynamicRangeConfigurations(
   // give precedence to the latter.
 
   if (video_config->hasHdrMetadataType()) {
-    const auto& hdr_metadata_type = video_config->hdrMetadataType();
-    // TODO(crbug.com/1092328): Switch by V8HdrMetadataType::Enum.
-    if (hdr_metadata_type == kSmpteSt2086HdrMetadataType) {
-      *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2086;
-    } else if (hdr_metadata_type == kSmpteSt209410HdrMetadataType) {
-      *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_10;
-    } else if (hdr_metadata_type == kSmpteSt209440HdrMetadataType) {
-      *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_40;
-    } else {
-      NOTREACHED();
+    switch (video_config->hdrMetadataType().AsEnum()) {
+      case V8HdrMetadataType::Enum::kSmpteSt2086:
+        *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2086;
+        break;
+      case V8HdrMetadataType::Enum::kSmpteSt209410:
+        *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_10;
+        break;
+      case V8HdrMetadataType::Enum::kSmpteSt209440:
+        *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_40;
+        break;
     }
   } else {
     *hdr_metadata = gfx::HdrMetadataType::kNone;
   }
 
   if (video_config->hasColorGamut()) {
-    const auto& color_gamut = video_config->colorGamut();
-    // TODO(crbug.com/1092328): Switch by V8ColorGamut::Enum.
-    if (color_gamut == kSrgbColorGamut) {
-      color_space->primaries = media::VideoColorSpace::PrimaryID::BT709;
-    } else if (color_gamut == kP3ColorGamut) {
-      color_space->primaries = media::VideoColorSpace::PrimaryID::SMPTEST431_2;
-    } else if (color_gamut == kRec2020ColorGamut) {
-      color_space->primaries = media::VideoColorSpace::PrimaryID::BT2020;
-    } else {
-      NOTREACHED();
+    switch (video_config->colorGamut().AsEnum()) {
+      case V8ColorGamut::Enum::kSRGB:
+        color_space->primaries = media::VideoColorSpace::PrimaryID::BT709;
+        break;
+      case V8ColorGamut::Enum::kP3:
+        color_space->primaries =
+            media::VideoColorSpace::PrimaryID::SMPTEST431_2;
+        break;
+      case V8ColorGamut::Enum::kRec2020:
+        color_space->primaries = media::VideoColorSpace::PrimaryID::BT2020;
+        break;
     }
   }
 
   if (video_config->hasTransferFunction()) {
-    const auto& transfer_function = video_config->transferFunction();
-    // TODO(crbug.com/1092328): Switch by V8TransferFunction::Enum.
-    if (transfer_function == kSrgbTransferFunction) {
-      color_space->transfer = media::VideoColorSpace::TransferID::BT709;
-    } else if (transfer_function == kPqTransferFunction) {
-      color_space->transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
-    } else if (transfer_function == kHlgTransferFunction) {
-      color_space->transfer = media::VideoColorSpace::TransferID::ARIB_STD_B67;
-    } else {
-      NOTREACHED();
+    switch (video_config->transferFunction().AsEnum()) {
+      case V8TransferFunction::Enum::kSRGB:
+        color_space->transfer = media::VideoColorSpace::TransferID::BT709;
+        break;
+      case V8TransferFunction::Enum::kPq:
+        color_space->transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
+        break;
+      case V8TransferFunction::Enum::kHlg:
+        color_space->transfer =
+            media::VideoColorSpace::TransferID::ARIB_STD_B67;
+        break;
     }
   }
 }
@@ -846,7 +841,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
         WebFeature::kMediaCapabilitiesDecodingInfoWithKeySystemConfig);
   }
 
-  const bool is_webrtc = config->type() == "webrtc";
+  const bool is_webrtc = config->type() == V8MediaDecodingType::Enum::kWebrtc;
   String message;
   if (!IsValidMediaDecodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
@@ -945,7 +940,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
   // MSE support is cheap to check (regex matching). Do it first. Also, note
   // that MSE support is not implied by EME support, so do it irrespective of
   // whether we have a KeySystem configuration.
-  if (config->type() == "media-source") {
+  if (config->type() == V8MediaDecodingType::Enum::kMediaSource) {
     if ((config->hasAudio() &&
          !CheckMseSupport(audio_mime_str, audio_codec_str)) ||
         (config->hasVideo() &&
@@ -1068,18 +1063,17 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
     ScriptState* script_state,
     const MediaEncodingConfiguration* config,
     ExceptionState& exception_state) {
-  if (config->type() == "record" &&
+  if (config->type() == V8MediaEncodingType::Enum::kRecord &&
       !RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled()) {
     exception_state.ThrowTypeError(
         "The provided value 'record' is not a valid enum value of type "
         "MediaEncodingType.");
     return EmptyPromise();
-    ;
   }
 
   const base::TimeTicks request_time = base::TimeTicks::Now();
 
-  const bool is_webrtc = config->type() == "webrtc";
+  const bool is_webrtc = config->type() == V8MediaEncodingType::Enum::kWebrtc;
   String message;
   if (!IsValidMediaEncodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
@@ -1157,7 +1151,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
     return promise;
   }
 
-  DCHECK_EQ(config->type(), "record");
+  DCHECK_EQ(config->type(), V8MediaEncodingType::Enum::kRecord);
   DCHECK(RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled());
 
   auto task_runner = resolver->GetExecutionContext()->GetTaskRunner(

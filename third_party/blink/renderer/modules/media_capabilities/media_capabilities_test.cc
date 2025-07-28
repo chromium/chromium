@@ -418,8 +418,8 @@ const char kWebrtcVideoContentType[] = "video/VP9; profile-id=\"0\"";
 const char kWebrtcAudioContentType[] = "audio/opus";
 
 // Construct AudioConfig using the constants above.
-template <class T>
-T* CreateAudioConfig(const char content_type[], const char type[]) {
+template <class T, class Enum>
+T* CreateAudioConfig(const char content_type[], Enum type) {
   auto* audio_config = MakeGarbageCollected<AudioConfiguration>();
   audio_config->setContentType(content_type);
   auto* decoding_config = MakeGarbageCollected<T>();
@@ -430,25 +430,25 @@ T* CreateAudioConfig(const char content_type[], const char type[]) {
 
 // Construct media-source AudioConfig using the constants above.
 MediaDecodingConfiguration* CreateAudioDecodingConfig() {
-  return CreateAudioConfig<MediaDecodingConfiguration>(kAudioContentType,
-                                                       "media-source");
+  return CreateAudioConfig<MediaDecodingConfiguration>(
+      kAudioContentType, V8MediaDecodingType::Enum::kMediaSource);
 }
 
 // Construct webrtc decoding AudioConfig using the constants above.
 MediaDecodingConfiguration* CreateWebrtcAudioDecodingConfig() {
-  return CreateAudioConfig<MediaDecodingConfiguration>(kWebrtcAudioContentType,
-                                                       "webrtc");
+  return CreateAudioConfig<MediaDecodingConfiguration>(
+      kWebrtcAudioContentType, V8MediaDecodingType::Enum::kWebrtc);
 }
 
 // Construct webrtc decoding AudioConfig using the constants above.
 MediaEncodingConfiguration* CreateWebrtcAudioEncodingConfig() {
-  return CreateAudioConfig<MediaEncodingConfiguration>(kWebrtcAudioContentType,
-                                                       "webrtc");
+  return CreateAudioConfig<MediaEncodingConfiguration>(
+      kWebrtcAudioContentType, V8MediaEncodingType::Enum::kWebrtc);
 }
 
 // Construct VideoConfig using the constants above.
-template <class T>
-T* CreateVideoConfig(const char content_type[], const char type[]) {
+template <class T, class Enum>
+T* CreateVideoConfig(const char content_type[], Enum type) {
   auto* video_config = MakeGarbageCollected<VideoConfiguration>();
   video_config->setFramerate(kFramerate);
   video_config->setContentType(content_type);
@@ -463,20 +463,20 @@ T* CreateVideoConfig(const char content_type[], const char type[]) {
 
 // Construct media-source VideoConfig using the constants above.
 MediaDecodingConfiguration* CreateDecodingConfig() {
-  return CreateVideoConfig<MediaDecodingConfiguration>(kVideoContentType,
-                                                       "media-source");
+  return CreateVideoConfig<MediaDecodingConfiguration>(
+      kVideoContentType, V8MediaDecodingType::Enum::kMediaSource);
 }
 
 // Construct webrtc decoding VideoConfig using the constants above.
 MediaDecodingConfiguration* CreateWebrtcDecodingConfig() {
-  return CreateVideoConfig<MediaDecodingConfiguration>(kWebrtcVideoContentType,
-                                                       "webrtc");
+  return CreateVideoConfig<MediaDecodingConfiguration>(
+      kWebrtcVideoContentType, V8MediaDecodingType::Enum::kWebrtc);
 }
 
 // Construct webrtc encoding VideoConfig using the constants above.
 MediaEncodingConfiguration* CreateWebrtcEncodingConfig() {
-  return CreateVideoConfig<MediaEncodingConfiguration>(kWebrtcVideoContentType,
-                                                       "webrtc");
+  return CreateVideoConfig<MediaEncodingConfiguration>(
+      kWebrtcVideoContentType, V8MediaEncodingType::Enum::kWebrtc);
 }
 
 // Construct PredicitonFeatures matching the CreateDecodingConfig, using the
@@ -1181,7 +1181,8 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedAudio) {
       .Times(testing::AtMost(1));
 
   const MediaDecodingConfiguration* kDecodingConfig =
-      CreateAudioConfig<MediaDecodingConfiguration>("audio/FooCodec", "webrtc");
+      CreateAudioConfig<MediaDecodingConfiguration>(
+          "audio/FooCodec", V8MediaDecodingType::Enum::kWebrtc);
   MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
   EXPECT_FALSE(info->supported());
   EXPECT_FALSE(info->smooth());
@@ -1258,7 +1259,8 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedVideo) {
       .Times(testing::AtMost(1));
 
   const MediaDecodingConfiguration* kDecodingConfig =
-      CreateVideoConfig<MediaDecodingConfiguration>("video/FooCodec", "webrtc");
+      CreateVideoConfig<MediaDecodingConfiguration>(
+          "video/FooCodec", V8MediaDecodingType::Enum::kWebrtc);
 
   MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
   EXPECT_FALSE(info->supported());
@@ -1322,7 +1324,8 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedAudio) {
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
   const MediaEncodingConfiguration* kEncodingConfig =
-      CreateAudioConfig<MediaEncodingConfiguration>("audio/FooCodec", "webrtc");
+      CreateAudioConfig<MediaEncodingConfiguration>(
+          "audio/FooCodec", V8MediaEncodingType::Enum::kWebrtc);
   MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
   EXPECT_FALSE(info->supported());
   EXPECT_FALSE(info->smooth());
@@ -1368,7 +1371,8 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedVideo) {
       .Times(testing::AtMost(1));
 
   const MediaEncodingConfiguration* kEncodingConfig =
-      CreateVideoConfig<MediaEncodingConfiguration>("video/FooCodec", "webrtc");
+      CreateVideoConfig<MediaEncodingConfiguration>(
+          "video/FooCodec", V8MediaEncodingType::Enum::kWebrtc);
 
   MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
   EXPECT_FALSE(info->supported());
