@@ -1925,6 +1925,7 @@ interface DigitalCredential : Credential
     getter data
     getter protocol
     method constructor
+    method toJSON
 interface Directive
     attribute @@toStringTag
     getter type

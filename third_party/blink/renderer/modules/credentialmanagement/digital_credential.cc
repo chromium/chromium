@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_credential.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -56,6 +58,13 @@ bool DigitalCredential::userAgentAllowsProtocol(const String& protocol) {
 
   // Must contain at least one lowercase letter.
   return has_lower_alpha;
+}
+
+ScriptObject DigitalCredential::toJSON(ScriptState* script_state) const {
+  V8ObjectBuilder builder(script_state);
+  builder.AddString("protocol", protocol_);
+  builder.AddV8Value("data", data_.V8Object());
+  return builder.ToScriptObject();
 }
 
 }  // namespace blink
