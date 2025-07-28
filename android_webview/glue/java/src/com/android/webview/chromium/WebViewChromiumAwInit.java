@@ -233,9 +233,11 @@ public class WebViewChromiumAwInit {
             new AtomicInteger(StartupTasksRunner.UNSET);
     // Only accessed from the UI thread
     private StartupTasksRunner mStartupTasksRunner;
-    private boolean mIsStartupTaskExperimentEnabled;
     private RuntimeException mStartupException;
     private Error mStartupError;
+    private boolean mIsStartupTaskExperimentEnabled;
+    private boolean mIsStartupTaskExperimentP2Enabled;
+    private boolean mIsStartupTasksYieldToNativeExperimentEnabled;
 
     private volatile boolean mShouldInitializeDefaultProfile = true;
 
@@ -328,6 +330,18 @@ public class WebViewChromiumAwInit {
     void setStartupTaskExperimentEnabled(boolean enabled) {
         assert mInitState.get() == INIT_NOT_STARTED;
         mIsStartupTaskExperimentEnabled = enabled;
+    }
+
+    // Called once during the WebViewChromiumFactoryProvider initialization
+    void setStartupTaskExperimentP2Enabled(boolean enabled) {
+        assert mInitState.get() == INIT_NOT_STARTED;
+        mIsStartupTaskExperimentP2Enabled = enabled;
+    }
+
+    // Called once during the WebViewChromiumFactoryProvider initialization
+    void setStartupTasksYieldToNativeExperimentEnabled(boolean enabled) {
+        assert mInitState.get() == INIT_NOT_STARTED;
+        mIsStartupTasksYieldToNativeExperimentEnabled = enabled;
     }
 
     // Initializes a new StartupTaskRunner with a list of tasks to run for chromium startup.
@@ -599,14 +613,13 @@ public class WebViewChromiumAwInit {
         // continuation of our startup tasks execution.
         // If a sync startup preempts an async startup, we need to run browser process startup
         // synchronously if the scheduled browser process async startup hasn't completed.
-        if (shouldEnableStartupTasksExperimentP2()
-                || shouldEnableStartupTasksYieldToNativeExperiment()) {
+        if (mIsStartupTaskExperimentP2Enabled || mIsStartupTasksYieldToNativeExperimentEnabled) {
             preBrowserProcessStartTasks.addLast(
                     () -> {
                         AwBrowserProcess.runPreBrowserProcessStart();
                         if (mStartupTasksRunner.getRunState() == StartupTasksRunner.ASYNC) {
                             AwBrowserProcess.triggerAsyncBrowserProcess(
-                                    callback, !shouldEnableStartupTasksYieldToNativeExperiment());
+                                    callback, !mIsStartupTasksYieldToNativeExperimentEnabled);
                         }
                     });
             postBrowserProcessStartTasks.addLast(
@@ -1088,28 +1101,10 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    boolean shouldEnableStartupTasksExperimentP2() {
-        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2)) {
-            return true;
-        }
-
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2);
-    }
-
     private boolean anyStartupTaskExperimentIsEnabled() {
         return mIsStartupTaskExperimentEnabled
-                || shouldEnableStartupTasksExperimentP2()
-                || shouldEnableStartupTasksYieldToNativeExperiment();
-    }
-
-    boolean shouldEnableStartupTasksYieldToNativeExperiment() {
-        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE)) {
-            return true;
-        }
-
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE);
+                || mIsStartupTaskExperimentP2Enabled
+                || mIsStartupTasksYieldToNativeExperimentEnabled;
     }
 
     // These are objects that need to be created on the UI thread and after chromium has started.

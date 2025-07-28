@@ -26,7 +26,8 @@ public final class ProcessGlobalConfigConstants {
                 DATA_DIRECTORY_SUFFIX,
                 DATA_DIRECTORY_BASE_PATH,
                 CACHE_DIRECTORY_BASE_PATH,
-                CONFIGURE_PARTITIONED_COOKIES
+                CONFIGURE_PARTITIONED_COOKIES,
+                UI_THREAD_STARTUP_MODE
             })
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.PARAMETER, ElementType.METHOD})
@@ -55,4 +56,40 @@ public final class ProcessGlobalConfigConstants {
      * is read in chromium via reflection into AndroidX class.
      */
     public static final String CONFIGURE_PARTITIONED_COOKIES = "CONFIGURE_PARTITIONED_COOKIES";
+
+    /**
+     * Key for setting Ui thread startup mode in the process global config map that is read in
+     * chromium via reflection into AndroidX class.
+     */
+    public static final String UI_THREAD_STARTUP_MODE = "UI_THREAD_STARTUP_MODE";
+
+    /**
+     * The default mode for the UI thread startup.
+     *
+     * <p>The UI thread may or may not be blocked during browser startup, depending on WebView's
+     * internal implementation.
+     */
+    public static final int UI_THREAD_STARTUP_MODE_DEFAULT = -1;
+
+    /** The UI thread is blocked completely during browser startup. */
+    public static final int UI_THREAD_STARTUP_MODE_SYNC = 0;
+
+    /**
+     * The UI thread is not blocked completely during browser startup. However, we still have
+     * long-running tasks that might trigger ANRs.
+     */
+    public static final int UI_THREAD_STARTUP_MODE_ASYNC_ONE = 1;
+
+    /**
+     * The UI thread is not blocked completely during browser startup. However, we still have
+     * long-running tasks that might trigger ANRs. The difference between this and {@link
+     * ASYNC_UI_STARTUP_MODE_ONE} is that the long-running tasks are shorter.
+     */
+    public static final int UI_THREAD_STARTUP_MODE_ASYNC_TWO = 2;
+
+    /**
+     * The UI thread is not blocked completely during browser startup. There are no long-running
+     * tasks that might trigger ANRs.
+     */
+    public static final int UI_THREAD_STARTUP_MODE_ASYNC_THREE = 3;
 }
