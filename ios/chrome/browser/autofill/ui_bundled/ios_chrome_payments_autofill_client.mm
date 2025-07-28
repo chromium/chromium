@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 
 #import <optional>
+#import <variant>
 
 #import "base/check_deref.h"
 #import "base/functional/callback.h"
@@ -278,6 +279,17 @@ IOSChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return payments_network_interface_.get();
 }
 
+MultipleRequestPaymentsNetworkInterface*
+IOSChromePaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
+  if (!multiple_request_payments_network_interface_) {
+    multiple_request_payments_network_interface_ =
+        std::make_unique<payments::MultipleRequestPaymentsNetworkInterface>(
+            client_->GetURLLoaderFactory(), *client_->GetIdentityManager(),
+            web_state_->GetBrowserState()->IsOffTheRecord());
+  }
+  return multiple_request_payments_network_interface_.get();
+}
+
 void IOSChromePaymentsAutofillClient::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
@@ -376,12 +388,19 @@ void IOSChromePaymentsAutofillClient::ConfirmExpirationDateFixFlow(
 VirtualCardEnrollmentManager*
 IOSChromePaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   if (!virtual_card_enrollment_manager_) {
+    PaymentsNetworkInterfaceVariation payments_network_interface;
+    if (base::FeatureList::IsEnabled(
+            features::
+                kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
+      payments_network_interface = GetMultipleRequestPaymentsNetworkInterface();
+    } else {
+      payments_network_interface = GetPaymentsNetworkInterface();
+    }
     virtual_card_enrollment_manager_ =
         std::make_unique<VirtualCardEnrollmentManager>(
             &client_->GetPersonalDataManager().payments_data_manager(),
-            GetPaymentsNetworkInterface(), &client_.get());
+            payments_network_interface, &client_.get());
   }
-
   return virtual_card_enrollment_manager_.get();
 }
 

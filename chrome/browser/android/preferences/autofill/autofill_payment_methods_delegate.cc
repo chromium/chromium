@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -58,10 +59,23 @@ AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
           profile->GetURLLoaderFactory(),
           IdentityManagerFactory::GetForProfile(profile),
           &personal_data_manager_->payments_data_manager());
+  multiple_request_payments_network_interface_ =
+      std::make_unique<payments::MultipleRequestPaymentsNetworkInterface>(
+          profile->GetURLLoaderFactory(),
+          *IdentityManagerFactory::GetForProfile(profile),
+          profile->IsOffTheRecord());
+
+  PaymentsNetworkInterfaceVariation interface;
+  if (base::FeatureList::IsEnabled(
+          features::
+              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
+    interface = multiple_request_payments_network_interface_.get();
+  } else {
+    interface = payments_network_interface_.get();
+  }
   virtual_card_enrollment_manager_ =
       std::make_unique<VirtualCardEnrollmentManager>(
-          &personal_data_manager_->payments_data_manager(),
-          payments_network_interface_.get());
+          &personal_data_manager_->payments_data_manager(), interface);
 }
 
 AutofillPaymentMethodsDelegate::~AutofillPaymentMethodsDelegate() = default;

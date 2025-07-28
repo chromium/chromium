@@ -8,11 +8,11 @@
 #include <jni.h>
 #include <stdint.h>
 
-#include "build/build_config.h"
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
 using base::android::JavaParamRef;
@@ -60,6 +60,8 @@ class AutofillPaymentMethodsDelegate {
   raw_ptr<PersonalDataManager> personal_data_manager_;  // weak reference
   std::unique_ptr<payments::PaymentsNetworkInterface>
       payments_network_interface_;
+  std::unique_ptr<payments::MultipleRequestPaymentsNetworkInterface>
+      multiple_request_payments_network_interface_;
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
 };
