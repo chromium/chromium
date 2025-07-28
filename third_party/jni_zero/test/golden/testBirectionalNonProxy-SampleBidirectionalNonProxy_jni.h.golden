@@ -8,8 +8,8 @@
 
 #include <jni.h>
 
-#include "third_party/jni_zero/jni_export.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "overridden/jni_export.h"
+#include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
 // static jint JNI_SampleBidirectionalNonProxy_Init(

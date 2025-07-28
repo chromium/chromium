@@ -317,13 +317,21 @@ def _CollectReferencedClasses(jni_obj):
   return sorted(ret)
 
 
-def _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class, *,
-                     enable_definition_macros):
+def _generate_header(jni_mode,
+                     jni_obj,
+                     gen_jni_class,
+                     *,
+                     enable_definition_macros,
+                     include_path_prefix,
+                     extra_includes=None):
+  user_includes = [f'{include_path_prefix}jni_export.h']
+  if extra_includes:
+    user_includes += extra_includes
   preamble, epilogue = header_common.header_preamble(
       GetScriptName(),
       jni_obj.java_class,
       system_includes=['jni.h'],
-      user_includes=['third_party/jni_zero/jni_export.h'] + extra_includes)
+      user_includes=user_includes)
   sb = common.StringBuilder()
   sb(preamble)
 
@@ -509,17 +517,20 @@ def _WriteHeaders(jni_mode,
                   jni_objs,
                   output_names,
                   output_dir,
-                  extra_includes,
+                  *,
+                  include_path_prefix,
                   gen_jni_class=None,
-                  enable_definition_macros=False):
+                  enable_definition_macros=False,
+                  extra_includes=None):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
     content = _generate_header(
         jni_mode,
         jni_obj,
-        extra_includes,
         gen_jni_class,
-        enable_definition_macros=enable_definition_macros)
+        enable_definition_macros=enable_definition_macros,
+        include_path_prefix=include_path_prefix,
+        extra_includes=extra_includes)
 
     with common.atomic_output(output_file, 'w') as f:
       f.write(content)
@@ -535,7 +546,10 @@ def GenerateFromSource(parser, args, jni_mode):
     parsed_files = [
         parse.parse_java_file(f,
                               package_prefix=args.package_prefix,
-                              package_prefix_filter=args.package_prefix_filter)
+                              package_prefix_filter=args.package_prefix_filter,
+                              enable_legacy_natives=args.enable_legacy_natives,
+                              allow_private_called_by_natives=args.
+                              allow_private_called_by_natives)
         for f in args.input_files
     ]
     jni_objs = [
@@ -558,9 +572,10 @@ def GenerateFromSource(parser, args, jni_mode):
                 jni_objs,
                 args.output_names,
                 args.output_dir,
-                args.extra_includes,
-                gen_jni_class,
-                enable_definition_macros=args.enable_definition_macros)
+                include_path_prefix=args.include_path_prefix,
+                gen_jni_class=gen_jni_class,
+                enable_definition_macros=args.enable_definition_macros,
+                extra_includes=args.extra_includes)
 
   jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
   # Write .srcjar
@@ -610,5 +625,9 @@ def GenerateFromJar(parser, args, jni_mode):
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
-  _WriteHeaders(jni_mode, jni_objs, args.output_names, args.output_dir,
-                args.extra_includes)
+  _WriteHeaders(jni_mode,
+                jni_objs,
+                args.output_names,
+                args.output_dir,
+                include_path_prefix=args.include_path_prefix,
+                extra_includes=args.extra_includes)
