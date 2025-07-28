@@ -6979,6 +6979,7 @@ test("unit_tests") {
     "//components/browsing_topics",
     "//components/captive_portal/content",
     "//components/captive_portal/core:buildflags",
+    "//components/cbor",
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto",
     "//components/collaboration:test_support",

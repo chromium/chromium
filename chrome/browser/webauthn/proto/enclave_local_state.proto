@@ -19,8 +19,17 @@ message EnclaveLocalState {
     reserved "generation";
 
     // The PIN, encrypted to the security domain secret. The plaintext is a CBOR
-    // structure containing the scrypt-hash of the PIN, claim key, plus recovery
-    // key store counter ID and handle.
+    // map with the following key-value pairs:
+    // 1: Scrypt-hash of the PIN.
+    // 2: Optional: Generation number (deprecated, may not be populated).
+    // 3: Claim key.
+    // 4: Vault counter ID.
+    // 5: Vault handle.
+    // 6: Optional: cert.xml serial number used at the time of wrapping.
+    // 7: Optional: Cohort public key.
+    //
+    // Keys 6 and 7 may not be populated by all clients, but if one is
+    // populated, the other is required.
     bytes wrapped_pin = 1;
 
     // A key used to encrypt claimed PIN hashes for validation at the enclave.

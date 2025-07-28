@@ -15,8 +15,10 @@
 #include "base/strings/string_util.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
+#include "crypto/evp.h"
 #include "crypto/sha2.h"
 #include "device/fido/enclave/constants.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -306,7 +308,7 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
         R"(<?xml version="1.0" encoding="UTF-8"?>
 <certificate>
   <metadata>
-    <serial>2</serial>
+    <serial>$3</serial>
     <creation-time>$1</creation-time>
     <refresh-interval>2592000</refresh-interval>
     <previous>
@@ -322,7 +324,8 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
 </certificate>
 )",
         {base::NumberToString(kTestTime),
-         base::Base64Encode(endpoint_cert_der_)},
+         base::Base64Encode(endpoint_cert_der_),
+         base::NumberToString(kTestSerialNumber)},
         /*offsets=*/nullptr);
 
     const auto certs_xml_hash =
@@ -380,6 +383,21 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
         result.data(), result.size(),
         EC_KEY_get0_private_key(EVP_PKEY_get0_EC_KEY(endpoint_key_.get()))));
     return result;
+  }
+
+  std::vector<uint8_t> endpoint_public_key_bytes() const override {
+    std::vector<uint8_t> spki =
+        crypto::evp::PublicKeyToBytes(endpoint_key_.get());
+    std::string_view spki_view = std::string_view(
+        reinterpret_cast<const char*>(spki.data()), spki.size());
+    // Extract the public key from the SPKI.
+    std::string_view ec_point_oct;
+    CHECK(net::asn1::ExtractSubjectPublicKeyFromSPKI(spki_view, &ec_point_oct));
+    // ExtractSubjectPublicKeyFromSPKI does not remove the initial octet
+    // encoding the number of unused bits in the ASN.1 BIT STRING so we do it
+    // here. The public key is always byte-aligned.
+    ec_point_oct.remove_prefix(1);
+    return std::vector<uint8_t>(ec_point_oct.begin(), ec_point_oct.end());
   }
 
  private:

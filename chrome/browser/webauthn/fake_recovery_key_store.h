@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -27,6 +28,9 @@ class Vault;
 // records uploaded vaults like the real service.
 class FakeRecoveryKeyStore {
  public:
+  // The cert.xml serial number.
+  static constexpr int kTestSerialNumber = 2;
+
   // If present, values of this type contain an HTTP status code (e.g. 200) and
   // the body of the response.
   using MaybeResponse =
@@ -51,6 +55,9 @@ class FakeRecoveryKeyStore {
 
   // Returns the cohort private scalar as 32 bytes in big-endian order.
   virtual std::array<uint8_t, 32> endpoint_private_key_bytes() const = 0;
+
+  // Returns the cohort public key bytes.
+  virtual std::vector<uint8_t> endpoint_public_key_bytes() const = 0;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_FAKE_RECOVERY_KEY_STORE_H_

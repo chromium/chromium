@@ -165,6 +165,10 @@ BASE_DECLARE_FEATURE(kWebAuthnLargeBlobForGPM);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSendPinGeneration);
 
+// Adds the cohort public key and cert.xml serial number to GPM wrapped PINs.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnWrapCohortData);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
