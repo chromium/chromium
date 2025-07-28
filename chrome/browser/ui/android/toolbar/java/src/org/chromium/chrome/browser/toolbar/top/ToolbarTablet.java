@@ -8,8 +8,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -63,6 +63,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
@@ -615,73 +616,27 @@ public class ToolbarTablet extends ToolbarLayout {
     private void runToolbarButtonsVisibilityAnimation(boolean visible) {
         if (mButtonVisibilityAnimators != null) mButtonVisibilityAnimators.cancel();
 
-        mButtonVisibilityAnimators =
-                visible ? buildShowToolbarButtonsAnimation() : buildHideToolbarButtonsAnimation();
-        mButtonVisibilityAnimators.start();
-    }
-
-    private AnimatorSet buildShowToolbarButtonsAnimation() {
         Collection<Animator> animators = new ArrayList<>();
+        animators.add(createLocationBarButtonAnimator(visible));
+        animators.add(mReloadButtonCoordinator.getFadeAnimator(visible));
+        animators.add(mBackButtonCoordinator.getFadeAnimator(visible));
+        animators.addAll(createLocationBarButtonsWhenUnfocusedAnimators(visible));
 
-        animators.add(mLocationBar.createShowButtonAnimatorForTablet(mForwardButton));
-        animators.add(mReloadButtonCoordinator.getFadeAnimator(/* shouldShow= */ true));
-        animators.add(mBackButtonCoordinator.getFadeAnimator(/* shouldShow= */ true));
-
-        // Add animators for location bar.
-        animators.addAll(
-                mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(
-                        getStartPaddingDifferenceForButtonVisibilityAnimation()));
-
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(animators);
-
-        set.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        keepControlsShownForAnimation();
-                        mForwardButton.setVisibility(View.VISIBLE);
-                        mReloadButtonCoordinator.setVisibility(true);
-                        mBackButtonCoordinator.setVisibility(true);
-
-                        // Set the padding at the start of the animation so the toolbar buttons
-                        // don't jump when the animation ends.
-                        setStartPaddingBasedOnButtonVisibility(true);
-                        setIncognitoIndicatorVisibility();
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mButtonVisibilityAnimators = null;
-                        allowBrowserControlsHide();
-                    }
-                });
-
-        return set;
-    }
-
-    private AnimatorSet buildHideToolbarButtonsAnimation() {
-        Collection<Animator> animators = new ArrayList<>();
-
-        animators.add(mLocationBar.createHideButtonAnimatorForTablet(mForwardButton));
-
-        animators.add(mReloadButtonCoordinator.getFadeAnimator(/* shouldShow= */ false));
-        animators.add(mBackButtonCoordinator.getFadeAnimator(/* shouldShow= */ false));
-
-        // Add animators for location bar.
-        animators.addAll(
-                mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(
-                        getStartPaddingDifferenceForButtonVisibilityAnimation()));
-
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(animators);
-
-        set.addListener(
+        mButtonVisibilityAnimators = new AnimatorSet();
+        mButtonVisibilityAnimators.playTogether(animators);
+        mButtonVisibilityAnimators.addListener(
                 new CancelAwareAnimatorListener() {
                     @Override
                     public void onStart(Animator animator) {
                         keepControlsShownForAnimation();
-
+                        if (visible) {
+                            mForwardButton.setVisibility(View.VISIBLE);
+                            mReloadButtonCoordinator.setVisibility(true);
+                            mBackButtonCoordinator.setVisibility(true);
+                            // Set the padding at the start of the show animation so the toolbar
+                            // buttons don't jump when the animation ends.
+                            setStartPaddingBasedOnButtonVisibility(true);
+                        }
                         setIncognitoIndicatorVisibility();
                     }
 
@@ -693,20 +648,33 @@ public class ToolbarTablet extends ToolbarLayout {
 
                     @Override
                     public void onEnd(Animator animator) {
-                        mForwardButton.setVisibility(View.GONE);
-                        mReloadButtonCoordinator.setVisibility(false);
-                        mBackButtonCoordinator.setVisibility(false);
-
-                        // Set the padding at the end of the animation so the toolbar buttons
-                        // don't jump when the animation starts.
-                        setStartPaddingBasedOnButtonVisibility(false);
-
+                        if (!visible) {
+                            mForwardButton.setVisibility(View.GONE);
+                            mReloadButtonCoordinator.setVisibility(false);
+                            mBackButtonCoordinator.setVisibility(false);
+                            // Set the padding at the end of the hide animation so the toolbar
+                            // buttons don't jump when the animation starts.
+                            setStartPaddingBasedOnButtonVisibility(false);
+                        }
                         mButtonVisibilityAnimators = null;
                         allowBrowserControlsHide();
                     }
                 });
+        mButtonVisibilityAnimators.start();
+    }
 
-        return set;
+    private ObjectAnimator createLocationBarButtonAnimator(boolean shouldShow) {
+        return shouldShow
+                ? mLocationBar.createShowButtonAnimatorForTablet(mForwardButton)
+                : mLocationBar.createHideButtonAnimatorForTablet(mForwardButton);
+    }
+
+    private List<Animator> createLocationBarButtonsWhenUnfocusedAnimators(boolean shouldShow) {
+        int startPaddingDifference = getStartPaddingDifferenceForButtonVisibilityAnimation();
+        return shouldShow
+                ? mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(startPaddingDifference)
+                : mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(
+                        startPaddingDifference);
     }
 
     private int getDimensionPixelSize(@DimenRes int dimenId) {
