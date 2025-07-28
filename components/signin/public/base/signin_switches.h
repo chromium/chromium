@@ -156,16 +156,10 @@ BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 #endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kGrammaticalGenderCapabilities);
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kInterceptBubblesDismissibleByAvatarButton);
 
 // When enabled, an implicitly signed-in user will be offered a dialog to
 // migrate to explicit browser sign-in.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kNeuterGrammaticalGenderCapability);
-
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kOfferMigrationToDiceUsers);
 
