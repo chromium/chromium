@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.RequestAccountInfoResult.Primary"
-    enum="ArcAuthCodeStatus" expires_after="2025-09-11">
+    enum="ArcAuthCodeStatus" expires_after="2026-07-28">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -841,7 +841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.RequestAccountInfoResult.Secondary"
-    enum="ArcAuthCodeStatus" expires_after="2025-09-11">
+    enum="ArcAuthCodeStatus" expires_after="2026-07-28">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
