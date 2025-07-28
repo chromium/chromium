@@ -56,7 +56,6 @@ class AutofillType {
         server_predictions;
   };
 
-  AutofillType();
   explicit AutofillType(FieldType field_type);
   explicit AutofillType(HtmlFieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
@@ -78,7 +77,7 @@ class AutofillType {
   std::string_view ToStringView() const;
 
  private:
-  std::variant<FieldType, HtmlFieldType> type_ = NO_SERVER_DATA;
+  std::variant<FieldType, HtmlFieldType> type_;
 };
 
 }  // namespace autofill
