@@ -71,8 +71,10 @@ library already in Chromium? If introducing a library with similar functionality
 as existing, will it be easy for another developer to understand which should be
 used where? Will you commit to consolidating uses in Chromium and remove the
 alternative libraries?
-* Is the library memory safe? If not, is there an alternative library
-available that is memory safe and meets Chromium's needs?
+* Is the library written in a [memory safe
+  language](security/rule-of-2.md#unsafe-implementation-languages)? If not, is
+  there an alternative library available that is memory safe and meets
+  Chromium's needs?
   * You will be responsible for [owning the library](#add-owners), which
     includes updating it for security and stability fixes. For C/C++, this is
     your responsibility.  For [Rust](#rust), minor version updates are regularly
