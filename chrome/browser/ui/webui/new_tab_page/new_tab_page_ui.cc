@@ -1049,12 +1049,15 @@ void NewTabPageUI::OnLoad() {
   const bool modules_enabled = ntp::HasModulesEnabled(
       module_id_details_, IdentityManagerFactory::GetForProfile(profile_));
   update.Set("modulesEnabled", modules_enabled);
-  const bool show_ntp_promos =
-      !modules_enabled && user_education::features::NtpBrowserPromosEnabled() &&
+
+  const auto* ntp_promo_controller =
       UserEducationServiceFactory::GetForBrowserContext(profile_)
-          ->ntp_promo_controller()
-          ->HasShowablePromos(profile_);
+          ->ntp_promo_controller();
+  const bool show_ntp_promos =
+      !modules_enabled && ntp_promo_controller &&
+      ntp_promo_controller->HasShowablePromos(profile_);
   update.Set("browserPromosEnabled", show_ntp_promos);
+
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }

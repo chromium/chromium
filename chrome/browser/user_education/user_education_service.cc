@@ -55,7 +55,7 @@ UserEducationService::UserEducationService(
     user_education_storage_service_->ResetRecentSessionData();
   }
 
-  if (user_education::features::NtpBrowserPromosEnabled()) {
+  if (user_education::features::NtpBrowserPromosEnabled() && allows_promos) {
     ntp_promo_registry_ = std::make_unique<user_education::NtpPromoRegistry>();
     ntp_promo_controller_ =
         std::make_unique<user_education::NtpPromoController>(
