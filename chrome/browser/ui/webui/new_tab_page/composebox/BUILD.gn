@@ -42,7 +42,7 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "composebox_fieldtrial_unittest.cc",
+    "composebox_fieldtrial_config_unittest.cc",
     "composebox_handler_unittest.cc",
   ]
   deps = [
@@ -59,7 +59,7 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "composebox_fieldtrial_browsertest.cc" ]
+  sources = [ "composebox_fieldtrial_entrypoint_browsertest.cc" ]
   deps = [
     ":composebox",
     "//chrome/browser:browser_process",

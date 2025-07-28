@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
-
 #include <string>
 
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,13 +27,13 @@ std::string SerializeAndBase64EncodeProto(
 
 }  // namespace
 
-class NtpComposeboxFieldTrialTest : public testing::Test {
+class NtpComposeboxFieldTrialConfigTest : public testing::Test {
  public:
   ScopedFeatureConfigForTesting scoped_config_;
 };
 
 // Tests the NTP Composebox configuration when the feature is disabled.
-TEST_F(NtpComposeboxFieldTrialTest, NTPComposeboxConfig_Disabled) {
+TEST_F(NtpComposeboxFieldTrialConfigTest, NTPComposeboxConfig_Disabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kNtpComposebox);
 
@@ -50,7 +49,7 @@ TEST_F(NtpComposeboxFieldTrialTest, NTPComposeboxConfig_Disabled) {
 
 // Tests the NTP Composebox configuration when the feature is enabled with the
 // default parameter.
-TEST_F(NtpComposeboxFieldTrialTest,
+TEST_F(NtpComposeboxFieldTrialConfigTest,
        NTPComposeboxConfig_Enabled_DefaultConfiguration) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kNtpComposebox);
@@ -87,7 +86,7 @@ TEST_F(NtpComposeboxFieldTrialTest,
 
 // Tests the NTP Composebox configuration when the feature is enabled with an
 // invalid Base64-encoded proto parameter.
-TEST_F(NtpComposeboxFieldTrialTest,
+TEST_F(NtpComposeboxFieldTrialConfigTest,
        NTPComposeboxConfig_Enabled_Invalid_Configuration) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -106,7 +105,7 @@ TEST_F(NtpComposeboxFieldTrialTest,
 
 // Tests the NTP Composebox configuration when the feature is enabled with a
 // valid Base64-encoded proto parameter that does not set a value.
-TEST_F(NtpComposeboxFieldTrialTest,
+TEST_F(NtpComposeboxFieldTrialConfigTest,
        NTPComposeboxConfig_Enabled_Valid_Unset_Configuration) {
   omnibox::NTPComposeboxConfig fieldtrial_config;
 
@@ -126,7 +125,7 @@ TEST_F(NtpComposeboxFieldTrialTest,
 
 // Tests the NTP Composebox configuration when the feature is enabled with a
 // valid Base64-encoded proto parameter that sets a value.
-TEST_F(NtpComposeboxFieldTrialTest,
+TEST_F(NtpComposeboxFieldTrialConfigTest,
        NTPComposeboxConfig_Enabled_Valid_Set_Configuration) {
   omnibox::NTPComposeboxConfig fieldtrial_config;
   fieldtrial_config.mutable_entry_point()->set_num_page_load_animations(5);
@@ -150,7 +149,7 @@ TEST_F(NtpComposeboxFieldTrialTest,
 
 // Tests that setting `mime_types_allowed` for images in the `fieldtrial_config`
 // overrides the default image mime types.
-TEST_F(NtpComposeboxFieldTrialTest,
+TEST_F(NtpComposeboxFieldTrialConfigTest,
        NTPComposeboxConfig_Enabled_Valid_OverrideImageMimeTypes) {
   omnibox::NTPComposeboxConfig fieldtrial_config;
   fieldtrial_config.mutable_composebox()
@@ -176,7 +175,7 @@ TEST_F(NtpComposeboxFieldTrialTest,
 
 // Tests that setting `mime_types_allowed` for attachments in the
 // `fieldtrial_config` overrides the default attachment mime types.
-TEST_F(NtpComposeboxFieldTrialTest,
+TEST_F(NtpComposeboxFieldTrialConfigTest,
        NTPComposeboxConfig_Enabled_Valid_OverrideAttachmentMimeTypes) {
   omnibox::NTPComposeboxConfig fieldtrial_config;
   fieldtrial_config.mutable_composebox()
@@ -202,7 +201,7 @@ TEST_F(NtpComposeboxFieldTrialTest,
 
 // Tests that providing an empty `mime_types_allowed` value in the fieldtrial
 // config does not clear the default value.
-TEST_F(NtpComposeboxFieldTrialTest,
+TEST_F(NtpComposeboxFieldTrialConfigTest,
        NTPComposeboxConfig_Enabled_Valid_ClearMimeTypes) {
   omnibox::NTPComposeboxConfig fieldtrial_config;
   // Providing an empty `mime_types_allowed`, will not clear the default
