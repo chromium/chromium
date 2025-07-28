@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "ui/gfx/color_utils.h"
 
@@ -120,8 +121,17 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
       DCHECK(chunk.has_text);
     }
   } else if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
-    if (scrollbar->IsOpaque())
+    if (scrollbar->IsOpaque()) {
       chunk.rect_known_to_be_opaque = item.VisualRect();
+    }
+  } else if (const auto* foreign_item =
+                 DynamicTo<ForeignLayerDisplayItem>(item)) {
+    // Assume all OOP iframes contain text to prevent applying
+    // 2DScaleTransformWithCompositedDescendants on 2D-transformed ancestors,
+    // which can cause text blurriness in iframes.
+    if (foreign_item->GetId().type == DisplayItem::kForeignLayerRemoteFrame) {
+      chunk.has_text = true;
+    }
   }
 
   chunk.raster_effect_outset =

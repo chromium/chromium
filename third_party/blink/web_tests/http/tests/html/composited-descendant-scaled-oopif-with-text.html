@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<head>
+  <style>
+  * {
+      margin: 0;
+    }
+  </style>
+</head>
+  <link rel=match href="composited-descendant-scaled-oopif-with-text-expected.html">
+  <body>
+    <h1>Composited 2D scaled transform with descended iframe.</h1>
+    This test verifies that the text within the OOP iframe is not blurry.
+    <div style="transform:scale(1.8); transform-origin: 0 0; height: 50px; width: 150px; background-color:pink">
+      <!--  Use of localhost below will make the iframe an OOPIF -->
+      <iframe  src="http://localhost:8080/html/resources/scaled-oopif-text-no-margin.html"
+               style="border: none; height: 50px; width: 150px;"
+               onload="document.documentElement.className = ''"></iframe>
+    </div>
+  </body>
+</html>
