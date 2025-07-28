@@ -241,7 +241,19 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
 }
 GlicMetrics::~GlicMetrics() = default;
 
+void GlicMetrics::OnFreAccepted() {
+  // Store the current time in a instance variable.
+  fre_accepted_time_ = base::TimeTicks::Now();
+}
+
 void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
+  if (!fre_accepted_time_.is_null()) {
+    base::TimeDelta delta = base::TimeTicks::Now() - fre_accepted_time_;
+    base::UmaHistogramLongTimes("Glic.FreToFirstQueryTime", delta);
+    base::UmaHistogramCustomTimes("Glic.FreToFirstQueryTimeMax24H", delta,
+                                  base::Milliseconds(1), base::Hours(24), 50);
+    fre_accepted_time_ = base::TimeTicks();
+  }
   base::UmaHistogramEnumeration(
       "Glic.Session.InputSubmit.BrowserActiveState",
       browser_activity_observer_->GetBrowserActiveState());

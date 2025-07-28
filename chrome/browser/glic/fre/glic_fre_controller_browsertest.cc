@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -19,6 +21,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 namespace {
@@ -71,6 +74,10 @@ class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
     ASSERT_FALSE(glic_fre_controller()->IsShowingDialog())
         << "FRE dialog should not have been shown";
   }
+
+ protected:
+  base::UserActionTester user_action_tester_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
@@ -109,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
   EXPECT_FALSE(tab->CanShowModalUI());
 
   // Once the FRE is closed, other modal dialogs can be shown again.
-  glic_fre_controller()->DismissFre();
+  glic_fre_controller()->DismissFre(mojom::FreWebUiState::kReady);
   EXPECT_TRUE(tab->CanShowModalUI());
 }
 
@@ -250,6 +257,12 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
   // Destroy the WebContents that the dialog is being shown on.
   browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  WaitForFreClose();
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Fre.WidgetClosedReason",
+      /*sample=*/views::Widget::ClosedReason::kUnspecified,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreAcceptance) {
@@ -260,6 +273,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreAcceptance) {
 
   // Accept the FRE and confirm it closed and the glic panel opened.
   glic_fre_controller()->AcceptFre();
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Accept"), 1);
   WaitForFreClose();
   WaitForGlicPanelShow();
 }
@@ -271,6 +285,10 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, DoNotCrashOnBrowserClose) {
   WaitForFreShow();
 
   chrome::CloseAllBrowsers();
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Fre.WidgetClosedReason",
+      /*sample=*/views::Widget::ClosedReason::kUnspecified,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

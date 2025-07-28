@@ -717,5 +717,27 @@ TEST_F(GlicMetricsTest, TabFocusStateReporting) {
       ActiveTabSharingState::kNoTabCanBeShared, 1);
 }
 
+TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnce) {
+  metrics_->OnFreAccepted();
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester_.ExpectTotalCount("Glic.FreToFirstQueryTime", 1);
+  histogram_tester_.ExpectUniqueSample("Glic.FreToFirstQueryTime", 100, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.FreToFirstQueryTimeMax24H", 100,
+                                       1);
+}
+
+TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnlyOnce) {
+  metrics_->OnFreAccepted();
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  // Second time should be ignored.
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester_.ExpectTotalCount("Glic.FreToFirstQueryTime", 1);
+  histogram_tester_.ExpectUniqueSample("Glic.FreToFirstQueryTime", 100, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.FreToFirstQueryTimeMax24H", 100,
+                                       1);
+}
+
 }  // namespace
 }  // namespace glic

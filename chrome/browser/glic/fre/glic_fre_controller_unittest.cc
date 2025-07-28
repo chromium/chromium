@@ -78,20 +78,42 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
 }
 
-TEST_F(GlicFreControllerTest, NoThanks) {
+TEST_F(GlicFreControllerTest, DismissUninitialized) {
   base::UserActionTester tester;
-  glic_fre_controller()->OnNoThanksClicked();
+  glic_fre_controller()->DismissFre(mojom::FreWebUiState::kUninitialized);
+  // The FRE can be dismissed for many reasons that are not direct user actions.
+  // When it is dismissed by a non-user action it is called with Panel type
+  // kUninitialized.
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.UninitializedPanelClosed"), 1);
+}
+
+TEST_F(GlicFreControllerTest, DismissReady) {
+  base::UserActionTester tester;
+  glic_fre_controller()->DismissFre(mojom::FreWebUiState::kReady);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 1);
 }
 
-TEST_F(GlicFreControllerTest, Dismiss) {
+TEST_F(GlicFreControllerTest, DismissOffline) {
   base::UserActionTester tester;
-  glic_fre_controller()->DismissFre();
-  // The FRE can be dismissed for many reasons that are not direct user actions.
-  // Don't expect any actions to be logged here.
+  glic_fre_controller()->DismissFre(mojom::FreWebUiState::kOffline);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.OfflinePanelClosed"), 1);
+}
+
+TEST_F(GlicFreControllerTest, DismissLoading) {
+  base::UserActionTester tester;
+  glic_fre_controller()->DismissFre(mojom::FreWebUiState::kShowLoading);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.LoadingPanelClosed"), 1);
+}
+
+TEST_F(GlicFreControllerTest, DismissError) {
+  base::UserActionTester tester;
+  glic_fre_controller()->DismissFre(mojom::FreWebUiState::kError);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.ErrorPanelClosed"), 1);
 }
 
 TEST_F(GlicFreControllerTest, UpdateLauncherOnFreCompletion) {

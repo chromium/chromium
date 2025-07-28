@@ -84,8 +84,8 @@ enum WebUiState {
 enum PrepareForClientResult {
   // Ready to load the web client.
   kSuccess,
-  // An unknown error occurred.
-  kUnknownError,
+  // An unknown error occurred while resyncing cookies.
+  kErrorResyncingCookies,
   // The account state is paused, and requires sign in.
   kRequiresSignIn,
 };

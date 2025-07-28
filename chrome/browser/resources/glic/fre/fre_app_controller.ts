@@ -87,9 +87,12 @@ export class FreAppController {
       // present on all UI states except for `FreWebUiState.kReady`.
       const buttons = document.querySelectorAll('.close-button');
       for (const button of buttons) {
-        button.addEventListener('click', () => {
-          freHandler.dismissFre();
-        });
+        const parentPanel = button.closest('.panel');
+        if (parentPanel) {
+          button.addEventListener('click', () => {
+            freHandler.dismissFre(this.panelIdToEnum(parentPanel.id));
+          });
+        }
       }
 
       document.getElementById('reload')?.addEventListener('click', () => {
@@ -101,7 +104,11 @@ export class FreAppController {
       if (ev.code === 'Escape') {
         ev.stopPropagation();
         ev.preventDefault();
-        freHandler.dismissFre();
+        const visiblePanel =
+            document.querySelector<HTMLElement>('.panel:not([hidden])');
+        if (visiblePanel) {
+          freHandler.dismissFre(this.panelIdToEnum(visiblePanel.id));
+        }
       }
     });
 
@@ -126,7 +133,7 @@ export class FreAppController {
     if (urlHash === '#continue') {
       freHandler.acceptFre();
     } else if (urlHash === '#noThanks') {
-      freHandler.dismissFre();
+      freHandler.dismissFre(FreWebUiState.kReady);
     }
   }
 
@@ -169,6 +176,7 @@ export class FreAppController {
   reload(): void {
     this.destroyWebview();
     this.useReloadTimeout = true;
+    freHandler.freReloaded();
     this.setState(FreWebUiState.kBeginLoading);
   }
 
@@ -297,6 +305,7 @@ export class FreAppController {
         MAX_WAIT_TIME_MS;
     this.loadingTimer = setTimeout(() => {
       console.warn('Exceeded timeout in finishLoading');
+      freHandler.exceededTimeoutError();
       this.setState(FreWebUiState.kError);
     }, timeoutValue - MIN_HOLD_LOADING_TIME_MS);
   }
@@ -330,6 +339,21 @@ export class FreAppController {
         webview, 'sizechanged', this.onSizeChanged.bind(this));
 
     return webview;
+  }
+
+  private panelIdToEnum(panelId: string): FreWebUiState {
+    switch (panelId) {
+      case 'guestPanel':
+        return FreWebUiState.kReady;
+      case 'offlinePanel':
+        return FreWebUiState.kOffline;
+      case 'errorPanel':
+        return FreWebUiState.kError;
+      case 'loadingPanel':
+        return FreWebUiState.kShowLoading;
+      default:
+        return FreWebUiState.kUninitialized;
+    }
   }
 
   // Destroy the current webview and create a new one. This is necessary because

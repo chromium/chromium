@@ -36,6 +36,20 @@ namespace glic {
 
 class GlicFreDialogView;
 
+// This enum is used to record the reason for the FRE error state.
+// These values are persisted to logs.
+// LINT.IfChange(FreErrorStateReason)
+enum class FreErrorStateReason {
+  // Sign-in is required.
+  kSignInRequired = 0,
+  // Error while re-syncing cookies before showing FRE.
+  kErrorResyncingCookies = 1,
+  // Timeout exceeded during loading error.
+  kTimeoutExceeded = 2,
+  kMaxValue = kTimeoutExceeded,
+};
+// LINT.ThenChange(tools/metrics/histograms/metadata/glic/enums.xml:FreErrorStateReason)
+
 // This class owns and manages the glic FRE modal dialog, and is owned by a
 // GlicWindowController.
 class GlicFreController {
@@ -85,7 +99,7 @@ class GlicFreController {
   void AcceptFre();
 
   // Closes the FRE dialog.
-  void DismissFre();
+  void DismissFre(mojom::FreWebUiState panel);
 
   // Used when the native window is closed directly.
   void CloseWithReason(views::Widget::ClosedReason reason);
@@ -93,11 +107,11 @@ class GlicFreController {
   // Re-sync cookies to FRE webview.
   void PrepareForClient(base::OnceCallback<void(bool)> callback);
 
+  // Loading timeout was exceeded.
+  void ExceededTimeoutError();
+
   // Notify FRE controller that the user clicked on a link.
   void OnLinkClicked(const GURL& url);
-
-  // Notify FRE controller that the user clicked "no thanks" in the FRE.
-  void OnNoThanksClicked();
 
   // Attempts to warm the FRE web contents.
   void TryPreload();
