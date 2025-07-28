@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -122,9 +123,12 @@ void HeaderModificationDelegateImpl::ProcessRequest(
   }
 #endif
 
-  ConsentLevel consent_level = ConsentLevel::kSync;
-#if BUILDFLAG(IS_ANDROID)
-  consent_level = ConsentLevel::kSignin;
+  ConsentLevel consent_level = ConsentLevel::kSignin;
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    consent_level = ConsentLevel::kSync;
+  }
 #endif
 
   IdentityManager* identity_manager =
@@ -153,6 +157,10 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       is_secondary_account_addition_allowed,
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      // This usage of `IsSyncFeatureEnabled()` needs to be kept until the Sync
+      // users are migrated to kSignin state. It tells the Gaia server whether
+      // the sync feature is enabled, which in particular triggers a
+      // confirmation web page on signout.
       sync_service && sync_service->IsSyncFeatureEnabled(),
       prefs->GetString(prefs::kGoogleServicesSigninScopedDeviceId),
 #endif
