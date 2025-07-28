@@ -594,11 +594,6 @@ const char kEnhancedSafeBrowsingPromoDescription[] =
     "When enabled, the Enhanced Safe Browsing inline and infobar promos are "
     "displayed given certain preconditions are met.";
 
-const char kEnterpriseRealtimeEventReportingOnIOSName[] =
-    "Enable realtime event reporting for Enterprise on iOS";
-const char kEnterpriseRealtimeEventReportingOnIOSDescription[] =
-    "When enabled, realtime events will be reported to the user's organization";
-
 const char kFeedBackgroundRefreshName[] = "Enable feed background refresh";
 const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "

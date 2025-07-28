@@ -339,9 +339,6 @@ extern const char kEnhancedCalendarDescription[];
 extern const char kEnhancedSafeBrowsingPromoName[];
 extern const char kEnhancedSafeBrowsingPromoDescription[];
 
-extern const char kEnterpriseRealtimeEventReportingOnIOSName[];
-extern const char kEnterpriseRealtimeEventReportingOnIOSDescription[];
-
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
 
