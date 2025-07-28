@@ -58,11 +58,13 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   // indicating that another track sizing pass will be required once we've
   // computed the auto track size. `opt_oof_children` is an optional vector of
   // out-of-flow direct children of the masonry container that this method will
-  // populate.
+  // populate. `collapsed_track_indexes` will be populated with all the grid
+  // track indexes that were collapsed as a result of auto-fit.
   GridSizingTrackCollection ComputeGridAxisTracks(
       const SizingConstraint sizing_constraint,
       std::optional<LayoutUnit> auto_repeat_track_size,
       GridItems& masonry_items,
+      Vector<wtf_size_t>& collapsed_track_indexes,
       wtf_size_t& start_offset,
       bool& needs_auto_track_size,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr) const;
@@ -72,6 +74,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       const GridItems& masonry_items,
       SizingConstraint sizing_constraint,
       bool& needs_auto_track_size,
+      Vector<wtf_size_t>& collapsed_track_indexes,
       wtf_size_t& start_offset) const;
 
   // If `auto_repeat_track_size` is non-null, this indicates the track
@@ -97,6 +100,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
                                      const GridItems& masonry_items,
                                      const bool needs_auto_track_size,
                                      SizingConstraint sizing_constraint,
+                                     const wtf_size_t auto_repetition_count,
                                      wtf_size_t& start_offset) const;
 
   LayoutUnit ComputeMasonryItemBlockContribution(

@@ -73,8 +73,16 @@ class CORE_EXPORT GridTrackList {
   wtf_size_t RepeaterCount() const;
   // Returns the count of all tracks, ignoring those within an auto repeater.
   wtf_size_t TrackCountWithoutAutoRepeat() const;
+  // Returns the count of tracks up to an auto repeater. If there is no auto
+  // repeater, returns 0.
+  wtf_size_t TrackCountBeforeAutoRepeat() const {
+    return track_count_before_auto_repeat_;
+  }
   // Returns the number of tracks in the auto repeater, or 0 if there is none.
   wtf_size_t AutoRepeatTrackCount() const;
+  // Returns the start index of the auto repeater, or kNotFound if there is
+  // none.
+  wtf_size_t AutoRepeatTrackIndex() const { return auto_repeater_index_; }
   // Returns the count of line names not including auto repeaters. Note that
   // this is subtly different than `TrackCountWithoutAutoRepeat`, as it is
   // specifically line names (not sizes), and includes empty line names.
@@ -123,6 +131,10 @@ class CORE_EXPORT GridTrackList {
 
   // Count of tracks ignoring those within an auto repeater.
   wtf_size_t track_count_without_auto_repeat_{0};
+
+  // Count of tracks up to an auto repeater. If there is no auto repeater, it is
+  // 0.
+  wtf_size_t track_count_before_auto_repeat_{0};
 
   // Count of line names outside of auto-repeaters. This is subtly different
   // than `track_count_without_auto_repeat_`, as that is track definitions,

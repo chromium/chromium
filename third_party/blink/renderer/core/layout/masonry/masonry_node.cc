@@ -30,7 +30,8 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
     const GridLineResolver& line_resolver,
     const GridItems& masonry_items,
     wtf_size_t& max_end_line,
-    wtf_size_t& start_offset) const {
+    wtf_size_t& start_offset,
+    wtf_size_t& unplaced_item_span_count) const {
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
 
   start_offset = 0;
@@ -50,6 +51,13 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
             child.Style(), grid_axis_direction));
 
     const auto& item_span = item_properties.Span();
+    // Keep a running sum of unplaced item spans to determine where to
+    // place auto placed virtual items per the auto-fit masonry heuristic.
+    //
+    // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
+    if (item_span.IsIndefinite()) {
+      unplaced_item_span_count += item_span.SpanSize();
+    }
     if (item_span.IsUntranslatedDefinite()) {
       start_offset =
           std::max<int>(start_offset, -item_span.UntranslatedStartLine());

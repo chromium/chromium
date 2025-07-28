@@ -41,12 +41,13 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     std::optional<LayoutUnit> auto_repeat_track_size = std::nullopt;
     wtf_size_t start_offset;
     GridItems masonry_items;
+    Vector<wtf_size_t> collapsed_track_indexes;
     const bool is_for_columns =
         Style().MasonryTrackSizingDirection() == kForColumns;
 
     GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
-        sizing_constraint, auto_repeat_track_size, masonry_items, start_offset,
-        needs_auto_track_size);
+        sizing_constraint, auto_repeat_track_size, masonry_items,
+        collapsed_track_indexes, start_offset, needs_auto_track_size);
 
     // We have a repeat() track definition with an auto sized track(s). The
     // previous track sizing pass was used to find the track size to apply
@@ -57,6 +58,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
     if (needs_auto_track_size) {
       CHECK_NE(track_collection.GetAutoSizedRepeaterTrackIndex(), kNotFound);
+      collapsed_track_indexes.clear();
       // Note that when `needs_auto_track_size` is true, we skip the steps to
       // distribute free space during track sizing. This means that the base
       // track size at this point represents the size of the intrinsic track
@@ -68,7 +70,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
 
       track_collection = ComputeGridAxisTracks(
           sizing_constraint, auto_repeat_track_size, masonry_items,
-          start_offset, needs_auto_track_size);
+          collapsed_track_indexes, start_offset, needs_auto_track_size);
     }
 
     if (is_for_columns) {
@@ -85,7 +87,8 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
 
       MasonryRunningPositions running_positions(
           track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
-          ResolveItemToleranceForMasonry(Style(), masonry_available_size_));
+          ResolveItemToleranceForMasonry(Style(), masonry_available_size_),
+          collapsed_track_indexes);
       PlaceMasonryItems(track_collection, masonry_items, start_offset,
                         running_positions, sizing_constraint);
       // `stacking_axis_gap` represents the space between each of the items
@@ -119,10 +122,12 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   wtf_size_t start_offset;
   GridItems masonry_items;
   HeapVector<Member<LayoutBox>> oof_children;
+  Vector<wtf_size_t> collapsed_track_indexes;
 
-  GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
-      SizingConstraint::kLayout, auto_repeat_track_size, masonry_items,
-      start_offset, needs_auto_track_size, &oof_children);
+  GridSizingTrackCollection track_collection =
+      ComputeGridAxisTracks(SizingConstraint::kLayout, auto_repeat_track_size,
+                            masonry_items, collapsed_track_indexes,
+                            start_offset, needs_auto_track_size, &oof_children);
 
   // We have a repeat() track definition with an auto sized track(s). The
   // previous track sizing pass was used to find the track size to apply
@@ -133,6 +138,7 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
   if (needs_auto_track_size) {
     CHECK_NE(track_collection.GetAutoSizedRepeaterTrackIndex(), kNotFound);
+    collapsed_track_indexes.clear();
     // Note that when `needs_auto_track_size` is true, we skip the steps to
     // distribute free space during track sizing. This means that the base track
     // size at this point represents the size of the intrinsic track without
@@ -144,14 +150,15 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 
     track_collection = ComputeGridAxisTracks(
         SizingConstraint::kLayout, auto_repeat_track_size, masonry_items,
-        start_offset, needs_auto_track_size);
+        collapsed_track_indexes, start_offset, needs_auto_track_size);
   }
 
   if (!masonry_items.IsEmpty()) {
     MasonryRunningPositions running_positions(
         /*track_count=*/track_collection.EndLineOfImplicitGrid(),
         /*initial_running_position=*/LayoutUnit(),
-        ResolveItemToleranceForMasonry(Style(), masonry_available_size_));
+        ResolveItemToleranceForMasonry(Style(), masonry_available_size_),
+        collapsed_track_indexes);
     PlaceMasonryItems(track_collection, masonry_items, start_offset,
                       running_positions, SizingConstraint::kLayout);
   }
@@ -366,6 +373,7 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
     const GridItems& masonry_items,
     const bool needs_auto_track_size,
     SizingConstraint sizing_constraint,
+    const wtf_size_t auto_repetition_count,
     wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
@@ -379,8 +387,24 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
   wtf_size_t max_end_line;
   GridItems virtual_items;
 
-  for (const auto& [group_items, group_properties] : Node().CollectItemGroups(
-           line_resolver, masonry_items, max_end_line, start_offset)) {
+  // If there is an auto-fit track definition, store what tracks it spans.
+  const GridTrackList& track_list =
+      is_for_columns ? style.GridTemplateColumns().GetTrackList()
+                     : style.GridTemplateRows().GetTrackList();
+  GridSpan auto_fit_span = GridSpan::IndefiniteGridSpan();
+  if (!needs_auto_track_size && track_list.HasAutoRepeater() &&
+      track_list.RepeatType(track_list.AutoRepeatTrackIndex()) ==
+          GridTrackRepeater::RepeatType::kAutoFit) {
+    auto_fit_span = GridSpan::TranslatedDefiniteGridSpan(
+        track_list.TrackCountBeforeAutoRepeat(),
+        track_list.TrackCountBeforeAutoRepeat() + auto_repetition_count);
+  }
+
+  wtf_size_t unplaced_item_span_count = 0;
+
+  for (const auto& [group_items, group_properties] :
+       Node().CollectItemGroups(line_resolver, masonry_items, max_end_line,
+                                start_offset, unplaced_item_span_count)) {
     auto* virtual_item = MakeGarbageCollected<GridItemData>();
 
     GridSpan span = group_properties.Span();
@@ -476,12 +500,26 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
         // `Translate` will move the span to the start and end of the next line,
         // allowing us to "slide" over the entire implicit grid.
         span.Translate(1);
+
+        // Per the auto-fit heuristic, don't add auto placed items to tracks
+        // within the auto-fit range that are greater than the total span count
+        // of auto placed items.
+        //
+        // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
+        if (!auto_fit_span.IsIndefinite()) {
+          while (span.Intersects(auto_fit_span) &&
+                 span.EndLine() > unplaced_item_span_count) {
+            span.Translate(1);
+          }
+        }
       }
     }
 
     DCHECK(span.IsTranslatedDefinite());
-    virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
-    virtual_items.Append(virtual_item);
+    if (span.EndLine() <= max_end_line) {
+      virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
+      virtual_items.Append(virtual_item);
+    }
   }
   return virtual_items;
 }
@@ -573,6 +611,7 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeGridAxisTracks(
     const SizingConstraint sizing_constraint,
     std::optional<LayoutUnit> auto_repeat_track_size,
     GridItems& masonry_items,
+    Vector<wtf_size_t>& collapsed_track_indexes,
     wtf_size_t& start_offset,
     bool& needs_auto_track_size,
     HeapVector<Member<LayoutBox>>* opt_oof_children) const {
@@ -595,7 +634,8 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeGridAxisTracks(
   }
 
   return BuildGridAxisTracks(line_resolver, masonry_items, sizing_constraint,
-                             needs_auto_track_size, start_offset);
+                             needs_auto_track_size, collapsed_track_indexes,
+                             start_offset);
 }
 
 GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
@@ -603,12 +643,13 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     const GridItems& masonry_items,
     SizingConstraint sizing_constraint,
     bool& needs_auto_track_size,
+    Vector<wtf_size_t>& collapsed_track_indexes,
     wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
-  auto virtual_items = BuildVirtualMasonryItems(
+  GridItems virtual_items = BuildVirtualMasonryItems(
       line_resolver, masonry_items, needs_auto_track_size, sizing_constraint,
-      start_offset);
+      line_resolver.AutoRepetitions(grid_axis_direction), start_offset);
 
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(
@@ -623,7 +664,7 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
                                         &range_indices.begin,
                                         &range_indices.end);
     }
-    return range_builder.FinalizeRanges();
+    return range_builder.FinalizeRanges(&collapsed_track_indexes);
   };
 
   GridSizingTrackCollection track_collection(BuildRanges(),

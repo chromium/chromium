@@ -110,7 +110,8 @@ void GridRangeBuilder::EnsureTrackCoverage(
   end_lines_.emplace_back(start_line + span_length, grid_item_end_range_index);
 }
 
-GridRangeVector GridRangeBuilder::FinalizeRanges() {
+GridRangeVector GridRangeBuilder::FinalizeRanges(
+    Vector<wtf_size_t>* collapsed_track_indexes) {
   DCHECK_EQ(start_lines_.size(), end_lines_.size());
 
   // Sort start and ending tracks from low to high.
@@ -291,12 +292,16 @@ GridRangeVector GridRangeBuilder::FinalizeRanges() {
         *end_lines_[line_index].grid_item_range_index_to_cache = ranges.size();
     }
 
-    // TODO(almaher): Handle special auto-fit behavior for Masonry.
-    //
-    // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
     if (is_in_auto_fit_range && open_items_or_repeaters == 1) {
       range.SetIsCollapsed();
       range.set_count = 0;
+      if (collapsed_track_indexes) {
+        wtf_size_t start_line = range.start_line;
+        for (wtf_size_t i = start_line; i < start_line + range.track_count;
+             ++i) {
+          collapsed_track_indexes->emplace_back(i);
+        }
+      }
     } else {
       // If this is a non-collapsed range, the number of sets in this range is
       // the number of track definitions in the current repeater clamped by the

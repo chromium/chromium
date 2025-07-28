@@ -20,9 +20,16 @@ class CORE_EXPORT MasonryRunningPositions {
  public:
   MasonryRunningPositions(wtf_size_t track_count,
                           LayoutUnit initial_running_position,
-                          LayoutUnit tie_threshold)
+                          LayoutUnit tie_threshold,
+                          const Vector<wtf_size_t>& collapsed_track_indexes)
       : running_positions_(track_count, initial_running_position),
-        tie_threshold_(tie_threshold) {}
+        tie_threshold_(tie_threshold) {
+    // To avoid placing items in collapsed tracks, set such tracks to the max
+    // size.
+    for (wtf_size_t index : collapsed_track_indexes) {
+      running_positions_[index] = LayoutUnit::Max();
+    }
+  }
 
   // Return the first span within `tie_threshold_` of the minimum max-position
   // that comes after the auto-placement cursor in masonry's flow.
@@ -60,8 +67,15 @@ class CORE_EXPORT MasonryRunningPositions {
 
   // For testing only.
   MasonryRunningPositions(const Vector<LayoutUnit>& running_positions,
-                          LayoutUnit tie_threshold)
-      : running_positions_(running_positions), tie_threshold_(tie_threshold) {}
+                          LayoutUnit tie_threshold,
+                          const Vector<wtf_size_t>& collapsed_track_indexes)
+      : running_positions_(running_positions), tie_threshold_(tie_threshold) {
+    // To avoid placing items in collapsed tracks, set such tracks to the max
+    // size.
+    for (wtf_size_t index : collapsed_track_indexes) {
+      running_positions_[index] = LayoutUnit::Max();
+    }
+  }
 
   void SetAutoPlacementCursorForTesting(wtf_size_t cursor) {
     auto_placement_cursor_ = cursor;
