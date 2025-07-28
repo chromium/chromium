@@ -85,6 +85,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support:test_support",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//net:test_support",

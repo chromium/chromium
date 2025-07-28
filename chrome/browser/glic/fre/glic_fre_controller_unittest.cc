@@ -92,7 +92,7 @@ TEST_F(GlicFreControllerTest, DismissReady) {
   base::UserActionTester tester;
   glic_fre_controller()->DismissFre(mojom::FreWebUiState::kReady);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 1);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.ReadyPanelClosed"), 1);
 }
 
 TEST_F(GlicFreControllerTest, DismissOffline) {
