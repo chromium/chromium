@@ -143,6 +143,25 @@ public class TabPersistentStore {
         int NUM_ENTRIES = 6;
     }
 
+    @IntDef({
+        MetadataSaveMode.SAVING_ALLOWED,
+        MetadataSaveMode.PAUSED_AND_CLEAN,
+        MetadataSaveMode.PAUSED_AND_DIRTY
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MetadataSaveMode {
+        /** Changes to the tab list are allowed to trigger saves. */
+        int SAVING_ALLOWED = 0;
+
+        /** Saving has been paused, but no changes have been seen. */
+        int PAUSED_AND_CLEAN = 1;
+
+        /**
+         * Saving has been paused and changes have been made, a save will be triggered on resume.
+         */
+        int PAUSED_AND_DIRTY = 2;
+    }
+
     /** Alerted at various stages of operation. */
     public interface TabPersistentStoreObserver {
         /**
@@ -226,7 +245,7 @@ public class TabPersistentStore {
     private TabModelObserver mTabModelObserver;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private int mDuplicateTabIdsSeen;
-    private boolean mSkipSaveTabList;
+    private @MetadataSaveMode int mMetadataSaveMode;
     private @Nullable TabBatchLoader mTabBatchLoader;
     private @Nullable SaveTabTask mSaveTabTask;
     private @Nullable MigrateTabTask mMigrateTabTask;
@@ -1304,7 +1323,11 @@ public class TabPersistentStore {
 
     /** Kick off an AsyncTask to save the current list of Tabs. */
     public void saveTabListAsynchronously() {
-        if (ChromeFeatureList.sAndroidTabSkipSaveTabsKillswitch.isEnabled() && mSkipSaveTabList) {
+        if (ChromeFeatureList.sAndroidTabSkipSaveTabsKillswitch.isEnabled()
+                && mMetadataSaveMode != MetadataSaveMode.SAVING_ALLOWED) {
+            if (mMetadataSaveMode == MetadataSaveMode.PAUSED_AND_CLEAN) {
+                mMetadataSaveMode = MetadataSaveMode.PAUSED_AND_DIRTY;
+            }
             return;
         }
         if (mSaveListTask != null) mSaveListTask.cancel(true);
@@ -1317,7 +1340,9 @@ public class TabPersistentStore {
      * {@link TabModel}s.
      */
     public void pauseSaveTabList() {
-        mSkipSaveTabList = true;
+        if (mMetadataSaveMode == MetadataSaveMode.SAVING_ALLOWED) {
+            mMetadataSaveMode = MetadataSaveMode.PAUSED_AND_CLEAN;
+        }
     }
 
     /** See {@link #resumeSaveTabList(Runnable)}. */
@@ -1334,19 +1359,24 @@ public class TabPersistentStore {
      *     SaveListTask} has completed after resumption.
      */
     public void resumeSaveTabList(Runnable onSaveTabListRunnable) {
-        mSkipSaveTabList = false;
-
-        addObserver(
-                new TabPersistentStoreObserver() {
-                    @Override
-                    public void onMetadataSavedAsynchronously(
-                            TabModelSelectorMetadata modelSelectorMetadata) {
-                        onSaveTabListRunnable.run();
-                        removeObserver(this);
-                    }
-                });
-
-        saveTabListAsynchronously();
+        boolean shouldTriggerSave =
+                !ChromeFeatureList.sTabModelInitFixes.isEnabled()
+                        || mMetadataSaveMode == MetadataSaveMode.PAUSED_AND_DIRTY;
+        mMetadataSaveMode = MetadataSaveMode.SAVING_ALLOWED;
+        if (shouldTriggerSave) {
+            addObserver(
+                    new TabPersistentStoreObserver() {
+                        @Override
+                        public void onMetadataSavedAsynchronously(
+                                TabModelSelectorMetadata modelSelectorMetadata) {
+                            onSaveTabListRunnable.run();
+                            removeObserver(this);
+                        }
+                    });
+            saveTabListAsynchronously();
+        } else {
+            onSaveTabListRunnable.run();
+        }
     }
 
     private class SaveTabTask extends AsyncTask<Void> {

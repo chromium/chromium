@@ -719,6 +719,90 @@ public class TabPersistentStoreUnitTest {
         reset(mSequencedTaskRunner);
     }
 
+    @Test
+    @Feature("TabPersistentStore")
+    @DisableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
+    public void testPauseSaveTabList() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
+        when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
+        mPersistentStore =
+                new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory);
+        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
+        mPersistentStore.onNativeLibraryReady();
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
+        verify(mSequencedTaskRunner).execute(any());
+        reset(mSequencedTaskRunner);
+
+        mPersistentStore.pauseSaveTabList();
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
+        verify(mSequencedTaskRunner, never()).execute(any());
+
+        mPersistentStore.resumeSaveTabList(() -> {});
+        verify(mSequencedTaskRunner).execute(any());
+        reset(mSequencedTaskRunner);
+
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
+        verify(mSequencedTaskRunner).execute(any());
+        reset(mSequencedTaskRunner);
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    @EnableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
+    public void testPauseSaveTabList_OnlySavesWhenDirty() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
+        when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
+        mPersistentStore =
+                new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory);
+        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
+        mPersistentStore.onNativeLibraryReady();
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
+        verify(mSequencedTaskRunner).execute(any());
+        reset(mSequencedTaskRunner);
+
+        mPersistentStore.pauseSaveTabList();
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
+        verify(mSequencedTaskRunner, never()).execute(any());
+
+        mPersistentStore.resumeSaveTabList(() -> {});
+        verify(mSequencedTaskRunner).execute(any());
+        reset(mSequencedTaskRunner);
+
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
+        verify(mSequencedTaskRunner).execute(any());
+        reset(mSequencedTaskRunner);
+
+        mPersistentStore.pauseSaveTabList();
+        mPersistentStore.resumeSaveTabList(() -> {});
+        verify(mSequencedTaskRunner, never()).execute(any());
+
+        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
+        verify(mSequencedTaskRunner).execute(any());
+        reset(mSequencedTaskRunner);
+    }
+
     private void setupSerializationTestMocks() {
         when(mNormalTabModel.getCount()).thenReturn(2);
         when(mNormalTabModel.index()).thenReturn(0);
