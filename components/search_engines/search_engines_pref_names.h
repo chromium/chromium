@@ -18,8 +18,12 @@ inline constexpr char kDefaultSearchProviderGUID[] =
     "default_search_provider.guid";
 
 // Epoch timestamp in seconds of when the user's search engine choice was
-// invalidated. We do this for example when they detect that a choice has
-// been transferred to a different device.
+// invalidated.
+// While Chrome is processing detected restored installs on a just-in-time
+// basis, we use this pref to flag the detected installs and differentiate them
+// from the ones we missed.
+// TODO(crbug.com/434651685): Remove this pref and the associated code when we
+// fully transition to retroactive detection.
 inline constexpr char kDefaultSearchProviderChoiceInvalidationTimestamp[] =
     "default_search_provider.choice_invalidation_timestamp";
 

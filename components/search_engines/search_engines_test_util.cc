@@ -103,5 +103,8 @@ bool FakeSearchEngineChoiceServiceClient::
 
 bool FakeSearchEngineChoiceServiceClient::DoesChoicePredateDeviceRestore(
     const search_engines::ChoiceCompletionMetadata& choice_metadata) {
+  if (restore_detection_time_.has_value()) {
+    return choice_metadata.timestamp < restore_detection_time_.value();
+  }
   return does_choice_predate_device_restore_;
 }

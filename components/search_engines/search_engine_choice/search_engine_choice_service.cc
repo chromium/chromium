@@ -573,7 +573,9 @@ SearchEngineChoiceService::CheckPrefsForWipeReason() {
       client_->DoesChoicePredateDeviceRestore(completion_metadata.value())) {
     if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get() ||
         client_->IsDeviceRestoreDetectedInCurrentSession()) {
-      return SearchEngineChoiceWipeReason::kDeviceRestored;
+      profile_prefs_->SetInt64(
+          prefs::kDefaultSearchProviderChoiceInvalidationTimestamp,
+          base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
     }
   }
 
@@ -635,8 +637,49 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
 SearchEngineChoiceService::ChoiceStatus
 SearchEngineChoiceService::EvaluateSearchProviderChoice(
     const TemplateURLService& template_url_service) {
-  if (GetChoiceCompletionMetadata(*profile_prefs_).has_value()) {
-    return ChoiceStatus::kValid;
+  auto IsChoiceImported = [&](const ChoiceCompletionMetadata&
+                                  completion_metadata) {
+    if (!base::FeatureList::IsEnabled(
+            switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
+      // Feature disabled, don't detect imported choices.
+      return false;
+    }
+    if (!client_->DoesChoicePredateDeviceRestore(completion_metadata)) {
+      // The current choice happened on this device, it's not imported.
+      return false;
+    }
+
+    if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get()) {
+      // Retroactive detection is activated, report the choice as imported.
+      return true;
+    }
+
+    if (client_->IsDeviceRestoreDetectedInCurrentSession()) {
+      // Restore was detected in this session, report the choice as imported for
+      // the "just-in-time" mode.
+      return true;
+    }
+
+    if (IsSearchEngineChoiceInvalid(*profile_prefs_)) {
+      // We're doing just-in-time invalidation, and observed the restore. The
+      // user however did not yet make a new choice since then, so the current
+      // one is still the imported one.
+      return true;
+    }
+
+    return false;
+  };
+
+  bool has_imported_choice = false;
+  if (auto completion_metadata = GetChoiceCompletionMetadata(*profile_prefs_);
+      completion_metadata.has_value()) {
+    if (IsChoiceImported(completion_metadata.value())) {
+      // Check other properties of the current choice, whether it was imported
+      // might affect the overall status later down the line.
+      has_imported_choice = true;
+    } else {
+      return ChoiceStatus::kValid;
+    }
   }
 
   const TemplateURL* default_search_provider =
@@ -670,7 +713,7 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
     return ChoiceStatus::kCurrentIsUnknownPrepopulated;
   }
 
-  if (IsSearchEngineChoiceInvalid(profile_prefs_.get())) {
+  if (has_imported_choice) {
     // Potentially eligible for choice screens
     return ChoiceStatus::kFromRestoredDevice;
   }

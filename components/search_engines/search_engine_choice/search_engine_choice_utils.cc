@@ -183,13 +183,6 @@ void RecordChoiceScreenPositions(
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
                                  SearchEngineChoiceWipeReason reason) {
   base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram, reason);
-  if (reason == SearchEngineChoiceWipeReason::kDeviceRestored &&
-      profile_prefs.HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
-    profile_prefs.SetInt64(
-        prefs::kDefaultSearchProviderChoiceInvalidationTimestamp,
-        base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
-  }
 
   profile_prefs.ClearPref(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
@@ -197,6 +190,8 @@ void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
   profile_prefs.ClearPref(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  profile_prefs.ClearPref(
+      prefs::kDefaultSearchProviderChoiceInvalidationTimestamp);
 
 #if BUILDFLAG(IS_IOS)
   profile_prefs.ClearPref(
@@ -258,15 +253,8 @@ bool IsSearchEngineChoiceInvalid(PrefService& prefs) {
     return false;
   }
 
-  if (prefs.GetInt64(prefs::kDefaultSearchProviderChoiceInvalidationTimestamp) >
-      0) {
-    CHECK(!prefs.HasPrefPath(
-              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
-          base::NotFatalUntil::M140);
-    return true;
-  }
-
-  return false;
+  return prefs.GetInt64(
+             prefs::kDefaultSearchProviderChoiceInvalidationTimestamp) > 0;
 }
 
 void SetChoiceCompletionMetadata(PrefService& prefs,

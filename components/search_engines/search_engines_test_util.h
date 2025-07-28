@@ -70,11 +70,16 @@ class FakeSearchEngineChoiceServiceClient
     does_choice_predate_device_restore_ = does_predate;
   }
 
+  void set_restore_detection_time(base::Time restore_detection_time) {
+    restore_detection_time_ = restore_detection_time;
+  }
+
  private:
   country_codes::CountryId variations_country_;
   bool is_profile_eligible_for_dse_guest_propagation_ = false;
   bool is_device_restore_detected_in_current_session_ = false;
   bool does_choice_predate_device_restore_ = false;
+  std::optional<base::Time> restore_detection_time_;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_TEST_UTIL_H_

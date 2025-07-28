@@ -489,19 +489,35 @@ class SearchEngineChoiceEligibilityOnRestoreTest
         expectations.current_dse_prepopulate_id);
   }
 
-  void UpdateDeviceState(Spec::DeviceStateChanges state_changes) {
-    if (state_changes.country_id.IsValid()) {
-      auto* command_line = base::CommandLine::ForCurrentProcess();
-      command_line->RemoveSwitch(switches::kSearchEngineChoiceCountry);
-      command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
-                                      state_changes.country_id.CountryCode());
+  void UpdateDeviceState(
+      std::optional<Spec::DeviceStateChanges> state_changes) {
+    bool restore_detected_in_current_session = false;
+    if (state_changes.has_value()) {
+      if (state_changes->set_restored) {
+        restore_detected_in_current_session = true;
+        latest_restore_time_ = base::Time::Now();
+      }
+
+      if (state_changes->country_id.IsValid()) {
+        auto* command_line = base::CommandLine::ForCurrentProcess();
+        command_line->RemoveSwitch(switches::kSearchEngineChoiceCountry);
+        command_line->AppendSwitchASCII(
+            switches::kSearchEngineChoiceCountry,
+            state_changes->country_id.CountryCode());
+      }
     }
 
     InitService({
         .force_reset = true,
-        .restore_detected_in_current_session = state_changes.set_restored,
-        .choice_predates_restore = state_changes.set_restored,
+        .restore_detected_in_current_session =
+            restore_detected_in_current_session,
     });
+
+    if (latest_restore_time_.has_value()) {
+      static_cast<FakeSearchEngineChoiceServiceClient&>(
+          search_engine_choice_service().GetClientForTesting())
+          .set_restore_detection_time(latest_restore_time_.value());
+    }
   }
 
   void UpdateServiceState(Spec::ServiceStateChanges state_changes) {
@@ -536,6 +552,8 @@ class SearchEngineChoiceEligibilityOnRestoreTest
           t_url, *state_changes.choice_location);
     }
   }
+
+  std::optional<base::Time> latest_restore_time_;
 };
 
 TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
@@ -550,13 +568,12 @@ TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
         switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
   }
 
+  latest_restore_time_ = std::nullopt;
   for (const auto& current_run : param.runs) {
     ResetServices();
 
-    if (current_run.update_device_state.has_value()) {
-      ASSERT_FALSE(search_engines_test_environment_);
-      UpdateDeviceState(*current_run.update_device_state);
-    }
+    ASSERT_FALSE(search_engines_test_environment_);
+    UpdateDeviceState(current_run.update_device_state);
 
     if (current_run.expect_choice_status_before.has_value()) {
       CheckChoiceStatus(*current_run.expect_choice_status_before);
@@ -612,7 +629,8 @@ INSTANTIATE_TEST_SUITE_P(
                               Spec::DeviceStateChanges{
                                   .set_restored = true,
                               },
-                          .expect_choice_status_before = ChoiceStatus::kValid,
+                          .expect_choice_status_before =
+                              ChoiceStatus::kFromRestoredDevice,
                           .expect_with_services =
                               Spec::ExpectationsWithServices{
                                   .static_condition =
@@ -847,7 +865,8 @@ INSTANTIATE_TEST_SUITE_P(
                              Spec::DeviceStateChanges{
                                  .set_restored = true,
                              },
-                         .expect_choice_status_before = ChoiceStatus::kValid,
+                         .expect_choice_status_before =
+                             ChoiceStatus::kCurrentIsNotPrepopulated,
                          .expect_with_services =
                              Spec::ExpectationsWithServices{
                                  .static_condition =
@@ -955,7 +974,8 @@ INSTANTIATE_TEST_SUITE_P(
                              Spec::DeviceStateChanges{
                                  .set_restored = true,
                              },
-                         .expect_choice_status_before = ChoiceStatus::kValid,
+                         .expect_choice_status_before =
+                             ChoiceStatus::kCurrentIsNotPrepopulated,
                          .expect_with_services =
                              Spec::ExpectationsWithServices{
                                  .static_condition =
