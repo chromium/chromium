@@ -14,7 +14,7 @@ static_library("android") {
     ":jni_headers",
     "//base",
     "//components/browsing_data/content",
-    "//components/permissions:permissions",
+    "//components/permissions",
     "//content/public/browser",
   ]
 }

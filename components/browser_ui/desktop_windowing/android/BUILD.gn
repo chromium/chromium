@@ -22,6 +22,6 @@ robolectric_library("junit") {
   deps = [
     ":java",
     "//base:base_junit_test_support",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 }

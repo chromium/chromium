@@ -123,7 +123,7 @@ static_library("android") {
     "//components/prefs",
     "//components/security_state/content",
     "//components/user_prefs",
-    "//components/webauthn/android:android",
+    "//components/webauthn/android",
     "//content/public/browser",
     "//third_party/jni_zero",
     "//ui/android",

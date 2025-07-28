@@ -14,14 +14,14 @@ static_library("content") {
 
   deps = [
     "//base",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/proto",
     "//components/prefs",
     "//components/strings:components_strings_grit",
     "//components/url_matcher",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/public/browser",
   ]
 }
@@ -43,6 +43,6 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }

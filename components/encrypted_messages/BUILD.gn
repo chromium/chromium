@@ -15,7 +15,7 @@ static_library("encrypted_messages") {
   deps = [
     "//base",
     "//crypto",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
 }
 
@@ -32,6 +32,6 @@ source_set("unit_tests") {
     ":encrypted_messages",
     "//base",
     "//testing/gtest",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
 }

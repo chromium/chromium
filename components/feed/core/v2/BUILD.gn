@@ -152,25 +152,25 @@ if (use_blink) {
     ]
     deps = [
       "public:common",
-      "//components/country_codes:country_codes",
+      "//components/country_codes",
       "//components/feed:feature_list",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/history/core/browser",
-      "//components/leveldb_proto:leveldb_proto",
-      "//components/offline_pages/task:task",
+      "//components/leveldb_proto",
+      "//components/offline_pages/task",
       "//components/prefs",
       "//components/search_engines",
       "//components/signin/public/identity_manager",
-      "//components/url_matcher:url_matcher",
+      "//components/url_matcher",
       "//components/variations",
       "//components/variations/net",
       "//components/version_info:channel",
-      "//components/web_resource:web_resource",
+      "//components/web_resource",
       "//net",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/zlib/google:compression_utils",
-      "//ui/base:base",
+      "//ui/base",
     ]
 
     public_deps = [

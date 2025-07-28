@@ -107,11 +107,11 @@ static_library("util") {
     "//components/google/core/common",
     "//components/version_info",
     "//content/public/browser",
-    "//mojo/public/cpp/bindings:bindings",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//net",
-    "//services/network/public/cpp:cpp",
-    "//services/network/public/mojom:mojom",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 }

@@ -85,7 +85,7 @@ source_set("data_type_controller") {
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/service",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 
@@ -265,7 +265,7 @@ if (is_android) {
       "//components/saved_tab_groups/public:java",
       "//components/signin/public/android:java",
       "//third_party/android_deps:robolectric_all_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//url:gurl_junit_test_support",
       "//url:url_java",

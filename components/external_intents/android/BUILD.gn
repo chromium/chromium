@@ -128,7 +128,7 @@ source_set("test_support") {
   deps = [
     ":test_support_java_jni_headers",
     "//base",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 }
 

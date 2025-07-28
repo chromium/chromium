@@ -116,7 +116,7 @@ source_set("prefs") {
 
   deps = [
     "//base",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
+    "//components/pref_registry",
+    "//components/prefs",
   ]
 }

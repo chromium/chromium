@@ -44,8 +44,8 @@ component("app_restore") {
   public_deps = [
     "//ash/constants",
     "//base",
-    "//chromeos/ui/base:base",
-    "//components/account_id:account_id",
+    "//chromeos/ui/base",
+    "//components/account_id",
     "//components/services/app_service",
     "//components/sessions:session_id",
     "//components/tab_groups",

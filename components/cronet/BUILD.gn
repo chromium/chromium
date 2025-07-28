@@ -72,7 +72,7 @@ source_set("cronet_common") {
     ":cronet_version_header",
     ":request_context_config_proto",
     "//base",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//net",
   ]
 
@@ -290,7 +290,7 @@ if (is_android) {
     sources = [ "native/sample/test/sample_test.cc" ]
     deps = [
       ":cronet_sample",
-      "//testing/gtest:gtest",
+      "//testing/gtest",
     ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

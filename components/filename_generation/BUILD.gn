@@ -15,7 +15,7 @@ static_library("filename_generation") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/url_formatter:url_formatter",
+    "//components/url_formatter",
     "//net",
     "//url",
   ]

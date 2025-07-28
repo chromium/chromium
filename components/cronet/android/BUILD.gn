@@ -193,7 +193,7 @@ source_set("cronet_static") {
     "//components/cronet:request_context_config_proto",
     "//components/prefs",
     "//net",
-    "//third_party/zlib:zlib",
+    "//third_party/zlib",
     "//url",
     "//url:buildflags",
   ]
@@ -257,7 +257,7 @@ shared_library("cronet") {
   deps = [
     ":cronet_static",
     "//base",
-    "//net:net",
+    "//net",
   ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ ":hide_all_but_jni_onload_and_cronet" ]
@@ -2045,7 +2045,7 @@ if (target_cpu == "arm" && arm_version == 7 && !arm_use_neon) {
       "--stamp",
       rebase_path(outputs[0], root_build_dir),
     ]
-    deps = [ "//base:base" ]
+    deps = [ "//base" ]
   }
 }
 
@@ -2257,7 +2257,7 @@ group("cronet_package_ci") {
   deps = [
     ":generate_build_script_test",
     "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets",
-    "//components/cronet/license/tests/target_a:target_a",
+    "//components/cronet/license/tests/target_a",
   ]
 }
 

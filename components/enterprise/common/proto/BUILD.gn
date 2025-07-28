@@ -27,9 +27,8 @@ proto_extras("connectors_proto_extras") {
     ":connectors_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
   ]
-  extras_deps = [
-    "//components/safe_browsing/core/common/proto:csd_proto_extras",
-  ]
+  extras_deps =
+      [ "//components/safe_browsing/core/common/proto:csd_proto_extras" ]
 
   # The fuzzable_proto_library rule above uses the full protobuf runtime.
   protobuf_full_support = true

@@ -80,7 +80,7 @@ static_library("group_data") {
     "//url",
   ]
 
-  deps = [ "//components/url_formatter:url_formatter" ]
+  deps = [ "//components/url_formatter" ]
 }
 
 source_set("unit_tests") {

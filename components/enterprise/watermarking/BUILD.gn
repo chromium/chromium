@@ -12,7 +12,7 @@ source_set("watermarking") {
 
   public_deps = [
     "//skia",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
   ]
 }
 

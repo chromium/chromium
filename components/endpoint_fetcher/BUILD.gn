@@ -11,7 +11,7 @@ source_set("endpoint_fetcher") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//components/signin/public/identity_manager",
     "//components/version_info:channel",
     "//google_apis",
@@ -28,15 +28,15 @@ source_set("unit_tests") {
 
   deps = [
     ":endpoint_fetcher",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis/common:request_util",
-    "//net:net",
+    "//net",
     "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

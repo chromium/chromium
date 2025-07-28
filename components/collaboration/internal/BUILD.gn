@@ -75,7 +75,7 @@ source_set("collaboration_finder") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
   ]
@@ -196,7 +196,7 @@ source_set("core_unit_tests") {
     "//components/collaboration:test_support",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
-    "//components/saved_tab_groups/test_support:test_support",
+    "//components/saved_tab_groups/test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//testing/gtest",
@@ -256,7 +256,7 @@ source_set("messaging_unit_tests") {
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
-    "//components/saved_tab_groups/test_support:test_support",
+    "//components/saved_tab_groups/test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/tab_groups",
     "//testing/gmock",

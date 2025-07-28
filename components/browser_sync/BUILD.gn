@@ -34,7 +34,7 @@ static_library("browser_sync") {
     "//components/collaboration/public",
     "//components/collaboration/public:data_type_controller",
     "//components/commerce/core:feature_list",
-    "//components/commerce/core/product_specifications:product_specifications",
+    "//components/commerce/core/product_specifications",
     "//components/consent_auditor",
     "//components/data_sharing/public",
     "//components/history/core/browser",

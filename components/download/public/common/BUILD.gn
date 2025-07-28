@@ -94,7 +94,7 @@ component("public") {
   deps = [
     "//components/download/database",
     "//components/download/internal/common:internal",
-    "//components/services/quarantine:quarantine",
+    "//components/services/quarantine",
     "//crypto",
     "//mojo/public/c/system",
     "//net",
@@ -175,7 +175,7 @@ source_set("test_support") {
     "//base",
     "//components/download/database",
     "//net",
-    "//services/service_manager/public/cpp:cpp",
+    "//services/service_manager/public/cpp",
     "//testing/gmock",
     "//url",
   ]

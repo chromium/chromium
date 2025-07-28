@@ -127,7 +127,7 @@ source_set("server_environment") {
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
     "//components/exo",
-    "//components/exo/wayland:wayland",
+    "//components/exo/wayland",
     "//components/exo/wayland:wayland_client_test_helper",
     "//mojo/core/embedder",
     "//ui/aura",

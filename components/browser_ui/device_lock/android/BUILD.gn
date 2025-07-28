@@ -33,7 +33,7 @@ source_set("android") {
   deps = [
     ":device_lock_bridge_jni_headers",
     "//base",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 
@@ -51,6 +51,6 @@ source_set("test_support") {
     ":android",
     ":device_lock_bridge_jni_headers",
     "//base",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }

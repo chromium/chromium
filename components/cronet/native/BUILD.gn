@@ -42,7 +42,7 @@ source_set("cronet_native_impl") {
     "//components/cronet:cronet_common",
     "//components/cronet:cronet_version_header",
     "//components/cronet:metrics_util",
-    "//components/grpc_support:grpc_support",
+    "//components/grpc_support",
     "//net",
   ]
 

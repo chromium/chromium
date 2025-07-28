@@ -20,7 +20,7 @@ component("file_access") {
 
   deps = [
     "//base",
-    "//url:url",
+    "//url",
   ]
 }
 

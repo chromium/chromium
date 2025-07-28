@@ -41,7 +41,7 @@ source_set("form_util_feature") {
     ":fill_js",
     ":form_js",
     "//base",
-    "//components/autofill/ios/common:common",
+    "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
   ]

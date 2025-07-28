@@ -35,10 +35,10 @@ component("account_manager_core") {
   deps = [
     "//base",
     "//chromeos/crosapi/mojom",
-    "//components/prefs:prefs",
-    "//google_apis:google_apis",
+    "//components/prefs",
+    "//google_apis",
     "//mojo/public/cpp/bindings",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 
   public_deps = [
@@ -86,9 +86,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/crosapi/mojom",
     "//components/prefs:test_support",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gtest",
   ]
 

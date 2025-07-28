@@ -36,7 +36,7 @@ source_set("penguin") {
 
   deps = [
     "//base",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 
   if (is_android) {
