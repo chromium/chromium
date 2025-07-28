@@ -406,11 +406,15 @@ FieldType AutofillField::heuristic_type(HeuristicSource s) const {
   }
 
   FieldType type = local_type_predictions_[static_cast<size_t>(s)];
+  // Guaranteed by construction of `local_type_predictions_`.
+  DCHECK(ToSafeFieldType(type, MAX_VALID_FIELD_TYPE) != MAX_VALID_FIELD_TYPE);
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
   // presumes there is a prediction, therefore we coalesce to `UNKNOWN_TYPE`.
   // Shadow predictions however are not used and we care whether the type is
   // `UNKNOWN_TYPE` or whether we never ran the heuristics.
-  return (type > 0 || s != GetActiveHeuristicSource()) ? type : UNKNOWN_TYPE;
+  return type != NO_SERVER_DATA || s != GetActiveHeuristicSource()
+             ? type
+             : UNKNOWN_TYPE;
 }
 
 FieldType AutofillField::server_type() const {
@@ -425,10 +429,8 @@ bool AutofillField::server_type_prediction_is_override() const {
 }
 
 void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
-  if (type < 0 || type > MAX_VALID_FIELD_TYPE ||
-      type == FIELD_WITH_DEFAULT_VALUE) {
-    NOTREACHED();
-  }
+  type = ToSafeFieldType(type, MAX_VALID_FIELD_TYPE);
+  CHECK_NE(type, MAX_VALID_FIELD_TYPE, base::NotFatalUntil::M142) << type;
   local_type_predictions_[static_cast<size_t>(s)] = type;
   if (s == GetActiveHeuristicSource()) {
     overall_type_ = std::nullopt;
