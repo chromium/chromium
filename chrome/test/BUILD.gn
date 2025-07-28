@@ -3948,6 +3948,7 @@ if (!is_android) {
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/chrome_labs",
@@ -10626,10 +10627,7 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [
-      "../browser/ui/startup/default_browser_prompt/default_browser_prompt_manager_unittest.cc",
-      "../browser/ui/startup/default_browser_prompt/default_browser_prompt_unittest.cc",
-    ]
+    deps += [ "//chrome/browser/ui/startup/default_browser_prompt:unit_tests" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -11515,8 +11513,7 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [ "../browser/ui/startup/default_browser_prompt/default_browser_prompt_interactive_uitest.cc" ]
-      deps += [ "//chrome/browser:shell_integration" ]
+      deps += [ "//chrome/browser/ui/startup/default_browser_prompt:interactive_ui_tests" ]
     }
 
     if (!is_chromeos) {

@@ -380,6 +380,8 @@ static_library("ui") {
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
+    "//chrome/browser/ui/startup/default_browser_prompt",
+    "//chrome/browser/ui/startup/default_browser_prompt:impl",
     "//chrome/browser/ui/sync",
     "//chrome/browser/ui/sync:impl",
     "//chrome/browser/ui/tab_contents",
@@ -1083,12 +1085,6 @@ static_library("ui") {
       "singleton_tabs.h",
       "startup/automation_infobar_delegate.cc",
       "startup/automation_infobar_delegate.h",
-      "startup/default_browser_prompt/default_browser_infobar_delegate.cc",
-      "startup/default_browser_prompt/default_browser_infobar_delegate.h",
-      "startup/default_browser_prompt/default_browser_prompt_manager.cc",
-      "startup/default_browser_prompt/default_browser_prompt_manager.h",
-      "startup/default_browser_prompt/default_browser_prompt_prefs.cc",
-      "startup/default_browser_prompt/default_browser_prompt_prefs.h",
       "startup/google_api_keys_infobar_delegate.cc",
       "startup/google_api_keys_infobar_delegate.h",
       "startup/infobar_utils.cc",
@@ -2937,8 +2933,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "startup/default_browser_prompt/default_browser_prompt.cc",
-      "startup/default_browser_prompt/default_browser_prompt.h",
       "startup/first_run_service.cc",
       "startup/first_run_service.h",
       "startup/web_app_info_recorder_utils.cc",

@@ -359,6 +359,10 @@ source_set("impl") {
       "//chrome/browser/glic",
     ]
   }
+
+  if (!is_android && !is_chromeos) {
+    deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
+  }
 }
 
 # There are users of this util such as //c/b/ash/app_restore. If it's part of
