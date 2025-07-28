@@ -1737,17 +1737,24 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   NSUInteger oldIncognitoTabCount =
       [ChromeEarlGreyAppInterface incognitoTabCount];
 
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+
   [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton()]
       performAction:grey_tap()];
 
   [self waitForIncognitoTabCount:oldIncognitoTabCount + 1];
   [self waitForMainTabCount:oldRegularTabCount];
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL)]
       assertWithMatcher:grey_notNil()];
 }
 
 - (void)verifyShareActionWithURL:(const GURL&)URL
                        pageTitle:(NSString*)pageTitle {
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+
   [[EarlGrey selectElementWithMatcher:ShareButton()] performAction:grey_tap()];
 
   NSString* hostString = base::SysUTF8ToNSString(URL.host());
@@ -1761,13 +1768,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                @"Either hostString %d or pageTitle %d was not present",
                hostStringPresent, pageTitlePresent);
   } else {
-#if TARGET_OS_SIMULATOR
-    // The activity view share sheet blocks EarlGrey's synchronization on
-    // the simulators. Ref:
-    // github.com/google/EarlGrey/blob/master/docs/features.md#visibility-checks
-    ScopedSynchronizationDisabler disabler;
-#endif
-
     // On iOS 16, LPLinkView and LPTextView are marked isAccessible=N.
     ScopedMatchNonAccessibilityElements enabler;
 
