@@ -223,9 +223,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
             &autofill_manager_);
   }
 
-  void TearDown() override {
-    credit_card_form_event_logger_->OnDestroyed();
-  }
+  void TearDown() override { credit_card_form_event_logger_->OnDestroyed(); }
 
   CreditCard CreateServerCard(
       const std::string& guid = "00000000-0000-0000-0000-000000000001",

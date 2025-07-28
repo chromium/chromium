@@ -1077,10 +1077,11 @@ TEST_F(
   FormFieldData triggering_field_with_katakana_label;
   triggering_field_with_katakana_label.set_label(katakana);
 
-  const std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
-      {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
-      SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
-      triggering_field_with_katakana_label);
+  const std::vector<Suggestion> suggestions =
+      CreateSuggestionsFromProfilesForTest(
+          {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
+          SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
+          triggering_field_with_katakana_label);
 
   EXPECT_THAT(suggestions, SuggestionVectorMainTextsAre(Suggestion::Text(
                                katakana, Suggestion::Text::IsPrimary(true))));
@@ -1106,10 +1107,11 @@ TEST_F(
   FormFieldData triggering_field_with_hiragana_label;
   triggering_field_with_hiragana_label.set_label(hiragana);
 
-  const std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
-      {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
-      SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
-      triggering_field_with_hiragana_label);
+  const std::vector<Suggestion> suggestions =
+      CreateSuggestionsFromProfilesForTest(
+          {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
+          SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
+          triggering_field_with_hiragana_label);
 
   EXPECT_THAT(suggestions, SuggestionVectorMainTextsAre(Suggestion::Text(
                                hiragana, Suggestion::Text::IsPrimary(true))));

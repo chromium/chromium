@@ -48,8 +48,11 @@ class SuggestionGenerator {
       std::pair<FillingProduct, std::vector<Suggestion>>;
   // Contains the structures used in order to generate various kind of
   // suggestions.
-  using SuggestionData =
-      std::variant<EntityInstance, AutofillProfile, CreditCard, Iban, AutofillOfferData>;
+  using SuggestionData = std::variant<EntityInstance,
+                                      AutofillProfile,
+                                      CreditCard,
+                                      Iban,
+                                      AutofillOfferData>;
 
   // Obtains data that will be used to generate suggestions on a given trigger
   // `field` that belongs to `form` by calling `GenerateSuggestions` later (See

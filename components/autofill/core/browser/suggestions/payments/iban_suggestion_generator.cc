@@ -19,7 +19,7 @@ namespace {
 // absent and the length of the input field is less than
 // `kFieldLengthLimitOnServerIbanSuggestion` characters.
 constexpr int kFieldLengthLimitOnServerIbanSuggestion = 6;
-}
+}  // namespace
 
 IbanSuggestionGenerator::IbanSuggestionGenerator() = default;
 IbanSuggestionGenerator::~IbanSuggestionGenerator() = default;
@@ -74,8 +74,8 @@ void IbanSuggestionGenerator::FetchSuggestionData(
     return;
   }
   if (!client.GetPaymentsAutofillClient()
-          ->GetPaymentsDataManager()
-          .IsAutofillPaymentMethodsEnabled()) {
+           ->GetPaymentsDataManager()
+           .IsAutofillPaymentMethodsEnabled()) {
     callback({FillingProduct::kIban, {}});
     return;
   }
@@ -126,7 +126,7 @@ void IbanSuggestionGenerator::GenerateSuggestions(
   // If the input box content equals any of the available IBANs, then
   // assume the IBAN has been filled, and don't show any suggestions.
   if (!field || (!field->value().empty() &&
-      base::Contains(ibans, field->value(), &Iban::value))) {
+                 base::Contains(ibans, field->value(), &Iban::value))) {
     callback({FillingProduct::kIban, {}});
     return;
   }
