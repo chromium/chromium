@@ -566,6 +566,9 @@
     <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to update an existing address." meaning="In Title Case for iOS">
       Update address
     </message>
+    <message name="IDS_IOS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to add info to an existing address." meaning="In Title Case for iOS">
+      Add New Info to Address
+    </message>
     <message name="IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE" desc="Title shown at the top of modal dialog that offers the user to migrate the profile to account." meaning="In Title Case for iOS">
       Save address in account
     </message>

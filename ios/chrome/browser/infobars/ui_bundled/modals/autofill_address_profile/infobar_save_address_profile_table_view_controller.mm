@@ -151,8 +151,10 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
     self.title = l10n_util::GetNSString(
         IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE);
   } else if (self.isUpdateModal) {
-    self.title =
-        l10n_util::GetNSString(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+    self.title = l10n_util::GetNSString(
+        [self shouldShowOldSection]
+            ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
+            : IDS_IOS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
   } else {
     self.title = l10n_util::GetNSString(
         self.isMigrationToAccount
