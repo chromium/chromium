@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/actor/ui/mock_actor_ui_state_manager.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,6 +23,18 @@
 namespace actor {
 
 namespace {
+
+using ::testing::_;
+
+std::unique_ptr<ui::ActorUiStateManagerInterface> BuildUiStateManagerMock() {
+  std::unique_ptr<ui::MockActorUiStateManager> ui_state_manager =
+      std::make_unique<ui::MockActorUiStateManager>();
+  ON_CALL(*ui_state_manager, OnUiEvent(_, _))
+      .WillByDefault([](ui::AsyncUiEvent, ui::UiCompleteCallback callback) {
+        std::move(callback).Run(MakeOkResult());
+      });
+  return ui_state_manager;
+}
 
 class ActorKeyedServiceTest : public testing::Test {
  public:
@@ -51,6 +64,7 @@ class ActorKeyedServiceTest : public testing::Test {
 // Adds a task to ActorKeyedService
 TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
+  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
   std::unique_ptr<ExecutionEngine> execution_engine =
       std::make_unique<ExecutionEngine>(profile());
   actor_service->AddActiveTask(std::make_unique<ActorTask>(
@@ -64,6 +78,7 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
 // Stops a task.
 TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
+  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
   std::unique_ptr<ExecutionEngine> execution_engine =
       std::make_unique<ExecutionEngine>(profile());
   TaskId id = actor_service->AddActiveTask(std::make_unique<ActorTask>(
