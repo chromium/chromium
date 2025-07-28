@@ -13,6 +13,8 @@ void InitializeUI() {
   // Tests do not have global UI state.
 }
 
+// TODO(crbug.com/423883582): Need to be removed after migrating to
+// SearchEngineLogoMediator.
 id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
   // Tests do not use LogoVendor.
   return nil;

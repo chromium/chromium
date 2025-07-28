@@ -14,6 +14,8 @@ class WebState;
 }  // namespace web
 
 // Observer to listen for when the doodle is shown and hidden.
+// TODO(crbug.com/423883582): Need to be removed after migrating to
+// SearchEngineLogoMediator.
 @protocol DoodleObserver <NSObject>
 
 // Notifies observer that the display state of the doodle has changed.
@@ -22,6 +24,8 @@ class WebState;
 @end
 
 // Defines a controller whose view contains a doodle or search engine logo.
+// TODO(crbug.com/423883582): Need to be removed after migrating to
+// SearchEngineLogoMediator.
 @protocol LogoVendor <LogoAnimationControllerOwnerOwner, NSObject>
 
 // View that shows a doodle or a search engine logo.

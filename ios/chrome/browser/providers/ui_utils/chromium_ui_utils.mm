@@ -14,6 +14,8 @@ void InitializeUI() {
   // Chromium does not have global UI state.
 }
 
+// TODO(crbug.com/423883582): Need to be removed after migrating to
+// SearchEngineLogoMediator.
 id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
   return [[ChromiumLogoController alloc] init];
 }

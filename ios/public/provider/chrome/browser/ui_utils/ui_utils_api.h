@@ -21,6 +21,8 @@ namespace provider {
 void InitializeUI();
 
 // Creates a new LogoVendor instance.
+// TODO(crbug.com/423883582): Need to be removed after migrating to
+// SearchEngineLogoMediator.
 id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state);
 
 // Returns a UIImageView to be used with CreateAnimatedImageFromData().
