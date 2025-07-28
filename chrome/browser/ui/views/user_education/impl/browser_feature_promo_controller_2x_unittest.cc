@@ -1545,14 +1545,6 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
 
 namespace {
 const int kStringWithNoSubstitution = IDS_OK;
-const int kStringWithSingleSubstitution =
-    IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME;
-const int kStringWithMultipleSubstitutions =
-    IDS_CONCAT_THREE_STRINGS_WITH_COMMA;
-const int kStringWithPluralSubstitution = IDS_TIME_HOURS;
-const std::u16string kSubstitution1{u"First"};
-const std::u16string kSubstitution2{u"Second"};
-const std::u16string kSubstitution3{u"Third"};
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPromoShownEvent);
 }  // namespace
 
@@ -1691,9 +1683,28 @@ class BrowserFeaturePromoController2xViewsTest
   }
 };
 
-INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xViewsTest);
+// In branded builds on Windows, some of the required strings may be optimized
+// out during Chrome resource compilation. To avoid issues, simply don't run
+// these tests on those specific bots.
+// See https://crbug.com/434261108 and https://crbug.com/1181150 for more info.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_WIN)
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+namespace {
+const int kStringWithSingleSubstitution =
+    IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME;
+const int kStringWithMultipleSubstitutions =
+    IDS_CONCAT_THREE_STRINGS_WITH_COMMA;
+const int kStringWithPluralSubstitution = IDS_TIME_HOURS;
+const std::u16string kSubstitution1{u"First"};
+const std::u16string kSubstitution2{u"Second"};
+const std::u16string kSubstitution3{u"Third"};
+}  // namespace
+
+using BrowserFeaturePromoController2xStringSubstitutionTest =
+    BrowserFeaturePromoController2xViewsTest;
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xStringSubstitutionTest);
+
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        BodyTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = kSubstitution1;
@@ -1707,7 +1718,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        BodyTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params =
@@ -1724,7 +1735,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kSubstitution2, kSubstitution3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        BodyTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = 1;
@@ -1738,7 +1749,8 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest, BodyTextSubstitution_Plural) {
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
+       BodyTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = 3;
 
@@ -1751,7 +1763,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest, BodyTextSubstitution_Plural) {
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        TitleTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = kSubstitution1;
@@ -1765,7 +1777,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        TitleTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params =
@@ -1782,7 +1794,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kSubstitution2, kSubstitution3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        TitleTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = 1;
@@ -1796,7 +1808,8 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest, TitleTextSubstitution_Plural) {
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
+       TitleTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = 3;
 
@@ -1809,7 +1822,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest, TitleTextSubstitution_Plural) {
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_Accelerator) {
   static const ui::Accelerator kAccelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
@@ -1822,7 +1835,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
           kStringWithSingleSubstitution, kAccelerator.GetShortcutText()));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = kSubstitution1;
@@ -1833,7 +1846,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                       kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params =
@@ -1847,7 +1860,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                       kSubstitution2, kSubstitution3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = 1;
@@ -1858,7 +1871,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                       kStringWithPluralSubstitution, 1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = 3;
@@ -1868,6 +1881,8 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                   CheckAccessibleText(l10n_util::GetPluralStringFUTF16(
                       kStringWithPluralSubstitution, 3)));
 }
+
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_WIN)
 
 namespace {
 
