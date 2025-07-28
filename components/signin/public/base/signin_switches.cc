@@ -242,6 +242,24 @@ BASE_FEATURE(kOfferMigrationToDiceUsers,
              "OfferMigrationToDiceUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kOfferMigrationToDiceUsersMinDelay,
+                   &kOfferMigrationToDiceUsers,
+                   "offer_migration_to_dice_users_min_delay",
+                   base::Seconds(30));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kOfferMigrationToDiceUsersMaxDelay,
+                   &kOfferMigrationToDiceUsers,
+                   "offer_migration_to_dice_users_max_delay",
+                   base::Minutes(5));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kOfferMigrationToDiceUsersMinTimeBetweenDialogs,
+                   &kOfferMigrationToDiceUsers,
+                   "offer_migration_to_dice_users_min_time_between_dialogs",
+                   base::Days(7));
+
 #if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kEnableIdentityInAuthError,

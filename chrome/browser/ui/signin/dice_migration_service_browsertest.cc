@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -341,12 +342,13 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
                        PRE_DoNotShowDialogIfShownLessThanWeekAgo) {
   ImplicitlySignIn(kTestEmail);
 
-  // Set the dialog last shown time to (`kMinTimeBetweenDialogInDays` - 1) days
-  // ago.
+  // Set the dialog last shown time to
+  // (`kOfferMigrationToDiceUsersMinTimeBetweenDialogs` - 1) days ago.
   GetProfile()->GetPrefs()->SetTime(
       kDiceMigrationDialogLastShownTime,
       base::Time::Now() -
-          (DiceMigrationService::kMinTimeBetweenDialogInDays - base::Days(1)));
+          (switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get() -
+           base::Days(1)));
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -365,12 +367,13 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
                        PRE_ShowDialogIfShownMoreThanAWeekAgo) {
   ImplicitlySignIn(kTestEmail);
 
-  // Set the dialog last shown time to (`kMinTimeBetweenDialogInDays` + 1) days
-  // ago.
+  // Set the dialog last shown time to
+  // (`kOfferMigrationToDiceUsersMinTimeBetweenDialogs` + 1) days ago.
   GetProfile()->GetPrefs()->SetTime(
       kDiceMigrationDialogLastShownTime,
       base::Time::Now() -
-          (DiceMigrationService::kMinTimeBetweenDialogInDays + base::Days(1)));
+          (switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get() +
+           base::Days(1)));
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -801,6 +804,60 @@ IN_PROC_BROWSER_TEST_P(
         ContainsViewWithId(dialog_widget->GetRootView(),
                            views::BubbleFrameView::kCloseButtonElementId));
   }
+}
+
+class DiceMigrationServiceBrowserTestWithMockedTime
+    : public DiceMigrationServiceBrowserTest {
+ protected:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    DiceMigrationServiceBrowserTest::SetUpBrowserContextKeyedServices(context);
+    DiceMigrationServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(&DiceMigrationServiceBrowserTestWithMockedTime::
+                                CreateDiceMigrationServiceWithTaskRunner,
+                            base::Unretained(this)));
+  }
+
+  std::unique_ptr<KeyedService> CreateDiceMigrationServiceWithTaskRunner(
+      content::BrowserContext* context) {
+    return std::make_unique<DiceMigrationService>(
+        Profile::FromBrowserContext(context), task_runner_);
+  }
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+};
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTestWithMockedTime,
+                      ShowDialogBetweenRange) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // The timer is running, the dialog is not shown.
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  // Fast forward to the minimum delay - 1 second. The timer is still running
+  // and the dialog is not shown.
+  task_runner_->FastForwardBy(
+      switches::kOfferMigrationToDiceUsersMinDelay.Get() - base::Seconds(1));
+  EXPECT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  // Fast forward to the maximum delay. The timer is stopped and the dialog is
+  // shown.
+  task_runner_->FastForwardBy(
+      switches::kOfferMigrationToDiceUsersMaxDelay.Get() -
+      switches::kOfferMigrationToDiceUsersMinDelay.Get() + base::Seconds(1));
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
 }  // namespace

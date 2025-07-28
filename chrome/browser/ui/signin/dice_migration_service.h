@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -46,13 +47,14 @@ class DiceMigrationService : public KeyedService,
  public:
   // The maximum number of times the dialog can be shown.
   static const int kMaxDialogShownCount;
-  // The minimum time between dialogs.
-  static const base::TimeDelta kMinTimeBetweenDialogInDays;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
 
-  explicit DiceMigrationService(Profile* profile);
+  // `task_runner` is used to schedule the dialog trigger timer during testing.
+  explicit DiceMigrationService(Profile* profile,
+                                scoped_refptr<base::SingleThreadTaskRunner>
+                                    task_runner_for_testing = nullptr);
   DiceMigrationService(const DiceMigrationService&) = delete;
   DiceMigrationService& operator=(const DiceMigrationService&) = delete;
   ~DiceMigrationService() override;

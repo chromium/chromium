@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 
+#include "base/check_is_test.h"
+#include "base/rand_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -89,13 +91,14 @@ bool MaybeMigrateUser(Profile* profile) {
     return false;
   }
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetBoolean(prefs::kExplicitBrowserSignin, true);
-
   // TODO(crbug.com/399838468): Consider calling
   // `PrimaryAccountManager::ComputeExplicitBrowserSignin` upon explicit signin
   // pref change.
   prefs->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
                     true);
+
+  prefs->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
   return true;
 }
 
@@ -119,23 +122,22 @@ const char kDiceMigrationDialogLastShownTime[] =
 // static
 const int DiceMigrationService::kMaxDialogShownCount = 3;
 
-// static
-const base::TimeDelta DiceMigrationService::kMinTimeBetweenDialogInDays =
-    base::Days(7);
-
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
                                       kAcceptButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
                                       kCancelButtonElementId);
 
-DiceMigrationService::DiceMigrationService(Profile* profile)
+DiceMigrationService::DiceMigrationService(
+    Profile* profile,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing)
     : profile_(profile) {
   if (!IsUserEligibleForDiceMigration(profile_) ||
       // Show the dialog at most `kMaxDialogShownCount` times.
       GetDialogShownCount() >= kMaxDialogShownCount ||
       // Show the dialog at least one week after the last time it was shown.
       GetDialogLastShownTime() >
-          base::Time::Now() - kMinTimeBetweenDialogInDays) {
+          base::Time::Now() -
+              switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get()) {
     return;
   }
 
@@ -146,8 +148,14 @@ DiceMigrationService::DiceMigrationService(Profile* profile)
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   identity_manager_observation_.Observe(identity_manager);
 
+  if (task_runner_for_testing) {
+    CHECK_IS_TEST();
+    dialog_trigger_timer_.SetTaskRunner(std::move(task_runner_for_testing));
+  }
   dialog_trigger_timer_.Start(
-      FROM_HERE, user_education::features::GetSessionStartGracePeriod(),
+      FROM_HERE,
+      base::RandTimeDelta(switches::kOfferMigrationToDiceUsersMinDelay.Get(),
+                          switches::kOfferMigrationToDiceUsersMaxDelay.Get()),
       base::BindOnce(
           &DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown,
           base::Unretained(this)));
@@ -176,7 +184,8 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   CHECK(!dialog_widget_);
   CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
   CHECK_LT(GetDialogLastShownTime(),
-           base::Time::Now() - kMinTimeBetweenDialogInDays);
+           base::Time::Now() -
+               switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get());
 
   if (!IsUserEligibleForDiceMigration(profile_)) {
     return;
