@@ -8,6 +8,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
@@ -40,6 +41,12 @@
 
   // The PageContext wrapper used to provide context about a page.
   PageContextWrapper* _pageContextWrapper;
+
+  // Start time for the preparation of the presentation of BWG overlay.
+  base::TimeTicks _BWGOverlayPreparationStartTime;
+
+  // Whether the FRE was presented for the current BWG instance.
+  BOOL _didPresentBWGFRE;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
@@ -55,6 +62,8 @@
 }
 
 - (void)presentBWGFlow {
+  _BWGOverlayPreparationStartTime = base::TimeTicks::Now();
+
   switch (BWGPromoConsentVariationsParam()) {
     case BWGPromoConsentVariations::kSkipConsent:
       [self prepareBWGOverlay];
@@ -68,10 +77,10 @@
       break;
   }
 
-  BOOL didPresentBWGFRE = [self.delegate maybePresentBWGFRE];
+  _didPresentBWGFRE = [self.delegate maybePresentBWGFRE];
   // Not presenting the FRE implies that the promo was shown and user consent
   // was given which means we can navigate to the BWG overlay immediately.
-  if (!didPresentBWGFRE) {
+  if (!_didPresentBWGFRE) {
     [self prepareBWGOverlay];
   }
 }
@@ -143,6 +152,11 @@
   BwgBrowserAgent* BWGBrowserAgent = BwgBrowserAgent::FromBrowser(_browser);
   BWGBrowserAgent->PresentBwgOverlay(self.baseViewController,
                                      std::move(pageContextWrapperResponse));
+
+  base::UmaHistogramTimes(
+      _didPresentBWGFRE ? kStartupTimeWithFREHistogram
+                        : kStartupTimeNoFREHistogram,
+      base::TimeTicks::Now() - _BWGOverlayPreparationStartTime);
 
   // TODO(crbug.com/419064727): Dismiss bwg promo/consent.
 }

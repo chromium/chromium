@@ -16,6 +16,10 @@ const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
 
 const char kConsentActionHistogram[] = "IOS.Gemini.FRE.ConsentAction";
 
+const char kStartupTimeWithFREHistogram[] = "IOS.Gemini.StartupTime.FirstRun";
+
+const char kStartupTimeNoFREHistogram[] = "IOS.Gemini.StartupTime.NotFirstRun";
+
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   base::UmaHistogramEnumeration(kPromoActionHistogram, action);
 }
