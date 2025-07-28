@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -143,6 +144,10 @@ class SavedTabGroupUtils {
   // the SavedTabGroupBar::EverythingMenuButton or the AppMenuButton.
   static ui::TrackedElement* GetAnchorElementForTabGroupsV2IPH(
       const ui::ElementTracker::ElementList& elements);
+
+  // Returns the correct help bubble arrow for the Saved Groups V2 IPH.
+  static user_education::HelpBubbleArrow GetArrowForTabGroupsV2IPH(
+      const ui::TrackedElement* el);
 
   // Returns true if new tab groups should be pinned.
   static bool ShouldAutoPinNewTabGroups(Profile* profile);

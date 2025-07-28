@@ -988,6 +988,8 @@ void MaybeRegisterChromeFeaturePromos(
           .SetAnchorElementFilter(
               base::BindRepeating(&tab_groups::SavedTabGroupUtils::
                                       GetAnchorElementForTabGroupsV2IPH))
+          .SetBubbleArrowCallback(base::BindRepeating(
+              &tab_groups::SavedTabGroupUtils::GetArrowForTabGroupsV2IPH))
           .SetMetadata(127, "dpenning@chromium.org",
                        "triggered on startup when the saved tab groups are "
                        "defaulted to saved for the first time.")));
@@ -1003,6 +1005,8 @@ void MaybeRegisterChromeFeaturePromos(
           .SetAnchorElementFilter(
               base::BindRepeating(&tab_groups::SavedTabGroupUtils::
                                       GetAnchorElementForTabGroupsV2IPH))
+          .SetBubbleArrowCallback(base::BindRepeating(
+              &tab_groups::SavedTabGroupUtils::GetArrowForTabGroupsV2IPH))
           .SetMetadata(127, "dpenning@chromium.org",
                        "triggered on startup when the saved tab groups are "
                        "defaulted to saved for the first time.")));

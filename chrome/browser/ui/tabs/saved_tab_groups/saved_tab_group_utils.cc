@@ -57,6 +57,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -617,6 +618,17 @@ ui::TrackedElement* SavedTabGroupUtils::GetAnchorElementForTabGroupsV2IPH(
 
   // Fallback to the AppMenuButton.
   return elements[0];
+}
+
+// static
+user_education::HelpBubbleArrow SavedTabGroupUtils::GetArrowForTabGroupsV2IPH(
+    const ui::TrackedElement* el) {
+  // Because the overflow button is often on the left side of the browser
+  // window, switch the arrow to the top left to avoid bubble placement that
+  // would otherwise leave the browser's bounds.
+  return el->identifier() == kSavedTabGroupOverflowButtonElementId
+             ? user_education::HelpBubbleArrow::kTopLeft
+             : user_education::HelpBubbleArrow::kTopRight;
 }
 
 // static
