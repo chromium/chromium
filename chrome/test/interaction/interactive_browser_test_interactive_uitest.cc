@@ -57,10 +57,6 @@
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithTitle[] = "/title3.html";
@@ -89,49 +85,41 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/432623498): Times out on windows rel.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PressButtonAndMouseMoveClick DISABLED_PressButtonAndMouseMoveClick
-#else
-#define MAYBE_PressButtonAndMouseMoveClick PressButtonAndMouseMoveClick
-#endif
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       MAYBE_PressButtonAndMouseMoveClick) {
+                       PressButtonAndMouseMoveClick) {
   RelativePositionSpecifier pos = CenterPoint();
 #if BUILDFLAG(IS_WIN)
-  if (base::win::OSInfo::GetInstance()->version() < base::win::Version::WIN11) {
-    // Handler for http://crbug.com/392854216 (menu may overlap button).
-    pos = base::BindOnce([](ui::TrackedElement* el) {
-      gfx::Rect bounds = el->GetScreenBounds();
-      auto* const menu_item =
-          ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-              AppMenuModel::kMoreToolsMenuItem);
-      const gfx::Rect widget_bounds =
-          menu_item->AsA<views::TrackedElementViews>()
-              ->view()
-              ->GetWidget()
-              ->GetWindowBoundsInScreen();
+  // Handler for http://crbug.com/392854216 and https://crbug.com/432623498
+  // (menu may overlap button).
+  pos = base::BindOnce([](ui::TrackedElement* el) {
+    gfx::Rect bounds = el->GetScreenBounds();
+    auto* const menu_item =
+        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+            AppMenuModel::kMoreToolsMenuItem);
+    const gfx::Rect widget_bounds = menu_item->AsA<views::TrackedElementViews>()
+                                        ->view()
+                                        ->GetWidget()
+                                        ->GetWindowBoundsInScreen();
 
-      // Create a rectangle where all points are strictly inside the original
-      // bounds.
-      bounds.Inset(gfx::Insets::TLBR(1, 1, 2, 2));
+    // Create a rectangle where all points are strictly inside the original
+    // bounds.
+    bounds.Inset(gfx::Insets::TLBR(1, 1, 2, 2));
 
-      // Test points around the rectangle to find one that does not intersect
-      // the menu widget.
-      for (const auto& point :
-           {bounds.CenterPoint(), bounds.bottom_center(), bounds.left_center(),
-            bounds.right_center(), bounds.origin(), bounds.top_right(),
-            bounds.bottom_right(), bounds.bottom_left()}) {
-        if (!widget_bounds.Contains(point)) {
-          return point;
-        }
+    // Test points around the rectangle to find one that does not intersect
+    // the menu widget.
+    for (const auto& point :
+         {bounds.CenterPoint(), bounds.bottom_center(), bounds.left_center(),
+          bounds.right_center(), bounds.origin(), bounds.top_right(),
+          bounds.bottom_right(), bounds.bottom_left()}) {
+      if (!widget_bounds.Contains(point)) {
+        return point;
       }
+    }
 
-      NOTREACHED() << "Menu widget ()" << widget_bounds.ToString()
-                   << ") significantly overlaps menu button ("
-                   << bounds.ToString() << ") cannot target button.";
-    });
-  }
+    NOTREACHED() << "Menu widget ()" << widget_bounds.ToString()
+                 << ") significantly overlaps menu button ("
+                 << bounds.ToString() << ") cannot target button.";
+  });
 #endif
 
   RunTestSequence(
