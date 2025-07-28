@@ -13,6 +13,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -25,9 +27,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * The coordinator for the password manager illustration modal dialog. Manages the sub-component
  * objects.
  */
+@NullMarked
 public class PasswordManagerDialogCoordinator {
     private final PasswordManagerDialogMediator mMediator;
-    private PropertyModel mModel;
+    private @Nullable PropertyModel mModel;
 
     public PasswordManagerDialogCoordinator(
             ModalDialogManager modalDialogManager,

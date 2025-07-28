@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** An interface for the implementations of {@link ExportFlow}. */
@@ -66,7 +67,8 @@ public interface ExportFlowInterface {
      * @param callerMetricsId The unique string, which identifies the caller. This will be used as
      *     the prefix for metrics histograms names.
      */
-    public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId);
+    public void onCreate(
+            @Nullable Bundle savedInstanceState, Delegate delegate, String callerMetricsId);
 
     /** Starts the password export flow. */
     public void startExporting();

@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -26,6 +27,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
@@ -33,6 +35,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.concurrent.TimeUnit;
 
 /** The bridge provides a way to interact with the Android sign in flow. */
+@NullMarked
 public class PasswordManagerErrorMessageHelperBridge {
     @VisibleForTesting
     static final long MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS =
@@ -106,14 +109,16 @@ public class PasswordManagerErrorMessageHelperBridge {
      */
     @CalledByNative
     static void startUpdateAccountCredentialsFlow(WindowAndroid windowAndroid, Profile profile) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        assert identityManager != null : "Regular profile should have an IdentityManager";
         final CoreAccountInfo primaryAccountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(profile)
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         // If the account has been removed before calling this method, there are no credentials to
         // update.
         if (primaryAccountInfo == null) return;
         final Activity activity = windowAndroid.getActivity().get();
+        assert activity != null : "Activity should not be null";
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo),
@@ -133,11 +138,13 @@ public class PasswordManagerErrorMessageHelperBridge {
             WindowAndroid windowAndroid,
             Profile profile,
             @TrustedVaultUserActionTriggerForUMA int trustedVaultUserActionTriggerForUMA) {
-        final CoreAccountInfo primaryAccountInfo =
-                SyncServiceFactory.getForProfile(profile).getAccountInfo();
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        assert syncService != null;
+        final CoreAccountInfo primaryAccountInfo = syncService.getAccountInfo();
         // If the account has been removed before calling this method, there is nothing to do.
         if (primaryAccountInfo == null) return;
         final Activity activity = windowAndroid.getActivity().get();
+        assert activity != null;
 
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)

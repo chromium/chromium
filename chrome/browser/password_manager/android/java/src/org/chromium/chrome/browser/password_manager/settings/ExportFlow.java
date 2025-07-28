@@ -169,7 +169,8 @@ public class ExportFlow implements ExportFlowInterface {
 
     @Initializer
     @Override
-    public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId) {
+    public void onCreate(
+            @Nullable Bundle savedInstanceState, Delegate delegate, String callerMetricsId) {
         mDelegate = delegate;
         mCallerMetricsId = callerMetricsId;
 

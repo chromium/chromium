@@ -7,14 +7,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
@@ -24,12 +24,15 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A utitily class for launching the password leak check. */
+@NullMarked
 public class PasswordCheckupLauncher {
     @CalledByNative
     private static void launchCheckupOnlineWithWindowAndroid(
             @JniType("std::string") String checkupUrl, WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
-        launchCheckupOnlineWithActivity(checkupUrl, windowAndroid.getActivity().get());
+        Activity activity = windowAndroid.getActivity().get();
+        assert activity != null;
+        launchCheckupOnlineWithActivity(checkupUrl, activity);
     }
 
     @CalledByNative
@@ -92,7 +95,9 @@ public class PasswordCheckupLauncher {
             WindowAndroid windowAndroid) {
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
-        modalDialogManagerSupplier.set(windowAndroid.getModalDialogManager());
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        assert modalDialogManager != null;
+        modalDialogManagerSupplier.set(modalDialogManager);
         return modalDialogManagerSupplier;
     }
 }
