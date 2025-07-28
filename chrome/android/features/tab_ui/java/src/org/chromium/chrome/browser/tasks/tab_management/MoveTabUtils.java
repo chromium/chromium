@@ -96,14 +96,30 @@ public final class MoveTabUtils {
      * Moves the specified group to the requested index. If the index is not a valid move operation,
      * it will calculate a valid index.
      *
-     * <p>If the requested index is inside the tab group, it will result in a no-op since the tab
+     * <p>{@param requestedIndex} is not the true destination index; it doesn't take into account
+     * the size of the moving tab group, and it will be modified to be a valid index (see below).
+     *
+     * <p>If the requested index is inside the source tab group, it will be a no-op since the tab
      * group is already in that index range.
      *
      * <p>If the requested index is a single tab, it will insert the tab group in that position.
      *
-     * <p>If the requestedIndex is inside a tab group, it will be placed adjacent to the destination
-     * group. This may result in a no-op if the source tab group is already adjacent to the
-     * destination group.
+     * <p>If the requestedIndex is inside a tab group, it will insert the tab group adjacent to the
+     * destination group. This may result in a no-op if the source tab group is already adjacent to
+     * the destination group.
+     *
+     * <p>"Insert" rounds away from the current location of the tab group. That is, if the tab group
+     * is being "inserted" to location i, if the tab group is moving left, the tab group will be
+     * inserted before the current contents of location i. If the tab group is moving right, the tab
+     * group will be inserted after the current contents of location i.
+     *
+     * <p>Taking a concrete example, if you have tabs D E [A B C], a requested index of 1 gives
+     * D [A B C] E and a requested index of 0 gives [A B C] D E. With a start state of [A B C] D E,
+     * a requested index of 3 (the current index of D) will result in the state D [A B C] E. [A B C]
+     * actually ends up at index 1, but that calling this method with a requested index of 1 would
+     * be a no-op because [A B C] already occupies index 1. If, because we wanted to move the tab
+     * group to the right of index D, we requested index 4 (current index of D plus 1), the tab
+     * group would actually move to after E (D E [A B C]).
      *
      * @param tabModel The current {@link TabModel}.
      * @param filter The current {@link TabGroupModelFilter}.
