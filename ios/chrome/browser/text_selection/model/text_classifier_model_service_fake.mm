@@ -27,13 +27,6 @@ std::unique_ptr<KeyedService> BuildInstance(web::BrowserState* context) {
 }  // anonymous namespace
 
 // static
-std::unique_ptr<KeyedService>
-TextClassifierModelServiceFake::CreateTextClassifierModelService(
-    web::BrowserState* context) {
-  return BuildInstance(context);
-}
-
-// static
 TextClassifierModelServiceFake::TestingFactory
 TextClassifierModelServiceFake::GetTestingFactory() {
   return base::BindOnce(BuildInstance);
