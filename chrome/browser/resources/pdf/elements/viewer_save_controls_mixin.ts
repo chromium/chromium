@@ -13,9 +13,9 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {CrLitElement, PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {SaveRequestType} from '../constants.js';
-
+const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 type Constructor<T> = new (...args: any[]) => T;
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     superClass: T): T&Constructor<ViewerSaveControlsMixinInterface> => {

@@ -19,7 +19,7 @@ export {AnnotationBrush, AnnotationBrushType, Color, TextAlignment, TextAnnotati
 // <if expr="enable_pdf_ink2 or enable_ink">
 export {AnnotationMode} from './constants.js';
 // </if>
-export {Attachment, FittingType, FormFieldFocusType, Point, Rect, SaveRequestType} from './constants.js';
+export {Attachment, FittingType, FormFieldFocusType, Point, Rect} from './constants.js';
 export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';

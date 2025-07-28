@@ -112,7 +112,9 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     kFailed,
   };
 
-  // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.ts.
+  // Must match `SaveRequestType` in
+  // `chrome/common/extensions/api/pdf_viewer_private.idl` and
+  // chromium/tools/typescript/definitions/pdf_viewer_private.d.ts.
   enum class SaveRequestType {
     kAnnotation = 0,
     kOriginal = 1,

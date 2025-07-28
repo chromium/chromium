@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, PluginController, PluginControllerEventType, SaveRequestType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -14,6 +14,8 @@ const viewerToolbar = viewer.$.toolbar;
 const controller = PluginController.getInstance();
 const mockPlugin = setupTestMockPluginForInk();
 const mockMetricsPrivate = setupMockMetricsPrivate();
+const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 function getDownloadControls() {
   return getRequiredElement(viewerToolbar, 'viewer-download-controls');

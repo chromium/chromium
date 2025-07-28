@@ -9,12 +9,14 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, TextAnnotation} from './constants.js';
 // </if>
-import type {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
+import type {NamedDestinationMessageData, Rect} from './constants.js';
 // clang-format on
 import type {PdfPluginElement} from './internal_plugin.js';
 import type {DestinationMessageData} from './pdf_viewer_utils.js';
 import type {Viewport} from './viewport.js';
 import {PinchPhase} from './viewport.js';
+
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 export interface MessageData {
   type: string;

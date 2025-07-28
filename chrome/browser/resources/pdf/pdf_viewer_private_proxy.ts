@@ -2,15 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="enable_pdf_save_to_drive">
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
+// </if>
+
 // TODO(crbug.com/40825351): Move the other chrome.pdfViewerPrivate calls across
 // the PDF UI under this proxy.
 // `chrome.pdfViewerPrivate.isAllowedLocalFileAccess` is currently located in
 // `chrome/browser/resources/pdf/navigator.ts`.
 interface PdfViewerPrivateProxy {
+  // <if expr="enable_pdf_save_to_drive">
+  saveToDrive(saveRequestType: SaveRequestType): void;
+  // </if>
   setPdfDocumentTitle(title: string): void;
 }
 
 export class PdfViewerPrivateProxyImpl implements PdfViewerPrivateProxy {
+  // <if expr="enable_pdf_save_to_drive">
+  saveToDrive(saveRequestType: SaveRequestType): void {
+    chrome.pdfViewerPrivate.saveToDrive(saveRequestType);
+  }
+  // </if>
+
   setPdfDocumentTitle(title: string): void {
     chrome.pdfViewerPrivate.setPdfDocumentTitle(title);
   }

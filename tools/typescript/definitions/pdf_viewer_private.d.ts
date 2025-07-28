@@ -10,6 +10,16 @@ import {ChromeEvent} from './chrome_event.js';
 declare global {
   export namespace chrome {
     export namespace pdfViewerPrivate {
+      // Keep in sync with the values for enum `SaveRequestType` in
+      // `pdf/pdf_view_web_plugin.h` and
+      // `chrome/common/extensions/api/pdf_viewer_private.idl`.
+      export enum SaveRequestType {
+        ANNOTATION = 'ANNOTATION',
+        ORIGINAL = 'ORIGINAL',
+        EDITED = 'EDITED',
+        SEARCHIFIED = 'SEARCHIFIED',
+      }
+
       // `mimeType` and `responseHeaders` are unused fields, but they are
       // necessary to be able to cast to chrome.mimeHandlerPrivate.StreamInfo.
       // TODO(crbug.com/40268279): Remove `mimeType` and `responseHeaders` after
@@ -31,6 +41,9 @@ declare global {
       export function getStreamInfo(callback: (info: StreamInfo) => void): void;
       export function isAllowedLocalFileAccess(
           url: string, callback: (isAllowed: boolean) => void): void;
+      // <if expr="enable_pdf_save_to_drive">
+      export function saveToDrive(saveRequestType: SaveRequestType): void;
+      // </if>
       export function setPdfDocumentTitle(title: string): void;
       export function setPdfPluginAttributes(attributes: PdfPluginAttributes):
           void;

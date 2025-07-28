@@ -273,6 +273,20 @@ base::Value::Dict CreateSaveDataBlockMessage(
       .Set("totalFileSize", base::checked_cast<int>(data.total_file_size));
 }
 
+PdfViewWebPlugin::SaveRequestType ParseSaveRequestType(
+    const std::string& save_request_type) {
+  if (save_request_type == "ANNOTATION") {
+    return PdfViewWebPlugin::SaveRequestType::kAnnotation;
+  } else if (save_request_type == "ORIGINAL") {
+    return PdfViewWebPlugin::SaveRequestType::kOriginal;
+  } else if (save_request_type == "EDITED") {
+    return PdfViewWebPlugin::SaveRequestType::kEdited;
+  } else if (save_request_type == "SEARCHIFIED") {
+    return PdfViewWebPlugin::SaveRequestType::kSearchified;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
@@ -1820,7 +1834,7 @@ void PdfViewWebPlugin::HandleGetSaveDataBlockMessage(
     const base::Value::Dict& message) {
   const std::string& token = *message.FindString("token");
   SaveRequestType request_type =
-      static_cast<SaveRequestType>(message.FindInt("saveRequestType").value());
+      ParseSaveRequestType(*message.FindString("saveRequestType"));
   uint32_t offset = static_cast<uint32_t>(message.FindInt("offset").value());
   uint32_t block_size =
       static_cast<uint32_t>(message.FindInt("blockSize").value());
@@ -1896,7 +1910,7 @@ void PdfViewWebPlugin::HandleSaveAttachmentMessage(
 void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
   const std::string& token = *message.FindString("token");
   SaveRequestType request_type =
-      static_cast<SaveRequestType>(message.FindInt("saveRequestType").value());
+      ParseSaveRequestType(*message.FindString("saveRequestType"));
 
   switch (request_type) {
     case SaveRequestType::kAnnotation:

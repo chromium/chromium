@@ -20,6 +20,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "pdf/buildflags.h"
 
 namespace extensions {
 
@@ -311,5 +312,18 @@ TEST_F(PdfViewerPrivateApiUnitTest,
             api_test_utils::RunFunctionAndReturnError(
                 function.get(), kSetPdfPluginAttributesArgs, profile()));
 }
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+// Succeed in sending a request to save a PDF to Drive.
+TEST_F(PdfViewerPrivateApiUnitTest, SaveToDrive) {
+  CreateAndClaimStreamContainer();
+
+  auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
+  function->SetRenderFrameHost(extension_host());
+
+  EXPECT_TRUE(
+      api_test_utils::RunFunction(function, R"(["ORIGINAL"])", profile()));
+}
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 }  // namespace extensions

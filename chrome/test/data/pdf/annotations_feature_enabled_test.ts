@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AnnotationTool, ViewerInkHostElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationMode, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -13,6 +13,7 @@ window.onerror = e => chrome.test.fail((e as unknown as Error).stack);
 window.onunhandledrejection = e => chrome.test.fail(e.reason);
 
 const viewer = document.body.querySelector('pdf-viewer')!;
+const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 function animationFrame(): Promise<void> {
   return new Promise(resolve => requestAnimationFrame(() => resolve()));

@@ -39,7 +39,7 @@ import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './cons
 // <if expr="enable_ink or enable_pdf_ink2">
 import {AnnotationMode} from './constants.js';
 // </if>
-import {FittingType, FormFieldFocusType, SaveRequestType} from './constants.js';
+import {FittingType, FormFieldFocusType} from './constants.js';
 import type {MessageData} from './controller.js';
 import {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
@@ -81,6 +81,9 @@ import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 // clang-format on
+
+const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 /**
  * Keep in sync with the values for enum PDFPostMessageDataType in
@@ -1345,8 +1348,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   // <if expr="enable_pdf_save_to_drive">
   protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
-    // TODO(crbug.com/427449996): Implement the logic to save the PDF to Drive.
-    console.warn('Saving to Drive is not implemented yet.' + e);
+    PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
   }
   // </if> enable_pdf_save_to_drive
 

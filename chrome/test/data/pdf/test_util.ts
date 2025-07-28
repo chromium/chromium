@@ -9,7 +9,7 @@ import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, View
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, BeforeUnloadProxyImpl, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, BeforeUnloadProxyImpl, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -18,6 +18,9 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // </if>
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
+
+const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 export class MockElement {
   dir: string = '';

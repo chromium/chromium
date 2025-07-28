@@ -2156,7 +2156,7 @@ TEST_F(PdfViewWebPluginSaveTest, DISABLED_AnnotationInNonEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 0,
+    "saveRequestType": "ANNOTATION",
     "token": "annotation-in-non-edit-mode",
   })"));
 
@@ -2181,7 +2181,7 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 0,
+    "saveRequestType": "ANNOTATION",
     "token": "annotation-in-edit-mode",
   })"));
 
@@ -2205,7 +2205,7 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 1,
+    "saveRequestType": "ORIGINAL",
     "token": "original-in-non-edit-mode",
   })"));
 
@@ -2233,7 +2233,7 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 1,
+    "saveRequestType": "ORIGINAL",
     "token": "original-in-edit-mode",
   })"));
 
@@ -2257,7 +2257,7 @@ TEST_F(PdfViewWebPluginSaveTest, DISABLED_EditedInNonEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 2,
+    "saveRequestType": "EDITED",
     "token": "edited-in-non-edit-mode",
   })"));
 }
@@ -2279,7 +2279,7 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 2,
+    "saveRequestType": "EDITED",
     "token": "edited-in-edit-mode",
   })"));
 }
@@ -2291,9 +2291,24 @@ class PdfViewWebPluginSaveInBlocksTest : public PdfViewWebPluginTest {
       uint32_t offset,
       uint32_t block_size,
       std::string token) {
+    std::string request_type_string;
+    switch (request_type) {
+      case PdfViewWebPlugin::SaveRequestType::kAnnotation:
+        request_type_string = "ANNOTATION";
+        break;
+      case PdfViewWebPlugin::SaveRequestType::kOriginal:
+        request_type_string = "ORIGINAL";
+        break;
+      case PdfViewWebPlugin::SaveRequestType::kEdited:
+        request_type_string = "EDITED";
+        break;
+      case PdfViewWebPlugin::SaveRequestType::kSearchified:
+        request_type_string = "SEARCHIFIED";
+        break;
+    }
     return base::Value::Dict()
         .Set("type", "getSaveDataBlock")
-        .Set("saveRequestType", static_cast<int>(request_type))
+        .Set("saveRequestType", request_type_string)
         .Set("offset", static_cast<int>(offset))
         .Set("blockSize", static_cast<int>(block_size))
         .Set("token", token);
@@ -3384,7 +3399,7 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInNonEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 0,
+    "saveRequestType": "ANNOTATION",
     "token": "annotation-in-non-edit-mode",
   })"));
 
@@ -3411,7 +3426,7 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditMode) {
 
   plugin_->OnMessage(ParseMessage(R"({
     "type": "save",
-    "saveRequestType": 0,
+    "saveRequestType": "ANNOTATION",
     "token": "annotation-in-edit-mode",
   })"));
 

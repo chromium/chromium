@@ -141,17 +141,6 @@ export interface NamedDestinationMessageData {
   namedDestinationView?: string;
 }
 
-/**
- * Enumeration of save message request types. Must match `SaveRequestType` in
- * pdf/pdf_view_web_plugin.h.
- */
-export enum SaveRequestType {
-  ANNOTATION,
-  ORIGINAL,
-  EDITED,
-  SEARCHIFIED,  // Saves the PDF with extracted text.
-}
-
 export interface Point {
   x: number;
   y: number;

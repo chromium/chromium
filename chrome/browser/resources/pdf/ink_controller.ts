@@ -5,10 +5,12 @@
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 import type {AnnotationTool} from './annotation_tool.js';
-import type {SaveRequestType} from './constants.js';
 import type {ContentController, SaveAttachmentMessageData} from './controller.js';
 import type {ViewerInkHostElement} from './elements/viewer_ink_host.js';
 import type {Viewport} from './viewport.js';
+
+const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 
 /** Event types dispatched by the ink controller. */
 export enum InkControllerEventType {
