@@ -466,7 +466,8 @@ void GnomeInteractionStrategyFactory::Create(
       [](std::unique_ptr<GnomeInteractionStrategy> session,
          CreateCallback callback, base::expected<void, std::string> result) {
         if (!result.has_value()) {
-          LOG(ERROR) << result.error();
+          LOG(ERROR) << "Failed to initialize Gnome Remote Desktop session: "
+                     << result.error();
           std::move(callback).Run(nullptr);
           return;
         }
@@ -474,20 +475,6 @@ void GnomeInteractionStrategyFactory::Create(
         std::move(callback).Run(std::move(session));
       },
       std::move(session), std::move(callback)));
-}
-
-void GnomeInteractionStrategyFactory::OnSessionInit(
-    std::unique_ptr<GnomeInteractionStrategy> session,
-    CreateCallback callback,
-    base::expected<void, std::string> result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "Failed to initialize Gnome Remote Desktop session: "
-               << result.error();
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::move(callback).Run(std::move(session));
 }
 
 }  // namespace remoting

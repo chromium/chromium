@@ -114,11 +114,6 @@ class GnomeInteractionStrategyFactory
               CreateCallback callback) override;
 
  private:
-  static void OnSessionInit(
-      std::unique_ptr<GnomeInteractionStrategy> session,
-      base::OnceCallback<void(std::unique_ptr<DesktopInteractionStrategy>)>
-          callback,
-      base::expected<void, std::string> result);
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 };
 
