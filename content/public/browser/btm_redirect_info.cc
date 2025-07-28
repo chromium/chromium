@@ -64,7 +64,7 @@ std::unique_ptr<BtmRedirectInfo> BtmRedirectInfo::CreateForClient(
       /*server_bounce_delay=*/base::TimeDelta()));
 }
 
-BtmRedirectInfo::BtmRedirectInfo(const UrlAndSourceId& url,
+BtmRedirectInfo::BtmRedirectInfo(const UrlAndSourceId& redirector,
                                  BtmRedirectType redirect_type,
                                  BtmDataAccessType access_type,
                                  base::Time time,
@@ -74,8 +74,8 @@ BtmRedirectInfo::BtmRedirectInfo(const UrlAndSourceId& url,
                                  bool was_response_cached,
                                  int response_code,
                                  base::TimeDelta server_bounce_delay)
-    : redirecting_url(url),
-      site(GetSiteForBtm(url.url)),
+    : redirector(redirector),
+      site(GetSiteForBtm(redirector.url)),
       redirect_type(redirect_type),
       access_type(access_type),
       time(time),

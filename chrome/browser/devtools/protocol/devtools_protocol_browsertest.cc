@@ -641,10 +641,9 @@ testing::AssertionResult SimulateBtmBounce(content::WebContents* web_contents,
   }
 
   const content::BtmRedirectInfo& redirect = *final_observer.redirects()->at(0);
-  if (redirect.redirecting_url.url != bounce_url) {
-    return testing::AssertionFailure()
-           << "Expected redirect at " << bounce_url << "; found "
-           << redirect.redirecting_url.url;
+  if (redirect.redirector.url != bounce_url) {
+    return testing::AssertionFailure() << "Expected redirect at " << bounce_url
+                                       << "; found " << redirect.redirector.url;
   }
 
   if (redirect.access_type != content::BtmDataAccessType::kWrite &&

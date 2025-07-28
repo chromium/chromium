@@ -136,7 +136,7 @@ void AppendRedirect(std::vector<std::string>* redirects,
   redirects->push_back(base::StringPrintf(
       "[%zu/%zu] %s -> %s (%s) -> %s", redirect_index + 1, chain.length,
       FormatURL(chain.initial_url.url).c_str(),
-      FormatURL(redirect.redirecting_url.url).c_str(),
+      FormatURL(redirect.redirector.url).c_str(),
       std::string(BtmDataAccessTypeToString(redirect.access_type)).c_str(),
       FormatURL(chain.final_url.url).c_str()));
 }
@@ -185,10 +185,10 @@ testing::AssertionResult WaitForRedirectCookieWrite(WebContents* web_contents,
   const BtmRedirectInfo& redirect =
       detector->CommittedRedirectContext()
           [detector->CommittedRedirectContext().size() - 1];
-  if (redirect.redirecting_url.url != redirect_url) {
+  if (redirect.redirector.url != redirect_url) {
     return testing::AssertionFailure()
            << "Expected redirect at " << redirect_url << "; found "
-           << redirect.redirecting_url.url;
+           << redirect.redirector.url;
   }
 
   if (!ContainsWrite(redirect.access_type)) {
@@ -3761,7 +3761,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
   const BtmRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
   const BtmRedirectInfo& redirect = context[0];
-  EXPECT_EQ(redirect.redirecting_url.url, bounce_url);
+  EXPECT_EQ(redirect.redirector.url, bounce_url);
   // A request to /favicon.ico may cause a cookie read in addition to the write
   // we explicitly performed.
   EXPECT_THAT(
@@ -3882,7 +3882,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
   const BtmRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
   const BtmRedirectInfo& redirect = context[0];
-  EXPECT_EQ(redirect.redirecting_url.url, bounce_url);
+  EXPECT_EQ(redirect.redirector.url, bounce_url);
   EXPECT_THAT(redirect.has_sticky_activation, true);
 }
 

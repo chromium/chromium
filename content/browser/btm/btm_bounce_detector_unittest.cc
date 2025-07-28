@@ -72,7 +72,7 @@ void AppendRedirect(std::vector<std::string>* redirects,
   redirects->push_back(base::StringPrintf(
       "[%zu/%zu] %s -> %s (%s) -> %s", redirect.chain_index.value() + 1,
       chain.length, FormatURL(chain.initial_url.url).c_str(),
-      FormatURL(redirect.redirecting_url.url).c_str(),
+      FormatURL(redirect.redirector.url).c_str(),
       BtmDataAccessTypeToString(redirect.access_type).data(),
       FormatURL(chain.final_url.url).c_str()));
 }
@@ -98,9 +98,9 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
 
     for (auto& redirect : redirects) {
       redirect->site_had_user_activation =
-          GetSiteHasUserActivation(redirect->redirecting_url.url);
+          GetSiteHasUserActivation(redirect->redirector.url);
       redirect->site_had_webauthn_assertion =
-          GetSiteHasWebAuthnAssertion(redirect->redirecting_url.url);
+          GetSiteHasWebAuthnAssertion(redirect->redirector.url);
       redirect->chain_id = chain->chain_id;
       redirect->chain_index = redirect_index;
       redirect->has_3pc_exception = false;
@@ -183,7 +183,7 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
     bool stateful = redirect.access_type > BtmDataAccessType::kRead;
 
     recorded_bounces_.insert(
-        std::make_tuple(redirect.redirecting_url.url, redirect.time, stateful));
+        std::make_tuple(redirect.redirector.url, redirect.time, stateful));
     if (stateful) {
       stateful_bounce_count_++;
     }
@@ -1141,8 +1141,8 @@ Btm3PcSettingsCallback GetAre3pcsAllowedCallback() {
 }
 
 MATCHER_P(HasUrl, url, "") {
-  *result_listener << "whose url is " << arg->redirecting_url.url;
-  return ExplainMatchResult(Eq(url), arg->redirecting_url.url, result_listener);
+  *result_listener << "whose url is " << arg->redirector.url;
+  return ExplainMatchResult(Eq(url), arg->redirector.url, result_listener);
 }
 
 MATCHER_P(HasRedirectType, redirect_type, "") {
@@ -1581,9 +1581,9 @@ TEST(BtmRedirectContextTest,
       context.GetServerRedirectsSinceLastPrimaryPageChange();
 
   EXPECT_EQ(server_redirects.size(), 2u);
-  EXPECT_EQ(server_redirects[0]->redirecting_url.url, "http://b.test/");
+  EXPECT_EQ(server_redirects[0]->redirector.url, "http://b.test/");
   EXPECT_EQ(server_redirects[0]->redirect_type, BtmRedirectType::kServer);
-  EXPECT_EQ(server_redirects[1]->redirecting_url.url, "http://c.test/");
+  EXPECT_EQ(server_redirects[1]->redirector.url, "http://c.test/");
   EXPECT_EQ(server_redirects[1]->redirect_type, BtmRedirectType::kServer);
 }
 
@@ -1635,7 +1635,7 @@ TEST(
       context.GetServerRedirectsSinceLastPrimaryPageChange();
 
   EXPECT_EQ(server_redirects.size(), 1u);
-  EXPECT_EQ(server_redirects[0]->redirecting_url.url,
+  EXPECT_EQ(server_redirects[0]->redirector.url,
             "http://a.test/server-redirect/");
   EXPECT_EQ(server_redirects[0]->redirect_type, BtmRedirectType::kServer);
 }

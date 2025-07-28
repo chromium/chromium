@@ -394,7 +394,7 @@ void BtmServiceImpl::HandleRedirectChain(
     if (redirect->redirect_type == BtmRedirectType::kServer) {
       total_server_bounce_delay += redirect->server_bounce_delay;
     }
-    redirect_sites.insert(GetSiteForBtm(redirect->redirecting_url.url));
+    redirect_sites.insert(GetSiteForBtm(redirect->redirector.url));
   }
   UmaHistogramBounceChainDelay(total_server_bounce_delay);
 
@@ -459,7 +459,7 @@ void BtmServiceImpl::RecordBounce(
     StatefulBounceCallback stateful_bounce_callback,
     const BtmRedirectInfo& redirect,
     const BtmRedirectChainInfo& chain) {
-  const GURL& url = redirect.redirecting_url.url;
+  const GURL& url = redirect.redirector.url;
   bool stateful = redirect.access_type > BtmDataAccessType::kRead;
 
   // If the bounced URL has a 3PC exception when embedded under the initial or
@@ -527,7 +527,7 @@ void BtmServiceImpl::HandleRedirect(const BtmRedirectInfo& redirect,
   bool final_site_same = (redirect.site == chain.final_site);
 
   if (!chain.are_3pcs_generally_enabled) {
-    ukm::builders::BTM_Redirect(redirect.redirecting_url.source_id)
+    ukm::builders::BTM_Redirect(redirect.redirector.source_id)
         .SetSiteHadUserActivation(redirect.site_had_user_activation.value())
         .SetSiteHadWebAuthnAssertion(
             redirect.site_had_webauthn_assertion.value())
