@@ -33,16 +33,8 @@ void BrowserUserEducationInterfaceImpl::Init(BrowserView* browser_view) {
         *browser_view, interface->user_education_storage_service());
   }
 
-  // Only override the controller if the controller has not been overridden for
-  // testing.
-  if (controller_) {
-    CHECK_IS_TEST();
-  } else {
-    // This returns a unique pointer to a `FeaturePromoControllerCommon`.
-    controller_ = CreateUserEducationResources(browser_view);
-  }
-
-  if (!controller_) {
+  auto* const controller = GetFeaturePromoControllerImpl();
+  if (!controller) {
     ClearQueuedPromos(
         user_education::FeaturePromoResult::Failure::kBlockedByContext);
     return;
@@ -52,8 +44,8 @@ void BrowserUserEducationInterfaceImpl::Init(BrowserView* browser_view) {
       << "Should not have a controller but no service.";
 
   for (auto& params : queued_params_) {
-    GetFeaturePromoControllerImpl()->MaybeShowStartupPromo(
-        std::move(params), user_education_context_);
+    controller->MaybeShowStartupPromo(std::move(params),
+                                      user_education_context_);
   }
   queued_params_.clear();
 }
@@ -65,7 +57,6 @@ void BrowserUserEducationInterfaceImpl::TearDown() {
   }
   state_ = State::kTornDown;
   profile_ = nullptr;
-  controller_.reset();
   ClearQueuedPromos();
 }
 
@@ -229,7 +220,13 @@ void BrowserUserEducationInterfaceImpl::SetFeaturePromoControllerForTesting(
            "in unit tests, and only if no promos have been previously queued.";
     state_ = State::kInitialized;
   }
-  controller_ = std::move(controller);
+  CHECK(profile_);
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_);
+  CHECK(service) << "Cannot set controller without a UserEducationService";
+  service->SetFeaturePromoController(
+      base::PassKey<BrowserUserEducationInterfaceImpl>(),
+      std::move(controller));
 }
 
 void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
@@ -243,7 +240,14 @@ void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
 
 const user_education::FeaturePromoController*
 BrowserUserEducationInterfaceImpl::GetFeaturePromoControllerImpl() const {
-  return controller_.get();
+  if (state_ != State::kInitialized || !profile_) {
+    return nullptr;
+  }
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_);
+  return service ? service->GetFeaturePromoController(
+                       base::PassKey<BrowserUserEducationInterfaceImpl>())
+                 : nullptr;
 }
 
 const user_education::UserEducationContextPtr&

@@ -93,6 +93,7 @@ if (is_android) {
       "//base",
       "//chrome/app:generated_resources",
       "//chrome/browser/headless",
+      "//chrome/browser/ui/views/user_education",
       "//chrome/common:non_code_constants",
       "//components/keyed_service/content",
       "//components/prefs",

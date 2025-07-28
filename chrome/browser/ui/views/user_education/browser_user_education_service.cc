@@ -1796,55 +1796,46 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
 }
 
 std::unique_ptr<user_education::FeaturePromoControllerCommon>
-CreateUserEducationResources(BrowserView* browser_view) {
-  Profile* const profile = browser_view->GetProfile();
-
-  // Get the user education service.
-  if (!UserEducationServiceFactory::ProfileAllowsUserEducation(profile)) {
-    return nullptr;
-  }
-  UserEducationService* const user_education_service =
-      UserEducationServiceFactory::GetForBrowserContext(profile);
-  if (!user_education_service) {
-    return nullptr;
-  }
+CreateUserEducationResources(UserEducationService& user_education_service) {
+  Profile* const profile = &user_education_service.profile();
+  CHECK(UserEducationServiceFactory::ProfileAllowsUserEducation(profile));
 
   // Consider registering factories, etc.
   RegisterChromeHelpBubbleFactories(
-      user_education_service->help_bubble_factory_registry());
+      user_education_service.help_bubble_factory_registry());
   MaybeRegisterChromeFeaturePromos(
-      user_education_service->feature_promo_registry(), profile);
-  MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
-  CHECK(user_education_service->new_badge_registry());
+      user_education_service.feature_promo_registry(), profile);
+  MaybeRegisterChromeTutorials(user_education_service.tutorial_registry());
+  CHECK(user_education_service.new_badge_registry());
 
-  MaybeRegisterChromeNewBadges(*user_education_service->new_badge_registry());
-  user_education_service->new_badge_controller()->InitData();
+  MaybeRegisterChromeNewBadges(*user_education_service.new_badge_registry());
+  user_education_service.new_badge_controller()->InitData();
 
   // Registry is valid if the NTP promo feature is enabled.
-  if (user_education_service->ntp_promo_registry()) {
-    MaybeRegisterNtpPromos(*user_education_service->ntp_promo_registry());
+  if (user_education_service.ntp_promo_registry()) {
+    MaybeRegisterNtpPromos(*user_education_service.ntp_promo_registry());
   }
 
   if (user_education::features::IsUserEducationV25()) {
     auto result = std::make_unique<BrowserFeaturePromoController25>(
         feature_engagement::TrackerFactory::GetForBrowserContext(profile),
-        &user_education_service->feature_promo_registry(),
-        &user_education_service->help_bubble_factory_registry(),
-        &user_education_service->user_education_storage_service(),
-        &user_education_service->feature_promo_session_policy(),
-        &user_education_service->tutorial_service(),
-        &user_education_service->product_messaging_controller());
+        &user_education_service.feature_promo_registry(),
+        &user_education_service.help_bubble_factory_registry(),
+        &user_education_service.user_education_storage_service(),
+        &user_education_service.feature_promo_session_policy(),
+        &user_education_service.tutorial_service(),
+        &user_education_service.product_messaging_controller());
     result->Init();
     return result;
   } else {
     return std::make_unique<BrowserFeaturePromoController20>(
         feature_engagement::TrackerFactory::GetForBrowserContext(profile),
-        &user_education_service->feature_promo_registry(),
-        &user_education_service->help_bubble_factory_registry(),
-        &user_education_service->user_education_storage_service(),
-        &user_education_service->feature_promo_session_policy(),
-        &user_education_service->tutorial_service(),
-        &user_education_service->product_messaging_controller());
+        &user_education_service.feature_promo_registry(),
+        &user_education_service.help_bubble_factory_registry(),
+        &user_education_service.user_education_storage_service(),
+        &user_education_service.feature_promo_session_policy(),
+        &user_education_service.tutorial_service(),
+        &user_education_service.product_messaging_controller());
   }
 }
 

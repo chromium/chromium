@@ -70,7 +70,6 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   State state_ = State::kUninitialized;
   raw_ptr<Profile> profile_ = nullptr;
   std::vector<user_education::FeaturePromoParams> queued_params_;
-  std::unique_ptr<user_education::FeaturePromoController> controller_;
   user_education::UserEducationContextPtr user_education_context_;
 };
 

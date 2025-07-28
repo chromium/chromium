@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/user_education/browser_tutorial_service.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/recent_session_observer.h"
 #include "chrome/browser/user_education/recent_session_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
@@ -29,11 +32,11 @@
 // Kill switch for recent session tracking. Enabled by default.
 BASE_DECLARE_FEATURE(kAllowRecentSessionTracking);
 
+class BrowserUserEducationInterfaceImpl;
+
 class UserEducationService : public KeyedService {
  public:
-  explicit UserEducationService(
-      std::unique_ptr<BrowserUserEducationStorageService> storage_service,
-      bool allows_promos);
+  explicit UserEducationService(Profile* profile, bool allows_promos);
   ~UserEducationService() override;
 
   user_education::TutorialRegistry& tutorial_registry() {
@@ -80,6 +83,22 @@ class UserEducationService : public KeyedService {
   user_education::NtpPromoController* ntp_promo_controller() {
     return ntp_promo_controller_.get();
   }
+  Profile& profile() { return *profile_; }
+
+  user_education::FeaturePromoController* GetFeaturePromoController(
+      base::PassKey<BrowserUserEducationInterfaceImpl>) {
+    return feature_promo_controller_.get();
+  }
+
+  void SetFeaturePromoController(
+      base::PassKey<BrowserUserEducationInterfaceImpl>,
+      std::unique_ptr<user_education::FeaturePromoController>
+          feature_promo_controller) {
+    feature_promo_controller_ = std::move(feature_promo_controller);
+  }
+
+  // KeyedService:
+  void Shutdown() override;
 
   // Utility methods for when a browser [window] isn't available; for example,
   // when only a WebContents is available:
@@ -98,6 +117,7 @@ class UserEducationService : public KeyedService {
  private:
   friend class UserEducationServiceFactory;
 
+  const raw_ref<Profile> profile_;
   user_education::TutorialRegistry tutorial_registry_;
   user_education::HelpBubbleFactoryRegistry help_bubble_factory_registry_;
   user_education::FeaturePromoRegistry feature_promo_registry_;
@@ -114,6 +134,8 @@ class UserEducationService : public KeyedService {
   std::unique_ptr<RecentSessionObserver> recent_session_observer_;
   std::unique_ptr<user_education::NtpPromoRegistry> ntp_promo_registry_;
   std::unique_ptr<user_education::NtpPromoController> ntp_promo_controller_;
+  std::unique_ptr<user_education::FeaturePromoController>
+      feature_promo_controller_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_

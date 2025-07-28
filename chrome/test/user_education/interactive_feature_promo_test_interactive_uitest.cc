@@ -85,23 +85,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
-                       CheckPromoRequestedInDifferentContextFails) {
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
-  auto* const other = CreateBrowser(browser()->profile());
-
-  auto spec = user_education::FeaturePromoSpecification::CreateForTesting(
-      kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
-  RegisterTestFeature(browser(), std::move(spec));
-
-  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
-  EXPECT_CALL_IN_SCOPE(
-      aborted, Run,
-      RunTestSequence(ShowPromo(),
-                      InContext(other->window()->GetElementContext(),
-                                CheckPromoRequested(kTestIphFeature))));
-}
-
-IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
                        CheckPromoRequestedInDifferentContextFromController) {
   auto* const other = CreateBrowser(browser()->profile());
 

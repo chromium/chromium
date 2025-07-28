@@ -551,6 +551,32 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       PressNonDefaultPromoButton()));
 }
 
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       CustomActionCallbackInSecondWindowAfterFirstCloses) {
+  // Create a second browser.
+  Browser* const other = CreateBrowser(browser()->profile());
+
+  // Hide the anchor element in the first browser.
+  auto* const app_menu_button =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kToolbarAppMenuButtonElementId,
+          browser()->window()->GetElementContext());
+  app_menu_button->SetVisible(false);
+
+  // The promo should now show in the second window.
+  EXPECT_CALL(custom_action_callback_,
+              Run(other->window()->GetElementContext(), testing::_))
+      .Times(1);
+
+  RunTestSequence(InAnyContext(
+      MaybeShowPromo(kCustomActionTestFeature),
+      Do([this]() { browser()->window()->Close(); }),
+      WaitForHide(kBrowserViewElementId).SetTransitionOnlyOnEvent(true),
+      EnsurePresent(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      PressNonDefaultPromoButton()));
+}
+
 class BrowserFeaturePromoController2xLiveTrackerUiTest
     : public InteractiveFeaturePromoTest,
       public testing::WithParamInterface<ControllerMode> {

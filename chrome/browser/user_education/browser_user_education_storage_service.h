@@ -91,6 +91,8 @@ class BrowserUserEducationStorageService
       const RecentSessionData& recent_session_data) override;
   void ResetRecentSessionData();
 
+  Profile* profile() const { return profile_; }
+
  private:
   const raw_ptr<Profile> profile_;
 };

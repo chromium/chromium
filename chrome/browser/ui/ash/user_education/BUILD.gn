@@ -18,6 +18,7 @@ static_library("user_education") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/views/user_education",
     "//chrome/browser/user_education",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
