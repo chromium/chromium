@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
@@ -64,8 +65,7 @@ namespace {
 // stream.
 void PromiseWriterHelper(const DropData& drop_data, base::File file) {
   DCHECK(file.IsValid());
-  UNSAFE_TODO(file.WriteAtCurrentPos(drop_data.file_contents.data(),
-                                     drop_data.file_contents.length()));
+  file.WriteAtCurrentPos(base::as_bytes(base::span(drop_data.file_contents)));
 }
 
 WebContentsViewMac::RenderWidgetHostViewCreateFunction
