@@ -230,7 +230,7 @@ TEST(PaymentRequestTest,
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(), details,
       options, scope.GetExceptionState());
 
-  EXPECT_EQ("shipping", request->shippingType());
+  EXPECT_EQ(V8PaymentShippingType::Enum::kShipping, request->shippingType());
 }
 
 TEST(PaymentRequestTest, DeliveryShippingTypeWhenShippingTypeIsDelivery) {
@@ -240,13 +240,13 @@ TEST(PaymentRequestTest, DeliveryShippingTypeWhenShippingTypeIsDelivery) {
   details->setTotal(BuildPaymentItemForTest());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
-  options->setShippingType("delivery");
+  options->setShippingType(V8PaymentShippingType::Enum::kDelivery);
 
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(), details,
       options, scope.GetExceptionState());
 
-  EXPECT_EQ("delivery", request->shippingType());
+  EXPECT_EQ(V8PaymentShippingType::Enum::kDelivery, request->shippingType());
 }
 
 TEST(PaymentRequestTest, PickupShippingTypeWhenShippingTypeIsPickup) {
@@ -256,13 +256,13 @@ TEST(PaymentRequestTest, PickupShippingTypeWhenShippingTypeIsPickup) {
   details->setTotal(BuildPaymentItemForTest());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
-  options->setShippingType("pickup");
+  options->setShippingType(V8PaymentShippingType::Enum::kPickup);
 
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(), details,
       options, scope.GetExceptionState());
 
-  EXPECT_EQ("pickup", request->shippingType());
+  EXPECT_EQ(V8PaymentShippingType::Enum::kPickup, request->shippingType());
 }
 
 TEST(PaymentRequestTest, RejectShowPromiseOnInvalidShippingAddress) {

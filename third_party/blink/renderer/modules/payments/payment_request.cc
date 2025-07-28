@@ -148,14 +148,17 @@ struct TypeConverter<PaymentOptionsPtr, blink::PaymentOptions> {
     output->request_payer_phone = input.requestPayerPhone();
     output->request_shipping = input.requestShipping();
 
-    if (input.shippingType() == "delivery") {
-      output->shipping_type = PaymentShippingType::DELIVERY;
-    } else if (input.shippingType() == "pickup") {
-      output->shipping_type = PaymentShippingType::PICKUP;
-    } else {
-      output->shipping_type = PaymentShippingType::SHIPPING;
+    switch (input.shippingType().AsEnum()) {
+      case blink::V8PaymentShippingType::Enum::kDelivery:
+        output->shipping_type = PaymentShippingType::DELIVERY;
+        break;
+      case blink::V8PaymentShippingType::Enum::kPickup:
+        output->shipping_type = PaymentShippingType::PICKUP;
+        break;
+      case blink::V8PaymentShippingType::Enum::kShipping:
+        output->shipping_type = PaymentShippingType::SHIPPING;
+        break;
     }
-
     return output;
   }
 };
