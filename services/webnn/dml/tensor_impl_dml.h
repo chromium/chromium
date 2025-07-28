@@ -39,6 +39,11 @@ class TensorImplDml final : public WebNNTensorImpl,
                 base::WeakPtr<WebNNContextImpl> context,
                 mojom::TensorInfoPtr tensor_info);
 
+  TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+                base::WeakPtr<WebNNContextImpl> context,
+                mojom::TensorInfoPtr tensor_info);
+
   TensorImplDml(const TensorImplDml&) = delete;
   TensorImplDml& operator=(const TensorImplDml&) = delete;
 

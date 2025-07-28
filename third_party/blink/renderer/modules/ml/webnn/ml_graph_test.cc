@@ -523,6 +523,12 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
   void WaitSyncToken(const gpu::SyncToken& sync_token_fence) override {
     NOTIMPLEMENTED();
   }
+  void CreateTensorFromMailbox(blink_mojom::TensorInfoPtr tensor_info,
+                               const ::gpu::Mailbox& mailbox,
+                               const gpu::SyncToken& fence,
+                               CreateTensorCallback callback) override {
+    NOTIMPLEMENTED();
+  }
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;

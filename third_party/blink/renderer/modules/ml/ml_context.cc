@@ -1076,11 +1076,17 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   pending_resolvers_.insert(resolver);
 
   // Use `WebNNContext` to create `WebNNTensor` message pipe.
-  context_remote_->CreateTensor(
-      std::move(tensor_info), mojo_base::BigBuffer(0),
-      WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver),
-                    std::move(validated_descriptor), usage));
+  if (descriptor->exportableToGPU()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Not implemented");
+    return EmptyPromise();
+  } else {
+    context_remote_->CreateTensor(
+        std::move(tensor_info), mojo_base::BigBuffer(0),
+        blink::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
+                        std::move(scoped_trace), WrapPersistent(resolver),
+                        std::move(validated_descriptor), usage));
+  }
 
   return resolver->Promise();
 }

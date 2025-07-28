@@ -99,6 +99,9 @@ class GPU_GLES2_EXPORT SharedImageManager
       MemoryTypeTracker* ref,
       const wgpu::Device& device,
       wgpu::BackendType backend_type);
+  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref);
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);

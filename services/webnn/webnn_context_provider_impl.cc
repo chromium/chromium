@@ -83,6 +83,7 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
     gpu::GPUInfo gpu_info,
+    gpu::SharedImageManager* shared_image_manager,
     LoseAllContextsCallback lose_all_contexts_callback,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     gpu::Scheduler* scheduler,
@@ -90,6 +91,7 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
     : shared_context_state_(std::move(shared_context_state)),
       gpu_feature_info_(std::move(gpu_feature_info)),
       gpu_info_(std::move(gpu_info)),
+      shared_image_manager_(shared_image_manager),
       lose_all_contexts_callback_(std::move(lose_all_contexts_callback)),
       scheduler_(scheduler),
       main_thread_task_runner_(std::move(main_thread_task_runner)),
@@ -104,6 +106,7 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
     gpu::GPUInfo gpu_info,
+    gpu::SharedImageManager* shared_image_manager,
     LoseAllContextsCallback lose_all_contexts_callback,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     gpu::Scheduler* scheduler,
@@ -114,8 +117,9 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
   // GPU context will result in a not-supported error.
   return base::WrapUnique(new WebNNContextProviderImpl(
       std::move(shared_context_state), std::move(gpu_feature_info),
-      std::move(gpu_info), std::move(lose_all_contexts_callback),
-      std::move(main_thread_task_runner), scheduler, client_id));
+      std::move(gpu_info), shared_image_manager,
+      std::move(lose_all_contexts_callback), std::move(main_thread_task_runner),
+      scheduler, client_id));
 }
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
@@ -165,7 +169,8 @@ WebNNContextProviderImpl::CreateForTesting(
       mojo::MakeSelfOwnedReceiver<mojom::WebNNContextProvider>(
           base::WrapUnique(new WebNNContextProviderImpl(
               /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
-              std::move(gpu_info), std::move(lose_all_contexts_callback),
+              std::move(gpu_info), /*shared_image_manager=*/nullptr,
+              std::move(lose_all_contexts_callback),
               base::SingleThreadTaskRunner::GetCurrentDefault(),
               g_webnn_scheduler.get(), kFakeClientIdForTesting)),
           std::move(receiver))

@@ -140,6 +140,12 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
         std::move(receiver), AsWeakPtr(), std::move(tensor_info)));
   }
 
+  void CreateTensorFromMailboxImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+      mojom::TensorInfoPtr tensor_info,
+      gpu::Mailbox mailbox,
+      CreateTensorImplCallback callback) override {}
+
   base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};
 };
 

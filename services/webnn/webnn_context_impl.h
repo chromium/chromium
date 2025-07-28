@@ -153,6 +153,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
                     CreateTensorCallback callback) override;
   void WaitSyncToken(const gpu::SyncToken& fence) override;
   void GenVerifiedSyncToken(GenVerifiedSyncTokenCallback callback) override;
+  void CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
+                               const gpu::Mailbox& mailbox,
+                               const gpu::SyncToken& fence,
+                               CreateTensorCallback callback) override;
 
   // This method will be called by `CreateTensor()` after the tensor info is
   // validated. A backend subclass should implement this method to create and
@@ -160,6 +164,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   virtual void CreateTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
+      CreateTensorImplCallback callback) = 0;
+
+  // Similar to `CreateTensorImpl()`, but creates a tensor from a shared image
+  // for WebGPU interop. Backend subclasses should implement this to
+  // asynchronously create a platform-specific tensor from a shared image.
+  virtual void CreateTensorFromMailboxImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+      mojom::TensorInfoPtr tensor_info,
+      gpu::Mailbox mailbox,
       CreateTensorImplCallback callback) = 0;
 
   void DidCreateWebNNTensorImpl(
