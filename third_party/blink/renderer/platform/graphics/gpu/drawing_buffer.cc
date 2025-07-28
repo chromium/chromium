@@ -547,14 +547,13 @@ void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
   WebGLImageConversion::AlphaOp op =
       need_premultiply ? WebGLImageConversion::kAlphaDoPremultiply
                        : WebGLImageConversion::kAlphaDoNothing;
-  state_restorer_->SetFramebufferBindingDirty();
-  gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
   // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
   const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
       size_, viz::SinglePlaneFormat::kRGBA_8888);
   ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
-                      kN32_SkColorType, op, kBottomLeft_GrSurfaceOrigin);
+                      kN32_SkColorType, op, kBottomLeft_GrSurfaceOrigin,
+                      kBackBuffer);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -1791,8 +1790,29 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
   if (!dst_buffer)
     return nullptr;
 
+  auto pixels = base::span<uint8_t>(
+      static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
+  ReadBackFramebuffer(pixels, color_type, WebGLImageConversion::kAlphaDoNothing,
+                      kTopLeft_GrSurfaceOrigin, source_buffer);
+
+  return StaticBitmapImage::Create(
+      std::move(dst_buffer),
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        color_type, kUnpremul_SkAlphaType,
+                        color_space_.ToSkColorSpace()));
+}
+
+void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
+                                        SkColorType color_type,
+                                        WebGLImageConversion::AlphaOp op,
+                                        GrSurfaceOrigin destination_origin,
+                                        SourceDrawingBuffer source_buffer) {
+  DCHECK(state_restorer_);
+
   GLuint fbo = 0;
+
   state_restorer_->SetFramebufferBindingDirty();
+  // Generate new fbo for front buffer if needed.
   if (source_buffer == kFrontBuffer && front_color_buffer_) {
     gl_->GenFramebuffers(1, &fbo);
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -1805,34 +1825,6 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
   }
 
-  auto pixels = base::span<uint8_t>(
-      static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
-  ReadBackFramebuffer(pixels, color_type, WebGLImageConversion::kAlphaDoNothing,
-                      kTopLeft_GrSurfaceOrigin);
-
-  if (fbo) {
-    // The front buffer was used as the source of the pixels via |fbo|; clean up
-    // |fbo| and release access to the front buffer's SharedImage now that the
-    // readback is finished.
-    gl_->FramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-        front_color_buffer_->shared_image->GetTextureTarget(), 0, 0);
-    gl_->DeleteFramebuffers(1, &fbo);
-    front_color_buffer_->EndAccess();
-  }
-
-  return StaticBitmapImage::Create(
-      std::move(dst_buffer),
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        color_type, kUnpremul_SkAlphaType,
-                        color_space_.ToSkColorSpace()));
-}
-
-void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
-                                        SkColorType color_type,
-                                        WebGLImageConversion::AlphaOp op,
-                                        GrSurfaceOrigin destination_origin) {
-  DCHECK(state_restorer_);
   state_restorer_->SetPixelPackParametersDirty();
   gl_->PixelStorei(GL_PACK_ALIGNMENT, 1);
   if (webgl_version_ > kWebGL1) {
@@ -1885,6 +1877,17 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
   // `opengl_flip_y_extension_`
   if (destination_origin != kBottomLeft_GrSurfaceOrigin) {
     FlipVertically(pixels, num_rows.ValueOrDie(), row_bytes.ValueOrDie());
+  }
+
+  if (fbo) {
+    // The front buffer was used as the source of the pixels via |fbo|; clean up
+    // |fbo| and release access to the front buffer's SharedImage now that the
+    // readback is finished.
+    gl_->FramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+        front_color_buffer_->shared_image->GetTextureTarget(), 0, 0);
+    gl_->DeleteFramebuffers(1, &fbo);
+    front_color_buffer_->EndAccess();
   }
 }
 
