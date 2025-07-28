@@ -11,12 +11,19 @@ import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
 if (use_system_harfbuzz) {
   import("//build/config/linux/pkg_config.gni")
-  pkg_config("harfbuzz-ng") {
-    visibility = [ "//third_party/harfbuzz-ng" ]
+  pkg_config("harfbuzz_from_pkgconfig") {
+    visibility = [
+      "//third_party/freetype",
+      "//third_party/harfbuzz-ng",
+    ]
     packages = [
       "harfbuzz",
       "harfbuzz-subset",
     ]
+  }
+
+  component("harfbuzz-ng") {
+    public_configs = [ ":harfbuzz_from_pkgconfig" ]
   }
 } else {
   config("harfbuzz_config") {
