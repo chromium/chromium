@@ -53,6 +53,8 @@ BASE_DECLARE_FEATURE(kWinDelaySpellcheckServiceInit);
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsAndroidSpellCheckFeatureEnabled();
+
+BASE_DECLARE_FEATURE(kAndroidGrammarCheck);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)

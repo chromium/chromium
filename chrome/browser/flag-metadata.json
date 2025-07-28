@@ -2721,6 +2721,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-android-grammar-check",
+    "owners": [
+      "jhtin@google.com",
+      "essential-inputs-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-android-mininal-ui-large-screen",
     "owners": [
       "vkorotkevich@google.com",

@@ -4608,6 +4608,11 @@ const char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =
     "Enables large display specific layout/renderer settings for "
     "Android large form factor devices";
 
+const char kAndroidGrammarCheckName[] = "Enable grammar checks on text input";
+const char kAndroidGrammarCheckDescription[] =
+    "When typing, allows spellcheckers to highlight grammar errors and suggest "
+    "corrections on browser text input.";
+
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

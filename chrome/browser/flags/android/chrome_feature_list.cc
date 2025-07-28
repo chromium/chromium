@@ -65,6 +65,7 @@
 #include "components/sensitive_content/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
@@ -474,6 +475,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
         kSegmentationPlatformAndroidHomeModuleRankerV2,
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
+    &spellcheck::kAndroidGrammarCheck,
     &supervised_user::kPropagateDeviceContentFiltersToSupervisedUser,
     &switches::kMitigateLegacySearchEnginePromoOverlap,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,

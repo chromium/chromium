@@ -6364,6 +6364,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kSystemShortcutBehaviorVariations,
                                     "SystemShortcutBehavior")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-android-grammar-check",
+     flag_descriptions::kAndroidGrammarCheckName,
+     flag_descriptions::kAndroidGrammarCheckDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(spellcheck::kAndroidGrammarCheck)},
+#endif  // BUILDFLAG(IS_ANDROID)
     {"enable-cros-touch-text-editing-redesign",
      flag_descriptions::kTouchTextEditingRedesignName,
      flag_descriptions::kTouchTextEditingRedesignDescription, kOsAll,

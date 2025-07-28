@@ -9205,6 +9205,7 @@ from previous Chrome versions.
   <int value="-1806739839"
       label="UseLookalikesForNavigationSuggestions:disabled"/>
   <int value="-1806173068" label="UseSharedImagesForPepperVideo:enabled"/>
+  <int value="-1804896568" label="AndroidGrammarCheck:disabled"/>
   <int value="-1804485171" label="disable-fullscreen-tab-detaching"/>
   <int value="-1804411756" label="ClipboardSuggestionContentHidden:enabled"/>
   <int value="-1804027916"
@@ -15411,6 +15412,7 @@ from previous Chrome versions.
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>
   <int value="481422857" label="LensOverlaySidePanelOpenInNewTab:disabled"/>
   <int value="481506759" label="ServiceWorkerScriptStreaming:enabled"/>
+  <int value="481942786" label="AndroidGrammarCheck:enabled"/>
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="483173979" label="SecurePaymentConfirmationExtensions:disabled"/>
