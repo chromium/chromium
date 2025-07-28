@@ -6,7 +6,6 @@
 
 import argparse
 import os
-import posixpath
 import shutil
 import sys
 
@@ -91,20 +90,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
   group.add_argument(
       '--module-name',
       help='Only look at natives annotated with a specific module name.')
-  default_path_prefix = os.path.relpath(
-      os.path.join(posixpath.dirname(__file__), ''), '../..') + '/'
-  group.add_argument('--include-path-prefix',
-                     help='Value for #include "${PREFIX}jni_zero.h" '
-                     f'(default={default_path_prefix})',
-                     default=default_path_prefix)
-  group.add_argument('--extra-include',
-                     action='append',
-                     dest='extra_includes',
-                     help='Header file to #include in the generated header.')
-  group.add_argument(
-      '--enable-legacy-natives',
-      action='store_true',
-      help='Whether to generate code from "native" java methods.')
   if is_final:
     group.add_argument(
         '--add-stubs-for-missing-native',
@@ -128,6 +113,10 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
                        action='store_true',
                        help='Whether to maintain ForTesting JNI methods.')
   else:
+    group.add_argument('--extra-include',
+                       action='append',
+                       dest='extra_includes',
+                       help='Header file to #include in the generated header.')
     group.add_argument(
         '--split-name',
         help='Split name that the Java classes should be loaded from.')
@@ -140,9 +129,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         '--enable-definition-macros',
         action='store_true',
         help='Generate JNI glue code in DEFINE_JNI_FOR_MyClass() macros')
-    group.add_argument('--allow-private-called-by-natives',
-                       action='store_true',
-                       help='Whether to allow private @CalledByNative symbols.')
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',
@@ -230,7 +216,6 @@ def main():
     parser.parse_args(sys.argv[1:] + ['-h'])
   else:
     args = parser.parse_args()
-
     bool_arg = lambda name: getattr(args, name, False)
     jni_mode = common.JniMode(is_hashing=bool_arg('use_proxy_hash'),
                               is_muxing=bool_arg('enable_jni_multiplexing'),

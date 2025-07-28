@@ -8,9 +8,8 @@
 
 #include <jni.h>
 
-#include "overridden/jni_export.h"
-#include "extra_include.h"
-
+#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 // Macro for transition to enable_definition_macros=true.
 #define DEFINE_JNI_FOR_SampleUniqueAnnotations()
 

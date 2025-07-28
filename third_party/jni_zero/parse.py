@@ -7,8 +7,8 @@ import re
 from typing import List
 from typing import Optional
 
-import common
 import java_types
+import common
 
 _MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
     'abstract',
@@ -335,8 +335,7 @@ _CALLED_BY_NATIVE_REGEX = re.compile(
     r'[{;]')
 
 
-def _parse_called_by_natives(type_resolver, contents, *,
-                             allow_private_called_by_natives):
+def _parse_called_by_natives(type_resolver, contents):
   ret = []
   for match in _CALLED_BY_NATIVE_REGEX.finditer(contents):
     return_type_grp = match.group('return_type')
@@ -359,15 +358,11 @@ def _parse_called_by_natives(type_resolver, contents, *,
     if inner_class_name:
       java_class = java_class.make_nested(inner_class_name)
 
-    modifiers = match.group('modifiers')
-    if not allow_private_called_by_natives and 'private' in modifiers:
-      raise ParseError(f'@CalledByNative methods must not be private. '
-                       f'Found:\n{match.group(0)}\n')
     ret.append(
         ParsedCalledByNative(java_class=java_class,
                              name=name,
                              signature=signature,
-                             static='static' in modifiers,
+                             static='static' in match.group('modifiers'),
                              unchecked='Unchecked' in match.group('Unchecked')))
 
   # Check for any @CalledByNative occurrences that were not matched.
@@ -409,8 +404,7 @@ def _parse_jni_namespace(contents):
   return m[0]
 
 
-def _do_parse(filename, *, package_prefix, package_prefix_filter,
-              enable_legacy_natives, allow_private_called_by_natives):
+def _do_parse(filename, *, package_prefix, package_prefix_filter):
   assert not filename.endswith('.kt'), (
       f'Found {filename}, but Kotlin is not supported by JNI generator.')
   with open(filename) as f:
@@ -439,14 +433,8 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter,
   parsed_proxy_natives = _parse_proxy_natives(type_resolver, contents)
   jni_namespace = _parse_jni_namespace(contents)
 
-  if enable_legacy_natives:
-    non_proxy_methods = _parse_non_proxy_natives(type_resolver, contents)
-  else:
-    non_proxy_methods = []
-  called_by_natives = _parse_called_by_natives(
-      type_resolver,
-      contents,
-      allow_private_called_by_natives=allow_private_called_by_natives)
+  non_proxy_methods = _parse_non_proxy_natives(type_resolver, contents)
+  called_by_natives = _parse_called_by_natives(type_resolver, contents)
 
   ret = ParsedFile(filename=filename,
                    jni_namespace=jni_namespace,
@@ -469,16 +457,11 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter,
 def parse_java_file(filename,
                     *,
                     package_prefix=None,
-                    package_prefix_filter=None,
-                    enable_legacy_natives=False,
-                    allow_private_called_by_natives=False):
+                    package_prefix_filter=None):
   try:
-    return _do_parse(
-        filename,
-        package_prefix=package_prefix,
-        package_prefix_filter=package_prefix_filter,
-        enable_legacy_natives=enable_legacy_natives,
-        allow_private_called_by_natives=allow_private_called_by_natives)
+    return _do_parse(filename,
+                     package_prefix=package_prefix,
+                     package_prefix_filter=package_prefix_filter)
   except Exception as e:
     note = f' (when parsing {filename})'
     if e.args and isinstance(e.args[0], str):
