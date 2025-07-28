@@ -3841,6 +3841,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabStrip.SplitView.Created" enum="SplitTabCreatedSource"
+    expires_after="2026-01-18">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    When a split tab is created, records the method through which it was
+    created.
+  </summary>
+</histogram>
+
 <histogram name="TabStrip.Tab.ContextMenuReloadCount" units="tabs"
     expires_after="2026-01-18">
   <owner>agale@chromium.org</owner>

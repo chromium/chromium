@@ -8,9 +8,8 @@
 namespace split_tabs {
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. SplitTabCreatedSource in
-// tools/metrics/histograms/enums.xml should also be updated when changed
-// here.
+// numeric values should never be reused.
+// LINT.IfChange(SplitTabCreatedSource)
 enum class SplitTabCreatedSource {
   kToolbarButton = 0,
   kDragAndDropLink = 1,
@@ -24,6 +23,7 @@ enum class SplitTabCreatedSource {
   kExtensionsApi = 7,
   kMaxValue = kExtensionsApi,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitTabCreatedSource)
 
 void RecordSplitTabCreated(SplitTabCreatedSource source);
 }  // namespace split_tabs

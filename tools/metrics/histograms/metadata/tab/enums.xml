@@ -261,6 +261,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupRecallTypeDesktop) -->
 
+<!-- LINT.IfChange(SplitTabCreatedSource) -->
+
+<enum name="SplitTabCreatedSource">
+  <int value="0" label="Toolbar button"/>
+  <int value="1" label="Drag and drop link"/>
+  <int value="2" label="Drag and drop tab"/>
+  <int value="3" label="Bookmark context menu"/>
+  <int value="4" label="Link context menu"/>
+  <int value="5" label="Tab context menu"/>
+  <int value="6" label="Duplicate split"/>
+  <int value="7" label="Extensions API"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_metrics.h:SplitTabCreatedSource) -->
+
 <!-- LINT.IfChange(SplitViewMenuEntry) -->
 
 <enum name="SplitViewMenuEntry">
