@@ -69,7 +69,7 @@
       <div>
 <if expr="not is_chromeos">
         <template is="dom-if" if="[[shouldShowSyncAccountControl_(
-            syncStatus.syncSystemEnabled)]]">
+            syncStatus.syncSystemEnabled, syncStatus.signedInStatus)]]" restamp>
           <settings-sync-account-control
               sync-status="[[syncStatus]]"
               prefs="{{prefs}}"
@@ -81,45 +81,72 @@
                   "$i18n{peopleSignInPromptSecondaryWithNoAccount}">
           </settings-sync-account-control>
         </template>
-</if>
         <template is="dom-if" if="[[!shouldShowSyncAccountControl_(
             syncStatus.syncSystemEnabled, signinAllowed_)]]" restamp>
-          <div id="profile-row" class="cr-row first two-line"
-                  actionable$="[[isProfileActionable_]]"
-                  on-click="onProfileClick_">
-            <template is="dom-if" if="[[syncStatus]]">
+          <template is="dom-if" if="[[!shouldLinkToAccountSettingsPage_(
+              syncStatus.signedInState)]]" restamp>
+            <div id="profile-row" class="cr-row first two-line"
+                actionable$="[[isProfileActionable_]]"
+                on-click="onProfileClick_">
+              <template is="dom-if" if="[[syncStatus]]">
+                <div id="profile-icon"
+                    style="background-image: [[getIconImageSet_(
+                        profileIconUrl_)]]">
+                </div>
+                <div class="flex cr-row-gap cr-padded-text text-elide">
+                  <span id="profile-name">[[profileName_]]</span>
+                </div>
+                <cr-icon-button class="subpage-arrow"
+                    aria-label="$i18n{editPerson}"
+                    aria-describedby="profile-name"
+                    aria-roledescription="$i18n{subpageArrowRoleDescription}">
+                </cr-icon-button>
+              </template>
+            </div>
+          </template>
+          <template is="dom-if" if="[[shouldLinkToAccountSettingsPage_(
+              syncStatus.signedInState)]]" restamp>
+            <cr-link-row id="account-subpage-row" on-click="onAccountClick_">
               <div id="profile-icon"
                   style="background-image: [[getIconImageSet_(
-                      profileIconUrl_)]]">
+                      primaryAccountIconUrl_)]]">
               </div>
-              <div class="flex cr-row-gap cr-padded-text text-elide">
-                <span id="profile-name">[[profileName_]]</span>
-<!-- When the user is signed-in, the settings-sync-account-control is always
-shown on non-ChromeOS platforms -->
-<if expr="is_chromeos">
-                <div class="secondary" hidden="[[!isSyncing_(
-                      syncStatus.signedInState)]]">
-                  [[syncStatus.signedInUsername]]
+              <div class="cr-row-gap cr-padded-text flex no-min-width">
+                <div id="account-name" class="text-elide">
+                  [[primaryAccountName_]]
                 </div>
-</if>
+                <div id="account-email" class="secondary text-elide">
+                  [[primaryAccountEmail_]]
+                </div>
               </div>
-<if expr="not is_chromeos">
-              <cr-icon-button class="subpage-arrow"
-                  aria-label="$i18n{editPerson}"
-                  aria-describedby="profile-name"
-                  aria-roledescription="$i18n{subpageArrowRoleDescription}">
-              </cr-icon-button>
-</if>
-<if expr="is_chromeos">
-              <cr-icon-button class="icon-external"
-                  id="profile-subpage-arrow"
-                  hidden="[[!isProfileActionable_]]"
-                  aria-label="$i18n{accountManagerSubMenuLabel}"
-                  aria-describedby="profile-name"></cr-icon-button>
-</if>
-            </template>
-          </div>
+            </cr-link-row>
+          </template>
         </template> <!-- if="[[!shouldShowSyncAccountControl_()]]" -->
+</if>
+
+<if expr="is_chromeos">
+        <div id="profile-row" class="cr-row first two-line"
+            actionable$="[[isProfileActionable_]]" on-click="onProfileClick_">
+          <template is="dom-if" if="[[syncStatus]]">
+            <div id="profile-icon"
+                style="background-image: [[getIconImageSet_(
+                    profileIconUrl_)]]">
+            </div>
+            <div class="flex cr-row-gap cr-padded-text text-elide">
+              <span id="profile-name">[[profileName_]]</span>
+              <div class="secondary" hidden="[[!isSyncing_(
+                    syncStatus.signedInState)]]">
+                [[syncStatus.signedInUsername]]
+              </div>
+            </div>
+            <cr-icon-button class="icon-external"
+                id="profile-subpage-arrow"
+                hidden="[[!isProfileActionable_]]"
+                aria-label="$i18n{accountManagerSubMenuLabel}"
+                aria-describedby="profile-name"></cr-icon-button>
+          </template>
+        </div>
+</if>
 
         <cr-link-row id="sync-setup"
             label="$i18n{syncAndNonPersonalizedServices}"
@@ -138,15 +165,11 @@ shown on non-ChromeOS platforms -->
               label="$i18n{profileNameAndPicture}"
               on-click="onProfileClick_" ></cr-link-row>
         </template>
-</if>
 
-<if expr="not is_chromeos">
         <cr-link-row id="importDataDialogTrigger"
             label="$i18n{importTitle}"
             on-click="onImportDataClick_"></cr-link-row>
-</if>
 
-<if expr="not is_chromeos">
         <template is="dom-if" if="[[isDasherlessProfile_]]">
           <div id="sync-not-allowed" class="cr-row continuation">
             <cr-icon id="info-icon" icon="cr:info-outline"></cr-icon>
