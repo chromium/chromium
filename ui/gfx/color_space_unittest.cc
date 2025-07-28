@@ -348,5 +348,34 @@ TEST(ColorSpaceUtil, SkcmsMatrixConvert) {
   UNSAFE_TODO(EXPECT_EQ(memcmp(&in_m33, &out_m33, sizeof(in_m33)), 0));
 }
 
+TEST(ColorSpace, AsHDR) {
+  ColorSpace cs;
+  skcms_TransferFunction fn;
+  constexpr float kEpsilon = 0.00001f;
+
+  cs = ColorSpace(ColorSpace::PrimaryID::P3, ColorSpace::TransferID::SRGB);
+  cs = cs.GetAsHDR();
+  EXPECT_EQ(cs.GetTransferID(), ColorSpace::TransferID::SRGB_HDR);
+
+  cs = ColorSpace(ColorSpace::PrimaryID::P3, ColorSpace::TransferID::LINEAR);
+  cs = cs.GetAsHDR();
+  EXPECT_EQ(cs.GetTransferID(), ColorSpace::TransferID::LINEAR_HDR);
+
+  cs = cs.GetWithTransferFunction(ColorSpace::TransferID::GAMMA22);
+  EXPECT_FALSE(cs.IsHDR());
+  cs = cs.GetAsHDR();
+  EXPECT_EQ(cs.GetTransferID(), ColorSpace::TransferID::CUSTOM_HDR);
+  EXPECT_TRUE(cs.GetTransferFunction(&fn));
+  EXPECT_NEAR(fn.g, 2.2, kEpsilon);
+
+  fn.a = 0.5;
+  fn.g = 2.5;
+  cs = cs.GetWithTransferFunction(fn, /*is_hdr=*/true);
+  EXPECT_EQ(cs.GetTransferID(), ColorSpace::TransferID::CUSTOM_HDR);
+  EXPECT_TRUE(cs.GetTransferFunction(&fn));
+  EXPECT_NEAR(fn.a, 0.5, kEpsilon);
+  EXPECT_NEAR(fn.g, 2.5, kEpsilon);
+}
+
 }  // namespace
 }  // namespace gfx
