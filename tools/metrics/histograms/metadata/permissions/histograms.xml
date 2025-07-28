@@ -219,7 +219,6 @@ chromium-metrics-reviews@google.com.
   <variant name="AnchoredBubble"/>
   <variant name="CustomModalDialog"/>
   <variant name="ElementAnchoredBubble"/>
-  <variant name="LocationBarLeftChip"/>
   <variant name="LocationBarLeftChipAutoBubble"/>
   <variant name="LocationBarLeftQuietAbusiveChip"/>
   <variant name="LocationBarLeftQuietChip"/>
@@ -296,9 +295,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ElementAnchoredBubble"
         summary="A bubble shown near the embedded permission element, when
                  the element is clicked."/>
-    <variant name="LocationBarLeftChip"
-        summary="A chip on the left-hand side of the location bar that shows
-                 a bubble when clicked"/>
     <variant name="LocationBarLeftChipAutoBubble"
         summary="A chip on the left-hand side of the location bar that
                  automatically shows a bubble"/>
@@ -1485,7 +1481,6 @@ chromium-metrics-reviews@google.com.
     available on Desktop.
   </summary>
   <token key="Disposition">
-    <variant name="LocationBarLeftChip"/>
     <variant name="LocationBarLeftChipAutoBubble"/>
     <variant name="LocationBarLeftQuietAbusiveChip"/>
     <variant name="LocationBarLeftQuietChip"/>
@@ -1543,7 +1538,6 @@ chromium-metrics-reviews@google.com.
     <variant name="AnchoredBubble"/>
     <variant name="CustomModalDialog"/>
     <variant name="ElementAnchoredBubble"/>
-    <variant name="LocationBarLeftChip"/>
     <variant name="LocationBarLeftChipAutoBubble"/>
     <variant name="LocationBarLeftQuietAbusiveChip"/>
     <variant name="LocationBarLeftQuietChip"/>

@@ -1262,7 +1262,7 @@ TEST_F(PermissionHatsTriggerUnitTest, PepcPromptPositionFilter) {
                   permissions::RequestType::kMicStream,
                   permissions::PermissionAction::DENIED,
                   permissions::PermissionPromptDisposition::
-                      LOCATION_BAR_LEFT_CHIP,
+                      LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE,
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "stable",
@@ -1346,7 +1346,7 @@ TEST_F(PermissionHatsTriggerUnitTest, PepcPromptInitialStatusFilter) {
                   permissions::RequestType::kCameraStream,
                   permissions::PermissionAction::DENIED,
                   permissions::PermissionPromptDisposition::
-                      LOCATION_BAR_LEFT_CHIP,
+                      LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE,
                   permissions::PermissionPromptDispositionReason::
                       DEFAULT_FALLBACK,
                   permissions::PermissionRequestGestureType::GESTURE, "stable",

@@ -240,7 +240,8 @@ enum class PermissionPromptDisposition {
 
   // Only used on desktop, a chip on the left-hand side of the location bar that
   // shows a bubble when clicked.
-  LOCATION_BAR_LEFT_CHIP = 6,
+  // DEPRECATED: This disposition is no longer existent.
+  // LOCATION_BAR_LEFT_CHIP = 6,
 
   // There was no UI being shown. This is usually because the user closed an
   // inactive tab that had a pending permission request.
