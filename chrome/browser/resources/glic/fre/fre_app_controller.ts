@@ -269,6 +269,11 @@ export class FreAppController {
     // Load the web client now that cookie sync is complete.
     this.destroyWebview();
 
+    // Signal to the fre controller that the web ui framework has completed
+    // loading and the remote web content is about to start loading in the
+    // webview. This is used to record timing metrics.
+    freHandler.logWebUiLoadComplete();
+
     this.webview.src = loadTimeData.getString('glicFreURL');
     this.loadingTimer = setTimeout(() => {
       this.setState(FreWebUiState.kShowLoading);

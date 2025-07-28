@@ -39,6 +39,7 @@ class GlicFrePageHandler : public glic::mojom::FrePageHandler {
   void ValidateAndOpenLinkInNewTab(const GURL& url) override;
   void WebUiStateChanged(mojom::FreWebUiState new_state) override;
   void ExceededTimeoutError() override;
+  void LogWebUiLoadComplete() override;
 
  private:
   content::BrowserContext* browser_context() const;
