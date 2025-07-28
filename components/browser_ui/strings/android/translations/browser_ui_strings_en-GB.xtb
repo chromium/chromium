@@ -78,6 +78,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1919950603503897840">Select contacts</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Automatic picture-in-picture</translation>
 <translation id="1954597385941141174">Sites can ask to connect to USB devices</translation>
 <translation id="1979673356880165407">Make text and images larger or smaller for all sites that you visit</translation>
 <translation id="1984937141057606926">Allowed, except third-party</translation>
@@ -228,6 +229,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3611658447322220736">Recently closed sites can finish sending and receiving data</translation>
+<translation id="3619294456800709762">Sites can enter picture-in-picture automatically</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
 <translation id="3641456520301071208">Sites can ask for your location</translation>
 <translation id="3658847490588580244">Default browser bottom sheet</translation>
@@ -608,6 +610,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8117244575099414087">When on, sites can use your device's sensors. When off, sites can't use sensors.</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8163152278172770963">Don't allow sites to enter picture-in-picture automatically</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="818487310457576362">Drag from the side of the screen to exit full screen.</translation>
 <translation id="8186479265534291036">Site not working? Third-party cookies blocked</translation>
@@ -699,6 +702,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notifications allowed</translation>
 <translation id="9138217887606523162">Current zoom is <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Sites use this feature to enter picture-in-picture automatically. This lets you continue watching a video while freeing up your screen for other tasks.</translation>
 <translation id="9156722768168878035">Let Chrome show your recent tabs in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>

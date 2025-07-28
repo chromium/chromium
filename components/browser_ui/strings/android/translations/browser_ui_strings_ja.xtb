@@ -78,6 +78,7 @@
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1919950603503897840">連絡先を選択</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">ピクチャー イン ピクチャーの自動開始</translation>
 <translation id="1954597385941141174">サイトが USB デバイスへの接続を要求できるようにする</translation>
 <translation id="1979673356880165407">アクセスしたすべてのサイトでテキストと画像を拡大または縮小して表示します</translation>
 <translation id="1984937141057606926">サードパーティ以外は許可</translation>
@@ -228,6 +229,7 @@
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3611658447322220736">最近閉じたサイトがデータの送受信を完了できるようにする</translation>
+<translation id="3619294456800709762">サイトはピクチャー イン ピクチャーを自動的に開始できる</translation>
 <translation id="3628308229821498208">提案された検索</translation>
 <translation id="3641456520301071208">位置情報へのアクセス権限がサイトからリクエストされる場合があります</translation>
 <translation id="3658847490588580244">デフォルトのブラウザのボトムシート</translation>
@@ -608,6 +610,7 @@
 <translation id="8117244575099414087">オンにすると、サイトはデバイスのセンサーを使用できます。オフにすると、サイトはセンサーを使用できません。</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
 <translation id="8131740175452115882">確認</translation>
+<translation id="8163152278172770963">サイトにピクチャー イン ピクチャーの自動開始を許可しない</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="818487310457576362">全画面表示を終了するには、画面の端からドラッグします。</translation>
 <translation id="8186479265534291036">サイトが動作していない場合 サードパーティ Cookie がブロックされています</translation>
@@ -699,6 +702,7 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="9138037198177304356">通知が許可されています</translation>
 <translation id="9138217887606523162">現在のズームレベルは <ph name="ZOOM_LEVEL" />%% です</translation>
+<translation id="915112772806845021">サイトがピクチャー イン ピクチャーを自動的に開始する機能です。この機能を使用すると、動画の視聴を続行しながら、画面で他のタスクを行うことができます。</translation>
 <translation id="9156722768168878035">Chrome で最近使ったタブをデバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="9162462602695099906">このページは危険です</translation>
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>

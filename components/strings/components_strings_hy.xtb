@@ -1215,6 +1215,7 @@
 <translation id="3027915437837548462">SVG պատկեր</translation>
 <translation id="3030331669969285614">Այս դրոշակները կանխում են կամ չեղարկում են վտանգավոր փոփոխությունները և հասանելի կլինեն միայն սահմանափակ ժամանակով։</translation>
 <translation id="3030542417256082866">Պահե՞լ փոխադրամիջոցը</translation>
+<translation id="3033200136993730761">Երբ ձեր տան հասցեն նշված է, Google-ի ծառայություններից օգտվելն ավելի հեշտ է․ դուք ստանում եք ավելի ճշգրիտ երթուղիներ Google Քարտեզներում, որոնման ավելի համապատասխան արդյունքներ և այլն։ Դուք կարող եք փոփոխել կամ ջնջել ձեր հասցեն <ph name="BEGIN_LINK" /><ph name="ACCOUNT" /> Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="3034526003882782781">Ոլորումով մասշտաբի փոփոխում թույլատրվում է</translation>
 <translation id="3036894576201005614">Տան մաքրման պարագաներ</translation>
 <translation id="3037177537145227281">Դուք հետևում եք այս ապրանքի գնին</translation>
@@ -2925,6 +2926,7 @@
 <translation id="5898767305816764989">«Լավն է» կոճակ․ սեղմեք Enter՝ հայտնելու, որ դուք հավանում եք, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Դեղին</translation>
 <translation id="5903264686717710770">Անվանում՝</translation>
+<translation id="5905671155741555195">Երբ ձեր աշխատավայրի հասցեն նշված է, Google-ի ծառայություններից օգտվելն ավելի հեշտ է․ դուք ստանում եք ավելի ճշգրիտ երթուղիներ Google Քարտեզներում, որոնման ավելի համապատասխան արդյունքներ և այլն։ Դուք կարող եք փոփոխել կամ ջնջել ձեր հասցեն <ph name="BEGIN_LINK" /><ph name="ACCOUNT" /> Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (համաժամացված)</translation>
 <translation id="5910140988253729859">Հետարկել ինքնալրացումը</translation>
 <translation id="5911020115933784199">Միջոցառումներ և ժամանակացույցներ</translation>
@@ -3821,6 +3823,7 @@
 <translation id="7403392780200267761">Կիսվել այս ներդիրով՝ ուղարկելով հղում կամ ստեղծելով QR կոդ, հեռարձակում և այլն</translation>
 <translation id="7403591733719184120">Ձեր <ph name="DEVICE_NAME" /> սարքը կառավարվում է</translation>
 <translation id="7405878640835614059">Այս կայքը (<ph name="ENROLLMENT_DOMAIN" />) լրացուցիչ գործառույթների համար հավելվածներ է տեղադրել։ Ձեր տվյալների մի մասը հասանելի է այդ հավելվածներին։</translation>
+<translation id="740691708085211707">Հեռացնե՞լ աշխատանքային հասցեն Chrome-ի ինքնալրացման տվյալներից</translation>
 <translation id="7407424307057130981">&lt;p&gt;Այս սխալը կցուցադրվի, եթե ձեր Windows համակարգչում տեղադրված է Superfish ծրագիրը։&lt;/p&gt;
       &lt;p&gt;Ծրագիրը ժամանակավորապես անջատելու և համացանցին միանալու համար կատարեք ստորև նշված գործողությունները։ Ձեզ անհրաժեշտ կլինեն ադմինիստրատորի արտոնություններ։&lt;/p&gt;
       &lt;ol&gt;
@@ -3917,6 +3920,7 @@
 <translation id="7534987659046836932">Envelope C7</translation>
 <translation id="7535087603100972091">Արժեք</translation>
 <translation id="753556296624075801">Google-ի տեխնոլոգիա</translation>
+<translation id="753713322968419914">Հեռացնե՞լ ձեր տան հասցեն Chrome-ի ինքնալրացման տվյալներից</translation>
 <translation id="7537536606612762813">Պարտադիր</translation>
 <translation id="7543525346216957623">Հարցրեք ձեր ծնողին</translation>
 <translation id="7546409722674205727">«<ph name="APP_NAME" />» հավելվածը գործարկվում է</translation>

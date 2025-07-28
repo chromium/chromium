@@ -537,7 +537,6 @@
 <translation id="3081338492074632642">तुम्ही सेव्ह करत असलेला पासवर्ड तुमच्या <ph name="WEBSITE" /> च्या पासवर्डशी जुळत असल्याची खात्री करा</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="309710370695886264">तुमच्याकडे पुन्हा वापरलेला १ पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.</translation>
-<translation id="3102790820790869053">अलीकडील टॅबमध्ये शोधा</translation>
 <translation id="3106258548858559536">वाचन मोड बंद करा</translation>
 <translation id="3106690631878101882">भाषांतर करा हे लपवा</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> चा पासवर्ड हटवायचा आहे का?</translation>
@@ -648,7 +647,6 @@
 <translation id="3581564640715911333">पेजचे अन्य भाषांमध्ये भाषांतर उपलब्ध करा</translation>
 <translation id="3587885837929752825">तुम्ही तुमच्या Google खाते मध्ये काय सेव्ह करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
 <translation id="3588820906588687999">नवीन टॅबमध्ये इमेज उघडा</translation>
-<translation id="3591006724568464696">अलीकडील टॅब उपलब्ध नाहीत</translation>
 <translation id="3595252146048399851">काय सिंक करायचे हे तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="3596414637720633074">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="3602260545951981695">"वर्धित संरक्षण" निवडा</translation>
@@ -892,7 +890,6 @@
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> ला अनफॉलो करा हे लपवा</translation>
 <translation id="461440297010471931">Google ने शोधत आहे</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
-<translation id="4619615317237390068">अन्य डिव्हाइसमधील टॅब</translation>
 <translation id="4621768135601674446">वाचन मोड पर्याय उघडा</translation>
 <translation id="4624080227980645783">नवीन गुप्त विंडो</translation>
 <translation id="4627107755957573804">पासकी वापरण्यासाठी सद्य खाती अपग्रेड करण्याची साइट आणि अ‍ॅप्सना अनुमती द्या</translation>
@@ -1817,7 +1814,6 @@
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8079530767338315840">पुनरावृत्ती करा</translation>
 <translation id="8079602123447022758">हे सेटिंग व्यवस्थापित केले, अधिक माहितीसाठी दोनदा टॅप करा</translation>
-<translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
 <translation id="8084285576995584326">तुमच्या Google खाते चा डेटा नियंत्रित करा</translation>
 <translation id="809543534949702122">शोध इतिहास</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{तुम्ही वापरत नसलेले टॅब {COUNT} दिवसानंतर इथे हलवले जातात}other{तुम्ही वापरत नसलेले टॅब {COUNT} दिवसांनंतर इथे हलवले जातात}}</translation>
@@ -2010,8 +2006,6 @@
 <translation id="8796634520835503150">वाचन मोड उपलब्ध आहे</translation>
 <translation id="8803526663383843427">सुरू असल्यास</translation>
 <translation id="8803639129939845298">सुरक्षित</translation>
-<translation id="8806823403540278281">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे. गुप्त मोडमध्ये टॅब सेव्ह केले जात नाहीत.
-<ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">मला नंतर आठवण करून द्या</translation>
 <translation id="8814719628147284151">पुढे सुरू ठेवा</translation>
 <translation id="8819155700324279105">ऑनलाइन धोक्यांपासून वाचण्यासाठी संरक्षणाचा अतिरिक्त स्तर जोडा</translation>

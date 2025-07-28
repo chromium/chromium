@@ -1426,7 +1426,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7304873321153398381">No tens connexió. Chrome no pot comprovar les teves contrasenyes.</translation>
 <translation id="7313188324932846546">Toca per configurar la sincronització</translation>
 <translation id="7314734791127433392">No es poden comprovar les contrasenyes</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Pestanyes i grups de pestanyes que no s'han utilitzat durant 1 dia o més}other{Pestanyes i grups de pestanyes que no s'han utilitzat durant # dies o més}}</translation>
 <translation id="7324354302972299151">Envia una sol·licitud Do Not Track</translation>
 <translation id="7333041109965360609">Has cancel·lat la subscripció a les notificacions</translation>
 <translation id="7336259382292148213">Les notificacions estan bé</translation>

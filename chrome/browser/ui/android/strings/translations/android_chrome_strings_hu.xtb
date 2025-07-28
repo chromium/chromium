@@ -1426,7 +1426,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7304873321153398381">Offline. A Chrome nem tudja ellenőrizni a jelszavakat.</translation>
 <translation id="7313188324932846546">Koppintson a szinkronizálás beállításához</translation>
 <translation id="7314734791127433392">Nem lehet ellenőrizni a jelszavakat</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Legalább 1 napja nem használt lapok és lapcsoportok}other{Legalább # napja nem használt lapok és lapcsoportok}}</translation>
 <translation id="7324354302972299151">„Nincs nyomon követés” kérés küldése</translation>
 <translation id="7333041109965360609">Leiratkozott az értesítésekről</translation>
 <translation id="7336259382292148213">Úgy tűnik, rendben vannak az értesítések</translation>

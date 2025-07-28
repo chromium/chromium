@@ -1426,7 +1426,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7304873321153398381">Bezsaistē. Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles.</translation>
 <translation id="7313188324932846546">Pieskarieties, lai iestatītu sinhronizāciju</translation>
 <translation id="7314734791127433392">Nevar pārbaudīt paroles</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Cilnes un ciļņu grupas, kas nav izmantotas vismaz vienu dienu}zero{Cilnes un ciļņu grupas, kas nav izmantotas vismaz # dienas}one{Cilnes un ciļņu grupas, kas nav izmantotas vismaz # dienu}other{Cilnes un ciļņu grupas, kas nav izmantotas vismaz # dienas}}</translation>
 <translation id="7324354302972299151">Sūtīt pieprasījumu “Do Not Track”</translation>
 <translation id="7333041109965360609">Paziņojumu abonements tika anulēts</translation>
 <translation id="7336259382292148213">Nav jāveic nekādas darbības ar paziņojumiem</translation>

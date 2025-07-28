@@ -536,7 +536,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3081338492074632642">Asigură-te că parola pe care o salvezi este aceeași cu parola pentru <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Jos</translation>
 <translation id="309710370695886264">Ai o parolă refolosită. Remediază problema acum pentru a rămâne în siguranță.</translation>
-<translation id="3102790820790869053">Caută în filele recente</translation>
 <translation id="3106258548858559536">Dezactivează Modul de lectură</translation>
 <translation id="3106690631878101882">Ascunde Traducere</translation>
 <translation id="310900540163454140">Ștergi parola pentru <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3581564640715911333">Afișează traducerea paginilor în alte limbi</translation>
 <translation id="3587885837929752825">Organizația ta limitează tipurile de conținut pe care îl poți salva în Contul Google.</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
-<translation id="3591006724568464696">Nu sunt disponibile file recente</translation>
 <translation id="3595252146048399851">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3596414637720633074">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3602260545951981695">Alege Protecție îmbunătățită</translation>
@@ -891,7 +889,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4611811151908969241">Ascunde anulează urmărirea pentru <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Căutare cu Google</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
-<translation id="4619615317237390068">File de pe alte dispozitive</translation>
 <translation id="4621768135601674446">Deschide opțiunile pentru modul de lectură</translation>
 <translation id="4624080227980645783">Fereastră incognito nouă</translation>
 <translation id="4627107755957573804">Permite site-urilor și aplicațiilor să facă upgrade conturilor existente, astfel încât să folosească chei de acces</translation>
@@ -1815,7 +1812,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8076492880354921740">File</translation>
 <translation id="8079530767338315840">Repetă</translation>
 <translation id="8079602123447022758">Această setare este gestionată. Atinge de două ori pentru mai multe informații.</translation>
-<translation id="8080028325999236607">Închide filele</translation>
 <translation id="8084285576995584326">Gestionează datele din Contul Google</translation>
 <translation id="809543534949702122">Istoricul căutărilor</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Filele pe care nu le folosești sunt mutate aici după {COUNT} zi}few{Filele pe care nu le folosești sunt mutate aici după {COUNT} zile}other{Filele pe care nu le folosești sunt mutate aici după {COUNT} de zile}}</translation>
@@ -2008,8 +2004,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8796634520835503150">Modul de lectură este disponibil</translation>
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8803639129939845298">Securizat</translation>
-<translation id="8806823403540278281">Organizația îți solicită să navighezi în privat. Filele nu sunt salvate în modul incognito.
-<ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Amintește-mi mai târziu</translation>
 <translation id="8814719628147284151">Continuă</translation>
 <translation id="8819155700324279105">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online</translation>

@@ -271,6 +271,7 @@
 <translation id="4205939740494406371">Chrome ვერ ახერხებს პაროლების შემოწმებას. ცადეთ 24 საათში ან <ph name="BEGIN_LINK" />შეამოწმეთ პაროლები თქვენს Google ანგარიშში<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">მიმდინარეობს გაუქმება…</translation>
 <translation id="4224210481850767180">ინსტალაცია გაუქმდა.</translation>
+<translation id="4230631012078055975">მიიღეთ წვდომა მეტ მონაცემზე Chrome-ში შესვლით</translation>
 <translation id="4242034826641750751">Chrome საჭიროებს კამერისა და მიკროფონზე წვდომის ნებართვას ამ საიტისთვის</translation>
 <translation id="424864128008805179">გსურთ Chrome-იდან გამოსვლა?</translation>
 <translation id="4251615635259297716">მივამაგროთ Chrome-ის მონაცემები ამ ანგარიშზე?</translation>
@@ -597,6 +598,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8321888067342493336">სურათად შენახვა</translation>
 <translation id="8336463659890584292">როცა საიტი გთხოვთ, უფლება მისცეთ, კონფიდენციალურად ჩატვირთოს თავის გვერდზე არსებული ბმულები, Chrome გამოიყენებს Google-ის სერვერებს. აღნიშნული დამალავს თქვენს ვინაობას წინასწარ ჩატვირთული საიტისგან, თუმცა Google-ს ეცოდინება, რომელი საიტები იტვირთება წინასწარ.</translation>
 <translation id="8342675569599923794">Chrome-მა დაბლოკა ეს ფაილი, რადგან ის სახიფათოა.</translation>
+<translation id="8349094670477064572">თქვენ შეინახავთ და გამოიყენეთ პაროლებსა და სხვა მონაცემებს Google ანგარიშში, როცა Chrome-ში შეხვალთ. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">თარგმნა შემდეგ ენაზე:</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" />, Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="8387459386171870978">Chrome-ის გამოყენების გაგრძელება</translation>

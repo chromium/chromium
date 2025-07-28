@@ -854,6 +854,7 @@
 <translation id="1587275751631642843">‏קונסולת JavaScript&amp;</translation>
 <translation id="1587907146729660231">יש לגעת בכפתור ההפעלה עם האצבע</translation>
 <translation id="1588438908519853928">רגיל</translation>
+<translation id="1588772269240419305">בדיקת עדכוני השם והלוגו</translation>
 <translation id="1588870296199743671">פתיחת קישור באמצעות...</translation>
 <translation id="1588919647604819635">לחיצה ימנית על הכרטיס</translation>
 <translation id="1589055389569595240">הצגת איות ודקדוק</translation>
@@ -1333,6 +1334,7 @@
 <translation id="1912867150686509584">רוצה לראות עוד פגישות ביומן?</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{השהיית הכרטיסייה שמאטה את הדפדפן}one{השהיית הכרטיסיות שמאטות את הדפדפן}two{השהיית הכרטיסיות שמאטות את הדפדפן}other{השהיית הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="1913749768968678106">‏הפעלת Cast, שמירה ושיתוף</translation>
+<translation id="19147273405311768">איפוס סרגל הכלים להגדרות ברירת המחדל</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">ניתוק</translation>
 <translation id="1915734383465415025">מספר החנות</translation>
@@ -3015,6 +3017,7 @@
 <translation id="3060952009917586498">שינוי השפה במכשיר. השפה הנוכחית היא <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">‏לא הצלחנו להתחבר לטלפון שלך. יש לוודא שהטלפון נמצא בקרבת מקום, אינו נעול, ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
 <translation id="3061302636956643119">‏הטקסט יישלח אל Google לעיבוד.</translation>
+<translation id="306166624240243643">‏בדיקת עדכוני השם וכתובת ה-URL</translation>
 <translation id="3064871050034234884">אתרים יכולים להשמיע צלילים</translation>
 <translation id="3065041951436100775">משוב על כרטיסייה שנסגרה.</translation>
 <translation id="3065522099314259755">קצב חזרה על פעולת מקלדת</translation>
@@ -3057,6 +3060,7 @@
 <translation id="3100071818310370858">‏שימוש בנתוני המיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר הזה. ‫Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את קביעת המיקום ואת האיכות של השירותים מבוססי-המיקום. <ph name="BEGIN_LINK1" />מידע נוסף על מיקום<ph name="BEGIN_LINK1_END" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">עמעום תאורת המסך</translation>
 <translation id="3101709781009526431">תאריך ושעה</translation>
+<translation id="3102309003841389927">בדיקת עדכון הלוגו</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3103451787721578293">יש להזין סיבה להעלאת הנתונים האלה:</translation>
 <translation id="3103512663951238230">‏‫Alt + לחיצה</translation>
@@ -6057,6 +6061,7 @@
 <translation id="5225324770654022472">הצגת קיצורי יישומים</translation>
 <translation id="52254442782792731">הרשאות הגישה הנוכחיות עוד לא הוגדרו</translation>
 <translation id="5225463052809312700">הפעלת המצלמה</translation>
+<translation id="5226253862147382094">‏בדיקת העדכונים של הלוגו וכתובת ה-URL</translation>
 <translation id="5226514125747186">יופיע עיגול מקווקו מסביב לסמלי אתרים. <ph name="BEGIN_LINK" />מידע נוסף על כרטיסיות לא פעילות<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">לאתרים אין הרשאה להשתמש במיקום שלך</translation>
 <translation id="5227679487546032910">דמות ברירת מחדל כחלחלה</translation>
@@ -7372,6 +7377,7 @@
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{להסיר את התוסף?}one{להסיר # תוספים?}two{להסיר # תוספים?}other{להסיר # תוספים?}}</translation>
 <translation id="6180510783007738939">כלי השורה</translation>
 <translation id="6180550893222597997">באיזה מפתח גישה ברצונך להשתמש עבור <ph name="APP_NAME" />?</translation>
+<translation id="6181218116951226898">לפעמים המיתוג של אפליקציות מתעדכן. לפני העדכון, חשוב לבדוק את כל השינויים ולוודא שהם מקובלים עליך.</translation>
 <translation id="6181431612547969857">ההורדה נחסמה</translation>
 <translation id="6183369864942961155">הפעלה אוטומטית של עיצוב בהיר או כהה</translation>
 <translation id="6184099524311454384">חיפוש כרטיסיות</translation>
@@ -7445,6 +7451,7 @@
 <translation id="6234108445915742946">‏התנאים וההגבלות של Chrome ישתנו ב-31 במרץ</translation>
 <translation id="6234474535228214774">ההתקנה בהמתנה</translation>
 <translation id="6235208551686043831">‏המצלמה של המכשיר פועלת. צריך למקם את קוד ה-QR של ה-eSIM מול המצלמה.</translation>
+<translation id="6237256594069101884">‏בדיקת העדכון של כתובת ה-URL</translation>
 <translation id="6237342324375264347">‫<ph name="SHARE_STATE" /> הקבוצה <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">אפליקציה לכתיבת הערות בעזרת סטיילוס</translation>
 <translation id="6237481151388361546">צריך לשנות את החיבור לאינטרנט ולבחור באפשרות 'ניסיון חוזר', או לבחור באפשרות 'פתיחה בכלי לעריכה בסיסית' כדי להשתמש באפשרויות מוגבלות לתצוגה ולעריכה.</translation>
@@ -8302,6 +8309,7 @@
 <translation id="6840155290835956714">יש לשאול לפני שליחה</translation>
 <translation id="6840184929775541289">אינו רשות אישורים</translation>
 <translation id="6840214587087739194">הכתובת נמחקה</translation>
+<translation id="6841076158433142214">לא תישלח לך התראה כשתתבצע הקלטת מסך באפליקציות האלה:</translation>
 <translation id="6841143363521180029">מוצפן</translation>
 <translation id="6841186874966388268">שגיאות</translation>
 <translation id="6842135459748401207">רק מכשירים שמחוברים אל <ph name="USER_EMAIL" /></translation>
@@ -8762,6 +8770,7 @@
 <translation id="7181329571386134105">‏כדי לאשר ל<ph name="CHILD_NAME" /> להתקין תוספים בעתיד בלי אישור ממך, עליך לפתוח את אפליקציית Family Link במכשיר שלך ולעדכן את הגדרות Google Chrome של <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" />}=1{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> בלבד (#)}one{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד # משתמשים}two{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד # משתמשים}other{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד # משתמשים}}</translation>
+<translation id="7181976109296206547">‏בדיקת העדכונים של הלוגו, השם וכתובת ה-URL</translation>
 <translation id="7182051712900867547">שימוש בחשבון אחר</translation>
 <translation id="7182063559013288142">נקודת אינטרנט מיידית</translation>
 <translation id="7182791023900310535">העברת הסיסמה שלך</translation>
@@ -8937,6 +8946,7 @@
 <translation id="7312040805247765153">לא ניתן להתקין את האפליקציה</translation>
 <translation id="7312210124139670355">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="7313539585802573958">צבעים לתאורה האחורית במקלדת</translation>
+<translation id="7314865262803554456">לא תישלח לך התראה כשההקלטה תתחיל.</translation>
 <translation id="7314989823816739632">רומנטי</translation>
 <translation id="7317342082064136423">צריך לאמת את החשבון</translation>
 <translation id="7317831949569936035">הרשמה לשימוש בית ספרי</translation>
@@ -11474,6 +11484,7 @@
 <translation id="9033765790910064284">אני רוצה להמשיך בכל זאת</translation>
 <translation id="9033857511263905942">&amp;הדבקה</translation>
 <translation id="903480517321259405">יש להקליד שוב את קוד האימות</translation>
+<translation id="9035157477209989051">תתקבל התראה כשיבוצעו הקלטות מסך באפליקציות האלה:</translation>
 <translation id="9036484080057916082">רשימת חותמות הזמן של אישורים חתומים</translation>
 <translation id="9037054491984310631">‏יש חיבור אל מכשיר Bluetooth בשם <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">המכשיר לא מורשה</translation>

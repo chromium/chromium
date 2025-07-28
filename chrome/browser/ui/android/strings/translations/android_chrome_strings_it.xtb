@@ -1426,7 +1426,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7304873321153398381">Offline. Chrome non può controllare le tue password.</translation>
 <translation id="7313188324932846546">Tocca per configurare la sincronizzazione</translation>
 <translation id="7314734791127433392">Impossibile controllare le password</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Schede e gruppi di schede non utilizzati per almeno 1 giorno}other{Schede e gruppi di schede non utilizzati per almeno # giorni}}</translation>
 <translation id="7324354302972299151">Invia una richiesta "Do Not Track"</translation>
 <translation id="7333041109965360609">Hai annullato l'iscrizione alle notifiche</translation>
 <translation id="7336259382292148213">Non ci sono problemi con le notifiche</translation>

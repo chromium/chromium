@@ -78,6 +78,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1919950603503897840">Välj kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Automatisk bild-i-bild</translation>
 <translation id="1954597385941141174">Webbplatser får begära tillstånd att ansluta till USB-enheter</translation>
 <translation id="1979673356880165407">Gör text och bilder större eller mindre för alla webbplatser du besöker</translation>
 <translation id="1984937141057606926">Tillåts, men inte från tredje part</translation>
@@ -228,6 +229,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3600792891314830896">Stäng av ljudet på webbplatser</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3611658447322220736">Webbplatser som stängts nyligen får fortsätta att skicka och ta emot data</translation>
+<translation id="3619294456800709762">Webbplatser kan öppna bild-i-bild automatiskt</translation>
 <translation id="3628308229821498208">Föreslagna sökningar</translation>
 <translation id="3641456520301071208">Webbplatser får fråga efter din plats</translation>
 <translation id="3658847490588580244">Ark på nedre delen av standardwebbläsaren</translation>
@@ -608,6 +610,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8117244575099414087">När detta är aktiverat kan webbplatser använda enhetens sensorer. När detta är inaktiverat får webbplatser inte använda sensorer.</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
+<translation id="8163152278172770963">Tillåt inte webbplatser att öppna bild-i-bild automatiskt</translation>
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="818487310457576362">Dra från sidan av skärmen för att avsluta helskärmsläge.</translation>
 <translation id="8186479265534291036">Fungerar inte webbplatsen? Cookies från tredje part har blockerats</translation>
@@ -699,6 +702,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="913657688200966289">Aktivera behörigheter för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Aviseringar tillåts</translation>
 <translation id="9138217887606523162">Nuvarande zoom är <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Webbplatser använder den här funktionen för att öppna bild-i-bild automatiskt. På så sätt kan du fortsätta titta på en video samtidigt som du frigör skärmen för andra uppgifter.</translation>
 <translation id="9156722768168878035">Tillåt att Chrome visar dina senaste flikar i enhetens applista och sökresultat. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="9162462602695099906">Den här sidan är farlig</translation>
 <translation id="9182556968660520230">Tillåt inte att webbplatser spelar upp skyddat innehåll</translation>

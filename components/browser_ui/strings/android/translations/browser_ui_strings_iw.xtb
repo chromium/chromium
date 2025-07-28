@@ -78,6 +78,7 @@
 <translation id="1915307458270490472">ניתוק</translation>
 <translation id="1919950603503897840">בחירת אנשי קשר</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">הפעלה אוטומטית של 'תמונה בתוך תמונה'</translation>
 <translation id="1954597385941141174">‏אתרים יכולים לבקש הרשאה להתחבר אל התקני USB</translation>
 <translation id="1979673356880165407">הגדלה או הקטנה של הטקסט והתמונות בכל האתרים שמבקרים בהם</translation>
 <translation id="1984937141057606926">מותר, מלבד צד שלישי</translation>
@@ -228,6 +229,7 @@
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3611658447322220736">אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים</translation>
+<translation id="3619294456800709762">אתרים יכולים להפעיל את מצב 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="3628308229821498208">הצעות לחיפוש</translation>
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
 <translation id="3658847490588580244">גיליון תחתון של דפדפן ברירת המחדל</translation>
@@ -609,6 +611,7 @@
 <translation id="8117244575099414087">כשהאפשרות מופעלת, אתרים יכולים להשתמש בחיישני המכשיר. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בחיישנים.</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8131740175452115882">אישור</translation>
+<translation id="8163152278172770963">אתרים לא יכולים להפעיל 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="8168435359814927499">תוכן</translation>
 <translation id="818487310457576362">כדי לצאת מהמסך המלא, גוררים את האצבע מהצד של המסך.</translation>
 <translation id="8186479265534291036">‏האתר לא פועל? קובצי cookie של צד שלישי חסומים</translation>
@@ -700,6 +703,7 @@
 <translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">יש הרשאת גישה להתראות</translation>
 <translation id="9138217887606523162">הזום הנוכחי: <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">התכונה הזו מעבירה אתרים באופן אוטומטי לתצוגה של תמונה בתוך תמונה. כך אפשר להמשיך לצפות בסרטון ולפנות מקום במסך למשימות אחרות.</translation>
 <translation id="9156722768168878035">‏‫Chrome יכול להציג את הכרטיסיות האחרונות ברשימת האפליקציות במכשיר ובתוצאות החיפוש. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות Chrome.</translation>
 <translation id="9162462602695099906">הדף הזה מסוכן</translation>
 <translation id="9182556968660520230">לא לאפשר לאתרים להפעיל תוכן מוגן</translation>

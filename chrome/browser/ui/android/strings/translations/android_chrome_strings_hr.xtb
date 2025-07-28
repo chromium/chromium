@@ -1426,7 +1426,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7304873321153398381">Offline. Chrome ne može provjeriti vaše zaporke.</translation>
 <translation id="7313188324932846546">Dodirnite da biste postavili sinkronizaciju</translation>
 <translation id="7314734791127433392">Provjera zaporki nije uspjela</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Kartice i grupe kartica koje se ne upotrebljavaju jedan dan ili dulje}one{Kartice i grupe kartica koje se ne upotrebljavaju # dan ili dulje}few{Kartice i grupe kartica koje se ne upotrebljavaju # dana ili dulje}other{Kartice i grupe kartica koje se ne upotrebljavaju # dana ili dulje}}</translation>
 <translation id="7324354302972299151">Slanje zahtjeva "Do Not Track"</translation>
 <translation id="7333041109965360609">Otkazana je pretplata na obavijesti</translation>
 <translation id="7336259382292148213">Obavijesti izgledaju dobro</translation>

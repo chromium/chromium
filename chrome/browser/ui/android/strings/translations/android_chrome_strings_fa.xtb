@@ -1426,7 +1426,6 @@
 <translation id="7304873321153398381">‏آفلاین. Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند.</translation>
 <translation id="7313188324932846546">برای تنظیم همگام‌سازی تک‌ضرب بزنید</translation>
 <translation id="7314734791127433392">بررسی گذرواژه‌ها امکان‌پذیر نیست</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{زبانه‌ها و گروه زبانه‌هایی که ۱ روز یا بیشتر استفاده نشده‌اند}one{زبانه‌ها و گروه زبانه‌هایی که # روز یا بیشتر استفاده نشده‌اند}other{زبانه‌ها و گروه زبانه‌هایی که # روز یا بیشتر استفاده نشده‌اند}}</translation>
 <translation id="7324354302972299151">‏ارسال درخواست «Do Not Track»</translation>
 <translation id="7333041109965360609">اشتراک اعلان‌ها لغو شد</translation>
 <translation id="7336259382292148213">اعلان‌ها مشکلی ندارد</translation>
@@ -1641,6 +1640,7 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUMBER_OF_OTHER_MEMBERS" /> نفر دیگر بپیوندید}one{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUMBER_OF_OTHER_MEMBERS" /> نفر دیگر بپیوندید}other{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUMBER_OF_OTHER_MEMBERS" /> نفر دیگر بپیوندید}}</translation>
 <translation id="8209050860603202033">باز کردن تصویر</translation>
 <translation id="8210770465353466621">زبانه‌ها را اینجا خواهید دید</translation>
+<translation id="8212799748012101103">باز کردن «جستجوی زبانه‌ها»</translation>
 <translation id="8215740705341534369">برگ کناری</translation>
 <translation id="8218622182176210845">مدیریت حساب</translation>
 <translation id="8221401890884589479">‏می‌توانید سایت‌هایی را که نمی‌خواهید مسدود کنید. Chrome همچنین سایت‌هایی را که قدیمی‌تر از ۳۰ روز باشند به‌طور خودکار از فهرست حذف می‌کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

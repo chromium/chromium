@@ -76,7 +76,7 @@
 <translation id="1327257854815634930">يتم فتح سجلّ التنقُّل.</translation>
 <translation id="1331212799747679585">‏يتعذَّر تحديث Chrome. يُرجى الاطِّلاع على مزيد من الخيارات</translation>
 <translation id="1332501820983677155">‏اختصارات ميزات Google Chrome</translation>
-<translation id="1333491156693005331">تم إجراء عملية التحقّق مؤخرًا</translation>
+<translation id="1333491156693005331">تم التحقّق منه مؤخرًا</translation>
 <translation id="1336996151357442890">تم إلغاء الاشتراك في تلقّي الإشعارات من "<ph name="SITE_NAME" />" سيُطلب منك مجددًا منح الإذن في زيارتك القادمة إلى هذا الموقع الإلكتروني.</translation>
 <translation id="1340839264183302272">مغادرة المجموعة</translation>
 <translation id="1342886103232377846">‏للتحقّق من كلمات المرور المحتمَل تعرّضها للاختراق، يُرجى الانتقال إلى "مدير كلمات المرور في Google".</translation>
@@ -594,7 +594,7 @@
 <translation id="3721119614952978349">‏أنت وGoogle</translation>
 <translation id="3737319253362202215">إعدادات الترجمة</translation>
 <translation id="3738139272394829648">المس للبحث</translation>
-<translation id="3739455665973395693">‏ما مِن كلمات مرور محتمَل تعرّضها للاختراق في حسابك على Google</translation>
+<translation id="3739455665973395693">‏ما مِن كلمات مرور معرّضة للاختراق في حسابك على Google</translation>
 <translation id="3739899004075612870">تمت إضافة إشارة مرجعية في <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">لا يتوفر البحث الصوتي على هذا الجهاز.</translation>
 <translation id="376561056759077985">لم يتم حفظ بعض البيانات إلى الآن</translation>
@@ -829,7 +829,7 @@
 <translation id="4782929588435725897">‫<ph name="SEARCH_ENGINE" /> هو محرك البحث التلقائي</translation>
 <translation id="4784349455504343791">يريد <ph name="WEBSITE_ORIGIN" /> استخدام معلومات شخصية من محفظتك الرقمية.</translation>
 <translation id="4787736314074622408">هل تريد حذف "<ph name="ITEM_TITLE" />"؟</translation>
-<translation id="4793679854893018356">‏تعرّف على الطريقة التي يحافظ بها Chrome على أمانك</translation>
+<translation id="4793679854893018356">‏كيف يحافظ Chrome على أمانك؟</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">الاسم المكتوب على البطاقة</translation>
 <translation id="480990236307250886">فتح الصفحة الرئيسية</translation>
@@ -1428,7 +1428,6 @@
 <translation id="7304873321153398381">‏لا يتوفَّر اتصال بالإنترنت. يتعذّر على Chrome التحقُّق من كلمات المرور.</translation>
 <translation id="7313188324932846546">انقر لإعداد المزامنة.</translation>
 <translation id="7314734791127433392">يتعذّر التحقّق من كلمات المرور</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{لم يتم استخدام علامات التبويب ومجموعات علامات التبويب لمدة يوم واحد أو أكثر}zero{لم يتم استخدام علامات التبويب ومجموعات علامات التبويب لمدة # يوم أو أكثر}two{لم يتم استخدام علامات التبويب ومجموعات علامات التبويب لمدة يومَين أو أكثر}few{لم يتم استخدام علامات التبويب ومجموعات علامات التبويب لمدة # أيام أو أكثر}many{لم يتم استخدام علامات التبويب ومجموعات علامات التبويب لمدة # يومًا أو أكثر}other{لم يتم استخدام علامات التبويب ومجموعات علامات التبويب لمدة # يوم أو أكثر}}</translation>
 <translation id="7324354302972299151">‏إرسال طلب Do Not Track
 </translation>
 <translation id="7333041109965360609">تم إلغاء اشتراكك في خدمة الإشعارات</translation>
@@ -1645,6 +1644,7 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" ومستخدمًا واحدًا آخر (<ph name="NUMBER_OF_OTHER_MEMBERS" />)}zero{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدم آخر}two{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" ومستخدمَين آخرَين (<ph name="NUMBER_OF_OTHER_MEMBERS" />)}few{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدمِين آخرِين}many{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدمًا آخر}other{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدم آخر}}</translation>
 <translation id="8209050860603202033">فتح الصورة</translation>
 <translation id="8210770465353466621">ستظهر لك علامات التبويب هنا</translation>
+<translation id="8212799748012101103">فتح نافذة "البحث في علامات التبويب"</translation>
 <translation id="8215740705341534369">بطاقة جانبية</translation>
 <translation id="8218622182176210845">إدارة حسابك</translation>
 <translation id="8221401890884589479">‏يمكنك حظر المواقع الإلكترونية التي لا تريدها. بالإضافة إلى ذلك، يحذف Chrome تلقائيًا المواقع الإلكترونية التي يمر أكثر من 30 يومًا على إضافتها إلى قائمة "المواقع الإلكترونية التي تقترح الإعلانات". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

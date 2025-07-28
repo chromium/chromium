@@ -536,7 +536,6 @@
 <translation id="3081338492074632642">ກວດໃຫ້ແນ່ໃຈວ່າລະຫັດຜ່ານທີ່ທ່ານກຳລັງບັນທຶກກົງກັບລະຫັດຜ່ານຂອງທ່ານສຳລັບ <ph name="WEBSITE" /> ຫຼືບໍ່.</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
 <translation id="309710370695886264">ທ່ານມີລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
-<translation id="3102790820790869053">ຊອກຫາແຖບຫຼ້າສຸດ</translation>
 <translation id="3106258548858559536">ປິດໂໝດການອ່ານ</translation>
 <translation id="3106690631878101882">ເຊື່ອງ ແປພາສາ</translation>
 <translation id="310900540163454140">ລຶບລະຫັດຜ່ານສຳລັບ <ph name="WEBSITE" /> ບໍ?</translation>
@@ -647,7 +646,6 @@
 <translation id="3581564640715911333">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>
 <translation id="3587885837929752825">ອົງກອນຂອງທ່ານຈຳກັດສິ່ງທີ່ທ່ານສາມາດບັນທຶກໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="3588820906588687999">ຮູບເປີດຢູ່ໃນແຖບໃໝ່</translation>
-<translation id="3591006724568464696">ແຖບຫຼ້າສຸດບໍ່ພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="3595252146048399851">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆຂອງ Google ໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="3596414637720633074">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3602260545951981695">ເລືອກ "ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນ"</translation>
@@ -891,7 +889,6 @@
 <translation id="4611811151908969241">ເຊື່ອງ ເຊົາຕິດຕາມ <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">ກຳລັງຊອກຫາດ້ວຍ Google</translation>
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
-<translation id="4619615317237390068">ແຖບຈາກອຸປະກອນອື່ນ</translation>
 <translation id="4621768135601674446">ເປີດຕົວເລືອກໂໝດການອ່ານ</translation>
 <translation id="4624080227980645783">ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="4627107755957573804">ອະນຸຍາດໃຫ້ເວັບໄຊ ແລະ ແອັບອັບເກຣດບັນຊີທີ່ມີຢູ່ເພື່ອໃຊ້ກະແຈຜ່ານ</translation>
@@ -1815,7 +1812,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8079530767338315840">ຫຼິ້ນຊໍ້າ</translation>
 <translation id="8079602123447022758">ການຕັ້ງຄ່ານີ້ໄດ້ຮັບການຈັດການ, ແຕະສອງຄັ້ງສຳລັບຂໍ້ມູນເພີ່ມເຕີມ</translation>
-<translation id="8080028325999236607">ປິດ​ທຸກແຖບ</translation>
 <translation id="8084285576995584326">ຄວບຄຸມຂໍ້ມູນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="809543534949702122">ປະຫວັດການຊອກຫາ</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{ແຖບທີ່ທ່ານບໍ່ໄດ້ໃຊ້ຈະຖືກຍ້າຍມາບ່ອນນີ້ຫຼັງຈາກ {COUNT} ມື້}other{ແຖບທີ່ທ່ານບໍ່ໄດ້ໃຊ້ຈະຖືກຍ້າຍມາບ່ອນນີ້ຫຼັງຈາກ {COUNT} ມື້}}</translation>
@@ -2008,8 +2004,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8796634520835503150">ສາມາດໃຊ້ໂໝດການອ່ານໄດ້</translation>
 <translation id="8803526663383843427">ເມື່ອເປີດໃຊ້</translation>
 <translation id="8803639129939845298">ປອດໄພ</translation>
-<translation id="8806823403540278281">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານທ່ອງເວັບແບບເປັນສ່ວນຕົວ. ຈະບໍ່ມີການບັນທຶກແຖບໄວ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.
-<ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">ແຈ້ງເຕືອນຂ້ອຍໃນພາຍຫຼັງ</translation>
 <translation id="8814719628147284151">ສືບຕໍ່</translation>
 <translation id="8819155700324279105">ເພີ່ມການປົກປ້ອງຕໍ່ກັບໄພຂົ່ມຂູ່ທາງອອນລາຍອີກຊັ້ນໜຶ່ງ</translation>

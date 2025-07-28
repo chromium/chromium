@@ -78,6 +78,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="1915307458270490472">Zložiť</translation>
 <translation id="1919950603503897840">Výber kontaktov</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Automatický obraz v obraze</translation>
 <translation id="1954597385941141174">Weby môžu žiadať o pripjenie k zariadeniam USB</translation>
 <translation id="1979673356880165407">Zväčšite alebo zmenšite si text a obrázky na všetkých weboch, ktoré navštívite</translation>
 <translation id="1984937141057606926">Povolené (okrem tretích strán)</translation>
@@ -228,6 +229,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3600792891314830896">Stlmiť weby, ktoré prehrávajú zvuk</translation>
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3611658447322220736">Nedávno zatvorené weby môžu dokončiť odosielanie a prijímanie údajov</translation>
+<translation id="3619294456800709762">Weby môžu automaticky spúšťať obraz v obraze</translation>
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
 <translation id="3641456520301071208">Weby môžu žiadať o vašu polohu</translation>
 <translation id="3658847490588580244">Dolný hárok predvoleného prehliadača</translation>
@@ -608,6 +610,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8117244575099414087">Keď je táto možnosť zapnutá, weby môžu používať senzory vášho zariadenia. Keď je táto možnosť vypnutá, weby nemôžu používať senzory.</translation>
 <translation id="813082847718468539">Zobraziť informácie o webe</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
+<translation id="8163152278172770963">Nepovoliť webom automaticky spúšťať obraz v obraze</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="818487310457576362">Režim celej obrazovky ukončíte presunutím z okraja obrazovky.</translation>
 <translation id="8186479265534291036">Web nefunguje? Súbory cookie tretích strán sú blokované.</translation>
@@ -699,6 +702,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="913657688200966289">Zapnite v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" /> povolenia pre aplikáciu <ph name="APP_NAME" />.</translation>
 <translation id="9138037198177304356">Upozornenia sú povolené</translation>
 <translation id="9138217887606523162">Aktuálna úroveň lupy je <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Weby pomocou tejto funkcie aktomaticky aktivujú obraz v obraze. Umožňuje vám to pokračovať v pozeraní videa a zároveň uvoľniť obrazovku pre iné úlohy.</translation>
 <translation id="9156722768168878035">Povoľte Chromu zobrazovať vaše nedávne karty v zozname aplikácií a výsledkoch vyhľadávania v zariadení. Túto možnosť môžete kedykoľvek vypnúť v nastaveniach Chromu.</translation>
 <translation id="9162462602695099906">Táto stránka je nebezpečná</translation>
 <translation id="9182556968660520230">Nepovoliť webom prehrávať chránený obsah</translation>

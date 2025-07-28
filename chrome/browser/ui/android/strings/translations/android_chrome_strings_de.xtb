@@ -1426,7 +1426,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7304873321153398381">Offline. Chrome kann deine Passwörter nicht prüfen.</translation>
 <translation id="7313188324932846546">Zum Einrichten der Synchronisierung tippen</translation>
 <translation id="7314734791127433392">Passwörter können nicht geprüft werden</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Tabs und Tabgruppen, die mindestens 1 Tag lang nicht verwendet wurden}other{Tabs und Tabgruppen, die mindestens # Tage lang nicht verwendet wurden}}</translation>
 <translation id="7324354302972299151">„Do Not Track“-Anfrage senden</translation>
 <translation id="7333041109965360609">Du erhältst keine Benachrichtigungen mehr</translation>
 <translation id="7336259382292148213">Benachrichtigungen sehen sicher aus</translation>

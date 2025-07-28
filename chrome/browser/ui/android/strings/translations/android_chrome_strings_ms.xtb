@@ -1196,6 +1196,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6404511346730675251">Edit penanda halaman</translation>
 <translation id="6406506848690869874">Segerak</translation>
 <translation id="6410883413783534063">Buka tab untuk melawati halaman yang berlainan pada masa yang sama</translation>
+<translation id="6411009031428071896">Dengar suapan</translation>
 <translation id="6411219469806822692">Tidak dapat pergi lebih tinggi. Cuba bermula dari bahagian atas halaman.</translation>
 <translation id="6412931879992742813">Tetingkap incognito baharu</translation>
 <translation id="641643625718530986">Cetak…</translation>
@@ -1426,7 +1427,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7304873321153398381">Luar talian. Chrome tidak dapat menyemak kata laluan anda.</translation>
 <translation id="7313188324932846546">Ketik untuk menyediakan penyegerakan</translation>
 <translation id="7314734791127433392">Tidak dapat menyemak kata laluan</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Tab dan kumpulan tab tidak digunakan selama 1 hari atau lebih lama}other{Tab dan kumpulan tab tidak digunakan selama # hari atau lebih lama}}</translation>
 <translation id="7324354302972299151">Hantar permintaan "Do Not Track"</translation>
 <translation id="7333041109965360609">Nyahlanggan daripada pemberitahuan</translation>
 <translation id="7336259382292148213">Pemberitahuan nampak baik</translation>

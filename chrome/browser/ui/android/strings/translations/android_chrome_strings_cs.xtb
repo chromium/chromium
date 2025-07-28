@@ -1426,7 +1426,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7304873321153398381">Offline. Chrome nemůže zkontrolovat vaše hesla.</translation>
 <translation id="7313188324932846546">Klepnutím nastavíte synchronizaci</translation>
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Karty a skupiny karet, které nejméně 1 den nebyly použity}few{Karty a skupiny karet, které nejméně # dny nebyly použity}many{Karty a skupiny karet, které nejméně # dne nebyly použity}other{Karty a skupiny karet, které nejméně # dní nebyly použity}}</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>
 <translation id="7333041109965360609">Odběr oznámení byl odhlášen</translation>
 <translation id="7336259382292148213">Oznámení vypadají v pořádku</translation>

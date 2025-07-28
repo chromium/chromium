@@ -1426,7 +1426,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7304873321153398381">Konexiorik gabe. Chrome-k ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="7313188324932846546">Sakatu hau sinkronizazioa konfiguratzeko</translation>
 <translation id="7314734791127433392">Ezin dira egiaztatu pasahitzak</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Fitxak eta fitxa taldeak ez dira erabili egun batez edo gehiagoz}other{Fitxak eta fitxa taldeak ez dira erabili # egunez edo gehiagoz}}</translation>
 <translation id="7324354302972299151">Bidali Do Not Track eskaera bat</translation>
 <translation id="7333041109965360609">Kendu da jakinarazpenetako harpidetza</translation>
 <translation id="7336259382292148213">Jakinarazpenak egokiak dira</translation>

@@ -1527,6 +1527,9 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 <translation id="208566302163036794">Devre dışı bırakılan özellikleri engelle</translation>
 <translation id="2086040449830622332">LPAC korumalı alanı ile yazdırmayı etkinleştir</translation>
 <translation id="208623333578980446">Güç yönetimi için ekran uyanık kalma kilitlerine izin ver</translation>
+<translation id="2086505225896497574">Politikanın ayarlanması, giriş ekranında güvenlik anahtarlarından onay sertifikaları istendiğinde hiçbir istem görünmeyen WebAuthn RP kimliklerini belirtir. Ayrıca, güvenlik anahtarına bağımsız onayın kullanılabileceğini belirten bir sinyal gönderilir. Bu olmadan, siteler güvenlik anahtarlarının onayını istediğinde kullanıcılar istem alır.
+
+Bu cihaz politikası, mevcut <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> kullanıcı politikası ile aynıdır ancak giriş ekranındaki oturum açma profilinde geçerlidir.</translation>
 <translation id="2089541797660774692">Yönetilen tarayıcı bulut raporlamasını etkinleştir</translation>
 <translation id="2090712407517297305">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/grouped adresinde görülebilir.</translation>
 <translation id="2090939118981888335">Politika, Etkin değerine ayarlanırsa veri sıkıştırma proxy'sine izin verilir. Politika, Devre Dışı değerine ayarlanırsa proxy'ye izin verilmez.
@@ -6886,6 +6889,7 @@ Bu politika hem giriş hem de kilit ekranı kimlik doğrulama akışlarını etk
       Not: Birden fazla değeri virgülle ayırın.</translation>
 <translation id="5693469654327063861">Veri taşımaya izin ver</translation>
 <translation id="56936613186060503">İndirme yöneticisinde dosyaları <ph name="GOOGLE_DRIVE_NAME" /> hedefine kaydetme seçeneği bulunmaz.</translation>
+<translation id="569457565603183">Giriş ekranında doğrudan güvenlik anahtarı onayına otomatik olarak izin verilen URL'ler/alan adları</translation>
 <translation id="5695209488612697377">İçerik menüsünde bir varsayılan arama sağlayıcısının kullanılabilmesini sağlar.
 
           Bu politikayı devre dışı değerine ayarlarsanız varsayılan arama sağlayıcınıza dayanan arama içerik menüsü öğesi kullanılamaz.

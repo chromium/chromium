@@ -45,6 +45,7 @@
 <translation id="1607715478322902680">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="1625909126243026060">Chromium'daki önemli gizlilik ve güvenlik kontrollerini inceleyin</translation>
 <translation id="1640672724030957280">İndiriliyor...</translation>
+<translation id="1680687534629375545">Görsel aramaya bu sayfa hakkında soru sorun</translation>
 <translation id="1709772298389099340"><ph name="BROWSER_NAME" /> için üst düzey ayrıcalıklar sağlar.</translation>
 <translation id="1715127912119967311">Chromium, özelliklerle olan etkileşimlerinizi Google'a göndererek bu özelliklerin iyileştirilmesini sağlar. İnceleme uzmanları bu verileri okuyabilir, işleyebilir ve bunlara ek açıklama ekleyebilir.</translation>
 <translation id="1722488837206509557">Böylece, kullanılabilir cihazlar arasından seçiminizi yapıp içerikleri bu cihazlarda görüntüleyebilirsiniz.</translation>
@@ -140,6 +141,7 @@
 <translation id="2785438272836277133">Bu uzantı kötü amaçlı yazılım içerdiği için güvenli değil. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2803971713792056305">Chromium'unuz</translation>
+<translation id="2816462166102338036">Bu videoyu görsel aramayla arayın</translation>
 <translation id="2841525013647267359">Şu dilden çevir:</translation>
 <translation id="2846251086934905009">Yükleme hatası: Yükleyici tamamlanmadı. Yükleme işlemi iptal edildi.</translation>
 <translation id="2847479871509788944">Chromium'dan kaldır...</translation>
@@ -185,6 +187,7 @@
 <translation id="3313189106987092621">Chromium, güvenli olmayan bağlantı kullanan siteleri yüklemeden önce sizi uyarır</translation>
 <translation id="3316771292331273802">Tüm Chromium pencerelerini kapattığınızda çoğu sitedeki oturumunuz kapatılır. Chromium'da oturum açtıysanız Google Hesabınız buna dahil değildir. Sitelerin sizi hatırlamasını sağlamak için <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">arama alanının sağ üst köşesi: sağ %<ph name="RIGHT" />, üst %<ph name="TOP" /></translation>
+<translation id="3369405342922656244">Bu sayfayı görsel aramayla arayın</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mevcut Chromium profiline geçilsin mi?</translation>
 <translation id="3412460710772753638">Bu cihazdaki Şifre Yöneticisi'nde</translation>
@@ -307,6 +310,7 @@
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="5231355151045086930">Chromium oturumunu kapatın</translation>
 <translation id="5234764350956374838">Kapat</translation>
+<translation id="5254739261293693943">Bu video hakkında soru sorun</translation>
 <translation id="5277894862589591112">Yaptığınız değişiklikleri uygulamak için Chromium'u yeniden başlatın</translation>
 <translation id="5286907366254680517">Algılandı</translation>
 <translation id="5294316920224716406">Chromium, Gizli modda gezinirken güvenli olmayan bağlantı kullanan bir siteyi yüklemeden önce sizi uyarır</translation>
@@ -385,6 +389,7 @@
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> cihazınızdan Chromium'da oturum açtığınızdan emin olup tekrar göndermeyi deneyin.</translation>
 <translation id="6212496753309875659">Bu bilgisayarda Chromium'un daha yeni bir sürümü de var. Yazılım çalışmıyorsa, Chromium'u kaldırın ve tekrar deneyin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium şimdi yeniden başlatılacak}=1{Chromium 1 saniye içinde yeniden başlatılacak}other{Chromium # saniye içinde yeniden başlatılacak}}</translation>
+<translation id="6239161312595354541">Görsel aramaya bu video hakkında soru sorun</translation>
 <translation id="6241367896540709610">Dosya indirmek için Chromium'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="6245734527075554892">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder.</translation>
 <translation id="6248213926982192922">Chromium varsayılan tarayıcı olsun</translation>
@@ -446,11 +451,13 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6847869444787758381">Chromium, şifrelerinizin güvenliğinin ihlal edilip edilmediğini size bildirir</translation>
 <translation id="684888714667046800">İnternete bağlanılamıyor. Güvenlik duvarı kullanıyorsanız lütfen <ph name="PRODUCT_EXE_NAME" /> dosyasının izin verilenler listesine eklendiğinden emin olun.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6862030660799253820">Bu görseli görsel aramayla arayın</translation>
 <translation id="6873893289264747459">Chromium, "<ph name="EXTENSION_NAME" />" uzantısında kötü amaçlı yazılım tespit etti</translation>
 <translation id="6877155553248388166">arama alanının sağ alt köşesi: sağ %<ph name="RIGHT" />, alt %<ph name="BOTTOM" /></translation>
 <translation id="6896758677409633944">Kopyala</translation>
 <translation id="6901631050894301805">Chromium'u varsayılan tarayıcınız olarak ayarlayın ve görev çubuğunuza sabitleyin</translation>
 <translation id="6929417474050522668">Reklam ölçümü, denemeler açıkken ziyaret ettiğiniz sitelerin Chromium'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
+<translation id="6934579572334859869">Görsel aramaya bu görsel hakkında soru sorun</translation>
 <translation id="6940431691900807093">Daha sonra ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chromium'dan ilgi alanlarınızı göstermesini isteyebilir. Chromium en çok 3 ilgi alanı paylaşabilir.</translation>
 <translation id="6964305034639999644">Bağlantıyı Chromium &amp;gizli penceresinde aç</translation>
 <translation id="6965382102122355670">Tamam</translation>
@@ -520,6 +527,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7859018312476869945">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="7867198900892795913">Chromium en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>
+<translation id="7877212753140190672">Bu görsel hakkında soru sorun</translation>
 <translation id="7888981273428720788">Chromium'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="7934340546140346950">Chromium, güvensiz bağlantıları mümkün olduğunda otomatik olarak HTTPS'ye yükseltir</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>

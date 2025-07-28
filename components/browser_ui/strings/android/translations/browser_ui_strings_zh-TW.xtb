@@ -78,6 +78,7 @@
 <translation id="1915307458270490472">掛斷</translation>
 <translation id="1919950603503897840">選取聯絡人</translation>
 <translation id="1923695749281512248">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">自動進入子母畫面</translation>
 <translation id="1954597385941141174">網站可以要求連線至 USB 裝置</translation>
 <translation id="1979673356880165407">在你造訪的所有網站上縮放文字和圖片</translation>
 <translation id="1984937141057606926">允許 (第三方網站除外)</translation>
@@ -228,6 +229,7 @@
 <translation id="3600792891314830896">將播放音訊的網站設為靜音</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3611658447322220736">最近關閉的網站可以完成資料收發作業</translation>
+<translation id="3619294456800709762">網站可以自動進入子母畫面</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
 <translation id="3641456520301071208">網站可以要求取得你的位置資訊</translation>
 <translation id="3658847490588580244">預設瀏覽器底部功能表</translation>
@@ -608,6 +610,7 @@
 <translation id="8117244575099414087">如果啟用，網站就可以使用裝置的感應器。如果停用，網站將無法使用感應器。</translation>
 <translation id="813082847718468539">查看網站資訊</translation>
 <translation id="8131740175452115882">確認</translation>
+<translation id="8163152278172770963">不允許網站自動進入子母畫面</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="818487310457576362">從畫面側邊向下拖曳即可退出全螢幕模式。</translation>
 <translation id="8186479265534291036">網站無法正常運作嗎？這是因為第三方 Cookie 已遭封鎖</translation>
@@ -699,6 +702,7 @@
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
 <translation id="9138037198177304356">允許通知</translation>
 <translation id="9138217887606523162">目前的縮放比例為 <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="915112772806845021">網站會使用這項功能自動進入子母畫面。你可以繼續觀看影片，同時在螢幕上處理其他工作。</translation>
 <translation id="9156722768168878035">允許 Chrome 在裝置的應用程式清單和搜尋結果顯示最近開啟的分頁。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="9162462602695099906">這是危險網頁</translation>
 <translation id="9182556968660520230">禁止網站播放受保護內容</translation>

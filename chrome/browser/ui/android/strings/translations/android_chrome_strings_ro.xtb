@@ -1426,7 +1426,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7304873321153398381">Offline. Chrome nu îți poate verifica parolele.</translation>
 <translation id="7313188324932846546">Atinge pentru a configura sincronizarea</translation>
 <translation id="7314734791127433392">Nu se pot verifica parolele</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Filele și grupurile de file care nu au fost folosite timp de cel puțin o zi}few{Filele și grupurile de file care nu au fost folosite timp de cel puțin # zile}other{Filele și grupurile de file care nu au fost folosite timp de cel puțin # de zile}}</translation>
 <translation id="7324354302972299151">Trimite o solicitare Do Not Track</translation>
 <translation id="7333041109965360609">Te-ai dezabonat de la notificări</translation>
 <translation id="7336259382292148213">Notificările par în regulă</translation>

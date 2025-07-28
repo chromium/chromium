@@ -1426,7 +1426,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7304873321153398381">Offline. Chrome kan je wachtwoorden niet checken.</translation>
 <translation id="7313188324932846546">Tik om synchronisatie in te stellen</translation>
 <translation id="7314734791127433392">Kan wachtwoorden niet checken</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Tabbladen en tabbladgroepen die 1 dag of langer niet zijn gebruikt}other{Tabbladen en tabbladgroepen die # dagen of langer niet zijn gebruikt}}</translation>
 <translation id="7324354302972299151">Een Do Not Track-verzoek sturen</translation>
 <translation id="7333041109965360609">Afgemeld voor meldingen</translation>
 <translation id="7336259382292148213">Meldingen zien er goed uit</translation>

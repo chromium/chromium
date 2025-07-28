@@ -1426,7 +1426,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7304873321153398381">Oflajn. Chrome ne može da vam proverava lozinke.</translation>
 <translation id="7313188324932846546">Dodirnite da biste podesili sinhronizaciju</translation>
 <translation id="7314734791127433392">Provera lozinki nije uspela</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Kartice i grupe kartica koje se ne koriste 1 dan ili duže}one{Kartice i grupe kartica koje se ne koriste # dan ili duže}few{Kartice i grupe kartica koje se ne koriste # dana ili duže}other{Kartice i grupe kartica koje se ne koriste # dana ili duže}}</translation>
 <translation id="7324354302972299151">Pošaljite zahtev „Do Not Track“</translation>
 <translation id="7333041109965360609">Prijava za obaveštenja je otkazana</translation>
 <translation id="7336259382292148213">Obaveštenja deluju u redu</translation>

@@ -1426,7 +1426,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7304873321153398381">Án nettengingar. Chrome getur ekki athugað aðgangsorðin þín.</translation>
 <translation id="7313188324932846546">Ýttu til að setja upp samstillingu</translation>
 <translation id="7314734791127433392">Ekki tókst að athuga aðgangsorð</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Flipar og flipahópar sem hafa ekki verið notaðir í einn dag eða lengur}one{Flipar og flipahópar sem hafa ekki verið notaðir í # dag eða lengur}other{Flipar og flipahópar sem hafa ekki verið notaðir í # daga eða lengur}}</translation>
 <translation id="7324354302972299151">Senda „Do Not Track“ beiðni</translation>
 <translation id="7333041109965360609">Hætt áskrift að tilkynningum</translation>
 <translation id="7336259382292148213">Tilkynningar eru í góðu lagi</translation>

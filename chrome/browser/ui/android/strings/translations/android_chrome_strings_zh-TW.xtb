@@ -1426,7 +1426,6 @@
 <translation id="7304873321153398381">你目前處於離線狀態，因此 Chrome 無法檢查你的密碼。</translation>
 <translation id="7313188324932846546">輕觸即可設定同步功能</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{閒置 1 天以上的分頁和分頁群組}other{閒置 # 天以上的分頁和分頁群組}}</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
 <translation id="7336259382292148213">通知權限沒有問題</translation>

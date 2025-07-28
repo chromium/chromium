@@ -78,6 +78,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1919950603503897840">Dewis cysylltiadau</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Llun mewn llun awtomatig</translation>
 <translation id="1954597385941141174">Gall gwefannau ofyn am gysylltu â dyfeisiau USB</translation>
 <translation id="1979673356880165407">Gwnewch destun a lluniau yn fwy neu'n llai ar gyfer pob gwefan rydych yn ymweld â hi</translation>
 <translation id="1984937141057606926">Wedi'i ganiatáu, ac eithrio trydydd parti</translation>
@@ -228,6 +229,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3600792891314830896">Distewi gwefannau sy'n chwarae sain</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
 <translation id="3611658447322220736">Gall gwefannau sydd wedi'u cau'n ddiweddar orffen anfon a derbyn data</translation>
+<translation id="3619294456800709762">Gall gwefannau gyrchu llun mewn llun yn awtomatig</translation>
 <translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
 <translation id="3641456520301071208">Gall gwefannau ofyn am eich lleoliad</translation>
 <translation id="3658847490588580244">Taflen waelod porwr diofyn</translation>
@@ -608,6 +610,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8117244575099414087">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio synwyryddion eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio synwyryddion.</translation>
 <translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
+<translation id="8163152278172770963">Peidio â chaniatáu gwefannau i gyrchu llun mewn llun yn awtomatig</translation>
 <translation id="8168435359814927499">Cynnwys</translation>
 <translation id="818487310457576362">Llusgwch o ochr y sgrîn i adael y sgrin lawn.</translation>
 <translation id="8186479265534291036">Gwefan ddim yn gweithio? Mae cwcis trydydd parti wedi'u rhwystro</translation>
@@ -699,6 +702,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="913657688200966289">Trowch ganiatadau ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Caniateir hysbysiadau</translation>
 <translation id="9138217887606523162">Y lefel chwyddo yw <ph name="ZOOM_LEVEL" /> %% ar hyn o bryd</translation>
+<translation id="915112772806845021">Mae gwefannau yn defnyddio'r nodwedd hon i gyrchu llun mewn llun yn awtomatig. Mae hyn yn eich galluogi i barhau i wylio fideo, tra'n rhyddhau eich sgrîn ar gyfer tasgau eraill.</translation>
 <translation id="9156722768168878035">Gadewch i Chrome ddangos eich tabiau diweddar yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="9162462602695099906">Mae'r dudalen hon yn beryglus</translation>
 <translation id="9182556968660520230">Peidio â chaniatáu i wefannau chwarae cynnwys gwarchodedig</translation>

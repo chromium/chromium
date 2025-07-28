@@ -1425,7 +1425,6 @@
 <translation id="7304873321153398381">အော့ဖ်လိုင်း။ Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။</translation>
 <translation id="7313188324932846546">စင့်ခ်လုပ်ခြင်းကို စနစ်ထည့်သွင်းရန် တို့ပါ</translation>
 <translation id="7314734791127433392">စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{၁ ရက်နှင့်အထက်ကြာ အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}other{# ရက်နှင့်အထက်ကြာ အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}}</translation>
 <translation id="7324354302972299151">“Do Not Track” တောင်းဆိုမှု ပို့ရန်</translation>
 <translation id="7333041109965360609">အကြောင်းကြားချက်များ မှာယူမှု ရပ်ဆိုင်းထားသည်</translation>
 <translation id="7336259382292148213">အကြောင်းကြားချက်များ အဆင်ပြေပုံပေါ်သည်</translation>
@@ -1640,6 +1639,7 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}other{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}}</translation>
 <translation id="8209050860603202033">ပုံဖွင့်</translation>
 <translation id="8210770465353466621">သင့်တဘ်များကို ဤနေရာတွင် ပြပါမည်</translation>
+<translation id="8212799748012101103">တဘ်ရှာဖွေမှု ဖွင့်နိုင်သည်</translation>
 <translation id="8215740705341534369">အရန်စာမျက်နှာ</translation>
 <translation id="8218622182176210845">သင့်အကောင့်ကို စီမံခန့်ခွဲခြင်း</translation>
 <translation id="8221401890884589479">သင်မလိုလားသည့် ဝဘ်ဆိုက်များကို ပိတ်ထားနိုင်သည်။ ရက် ၃၀ ကျော်ပြီဖြစ်သော ဝဘ်ဆိုက်များကိုလည်း Chrome က အလိုအလျောက်ဖျက်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>

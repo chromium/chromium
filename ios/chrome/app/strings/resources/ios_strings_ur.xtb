@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">آپ جو پروڈکٹس ٹریک کرتے ہیں ان کے لیے قیمت میں کمی کے الرٹس وصول کریں۔</translation>
 <translation id="1521366073263497277">اپنے ٹیب گرڈ پر جائیں</translation>
 <translation id="1521774566618522728">آج فعال کیا گیا</translation>
+<translation id="1523567067736644845">پاس ورڈ دکھانے کے لیے غیر مقفل کریں</translation>
 <translation id="1524563461097350801">نہیں شکریہ</translation>
 <translation id="1531038290222364269">ٹیبز دکھائیں</translation>
 <translation id="1536390784834419204">صفحہ کا ترجمہ کریں</translation>
@@ -536,7 +537,6 @@
 <translation id="3081338492074632642">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے</translation>
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="309710370695886264">آپ کے پاس 1 دوبارہ استعمال کردہ پاس ورڈ ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔</translation>
-<translation id="3102790820790869053">حالیہ ٹیبز تلاش کریں</translation>
 <translation id="3106258548858559536">ریڈنگ موڈ آف کریں</translation>
 <translation id="3106690631878101882">ترجمہ کریں کو چھپائیں</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> کا پاس ورڈ حذف کریں؟</translation>
@@ -647,7 +647,6 @@
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3587885837929752825">‏آپ کی تنظیم یہ محدود کرتی ہے کہ آپ اپنے Google اکاؤنٹ میں کیا محفوظ کر سکتے ہیں۔</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
-<translation id="3591006724568464696">حالیہ ٹیبز دستیاب نہیں ہیں</translation>
 <translation id="3595252146048399851">‏آپ کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کس چیز کی مطابقت پذیری کرنی ہے۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="3596414637720633074">پوشیدگی میں فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="3602260545951981695">"بہتر کردہ حفاظت" منتخب کریں</translation>
@@ -891,7 +890,6 @@
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> کی پیروی ختم کریں کو چھپائیں</translation>
 <translation id="461440297010471931">‏Google کے ذریعے تلاش کیا جا رہا ہے</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
-<translation id="4619615317237390068">دیگر آلات کے ٹیبز</translation>
 <translation id="4621768135601674446">ریڈنگ موڈ کے اختیارات کھولیں</translation>
 <translation id="4624080227980645783">نئی پوشیدگی ونڈو</translation>
 <translation id="4627107755957573804">سائٹس اور ایپس کو پاس کیز استعمال کرنے کے لیے موجودہ اکاؤنٹس کو اپ گریڈ کرنے کی اجازت دیں</translation>
@@ -1815,7 +1813,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8079530767338315840">دہرائیں</translation>
 <translation id="8079602123447022758">یہ ترتیب نظم کردہ ہے، مزید معلومات کیلئے دوبار تھپتھپائیں</translation>
-<translation id="8080028325999236607">سبھی ٹیبز بند کریں</translation>
 <translation id="8084285576995584326">‏اپنے Google اکاؤنٹ کے ڈیٹا کو کنٹرول کریں</translation>
 <translation id="809543534949702122">تلاش کی سرگزشت</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{وہ ٹیبز جنہیں آپ استعمال نہیں کرتے ہیں {COUNT} دن کے بعد یہاں منتقل ہو جاتے ہیں}other{وہ ٹیبز جنہیں آپ استعمال نہیں کرتے ہیں {COUNT} دن کے بعد یہاں منتقل ہو جاتے ہیں}}</translation>
@@ -2008,8 +2005,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8796634520835503150">ریڈنگ موڈ دستیاب ہے</translation>
 <translation id="8803526663383843427">آن ہونے پر</translation>
 <translation id="8803639129939845298">محفوظ</translation>
-<translation id="8806823403540278281">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔ ٹیبز پوشیدگی وضع میں محفوظ نہیں ہیں۔
-<ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">مجھے بعد میں یاد دلائیں</translation>
 <translation id="8814719628147284151">جاری رکھیں</translation>
 <translation id="8819155700324279105">آن لائن خطرات سے تحفظ کی ایک اضافی پرت شامل کریں</translation>

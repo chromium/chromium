@@ -1426,7 +1426,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7304873321153398381">Hors connexion. Chrome ne parvient pas à vérifier vos mots de passe.</translation>
 <translation id="7313188324932846546">Appuyez ici pour configurer la synchronisation</translation>
 <translation id="7314734791127433392">Impossible de vérifier les mots de passe</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Onglets et groupes d'onglets inutilisés depuis au moins 1 jour}one{Onglets et groupes d'onglets inutilisés depuis au moins # jour}other{Onglets et groupes d'onglets inutilisés depuis au moins # jours}}</translation>
 <translation id="7324354302972299151">Envoyer une requête "Do Not Track"</translation>
 <translation id="7333041109965360609">Désabonné des notifications</translation>
 <translation id="7336259382292148213">Aucun problème détecté dans les notifications</translation>

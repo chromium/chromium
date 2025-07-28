@@ -1426,7 +1426,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
 <translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7314734791127433392">Can't check passwords</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Tabs and tab groups not used for 1 day or more}other{Tabs and tab groups not used for # days or more}}</translation>
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7333041109965360609">Unsubscribed from notifications</translation>
 <translation id="7336259382292148213">Notifications look good</translation>

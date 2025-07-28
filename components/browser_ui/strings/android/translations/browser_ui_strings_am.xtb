@@ -78,6 +78,7 @@
 <translation id="1915307458270490472">ዝጋ</translation>
 <translation id="1919950603503897840">ዕውቂያዎችን ምረጥ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">የራስ-ሰር ስዕል-ላይ-ስዕል</translation>
 <translation id="1954597385941141174">ጣቢያዎች ከዩኤስቢ መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላሉ</translation>
 <translation id="1979673356880165407">የሚጎበኟቸው ሁሉም ጣቢያዎች ላይ ጽሁፍ እና ምስሎችን ይበልጥ ትልቅ ወይም ትንሽ ያድርጉ</translation>
 <translation id="1984937141057606926">የተፈቀደ፣ ከሶስተኛ ወገን በቀር</translation>
@@ -228,6 +229,7 @@
 <translation id="3600792891314830896">ድምጽን በሚያጫውቱ ጣቢያዎች ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3611658447322220736">በቅርቡ የተዘጉ ጣቢያዎች ውሂብን መላክ እና መቀበል መጨረስ ይችላሉ</translation>
+<translation id="3619294456800709762">ጣቢያዎች በራስ-ሰር ስዕል-ላይ-ስዕል መግባት ይችላሉ</translation>
 <translation id="3628308229821498208">የተጠቆሙ ፍለጋዎች</translation>
 <translation id="3641456520301071208">ጣቢያዎች አካባቢዎን ሊጠይቁ ይችላሉ</translation>
 <translation id="3658847490588580244">የነባሪ አሳሽ የግርጌ ሉህ</translation>
@@ -608,6 +610,7 @@
 <translation id="8117244575099414087">ሲበራ፣ ጣቢያዎች የመሣሪያዎን ዳሳሾች መጠቀም ይችላሉ። ሲጠፋ፣ ጣቢያዎች ዳሳሾችን መጠቀም አይችሉም።</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
+<translation id="8163152278172770963">ጣቢያዎች በራስ-ሰር ስዕል-ላይ-ስዕል ውስጥ እንዲገቡ አይፍቀዱ</translation>
 <translation id="8168435359814927499">ይዘት</translation>
 <translation id="818487310457576362">ከሙሉ ገፅ ዕይታ ለመውጣት ከማያ ገፁ ጎን ላይ ይጎትቱ።</translation>
 <translation id="8186479265534291036">ጣቢያው እየሰራ አይደለም? የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
@@ -699,6 +702,7 @@
 <translation id="913657688200966289">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃዶችን ያብሩ።</translation>
 <translation id="9138037198177304356">ማሳወቂያዎች ይፈቀዳሉ</translation>
 <translation id="9138217887606523162">የአሁን ማጉላት <ph name="ZOOM_LEVEL" /> %% ነው</translation>
+<translation id="915112772806845021">ጣቢያዎች በራስ-ሰር ወደ ስዕል-ላይ-ስዕል ለመግባት ይህን ባህሪ ይጠቀማሉ። ይህ ማያ ገፅዎን ለሌሎች ተግባሮች ነፃ በሚያደርጉበት ወቅት ቪድዮ ማየት እንዲቀጥሉ ያስችልዎታል።</translation>
 <translation id="9156722768168878035">Chrome የቅርብ ጊዜ ትሮችን በመሣሪያዎ መተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ እንዲያሳይ ይፍቀዱለት። ይህን በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="9162462602695099906">ይህ ገፅ አደገኛ ነው</translation>
 <translation id="9182556968660520230">ጣቢያዎች የተጠበቀ ይዘትን እንዲጫወቱ አይፍቀዱ</translation>

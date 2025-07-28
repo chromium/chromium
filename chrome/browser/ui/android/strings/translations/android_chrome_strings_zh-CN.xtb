@@ -1424,7 +1424,6 @@
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7314734791127433392">无法检查密码</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{1 天或更长时间未使用的标签页和标签页分组}other{# 天或更长时间未使用的标签页和标签页分组}}</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
 <translation id="7333041109965360609">已退订通知</translation>
 <translation id="7336259382292148213">通知权限正常</translation>

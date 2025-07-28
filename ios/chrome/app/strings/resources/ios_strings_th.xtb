@@ -536,7 +536,6 @@
 <translation id="3081338492074632642">ตรวจสอบว่ารหัสผ่านที่คุณจะบันทึกตรงกับรหัสผ่านสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="309710370695886264">คุณมีรหัสผ่านที่ใช้ซ้ำ 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
-<translation id="3102790820790869053">ค้นหาในแท็บล่าสุด</translation>
 <translation id="3106258548858559536">ปิดโหมดการอ่าน</translation>
 <translation id="3106690631878101882">ซ่อน "แปลภาษา"</translation>
 <translation id="310900540163454140">ลบรหัสผ่านสำหรับ <ph name="WEBSITE" /> ใช่ไหม</translation>
@@ -647,7 +646,6 @@
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
-<translation id="3591006724568464696">แท็บล่าสุดไม่พร้อมใช้งาน</translation>
 <translation id="3595252146048399851">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /> Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3602260545951981695">เลือก "การปกป้องที่ดียิ่งขึ้น"</translation>
@@ -891,7 +889,6 @@
 <translation id="4611811151908969241">ซ่อน "เลิกติดตาม <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">กำลังค้นหาด้วย Google</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
-<translation id="4619615317237390068">แท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="4621768135601674446">เปิดตัวเลือกโหมดการอ่าน</translation>
 <translation id="4624080227980645783">หน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="4627107755957573804">อนุญาตให้เว็บไซต์และแอปอัปเกรดบัญชีที่มีอยู่เพื่อใช้พาสคีย์</translation>
@@ -1815,7 +1812,6 @@
 <translation id="8076492880354921740">แท็บ</translation>
 <translation id="8079530767338315840">เล่นซ้ำ</translation>
 <translation id="8079602123447022758">การตั้งค่านี้ได้รับการจัดการ แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
-<translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
 <translation id="8084285576995584326">ควบคุมข้อมูลในบัญชี Google ของคุณ</translation>
 <translation id="809543534949702122">ประวัติการค้นหา</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{แท็บที่คุณไม่ได้ใช้งานจะย้ายมาที่นี่หลังจากผ่านไป {COUNT} วัน}other{แท็บที่คุณไม่ได้ใช้งานจะย้ายมาที่นี่หลังจากผ่านไป {COUNT} วัน}}</translation>
@@ -2008,8 +2004,6 @@
 <translation id="8796634520835503150">โหมดการอ่านพร้อมใช้งาน</translation>
 <translation id="8803526663383843427">เมื่อเปิด</translation>
 <translation id="8803639129939845298">ปลอดภัย</translation>
-<translation id="8806823403540278281">องค์กรกำหนดให้คุณท่องเว็บแบบส่วนตัว ระบบจะไม่บันทึกแท็บในโหมดไม่ระบุตัวตน
-<ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">เตือนฉันภายหลัง</translation>
 <translation id="8814719628147284151">ดำเนินการต่อ</translation>
 <translation id="8819155700324279105">เพิ่มการป้องกันภัยคุกคามทางออนไลน์อีกชั้นหนึ่ง</translation>

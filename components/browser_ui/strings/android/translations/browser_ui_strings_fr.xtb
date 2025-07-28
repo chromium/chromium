@@ -78,6 +78,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1919950603503897840">Sélectionner des contacts</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Picture-in-picture automatique</translation>
 <translation id="1954597385941141174">Les sites peuvent demander à se connecter à des appareils USB</translation>
 <translation id="1979673356880165407">Agrandir ou réduire la taille du texte et des images sur tous les sites que vous consultez</translation>
 <translation id="1984937141057606926">Autorisés, sauf cookies tiers</translation>
@@ -228,6 +229,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3600792891314830896">Couper le son des sites</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3611658447322220736">Les sites fermés récemment peuvent terminer l'envoi et la réception de données</translation>
+<translation id="3619294456800709762">Les sites peuvent passer en Picture-in-picture automatiquement</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
 <translation id="3641456520301071208">Les sites peuvent demander votre position</translation>
 <translation id="3658847490588580244">Bottom sheet du navigateur par défaut</translation>
@@ -608,6 +610,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8117244575099414087">Lorsque cette option est activée, les sites peuvent utiliser les capteurs de votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les capteurs.</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8131740175452115882">Confirmer</translation>
+<translation id="8163152278172770963">Ne pas autoriser les sites à passer en Picture-in-picture automatiquement</translation>
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="818487310457576362">Balayez l'écran vers le côté pour quitter le plein écran.</translation>
 <translation id="8186479265534291036">Impossible d'accéder au site ? Les cookies tiers sont bloqués.</translation>
@@ -699,6 +702,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="913657688200966289">Activez les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notifications autorisées</translation>
 <translation id="9138217887606523162">Le zoom actuel est de <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Les sites utilisent cette fonctionnalité pour passer en Picture-in-picture automatiquement. Cela vous permet de continuer à regarder une vidéo tout en libérant votre écran pour d'autres tâches.</translation>
 <translation id="9156722768168878035">Autorisez Chrome à afficher vos onglets récents dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option à tout moment dans les paramètres de Chrome.</translation>
 <translation id="9162462602695099906">Cette page est dangereuse</translation>
 <translation id="9182556968660520230">Ne pas autoriser les sites à lire du contenu protégé</translation>

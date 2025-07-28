@@ -854,6 +854,7 @@
 <translation id="1587275751631642843">‏JavaScript&amp; کونسول</translation>
 <translation id="1587907146729660231">اپنی انگلی سے پاور بٹن کو ٹچ کریں</translation>
 <translation id="1588438908519853928">حسب معمول</translation>
+<translation id="1588772269240419305">لوگو اور نام کی اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="1588870296199743671">لنک کو اس کے ساتھ کھولیں…</translation>
 <translation id="1588919647604819635">کارڈ پر دائیں طرف کلک کریں</translation>
 <translation id="1589055389569595240">ہجے اور گرامر کو دکھائیں</translation>
@@ -1324,6 +1325,7 @@
 <translation id="1912867150686509584">اپنے کیلنڈر پر مزید میٹنگز دیکھیں</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو روکیں}other{آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو روکیں}}</translation>
 <translation id="1913749768968678106">کاسٹ کریں، محفوظ کریں اور اشتراک کریں</translation>
+<translation id="19147273405311768">ٹول بار کو ڈیفالٹ ترتیبات پر ری سیٹ کریں</translation>
 <translation id="1915073950770830761">کینری</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1915734383465415025">اسٹور نمبر</translation>
@@ -3005,6 +3007,7 @@
 <translation id="3060952009917586498">آلہ کی زبان تبدیل کریں۔ موجودہ زبان <ph name="LANGUAGE" /> ہے۔</translation>
 <translation id="3060987956645097882">‏ہم آپ کے فون کے ساتھ کنکشن قائم کرنے سے قاصر تھے۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
 <translation id="3061302636956643119">‏پروسیسنگ کے لیے ٹیکسٹ Google کو بھیجا جائے گا۔</translation>
+<translation id="306166624240243643">‏نام اور URL اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="3064871050034234884">سائٹس آواز چلا سکتی ہیں</translation>
 <translation id="3065041951436100775">ٹیب بند ہونے سے متعلق تاثرات۔</translation>
 <translation id="3065522099314259755">کی بورڈ دہرانے میں تاخیر</translation>
@@ -3047,6 +3050,7 @@
 <translation id="3100071818310370858">‏مقام کا استعمال کریں۔ مقام کی اجازت والی ایپس اور سروسز کو اس آلے کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK1" />مقام کے بارے میں مزید جانیں<ph name="BEGIN_LINK1_END" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">مدھم روشنی</translation>
 <translation id="3101709781009526431">تاریخ اور وقت</translation>
+<translation id="3102309003841389927">لوگو اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="310297983047869047">پچھلی سلائیڈ</translation>
 <translation id="3103451787721578293">براہ کرم اس ڈیٹا کو اپ لوڈ کرنے کی وجہ درج کریں:</translation>
 <translation id="3103512663951238230">‏Alt + کلک</translation>
@@ -6043,6 +6047,7 @@
 <translation id="5225324770654022472">ایپس شارٹ کٹ دکھائیں</translation>
 <translation id="52254442782792731">موجودہ نظر آنے کی ترتیب اب بھی سیٹ نہیں ہے</translation>
 <translation id="5225463052809312700">کیمرا آن کریں</translation>
+<translation id="5226253862147382094">‏لوگو اور URL اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="5226514125747186">سائٹ آئیکنز کے ارد گرد ایک نقطے والا دائرہ ظاہر ہوتا ہے۔ <ph name="BEGIN_LINK" />غیر فعال ٹیبز کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">ویب سائٹس کو آپ کا مقام استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="5227679487546032910">ڈیفالٹ نیلگوں سبز اوتار</translation>
@@ -7356,6 +7361,7 @@
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{ایکسٹینشن ہٹائیں؟}other{# ایکسٹینشنز ہٹائیں؟}}</translation>
 <translation id="6180510783007738939">لائن ٹول</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> کے لئے آپ کون سی پاس کی استعمال کرنا چاہتے ہیں؟</translation>
+<translation id="6181218116951226898">ایپس کبھی کبھی اپنی برانڈنگ کو اپ ڈیٹ کرتی ہیں۔ اپ ڈیٹ کرنے سے پہلے یہ یقینی بنانے کے لیے تمام تبدیلیوں کا جائزہ لیں کہ آپ ان کے ساتھ سہولت بخش ہیں۔</translation>
 <translation id="6181431612547969857">ڈاؤن لوڈ مسدود ہوگیا</translation>
 <translation id="6183369864942961155">خودکار ہکی/گہری تھیم</translation>
 <translation id="6184099524311454384">ٹیبز تلاش کریں</translation>
@@ -7429,6 +7435,7 @@
 <translation id="6234108445915742946">‏Chrome کی سروس کی شرائط 31 مارچ کو بدل رہی ہیں</translation>
 <translation id="6234474535228214774">انسٹال زیر التوا ہے</translation>
 <translation id="6235208551686043831">‏آلہ کا کیمرا آن ہو گیا ہے۔ براہ کرم اپنے eSIM کے QR کوڈ کو کیمرے کے سامنے رکھیں۔</translation>
+<translation id="6237256594069101884">‏‫URL اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="6237342324375264347">‫<ph name="SHARE_STATE" /> گروپ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">اسٹائلس نوٹ لینے والی ایپ</translation>
 <translation id="6237481151388361546">اپنا انٹرنیٹ کنکشن تبدیل کریں اور "دوبارہ کوشش کریں" کو منتخب کریں یا محدود منظر اور ترمیم کے اختیارات استعمال کرنے کے لیے "بنیادی ایڈیٹر میں کھولیں" کو منتخب کریں۔</translation>
@@ -8282,6 +8289,7 @@
 <translation id="6840155290835956714">بھیجنے سے پہلے پوچھیں</translation>
 <translation id="6840184929775541289">ایک توثیقی ادارہ نہیں ہے</translation>
 <translation id="6840214587087739194">پتہ حذف ہو گیا</translation>
+<translation id="6841076158433142214">جب یہ ایپس آپ کی اسکرین کو ریکارڈ کرنے کے لیے استعمال کی جائیں گی تو آپ کو مطلع نہیں کیا جائے گا:</translation>
 <translation id="6841143363521180029">مرموز کردہ</translation>
 <translation id="6841186874966388268">خرابیاں</translation>
 <translation id="6842135459748401207">صرف <ph name="USER_EMAIL" /> میں سائن ان کردہ آلات</translation>
@@ -8741,6 +8749,7 @@
 <translation id="7181329571386134105">‏آپ کی منظوری کے بغیر <ph name="CHILD_NAME" /> کو مستقبل کی ایکسٹینشنز انسٹال کرنے کی اجازت دینے کے لیے، اپنے آلے پر Family Link ایپ کھولیں اور <ph name="CHILD_NAME" /> کے Google Chrome کی ترتیبات کو اپ ڈیٹ کریں۔</translation>
 <translation id="7181840534454431748">‫<ph name="OWNER_FIRST_NAME" /> کے ساتھ ٹیب گروپ میں شامل ہوں
             {NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" />}=1{ کے ساتھ ٹیب گروپ میں شامل ہوں <ph name="OWNER_FIRST_NAME" /> اور # دیگر}other{کے ساتھ ٹیب گروپ میں شامل ہوں <ph name="OWNER_FIRST_NAME" /> اور # دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}}</translation>
+<translation id="7181976109296206547">‏لوگو، نام اور URL اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="7182051712900867547">مختلف اکاؤنٹ استعمال کریں</translation>
 <translation id="7182063559013288142">فوری ہاٹ اسپاٹ</translation>
 <translation id="7182791023900310535">اپنا پاس ورڈ منتقل کریں</translation>
@@ -8916,6 +8925,7 @@
 <translation id="7312040805247765153">ایپ کو انسٹال نہیں کیا جا سکا</translation>
 <translation id="7312210124139670355">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="7313539585802573958">کی بورڈ بیک لائٹ کا رنگ</translation>
+<translation id="7314865262803554456">ریکارڈنگ شروع ہونے پر، آپ کو مطلع نہیں کیا جائے گا۔</translation>
 <translation id="7314989823816739632">رومانی</translation>
 <translation id="7317342082064136423">اپنے اکاؤنٹ کی توثیق کریں</translation>
 <translation id="7317831949569936035">اسکول میں اندراج</translation>
@@ -11449,6 +11459,7 @@
 <translation id="9033765790910064284">بہرصورت جاری رکھیں</translation>
 <translation id="9033857511263905942">&amp;پیسٹ کریں</translation>
 <translation id="903480517321259405">‏PIN دوبارہ ٹائپ کریں</translation>
+<translation id="9035157477209989051">جب یہ ایپس آپ کی اسکرین کو ریکارڈ کرنے کے لیے استعمال کی جائیں گی تو آپ کو مطلع کیا جائے گا:</translation>
 <translation id="9036484080057916082">سائن کردہ سرٹیفیکیٹ کی ٹائم سٹیمپ کی فہرست</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> نام والے بلوٹوتھ آلے سے منسلک کیا گیا</translation>
 <translation id="9037640663275993951">‏اس آلے پر VM چلانے کی اجازت نہیں ہے</translation>

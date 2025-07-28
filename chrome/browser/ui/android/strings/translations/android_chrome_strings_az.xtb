@@ -1424,7 +1424,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7304873321153398381">Oflayn. Chrome parollarınızı yoxlaya bilmir.</translation>
 <translation id="7313188324932846546">Sinxronlaşdırmanı ayarlamaq üçün toxunun</translation>
 <translation id="7314734791127433392">Parolları yoxlamaq olmur</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Tab və tab qrupları 1 gün və ya daha çox istifadə edilməyib}other{Tab və tab qrupları # gün və ya daha çox istifadə edilməyib}}</translation>
 <translation id="7324354302972299151">"Do Not Track" sorğusu göndərin</translation>
 <translation id="7333041109965360609">Bildirişlərə abunəlik dayandırıldı</translation>
 <translation id="7336259382292148213">Bildirişlər təhlükəsiz görünür</translation>

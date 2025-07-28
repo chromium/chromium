@@ -1426,7 +1426,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7304873321153398381">Está offline. O Chrome não consegue verificar as suas palavras-passe.</translation>
 <translation id="7313188324932846546">Toque para configurar a sincronização.</translation>
 <translation id="7314734791127433392">Não é possível verificar as palavras-passe</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Separadores e grupos de separadores que não são usados há 1 dia ou mais}other{Separadores e grupos de separadores não usados há # dias ou mais}}</translation>
 <translation id="7324354302972299151">Enviar um pedido "Do Not Track"</translation>
 <translation id="7333041109965360609">Anulou a subscrição de notificações</translation>
 <translation id="7336259382292148213">As notificações parecem estar corretas</translation>

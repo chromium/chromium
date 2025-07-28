@@ -536,7 +536,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3081338492074632642">Make sure that the password that you are saving matches your password for <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="309710370695886264">You have one reused password. Fix it now to stay safe.</translation>
-<translation id="3102790820790869053">Search recent tabs</translation>
 <translation id="3106258548858559536">Turn off reading mode</translation>
 <translation id="3106690631878101882">Hide Translate</translation>
 <translation id="310900540163454140">Delete password for <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
 <translation id="3587885837929752825">Your organisation limits what you can save in your Google Account.</translation>
 <translation id="3588820906588687999">Open image in new tab</translation>
-<translation id="3591006724568464696">Recent tabs are unavailable</translation>
 <translation id="3595252146048399851">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />. Google may personalise Search and other services based on your history.</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3602260545951981695">Choose 'Enhanced protection'</translation>
@@ -891,7 +889,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4611811151908969241">Hide Unfollow <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Searching with Google</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
-<translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4621768135601674446">Open reading mode options</translation>
 <translation id="4624080227980645783">New Incognito window</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
@@ -1815,7 +1812,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079530767338315840">Repeat</translation>
 <translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
-<translation id="8080028325999236607">Close All Tabs</translation>
 <translation id="8084285576995584326">Control your Google Account data</translation>
 <translation id="809543534949702122">Search history</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Tabs that you don't use get moved here after {COUNT} day}other{Tabs that you don't use get moved here after {COUNT} days}}</translation>
@@ -2008,8 +2004,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8796634520835503150">Reading mode available</translation>
 <translation id="8803526663383843427">When on</translation>
 <translation id="8803639129939845298">Secure</translation>
-<translation id="8806823403540278281">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode.
-<ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Remind me later</translation>
 <translation id="8814719628147284151">Continue</translation>
 <translation id="8819155700324279105">Add an extra layer of protection against online threats</translation>

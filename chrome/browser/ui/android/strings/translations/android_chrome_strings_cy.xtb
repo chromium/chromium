@@ -1427,7 +1427,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7304873321153398381">All-lein. Ni all Chrome wirio'ch cyfrineiriau.</translation>
 <translation id="7313188324932846546">Tapiwch i osod cysoni</translation>
 <translation id="7314734791127433392">Methu â gwirio cyfrineiriau</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Tabiau a grwpiau tabiau heb eu defnyddio ers 1 diwrnod neu fwy}zero{Tabiau a grwpiau tabiau heb eu defnyddio ers # diwrnod neu fwy}two{Tabiau a grwpiau tabiau heb eu defnyddio ers # ddiwrnod neu fwy}few{Tabiau a grwpiau tabiau heb eu defnyddio ers # diwrnod neu fwy}many{Tabiau a grwpiau tabiau heb eu defnyddio ers # diwrnod neu fwy}other{Tabiau a grwpiau tabiau heb eu defnyddio ers # diwrnod neu fwy}}</translation>
 <translation id="7324354302972299151">Anfon cais "Do Not Track"</translation>
 <translation id="7333041109965360609">Wedi dad-danysgrifio o hysbysiadau</translation>
 <translation id="7336259382292148213">Mae hysbysiadau'n edrych yn dda</translation>

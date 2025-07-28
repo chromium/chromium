@@ -1426,7 +1426,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7304873321153398381">Brez povezave. Chrome ne more preveriti vaših gesel.</translation>
 <translation id="7313188324932846546">Dotaknite se, če želite nastaviti sinhronizacijo.</translation>
 <translation id="7314734791127433392">Gesel ni mogoče preveriti</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Zavihki in skupine zavihkov, ki jih niste uporabljali 1 dan ali več}one{Zavihki in skupine zavihkov, ki jih niste uporabljali # dan ali več}two{Zavihki in skupine zavihkov, ki jih niste uporabljali # dneva ali več}few{Zavihki in skupine zavihkov, ki jih niste uporabljali # dni ali več}other{Zavihki in skupine zavihkov, ki jih niste uporabljali # dni ali več}}</translation>
 <translation id="7324354302972299151">Pošlji zahtevo »Do Not Track«</translation>
 <translation id="7333041109965360609">Odjavljeni ste od prejemanja obvestil</translation>
 <translation id="7336259382292148213">Obvestila so videti v redu</translation>

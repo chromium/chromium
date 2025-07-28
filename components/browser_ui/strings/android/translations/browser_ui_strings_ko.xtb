@@ -78,6 +78,7 @@
 <translation id="1915307458270490472">종료</translation>
 <translation id="1919950603503897840">연락처 선택</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">자동 PIP 모드</translation>
 <translation id="1954597385941141174">사이트에서 USB 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="1979673356880165407">방문하는 모든 사이트에서 텍스트 및 이미지 확대 또는 축소합니다.</translation>
 <translation id="1984937141057606926">타사 쿠키만 제외하고 허용</translation>
@@ -228,6 +229,7 @@
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3611658447322220736">최근에 닫은 사이트에서 데이터 송수신을 완료할 수 있음</translation>
+<translation id="3619294456800709762">사이트에서 PIP 모드를 자동으로 시작할 수 있음</translation>
 <translation id="3628308229821498208">추천 검색어</translation>
 <translation id="3641456520301071208">사이트에서 위치 정보를 요청할 수 있음</translation>
 <translation id="3658847490588580244">기본 브라우저 하단 시트</translation>
@@ -608,6 +610,7 @@
 <translation id="8117244575099414087">사용 설정하면 사이트에서 기기의 센서를 사용할 수 있습니다. 사용 중지하면 사이트에서 센서를 사용할 수 없습니다.</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8131740175452115882">확인</translation>
+<translation id="8163152278172770963">사이트에서 PIP 모드를 자동으로 입력하도록 허용하지 않음</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="818487310457576362">전체 화면을 종료하려면 화면 측면에서 드래그하세요.</translation>
 <translation id="8186479265534291036">사이트가 작동하지 않나요? 서드 파티 쿠키가 차단되었습니다.</translation>
@@ -699,6 +702,7 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 허용하세요.</translation>
 <translation id="9138037198177304356">알림 허용됨</translation>
 <translation id="9138217887606523162">현재 확대/축소 레벨은 <ph name="ZOOM_LEVEL" />%%입니다</translation>
+<translation id="915112772806845021">사이트에서는 이 기능을 사용하여 PIP 모드로 자동 전환합니다. 이렇게 하면 동영상을 계속 시청하면서 다른 작업을 위한 화면을 확보할 수 있습니다.</translation>
 <translation id="9156722768168878035">Chrome에서 기기의 앱 목록과 검색 결과에 최근 탭을 표시하도록 허용합니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>
 <translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>

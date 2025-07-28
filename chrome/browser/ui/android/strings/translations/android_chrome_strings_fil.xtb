@@ -1426,7 +1426,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7304873321153398381">Offline. Hindi masuri ng Chrome ang iyong mga password.</translation>
 <translation id="7313188324932846546">Mag-tap para i-set up ang pag-sync</translation>
 <translation id="7314734791127433392">Hindi masuri ang mga password</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Hindi ginamit ang mga tab at grupo ng tab sa loob ng 1 araw o higit pa}one{Hindi ginamit ang mga tab at grupo ng tab sa loob ng # araw o higit pa}other{Hindi ginamit ang mga tab at grupo ng tab sa loob ng # na araw o higit pa}}</translation>
 <translation id="7324354302972299151">Magpadala ng request na “Do Not Track”</translation>
 <translation id="7333041109965360609">Na-unsubscribe sa mga notification</translation>
 <translation id="7336259382292148213">Mukhang maayos ang mga notification</translation>

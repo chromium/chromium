@@ -1426,7 +1426,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7304873321153398381">Offline. Chrome nie może sprawdzić Twoich haseł.</translation>
 <translation id="7313188324932846546">Kliknij, by skonfigurować synchronizację</translation>
 <translation id="7314734791127433392">Nie udało się sprawdzić haseł</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Karty i grupy kart nieużywane od co najmniej 1 dnia}few{Karty i grupy kart nieużywane od co najmniej # dni}many{Karty i grupy kart nieużywane od co najmniej # dni}other{Karty i grupy kart nieużywane od co najmniej # dnia}}</translation>
 <translation id="7324354302972299151">Wysyłaj żądanie „Do Not Track”</translation>
 <translation id="7333041109965360609">Zrezygnowano z otrzymywania powiadomień</translation>
 <translation id="7336259382292148213">Powiadomienia wyglądają dobrze</translation>

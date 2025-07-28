@@ -78,6 +78,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1919950603503897840">Hautatu kontaktuak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Pantaila txiki gainjarri automatikoa</translation>
 <translation id="1954597385941141174">Webguneek USB bidezko gailuetara konektatzea eska dezakete</translation>
 <translation id="1979673356880165407">Handitu edo txikitu testua eta irudiak bisitatzen dituzun webgune guztietan</translation>
 <translation id="1984937141057606926">Onartuta, hirugarrenenak izan ezik</translation>
@@ -228,6 +229,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="3600792891314830896">Desaktibatu soinua erreproduzitzen duten webguneen audioa</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3611658447322220736">Berriki itxitako webguneek datuak bidaltzen eta jasotzen amai dezakete</translation>
+<translation id="3619294456800709762">Webguneek automatikoki ireki dezakete pantaila txiki gainjarria</translation>
 <translation id="3628308229821498208">Bilaketa iradokiak</translation>
 <translation id="3641456520301071208">Webguneek kokapena eska dezakete</translation>
 <translation id="3658847490588580244">Pantailaren behealdean ainguratutako orria, arakatzaile lehenetsiari buruzkoa</translation>
@@ -608,6 +610,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="8117244575099414087">Aktibatuta dagoenean, webguneek gailuaren sentsoreak erabil ditzakete. Desaktibatuta dagoenean, webguneek ezin dute erabili sentsorerik.</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8131740175452115882">Berretsi</translation>
+<translation id="8163152278172770963">Ez eman pantaila txiki gainjarria automatikoki irekitzeko baimenik webguneei</translation>
 <translation id="8168435359814927499">Edukia</translation>
 <translation id="818487310457576362">Pantaila osotik irteteko, arrastatu pantailaren ertzetik.</translation>
 <translation id="8186479265534291036">Ez al du funtzionatzen webguneak? Hirugarrenen cookieak blokeatuta daude.</translation>
@@ -699,6 +702,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="913657688200966289">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimenak <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Eman da jakinarazpenak bidaltzeko baimena</translation>
 <translation id="9138217887606523162">Oraingo zooma: %% <ph name="ZOOM_LEVEL" /></translation>
+<translation id="915112772806845021">Webguneek eginbide hau erabiltzen dute pantaila txiki gainjarria automatikoki irekitzeko. Horrela bideoak ikusten jarrai dezakezu, eta, aldi berean, zure pantaila beste zeregin batzuetarako libre geratzen da.</translation>
 <translation id="9156722768168878035">Eman azkenaldiko fitxak gailuko aplikazioen zerrendan eta bilaketa-emaitzetan erakusteko baimena Chrome-ri. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="9162462602695099906">Orri hau arriskutsua da</translation>
 <translation id="9182556968660520230">Ez eman eduki babestua erreproduzitzeko baimena webguneei</translation>

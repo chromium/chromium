@@ -536,7 +536,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3081338492074632642">Asegúrate de que o contrasinal que gardas coincida co de <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Tes 1 contrasinal reutilizado. Cámbiao xa para non correr riscos.</translation>
-<translation id="3102790820790869053">Fai buscas nas pestanas recentes</translation>
 <translation id="3106258548858559536">Desactivar modo de lectura</translation>
 <translation id="3106690631878101882">Ocultar Traducir</translation>
 <translation id="310900540163454140">Queres eliminar o contrasinal de <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3581564640715911333">Ofrece a tradución de páxinas noutros idiomas</translation>
 <translation id="3587885837929752825">A túa organización limita o que podes gardar na túa Conta de Google.</translation>
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
-<translation id="3591006724568464696">As pestanas recentes non están dispoñibles</translation>
 <translation id="3595252146048399851">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="3602260545951981695">Escolle Protección mellorada</translation>
@@ -891,7 +889,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4611811151908969241">Ocultar Deixar de seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Realizando buscas con Google</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
-<translation id="4619615317237390068">Pestanas doutros dispositivos</translation>
 <translation id="4621768135601674446">Abrir opcións do modo de lectura</translation>
 <translation id="4624080227980645783">Nova ventá do modo de incógnito</translation>
 <translation id="4627107755957573804">Permite que os sitios e as aplicacións actualicen as contas para poder usar claves de acceso</translation>
@@ -1815,7 +1812,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8079602123447022758">Esta opción de configuración está xestionada polo administrador. Toca dúas veces para obter máis información</translation>
-<translation id="8080028325999236607">Pechar pestanas</translation>
 <translation id="8084285576995584326">Controlar datos da túa Conta de Google</translation>
 <translation id="809543534949702122">Historial de busca</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{As pestanas que non uses moveranse aquí despois de {COUNT} día}other{As pestanas que non uses moveranse aquí despois de {COUNT} días}}</translation>
@@ -2008,8 +2004,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8796634520835503150">Modo de lectura dispoñible</translation>
 <translation id="8803526663383843427">Se a función está activada</translation>
 <translation id="8803639129939845298">Seguro</translation>
-<translation id="8806823403540278281">A túa organización esixe que navegues de forma privada. As pestanas do modo de incógnito non se gardan.
-<ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Lembrarmo máis tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="8819155700324279105">Engade unha capa máis de protección contra as ameazas en liña</translation>

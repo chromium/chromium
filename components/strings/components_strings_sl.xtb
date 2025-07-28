@@ -1209,6 +1209,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3027915437837548462">Slika SVG</translation>
 <translation id="3030331669969285614">Te zastavice preprečijo ali razveljavijo spremembo, ki povzroči težave, in so na voljo samo omejen čas.</translation>
 <translation id="3030542417256082866">Želite shraniti vozilo?</translation>
+<translation id="3033200136993730761">Domači naslov vam lahko pomaga opraviti različne stvari v Googlovih storitvah, na primer pridobiti ustreznejše rezultate iskanja in navodila za pot v Google Zemljevidih. Naslov lahko uredite ali izbrišete <ph name="BEGIN_LINK" />v računu Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3034526003882782781">Pomikanje in povečava/pomanjšava sta dovoljena</translation>
 <translation id="3036894576201005614">Potrebščine za čiščenje doma</translation>
 <translation id="3037177537145227281">Spremljanje cene</translation>
@@ -2916,6 +2917,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5898767305816764989">Gumb za Všeč mi je pritisnite Enter, če želite poslati povratne informacije, ki so vam všeč, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5903264686717710770">Naslov:</translation>
+<translation id="5905671155741555195">Službeni naslov vam lahko pomaga opraviti različne stvari v Googlovih storitvah, na primer pridobiti ustreznejše rezultate iskanja in navodila za pot v Google Zemljevidih. Naslov lahko uredite ali izbrišete <ph name="BEGIN_LINK" />v računu Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizirano)</translation>
 <translation id="5910140988253729859">Razveljavi samodejno izpolnjevanje</translation>
 <translation id="5911020115933784199">Dogodki in sporedi</translation>
@@ -3813,6 +3815,7 @@ Dodatne podrobnosti:
 <translation id="7403392780200267761">Delite ta zavihek z drugimi tako, da delite povezavo, ustvarite kodo QR, ga predvajate oziroma na kak drug način.</translation>
 <translation id="7403591733719184120">Naprava <ph name="DEVICE_NAME" /> je upravljana</translation>
 <translation id="7405878640835614059">Skrbnik <ph name="ENROLLMENT_DOMAIN" /> je namestil aplikacije zaradi dodatnih funkcij. Aplikacije imajo dostop do nekaterih vaših podatkov.</translation>
+<translation id="740691708085211707">Želite službeni naslov odstraniti iz samodejnega izpolnjevanja v Chromu?</translation>
 <translation id="7407424307057130981">&lt;p&gt;To napako boste videli, če imate v računalniku s sistemom Windows programsko opremo Superfish.&lt;/p&gt;
       &lt;p&gt;Upoštevajte ta navodila, če želite začasno onemogočiti programsko opremo, da se boste lahko povezali v splet. Potrebujete skrbniške pravice.&lt;/p&gt;
       &lt;ol&gt;
@@ -3909,6 +3912,7 @@ Dodatne podrobnosti:
 <translation id="7534987659046836932">Kuverta C7</translation>
 <translation id="7535087603100972091">Vrednost</translation>
 <translation id="753556296624075801">Uporablja tehnologijo Google</translation>
+<translation id="753713322968419914">Želite domači naslov odstraniti iz Chromovega samodejnega izpolnjevanja?</translation>
 <translation id="7537536606612762813">Obvezen</translation>
 <translation id="7543525346216957623">Prosi starša</translation>
 <translation id="7546409722674205727">Zagon aplikacije <ph name="APP_NAME" /></translation>

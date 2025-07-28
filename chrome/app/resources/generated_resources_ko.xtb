@@ -855,6 +855,7 @@
 <translation id="1587275751631642843">자바스크립트 콘솔(&amp;J)</translation>
 <translation id="1587907146729660231">전원 버튼을 손가락으로 터치하세요.</translation>
 <translation id="1588438908519853928">일반</translation>
+<translation id="1588772269240419305">로고 및 이름 업데이트 검토</translation>
 <translation id="1588870296199743671">다음으로 링크 열기...</translation>
 <translation id="1588919647604819635">마우스 오른쪽 버튼으로 클릭 카드</translation>
 <translation id="1589055389569595240">영문 철자 및 문법 보기</translation>
@@ -1334,6 +1335,7 @@
 <translation id="1912867150686509584">Calendar에서 더 많은 회의 보기</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭 일시중지}other{브라우저 속도를 저하시키는 탭 일시중지}}</translation>
 <translation id="1913749768968678106">전송, 저장, 공유</translation>
+<translation id="19147273405311768">툴바를 기본 설정으로 재설정</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1915734383465415025">상점 번호</translation>
@@ -3018,6 +3020,7 @@
 <translation id="3060952009917586498">기기 언어를 변경합니다. 현재 언어는 <ph name="LANGUAGE" />입니다.</translation>
 <translation id="3060987956645097882">휴대전화와 연결을 설정할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3061302636956643119">처리를 위해 텍스트가 Google로 전송됩니다.</translation>
+<translation id="306166624240243643">이름 및 URL 업데이트 검토</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065041951436100775">탭 사용 중지 관련 피드백</translation>
 <translation id="3065522099314259755">키보드 반복 지연 시간</translation>
@@ -3060,6 +3063,7 @@
 <translation id="3100071818310370858">위치를 사용합니다. 위치 정보 액세스 권한이 있는 앱 및 서비스가 이 기기의 위치를 사용하도록 허용합니다. Google은 주기적으로 위치 데이터를 수집할 수 있으며, 이 데이터를 익명으로 사용하여 위치 정확도와 위치 기반 서비스를 개선할 수 있습니다. <ph name="BEGIN_LINK1" />위치에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">조명 밝기 줄이기</translation>
 <translation id="3101709781009526431">날짜 및 시간</translation>
+<translation id="3102309003841389927">로고 업데이트 검토</translation>
 <translation id="310297983047869047">이전 슬라이드</translation>
 <translation id="3103451787721578293">이 데이터를 업로드하는 이유를 입력하세요</translation>
 <translation id="3103512663951238230">Alt + 클릭</translation>
@@ -6058,6 +6062,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5225324770654022472">앱 단축키 표시</translation>
 <translation id="52254442782792731">현재 공개 범위가 아직 설정되어 있지 않음</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
+<translation id="5226253862147382094">로고 및 URL 업데이트 검토</translation>
 <translation id="5226514125747186">사이트 아이콘 주위에 점선으로 된 원이 표시됩니다. <ph name="BEGIN_LINK" />비활성 탭에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">웹사이트에서 내 위치를 사용할 수 없습니다.</translation>
 <translation id="5227679487546032910">기본 청록색 아바타</translation>
@@ -7373,6 +7378,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{확장 프로그램을 삭제하시겠습니까?}other{#개의 확장 프로그램을 삭제하시겠습니까?}}</translation>
 <translation id="6180510783007738939">선 도구</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" />에 어떤 패스키를 사용하시겠습니까?</translation>
+<translation id="6181218116951226898">앱에서 브랜딩을 업데이트하는 경우가 있습니다. 업데이트 전에 모든 변경사항을 검토해 변경사항이 적용되어도 괜찮은지 확인하세요.</translation>
 <translation id="6181431612547969857">다운로드 차단됨</translation>
 <translation id="6183369864942961155">밝은 테마/어두운 테마 자동 전환</translation>
 <translation id="6184099524311454384">탭 검색</translation>
@@ -7446,6 +7452,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6234108445915742946">3월 31일부터 Chrome의 서비스 약관이 변경됩니다</translation>
 <translation id="6234474535228214774">설치 대기 중</translation>
 <translation id="6235208551686043831">기기 카메라가 켜졌습니다. 카메라 앞에 eSIM QR 코드를 두세요.</translation>
+<translation id="6237256594069101884">URL 업데이트 검토</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> 그룹 <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">스타일러스 메모 앱</translation>
 <translation id="6237481151388361546">인터넷 연결을 변경하고 '다시 시도'를 선택하거나 '기본 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
@@ -8299,6 +8306,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6840155290835956714">보내기 전에 확인</translation>
 <translation id="6840184929775541289">인증 기관 아님</translation>
 <translation id="6840214587087739194">주소 삭제됨</translation>
+<translation id="6841076158433142214">다음 앱을 사용하여 화면 녹화 시 알림이 전송되지 않습니다.</translation>
 <translation id="6841143363521180029">암호화됨</translation>
 <translation id="6841186874966388268">오류</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" />에 로그인되어 있는 기기만</translation>
@@ -8759,6 +8767,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7181329571386134105"><ph name="CHILD_NAME" />님이 향후에 부모의 승인 없이 확장 프로그램을 설치하도록 허용하려면 기기에서 Family Link 앱을 열고 <ph name="CHILD_NAME" />님의 Chrome 설정을 업데이트하세요.</translation>
 <translation id="7181840534454431748"><ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여
             {NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여}=1{<ph name="OWNER_FIRST_NAME" />님 외 #명이 있는 탭 그룹에 참여}other{<ph name="OWNER_FIRST_NAME" />님 외 #명이 있는 탭 그룹에 참여}}</translation>
+<translation id="7181976109296206547">로고, 이름, URL 업데이트 검토</translation>
 <translation id="7182051712900867547">다른 계정 사용</translation>
 <translation id="7182063559013288142">인스턴트 핫스팟</translation>
 <translation id="7182791023900310535">비밀번호 이동</translation>
@@ -8934,6 +8943,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7312040805247765153">앱을 설치할 수 없음</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7313539585802573958">키보드 백라이트 색상</translation>
+<translation id="7314865262803554456">녹화가 시작될 때 알림이 전송되지 않습니다.</translation>
 <translation id="7314989823816739632">로맨틱</translation>
 <translation id="7317342082064136423">계정 확인</translation>
 <translation id="7317831949569936035">학교 등록</translation>
@@ -11468,6 +11478,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
 <translation id="903480517321259405">PIN 다시 입력</translation>
+<translation id="9035157477209989051">다음 앱을 사용하여 화면 녹화 시 알림이 전송됩니다.</translation>
 <translation id="9036484080057916082">서명된 인증서 타임스탬프 목록</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> 블루투스 기기에 연결되었습니다</translation>
 <translation id="9037640663275993951">허용되지 않는 기기입니다.</translation>

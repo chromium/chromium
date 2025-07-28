@@ -536,7 +536,6 @@
 <translation id="3081338492074632642">請確保您儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3087734570205094154">下方</translation>
 <translation id="309710370695886264">你有 1 個重用密碼。請立即修正以確保安全。</translation>
-<translation id="3102790820790869053">搜尋最近開啟的分頁</translation>
 <translation id="3106258548858559536">關閉「閱讀模式」</translation>
 <translation id="3106690631878101882">隱藏「翻譯」</translation>
 <translation id="310900540163454140">要刪除「<ph name="WEBSITE" />」的密碼嗎？</translation>
@@ -647,7 +646,6 @@
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3587885837929752825">你的機構已限制你可儲存在 Google 帳戶中的內容。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
-<translation id="3591006724568464696">無法使用最近開啟的分頁</translation>
 <translation id="3595252146048399851">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3602260545951981695">選擇「強化保護」</translation>
@@ -891,7 +889,6 @@
 <translation id="4611811151908969241">隱藏「取消追蹤 <ph name="DOMAIN_NAME" />」</translation>
 <translation id="461440297010471931">目前嘅搜尋引擎係 Google</translation>
 <translation id="4619564267100705184">驗證身分</translation>
-<translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4621768135601674446">打開「閱讀模式」選項</translation>
 <translation id="4624080227980645783">新無痕式視窗</translation>
 <translation id="4627107755957573804">允許網站和應用程式將現有帳戶驗證升級為密鑰</translation>
@@ -1815,7 +1812,6 @@
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8079530767338315840">重複播放</translation>
 <translation id="8079602123447022758">呢個設定已經受管理，㩒兩下就可以了解詳情</translation>
-<translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8084285576995584326">控制 Google 帳戶資料</translation>
 <translation id="809543534949702122">在記錄中搜尋</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{未使用的分頁將於 {COUNT} 天後移到這裡}other{未使用的分頁將於 {COUNT} 天後移到這裡}}</translation>
@@ -2008,8 +2004,6 @@
 <translation id="8796634520835503150">可使用閱讀模式</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8803639129939845298">安全</translation>
-<translation id="8806823403540278281">您的機構要求您私密瀏覽內容。在無痕模式下無法儲存分頁。
-<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814719628147284151">繼續</translation>
 <translation id="8819155700324279105">為對抗網上威脅增添多一重安全保障</translation>

@@ -78,6 +78,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="1915307458270490472">Tugatish</translation>
 <translation id="1919950603503897840">Kontaktlarni tanlash</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Avtomatik tasvir ustida tasvir</translation>
 <translation id="1954597385941141174">Saytlar USB qurilmalarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="1979673356880165407">Ochilgan barcha saytlar uchun matn va rasmlarni kattalashtiring yoki kichiklashtiring</translation>
 <translation id="1984937141057606926">Tashqi saytlardan tashqarilarga ruxsat berilgan</translation>
@@ -228,6 +229,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3600792891314830896">Saytlardagi ovozni o‘chirib qo‘yish</translation>
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3611658447322220736">Yaqinda yopilgan saytlar axborot yuborishi va qabul qilishi mumkin</translation>
+<translation id="3619294456800709762">Saytlar tasvir ustida tasvir rejimiga avtomatik kirishi mumkin</translation>
 <translation id="3628308229821498208">Tavsiya etilgan qidiruvlar</translation>
 <translation id="3641456520301071208">Saytlar joylashuv axborotingizni talab qilishi mumkin</translation>
 <translation id="3658847490588580244">Birlamchi brauzer quyi ekrani</translation>
@@ -608,6 +610,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="8117244575099414087">Yoqilsa, saytlar qurilmangiz sensoridan foydalana oladi. Oʻchirilsa, ulardan foydalana olmaydi.</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
+<translation id="8163152278172770963">Saytlarga tasvir ustida tasvir rejimiga avtomatik kirishiga ruxsat berilmasin</translation>
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="818487310457576362">Butun ekran rejimidan chiqish uchun ekranning chap yoki oʻng chekkasini torting.</translation>
 <translation id="8186479265534291036">Sayt ishlamayaptimi? Tashqi cookie fayllar bloklandi</translation>
@@ -699,6 +702,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
 <translation id="9138037198177304356">Bildirishnomalarga kirishga ruxsat berilgan</translation>
 <translation id="9138217887606523162">Joriy zum: <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Saytlar bu funksiyadan tasvir ustida tasvir rejimiga avtomatik kirish uchun foydalanadi. Bu boshqa vazifalar uchun ekranni boʻshatib, videoni tomosha qilishni davom ettirish imkonini beradi.</translation>
 <translation id="9156722768168878035">Chrome oxirgi varaqlarni qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqarishiga ruxsat bering. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="9162462602695099906">Bu sahifa xavfli</translation>
 <translation id="9182556968660520230">Saytlarga himoyalangan kontentni ijro qilishni taqiqlash</translation>

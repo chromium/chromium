@@ -1426,7 +1426,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7304873321153398381">Çevrimdışı. Chrome, şifrelerinizi kontrol edemiyor.</translation>
 <translation id="7313188324932846546">Senkronizasyonu ayarlamak için dokunun</translation>
 <translation id="7314734791127433392">Şifreler kontrol edilemiyor</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{En az 1 gündür kullanılmayan sekmeler ve sekme grupları}other{En az # gündür kullanılmayan sekmeler ve sekme grupları}}</translation>
 <translation id="7324354302972299151">"Do Not Track" isteği gönder</translation>
 <translation id="7333041109965360609">Bildirimlerin aboneliğinden çıkıldı</translation>
 <translation id="7336259382292148213">Bildirimlerde bir sorun görünmüyor</translation>
@@ -1641,6 +1640,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}other{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}}</translation>
 <translation id="8209050860603202033">Resmi Aç</translation>
 <translation id="8210770465353466621">Sekmeleriniz burada gösterilir</translation>
+<translation id="8212799748012101103">Sekme arama özelliğini açın</translation>
 <translation id="8215740705341534369">Yan sayfa</translation>
 <translation id="8218622182176210845">Hesabınızı yönetin</translation>
 <translation id="8221401890884589479">İstemediğiniz siteleri engelleyebilirsiniz. Chrome 30 günden daha uzun süre önce ziyaret edilmiş siteleri de otomatik olarak siler. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

@@ -1426,7 +1426,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7304873321153398381">Estás sen conexión. Chrome non puido comprobar os teus contrasinais.</translation>
 <translation id="7313188324932846546">Toca para configurar a sincronización</translation>
 <translation id="7314734791127433392">Non se puideron comprobar os contrasinais</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Pestanas e grupos de pestanas que leven sen usarse 1 día ou máis}other{Pestanas e grupos de pestanas que leven sen usarse # días ou máis}}</translation>
 <translation id="7324354302972299151">Enviar unha solicitude Do Not Track</translation>
 <translation id="7333041109965360609">Cancelaches a subscrición ás notificacións</translation>
 <translation id="7336259382292148213">Todo en orde coas notificacións</translation>

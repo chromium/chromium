@@ -78,6 +78,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="1915307458270490472">Baigti</translation>
 <translation id="1919950603503897840">Kontaktų pasirinkimas</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Automatinis vaizdas vaizde</translation>
 <translation id="1954597385941141174">Svetainėse gali būti prašoma prisijungti prie USB įrenginių</translation>
 <translation id="1979673356880165407">Padidinkite arba sumažinkite tekstą ir vaizdus visose svetainėse, kuriose lankotės</translation>
 <translation id="1984937141057606926">Leidžiama (išskyrus trečiąsias šalis)</translation>
@@ -228,6 +229,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3600792891314830896">Nutildyti svetaines, kurios leidžia garsą</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3611658447322220736">Neseniai uždarytose svetainėse galima baigti siųsti ir gauti duomenis</translation>
+<translation id="3619294456800709762">Svetainėse galima automatiškai įjungti vaizdo vaizde režimą</translation>
 <translation id="3628308229821498208">Siūlomos paieškos</translation>
 <translation id="3641456520301071208">Svetainės gali klausti jūsų vietovės</translation>
 <translation id="3658847490588580244">Numatytosios naršyklės apatinis lapas</translation>
@@ -608,6 +610,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8117244575099414087">Įjungus svetainėse gali būti naudojami įrenginio jutikliai. Išjungus svetainėse negalima naudoti jutiklių.</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
+<translation id="8163152278172770963">Neleisti svetainėms automatiškai įjungti vaizdo vaizde režimo</translation>
 <translation id="8168435359814927499">Turinys</translation>
 <translation id="818487310457576362">Vilkite nuo ekrano šono, kad išeitumėte iš viso ekrano režimo.</translation>
 <translation id="8186479265534291036">Neveikia svetainė? Trečiųjų šalių slapukai užblokuoti</translation>
@@ -699,6 +702,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Pranešimai leidžiami</translation>
 <translation id="9138217887606523162">Dabartinis mastelis yra <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Svetainėse naudojama ši funkcija, kad būtų galima įjungti vaizdo vaizde režimą automatiškai. Taip galite toliau žiūrėti vaizdo įrašą, o ekranas bus atlaisvintas kitoms užduotims.</translation>
 <translation id="9156722768168878035">Leiskite „Chrome“ rodyti naujausius skirtukus įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>

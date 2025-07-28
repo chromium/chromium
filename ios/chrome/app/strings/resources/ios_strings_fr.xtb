@@ -536,7 +536,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond bien à celui que vous utilisez pour accéder à <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">En bas</translation>
 <translation id="309710370695886264">Vous avez 1 mot de passe réutilisé. Modifiez-le maintenant pour vous protéger.</translation>
-<translation id="3102790820790869053">Rechercher dans les onglets récents</translation>
 <translation id="3106258548858559536">Désactiver le mode Lecture</translation>
 <translation id="3106690631878101882">Masquer "Traduire"</translation>
 <translation id="310900540163454140">Supprimer le mot de passe pour <ph name="WEBSITE" /> ?</translation>
@@ -647,7 +646,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
 <translation id="3587885837929752825">Votre organisation limite les éléments pouvant être enregistrés dans votre compte Google.</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
-<translation id="3591006724568464696">Onglets récents indisponibles</translation>
 <translation id="3595252146048399851">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3596414637720633074">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3602260545951981695">Sélectionnez "Protection renforcée"</translation>
@@ -891,7 +889,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4611811151908969241">Masquer "Ne plus suivre <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Recherche sur Google</translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
-<translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4621768135601674446">Ouvrir les options du mode Lecture</translation>
 <translation id="4624080227980645783">Nouvelle fenêtre de navigation privée</translation>
 <translation id="4627107755957573804">Autorisez les sites et les applis à mettre à niveau les comptes existants pour qu'ils utilisent des clés d'accès.</translation>
@@ -1815,7 +1812,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8079530767338315840">Répéter</translation>
 <translation id="8079602123447022758">Il s'agit d'un paramètre géré, appuyez deux fois pour plus d'informations</translation>
-<translation id="8080028325999236607">Fermer tous les onglets</translation>
 <translation id="8084285576995584326">Gérez les données de votre compte Google</translation>
 <translation id="809543534949702122">Rechercher dans l'historique</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Les onglets inutilisés pendant {COUNT} jour sont déplacés ici}one{Les onglets inutilisés pendant {COUNT} jour sont déplacés ici}other{Les onglets inutilisés pendant {COUNT} jours sont déplacés ici}}</translation>
@@ -2008,8 +2004,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8796634520835503150">Mode Lecture disponible</translation>
 <translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
 <translation id="8803639129939845298">Sécurisé</translation>
-<translation id="8806823403540278281">Votre organisation exige que vous utilisiez le mode navigation privée. Lorsque ce mode est utilisé, les onglets ne sont pas enregistrés.
-<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Plus tard</translation>
 <translation id="8814719628147284151">Continuer</translation>
 <translation id="8819155700324279105">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne</translation>

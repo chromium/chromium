@@ -853,6 +853,7 @@
 <translation id="1587275751631642843">کنسول &amp;جاوا اسکریپت</translation>
 <translation id="1587907146729660231">دکمه روشن/خاموش را با انگشتتان لمس کنید</translation>
 <translation id="1588438908519853928">معمولی</translation>
+<translation id="1588772269240419305">بازبینی کردن به‌روزرسانی‌های نشان‌واره و نام</translation>
 <translation id="1588870296199743671">بازکردن پیوند با...</translation>
 <translation id="1588919647604819635">روی کارت کلیک راست کنید</translation>
 <translation id="1589055389569595240">نمایش املا و گرامر</translation>
@@ -1331,6 +1332,7 @@
 <translation id="1912867150686509584">دیدن جلسه‌های بیشتر در «تقویم»</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{زبانه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>
 <translation id="1913749768968678106">پخش محتوا، ذخیره، و هم‌رسانی</translation>
+<translation id="19147273405311768">بازنشانی نوارابزار به تنظیمات پیش‌فرض</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1915734383465415025">شماره فروشگاه</translation>
@@ -3013,6 +3015,7 @@
 <translation id="3060952009917586498">تغییر دادن زبان دستگاه. زبان فعلی <ph name="LANGUAGE" /> است.</translation>
 <translation id="3060987956645097882">‏نتوانستیم اتصال با تلفنتان را برقرار کنیم. مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز، و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
 <translation id="3061302636956643119">‏نوشتار برای پردازش به Google ارسال خواهد شد.</translation>
+<translation id="306166624240243643">بازبینی کردن به‌روزرسانی‌های نشانی وب و نام</translation>
 <translation id="3064871050034234884">سایت‌ها می‌توانند صدا پخش کنند</translation>
 <translation id="3065041951436100775">بازخورد بسته شدن برگه.</translation>
 <translation id="3065522099314259755">تأخیر در تکرار صفحه‌کلید</translation>
@@ -3055,6 +3058,7 @@
 <translation id="3100071818310370858">‏استفاده از مکان. به برنامه‌ها و سرویس‌های دارای اجازه مکان اجازه داده می‌شود از مکان این دستگاه استفاده کنند. Google ممکن است به‌صورت دوره‌ای داده‌های مکان را جمع‌آوری کند و از این داده‌ها به‌شیوه‌ای ناشناس برای بهبود دقت مکان و خدمات مکان‌مبنا استفاده کند. <ph name="BEGIN_LINK1" />درباره مکان بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">کم کردن نور</translation>
 <translation id="3101709781009526431">تاریخ و ساعت</translation>
+<translation id="3102309003841389927">بازبینی کردن به‌روزرسانی نشان‌واره</translation>
 <translation id="310297983047869047">اسلاید قبلی</translation>
 <translation id="3103451787721578293">لطفاً دلیلی برای بارگذاری این داده وارد کنید:</translation>
 <translation id="3103512663951238230">دگرساز+کلیک</translation>
@@ -6054,6 +6058,7 @@
 <translation id="5225324770654022472">نمایش میان‌بر برنامه‌ها</translation>
 <translation id="52254442782792731">تنظیم رؤیت‌پذیری کنونی هنوز تنظیم نشده است</translation>
 <translation id="5225463052809312700">روشن کردن دوربین</translation>
+<translation id="5226253862147382094">بازبینی کردن به‌روزرسانی‌های نشان‌واره و نشانی وب</translation>
 <translation id="5226514125747186">یک دایره نقطه‌چین دور نماد سایت‌ها نمایش داده می‌شود. <ph name="BEGIN_LINK" />درباره برگه‌های غیرفعال بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">وب‌سایت‌ها اجازه ندارند از مکانتان استفاده کنند</translation>
 <translation id="5227679487546032910">چهرک پیش‌فرض آبی سیر</translation>
@@ -7369,6 +7374,7 @@
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{افزونه حذف شود؟}one{# افزونه حذف شود؟}other{# افزونه حذف شود؟}}</translation>
 <translation id="6180510783007738939">ابزار خط</translation>
 <translation id="6180550893222597997">می‌خواهید از کدام گذرکلید برای <ph name="APP_NAME" /> استفاده کنید؟</translation>
+<translation id="6181218116951226898">گاهی‌اوقات برنامه‌ها نمانام‌هایشان را به‌روز می‌کنند. قبل‌از به‌روزرسانی، تمام تغییرات را بازبینی کنید تا مطمئن شوید با آن‌ها مشکلی ندارید.</translation>
 <translation id="6181431612547969857">بارگیری مسدود شد</translation>
 <translation id="6183369864942961155">زمینه تاریک/روشن خودکار</translation>
 <translation id="6184099524311454384">جستجوی برگه‌ها</translation>
@@ -7442,6 +7448,7 @@
 <translation id="6234108445915742946">‏«شرایط خدمات Chrome» در تاریخ ۳۱ مارس تغییر می‌کند</translation>
 <translation id="6234474535228214774">نصب درانتظار</translation>
 <translation id="6235208551686043831">دوربین دستگاه روشن شده است. لطفاً رمزینه پاسخ‌سریع سیم‌کارت داخلی را مقابل دوربین قرار دهید.</translation>
+<translation id="6237256594069101884">بازبینی کردن به‌روزرسانی نشانی وب</translation>
 <translation id="6237342324375264347">گروه <ph name="GROUP_NAME" /> <ph name="SHARE_STATE" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">برنامه یادداشت‌برداری قلم</translation>
 <translation id="6237481151388361546">اتصال اینترنت را تغییر دهید و «امتحان مجدد» را انتخاب کنید، یا برای استفاده از نمای محدود و گزینه‌های ویرایش، «باز کردن در ویرایشگر پایه» را انتخاب کنید.</translation>
@@ -8297,6 +8304,7 @@
 <translation id="6840155290835956714">پیش از ارسال سؤال شود</translation>
 <translation id="6840184929775541289">یک ارائه دهنده مجوز نیست</translation>
 <translation id="6840214587087739194">نشانی حذف شد</translation>
+<translation id="6841076158433142214">هنگام استفاده از این برنامه‌ها برای ضبط صفحه‌نمایش، به شما اطلاع داده نخواهد شد:</translation>
 <translation id="6841143363521180029">رمزگذاری‌شده</translation>
 <translation id="6841186874966388268">خطاها</translation>
 <translation id="6842135459748401207">فقط دستگاه‌های واردشده به سیستم <ph name="USER_EMAIL" /></translation>
@@ -8757,6 +8765,7 @@
 <translation id="7181329571386134105">‏برای اینکه <ph name="CHILD_NAME" /> بعداً بتواند افزونه‌ها را بدون تأیید شما نصب کند، برنامه Family Link را در دستگاهتان باز کنید و تنظیمات Google Chrome ‏<ph name="CHILD_NAME" /> را به‌روز کنید.</translation>
 <translation id="7181840534454431748">به گروه برگه با <ph name="OWNER_FIRST_NAME" /> بپیوندید
               {NUM_OTHER_MEMBERS,plural, =0{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> بپیوندید}=1{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}one{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}other{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}}</translation>
+<translation id="7181976109296206547">بازبینی کردن به‌روزرسانی‌های نشان‌واره، نام، و نشانی وب</translation>
 <translation id="7182051712900867547">استفاده از حسابی دیگر</translation>
 <translation id="7182063559013288142">نقطه اتصال فوری</translation>
 <translation id="7182791023900310535">انتقال گذرواژه</translation>
@@ -8932,6 +8941,7 @@
 <translation id="7312040805247765153">برنامه نصب نشد</translation>
 <translation id="7312210124139670355">سرپرستتان درحال بازنشانی سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7313539585802573958">رنگ‌های نور پس‌زمینه صفحه‌کلید</translation>
+<translation id="7314865262803554456">وقتی ضبط شروع شود به شما اطلاع داده نخواهد شد.</translation>
 <translation id="7314989823816739632">عاشقانه</translation>
 <translation id="7317342082064136423">حسابتان را به‌تأیید برسانید</translation>
 <translation id="7317831949569936035">ثبت‌نام مدرسه</translation>
@@ -11466,6 +11476,7 @@
 <translation id="9033765790910064284">ادامه درهرصورت</translation>
 <translation id="9033857511263905942">&amp;جای‌گذاری</translation>
 <translation id="903480517321259405">پین را دوباره تایپ کنید</translation>
+<translation id="9035157477209989051">هنگام استفاده از این برنامه‌ها برای ضبط صفحه‌نمایش، به شما اطلاع داده خواهد شد:</translation>
 <translation id="9036484080057916082">فهرست مُهر زمان گواهینامه امضاشده</translation>
 <translation id="9037054491984310631">متصل به دستگاه بلوتوث با نام <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">دستگاه مجاز نیست</translation>

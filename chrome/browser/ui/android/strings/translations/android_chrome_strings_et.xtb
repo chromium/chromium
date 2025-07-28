@@ -1426,7 +1426,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7304873321153398381">Võrguühenduseta. Chrome ei saa teie paroole kontrollida.</translation>
 <translation id="7313188324932846546">Puudutage sünkroonimise seadistamiseks</translation>
 <translation id="7314734791127433392">Paroole ei saa kontrollida</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Vahelehed ja vahelehtede rühmad, mida pole üks päev või kauem kasutatud}other{Vahelehed ja vahelehtede rühmad, mida pole # päeva või kauem kasutatud}}</translation>
 <translation id="7324354302972299151">„Do Not Track” taotluse saatmine</translation>
 <translation id="7333041109965360609">Märguannete tellimus on tühistatud</translation>
 <translation id="7336259382292148213">Teie märguanded näivad turvalised</translation>

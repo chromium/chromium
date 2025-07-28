@@ -536,7 +536,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3081338492074632642">Gwnewch yn siŵr bod y cyfrinair rydych yn ei gadw yn cyd-fynd â'ch cyfrinair ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Gwaelod</translation>
 <translation id="309710370695886264">Mae gennych 1 cyfrinair sydd wedi'i ailddefnyddio. Trwsiwch ef nawr i aros yn ddiogel.</translation>
-<translation id="3102790820790869053">Chwilio tabiau diweddar</translation>
 <translation id="3106258548858559536">Diffodd y Modd Darllen</translation>
 <translation id="3106690631878101882">Cuddio Cyfieithu</translation>
 <translation id="310900540163454140">Dileu cyfrinair ar gyfer <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3581564640715911333">Cynnig cyfieithu tudalennau mewn ieithoedd eraill</translation>
 <translation id="3587885837929752825">Mae eich sefydliad yn cyfyngu ar yr hyn y gallwch ei gadw yn eich Cyfrif Google.</translation>
 <translation id="3588820906588687999">Agor y Llun Mewn Tab Newydd</translation>
-<translation id="3591006724568464696">Nid yw'r tabiau diweddar ar gael</translation>
 <translation id="3595252146048399851">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="3596414637720633074">Rhwystro cwcis gan drydydd parti yn y Modd Anhysbys</translation>
 <translation id="3602260545951981695">Dewiswch "Diogelwch Gwell"</translation>
@@ -891,7 +889,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4611811151908969241">Cuddio Dad-ddilyn <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Chwilio gyda Google</translation>
 <translation id="4619564267100705184">Cadarnhewch mai chi sydd yno</translation>
-<translation id="4619615317237390068">Tabiau o ddyfeisiau eraill</translation>
 <translation id="4621768135601674446">Agor opsiynau Modd darllen</translation>
 <translation id="4624080227980645783">Ffenestr Anhysbys newydd</translation>
 <translation id="4627107755957573804">Caniatáu i wefannau ac apiau uwchraddio cyfrifon sydd eisoes yn bodoli i ddefnyddio codau pas</translation>
@@ -1815,7 +1812,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8076492880354921740">Tabiau</translation>
 <translation id="8079530767338315840">Ailadrodd</translation>
 <translation id="8079602123447022758">Mae'r gosodiad hwn yn cael ei reoli, tapiwch ddwywaith am ragor o wybodaeth</translation>
-<translation id="8080028325999236607">Cau Pob Tab</translation>
 <translation id="8084285576995584326">Rheoli eich data Cyfrif Google</translation>
 <translation id="809543534949702122">Hanes Chwilio</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}zero{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}two{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} ddiwrnod}few{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}many{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}other{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}}</translation>
@@ -2008,8 +2004,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8796634520835503150">Modd darllen ar gael</translation>
 <translation id="8803526663383843427">Pan fydd ymlaen</translation>
 <translation id="8803639129939845298">Diogel</translation>
-<translation id="8806823403540278281">Mae eich sefydliad yn gofyn i chi bori'n breifat. Nid yw tabiau yn cael eu cadw yn y modd Anhysbys.
-<ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Atgoffa fi yn nes ymlaen</translation>
 <translation id="8814719628147284151">Parhau</translation>
 <translation id="8819155700324279105">Ychwanegu haen ychwanegol o amddiffyniad rhag bygythiadau ar-lein</translation>

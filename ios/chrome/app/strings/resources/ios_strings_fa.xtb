@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">دریافت اعلان‌های کاهش قیمت برای محصولاتی که پیگیری می‌کنید.</translation>
 <translation id="1521366073263497277">به جدول زبانه‌ها بروید</translation>
 <translation id="1521774566618522728">امروز فعال بود</translation>
+<translation id="1523567067736644845">برای نمایش گذرواژه، قفل را باز کنید</translation>
 <translation id="1524563461097350801">نه، متشکرم</translation>
 <translation id="1531038290222364269">نشان دادن برگه‌ها</translation>
 <translation id="1536390784834419204">ترجمه صفحه</translation>
@@ -536,7 +537,6 @@
 <translation id="3081338492074632642">مطمئن شوید گذرواژه‌ای که ذخیره می‌کنید با گذرواژه <ph name="WEBSITE" /> مطابقت داشته باشد</translation>
 <translation id="3087734570205094154">پایین</translation>
 <translation id="309710370695886264">۱ گذرواژه دوباره‌استفاده‌شده دارید. همین‌حالا مشکل را برطرف کنید تا ایمن بمانید.</translation>
-<translation id="3102790820790869053">جستجوی برگه‌های اخیر</translation>
 <translation id="3106258548858559536">خاموش کردن «حالت مطالعه»</translation>
 <translation id="3106690631878101882">‏پنهان کردن «ترجمه Google»</translation>
 <translation id="310900540163454140">گذرواژه مربوط به <ph name="WEBSITE" /> حذف شود؟</translation>
@@ -647,7 +647,6 @@
 <translation id="3581564640715911333">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
 <translation id="3587885837929752825">‏سازمان شما آنچه را می‌توانید در «حساب Google» خود ذخیره کنید محدود می‌کند.</translation>
 <translation id="3588820906588687999">باز کردن تصویر در برگه جدید</translation>
-<translation id="3591006724568464696">برگه‌های اخیر دردسترس نیست</translation>
 <translation id="3595252146048399851">‏همواره می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید چه مواردی همگام‌سازی شود. Google ممکن است براساس سابقه‌تان «جستجو» و سرویس‌های دیگر را شخصی کند.</translation>
 <translation id="3596414637720633074">مسدود کردن کوکی‌های طرف سوم در «حالت ناشناس»</translation>
 <translation id="3602260545951981695">«محافظت بهبودیافته» را انتخاب کنید</translation>
@@ -891,7 +890,6 @@
 <translation id="4611811151908969241">پنهان کردن «لغو دنبال کردن <ph name="DOMAIN_NAME" />»</translation>
 <translation id="461440297010471931">‏درحال جستجو با Google</translation>
 <translation id="4619564267100705184">هویتتان را درستی‌سنجی کنید</translation>
-<translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4621768135601674446">باز کردن گزینه‌های «حالت خواندن»</translation>
 <translation id="4624080227980645783">پنجره «ناشناس» جدید</translation>
 <translation id="4627107755957573804">به سایت‌ها و برنامه‌ها اجازه می‌دهد تا حساب‌های موجود را برای استفاده از گذرکلید ارتقا دهند</translation>
@@ -1815,7 +1813,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8079530767338315840">تکرار</translation>
 <translation id="8079602123447022758">این تنظیم مدیریت می‌شود، برای اطلاعات بیشتر دو تک‌ضرب بزنید</translation>
-<translation id="8080028325999236607">بستن همه برگه‌ها</translation>
 <translation id="8084285576995584326">‏کنترل کردن داده‌های «حساب Google»</translation>
 <translation id="809543534949702122">سابقه «جستجو»</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{برگه‌هایی که استفاده نمی‌کنید، پس‌از {COUNT} روز به اینجا منتقل می‌شوند}one{برگه‌هایی که استفاده نمی‌کنید، پس‌از {COUNT} روز به اینجا منتقل می‌شوند}other{برگه‌هایی که استفاده نمی‌کنید، پس‌از {COUNT} روز به اینجا منتقل می‌شوند}}</translation>
@@ -2008,8 +2005,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8796634520835503150">حالت مطالعه دردسترس است</translation>
 <translation id="8803526663383843427">وقتی روشن است</translation>
 <translation id="8803639129939845298">ایمن</translation>
-<translation id="8806823403540278281">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید. برگه‌ها در «حالت ناشناس» ذخیره نمی‌شود.
-<ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
 <translation id="8814719628147284151">ادامه دادن</translation>
 <translation id="8819155700324279105">اضافه شدن لایه محافظتی بیشتر دربرابر تهدیدهای آنلاین</translation>

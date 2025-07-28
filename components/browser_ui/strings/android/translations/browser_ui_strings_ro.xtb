@@ -78,6 +78,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1919950603503897840">Selectează persoane de contact</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Picture-in-picture automat</translation>
 <translation id="1954597385941141174">Site-urile pot solicita permisiunea de a se conecta la dispozitive USB</translation>
 <translation id="1979673356880165407">Mărește sau micșorează textul și imaginile pentru toate site-urile pe care le accesezi</translation>
 <translation id="1984937141057606926">Permise, cu excepția celor terță parte</translation>
@@ -228,6 +229,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3611658447322220736">Site-urile închise recent pot să finalizeze trimiterea sau primirea datelor</translation>
+<translation id="3619294456800709762">Site-urile pot intra automat în modul picture-in-picture</translation>
 <translation id="3628308229821498208">Căutări sugerate</translation>
 <translation id="3641456520301071208">Site-urile pot solicita permisiunea de a accesa locația</translation>
 <translation id="3658847490588580244">Foaia din partea de jos a browserului prestabilit</translation>
@@ -608,6 +610,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8117244575099414087">Când opțiunea este activată, site-urile pot folosi senzorii dispozitivului. Când opțiunea este dezactivată, site-urile nu pot folosi senzori.</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
 <translation id="8131740175452115882">Confirmați</translation>
+<translation id="8163152278172770963">Nu permite site-urilor să intre automat în modul picture-in-picture</translation>
 <translation id="8168435359814927499">Conținut</translation>
 <translation id="818487310457576362">Trage dintr-o parte a ecranului pentru a ieși din ecranul complet.</translation>
 <translation id="8186479265534291036">Site-ul nu funcționează? Cookie-urile terță parte au fost blocate</translation>
@@ -699,6 +702,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notificările sunt permise</translation>
 <translation id="9138217887606523162">Nivelul de zoom actual este <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Site-urile folosesc această funcție pentru a intra automat în modul picture-in-picture. Astfel, poți să continui vizionarea unui videoclip și să eliberezi spațiu pe ecran pentru alte activități.</translation>
 <translation id="9156722768168878035">Permite ca Chrome să-ți afișeze filele recente în lista de aplicații și în rezultatele căutării de pe dispozitiv. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>

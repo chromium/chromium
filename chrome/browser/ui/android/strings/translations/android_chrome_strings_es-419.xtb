@@ -1426,7 +1426,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7304873321153398381">Sin conexión. Chrome no puede verificar tus contraseñas.</translation>
 <translation id="7313188324932846546">Presionar para configurar la sincronización</translation>
 <translation id="7314734791127433392">No se pueden revisar las contraseñas</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Pestañas y grupos de pestañas que no se usaron durante 1 día o más}other{Pestañas y grupos de pestañas que no se usaron durante # días o más}}</translation>
 <translation id="7324354302972299151">Enviar una solicitud de "Do Not Track"</translation>
 <translation id="7333041109965360609">Se anuló la suscripción a las notificaciones</translation>
 <translation id="7336259382292148213">Las notificaciones parecen estar en orden</translation>

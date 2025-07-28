@@ -1426,7 +1426,6 @@
 <translation id="7304873321153398381">ออฟไลน์ Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="7313188324932846546">แตะเพื่อตั้งค่าการซิงค์</translation>
 <translation id="7314734791127433392">ตรวจสอบรหัสผ่านไม่ได้</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{แท็บและกลุ่มแท็บที่ไม่ได้ใช้งานเป็นเวลา 1 วันขึ้นไป}other{แท็บและกลุ่มแท็บที่ไม่ได้ใช้งานเป็นเวลา # วันขึ้นไป}}</translation>
 <translation id="7324354302972299151">ส่งคำขอ Do Not Track</translation>
 <translation id="7333041109965360609">ยกเลิกการสมัครรับข้อมูลจากการแจ้งเตือนแล้ว</translation>
 <translation id="7336259382292148213">การแจ้งเตือนไม่มีปัญหา</translation>

@@ -536,7 +536,6 @@
 <translation id="3081338492074632642"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
 <translation id="309710370695886264">તમારી પાસે 1 એવો પાસવર્ડ છે જેનો તમે વારંવાર ઉપયોગ કરો છો. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.</translation>
-<translation id="3102790820790869053">તાજેતરના ટૅબમાં શોધો</translation>
 <translation id="3106258548858559536">વાંચન મોડ બંધ કરો</translation>
 <translation id="3106690631878101882">'અનુવાદ કરો' છુપાવો</translation>
 <translation id="310900540163454140">શું <ph name="WEBSITE" /> માટેનો પાસવર્ડ ડિલીટ કરીએ?</translation>
@@ -647,7 +646,6 @@
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="3587885837929752825">તમારી સંસ્થા તમે તમારા Google એકાઉન્ટમાં શુંં સાચવી શકો છો તે મર્યાદિત કરે છે.</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
-<translation id="3591006724568464696">તાજેતરના ટૅબ ઉપલબ્ધ નથી</translation>
 <translation id="3595252146048399851">શું સિંક કરવું, તે તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="3602260545951981695">"વધારેલું સંરક્ષણ" પસંદ કરો</translation>
@@ -891,7 +889,6 @@
 <translation id="4611811151908969241">'<ph name="DOMAIN_NAME" />ને અનફૉલો કરો' છુપાવો</translation>
 <translation id="461440297010471931">Google વડે શોધી રહ્યાં છીએ</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
-<translation id="4619615317237390068">અન્ય ઉપકરણોમાંથી ટૅબ્સ</translation>
 <translation id="4621768135601674446">વાંચન મોડના વિકલ્પો ખોલો</translation>
 <translation id="4624080227980645783">નવી છૂપી વિન્ડો</translation>
 <translation id="4627107755957573804">પાસકીનો ઉપયોગ કરવા માટે સાઇટ અને ઍપને ઉપલબ્ધ હોય તેવા એકાઉન્ટને અપગ્રેડ કરવાની મંજૂરી આપો</translation>
@@ -1815,7 +1812,6 @@
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8079530767338315840">પુનરાવર્તન કરો</translation>
 <translation id="8079602123447022758">આ સેટિંગ મેનેજ કરવામાં આવે છે, વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
-<translation id="8080028325999236607">બધા ટૅબ્સ બંધ કરો</translation>
 <translation id="8084285576995584326">તમારા Google એકાઉન્ટનો ડેટા નિયંત્રિત કરો</translation>
 <translation id="809543534949702122">શોધ ઇતિહાસ</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{તમે ઉપયોગ ન કરતા હો તેવા ટૅબને {COUNT} દિવસ પછી અહી ખસેડવામાં આવે છે}one{તમે ઉપયોગ ન કરતા હો તેવા ટૅબને {COUNT} દિવસ પછી અહી ખસેડવામાં આવે છે}other{તમે ઉપયોગ ન કરતા હો તેવા ટૅબને {COUNT} દિવસ પછી અહી ખસેડવામાં આવે છે}}</translation>
@@ -2008,8 +2004,6 @@
 <translation id="8796634520835503150">વાંચન મોડ ઉપલબ્ધ છે</translation>
 <translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
 <translation id="8803639129939845298">સુરક્ષિત</translation>
-<translation id="8806823403540278281">તમારી સંસ્થા માટે જરૂરી છે કે તમે ખાનગી રીતે બ્રાઉઝ કરો. છૂપા મોડમાં ટૅબ સાચવવામાં આવતી નથી.
-<ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
 <translation id="8814719628147284151">ચાલુ રાખો</translation>
 <translation id="8819155700324279105">ઑનલાઇન જોખમો સામે સુરક્ષાનું વધારાનું સ્તર ઉમેરો</translation>

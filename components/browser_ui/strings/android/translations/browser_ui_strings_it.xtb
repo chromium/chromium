@@ -78,6 +78,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1919950603503897840">Seleziona contatti</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> di <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Modalità Picture in picture automatica</translation>
 <translation id="1954597385941141174">I siti possono chiedere di connettersi ai dispositivi USB</translation>
 <translation id="1979673356880165407">Ingrandisci o riduci testo e immagini per tutti i siti visitati</translation>
 <translation id="1984937141057606926">Consentiti, tranne i cookie di terze parti</translation>
@@ -228,6 +229,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3600792891314830896">Disattiva l'audio nei siti che riproducono suoni</translation>
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3611658447322220736">I siti chiusi di recente possono terminare l'invio e la ricezione di dati</translation>
+<translation id="3619294456800709762">I siti possono attivare automaticamente la modalità Picture in picture</translation>
 <translation id="3628308229821498208">Ricerche suggerite</translation>
 <translation id="3641456520301071208">I siti possono chiederti la posizione</translation>
 <translation id="3658847490588580244">Riquadro inferiore del browser predefinito</translation>
@@ -608,6 +610,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="8117244575099414087">Quando l'opzione è attiva, i siti possono usare i sensori del dispositivo. Quando l'opzione è disattivata, i siti non possono utilizzare i sensori.</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8131740175452115882">Conferma</translation>
+<translation id="8163152278172770963">Non consentire ai siti di attivare automaticamente la modalità Picture in picture</translation>
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="818487310457576362">Trascina dal lato dello schermo per uscire dalla modalità a schermo intero.</translation>
 <translation id="8186479265534291036">Il sito non funziona? Cookie di terze parti bloccati</translation>
@@ -699,6 +702,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="913657688200966289">Attiva le autorizzazioni per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notifiche consentite</translation>
 <translation id="9138217887606523162">Al momento lo zoom è <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">I siti usano questa funzionalità per attivare automaticamente la modalità Picture in picture. In questo modo puoi continuare a guardare un video, liberando lo schermo per altre attività.</translation>
 <translation id="9156722768168878035">Consenti a Chrome di mostrare le schede recenti nell'elenco di app e nei risultati di ricerca del dispositivo. Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="9162462602695099906">Questa pagina è pericolosa</translation>
 <translation id="9182556968660520230">Non consentire ai siti di riprodurre contenuti protetti</translation>

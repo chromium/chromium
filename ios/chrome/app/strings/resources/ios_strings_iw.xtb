@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">קבלת התראות על ירידות במחיר של המוצרים שבמעקב.</translation>
 <translation id="1521366073263497277">מעבר לתצוגת הכרטיסיות</translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
+<translation id="1523567067736644845">צריך לבטל את הנעילה כדי להציג את הסיסמה</translation>
 <translation id="1524563461097350801">לא, תודה</translation>
 <translation id="1531038290222364269">הצגת כרטיסיות</translation>
 <translation id="1536390784834419204">תרגום הדף</translation>
@@ -536,7 +537,6 @@
 <translation id="3081338492074632642">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="309710370695886264">יש לך סיסמה אחת בשימוש חוזר. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.</translation>
-<translation id="3102790820790869053">חיפוש בכרטיסיות האחרונות</translation>
 <translation id="3106258548858559536">השבתת מצב הקריאה</translation>
 <translation id="3106690631878101882">‏הסתרה של Translate</translation>
 <translation id="310900540163454140">למחוק את הסיסמה של <ph name="WEBSITE" />?</translation>
@@ -647,7 +647,6 @@
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="3587885837929752825">‏הארגון שלך מגביל את סוגי הנתונים שאפשר לשמור בחשבון Google שלך.</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
-<translation id="3591006724568464696">הכרטיסיות האחרונות לא זמינות</translation>
 <translation id="3595252146048399851">‏תמיד אפשר לבחור מה לסנכרן דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="3602260545951981695">בוחרים באפשרות 'הגנה משופרת'</translation>
@@ -891,7 +890,6 @@
 <translation id="4611811151908969241">הסתרת האפשרות 'ביטול המעקב אחרי <ph name="DOMAIN_NAME" />'</translation>
 <translation id="461440297010471931">‏חיפוש באמצעות Google</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
-<translation id="4619615317237390068">כרטיסיות ממכשירים אחרים</translation>
 <translation id="4621768135601674446">פתיחת האפשרויות של "מצב קריאה"</translation>
 <translation id="4624080227980645783">חלון פרטי חדש</translation>
 <translation id="4627107755957573804">מתן הרשאה לאתרים ולאפליקציות לשדרג חשבונות קיימים לשימוש במפתחות גישה</translation>
@@ -1815,7 +1813,6 @@
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8079530767338315840">חזרה</translation>
 <translation id="8079602123447022758">ההגדרה הזו מנוהלת. יש ללחוץ פעמיים לקבלת מידע נוסף</translation>
-<translation id="8080028325999236607">סגור את כל הכרטיסיות</translation>
 <translation id="8084285576995584326">‏שליטה בנתונים שלך בחשבון Google</translation>
 <translation id="809543534949702122">חיפוש בהיסטוריה</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יום אחד ({COUNT})}one{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}two{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יומיים ({COUNT})}other{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}}</translation>
@@ -2008,8 +2005,6 @@
 <translation id="8796634520835503150">מצב הקריאה זמין</translation>
 <translation id="8803526663383843427">במצב מופעל</translation>
 <translation id="8803639129939845298">מאובטח</translation>
-<translation id="8806823403540278281">לפי דרישת הארגון שלך, עליך לגלוש באופן פרטי. כרטיסיות אינן נשמרות במצב אנונימי.
-<ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">אני רוצה לקבל תזכורת אחר כך</translation>
 <translation id="8814719628147284151">המשך</translation>
 <translation id="8819155700324279105">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט</translation>

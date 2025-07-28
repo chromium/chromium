@@ -1426,7 +1426,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7304873321153398381">Offline-tilassa. Chrome ei voi tarkistaa salasanojasi.</translation>
 <translation id="7313188324932846546">Ota synkronointi käyttöön napauttamalla</translation>
 <translation id="7314734791127433392">Salasanojen tarkistaminen ei onnistu</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Välilehdet ja välilehtiryhmät, joita ei ole käytetty vähintään 1 päivään}other{Välilehdet ja välilehtiryhmät, joita ei ole käytetty vähintään # päivään}}</translation>
 <translation id="7324354302972299151">Lähetä Do Not Track ‐pyyntö</translation>
 <translation id="7333041109965360609">Ilmoitusten tilaus peruttu</translation>
 <translation id="7336259382292148213">Ilmoitukset näyttävät hyviltä</translation>

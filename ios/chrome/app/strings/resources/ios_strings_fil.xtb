@@ -536,7 +536,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3081338492074632642">Tiyaking tumutugma ang password na sine-save mo sa iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="309710370695886264">Mayroon kang 1 password na ginamit ulit. Ayusin ito ngayon para manatiling ligtas.</translation>
-<translation id="3102790820790869053">Maghanap sa mga kamakailang tab</translation>
 <translation id="3106258548858559536">I-off ang Reading Mode</translation>
 <translation id="3106690631878101882">I-hide ang Isalin</translation>
 <translation id="310900540163454140">I-delete ang password para sa <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3581564640715911333">Mag-alok na mag-translate ng mga page sa iba pang wika</translation>
 <translation id="3587885837929752825">Nililimitahan ng iyong organisasyon kung ano ang puwede mong i-save sa iyong Google Account.</translation>
 <translation id="3588820906588687999">Buksan ang Larawan sa Bagong Tab</translation>
-<translation id="3591006724568464696">Hindi available ang mga kamakailang tab</translation>
 <translation id="3595252146048399851">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3596414637720633074">I-block ang third-party na cookies sa Incognito</translation>
 <translation id="3602260545951981695">Piliin ang "Pinaigting na Proteksyon"</translation>
@@ -891,7 +889,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4611811151908969241">I-hide ang Huwag Nang Subaybayan ang <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Paghahanap gamit ang Google</translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
-<translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4621768135601674446">Buksan ang mga opsyon sa Reading mode</translation>
 <translation id="4624080227980645783">Bagong Incognito window</translation>
 <translation id="4627107755957573804">Payagan ang mga site at app na i-upgrade ang mga kasalukuyang account para gumamit ng mga passkey</translation>
@@ -1815,7 +1812,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8079530767338315840">Ulitin</translation>
 <translation id="8079602123447022758">Pinapamahalaan ang setting na ito, mag-double tap para sa higit pang impormasyon</translation>
-<translation id="8080028325999236607">Isara ang Lahat ng Tab</translation>
 <translation id="8084285576995584326">Kontrolin ang data sa iyong Google Account</translation>
 <translation id="809543534949702122">History ng Paghahanap</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Ililipat dito ang mga tab na hindi mo ginagamit pagkatapos ng {COUNT} araw}one{Ililipat dito ang mga tab na hindi mo ginagamit pagkatapos ng {COUNT} araw}other{Ililipat dito ang mga tab na hindi mo ginagamit pagkatapos ng {COUNT} na araw}}</translation>
@@ -2008,8 +2004,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8796634520835503150">Available ang reading mode</translation>
 <translation id="8803526663383843427">Kapag naka-on</translation>
 <translation id="8803639129939845298">Secure</translation>
-<translation id="8806823403540278281">Ipinag-aatas sa iyo ng organisasyon mo na mag-browse nang pribado. Hindi nase-save ang mga tab sa Incognito mode.
-<ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Ipaalala sa akin sa ibang pagkakataon</translation>
 <translation id="8814719628147284151">Magpatuloy</translation>
 <translation id="8819155700324279105">Magdagdag pa ng proteksyon laban sa mga banta online</translation>

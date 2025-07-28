@@ -1426,7 +1426,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7304873321153398381">Offline. Chrome nuk mund t'i kontrollojë fjalëkalimet e tua.</translation>
 <translation id="7313188324932846546">Trokit për të konfiguruar sinkronizimin</translation>
 <translation id="7314734791127433392">Fjalëkalimet nuk mund të kontrollohen</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Skedat dhe grupet e skedave që nuk janë përdorur për 1 ose më shumë ditë}other{Skedat dhe grupet e skedave që nuk janë përdorur për # ose më shumë ditë}}</translation>
 <translation id="7324354302972299151">Dërgo një kërkesë "Do Not Track"</translation>
 <translation id="7333041109965360609">U çabonove nga njoftimet</translation>
 <translation id="7336259382292148213">Njoftimet duken mirë</translation>

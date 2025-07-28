@@ -537,7 +537,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3081338492074632642">Hakikisha kwamba nenosiri unalohifadhi linalingana na nenosiri lako kwenye <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Chini</translation>
 <translation id="309710370695886264">Una nenosiri 1 lililotumiwa kwingine. Lirekebishe sasa ili udumishe usalama.</translation>
-<translation id="3102790820790869053">Tafuta kwenye vichupo vya hivi majuzi</translation>
 <translation id="3106258548858559536">Zima Hali ya Kusoma</translation>
 <translation id="3106690631878101882">Ficha Kitendo cha Kutafsiri</translation>
 <translation id="310900540163454140">Ungependa kufuta nenosiri la <ph name="WEBSITE" />?</translation>
@@ -648,7 +647,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3581564640715911333">Jitolee kutafsiri kurasa katika lugha nyingine</translation>
 <translation id="3587885837929752825">Shirika lako linadhibiti unachoweza kuhifadhi kwenye Akaunti yako ya Google.</translation>
 <translation id="3588820906588687999">Fungua Picha Katika Kichupo Kipya</translation>
-<translation id="3591006724568464696">Vichupo vya hivi majuzi havipatikani</translation>
 <translation id="3595252146048399851">Unaweza kuchagua unachotaka kusawazisha wakati wowote kwenye <ph name="BEGIN_LINK" />mipangilio<ph name="END_LINK" />. Google inaweza kuweka mapendeleo kwenye huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="3596414637720633074">Zuia vidakuzi vya watu au kampuni nyingine katika Hali Fiche</translation>
 <translation id="3602260545951981695">Chagua "Ulinzi Ulioboreshwa"</translation>
@@ -892,7 +890,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4611811151908969241">Ficha Chaguo la Acha Kufuata <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Inatafuta kwa kutumia Google</translation>
 <translation id="4619564267100705184">Thibitisha kwamba ni wewe</translation>
-<translation id="4619615317237390068">Vichupo kutoka kwenye vifaa vingine</translation>
 <translation id="4621768135601674446">Fungua chaguo za Hali ya kusoma</translation>
 <translation id="4624080227980645783">Dirisha jipya la faraghani</translation>
 <translation id="4627107755957573804">Ruhusu tovuti na programu ziboreshe akaunti zilizopo ili zitumie funguo za siri</translation>
@@ -1816,7 +1813,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8076492880354921740">Vichupo</translation>
 <translation id="8079530767338315840">Rudia</translation>
 <translation id="8079602123447022758">Mipangilio hii inadhibitiwa, gusa mara mbili ili upate maelezo zaidi</translation>
-<translation id="8080028325999236607">Funga Vichupo Vyote</translation>
 <translation id="8084285576995584326">Dhibiti data ya Akaunti yako ya Google</translation>
 <translation id="809543534949702122">Historia ya Mambo Uliyotafuta</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Vichupo ambavyo hutumii vitahamishiwa hapa baada ya siku {COUNT}}other{Vichupo ambavyo hutumii vitahamishiwa hapa baada ya siku {COUNT}}}</translation>
@@ -2009,8 +2005,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8796634520835503150">Hali ya kusoma inapatikana</translation>
 <translation id="8803526663383843427">Ukiwa umekiwasha</translation>
 <translation id="8803639129939845298">Salama</translation>
-<translation id="8806823403540278281">Shirika lako linahitaji uvinjari kwa faragha. Vichupo havihifadhiwi katika Hali fiche.
-<ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Nikumbushe baadaye</translation>
 <translation id="8814719628147284151">Endelea</translation>
 <translation id="8819155700324279105">Weka safu ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni</translation>

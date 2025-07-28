@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1613742542373525524">Aplikácia APPLICATION_NAME nedokáže spracovať tento odkaz.</translation>
+<translation id="1987317783729300807">Účty</translation>
 <translation id="3086502722585482455">Otvoriť v aplikácii</translation>
 <translation id="4655616150233109325">Otvoriť v Chrome</translation>
 <translation id="5244924493358516288">(Maximálny limit)</translation>
@@ -12,6 +13,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="712865579676939176">Hľadať v aplikácii alebo režime</translation>
 <translation id="7440631557836890806">Hľadať v režime inkognito</translation>
+<translation id="7557508262441527045">Účet je odhlásený</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="8258999165172757081">Pridané</translation>
 <translation id="850600235656508448">Otvoriť v režime inkognito</translation>

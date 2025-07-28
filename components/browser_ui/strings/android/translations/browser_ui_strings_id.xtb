@@ -78,6 +78,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1919950603503897840">Pilih kontak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Picture-in-picture otomatis</translation>
 <translation id="1954597385941141174">Situs dapat meminta untuk terhubung ke perangkat USB</translation>
 <translation id="1979673356880165407">Perbesar atau perkecil teks dan gambar untuk semua situs yang Anda buka</translation>
 <translation id="1984937141057606926">Diizinkan, kecuali pihak ketiga</translation>
@@ -228,6 +229,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3600792891314830896">Nonaktifkan suara situs yang memutar suara</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3611658447322220736">Situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data</translation>
+<translation id="3619294456800709762">Situs dapat masuk ke mode picture-in-picture secara otomatis</translation>
 <translation id="3628308229821498208">Penelusuran yang disarankan</translation>
 <translation id="3641456520301071208">Situs dapat meminta lokasi Anda</translation>
 <translation id="3658847490588580244">Sheet bawah browser default</translation>
@@ -608,6 +610,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8117244575099414087">Jika diaktifkan, situs dapat menggunakan sensor perangkat. Jika dinonaktifkan, situs tidak dapat menggunakan sensor.</translation>
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
+<translation id="8163152278172770963">Jangan izinkan situs masuk ke mode picture-in-picture secara otomatis</translation>
 <translation id="8168435359814927499">Konten</translation>
 <translation id="818487310457576362">Tarik dari sisi layar untuk keluar dari mode layar penuh.</translation>
 <translation id="8186479265534291036">Situs tidak berfungsi? Cookie pihak ketiga diblokir</translation>
@@ -699,6 +702,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="913657688200966289">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Notifikasi diizinkan</translation>
 <translation id="9138217887606523162">Zoom saat ini sebesar <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Situs menggunakan fitur ini untuk masuk ke mode picture-in-picture secara otomatis. Hal ini memungkinkan Anda terus menonton video, sekaligus mengosongkan layar untuk melakukan tugas lainnya.</translation>
 <translation id="9156722768168878035">Izinkan Chrome menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="9182556968660520230">Jangan izinkan situs memutar konten yang dilindungi</translation>

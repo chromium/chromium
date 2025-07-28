@@ -1374,6 +1374,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1931152874660185993">Nameščena ni nobena komponenta.</translation>
 <translation id="1931410639376954712">Nameščanje sistema <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Ne pred</translation>
+<translation id="1933070475689690969">Dejavnost v aplikacijah Gemini</translation>
 <translation id="1933489278505808700">Dovoljeno branje in spreminjanje</translation>
 <translation id="1935303383381416800">Dovoljen je ogled lokacije</translation>
 <translation id="193565226207940518">Orodje za podporo</translation>
@@ -3510,6 +3511,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3435738964857648380">Varnost</translation>
 <translation id="343578350365773421">Ni več papirja</translation>
 <translation id="3435896845095436175">Omogoči</translation>
+<translation id="3437072258256045988">Upravljanje dejavnosti v aplikacijah Gemini</translation>
 <translation id="3437397693214267762">Ogled datotek v Outlookovem koledarju, SharePointu in OneDriveu</translation>
 <translation id="3438633801274389918">Nindža</translation>
 <translation id="3439153939049640737">Vedno dovoli gostitelju <ph name="HOST" /> dostop do mikrofona</translation>

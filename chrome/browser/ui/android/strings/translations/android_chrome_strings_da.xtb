@@ -1426,7 +1426,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7304873321153398381">Offline. Chrome kan ikke tjekke dine adgangskoder.</translation>
 <translation id="7313188324932846546">Tryk for at konfigurere synkronisering</translation>
 <translation id="7314734791127433392">Kan ikke tjekke adgangskoder</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Faner og fanegrupper, der ikke har været brugt i 1 dag eller flere}one{Faner og fanegrupper, der ikke har været brugt i # dag eller flere}other{Faner og fanegrupper, der ikke har været brugt i # dage eller flere}}</translation>
 <translation id="7324354302972299151">Send en "Do Not Track"-anmodning</translation>
 <translation id="7333041109965360609">Du har afmeldt notifikationer</translation>
 <translation id="7336259382292148213">Der er ingen notifikationer</translation>

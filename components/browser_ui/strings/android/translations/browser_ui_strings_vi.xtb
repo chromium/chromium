@@ -77,6 +77,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1919950603503897840">Chọn mục liên hệ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Chế độ hình trong hình tự động</translation>
 <translation id="1954597385941141174">Các trang web có thể yêu cầu kết nối với thiết bị USB</translation>
 <translation id="1979673356880165407">Tăng hoặc giảm kích thước văn bản và hình ảnh cho tất cả trang web bạn truy cập</translation>
 <translation id="1984937141057606926">Được cho phép, ngoại trừ cookie của bên thứ ba</translation>
@@ -227,6 +228,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3611658447322220736">Các trang web đã đóng gần đây có thể hoàn tất thao tác gửi và nhận dữ liệu</translation>
+<translation id="3619294456800709762">Các trang web có thể tự động chuyển sang chế độ hình trong hình</translation>
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
 <translation id="3641456520301071208">Các trang web có thể yêu cầu thông tin vị trí của bạn</translation>
 <translation id="3658847490588580244">Bảng dưới cùng của trình duyệt mặc định</translation>
@@ -607,6 +609,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8117244575099414087">Khi bạn bật tuỳ chọn này, các trang web có thể sử dụng cảm biến trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng cảm biến.</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
+<translation id="8163152278172770963">Không cho phép các trang web tự động chuyển sang chế độ hình trong hình</translation>
 <translation id="8168435359814927499">Nội dung</translation>
 <translation id="818487310457576362">Kéo từ bên cạnh màn hình để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="8186479265534291036">Trang web không hoạt động? Bạn đã chặn cookie của bên thứ ba</translation>
@@ -698,6 +701,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Cho phép thông báo</translation>
 <translation id="9138217887606523162">Mức thu phóng hiện tại là <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">Các trang web dùng tính năng này để tự động chuyển sang dạng xem hình trong hình. Nhờ đó, bạn vừa có thể xem tiếp video, vừa thoải mái dùng màn hình để thực hiện các tác vụ khác.</translation>
 <translation id="9156722768168878035">Cho phép Chrome hiển thị các thẻ gần đây trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
 <translation id="9182556968660520230">Không cho phép trang web phát nội dung được bảo vệ</translation>

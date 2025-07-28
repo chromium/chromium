@@ -536,7 +536,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3081338492074632642">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="309710370695886264">Anda memiliki 1 sandi yang digunakan ulang. Perbaiki sekarang agar tetap terlindungi.</translation>
-<translation id="3102790820790869053">Telusuri tab terbaru</translation>
 <translation id="3106258548858559536">Nonaktifkan Mode Baca</translation>
 <translation id="3106690631878101882">Sembunyikan Terjemahkan</translation>
 <translation id="310900540163454140">Hapus sandi untuk <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3581564640715911333">Tawarkan penerjemahan halaman ke dalam bahasa lain</translation>
 <translation id="3587885837929752825">Organisasi membatasi apa saja yang dapat Anda simpan di Akun Google Anda.</translation>
 <translation id="3588820906588687999">Buka Gambar di Tab Baru</translation>
-<translation id="3591006724568464696">Tab terbaru tidak tersedia</translation>
 <translation id="3595252146048399851">Anda dapat memilih jenis data yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="3602260545951981695">Pilih "Perlindungan yang Ditingkatkan"</translation>
@@ -891,7 +889,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4611811151908969241">Sembunyikan Berhenti Mengikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Menelusuri dengan Google</translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
-<translation id="4619615317237390068">Tab dari perangkat lain</translation>
 <translation id="4621768135601674446">Buka opsi Mode baca</translation>
 <translation id="4624080227980645783">Jendela Samaran baru</translation>
 <translation id="4627107755957573804">Izinkan situs dan aplikasi mengupgrade akun yang ada untuk menggunakan kunci sandi</translation>
@@ -1815,7 +1812,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8079530767338315840">Ulangi</translation>
 <translation id="8079602123447022758">Setelan ini dikelola, ketuk dua kali untuk mengetahui informasi selengkapnya</translation>
-<translation id="8080028325999236607">Tutup Semua Tab</translation>
 <translation id="8084285576995584326">Mengontrol data Akun Google Anda</translation>
 <translation id="809543534949702122">Histori Penelusuran</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Tab yang tidak Anda gunakan akan dipindahkan ke sini setelah {COUNT} hari}other{Tab yang tidak Anda gunakan akan dipindahkan ke sini setelah {COUNT} hari}}</translation>
@@ -2008,8 +2004,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8796634520835503150">Mode baca tersedia</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
 <translation id="8803639129939845298">Aman</translation>
-<translation id="8806823403540278281">Organisasi mengharuskan Anda menjelajah secara pribadi. Tab tidak disimpan dalam mode Samaran.
-<ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Ingatkan saya nanti</translation>
 <translation id="8814719628147284151">Lanjutkan</translation>
 <translation id="8819155700324279105">Berikan lapisan perlindungan tambahan terhadap ancaman online</translation>

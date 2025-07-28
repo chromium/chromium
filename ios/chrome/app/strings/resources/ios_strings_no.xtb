@@ -537,7 +537,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3081338492074632642">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bunn</translation>
 <translation id="309710370695886264">Du har ett gjenbrukt passord. Løs problemet nå for å ivareta sikkerheten.</translation>
-<translation id="3102790820790869053">Søk i nylige faner</translation>
 <translation id="3106258548858559536">Slå av lesemodus</translation>
 <translation id="3106690631878101882">Skjul Oversetter</translation>
 <translation id="310900540163454140">Vil du slette passordet for <ph name="WEBSITE" />?</translation>
@@ -648,7 +647,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3581564640715911333">Tilby å oversette sider på andre språk</translation>
 <translation id="3587885837929752825">Organisasjonen din begrenser hva du kan lagre i Google-kontoen din.</translation>
 <translation id="3588820906588687999">Åpne bildet i en ny fane</translation>
-<translation id="3591006724568464696">Nylige faner er ikke tilgjengelige</translation>
 <translation id="3595252146048399851">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="3602260545951981695">Velg «Økt beskyttelse»</translation>
@@ -892,7 +890,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4611811151908969241">Skjul Slutt å følge <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Søker med Google</translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
-<translation id="4619615317237390068">Faner fra andre enheter</translation>
 <translation id="4621768135601674446">Åpne alternativer for lesemodus</translation>
 <translation id="4624080227980645783">Nytt inkognitovindu</translation>
 <translation id="4627107755957573804">Tillat at nettsteder og apper oppgraderer eksisterende kontoer til å bruke passnøkler</translation>
@@ -1816,7 +1813,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8079530767338315840">Gjenta</translation>
 <translation id="8079602123447022758">Denne innstillingen er administrert – dobbelttrykk for mer informasjon</translation>
-<translation id="8080028325999236607">Lukk alle faner</translation>
 <translation id="8084285576995584326">Kontroller Google-kontodataene dine</translation>
 <translation id="809543534949702122">Søkelogg</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Faner du ikke bruker, flyttes hit etter {COUNT} dag}other{Faner du ikke bruker, flyttes hit etter {COUNT} dager}}</translation>
@@ -2009,8 +2005,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8796634520835503150">Lesemodus er tilgjengelig</translation>
 <translation id="8803526663383843427">Når funksjonen er på</translation>
 <translation id="8803639129939845298">Sikker</translation>
-<translation id="8806823403540278281">Organisasjonen din krever at du surfer privat. Faner lagres ikke i inkognitomodus.
-<ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Påminn meg senere</translation>
 <translation id="8814719628147284151">Fortsett</translation>
 <translation id="8819155700324279105">Legg til et ekstra lag med beskyttelse mot trusler på nettet</translation>

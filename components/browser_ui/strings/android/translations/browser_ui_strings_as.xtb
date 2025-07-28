@@ -78,6 +78,7 @@
 <translation id="1915307458270490472">কল শেষ কৰক</translation>
 <translation id="1919950603503897840">সম্পৰ্কসমূহ বাছনি কৰক</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">স্বয়ংক্ৰিয় picture-in-picture</translation>
 <translation id="1954597385941141174">ছাইটসমূহে ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1979673356880165407">আপুনি চোৱা আটাইবোৰ ছাইটৰ বাবে পাঠ আৰু প্ৰতিচ্ছবি ডাঙৰ অথবা সৰু কৰক</translation>
 <translation id="1984937141057606926">তৃতীয়-পক্ষক বাদ দি অনুমতি আছে</translation>
@@ -228,6 +229,7 @@
 <translation id="3600792891314830896">ধ্বনি প্লে’ কৰা ছাটসমূহ মিউট কৰক</translation>
 <translation id="3602290021589620013">পূৰ্বদৰ্শন</translation>
 <translation id="3611658447322220736">শেহতীয়াকৈ বন্ধ কৰা ছাইটসমূহে ডেটা পঠিওৱা আৰু গ্ৰহণ কৰা কাৰ্যটো সম্পূৰ্ণ কৰিব পাৰে</translation>
+<translation id="3619294456800709762">ছাইটসমূহ স্বয়ংক্ৰিয়ভাৱে picture-in-picture ম’ডলৈ যাব পাৰে</translation>
 <translation id="3628308229821498208">পৰামৰ্শিত সন্ধানসমূহ</translation>
 <translation id="3641456520301071208">ছাইটে আপোনাৰ অৱস্থান বিচাৰিব পাৰে</translation>
 <translation id="3658847490588580244">ডিফ’ল্ট ব্ৰাউজাৰৰ তলৰ শ্বীট</translation>
@@ -608,6 +610,7 @@
 <translation id="8117244575099414087">অন কৰা থাকিলে, ছাইটে আপোনাৰ ডিভাইচৰ ছেন্সৰ ব্যৱহাৰ কৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে ছেন্সৰ ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="813082847718468539">ছাইটৰ তথ্য চাওক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
+<translation id="8163152278172770963">ছাইটসমূহক স্বয়ংক্ৰিয়ভাৱে picture-in-picture ম’ডলৈ যোৱাৰ অনুমতি নিদিব</translation>
 <translation id="8168435359814927499">সমল</translation>
 <translation id="818487310457576362">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ ওলাবলৈ স্ক্ৰীনৰ কাষৰ পৰা টানি আনক।</translation>
 <translation id="8186479265534291036">ছাইটটোৱে কাম কৰা নাই নেকি? তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
@@ -699,6 +702,7 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />ত <ph name="APP_NAME" />ৰ বাবে অনুমতিসমূহ অন কৰক।</translation>
 <translation id="9138037198177304356">জাননীৰ অনুমতি আছে</translation>
 <translation id="9138217887606523162">বৰ্তমানৰ জুম <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">ছাইটসমূহে picture-in-picture ম’ডলৈ স্বয়ংক্ৰিয়ভাৱে যাবলৈ এই ছেটিংটো ব্যৱহাৰ কৰে। ই আপোনাক অন্য কামৰ বাবে স্ক্ৰীন খালী কৰি থাকোঁতে ভিডিঅ’ চাই থাকিবলৈ দিয়ে।</translation>
 <translation id="9156722768168878035">Chromeক আপোনাৰ ডিভাইচৰ এপৰ সূচী আৰু সন্ধানৰ ফলাফলত আপোনাৰ শেহতীয়া টেবসমূহ দেখুৱাবলৈ দিয়ক। আপুনি Chromeৰ ছেটিঙত যিকোনো সময়তে এইটো অফ কৰিব পাৰে।</translation>
 <translation id="9162462602695099906">এই পৃষ্ঠাখন বিপজ্জনক</translation>
 <translation id="9182556968660520230">ছাইটক সুৰক্ষিত সমল প্লে’ কৰাৰ অনুমতি নিদিব</translation>

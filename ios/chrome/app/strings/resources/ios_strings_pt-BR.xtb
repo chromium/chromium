@@ -536,7 +536,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3081338492074632642">A senha que você está salvando precisa ser a mesma usada em <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Você tem uma senha reutilizada. Corrija o problema agora para se proteger.</translation>
-<translation id="3102790820790869053">Pesquisar guias recentes</translation>
 <translation id="3106258548858559536">Desativar Modo de leitura</translation>
 <translation id="3106690631878101882">Ocultar opção "Traduzir"</translation>
 <translation id="310900540163454140">Excluir a senha de <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
 <translation id="3588820906588687999">Abrir em uma nova guia</translation>
-<translation id="3591006724568464696">As guias recentes estão indisponíveis</translation>
 <translation id="3595252146048399851">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="3602260545951981695">Escolha "Proteção reforçada"</translation>
@@ -891,7 +889,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4611811151908969241">Ocultar opção "Parar de seguir <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Pesquisando com o Google</translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
-<translation id="4619615317237390068">Guias de outros dispositivos</translation>
 <translation id="4621768135601674446">Abrir opções do Modo de Leitura</translation>
 <translation id="4624080227980645783">Nova janela anônima</translation>
 <translation id="4627107755957573804">Permita que sites e apps façam upgrade das contas para usar chaves de acesso</translation>
@@ -1815,7 +1812,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8079602123447022758">Esta configuração é gerenciada. Toque duas vezes para ver mais informações</translation>
-<translation id="8080028325999236607">Fechar todas as guias</translation>
 <translation id="8084285576995584326">Controle os dados da sua Conta do Google</translation>
 <translation id="809543534949702122">Pesquisar no histórico</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{As guias que você não usa são movidas para cá depois de {COUNT} dia}one{As guias que você não usa são movidas para cá depois de {COUNT} dia}other{As guias que você não usa são movidas para cá depois de {COUNT} dias}}</translation>
@@ -2008,8 +2004,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8796634520835503150">Modo de leitura disponível</translation>
 <translation id="8803526663383843427">Quando ativado</translation>
 <translation id="8803639129939845298">Seguro</translation>
-<translation id="8806823403540278281">Sua organização requer o uso do modo de navegação privada. As guias não são salvas no modo de navegação anônima.
-<ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="8819155700324279105">Adicione mais uma camada de proteção contra ameaças on-line</translation>

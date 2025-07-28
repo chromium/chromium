@@ -1427,7 +1427,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7304873321153398381">Off-line. Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7313188324932846546">Toque para configurar sincronização</translation>
 <translation id="7314734791127433392">Não foi possível verificar as senhas</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Guias e grupos de guias não usados há 1 dia ou mais}one{Guias e grupos de guias não usados há # dia ou mais}other{Guias e grupos de guias não usados há # dias ou mais}}</translation>
 <translation id="7324354302972299151">Enviar uma solicitação "Do Not Track"</translation>
 <translation id="7333041109965360609">Você cancelou sua inscrição para receber notificações</translation>
 <translation id="7336259382292148213">Tudo certo com as notificações</translation>

@@ -193,6 +193,7 @@
 <translation id="3282568296779691940">Chrome'da oturum açın</translation>
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
 <translation id="3292333338048274092">Ardından Chrome'u yeniden başlatmanız gerekir.</translation>
+<translation id="3324218984287646518">Google Lens'e bu video hakkında soru sorun</translation>
 <translation id="3327226547491422998">Daha sonra Chrome, formlarınızın otomatik olarak doldurulması için kayıtlı bilgileri kullanmak isteyip istemediğinizi sorabilir</translation>
 <translation id="3352986031709923790">arama alanının sağ üst köşesi: sağ %<ph name="RIGHT" />, üst %<ph name="TOP" /></translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -211,6 +212,7 @@
 <translation id="3576528680708590453">Sistem yöneticiniz Google Chrome'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için alternatif bir tarayıcıyı açacak şekilde yapılandırmış.</translation>
 <translation id="3582972582564653026">Chrome'u cihazlarınız arasında senkronize edin ve kişiselleştirin</translation>
 <translation id="3583751698304738917">Başka bir Chrome profilinde <ph name="USER_EMAIL_ADDRESS" /> olarak zaten oturum açmış durumdasınız.</translation>
+<translation id="358381413217813387">Bu sayfayı Google Lens ile arayın</translation>
 <translation id="3589519427766620380">Google Lens'e bu sayfa hakkında soru sorun</translation>
 <translation id="3595784445906693824">Chrome'da yeni bir profilde oturum açılsın mı?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
@@ -290,9 +292,11 @@
 <translation id="4501471624619070934">Bu ülkede erişim kısıtlandığı için yükleme başarısız oldu.</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Şimdi oturum açtığınız tüm cihazlarda yer işaretlerinize, geçmişinize ve diğer ayarlarınıza erişebilirsiniz.</translation>
 <translation id="4571503333518166079">Chrome bildirim ayarlarına git</translation>
+<translation id="4592634244097223647">Google'a bu görsel hakkında soru sorun</translation>
 <translation id="459622048091363950">Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
 <translation id="4598116752460667024">Listeden herhangi bir işlemi arayın.</translation>
 <translation id="4600710005438004015">Chrome en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
+<translation id="4608435347866444037">Bu resmi Google Lens ile arayın</translation>
 <translation id="4624065194742029982">Chrome Gizli Modu</translation>
 <translation id="4627412468266359539">İsteğe bağlı: Teşhis ve kullanım verilerini otomatik olarak Google'a göndererek ChromeOS Flex özellikleri ile performansını iyileştirmeye yardımcı olun.</translation>
 <translation id="4633000520311261472">Chrome'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek bazı uzantıları devre dışı bıraktık.</translation>
@@ -480,6 +484,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7025789849649390912">Yükleme İşlemi Durduruldu.</translation>
 <translation id="7025800014283535195">Chrome profilleri arasında burada geçiş yapabilirsiniz</translation>
 <translation id="7059914902409643750">Chrome'u Kendinize Uyarlayın</translation>
+<translation id="7060643578009939353">Bu videoyu Google Lens ile arayın</translation>
 <translation id="7071827361006050863">Chrome yakında tarama verilerini silecek</translation>
 <translation id="7085332316435785646">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chrome geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="7088681679121566888">Chrome güncel</translation>
@@ -614,6 +619,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8712767363896337380">Güncel hale gelmek üzere. Güncellemenin tamamlanması için Chrome'u yeniden başlatın.</translation>
 <translation id="8718062187489036808">Chrome Oturumunu Kapat</translation>
+<translation id="8725440680697264016">Google'a bu video hakkında soru sorun</translation>
 <translation id="873133009373065397">Google Chrome, varsayılan tarayıcıyı tespit edemiyor veya ayarlayamıyor</translation>
 <translation id="8747073452963259673">arama alanının sol alt köşesi: sol %<ph name="LEFT" />, alt %<ph name="BOTTOM" /></translation>
 <translation id="8748735421235723888">Chrome, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chrome hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir. <ph name="BEGIN_LINK" />Bellek Tasarrufu hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
@@ -630,6 +636,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8843516219908676469">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir.</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome, bu dosyayı kaldırmanızı önerir}other{Chrome, bunları kaldırmanızı önerir}}</translation>
 <translation id="8862326446509486874">Sistem düzeyinde yükleme için gerekli haklara sahip değilsiniz. Yükleyiciyi Yönetici olarak tekrar çalıştırmayı deneyin.</translation>
+<translation id="8883862939660515976">Google Lens'e bu görsel hakkında soru sorun</translation>
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8948460679427074738">Bu uzantı, verileri nasıl topladığı ve kullandığı gibi gizlilik uygulamalarını yayınlamadı. Chrome, bu dosyayı kaldırmanızı önerir.</translation>

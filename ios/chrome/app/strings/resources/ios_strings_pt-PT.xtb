@@ -536,7 +536,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3081338492074632642">Certifique-se de que a palavra-passe que está a guardar corresponde à sua palavra-passe para <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Tem 1 palavra-passe reutilizada. Corrija-a agora para manter a sua segurança.</translation>
-<translation id="3102790820790869053">Pesquise separadores recentes</translation>
 <translation id="3106258548858559536">Desativar Modo de leitura</translation>
 <translation id="3106690631878101882">Ocultar Traduzir</translation>
 <translation id="310900540163454140">Eliminar a palavra-passe de <ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
 <translation id="3587885837929752825">A sua organização limita o que pode guardar na sua Conta Google.</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
-<translation id="3591006724568464696">Os separadores recentes estão indisponíveis</translation>
 <translation id="3595252146048399851">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3596414637720633074">Bloqueie cookies de terceiros na Navegação anónima.</translation>
 <translation id="3602260545951981695">Escolha "Proteção melhorada"</translation>
@@ -891,7 +889,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4611811151908969241">Ocultar Deixar de seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Pesquisar com o Google</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
-<translation id="4619615317237390068">Separadores de outros dispositivos</translation>
 <translation id="4621768135601674446">Abrir opções do Modo de leitura</translation>
 <translation id="4624080227980645783">Nova janela de navegação anónima</translation>
 <translation id="4627107755957573804">Permitir que os sites e as apps atualizem as contas existentes para usarem chaves de acesso</translation>
@@ -1815,7 +1812,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8079602123447022758">Esta definição é gerida. Toque duas vezes para obter mais informações.</translation>
-<translation id="8080028325999236607">Fechar Todos os Separadores</translation>
 <translation id="8084285576995584326">Controle os dados da sua Conta Google</translation>
 <translation id="809543534949702122">Histórico de pesquisas</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Os separadores que não usa são movidos para aqui após {COUNT} dia}other{Os separadores que não usa são movidos para aqui após {COUNT} dias}}</translation>
@@ -2008,8 +2004,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8796634520835503150">Modo de leitura disponível</translation>
 <translation id="8803526663383843427">Quando está ativada</translation>
 <translation id="8803639129939845298">Seguro</translation>
-<translation id="8806823403540278281">A sua entidade requer que navegue em privado. Os separados não são guardados no Modo de navegação anónima.
-<ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Lembrar-me mais tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="8819155700324279105">Adicione uma camada extra de proteção contra ameaças online</translation>

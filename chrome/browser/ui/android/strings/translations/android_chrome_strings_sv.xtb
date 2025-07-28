@@ -1427,7 +1427,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7304873321153398381">Offline. Chrome kan inte kontrollera dina lösenord.</translation>
 <translation id="7313188324932846546">Tryck för att konfigurera synkronisering</translation>
 <translation id="7314734791127433392">Det går inte att kontrollera lösenorden</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Flikar och flikgrupper som inte har använts på minst 1 dag}other{Flikar och flikgrupper som inte har använts på # dagar eller mer}}</translation>
 <translation id="7324354302972299151">Skicka en Do Not Track-begäran</translation>
 <translation id="7333041109965360609">Du har slutat prenumerera på aviseringar</translation>
 <translation id="7336259382292148213">Aviseringar ser bra ut</translation>

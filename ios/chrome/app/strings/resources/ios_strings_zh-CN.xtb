@@ -537,7 +537,6 @@
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3087734570205094154">底部</translation>
 <translation id="309710370695886264">您有 1 个重复使用的密码。请立即修正它以确保安全。</translation>
-<translation id="3102790820790869053">在最近打开的标签页中搜索</translation>
 <translation id="3106258548858559536">关闭阅读模式</translation>
 <translation id="3106690631878101882">隐藏“翻译”</translation>
 <translation id="310900540163454140">删除 <ph name="WEBSITE" /> 的密码？</translation>
@@ -648,7 +647,6 @@
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
 <translation id="3587885837929752825">贵组织限制了您可在 Google 账号中保存的内容。</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
-<translation id="3591006724568464696">“最近打开的标签页”页面不可用</translation>
 <translation id="3595252146048399851">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3602260545951981695">选择“增强型保护”</translation>
@@ -892,7 +890,6 @@
 <translation id="4611811151908969241">隐藏“取消关注‘<ph name="DOMAIN_NAME" />’”</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
-<translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4621768135601674446">打开阅读模式选项</translation>
 <translation id="4624080227980645783">打开新的无痕式窗口</translation>
 <translation id="4627107755957573804">允许网站和应用将现有账号升级为使用通行密钥</translation>
@@ -1816,7 +1813,6 @@
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8079530767338315840">重复播放</translation>
 <translation id="8079602123447022758">此设置处于受管状态，点按两次可了解详情</translation>
-<translation id="8080028325999236607">关闭所有标签页</translation>
 <translation id="8084285576995584326">控制您的 Google 账号数据</translation>
 <translation id="809543534949702122">在历史记录中搜索</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{{COUNT} 天后，您未使用的标签页会移至此处}other{{COUNT} 天后，您未使用的标签页会移至此处}}</translation>
@@ -2009,8 +2005,6 @@
 <translation id="8796634520835503150">阅读模式可用</translation>
 <translation id="8803526663383843427">开启时</translation>
 <translation id="8803639129939845298">安全</translation>
-<translation id="8806823403540278281">贵单位要求您进行无痕浏览。在无痕模式下，系统不会保存标签页。
-<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8814719628147284151">继续</translation>
 <translation id="8819155700324279105">增添一层额外的安全保障，防范在线威胁</translation>

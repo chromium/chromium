@@ -1426,7 +1426,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7304873321153398381">Neprisijungta. „Chrome“ negali patikrinti jūsų slaptažodžių.</translation>
 <translation id="7313188324932846546">Palieskite, kad nustatytumėte sinchronizavimą</translation>
 <translation id="7314734791127433392">Nepavyko patikrinti slaptažodžių</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami vieną dieną ar ilgiau}one{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dieną ar ilgiau}few{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dienas ar ilgiau}many{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dienos ar ilgiau}other{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dienų ar ilgiau}}</translation>
 <translation id="7324354302972299151">Užklausos „Do Not Track“ siuntimas</translation>
 <translation id="7333041109965360609">Atšaukta pranešimų prenumerata</translation>
 <translation id="7336259382292148213">Pranešimai atrodo gerai</translation>

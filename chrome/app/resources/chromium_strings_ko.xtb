@@ -47,6 +47,7 @@
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
+<translation id="1680687534629375545">이미지 검색에 이 페이지에 관해 질문하기</translation>
 <translation id="1709772298389099340"><ph name="BROWSER_NAME" />에 승격된 권한을 제공합니다.</translation>
 <translation id="1715127912119967311">Chromium은 이러한 기능을 개선하도록 사용자와의 상호작용을 Google에 전송합니다. 검토자가 이 데이터를 읽고 처리하고 이 데이터에 주석을 달 수 있습니다.</translation>
 <translation id="1722488837206509557">이렇게 하면 사용 가능한 기기 중에서 선택하고 해당 기기에 콘텐츠를 표시할 수 있습니다.</translation>
@@ -142,6 +143,7 @@
 <translation id="2785438272836277133">이 확장 프로그램에는 멀웨어가 포함되어 있으며, 안전하지 않습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chromium에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2803971713792056305">내 Chromium</translation>
+<translation id="2816462166102338036">이미지 검색으로 이 동영상 검색하기</translation>
 <translation id="2841525013647267359">출발어</translation>
 <translation id="2846251086934905009">설치 오류: 설치 프로그램이 완료되지 않았습니다. 설치가 중단되었습니다.</translation>
 <translation id="2847479871509788944">Chromium에서 제거...</translation>
@@ -189,6 +191,7 @@
 <translation id="3313189106987092621">Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="3316771292331273802">Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다. 사이트에서 나를 기억하도록 하려면 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="3352986031709923790">검색 영역의 오른쪽 상단: 오른쪽 <ph name="RIGHT" />%, 상단 <ph name="TOP" />%</translation>
+<translation id="3369405342922656244">이미지 검색으로 이 페이지 검색하기</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">기존 Chromium 프로필로 전환하시겠습니까?</translation>
 <translation id="3412460710772753638">기기의 비밀번호 관리자에 업데이트합니다.</translation>
@@ -311,6 +314,7 @@
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
+<translation id="5254739261293693943">이 동영상에 관해 질문하기</translation>
 <translation id="5277894862589591112">변경사항을 적용하려면 Chromium을 다시 실행하세요.</translation>
 <translation id="5286907366254680517">감지됨</translation>
 <translation id="5294316920224716406">시크릿 모드로 탐색할 때 Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
@@ -389,6 +393,7 @@
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" />에서 Chromium에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="6212496753309875659">컴퓨터에 이미 최신 버전의 Chromium이 있습니다. 소프트웨어가 작동하지 않으면 Chromium의 설치를 제거한 뒤 다시 시도하세요.</translation>
 <translation id="6219195342503754812">{0,plural, =0{곧 Chromium이 다시 시작됩니다}=1{1초 후 Chromium이 다시 시작됩니다}other{#초 후 Chromium이 다시 시작됩니다}}</translation>
+<translation id="6239161312595354541">이미지 검색에 이 동영상에 관해 질문하기</translation>
 <translation id="6241367896540709610">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 필요합니다.</translation>
 <translation id="6245734527075554892">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="6248213926982192922">Chromium을 기본 브라우저로 설정</translation>
@@ -450,11 +455,13 @@
 <translation id="6847869444787758381">비밀번호가 유출되면 Chromium에서 알려줍니다.</translation>
 <translation id="684888714667046800">인터넷에 연결할 수 없습니다. 방화벽을 사용하는 경우 <ph name="PRODUCT_EXE_NAME" />이(가) 허용 목록에 있는지 확인해 주세요.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6862030660799253820">이미지 검색으로 이 이미지 검색하기</translation>
 <translation id="6873893289264747459">Chromium에서 "<ph name="EXTENSION_NAME" />"에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="6877155553248388166">검색 영역의 오른쪽 하단: 오른쪽 <ph name="RIGHT" />%, 하단 <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6901631050894301805">Chromium을 기본 브라우저로 설정하고 태스크 바에 고정하세요.</translation>
 <translation id="6929417474050522668">무료 체험을 사용 설정한 경우 방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chromium에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
+<translation id="6934579572334859869">이미지 검색에 이 이미지에 관해 질문하기</translation>
 <translation id="6940431691900807093">이후 방문한 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chromium에 요청할 수 있습니다. Chromium은 최대 3개의 관심분야를 공유할 수 있습니다.</translation>
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="6965382102122355670">확인</translation>
@@ -524,6 +531,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7859018312476869945">주소 표시줄이나 검색창에 검색어를 입력하면 Chromium은 더 나은 추천 검색어를 제공하기 위해 사용자가 입력한 내용을 기본 검색엔진으로 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="7867198900892795913">Chromium을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
 <translation id="7872446069773932638">다운로드 중... <ph name="SECONDS" />초 남았습니다.</translation>
+<translation id="7877212753140190672">이 이미지에 관해 질문하기</translation>
 <translation id="7888981273428720788">Chromium을 기본 브라우저로 설정</translation>
 <translation id="7934340546140346950">가능한 경우 Chromium이 비보안 연결을 HTTPS로 자동 업그레이드합니다.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chromium에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>

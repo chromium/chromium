@@ -1426,7 +1426,6 @@
 <translation id="7304873321153398381">‏אין חיבור לאינטרנט. ל-Chrome אין אפשרות לבדוק את הסיסמאות שלך.</translation>
 <translation id="7313188324932846546">יש ללחוץ כדי להגדיר סנכרון</translation>
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך יום אחד או יותר}one{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך # או יותר}two{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך יומיים או יותר}other{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך # או יותר}}</translation>
 <translation id="7324354302972299151">‏שליחה של בקשת Do Not Track</translation>
 <translation id="7333041109965360609">ביטלת את ההרשמה לקבלת התראות</translation>
 <translation id="7336259382292148213">נראה שהכול בסדר בהתראות</translation>
@@ -1641,6 +1640,7 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד משתמש אחד (<ph name="NUMBER_OF_OTHER_MEMBERS" />)}one{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUMBER_OF_OTHER_MEMBERS" /> משתמשים}two{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUMBER_OF_OTHER_MEMBERS" /> משתמשים}other{הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUMBER_OF_OTHER_MEMBERS" /> משתמשים}}</translation>
 <translation id="8209050860603202033">פתיחת התמונה</translation>
 <translation id="8210770465353466621">הכרטיסיות יופיעו כאן</translation>
+<translation id="8212799748012101103">פתיחת החיפוש בכרטיסיות</translation>
 <translation id="8215740705341534369">גיליון צד</translation>
 <translation id="8218622182176210845">ניהול החשבון</translation>
 <translation id="8221401890884589479">‏אפשר לחסום אתרים שלא רוצים לתת להם הרשאה. בנוסף, אתרים שנוספו לפני יותר מ-30 יום נמחקים מהרשימה ב-Chrome באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>

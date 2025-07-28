@@ -536,7 +536,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3081338492074632642">Varmista, että tallennettava salasana vastaa palvelun (<ph name="WEBSITE" />) salasanaa.</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
 <translation id="309710370695886264">Sinulla on 1 uudelleenkäytetty salasana. Korjaa se nyt, jotta pysyt turvassa.</translation>
-<translation id="3102790820790869053">Hae hiljattain suljetuista välilehdistä</translation>
 <translation id="3106258548858559536">Laita lukutila pois päältä</translation>
 <translation id="3106690631878101882">Piilota "Kääntäjä"</translation>
 <translation id="310900540163454140">Poistetaanko salasana (<ph name="WEBSITE" />)?</translation>
@@ -647,7 +646,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3581564640715911333">Tarjoudu kääntämään vierailla kielillä kirjoitettuja sivuja</translation>
 <translation id="3587885837929752825">Organisaatiosi rajoittaa, mitä voit tallentaa Google-tilillesi.</translation>
 <translation id="3588820906588687999">Avaa kuva uudessa välilehdessä</translation>
-<translation id="3591006724568464696">Viimeaikaiset välilehdet eivät ole saatavilla</translation>
 <translation id="3595252146048399851">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="3596414637720633074">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="3602260545951981695">Valitse "Parannettu suojaus"</translation>
@@ -891,7 +889,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4611811151908969241">Piilota "Älä seuraa: <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Haetaan Googlella</translation>
 <translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
-<translation id="4619615317237390068">Välilehdet muista laitteista</translation>
 <translation id="4621768135601674446">Avaa lukutilan asetukset</translation>
 <translation id="4624080227980645783">Uusi incognito-ikkuna</translation>
 <translation id="4627107755957573804">Salli sivustojen ja sovellusten päivittää nykyiset tilit käyttämään avainkoodeja</translation>
@@ -1815,7 +1812,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8079530767338315840">Toista</translation>
 <translation id="8079602123447022758">Tätä asetusta ylläpidetään, katso lisätietoja kaksoisnapauttamalla</translation>
-<translation id="8080028325999236607">Sulje kaikki välilehdet</translation>
 <translation id="8084285576995584326">Hallinnoi Google-tilin dataa</translation>
 <translation id="809543534949702122">Hae historiasta</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Välilehdet, joita et käytä, siirretään tänne {COUNT} päivän kuluttua}other{Välilehdet, joita et käytä, siirretään tänne {COUNT} päivän kuluttua}}</translation>
@@ -2008,8 +2004,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8796634520835503150">Lukutila saatavilla</translation>
 <translation id="8803526663383843427">Toiminnon ollessa päällä</translation>
 <translation id="8803639129939845298">Turvallinen</translation>
-<translation id="8806823403540278281">Organisaatiosi edellyttää, että selaat yksityisesti. Välilehtiä ei tallenneta incognito-tilassa.
-<ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Muistuta myöhemmin</translation>
 <translation id="8814719628147284151">Jatka</translation>
 <translation id="8819155700324279105">Lisäsuojaus verkkouhkia vastaan</translation>

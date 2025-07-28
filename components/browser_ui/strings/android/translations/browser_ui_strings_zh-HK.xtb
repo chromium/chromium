@@ -78,6 +78,7 @@
 <translation id="1915307458270490472">結束通話</translation>
 <translation id="1919950603503897840">選取聯絡人</translation>
 <translation id="1923695749281512248">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">自動顯示畫中畫</translation>
 <translation id="1954597385941141174">網站可要求連接 USB 裝置</translation>
 <translation id="1979673356880165407">在您瀏覽的所有網站上縮放文字和圖片</translation>
 <translation id="1984937141057606926">已允許 (第三方除外)</translation>
@@ -228,6 +229,7 @@
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3611658447322220736">最近關閉的網站可完成傳送和接受資料</translation>
+<translation id="3619294456800709762">網站可自動進入畫中畫</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
 <translation id="3641456520301071208">網站可要求取得您的位置</translation>
 <translation id="3658847490588580244">預設瀏覽器頁底面板</translation>
@@ -608,6 +610,7 @@
 <translation id="8117244575099414087">開咗之後，網站可以使用裝置嘅感應器。閂咗之後，網站唔可以使用感應器。</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8131740175452115882">確定</translation>
+<translation id="8163152278172770963">不允許網站自動進入畫中畫</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="818487310457576362">從螢幕側邊拖曳即可離開全螢幕。</translation>
 <translation id="8186479265534291036">網站無法正常運作嗎？因為第三方 Cookie 已被封鎖</translation>
@@ -699,6 +702,7 @@
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
 <translation id="9138037198177304356">批准咗通知</translation>
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="915112772806845021">網站會使用此功能自動進入畫中畫模式。你可繼續觀看影片，同時在螢幕上處理其他工作。</translation>
 <translation id="9156722768168878035">讓 Chrome 在裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="9182556968660520230">不允許網站播放受保護的內容</translation>

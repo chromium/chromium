@@ -46,6 +46,7 @@
 <translation id="1607715478322902680">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. החלון האנונימי לא ייפתח מחדש.}one{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chromium כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="1625909126243026060">‏בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה ב-Chromium</translation>
 <translation id="1640672724030957280">מוריד...</translation>
+<translation id="1680687534629375545">רוצה לשאול שאלה על הדף הזה ב"חיפוש התמונות"?</translation>
 <translation id="1709772298389099340">השירות הזה מספק הרשאות מורחבות ל-<ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">‏כדי לשפר את התכונות האלו, Chromium שולח את האינטראקציות שלך איתן ל-Google. בודקים אנושיים יכולים לקרוא את הנתונים האלה, לעבד אותם ולהוסיף להם הערות.</translation>
 <translation id="1722488837206509557">כך תהיה לך אפשרות לבחור מבין המכשירים הזמינים ולהציג בהם תוכן.</translation>
@@ -141,6 +142,7 @@
 <translation id="2785438272836277133">‏התוסף הזה מכיל תוכנה זדונית והוא לא בטוח. צריך להסיר אותו מ-Chromium כדי לא לאפשר לו יותר להציג ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
 <translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2803971713792056305">‏ה-Chromium שלך</translation>
+<translation id="2816462166102338036">חיפוש הסרטון הזה באמצעות התכונה "חיפוש תמונות"</translation>
 <translation id="2841525013647267359">תרגום מ:</translation>
 <translation id="2846251086934905009">שגיאת התקנה: פעולת מנהל ההתקנה לא הושלמה. ההתקנה בוטלה.</translation>
 <translation id="2847479871509788944">‏הסרה מ-Chromium...</translation>
@@ -186,6 +188,7 @@
 <translation id="3313189106987092621">‏Chromium יציג אזהרה לפני טעינת אתר כלשהו באמצעות חיבור לא מאובטח</translation>
 <translation id="3316771292331273802">‏אם סוגרים את כל החלונות של Chromium, מתבצעת יציאה מהחשבון ברוב האתרים, אבל לא מחשבון Google, אם נכנסת אליו ב-Chromium. כדי לאפשר לאתרים לזכור אותך, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">‏הפינה הימנית העליונה של אזור החיפוש: ‎<ph name="RIGHT" />%‎ מימין, ‎<ph name="TOP" />%‎ מלמעלה</translation>
+<translation id="3369405342922656244">חיפוש הדף הזה באמצעות התכונה "חיפוש תמונות"</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏לעבור לפרופיל קיים של Chromium?</translation>
 <translation id="3412460710772753638">עדכון במנהל הסיסמאות במכשיר הזה</translation>
@@ -308,6 +311,7 @@
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="5231355151045086930">‏יציאה מ-Chromium</translation>
 <translation id="5234764350956374838">סגירה</translation>
+<translation id="5254739261293693943">אפשר לשאול שאלות לגבי הסרטון הזה</translation>
 <translation id="5277894862589591112">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chromium</translation>
 <translation id="5286907366254680517">זוהתה</translation>
 <translation id="5294316920224716406">‏בגלישה במצב פרטי, Chromium יציג אזהרה לפני טעינת אתר באמצעות חיבור לא מאובטח</translation>
@@ -386,6 +390,7 @@
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>
 <translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}one{‏Chromium יופעל מחדש בעוד # שניות}two{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
+<translation id="6239161312595354541">רוצה לשאול משהו לגבי הסרטון הזה בחיפוש תמונות?</translation>
 <translation id="6241367896540709610">‏נדרשת הרשאת גישה לאחסון ב-Chromium כדי להוריד קבצים</translation>
 <translation id="6245734527075554892">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium</translation>
 <translation id="6248213926982192922">‏יש להפוך את Chromium לדפדפן ברירת המחדל</translation>
@@ -447,11 +452,13 @@
 <translation id="6847869444787758381">‏Chromium מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="684888714667046800">לא ניתן להתחבר לאינטרנט. אם משתמשים בחומת אש, צריך לוודא ש-<ph name="PRODUCT_EXE_NAME" /> ברשימת ההיתרים.</translation>
 <translation id="6857782730669500492">‏Chromium‏ - <ph name="PAGE_TITLE" /></translation>
+<translation id="6862030660799253820">חיפוש התמונה הזו באמצעות התכונה "חיפוש תמונות"</translation>
 <translation id="6873893289264747459">‏הפריט "<ph name="EXTENSION_NAME" />" שנמצא ב-Chromium מכיל תוכנה זדונית</translation>
 <translation id="6877155553248388166">‏הפינה הימנית התחתונה של אזור החיפוש: ‎<ph name="RIGHT" />%‎ מימין, ‎<ph name="BOTTOM" />%‎ מלמטה</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6901631050894301805">‏הגדרת Chromium כדפדפן ברירת המחדל והצמדה שלו לסרגל המשימות</translation>
 <translation id="6929417474050522668">‏כשגרסאות הניסיון פעילות, מדידת המודעות מאפשרת לאתרים שבהם ביקרת לבקש מ-Chromium מידע שיעזור לבעלי האתרים למדוד את הביצועים של המודעות שלהם. מדידת המודעות מגבילה את המעקב באתרים שונים על ידי העברת כמות קטנה ככל האפשר של מידע בין אתרים.</translation>
+<translation id="6934579572334859869">שליחת שאלה אל חיפוש התמונות לגבי התמונה הזו</translation>
 <translation id="6940431691900807093">‏לאחר מכן, אתר שבו ביקרת יכול לשלוח בקשה ל-Chromium כדי לגלות מהם תחומי העניין שלך ולהתאים אישית את המודעות שמוצגות לך. Chromium יכול לשתף עד 3 תחומי עניין.</translation>
 <translation id="6964305034639999644">‏פתיחת הקישור בחלון &amp;אנונימי של Chromium</translation>
 <translation id="6965382102122355670">אישור</translation>
@@ -521,6 +528,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7859018312476869945">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chromium שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="7867198900892795913">‏עדכון Chromium לגרסה האחרונה לא הצליח, ולכן אין לך גישה אל תכונות חדשות ותיקוני אבטחה.</translation>
 <translation id="7872446069773932638">מתבצעת הורדה… יש עוד <ph name="SECONDS" /> שנ'</translation>
+<translation id="7877212753140190672">שאלות לגבי התמונה הזו</translation>
 <translation id="7888981273428720788">‏הגדרת Chromium כדפדפן ברירת המחדל</translation>
 <translation id="7934340546140346950">‏‫Chromium משדרג חיבורים לא מאובטחים ל-HTTPS באופן אוטומטי כשאפשר</translation>
 <translation id="7937630085815544518">‏נכנסת ל-Chromium כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>

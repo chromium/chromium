@@ -78,6 +78,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Automatyczny obraz w obrazie</translation>
 <translation id="1954597385941141174">Strony mogą prosić o zgodę na połączenie z urządzeniami USB</translation>
 <translation id="1979673356880165407">Powiększaj lub pomniejszaj tekst i obrazy we wszystkich odwiedzanych witrynach</translation>
 <translation id="1984937141057606926">Dozwolone, z wyjątkiem witryn innych firm</translation>
@@ -228,6 +229,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3611658447322220736">Niedawno zamknięte strony mogą dokończyć wysyłanie i odbieranie danych</translation>
+<translation id="3619294456800709762">Witryny mogą automatycznie włączać obraz w obrazie</translation>
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
 <translation id="3641456520301071208">Strony mogą prosić o informacje o Twojej lokalizacji</translation>
 <translation id="3658847490588580244">Plansza dolna przeglądarki domyślnej</translation>
@@ -608,6 +610,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8117244575099414087">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników urządzenia. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
+<translation id="8163152278172770963">Nie zezwalaj witrynom na automatyczne włączanie obrazu w obrazie</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="818487310457576362">Aby zamknąć pełny ekran, przeciągnij od krawędzi ekranu.</translation>
 <translation id="8186479265534291036">Strona nie działa? Pliki cookie innych firm zostały zablokowane</translation>
@@ -699,6 +702,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Powiadomienia są dozwolone</translation>
 <translation id="9138217887606523162">Obecne powiększenie: <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="915112772806845021">Strony używają tego ustawienia, aby automatycznie włączać obraz w obrazie. Dzięki temu możesz kontynuować oglądanie filmu, a jednocześnie zyskać miejsce na ekranie na inne zadania.</translation>
 <translation id="9156722768168878035">Pozwól Chrome wyświetlać ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>

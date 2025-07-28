@@ -250,6 +250,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166583374608765787">Semak kemaskinian nama</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> milik meja <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Apl Web Terpencil mengikut tetapan ini secara automatik</translation>
+<translation id="116712635768212829">Jika Chrome mendapati salah satu kata laluan anda dalam pelanggaran data, Google Password Manager boleh mencadangkan untuk menukar kata laluan sekiranya anda telah log masuk.</translation>
 <translation id="1168020859489941584">Dibuka dalam <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema AI <ph name="INDEX" /> terbaharu daripada <ph name="SUBJECT" />, dalam gaya <ph name="STYLE" /> dengan perasaan <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Tukar bahasa secara automatik untuk memadankan kandungan yang dipilih</translation>
@@ -554,6 +555,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1375938286942050085">Persediaan selesai! Sediakan peranti anda untuk permainan</translation>
 <translation id="137651782282853227">Alamat yang disimpan akan kelihatan di sini</translation>
 <translation id="1376771218494401509">Namakan &amp;Tetingkap...</translation>
+<translation id="1377438103060664754">Jika satu daripada kata laluan anda ditemukan dalam pelanggaran data, Google Password Manager akan bertanya sama ada anda mahu Google Password Manager menukar kata laluan tersebut menjadi kata laluan kukuh atau tidak</translation>
 <translation id="1377600615067678409">Langkau pada masa ini</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> mengawal tetapan ini</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Tiada kata laluan yang terjejas}=1{1 kata laluan yang terjejas}other{{NUM_COMPROMISED} kata laluan yang terjejas}}</translation>
@@ -4779,6 +4781,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4295072614469448764">Apl tersedia di terminal anda. Mungkin terdapat ikon dalam Pelancar anda juga.</translation>
 <translation id="4295979599050707005">Sila log masuk semula untuk mengesahkan bahawa akaun <ph name="USER_EMAIL" /> anda boleh digunakan dengan laman web, apl dan sambungan dalam Chrome serta Google Play. Anda juga boleh mengalih keluar akaun ini. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplikasi dipasang dan distrim daripada <ph name="APP_NAME" /></translation>
+<translation id="4296632172536745000">Kata laluan asal anda untuk laman ini ditemukan dalam pelanggaran data awam. Pada <ph name="DATE" />, anda meminta <ph name="BRAND" /> menukar kata laluan anda secara automatik untuk anda.</translation>
 <translation id="4297219207642690536">Mulakan semula dan tetapkan semula</translation>
 <translation id="4297813521149011456">Putaran paparan</translation>
 <translation id="4298660926525614540">Nama Storan Boleh Tanggal</translation>
@@ -9337,6 +9340,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7582844466922312471">Data Mudah Alih</translation>
 <translation id="7583948862126372804">Kiraan</translation>
 <translation id="7585106857920830898">Membuat semakan berdasarkan dasar keselamatan organisasi anda...</translation>
+<translation id="7585490016012953607">Kata laluan pemulihan — disimpan buat sementara waktu sehingga 3 bulan</translation>
 <translation id="7586498138629385861">Chrome akan terus berjalan semasa Apl Chrome terbuka.</translation>
 <translation id="7587806318633605613">Sejarah Cadangan</translation>
 <translation id="7589448773774086276">Paparan Pisah Baharu dengan Tab Semasa</translation>

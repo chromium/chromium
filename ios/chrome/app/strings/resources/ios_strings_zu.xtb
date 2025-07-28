@@ -536,7 +536,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3081338492074632642">Yenza isiqinisekiso sokuthi iphasiwedi oyilondolozayo ifana nephasiwedi ye-<ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Ngaphansi</translation>
 <translation id="309710370695886264">Unephasiwedi eyodwa esetshenziswe kabusha. Yilungise manje ukuze uhlale uphephile.</translation>
-<translation id="3102790820790869053">Sesha amathebhu akamuva</translation>
 <translation id="3106258548858559536">Vala Imodi Yokufunda</translation>
 <translation id="3106690631878101882">Fihla Ukuhumusha</translation>
 <translation id="310900540163454140">Sula iphasiwedi ye-<ph name="WEBSITE" />?</translation>
@@ -647,7 +646,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3581564640715911333">Nikeza ngokuhumusha amakhasi ngezinye izilimi</translation>
 <translation id="3587885837929752825">Inhlangano yakho ikhawulela lokho ongakulondoloza ku-Google Account yakho.</translation>
 <translation id="3588820906588687999">Vula isithombe kuthebhu entsha</translation>
-<translation id="3591006724568464696">Amathebhu wakamuva awatholakali</translation>
 <translation id="3595252146048399851">Ungahlala ukhetha ukuthi yini ezovunyelaniswa <ph name="BEGIN_LINK" />kumasethingi<ph name="END_LINK" />. I-Google ingase iqondanise nomuntu siqu i-Search namanye amasevisi ngokususelwe emlandweni wakho.</translation>
 <translation id="3596414637720633074">Vimba amakhukhi wenkampani yangaphandle ku-Incognito</translation>
 <translation id="3602260545951981695">Khetha "Ukuvikeleka Okuthuthukisiwe"</translation>
@@ -891,7 +889,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4611811151908969241">Fihla Ukuyekela Ukulandela <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Ukusesha nge-Google</translation>
 <translation id="4619564267100705184">Qinisekisa ukuthi nguwe</translation>
-<translation id="4619615317237390068">Amathebhu kusuka kwamanye amadivayisi</translation>
 <translation id="4621768135601674446">Vula ongakukhetha kwiModi yokufunda</translation>
 <translation id="4624080227980645783">Iwindi le-Incognito elisha</translation>
 <translation id="4627107755957573804">Vumela amasayithi nama-app ukuthi kuthuthukise ama-akhawunti akhona ukuze asebenzise okhiye bokudlula</translation>
@@ -1815,7 +1812,6 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8076492880354921740">Okwamathebhu</translation>
 <translation id="8079530767338315840">Phinda</translation>
 <translation id="8079602123447022758">Leli sethingi liphethwe, thepha kabili ukuthola ulwazi olwengeziwe</translation>
-<translation id="8080028325999236607">Vala wonke amathebhu</translation>
 <translation id="8084285576995584326">Lawula idatha ye-akhawunti yakho ye-Google</translation>
 <translation id="809543534949702122">Umlando wosesho</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Amathebhu ongawasebenzisi adluliselwa lapha ngemva kosuku olu-{COUNT}}one{Amathebhu ongawasebenzisi adluliselwa lapha ngemva kwezinsuku ezingu-{COUNT}}other{Amathebhu ongawasebenzisi adluliselwa lapha ngemva kwezinsuku ezingu-{COUNT}}}</translation>
@@ -2008,8 +2004,6 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8796634520835503150">Imodi yokufunda iyatholakala</translation>
 <translation id="8803526663383843427">Lapho kuvuliwe</translation>
 <translation id="8803639129939845298">Kuphephile</translation>
-<translation id="8806823403540278281">Inhlangano yakho idinga ukuthi uphequlule ngobumfihlo. Amathebhu awalondoloziwe kumodi ye-Incognito.
-<ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Ngikhumbuze ngesinye isikhathi</translation>
 <translation id="8814719628147284151">Qhubeka</translation>
 <translation id="8819155700324279105">Engeza isendlalelo esengeziwe sokuvikela izinsongo ze-inthanethi</translation>

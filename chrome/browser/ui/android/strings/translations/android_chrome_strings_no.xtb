@@ -1426,7 +1426,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7304873321153398381">Uten nett. Chrome kan ikke sjekke passordene dine.</translation>
 <translation id="7313188324932846546">Trykk for å konfigurere synkronisering</translation>
 <translation id="7314734791127433392">Kan ikke sjekke passordene</translation>
-<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Faner og fanegrupper som ikke er brukt på 1 dag eller mer}other{Faner og fanegrupper som ikke er brukt på # dager eller mer}}</translation>
 <translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
 <translation id="7333041109965360609">Du har meldt deg av varsler</translation>
 <translation id="7336259382292148213">Varsler ser bra ut</translation>
