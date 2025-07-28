@@ -103,26 +103,6 @@ public class IdentityManagerImpl implements IdentityManager {
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
     }
 
-    /**
-     * Called for all types of changes to the primary account such as - primary account set/cleared
-     * or sync consent granted/revoked in C++.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        for (Observer observer : mObservers) {
-            observer.onPrimaryAccountChanged(eventDetails);
-        }
-    }
-
-    @CalledByNative
-    @VisibleForTesting
-    public void onAccountsCookieDeletedByUserAction() {
-        for (Observer observer : mObservers) {
-            observer.onAccountsCookieDeletedByUserAction();
-        }
-    }
-
     /** Called after an account is updated. */
     @CalledByNative
     @VisibleForTesting
@@ -132,11 +112,29 @@ public class IdentityManagerImpl implements IdentityManager {
         }
     }
 
+    /**
+     * Called for all types of changes to the primary account such as - primary account set/cleared
+     * or sync consent granted/revoked in C++.
+     */
+    @CalledByNative
+    private void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        for (Observer observer : mObservers) {
+            observer.onPrimaryAccountChanged(eventDetails);
+        }
+    }
+
     /** Called when the refresh token of the give account gets updated. */
     @CalledByNative
     private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
         if (mRefreshTokenUpdateObserver != null) {
             mRefreshTokenUpdateObserver.onResult(coreAccountInfo);
+        }
+    }
+
+    @CalledByNative
+    private void onAccountsCookieDeletedByUserAction() {
+        for (Observer observer : mObservers) {
+            observer.onAccountsCookieDeletedByUserAction();
         }
     }
 

@@ -78,7 +78,7 @@ import java.util.Objects;
  * <p>See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
 @NullMarked
-class SigninManagerImpl implements IdentityManager.Observer, SigninManager, AccountsChangeObserver {
+class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     private static final String TAG = "SigninManager";
 
     private static final Duration MANAGED_STATUS_TIMEOUT = Duration.ofSeconds(10);
@@ -133,7 +133,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 new SigninManagerImpl(
                         nativeSigninManagerAndroid, profile, identityManager, identityMutator);
 
-        identityManager.addObserver(signinManager);
         AccountInfoServiceProvider.init(identityManager);
 
         return signinManager;
@@ -173,7 +172,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     @CalledByNative
     void destroy() {
         AccountInfoServiceProvider.get().destroy();
-        mIdentityManager.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
         mPrefChangeRegistrar.destroy();
         mNativeSigninManagerAndroid = 0;
@@ -485,10 +483,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         }
     }
 
-    /**
-     * Initialize SignOutState, and call identity mutator to revoke the sync consent.  Processing
-     * will complete asynchronously in the {@link #onPrimaryAccountChanged()} callback.
-     */
+    /** Initialize SignOutState, and call identity mutator to revoke the sync consent. */
     @Override
     public void revokeSyncConsent(
             @SignoutReason int signoutSource,
