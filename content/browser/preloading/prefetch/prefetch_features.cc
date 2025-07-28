@@ -64,7 +64,7 @@ BASE_FEATURE(kPrefetchBumpNetworkPriorityAfterBeingServed,
 
 BASE_FEATURE(kPrefetchServiceWorker,
              "PrefetchServiceWorker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(kPrefetchServiceWorker) &&
