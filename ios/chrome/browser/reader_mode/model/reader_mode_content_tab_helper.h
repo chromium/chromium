@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_CONTENT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_CONTENT_TAB_HELPER_H_
 
+#import <memory>
+
 #import "base/scoped_observation.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_delegate.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -37,6 +40,8 @@ class ReaderModeContentTabHelper
                           PolicyDecisionCallback callback) override;
 
  private:
+  // Forwarding class for WebStateDelegate.
+  std::unique_ptr<ReaderModeWebStateDelegate> web_state_delegate_;
   // URL of original document.
   GURL content_url_;
   // Whether request to navigate to content URL was allowed.

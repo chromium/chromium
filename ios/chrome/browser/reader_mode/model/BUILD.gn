@@ -27,6 +27,8 @@ source_set("model") {
     "reader_mode_panel_item_configuration.mm",
     "reader_mode_tab_helper.h",
     "reader_mode_tab_helper.mm",
+    "reader_mode_web_state_delegate.h",
+    "reader_mode_web_state_delegate.mm",
   ]
   deps = [
     ":constants",
@@ -148,6 +150,7 @@ source_set("unit_tests") {
     "reader_mode_metrics_helper_unittest.mm",
     "reader_mode_model_unittest.mm",
     "reader_mode_tab_helper_unittest.mm",
+    "reader_mode_web_state_delegate_unittest.mm",
   ]
   deps = [
     ":constants",
