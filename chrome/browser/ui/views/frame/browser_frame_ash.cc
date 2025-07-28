@@ -258,6 +258,13 @@ bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {
 }
 
 void BrowserFrameAsh::OnWidgetDestroyed(views::Widget* widget) {
+  // If BrowserFrameAsh's NativeWindow has not been destroyed by the time the
+  // Browser's Widget has been destroyed, clear any Browser refs to mitigate
+  // risks from dangling pointers.
+  if (GetNativeWindow()) {
+    ash::WindowState* window_state = ash::WindowState::Get(GetNativeWindow());
+    window_state->SetDelegate(nullptr);
+  }
   browser_view_ = nullptr;
   widget_observation_.Reset();
 }
