@@ -1281,10 +1281,10 @@ void AutocompleteResult::DeduplicateMatches(
     match.ComputeStrippedDestinationURL(input, template_url_service);
   }
 
-  // Group matches by stripped URL and whether it's a calculator suggestion.
+  // Group matches by stripped URL and `AutocompleteMatchDedupeType`.
   std::unordered_map<AutocompleteResult::MatchDedupComparator,
                      std::vector<ACMatches::iterator>,
-                     ACMatchKeyHash<std::string, bool, bool, bool>>
+                     ACMatchKeyHash<std::string, AutocompleteMatchDedupeType>>
       url_to_matches;
   for (auto i = matches->begin(); i != matches->end(); ++i) {
     url_to_matches[GetMatchComparisonFields(*i)].push_back(i);
@@ -1551,16 +1551,24 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
 
 AutocompleteResult::MatchDedupComparator
 AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
-  bool is_answer =
-      (match.answer_template.has_value() &&
+  AutocompleteMatchDedupeType type;
+  if ((match.answer_template.has_value() &&
        OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) ||
-      match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER;
-  return std::make_tuple(
-      match.stripped_destination_url.spec(),
-      match.type == ACMatchType::CALCULATOR,
-      match.provider != nullptr &&
-          match.provider->type() == AutocompleteProvider::TYPE_VERBATIM_MATCH,
-      is_answer);
+      match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER) {
+    type = AutocompleteMatchDedupeType::kHistoryEmbeddingAnswer;
+  } else if (match.provider != nullptr &&
+             match.provider->type() ==
+                 AutocompleteProvider::TYPE_VERBATIM_MATCH) {
+    type = AutocompleteMatchDedupeType::kVerbatimProvider;
+  } else if (match.type == ACMatchType::CALCULATOR) {
+    type = AutocompleteMatchDedupeType::kCalculator;
+  } else if (match.IsSearchAimSuggestion()) {
+    type = AutocompleteMatchDedupeType::kAiMode;
+  } else {
+    type = AutocompleteMatchDedupeType::kNormal;
+  }
+
+  return std::make_tuple(match.stripped_destination_url.spec(), type);
 }
 
 void AutocompleteResult::LimitNumberOfURLsShown(

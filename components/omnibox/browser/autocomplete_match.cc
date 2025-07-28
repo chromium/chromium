@@ -156,16 +156,12 @@ size_t ACMatchKeyHash<Args...>::operator()(
   return seed;
 }
 
-// This trick allows implementing ACMatchKeyHash in the implementation file.
-// Every unique specialization of ACMatchKey should have a corresponding
+// This trick allows implementing `ACMatchKeyHash` in the implementation file.
+// Every unique specialization of `ACMatchKey` should have a corresponding
 // declaration here.
-template struct ACMatchKeyHash<std::u16string,
-                               std::string>;  // base_search_provider
-// Deduplication key hash for AutocompleteResult.
+// Deduplication key hash for `AutocompleteResult`.
 template struct ACMatchKeyHash<std::string,  // URL
-                               bool,         // Is Calculator type?
-                               bool,         // Is Verbatim Match?
-                               bool>;        // Is Answer card?
+                               AutocompleteMatchDedupeType>;
 
 // RichAutocompletionParams ---------------------------------------------------
 
@@ -1011,7 +1007,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   if (!url.is_valid())
     return url;
 
-  // Special-case canonicalizing Docs URLs. This logic is self-contained and
+  // Special-case canonicalization Docs URLs. This logic is self-contained and
   // will not participate in the TemplateURL canonicalization.
   GURL docs_url = DocumentProvider::GetURLForDeduping(url);
   if (docs_url.is_valid())
@@ -1744,6 +1740,12 @@ bool AutocompleteMatch::IsContextualSearchSuggestion() const {
 bool AutocompleteMatch::IsToolbelt() const {
   return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
          !actions.empty() && omnibox_feature_configs::Toolbelt::Get().enabled;
+}
+
+bool AutocompleteMatch::IsSearchAimSuggestion() const {
+  return suggest_template.has_value() &&
+         suggest_template->default_search_parameters().contains("udm") &&
+         suggest_template->default_search_parameters().at("udm") == "50";
 }
 
 void AutocompleteMatch::FilterOmniboxActions(

@@ -153,6 +153,18 @@ enum class FeedbackType {
   kThumbsDown,
 };
 
+// Used with `stripped_destination_url` to dedupe matches. Matches with the same
+// URL but different types won't be deduped. This'll allow showing e.g. both a
+// "1+1" normal query and a "1+1 = 2" calculator suggestion simultaneously.
+enum class AutocompleteMatchDedupeType {
+  kNormal,
+  kCalculator,        // E.g. "1+1 = 2" matches.
+  kVerbatimProvider,  // Matches that come from the verbatim provider, which
+                      // does not include the verbatim SWYT match.
+  kHistoryEmbeddingAnswer,  // Matches with type `HISTORY_EMBEDDINGS_ANSWER`.
+  kAiMode,                  // Matches that activate to the DSE's AI Mode
+};
+
 // AutocompleteMatch ----------------------------------------------------------
 
 // A single result line with classified spans.  The autocomplete popup displays
@@ -547,6 +559,9 @@ struct AutocompleteMatch {
   // Checks if this match is a specialized toolbelt match with actions on
   // a button row.
   bool IsToolbelt() const;
+
+  // Checks if this match is a AI mode suggestion.
+  bool IsSearchAimSuggestion() const;
 
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
