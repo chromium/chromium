@@ -295,8 +295,14 @@ public class SearchEngineChoiceService {
                 SearchEnginesFeatureUtils.CHOICE_DIALOG_DEFAULT_BROWSER_PROMO_SUPPRESSED_MILLIS;
 
         if (mDelegate == null) return false;
+
         Instant deviceBrowserSelectedTimestamp = mDelegate.getDeviceBrowserSelectedTimestamp();
         if (deviceBrowserSelectedTimestamp == null) return false;
+
+        if (SearchEnginesFeatures.isEnabled(
+                SearchEnginesFeatures.SUPPRESS_DEFAULT_BROWSER_PROMO_IF_CHOICE_SET)) {
+            return true;
+        }
 
         try {
             return Instant.now()
