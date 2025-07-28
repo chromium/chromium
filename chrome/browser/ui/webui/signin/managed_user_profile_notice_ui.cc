@@ -321,7 +321,10 @@ void ManagedUserProfileNoticeUI::Initialize(
     // Canceling when profile separation is enabled forces the user to signout.
     update_data.Set(
         "cancelLabel",
-        l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON));
+        l10n_util::GetStringUTF16(
+            create_param->profile_creation_required_by_policy
+                ? IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON
+                : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT));
   } else if (is_school_account) {
     update_data.Set("separateBrowsingDataTitle",
                     l10n_util::GetStringUTF16(

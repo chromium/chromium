@@ -738,7 +738,7 @@
       Data that is saved only on this device will remain in the existing profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_ALREADY_SIGNED_IN_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created managed profile, this is shown when the user was already signed into a profile.">
-      Your organization, <ph name="ACCOUNT_MANAGER">$1<ex>example.com</ex></ph>, will not be able to see or manage this data. It will remain in the existing profile.
+      Your organization, <ph name="ACCOUNT_MANAGER">$1<ex>example.com</ex></ph>, will not be able to see or manage your existing data. It will remain in the existing profile.
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
       No, continue to work in this profile
