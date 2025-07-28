@@ -346,13 +346,6 @@ std::string GetUnifiedPlatform() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return kUnifiedPlatformLinuxX64;
   }
-#if BUILDFLAG(ENABLE_VR)
-  // The Android XR device by default also has the unified platform of desktop
-  // form factor.
-  if (device::features::IsXrDevice()) {
-    return kUnifiedPlatformLinuxX64;
-  }
-#endif  // BUILDFLAG(ENABLE_VR)
   return "Linux; Android 10; K";
 #elif BUILDFLAG(IS_CHROMEOS)
   return "X11; CrOS x86_64 14541.0.0";
@@ -613,11 +606,6 @@ bool GetMobileBitForUAMetadata() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return false;
   }
-#if BUILDFLAG(ENABLE_VR)
-  if (device::features::IsXrDevice()) {
-    return false;
-  }
-#endif  // BUILDFLAG(ENABLE_VR)
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -640,11 +628,6 @@ std::string GetPlatformVersion() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return std::string();
   }
-#if BUILDFLAG(ENABLE_VR)
-  if (device::features::IsXrDevice()) {
-    return std::string();
-  }
-#endif  // BUILDFLAG(ENABLE_VR)
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -662,11 +645,6 @@ std::string GetPlatformForUAMetadata() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return "Linux";
   }
-#if BUILDFLAG(ENABLE_VR)
-  if (device::features::IsXrDevice()) {
-    return "Linux";
-  }
-#endif  // BUILDFLAG(ENABLE_VR)
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -809,17 +787,9 @@ std::string GetCpuArchitecture() {
 #elif BUILDFLAG(IS_IOS)
   return "arm";
 #elif BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/433345971) The user agent string should contain the actual
-  // cpu type information obtained from the Android device. Same for the cpu bit
-  // count in #GetCpuBitness below.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return "x86";
   }
-#if BUILDFLAG(ENABLE_VR)
-  if (device::features::IsXrDevice()) {
-    return "x86";
-  }
-#endif  // BUILDFLAG(ENABLE_VR)
   return std::string();
 #elif BUILDFLAG(IS_POSIX)
   std::string cpu_info = BuildCpuInfo();
@@ -859,11 +829,6 @@ std::string GetCpuBitness() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
     return "64";
   }
-#if BUILDFLAG(ENABLE_VR)
-  if (device::features::IsXrDevice()) {
-    return "64";
-  }
-#endif  // BUILDFLAG(ENABLE_VR)
   return std::string();
 #elif BUILDFLAG(IS_POSIX)
   return base::Contains(BuildCpuInfo(), "64") ? "64" : "32";
