@@ -301,6 +301,12 @@ message ContentAttributes {
   ContentAttributeType attribute_type = 3 [features = { field_presence: EXPLICIT }];
 
   // This is the geometry of the common_ancestor_dom_node_id.
+  //
+  // In the default mode, this is only populated if this is the
+  // `accessibility_focused_dom_node_id`.
+  //
+  // Populated for all nodes in
+  // `ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.`
   Geometry geometry = 4 [features = { field_presence: EXPLICIT }];
 
   // The interaction information for the content node.
