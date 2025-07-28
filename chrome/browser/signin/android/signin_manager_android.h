@@ -52,8 +52,6 @@ class SigninManagerAndroid : public KeyedService {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  bool IsSigninAllowed(JNIEnv* env) const;
-
   bool IsForceSigninEnabled(JNIEnv* env);
 
   // Registers a CloudPolicyClient for fetching policy for a user and fetches
@@ -109,9 +107,6 @@ class SigninManagerAndroid : public KeyedService {
       const CachedIsAccountManaged& cached_entry,
       const CoreAccountInfo& account);
 
-  void OnSigninAllowedPrefChanged() const;
-  bool IsSigninAllowed() const;
-
   using RegisterPolicyWithAccountCallback = base::OnceCallback<void(
       const std::optional<ManagementCredentials>& credentials)>;
 
@@ -140,9 +135,6 @@ class SigninManagerAndroid : public KeyedService {
                        base::OnceClosure callback);
 
   const raw_ptr<Profile> profile_ = nullptr;
-
-  // Handler for prefs::kSigninAllowed set in user's profile.
-  BooleanPrefMember signin_allowed_;
 
   // Handler for prefs::kForceBrowserSignin. This preference is set in Local
   // State, not in user prefs.

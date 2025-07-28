@@ -32,10 +32,13 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -53,6 +56,7 @@ import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.lang.annotation.Retention;
@@ -90,10 +94,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     private final IdentityMutator mIdentityMutator;
     private final ObserverList<SignInStateObserver> mSignInStateObservers = new ObserverList<>();
     private final List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
-
-    // Is true when the sign-in is not disabled via the toggle in settings and not disabled by
-    // policies. The value should match the one of PrefService.getBoolean(Pref.SIGNIN_ALLOWED).
-    private boolean mSigninAllowedPref;
+    private final PrefChangeRegistrar mPrefChangeRegistrar;
+    private final PrefService mPrefService;
 
     /**
      * Will be set during the sign in process, and nulled out when there is not a pending sign in.
@@ -148,8 +150,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         mIdentityManager = identityManager;
         mIdentityMutator = identityMutator;
 
-        mSigninAllowedPref =
-                SigninManagerImplJni.get().isSigninAllowed(mNativeSigninManagerAndroid);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
         var accountsPromise = mAccountManagerFacade.getAccounts();
@@ -160,6 +160,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                     CoreAccountInfo.getIdFrom(
                             identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         }
+        mPrefService = UserPrefs.get(profile);
+        mPrefChangeRegistrar = new PrefChangeRegistrar(mPrefService);
+        mPrefChangeRegistrar.addObserver(Pref.SIGNIN_ALLOWED, this::notifySignInAllowedChanged);
     }
 
     /**
@@ -172,6 +175,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         AccountInfoServiceProvider.get().destroy();
         mIdentityManager.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
+        mPrefChangeRegistrar.destroy();
         mNativeSigninManagerAndroid = 0;
     }
 
@@ -239,7 +243,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     @Override
     public boolean isSigninAllowed() {
         return mSignInState == null
-                && mSigninAllowedPref
+                && mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
                 && isSigninSupported(/* requireUpdatedPlayServices= */ false);
     }
@@ -343,10 +347,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                     String.format(
                             "Sign-in isn't allowed!\n"
                                     + "  mSignInState: %s\n"
-                                    + "  mSigninAllowedPref: %s\n"
+                                    + "  Pref.SIGNIN_ALLOWED: %s\n"
                                     + "  Signed-in account: %s",
                             mSignInState,
-                            mSigninAllowedPref,
+                            mPrefService.getBoolean(Pref.SIGNIN_ALLOWED),
                             mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         }
 
@@ -617,14 +621,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         }
     }
 
-    // TODO(crbug.com/404801135): Remove this method and mSigninAllowedPref to rely on
-    // Pref.SIGNIN_ALLOWED instead.
-    @CalledByNative
-    private void onSigninAllowedChanged(boolean signinAllowed) {
-        mSigninAllowedPref = signinAllowed;
-        notifySignInAllowedChanged();
-    }
-
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or
      * asynchronously depending on the availability of the result.
@@ -870,8 +866,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
     @NativeMethods
     interface Natives {
-        boolean isSigninAllowed(long nativeSigninManagerAndroid);
-
         boolean isForceSigninEnabled(long nativeSigninManagerAndroid);
 
         @JniType("std::string")

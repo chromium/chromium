@@ -55,11 +55,15 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -73,6 +77,8 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -96,6 +102,9 @@ public class SigninManagerImplTest {
     @Mock private SigninManagerImpl.Natives mNativeMock;
     @Mock private IdentityManagerImpl.Natives mIdentityManagerNativeMock;
     @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeNativeMock;
+    @Mock private UserPrefs.Natives mUserPrefsNativeMock;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarNativeMock;
+    @Mock private PrefService mPrefService;
     @Mock private IdentityMutator mIdentityMutator;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
     @Mock private Profile mProfile;
@@ -110,10 +119,14 @@ public class SigninManagerImplTest {
         SigninManagerImplJni.setInstanceForTesting(mNativeMock);
         IdentityManagerImplJni.setInstanceForTesting(mIdentityManagerNativeMock);
         BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
+        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarNativeMock);
+
+        when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         BookmarkModel.setInstanceForTesting(FakeBookmarkModel.createModel());
 
-        when(mNativeMock.isSigninAllowed(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
         // Suppose that the accounts are already seeded

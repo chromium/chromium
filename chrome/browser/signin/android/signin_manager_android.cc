@@ -157,11 +157,6 @@ SigninManagerAndroid::SigninManagerAndroid(
   DCHECK(user_cloud_policy_manager_);
   DCHECK(user_policy_signin_service_);
 
-  signin_allowed_.Init(
-      prefs::kSigninAllowed, profile_->GetPrefs(),
-      base::BindRepeating(&SigninManagerAndroid::OnSigninAllowedPrefChanged,
-                          base::Unretained(this)));
-
   force_browser_signin_.Init(prefs::kForceBrowserSignin,
                              g_browser_process->local_state());
 
@@ -193,14 +188,6 @@ SigninManagerAndroid::ManagementCredentials::ManagementCredentials(
 
 SigninManagerAndroid::ManagementCredentials::~ManagementCredentials() = default;
 
-bool SigninManagerAndroid::IsSigninAllowed() const {
-  return signin_allowed_.GetValue();
-}
-
-bool SigninManagerAndroid::IsSigninAllowed(JNIEnv* env) const {
-  return IsSigninAllowed();
-}
-
 bool SigninManagerAndroid::IsForceSigninEnabled(JNIEnv* env) {
   return force_browser_signin_.GetValue();
 }
@@ -211,13 +198,6 @@ bool SigninManagerAndroid::MatchesCachedIsAccountManagedEntry(
     const CoreAccountInfo& account) {
   return cached_entry.gaia_id == account.gaia &&
          cached_entry.expiration_time > base::Time::Now();
-}
-
-void SigninManagerAndroid::OnSigninAllowedPrefChanged() const {
-  VLOG(1) << "::OnSigninAllowedPrefChanged() " << IsSigninAllowed();
-  Java_SigninManagerImpl_onSigninAllowedChanged(
-      base::android::AttachCurrentThread(), java_signin_manager_,
-      IsSigninAllowed());
 }
 
 void SigninManagerAndroid::StopApplyingCloudPolicy(JNIEnv* env) {
