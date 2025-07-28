@@ -428,7 +428,7 @@ static llvm::DenseMap<
             },
         },
         {
-            "WTF::Vector",
+            "blink::Vector",
             {
                 {
                     "begin",

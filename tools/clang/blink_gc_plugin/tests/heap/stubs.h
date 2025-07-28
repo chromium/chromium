@@ -58,7 +58,7 @@ template <typename T, typename Traits = void>
 class raw_ref {};
 
 }  // namespace base
-namespace WTF {
+namespace blink {
 
 template<typename T> class RefCounted { };
 
@@ -157,7 +157,7 @@ class HashMap {
 
   ~HashMap() {}
 };
-}
+}  // namespace blink
 
 // Empty namespace declaration to exercise internal
 // handling of namespace equality.
@@ -417,8 +417,6 @@ using CrossThreadWeakPersistent = cppgc::subtle::CrossThreadWeakPersistent<T>;
 
 template <typename T>
 using TraceWrapperV8Reference = v8::TracedReference<T>;
-
-using namespace WTF;
 
 #define DISALLOW_NEW()                                            \
  public:                                                          \

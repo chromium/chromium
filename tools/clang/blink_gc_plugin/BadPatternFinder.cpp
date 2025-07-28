@@ -234,14 +234,15 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
                   hasName("::std::pair"),
                   hasAnyTemplateArgument(refersToType(member_ptr_or_ref)))))));
     auto gced_or_member = anyOf(gced_ptr_ref_or_pair, member_ptr_ref_or_pair);
-    auto has_wtf_collection_name = hasAnyName(
-        "::WTF::Vector", "::WTF::Deque", "::WTF::HashSet",
-        "::WTF::LinkedHashSet", "::WTF::HashCountedSet", "::WTF::HashMap");
+    auto has_wtf_collection_name =
+        hasAnyName("::blink::Vector", "::blink::Deque", "::blink::HashSet",
+                   "::blink::LinkedHashSet", "::blink::HashCountedSet",
+                   "::blink::HashMap");
     auto has_std_collection_name =
         hasAnyName("::std::vector", "::std::map", "::std::unordered_map",
                    "::std::set", "::std::unordered_set", "::std::array");
     auto partition_allocator = hasCanonicalType(
-        hasDeclaration(cxxRecordDecl(hasName("::WTF::PartitionAllocator"))));
+        hasDeclaration(cxxRecordDecl(hasName("::blink::PartitionAllocator"))));
     auto wtf_collection_decl =
         classTemplateSpecializationDecl(
             has_wtf_collection_name,

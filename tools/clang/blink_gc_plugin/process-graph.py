@@ -282,7 +282,7 @@ def detect_cycles():
     dst = graph.get(root_edge.dst)
     if src.visited:
       continue
-    if root_edge.dst == "WTF::String":
+    if root_edge.dst == "blink::String":
       continue
     if dst is None:
       print("\nPersistent root to incomplete destination object:")
@@ -366,8 +366,8 @@ gc_bases = (
   'cppgc::GarbageCollectedMixin',
 )
 ref_bases = (
-  'WTF::RefCounted',
-  'WTF::ThreadSafeRefCounted',
+    'blink::RefCounted',
+    'blink::ThreadSafeRefCounted',
 )
 gcref_bases = (
   'blink::RefCountedGarbageCollected',
