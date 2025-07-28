@@ -48,6 +48,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -205,6 +206,9 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   histograms.ExpectUniqueSample("WebApp.LaunchSource", kLaunchSource, 1);
   histograms.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
                                 /*sample=*/true, 1);
+  histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                               blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
+                               1);
 
   EXPECT_THAT(histograms,
               test::ForAllGetAllSamples(
@@ -241,6 +245,9 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   histograms.ExpectUniqueSample("WebApp.LaunchSource", kLaunchSource, 1);
   histograms.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
                                 /*sample=*/true, 1);
+  histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                               blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
+                               1);
 
   EXPECT_THAT(histograms,
               test::ForAllGetAllSamples(

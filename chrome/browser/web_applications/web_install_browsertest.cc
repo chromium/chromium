@@ -32,6 +32,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
@@ -210,6 +211,9 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest, Install) {
   // Validate JS results.
   EXPECT_TRUE(ResultExists(app_web_contents));
   EXPECT_FALSE(ErrorExists(app_web_contents));
+  histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                               blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
+                               1);
 
   histograms.ExpectUniqueSample("WebApp.Install.Source.Success", kInstallSource,
                                 1);
