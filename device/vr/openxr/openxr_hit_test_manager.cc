@@ -107,12 +107,14 @@ OpenXrHitTestManager::GetTransientHitTestSubscriptionResult(
 
 mojom::XRHitTestSubscriptionResultsDataPtr
 OpenXrHitTestManager::GetHitTestResults(
+    XrTime predicted_display_time,
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   TRACE_EVENT2("xr", "GetHitTestResults", "subscription_count",
                hit_test_subscription_id_to_data_.size(),
                "transient_subscription_count",
                hit_test_subscription_id_to_transient_hit_test_data_.size());
+  OnStartProcessingHitTests(predicted_display_time);
   mojom::XRHitTestSubscriptionResultsDataPtr result =
       mojom::XRHitTestSubscriptionResultsData::New();
 

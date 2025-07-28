@@ -34,9 +34,4 @@ OpenXrPlaneManagerAndroid::~OpenXrPlaneManagerAndroid() {
   }
 }
 
-void OpenXrPlaneManagerAndroid::OnFrameUpdate(XrTime predicted_display_time,
-                                              XrSpace mojo_space) {
-  predicted_display_time_ = predicted_display_time;
-}
-
 }  // namespace device

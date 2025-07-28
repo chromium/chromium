@@ -707,25 +707,18 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     }
   }
 
-  OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetSceneUnderstandingManager();
-
+  // Get results for hit test subscriptions.
   OpenXrHitTestManager* hit_test_manager = openxr_->GetHitTestManager();
-
-  if (scene_understanding_manager &&
-      frame_data->render_info->mojo_from_viewer &&
+  if (hit_test_manager && frame_data->render_info->mojo_from_viewer &&
       frame_data->render_info->mojo_from_viewer->position &&
       frame_data->render_info->mojo_from_viewer->orientation) {
-    scene_understanding_manager->OnFrameUpdate(frame_time);
     device::Pose mojo_from_viewer(
         *frame_data->render_info->mojo_from_viewer->position,
         *frame_data->render_info->mojo_from_viewer->orientation);
-    // Get results for hit test subscriptions.
-    if (hit_test_manager) {
-      frame_data->hit_test_subscription_results =
-          hit_test_manager->GetHitTestResults(mojo_from_viewer.ToTransform(),
-                                              frame_data->input_state.value());
-    }
+    frame_data->hit_test_subscription_results =
+        hit_test_manager->GetHitTestResults(frame_time,
+                                            mojo_from_viewer.ToTransform(),
+                                            frame_data->input_state.value());
   }
 
   // If we don't have a depth_sensor, depth wasn't enabled.

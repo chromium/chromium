@@ -40,15 +40,14 @@ std::vector<mojom::XRHitResultPtr> OpenXrHitTestManagerAndroid::RequestHitTest(
     return {};
   }
 
-  XrTime predicted_display_time = plane_manager_->predicted_display_time();
   XrTrackableTrackerANDROID plane_tracker = plane_manager_->plane_tracker();
 
-  if (predicted_display_time == 0 || plane_tracker == XR_NULL_HANDLE ||
+  if (predicted_display_time_ == 0 || plane_tracker == XR_NULL_HANDLE ||
       mojo_space_ == XR_NULL_HANDLE) {
     DVLOG(3) << __func__
              << ": plane_manager_ not yet ready for hit-testing. "
                 "predicted_display_time="
-             << predicted_display_time << ", plane_tracker=" << plane_tracker
+             << predicted_display_time_ << ", plane_tracker=" << plane_tracker
              << ", mojo_space=" << mojo_space_;
     return {};
   }
@@ -62,7 +61,7 @@ std::vector<mojom::XRHitResultPtr> OpenXrHitTestManagerAndroid::RequestHitTest(
   raycast_info.trajectory =
       XrVector3f{ray_direction.x(), ray_direction.y(), ray_direction.z()};
   raycast_info.space = mojo_space_;
-  raycast_info.time = predicted_display_time;
+  raycast_info.time = predicted_display_time_;
 
   XrRaycastHitResultANDROID xr_results_array[kMaxHitTestResults];
   XrRaycastHitResultsANDROID xr_hit_results = {
@@ -94,6 +93,11 @@ std::vector<mojom::XRHitResultPtr> OpenXrHitTestManagerAndroid::RequestHitTest(
 
   DVLOG(2) << __func__ << ": hit_results->size()=" << hit_results.size();
   return hit_results;
+}
+
+void OpenXrHitTestManagerAndroid::OnStartProcessingHitTests(
+    XrTime predicted_display_time) {
+  predicted_display_time_ = predicted_display_time;
 }
 
 }  // namespace device

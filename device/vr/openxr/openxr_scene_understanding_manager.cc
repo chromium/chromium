@@ -11,5 +11,4 @@ namespace device {
 OpenXRSceneUnderstandingManager::OpenXRSceneUnderstandingManager() = default;
 OpenXRSceneUnderstandingManager::~OpenXRSceneUnderstandingManager() = default;
 
-
 }  // namespace device

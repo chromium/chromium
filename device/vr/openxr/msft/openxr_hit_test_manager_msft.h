@@ -16,7 +16,8 @@ class OpenXrPlaneManagerMsft;
 
 class OpenXrHitTestManagerMsft : public OpenXrHitTestManager {
  public:
-  explicit OpenXrHitTestManagerMsft(OpenXrPlaneManagerMsft* plane_manager);
+  explicit OpenXrHitTestManagerMsft(OpenXrPlaneManagerMsft* plane_manager,
+                                    XrSpace mojo_space);
   ~OpenXrHitTestManagerMsft() override;
 
   std::vector<mojom::XRHitResultPtr> RequestHitTest(
@@ -26,11 +27,13 @@ class OpenXrHitTestManagerMsft : public OpenXrHitTestManager {
  protected:
   bool OnNewHitTestSubscription() override;
   void OnAllHitTestSubscriptionsRemoved() override;
+  void OnStartProcessingHitTests(XrTime predicted_display_time) override;
   std::optional<float> GetRayPlaneDistance(const gfx::Point3F& ray_origin,
                                            const gfx::Vector3dF& ray_vector,
                                            const gfx::Point3F& plane_origin,
                                            const gfx::Vector3dF& plane_normal);
   raw_ptr<OpenXrPlaneManagerMsft> plane_manager_;
+  XrSpace mojo_space_;
 };
 
 }  // namespace device

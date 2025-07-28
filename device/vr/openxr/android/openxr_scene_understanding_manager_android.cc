@@ -44,13 +44,6 @@ OpenXRSceneUnderstandingManagerAndroid::GetHitTestManager() {
   return hit_test_manager_.get();
 }
 
-void OpenXRSceneUnderstandingManagerAndroid::OnFrameUpdate(
-    XrTime predicted_display_time) {
-  if (plane_manager_) {
-    plane_manager_->OnFrameUpdate(predicted_display_time, mojo_space_);
-  }
-}
-
 OpenXrSceneUnderstandingManagerAndroidFactory::
     OpenXrSceneUnderstandingManagerAndroidFactory() = default;
 OpenXrSceneUnderstandingManagerAndroidFactory::

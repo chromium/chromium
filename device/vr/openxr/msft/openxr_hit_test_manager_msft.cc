@@ -15,8 +15,9 @@
 namespace device {
 
 OpenXrHitTestManagerMsft::OpenXrHitTestManagerMsft(
-    OpenXrPlaneManagerMsft* plane_manager)
-    : plane_manager_(plane_manager) {}
+    OpenXrPlaneManagerMsft* plane_manager,
+    XrSpace mojo_space)
+    : plane_manager_(plane_manager), mojo_space_(mojo_space) {}
 
 OpenXrHitTestManagerMsft::~OpenXrHitTestManagerMsft() = default;
 
@@ -121,6 +122,13 @@ std::vector<mojom::XRHitResultPtr> OpenXrHitTestManagerMsft::RequestHitTest(
 
   DVLOG(2) << __func__ << ": hit_results->size()=" << hit_results.size();
   return hit_results;
+}
+
+void OpenXrHitTestManagerMsft::OnStartProcessingHitTests(
+    XrTime predicted_display_time) {
+  // Ensure that the PlaneManager is updated so that we can get the latest
+  // state for hit tests.
+  plane_manager_->EnsureFrameUpdated(predicted_display_time, mojo_space_);
 }
 
 bool OpenXrHitTestManagerMsft::OnNewHitTestSubscription() {

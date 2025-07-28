@@ -115,7 +115,6 @@ class OpenXrApiWrapper {
   OpenXrAnchorManager* GetAnchorManager();
   OpenXrHitTestManager* GetHitTestManager();
   OpenXrLightEstimator* GetLightEstimator();
-  OpenXRSceneUnderstandingManager* GetSceneUnderstandingManager();
   OpenXrDepthSensor* GetDepthSensor();
 
   void OnContextProviderCreated(

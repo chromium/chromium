@@ -28,8 +28,7 @@ class OpenXrPlaneManagerMsft : public OpenXrPlaneManager {
                          XrSession session);
   ~OpenXrPlaneManagerMsft() override;
 
-  void OnFrameUpdate(XrTime predicted_display_time,
-                     XrSpace mojo_space) override;
+  void EnsureFrameUpdated(XrTime predicted_display_time, XrSpace mojo_space);
 
   // Helper methods to start/stop the plane manager. Note that at present these
   // are only expected to be called by `OpenXrHitTestManagerMsft`. During a
@@ -48,6 +47,7 @@ class OpenXrPlaneManagerMsft : public OpenXrPlaneManager {
   std::unique_ptr<OpenXrSceneMsft> scene_;
   OpenXrSceneBoundsMsft scene_bounds_;
   XrTime next_scene_update_time_{0};
+  XrTime last_predicted_display_time_{0};
 
   enum class SceneComputeState { kOff, kIdle, kWaiting };
   SceneComputeState scene_compute_state_{SceneComputeState::kOff};

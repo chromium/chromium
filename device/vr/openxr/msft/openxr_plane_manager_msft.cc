@@ -58,8 +58,13 @@ void OpenXrPlaneManagerMsft::Stop() {
   scene_compute_state_ = SceneComputeState::kOff;
 }
 
-void OpenXrPlaneManagerMsft::OnFrameUpdate(XrTime predicted_display_time,
-                                           XrSpace mojo_space) {
+void OpenXrPlaneManagerMsft::EnsureFrameUpdated(XrTime predicted_display_time,
+                                                XrSpace mojo_space) {
+  if (last_predicted_display_time_ == predicted_display_time) {
+    return;
+  }
+  last_predicted_display_time_ = predicted_display_time;
+
   switch (scene_compute_state_) {
     case SceneComputeState::kOff:
       // Start/Stop are the only way to start the SceneObserver.

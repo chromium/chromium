@@ -438,11 +438,6 @@ OpenXrLightEstimator* OpenXrApiWrapper::GetLightEstimator() {
   return light_estimator_.get();
 }
 
-OpenXRSceneUnderstandingManager*
-OpenXrApiWrapper::GetSceneUnderstandingManager() {
-  return scene_understanding_manager_.get();
-}
-
 OpenXrDepthSensor* OpenXrApiWrapper::GetDepthSensor() {
   return depth_sensor_.get();
 }

@@ -23,7 +23,6 @@ class OpenXRSceneUnderstandingManager {
   OpenXRSceneUnderstandingManager();
   virtual ~OpenXRSceneUnderstandingManager();
 
-  virtual void OnFrameUpdate(XrTime predicted_display_time) = 0;
   virtual OpenXrPlaneManager* GetPlaneManager() = 0;
   virtual OpenXrHitTestManager* GetHitTestManager() = 0;
 };

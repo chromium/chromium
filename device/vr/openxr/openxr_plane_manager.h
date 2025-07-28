@@ -18,9 +18,6 @@ namespace device {
 class OpenXrPlaneManager {
  public:
   virtual ~OpenXrPlaneManager();
-
-  virtual void OnFrameUpdate(XrTime predicted_display_time,
-                             XrSpace mojo_space) = 0;
 };
 
 }  // namespace device

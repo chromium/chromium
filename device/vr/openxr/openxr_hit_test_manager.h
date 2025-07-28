@@ -46,6 +46,7 @@ class OpenXrHitTestManager {
   void UnsubscribeFromHitTest(HitTestSubscriptionId subscription_id);
 
   mojom::XRHitTestSubscriptionResultsDataPtr GetHitTestResults(
+      XrTime predicted_display_time,
       const gfx::Transform& mojo_from_viewer,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
 
@@ -54,6 +55,7 @@ class OpenXrHitTestManager {
   // new subscription and that it is not actually registered.
   virtual bool OnNewHitTestSubscription();
   virtual void OnAllHitTestSubscriptionsRemoved();
+  virtual void OnStartProcessingHitTests(XrTime predicted_display_time) {}
 
   // Called to get hit test results in the mojom space from the specified origin
   // and in the specified direction. Results should be appended to the end of

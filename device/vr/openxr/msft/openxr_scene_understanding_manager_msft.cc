@@ -29,8 +29,8 @@ OpenXRSceneUnderstandingManagerMSFT::OpenXRSceneUnderstandingManagerMSFT(
       mojo_space_(mojo_space) {
   plane_manager_ =
       std::make_unique<OpenXrPlaneManagerMsft>(extension_helper, session);
-  hit_test_manager_ =
-      std::make_unique<OpenXrHitTestManagerMsft>(plane_manager_.get());
+  hit_test_manager_ = std::make_unique<OpenXrHitTestManagerMsft>(
+      plane_manager_.get(), mojo_space_);
 }
 
 OpenXRSceneUnderstandingManagerMSFT::~OpenXRSceneUnderstandingManagerMSFT() =
@@ -42,13 +42,6 @@ OpenXrPlaneManager* OpenXRSceneUnderstandingManagerMSFT::GetPlaneManager() {
 
 OpenXrHitTestManager* OpenXRSceneUnderstandingManagerMSFT::GetHitTestManager() {
   return hit_test_manager_.get();
-}
-
-void OpenXRSceneUnderstandingManagerMSFT::OnFrameUpdate(
-    XrTime predicted_display_time) {
-  if (plane_manager_) {
-    plane_manager_->OnFrameUpdate(predicted_display_time, mojo_space_);
-  }
 }
 
 OpenXrSceneUnderstandingManagerMsftFactory::

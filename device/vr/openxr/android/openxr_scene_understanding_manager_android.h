@@ -29,10 +29,7 @@ class OpenXRSceneUnderstandingManagerAndroid
   // OpenXRSceneUnderstandingManager
   OpenXrPlaneManager* GetPlaneManager() override;
   OpenXrHitTestManager* GetHitTestManager() override;
-
  private:
-  void OnFrameUpdate(XrTime predicted_display_time) override;
-
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   XrSpace mojo_space_;
 

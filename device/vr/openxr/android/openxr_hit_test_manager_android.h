@@ -28,9 +28,12 @@ class OpenXrHitTestManagerAndroid : public OpenXrHitTestManager {
       const gfx::Vector3dF& direction) override;
 
  private:
+  void OnStartProcessingHitTests(XrTime predicted_display_time) override;
+
   raw_ptr<OpenXrPlaneManagerAndroid> plane_manager_;
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   XrSession session_;
+  XrTime predicted_display_time_ = 0;
   XrSpace mojo_space_;
 };
 
