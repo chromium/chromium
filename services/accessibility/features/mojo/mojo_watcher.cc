@@ -13,13 +13,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
-#include "gin/handle.h"
 #include "gin/public/wrapper_info.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
 #include "services/accessibility/features/mojo/mojo_watch_callback.h"
 #include "services/accessibility/features/registered_wrappable.h"
 #include "services/accessibility/features/v8_manager.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 
@@ -99,18 +100,17 @@ void MojoWatcher::Persistent::OnIsolateWillDestroy() {
 
 // static
 void MojoWatcher::Persistent::OnHandleReady(const MojoTrapEvent* event) {
-  // It is safe to assume this MojoWatcher::Persistent still exists, because
-  // we keep it alive until we've dispatched MOJO_RESULT_CANCELLED from here to
-  // RunReadyCallback, and that is always the last notification we'll dispatch.
+  // It is safe to assume this MojoWatcher::Persistent still exists. It is kept
+  // alive by MojoWatcher, and only released in two situations:
+  // 1) in MojoWatcher::RunReadyCallback, which only gets called indirectly from
+  // here;
+  // 2) in MojoWatcher::OnIsolateWillDestroy, but only after it called to here
+  // synchronously.
   auto* wrap =
       reinterpret_cast<MojoWatcher::Persistent*>(event->trigger_context);
-
-  // It is safe to use base::Unretained because MojoWatcher, which is in the
-  // v8::Persistent member var, has a ref to `this` Persistent that is not
-  // cleared until MOJO_RESULT_CANCELLED.
   wrap->owning_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&MojoWatcher::Persistent::RunReadyCallback,
-                                base::Unretained(wrap), event->result));
+                                wrap, event->result));
 }
 
 void MojoWatcher::Persistent::ScheduleRunReadyCallback(MojoResult result) {
@@ -143,10 +143,6 @@ void MojoWatcher::Persistent::RunReadyCallback(MojoResult result) {
 //                            //
 
 // static
-gin::DeprecatedWrapperInfo MojoWatcher::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
-// static
 v8::Local<v8::Object> MojoWatcher::Create(
     v8::Local<v8::Context> context,
     mojo::Handle handle,
@@ -157,16 +153,13 @@ v8::Local<v8::Object> MojoWatcher::Create(
   v8::Isolate* isolate = context->GetIsolate();
   CHECK(isolate);
 
-  // Start observing.
-  MojoWatcher* watcher = new MojoWatcher(context, std::move(callback));
+  MojoWatcher* watcher = cppgc::MakeGarbageCollected<MojoWatcher>(
+      isolate->GetCppHeap()->GetAllocationHandle(), context,
+      std::move(callback));
   MojoResult result =
       watcher->Watch(handle, readable, writable, peer_closed, isolate);
 
-  gin::Handle<MojoWatcher> mojo_watcher_handle =
-      gin::CreateHandle(isolate, watcher);
-  v8::Local<v8::Object> object = mojo_watcher_handle.ToV8()
-                                     ->ToObject(isolate->GetCurrentContext())
-                                     .ToLocalChecked();
+  v8::Local<v8::Object> object = watcher->GetWrapper(isolate).ToLocalChecked();
 
   // TODO(alokp): Consider raising an exception.
   // Current clients expect to receive the initial error returned by MojoWatch
@@ -204,19 +197,27 @@ void MojoWatcher::OnIsolateWillDestroy() {
     persistent_wrap_->OnIsolateWillDestroy();
   }
   Cancel(nullptr);
-  // Stop observing the V8 isolate. Cancel() will clear `persistent_wrap_` and
-  // allow garbage collection to clear this instance.
-  StopObserving();
+  // `persistent_wrap_` can be reset after `trap_handle_` is reset in Cancel(),
+  // because resetting `trap_handle_` will trigger the trap handler
+  // `MojoWatcher::Persistent::OnHandleReady` synchronously, and there the
+  // reference count of the Persistent object gets incremented to keep it alive
+  // for all the trap handling.
+  persistent_wrap_.reset();
 
+  // Stop observing the V8 isolate.
+  StopObserving();
   // Reset the callback not to keep the Isolate in MojoWatchCallback.
   callback_ = nullptr;
 }
 
 gin::ObjectTemplateBuilder MojoWatcher::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<MojoWatcher>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::Wrappable<MojoWatcher>::GetObjectTemplateBuilder(isolate)
       .SetMethod("cancel", &MojoWatcher::Cancel);
+}
+
+const gin::WrapperInfo* MojoWatcher::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 void MojoWatcher::Cancel(gin::Arguments* arguments) {
@@ -228,13 +229,10 @@ void MojoWatcher::Cancel(gin::Arguments* arguments) {
     trap_handle_.reset();
     result = MOJO_RESULT_OK;
   }
+
   if (arguments) {
     arguments->Return(result);
   }
-
-  // We don't need to clear the persistent_wrap_ here because closing
-  // trap_handle_ will end up with a MOJO_RESULT_CANCELLED coming back in
-  // OnHandleReady.
 }
 
 MojoWatcher::MojoWatcher(v8::Local<v8::Context> context,

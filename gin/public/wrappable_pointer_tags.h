@@ -43,6 +43,7 @@ enum WrappablePointerTag : uint16_t {
   kManagedStorageArea,               // extensions::ManagedStorageArea
   kMojo,                             // ax::Mojo
   kMojoHandle,                       // ax::MojoHandle
+  kMojoWatcher,                      // ax::MojoWatcher
   kNetErrorPageController,           // NetErrorPageController
   kNewTabPageBindings,               // NewTabPageBindings
   kPDFPluginPlaceholder,             // PDFPluginPlaceholder

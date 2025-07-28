@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/trap.h"
@@ -29,10 +30,11 @@ class MojoWatchCallback;
 // Provides MojoWatcher object to the Accessibility Service's V8 Javascript.
 // This class is a parallel to blink::MojoWatcher, which does the same for
 // any blink renderer.
-class MojoWatcher : public gin::DeprecatedWrappable<MojoWatcher>,
+class MojoWatcher : public gin::Wrappable<MojoWatcher>,
                     public RegisteredWrappable {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kMojoWatcher};
 
   static v8::Local<v8::Object> Create(
       v8::Local<v8::Context> context,
@@ -42,6 +44,8 @@ class MojoWatcher : public gin::DeprecatedWrappable<MojoWatcher>,
       bool peer_closed,
       std::unique_ptr<MojoWatchCallback> callback);
 
+  MojoWatcher(v8::Local<v8::Context> context,
+              std::unique_ptr<MojoWatchCallback> callback);
   ~MojoWatcher() override;
   MojoWatcher(const MojoWatcher&) = delete;
   MojoWatcher& operator=(const MojoWatcher&) = delete;
@@ -49,13 +53,13 @@ class MojoWatcher : public gin::DeprecatedWrappable<MojoWatcher>,
   // RegisteredWrappable:
   void OnIsolateWillDestroy() override;
 
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+  const gin::WrapperInfo* wrapper_info() const override;
 
   //
   // Methods exposed to Javascript.
-  // Note: gin::DeprecatedWrappable's bound methods need to be public.
   //
 
   // Stops watching a pipe.
@@ -67,9 +71,6 @@ class MojoWatcher : public gin::DeprecatedWrappable<MojoWatcher>,
   //
 
  private:
-  MojoWatcher(v8::Local<v8::Context> context,
-              std::unique_ptr<MojoWatchCallback> callback);
-
   MojoResult Watch(mojo::Handle handle,
                    bool readable,
                    bool writable,
