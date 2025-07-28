@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,11 +37,16 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -245,5 +251,37 @@ public class TabSwitcherSearchRenderTest {
         mRenderTestRule.render(
                 searchStation.getActivity().findViewById(android.R.id.content),
                 "hub_search_typed_incognito");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testRenderTypedTabGroupSuggestions(boolean nightModeEnabled) throws IOException {
+        int firstTabId = mInitialPage.loadedTabElement.get().getId();
+        RegularNewTabPageStation secondPage = mInitialPage.openNewTabFast();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+        editor = editor.addTabToSelection(1, secondTabId);
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
+        dialog = dialog.inputName("Test");
+        dialog = dialog.pickColor(TabGroupColorId.BLUE);
+        dialog.pressDone();
+
+        TabSwitcherSearchStation searchStation = tabSwitcher.openTabSwitcherSearch();
+        searchStation.typeInOmnibox("test");
+        searchStation.findSuggestion(
+                /* index= */ 0,
+                /* title= */ "   Test",
+                /* text= */ "chrome://newtab/, chrome://newtab/");
+
+        mRenderTestRule.render(
+                searchStation.getActivity().findViewById(android.R.id.content),
+                "hub_search_typed_tab_group");
     }
 }

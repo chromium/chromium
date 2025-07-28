@@ -1404,6 +1404,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="TILE_NAVSUGGEST"/>
   <int value="8" label="GROUP_SEPARATOR"/>
   <int value="9" label="OBSOLETE_QUERY_TILES"/>
+  <int value="10" label="TAB_GROUP_SUGGESTION"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/suggestions/OmniboxSuggestionUiType.java:OmniboxSuggestionUiType) -->

@@ -76,6 +76,9 @@ TEST_F(TabGroupProviderTest, TestOneTitleMatch) {
   ASSERT_EQ(u"test", tab_group_provider().matches()[0].contents);
   ASSERT_TRUE(
       tab_group_provider().matches()[0].matching_tab_group_uuid.has_value());
+  ASSERT_EQ("0", tab_group_provider().matches()[0].image_dominant_color);
+  ASSERT_EQ(u"http://google.com/saved_1, http://google.com/saved_2",
+            tab_group_provider().matches()[0].description);
 }
 
 TEST_F(TabGroupProviderTest, TestSkipProviderResultsOnIncognito) {

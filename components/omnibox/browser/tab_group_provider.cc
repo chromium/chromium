@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/i18n/case_conversion.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -28,6 +29,7 @@
 #include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/query_parser/query_parser.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/search_engines/template_url.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -128,6 +130,23 @@ AutocompleteMatch TabGroupProvider::CreateTabGroupMatch(
       ACMatchClassification::NONE);
   match.matching_tab_group_uuid = group.saved_guid();
   match.suggestion_group_id = omnibox::GROUP_MOBILE_OPEN_TABS;
+  match.image_dominant_color =
+      base::NumberToString(static_cast<int>(group.color()));
+
+  std::u16string url_list;
+  for (size_t i = 0; i < group.saved_tabs().size(); i++) {
+    const tab_groups::SavedTabGroupTab& saved_tab = group.saved_tabs()[i];
+    url_list.append(base::ASCIIToUTF16(saved_tab.url().spec()));
+
+    if (i < group.saved_tabs().size() - 1) {
+      url_list.append(u", ");
+    }
+  }
+  match.description = url_list;
+  auto description_terms = FindTermMatches(input.text(), match.description);
+  match.description_class = ClassifyTermMatches(
+      description_terms, match.description.size(), ACMatchClassification::MATCH,
+      ACMatchClassification::NONE);
 
   return match;
 }
