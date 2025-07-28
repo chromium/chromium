@@ -718,7 +718,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
       FlushReason reason) override;
   void ClearMarkedCanvasDirty() override { marked_canvas_dirty_ = false; }
   scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
-      bool was_dirty,
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
 

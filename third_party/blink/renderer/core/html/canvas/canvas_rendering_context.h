@@ -217,7 +217,6 @@ class CORE_EXPORT CanvasRenderingContext
   // WebGL-specific methods
   virtual void ClearMarkedCanvasDirty() {}
   virtual scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
-      bool was_dirty,
       SourceDrawingBuffer source_buffer,
       FlushReason reason) {
     NOTREACHED();

@@ -842,10 +842,10 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   if (IsWebGL()) {
     context_->ClearMarkedCanvasDirty();
     if (LowLatencyEnabled()) {
-      if (frame_dispatcher_) {
+      if (frame_dispatcher_ && !dirty_rect_.IsEmpty()) {
         if (scoped_refptr<CanvasResource> canvas_resource =
-                context_->PaintRenderingResultsToResource(
-                    !dirty_rect_.IsEmpty(), kBackBuffer, reason)) {
+                context_->PaintRenderingResultsToResource(kBackBuffer,
+                                                          reason)) {
           const gfx::Rect src_rect(Size());
           dirty_rect_.Intersect(src_rect);
           const gfx::Rect int_dirty = dirty_rect_;
