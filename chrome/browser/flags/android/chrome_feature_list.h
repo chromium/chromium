@@ -56,6 +56,7 @@ BASE_DECLARE_FEATURE(kAndroidThemeModule);
 BASE_DECLARE_FEATURE(kAndroidToolbarScrollAblation);
 BASE_DECLARE_FEATURE(kAndroidUseAdminsForEnterpriseInfo);
 BASE_DECLARE_FEATURE(kAndroidWindowPopupLargeScreen);
+BASE_DECLARE_FEATURE(kAnimatedGifRefactor);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAppSpecificHistory);
 BASE_DECLARE_FEATURE(kAppSpecificHistoryViewIntent);

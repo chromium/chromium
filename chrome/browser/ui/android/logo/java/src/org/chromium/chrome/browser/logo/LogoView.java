@@ -15,6 +15,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -50,7 +51,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private @Nullable Bitmap mLogo;
     private @Nullable Bitmap mNewLogo;
     private @Nullable Bitmap mDefaultGoogleLogo;
-    private @Nullable BaseGifDrawable mAnimatedLogoDrawable;
+    private @Nullable Drawable mAnimatedLogoDrawable;
 
     private @Nullable ObjectAnimator mFadeAnimation;
     private final Paint mPaint;
@@ -161,15 +162,29 @@ public class LogoView extends FrameLayout implements OnClickListener {
         }
     }
 
-    /** @return True after we receive an animated logo from the server.*/
+    /**
+     * @return True after we receive an animated logo from the server.
+     */
     private boolean isAnimatedLogoShowing() {
         return mAnimatedLogoDrawable != null;
     }
 
     /** Starts playing the given animated GIF logo. */
-    void playAnimatedLogo(BaseGifImage gifImage) {
+    // TODO(crbug.com/434200490): Replace Object reference with ImageDecoder.Source when the
+    // refactoring is fully rolled out.
+    void playAnimatedLogo(Object animatedLogo) {
         mLoadingView.hideLoadingUi();
-        mAnimatedLogoDrawable = new BaseGifDrawable(gifImage, Config.ARGB_8888);
+
+        if (animatedLogo instanceof BaseGifImage) {
+            mAnimatedLogoDrawable =
+                    new BaseGifDrawable((BaseGifImage) animatedLogo, Config.ARGB_8888);
+        } else if (animatedLogo instanceof AnimatedImageDrawable) {
+            mAnimatedLogoDrawable = (AnimatedImageDrawable) animatedLogo;
+        } else {
+            assert false : "Unexpected logo type: " + animatedLogo;
+            return;
+        }
+
         mAnimatedLogoMatrix = new Matrix();
         setMatrix(
                 mAnimatedLogoDrawable.getIntrinsicWidth(),
@@ -178,10 +193,14 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 false);
         // Set callback here to ensure #invalidateDrawable() is called.
         mAnimatedLogoDrawable.setCallback(this);
-        mAnimatedLogoDrawable.start();
+        if (mAnimatedLogoDrawable instanceof BaseGifDrawable) {
+            ((BaseGifDrawable) mAnimatedLogoDrawable).start();
+        } else if (mAnimatedLogoDrawable instanceof AnimatedImageDrawable) {
+            ((AnimatedImageDrawable) mAnimatedLogoDrawable).start();
+        }
     }
 
-    /** Show a spinning progressbar.*/
+    /** Show a spinning progressbar. */
     void showLoadingView() {
         mLogo = null;
         invalidate();
@@ -395,7 +414,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     @Override
     protected boolean verifyDrawable(Drawable who) {
-        return (who == mAnimatedLogoDrawable) || super.verifyDrawable(who);
+        return who == mAnimatedLogoDrawable || super.verifyDrawable(who);
     }
 
     @Override

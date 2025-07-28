@@ -10,12 +10,14 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimatedImageDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -228,6 +230,14 @@ public class LogoViewBinderUnitTest {
     public void testLoadingViewWithAnimatedLogo() {
         mLogoView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
         mLogoModel.set(LogoProperties.ANIMATED_LOGO, new BaseGifImage(new byte[] {}));
+        assertEquals(View.GONE, mLogoView.getLoadingViewVisibilityForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadingViewWithAnimatedImageDrawable() {
+        mLogoView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
+        mLogoModel.set(LogoProperties.ANIMATED_LOGO, mock(AnimatedImageDrawable.class));
         assertEquals(View.GONE, mLogoView.getLoadingViewVisibilityForTesting());
     }
 
