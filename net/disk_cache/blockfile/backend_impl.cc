@@ -68,6 +68,12 @@ BASE_FEATURE(kBlockfileCacheBackendDumpWithoutCrashing,
              "BlockfileCacheBackendDumpWithoutCrashing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(double,
+                   kBlockfileCacheBackendDumpWithoutCrashingFrequency,
+                   &kBlockfileCacheBackendDumpWithoutCrashing,
+                   "dump_without_crashing_frequency",
+                   0.01);
+
 int DesiredIndexTableLen(int32_t storage_size) {
   if (storage_size <= k64kEntriesStore)
     return kBaseTableLen;
@@ -255,6 +261,15 @@ int BackendImpl::SyncInit() {
   if (check_index_result != BackendImpl::CheckIndexResult::kOk) {
     SCOPED_CRASH_KEY_NUMBER("DiskCache", "check_index_result",
                             static_cast<int>(check_index_result));
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "current_index_size",
+                            index_->GetLength());
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "table_len", data_->header.table_len);
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "index_size",
+                            GetIndexSize(data_->header.table_len));
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "num_entries",
+                            data_->header.num_entries);
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "last_file_num",
+                            data_->header.last_file);
     ReportError(ERR_INIT_FAILED);
     return net::ERR_FAILED;
   }
@@ -1025,15 +1040,15 @@ void BackendImpl::ReportError(int error) {
     // been gathered, and definitely before stable.
     if (error == ERR_INIT_FAILED) {
       static bool has_considered_dumping = false;
-      // We want to DumpWithoutCrashing() only for 0.2% of processes, and only
-      // once per process, to avoid overwhelming the crash service. There are
-      // roughly 8000 ERR_INIT_FAILED logged to UMA per day in Dev and Canary,
-      // so this should yield around 0.002 * 8000 = 16 crash reports per day.
+      // We want to DumpWithoutCrashing() only for X% of processes (configured
+      // by kBlockfileCacheBackendDumpWithoutCrashingFrequency), and only once
+      // per process, to avoid overwhelming the crash service.
       if (!has_considered_dumping) {
         has_considered_dumping = true;
         if (base::FeatureList::IsEnabled(
                 kBlockfileCacheBackendDumpWithoutCrashing) &&
-            base::ShouldRecordSubsampledMetric(0.002)) {
+            base::ShouldRecordSubsampledMetric(
+                kBlockfileCacheBackendDumpWithoutCrashingFrequency.Get())) {
           // Capture the last file error. This may or may not be related to the
           // reason why init failed.
           base::File::Error file_error = base::File::GetLastFileError();
@@ -1955,10 +1970,14 @@ BackendImpl::CheckIndexResult BackendImpl::CheckIndex() {
     return BackendImpl::CheckIndexResult::kInvalidTableSize;
   }
 
-  if (current_size < GetIndexSize(data_->header.table_len) ||
-      data_->header.table_len & (kBaseTableLen - 1)) {
+  if (current_size < GetIndexSize(data_->header.table_len)) {
     LOG(ERROR) << "Corrupt Index file";
-    return BackendImpl::CheckIndexResult::kCorruptIndexFileInTableLength;
+    return BackendImpl::CheckIndexResult::kCorruptIndexFileInTableLength1;
+  }
+
+  if (data_->header.table_len & (kBaseTableLen - 1)) {
+    LOG(ERROR) << "Corrupt Index file";
+    return BackendImpl::CheckIndexResult::kCorruptIndexFileInTableLength2;
   }
 
   AdjustMaxCacheSize(data_->header.table_len);

@@ -386,10 +386,11 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
     kInvalidFileMagic,
     kInvalidFileVersion,
     kInvalidTableSize,
-    kCorruptIndexFileInTableLength,
+    kCorruptIndexFileInTableLength1,
     kInvalidCacheSize,
     kInvalidNumberOfEntries,
     kFailedOnPreload,
+    kCorruptIndexFileInTableLength2,
   };
 
   // Performs basic checks on the index file.
