@@ -150,9 +150,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
 @property(nonatomic, strong)
     NSMutableArray<NSLayoutConstraint*>* dynamicConstraints;
 
-// The constraints for the visible favicon.
-@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* faviconContraints;
-
 // The view displayed at the top the cell containing the favicon, the site name
 // and an overflow button.
 @property(nonatomic, strong) UIView* headerView;
@@ -206,8 +203,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  [NSLayoutConstraint deactivateConstraints:self.faviconContraints];
-  self.faviconView.hidden = YES;
 
   [_customSymbolImageView removeFromSuperview];
   _customSymbolImageView = nil;
@@ -216,7 +211,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
   [self.dynamicConstraints removeAllObjects];
 
   self.siteNameLabel.text = @"";
-  [self configureFaviconWithAttributes:nil];
+  [self setUpFaviconViewWithAttributes:nil];
 
   [self.usernameButton setTitle:@"" forState:UIControlStateNormal];
   self.usernameButton.enabled = YES;
@@ -369,14 +364,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
 }
 
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes {
-  if (attributes.faviconImage) {
-    self.faviconView.hidden = NO;
-    [NSLayoutConstraint activateConstraints:self.faviconContraints];
-    [self configureFaviconWithAttributes:attributes];
-    return;
-  }
-  [NSLayoutConstraint deactivateConstraints:self.faviconContraints];
-  self.faviconView.hidden = YES;
+  [self setUpFaviconViewWithAttributes:attributes];
 }
 
 - (void)configureWithSymbol:(UIImage*)symbol {
@@ -429,12 +417,11 @@ static const CGFloat kOffsetForConnectedCell = 16;
                          : [[FaviconView alloc] init];
   self.faviconView.translatesAutoresizingMaskIntoConstraints = NO;
   self.faviconView.clipsToBounds = YES;
-  self.faviconView.hidden = YES;
-  self.faviconContraints = @[
+  [NSLayoutConstraint activateConstraints:@[
     [self.faviconView.widthAnchor constraintEqualToConstant:GetFaviconSize()],
     [self.faviconView.heightAnchor
         constraintEqualToAnchor:self.faviconView.widthAnchor],
-  ];
+  ]];
 
   self.siteNameLabel = CreateLabel();
   self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
@@ -518,8 +505,8 @@ static const CGFloat kOffsetForConnectedCell = 16;
                                       shouldReauth:!_fromAllPasswordsContext];
 }
 
-// Configure the favicon with the given `attributes`.
-- (void)configureFaviconWithAttributes:(FaviconAttributes*)attributes {
+// Sets up the favicon with the given `attributes`.
+- (void)setUpFaviconViewWithAttributes:(FaviconAttributes*)attributes {
   FaviconView* favicon;
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     FaviconContainerView* faviconContainerView =
@@ -528,6 +515,8 @@ static const CGFloat kOffsetForConnectedCell = 16;
   } else {
     favicon = static_cast<FaviconView*>(self.faviconView);
   }
+  favicon.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillPasswordFaviconID;
   [favicon configureWithAttributes:attributes];
 }
 

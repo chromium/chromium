@@ -92,6 +92,21 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       manual_fill::kSelectPlusAddressAccessibilityIdentifier);
 }
 
+// Checks the visibility of the plus address manual filling option.
+void CheckPlusAddressCellVisibility(std::u16string chip_button_text,
+                                    bool should_be_visible = true) {
+  id<GREYMatcher> expected_visibility =
+      should_be_visible ? grey_sufficientlyVisible() : grey_notVisible();
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     manual_fill::kExpandedManualFillPlusAddressFaviconID)]
+      assertWithMatcher:expected_visibility];
+
+  [[EarlGrey selectElementWithMatcher:manual_fill::ChipButton(chip_button_text)]
+      assertWithMatcher:expected_visibility];
+}
+
 }  // namespace
 
 // Test case for the plus address manual fill view.
@@ -178,10 +193,7 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
-  [[EarlGrey
-      selectElementWithMatcher:manual_fill::ChipButton(
-                                   plus_addresses::test::kFakePlusAddressU16)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckPlusAddressCellVisibility(plus_addresses::test::kFakePlusAddressU16);
 
   // Switch over to passwords.
   [[EarlGrey
@@ -333,9 +345,7 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey selectElementWithMatcher:PlusAddressSelectActionMatcher()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckPlusAddressCellVisibility(u"plus+foo@plus.plus");
 
   [[EarlGrey selectElementWithMatcher:PlusAddressSelectDoneMatcher()]
       performAction:grey_tap()];
@@ -359,9 +369,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
 
   [[EarlGrey selectElementWithMatcher:SearchBar()]
       performAction:grey_replaceText(@"example1")];
-  [[EarlGrey
-      selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
-      assertWithMatcher:grey_notVisible()];
+  CheckPlusAddressCellVisibility(u"plus+foo@plus.plus",
+                                 /*should_be_visible=*/false);
 
   [[EarlGrey selectElementWithMatcher:SearchBar()]
       performAction:grey_replaceText(@"foo.com")];
@@ -381,10 +390,7 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
-  [[EarlGrey
-      selectElementWithMatcher:manual_fill::ChipButton(
-                                   plus_addresses::test::kFakePlusAddressU16)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckPlusAddressCellVisibility(plus_addresses::test::kFakePlusAddressU16);
 
   // Tap the overflow menu button.
   [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]

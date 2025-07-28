@@ -16,6 +16,10 @@ namespace manual_fill {
 // Accessibility identifier of the password button.
 extern NSString* const kAccessoryPasswordAccessibilityIdentifier;
 
+// Accessibility identifier for the favicon shown in a password cell of the
+// expanded manual fill view.
+extern NSString* const kExpandedManualFillPasswordFaviconID;
+
 // Accessibility Identifier for the done button in the select password sheet.
 extern NSString* const kPasswordDoneButtonAccessibilityIdentifier;
 
@@ -79,6 +83,10 @@ extern NSString* const kCreatePlusAddressAccessibilityIdentifier;
 
 // Accessibility identifier for the select plus address action.
 extern NSString* const kSelectPlusAddressAccessibilityIdentifier;
+
+// Accessibility identifier for the favicon shown in a plus address cell of the
+// expanded manual fill view.
+extern NSString* const kExpandedManualFillPlusAddressFaviconID;
 
 // Accessibility identifier for the overflow menu in plus address cell.
 extern NSString* const kExpandedManualFillPlusAddressOverflowMenuID;

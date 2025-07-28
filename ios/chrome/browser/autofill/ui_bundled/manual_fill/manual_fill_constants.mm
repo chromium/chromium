@@ -11,6 +11,9 @@ namespace manual_fill {
 NSString* const kAccessoryPasswordAccessibilityIdentifier =
     @"ManualFillAccessoryPasswordAccessibilityIdentifier";
 
+NSString* const kExpandedManualFillPasswordFaviconID =
+    @"ExpandedManualFillPasswordFaviconID";
+
 NSString* const kPasswordDoneButtonAccessibilityIdentifier =
     @"ManualFillPasswordDoneButtonAccessibilityIdentifier";
 
@@ -71,6 +74,9 @@ NSString* const kCreatePlusAddressAccessibilityIdentifier =
 
 NSString* const kSelectPlusAddressAccessibilityIdentifier =
     @"SelectPlusAddressAccessibilityIdentifier";
+
+NSString* const kExpandedManualFillPlusAddressFaviconID =
+    @"ExpandedManualFillPlusAddressFaviconID";
 
 NSString* const kExpandedManualFillPlusAddressOverflowMenuID =
     @"ExpandedManualFillPlusAddressOverflowMenuID";

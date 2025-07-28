@@ -31,13 +31,13 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/multi_avatar_image_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -657,10 +657,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 // initialized.
 - (FaviconAttributes*)defaultGlobeIconAttributes {
   if (!_defaultGlobeIconAttributes) {
-    _defaultGlobeIconAttributes = [FaviconAttributes
-        attributesWithImage:DefaultSymbolWithPointSize(
-                                kGlobeAmericasSymbol,
-                                kDesiredMediumFaviconSizePt)];
+    _defaultGlobeIconAttributes = GetDefaultGlobeFaviconAttributes();
   }
   return _defaultGlobeIconAttributes;
 }

@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -114,6 +115,10 @@ UIColor* GetBackgroundColor() {
 
   // The number of data items that are currently being presented.
   NSInteger _dataItemCount;
+
+  // Attributes for the default globe favicon shown when no site-specific
+  // favicon can be retrieved.
+  FaviconAttributes* _defaultGlobeFaviconAttributes;
 }
 
 - (instancetype)init {
@@ -206,6 +211,11 @@ UIColor* GetBackgroundColor() {
                               (ConfigureFaviconCompletionBlock)completion {
   // Only set the favicon if the cell hasn't been reused.
   if (![cellIdentifier isEqualToString:itemIdentifier]) {
+    return;
+  }
+
+  if (faviconURL.is_empty()) {
+    completion([self defaultGlobeFaviconAttributes]);
     return;
   }
 
@@ -531,6 +541,15 @@ UIColor* GetBackgroundColor() {
         removeSectionWithIdentifier:NoDataItemsSectionIdentifier];
     self.noRegularDataItemsToShowHeaderItem = nil;
   }
+}
+
+// Creates the default globe favicon attributes if needed, and returns them.
+- (FaviconAttributes*)defaultGlobeFaviconAttributes {
+  if (!_defaultGlobeFaviconAttributes) {
+    _defaultGlobeFaviconAttributes = GetDefaultGlobeFaviconAttributes();
+  }
+
+  return _defaultGlobeFaviconAttributes;
 }
 
 @end
