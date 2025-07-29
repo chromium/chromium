@@ -5779,7 +5779,8 @@ void HandleGraphCreationFailure(
 }
 
 bool IsDispatchBindingValid(
-    const base::flat_map<std::string, WebNNTensorImpl*>& named_tensors,
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_tensors,
     const base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>&
         prev_named_tensors) {
   return std::ranges::equal(
@@ -5792,6 +5793,58 @@ bool IsDispatchBindingValid(
 }
 
 }  // namespace
+
+// Contains the persistent resource for the graph initialization and execution
+// if the graph needs it. The resource should be kept alive until the GPU has
+// completed the execution.
+class GraphImplDml::PersistentResource final
+    : public base::RefCountedThreadSafe<PersistentResource> {
+ public:
+  static scoped_refptr<PersistentResource> Create(
+      uint64_t persistent_buffer_byte_length,
+      Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer);
+
+  PersistentResource(const PersistentResource&) = delete;
+  PersistentResource& operator=(const PersistentResource&) = delete;
+
+  DML_BINDING_DESC persistent_buffer_binding_desc() const {
+    return persistent_buffer_binding_desc_;
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<PersistentResource>;
+  PersistentResource(uint64_t persistent_buffer_byte_length,
+                     Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer);
+  ~PersistentResource();
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer_;
+  DML_BUFFER_BINDING persistent_buffer_binding_;
+  DML_BINDING_DESC persistent_buffer_binding_desc_;
+};
+
+// Contains the GPU descriptor heap and temporary buffer for graph
+// execution. These resources should be kept alive until the GPU has completed
+// the execution. After that, the resources could be reused for next graph
+// execution or be released.
+struct GraphImplDml::GraphResources {
+  GraphResources(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
+                 uint64_t temporary_buffer_byte_length,
+                 Microsoft::WRL::ComPtr<ID3D12Resource> temporary_resource);
+  ~GraphResources();
+  GraphResources(const GraphResources&) = delete;
+  GraphResources& operator=(const GraphResources&) = delete;
+  GraphResources(GraphResources&&) = delete;
+  GraphResources& operator=(GraphResources&&) = delete;
+
+  Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+
+  // Temporary buffers can be reused between DML dispatches. However,
+  // they cannot be used between multiple queues at a time.
+  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-binding
+  Microsoft::WRL::ComPtr<ID3D12Resource> temporary_buffer;
+  std::optional<DML_BUFFER_BINDING> temporary_buffer_binding;
+  std::optional<DML_BINDING_DESC> temporary_buffer_binding_desc;
+};
 
 GraphImplDml::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
 GraphImplDml::GraphBufferBindingInfo::~GraphBufferBindingInfo() = default;
@@ -5885,7 +5938,7 @@ GraphImplDml::AllocateGraphResources(Adapter* adapter,
 GraphImplDml::GraphImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
-    ContextImplDml* context,
+    base::WeakPtr<WebNNContextImpl> context,
     std::unique_ptr<CommandRecorder> command_recorder,
     scoped_refptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -5894,12 +5947,11 @@ GraphImplDml::GraphImplDml(
     std::unique_ptr<GraphResources> graph_resources,
     std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
-                     context,
+                     std::move(context),
                      std::move(compute_resource_info),
                      std::move(devices)),
       persistent_resource_(std::move(persistent_resource)),
       adapter_(std::move(adapter)),
-      context_(context),
       command_recorder_(std::move(command_recorder)),
       compiled_operator_(std::move(compiled_operator)),
       graph_buffer_binding_info_(std::move(graph_buffer_binding_info)),
@@ -6249,12 +6301,13 @@ void GraphImplDml::CreateWebNNGraphImpl(
   }
 
   // The receiver bound to GraphImplDml.
-  std::move(callback).Run(base::WrapUnique(new GraphImplDml(
-      std::move(receiver), std::move(adapter), context.get(),
+  std::move(callback).Run(base::MakeRefCounted<GraphImplDml>(
+      std::move(receiver), std::move(adapter), context->AsWeakPtr(),
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
       std::move(graph_buffer_binding_info), std::move(graph_resources),
-      {adapter->IsNPU() ? mojom::Device::kNpu : mojom::Device::kGpu})));
+      std::vector<mojom::Device>(
+          {adapter->IsNPU() ? mojom::Device::kNpu : mojom::Device::kGpu})));
 }
 
 // static
@@ -6826,7 +6879,13 @@ void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
   // skip recording on failure.
   previous_input_tensors_.clear();
   previous_output_tensors_.clear();
-  context_->HandleContextLostOrCrash(error_message, hr);
+  // For GraphImplDml, the context owns the graph and OnDispatchComplete() is
+  // only invoked while the context is alive. A CHECK is appropriate here
+  // because DML does not currently support background tasks that outlive the
+  // context.
+  CHECK(context_);
+  static_cast<ContextImplDml*>(context_.get())
+      ->HandleContextLostOrCrash(error_message, hr);
 }
 
 GraphImplDml::IoBindings::IoBindings(
@@ -6837,7 +6896,8 @@ GraphImplDml::IoBindings::IoBindings(
 GraphImplDml::IoBindings::~IoBindings() = default;
 
 GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
-    const base::flat_map<std::string, WebNNTensorImpl*>& named_inputs) {
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_inputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheInputBindings");
   // Create the MLTensor input bindings needed for graph execution.
   std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
@@ -6854,7 +6914,7 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
 
   for (auto& [name, input_tensor] : named_inputs) {
     TensorImplDml* input_tensor_impl =
-        static_cast<TensorImplDml*>(input_tensor);
+        static_cast<TensorImplDml*>(input_tensor.get());
     // Get the graph input index for the name.
     const size_t graph_input_index =
         graph_buffer_binding_info_.graph_input_name_to_index_map.at(
@@ -6874,7 +6934,8 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
 }
 
 GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
-    const base::flat_map<std::string, WebNNTensorImpl*>& named_outputs) {
+    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
+        named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheOutputBindings");
   // TODO(crbug.com/40278771): consider pre-computing the output binding
   // count.
@@ -6896,7 +6957,7 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
 
   for (auto& [name, output_tensor] : named_outputs) {
     TensorImplDml* output_tensor_impl =
-        static_cast<TensorImplDml*>(output_tensor);
+        static_cast<TensorImplDml*>(output_tensor.get());
     // Get the graph output index with the name.
     const size_t graph_output_index =
         graph_buffer_binding_info_.graph_output_name_to_index_map.at(
@@ -6916,8 +6977,8 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
 }
 
 void GraphImplDml::DispatchImpl(
-    base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-    base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
   // It indicates whether we need to record commands and bind resources again.
@@ -7030,16 +7091,14 @@ void GraphImplDml::DispatchImpl(
   CommandQueue* command_queue = command_recorder_->command_queue();
   uint64_t last_submitted_fence_value = command_queue->GetLastFenceValue();
   for (auto& [name, input_tensor] : named_inputs) {
-    TensorImplDml* input_tensor_impl =
-        static_cast<TensorImplDml*>(input_tensor);
-    input_tensor_impl->SetLastSubmissionFenceValue(last_submitted_fence_value);
-    command_queue->ReferenceUntilCompleted(input_tensor_impl->buffer());
+    auto* dml_input_tensor = static_cast<TensorImplDml*>(input_tensor.get());
+    dml_input_tensor->SetLastSubmissionFenceValue(last_submitted_fence_value);
+    command_queue->ReferenceUntilCompleted(dml_input_tensor->buffer());
   }
   for (auto& [name, output_tensor] : named_outputs) {
-    TensorImplDml* output_tensor_impl =
-        static_cast<TensorImplDml*>(output_tensor);
-    output_tensor_impl->SetLastSubmissionFenceValue(last_submitted_fence_value);
-    command_queue->ReferenceUntilCompleted(output_tensor_impl->buffer());
+    auto* dml_output_tensor = static_cast<TensorImplDml*>(output_tensor.get());
+    dml_output_tensor->SetLastSubmissionFenceValue(last_submitted_fence_value);
+    command_queue->ReferenceUntilCompleted(dml_output_tensor->buffer());
   }
 
   // Prepare for the next dispatch.

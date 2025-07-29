@@ -42,23 +42,23 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
   FakeWebNNGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-      ContextImplDml* context,
+      base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info)
       : WebNNGraphImpl(std::move(receiver),
-                       context,
+                       std::move(context),
                        std::move(compute_resource_info),
-                       /*devices=*/{}),
-        context_(context) {}
-  ~FakeWebNNGraphImpl() override = default;
+                       /*devices=*/{}) {}
 
  private:
-  void DispatchImpl(
-      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override {
-    RemoveDeviceToDestroyAllContexts(context_);
-  }
+  ~FakeWebNNGraphImpl() override = default;
 
-  raw_ptr<ContextImplDml> context_;
+  void DispatchImpl(
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
+      override {
+    RemoveDeviceToDestroyAllContexts(
+        static_cast<ContextImplDml*>(context_.get()));
+  }
 };
 
 // A fake WebNNTensor Mojo interface implementation that binds a pipe for
@@ -100,8 +100,9 @@ class FakeWebNNBackend final : public ContextImplDml::BackendForTesting {
       ContextImplDml* context,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback) override {
-    std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
-        std::move(receiver), context, std::move(compute_resource_info)));
+    std::move(callback).Run(base::MakeRefCounted<FakeWebNNGraphImpl>(
+        std::move(receiver), context->AsWeakPtr(),
+        std::move(compute_resource_info)));
   }
 
   void CreateTensorImpl(

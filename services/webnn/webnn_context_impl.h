@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       public WebNNObjectImpl<blink::WebNNContextToken> {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
+      base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
   using CreateTensorImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>)>;
@@ -81,11 +81,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Disassociates a `WebNNGraph` instance owned by this context by its handle.
   // Called when a `WebNNGraph` instance has a connection error. After this
   // call, it is no longer safe to use the WebNNGraphImpl.
-  void DisconnectAndDestroyWebNNGraphImpl(const blink::WebNNGraphToken& handle);
+  void RemoveWebNNGraphImpl(const blink::WebNNGraphToken& handle);
 
   // Retrieves a `WebNNTensorImpl` instance created from this context.
   // Emits a bad message if a tensor with the given handle does not exist.
-  base::optional_ref<WebNNTensorImpl> GetWebNNTensorImpl(
+  scoped_refptr<WebNNTensorImpl> GetWebNNTensorImpl(
       const blink::WebNNTensorToken& handle);
 
   // Report the currently dispatching Message as bad and remove the GraphBuilder
@@ -110,9 +110,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       CreateGraphImplCallback callback) = 0;
 
   // Pass ownership of a newly-created `graph_impl` to this context.
-  void TakeGraph(
-      std::unique_ptr<WebNNGraphImpl> graph_impl,
-      base::PassKey<WebNNGraphBuilderImpl> pass_key);
+  void TakeGraph(scoped_refptr<WebNNGraphImpl> graph_impl,
+                 base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
   // Called by a graph builder to destroy itself.
   void RemoveGraphBuilder(mojo::ReceiverId graph_builder_id,
@@ -193,10 +192,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // context.
   mojom::CreateContextOptionsPtr options_;
 
-  // TensorImpls must be stored on the context to allow the WebNN service to
-  // identify and use them from the renderer process in MLContext operations.
-  // This cache only contains valid TensorImpls whose size is managed by the
-  // lifetime of the tensors it contains.
+  // TensorImpls owned by the context so the WebNN service can look them up
+  // by token and use them during MLContext operations from the renderer
+  // process. This cache only contains valid TensorImpls whose size is managed
+  // by the lifetime of the tensors it contains.
   base::flat_set<
       scoped_refptr<WebNNTensorImpl>,
       WebNNObjectImpl<blink::WebNNTensorToken>::Comparator<WebNNTensorImpl>>
@@ -209,10 +208,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>
       graph_builder_impls_;
 
-  // GraphsImpls which are stored on the context to allow graph
-  // operations to use this context safely via a raw_ptr.
+  // GraphImpls owned by the context. Graphs use a WeakPtr to safely access the
+  // context during operations.
   base::flat_set<
-      std::unique_ptr<WebNNGraphImpl>,
+      scoped_refptr<WebNNGraphImpl>,
       WebNNObjectImpl<blink::WebNNGraphToken>::Comparator<WebNNGraphImpl>>
       graph_impls_;
 

@@ -98,7 +98,7 @@ void WebNNContextImpl::ReportBadGraphBuilderMessage(
 }
 
 void WebNNContextImpl::TakeGraph(
-    std::unique_ptr<WebNNGraphImpl> graph_impl,
+    scoped_refptr<WebNNGraphImpl> graph_impl,
     base::PassKey<WebNNGraphBuilderImpl> pass_key) {
   graph_impls_.emplace(std::move(graph_impl));
 }
@@ -270,7 +270,7 @@ void WebNNContextImpl::RemoveWebNNTensorImpl(
   tensor_impls_.erase(it);
 }
 
-void WebNNContextImpl::DisconnectAndDestroyWebNNGraphImpl(
+void WebNNContextImpl::RemoveWebNNGraphImpl(
     const blink::WebNNGraphToken& handle) {
   const auto it = graph_impls_.find(handle);
   CHECK(it != graph_impls_.end());
@@ -287,12 +287,12 @@ void WebNNContextImpl::OnLost(const std::string& reason) {
   std::move(on_lost_callback_).Run(reason);
 }
 
-base::optional_ref<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
+scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
     const blink::WebNNTensorToken& tensor_handle) {
   const auto it = tensor_impls_.find(tensor_handle);
   if (it == tensor_impls_.end()) {
     receiver_.ReportBadMessage(kBadMessageInvalidTensor);
-    return std::nullopt;
+    return nullptr;
   }
   return it->get();
 }

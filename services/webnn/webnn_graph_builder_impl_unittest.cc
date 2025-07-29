@@ -24,6 +24,7 @@
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_tensor_impl.h"
 #include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -51,18 +52,20 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
   FakeWebNNGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-      WebNNContextImpl* context,
+      base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info)
       : WebNNGraphImpl(std::move(receiver),
-                       context,
+                       std::move(context),
                        std::move(compute_resource_info),
                        /*devices=*/{}) {}
-  ~FakeWebNNGraphImpl() override = default;
 
  private:
+  ~FakeWebNNGraphImpl() override = default;
+
   void DispatchImpl(
-      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override {
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
+      override {
     NOTIMPLEMENTED();
   }
 };
@@ -106,8 +109,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
                CreateGraphImplCallback callback) {
               CHECK(context);
-              std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
-                  std::move(receiver), context.get(),
+              std::move(callback).Run(base::MakeRefCounted<FakeWebNNGraphImpl>(
+                  std::move(receiver), std::move(context),
                   std::move(compute_resource_info)));
             },
             std::move(receiver), AsWeakPtr(), std::move(compute_resource_info),

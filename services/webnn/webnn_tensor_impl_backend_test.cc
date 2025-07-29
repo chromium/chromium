@@ -512,7 +512,7 @@ class WebNNTensorImplDmlBackendTest : public WebNNTensorImplBackendTest {
     base::optional_ref<WebNNContextImpl> context_impl =
         provider_impl_->GetWebNNContextImplForTesting(webnn_context_handle_);
     return static_cast<dml::TensorImplDml*>(
-               context_impl->GetWebNNTensorImpl(webnn_tensor_handle).as_ptr())
+               context_impl->GetWebNNTensorImpl(webnn_tensor_handle).get())
         ->AsWeakPtr();
   }
 

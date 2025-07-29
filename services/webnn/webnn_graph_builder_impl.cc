@@ -2806,7 +2806,7 @@ void WebNNGraphBuilderImpl::IsValidGraphForTesting(
 void WebNNGraphBuilderImpl::DidCreateGraph(
     CreateGraphCallback callback,
     mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
-    base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
+    base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure `this` is destroyed.
@@ -2936,9 +2936,9 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
             id_and_handle_it !=
             graph_info.id_to_constant_tensor_operand_map.end()) {
           // `id` must correspond to a handle known by the context...
-          base::optional_ref<WebNNTensorImpl> tensor_impl =
+          scoped_refptr<WebNNTensorImpl> tensor_impl =
               context_->GetWebNNTensorImpl(id_and_handle_it->second);
-          if (!tensor_impl.has_value()) {
+          if (!tensor_impl) {
             return std::nullopt;
           }
 
@@ -2952,7 +2952,7 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
             return std::nullopt;
           }
 
-          graph_constant_tensors.emplace_back(operand_id, tensor_impl.as_ptr());
+          graph_constant_tensors.emplace_back(operand_id, tensor_impl.get());
           processed_operands.insert(operand_id);
           break;
         }

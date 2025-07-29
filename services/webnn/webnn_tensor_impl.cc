@@ -50,8 +50,7 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
 
   // Call ReadTensorImpl() implemented by a backend.
   PostTaskToOwningTaskRunner(base::BindOnce(&WebNNTensorImpl::ReadTensorImpl,
-                                            base::WrapRefCounted(this),
-                                            std::move(callback)));
+                                            this, std::move(callback)));
 }
 
 void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
@@ -68,8 +67,7 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
 
   // Call WriteTensorImpl() implemented by a backend.
   PostTaskToOwningTaskRunner(base::BindOnce(&WebNNTensorImpl::WriteTensorImpl,
-                                            base::WrapRefCounted(this),
-                                            std::move(src_buffer)));
+                                            this, std::move(src_buffer)));
 }
 
 void WebNNTensorImpl::OnDisconnect() {
