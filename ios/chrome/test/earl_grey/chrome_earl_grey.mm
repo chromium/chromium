@@ -1709,6 +1709,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 }
 
 - (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL {
+#if TARGET_OS_SIMULATOR
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+#endif
+
   // Check tab count prior to execution.
   NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
   NSUInteger oldIncognitoTabCount =

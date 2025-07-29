@@ -18,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -282,6 +283,11 @@ id<GREYMatcher> CarouselMatcher() {
 /// Long press on `tile` and select delete in the context menu.
 - (void)deleteMostVisitedTile:(id<GREYMatcher>)tile {
   [self longPressMostVisitedTile:tile];
+
+#if TARGET_OS_SIMULATOR
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+#endif
   // Tap on remove.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
