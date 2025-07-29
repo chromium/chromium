@@ -28,6 +28,7 @@ source_set("color") {
     "new_tab_page_color_palette.mm",
     "new_tab_page_color_palette_util.h",
     "new_tab_page_color_palette_util.mm",
+    "new_tab_page_color_updating.h",
     "new_tab_page_trait.h",
     "new_tab_page_trait.mm",
     "theme_utils.h",

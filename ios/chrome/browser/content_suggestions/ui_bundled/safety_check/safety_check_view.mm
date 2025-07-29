@@ -8,6 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
@@ -15,8 +16,12 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/types.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -52,6 +57,12 @@ bool IsDefault(SafetyCheckState* state) {
   id<MagicStackModuleContentViewDelegate> _contentViewDelegate;
   SafetyCheckState* _state;
   UIView* _contentView;
+
+  // The background color applied behind the symbol.
+  UIColor* _symbolBackgroundColor;
+
+  // The array of foreground colors used to render the symbol.
+  NSArray<UIColor*>* _symbolColorPalette;
 }
 
 #pragma mark - Public methods
@@ -62,6 +73,12 @@ bool IsDefault(SafetyCheckState* state) {
   if ((self = [super init])) {
     _contentViewDelegate = contentViewDelegate;
     _state = state;
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                         withAction:@selector(applyBackgroundColors)];
+      [self applyBackgroundColors];
+    }
   }
 
   return self;
@@ -93,6 +110,36 @@ bool IsDefault(SafetyCheckState* state) {
   SafetyCheckItemType itemType = SafetyCheckItemTypeForName(view.identifier);
 
   [self.audience didSelectSafetyCheckItem:itemType];
+}
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  if (colorPalette) {
+    _symbolColorPalette = @[ colorPalette.tintColor ];
+    _symbolBackgroundColor = colorPalette.tertiaryColor;
+  } else {
+    int checkIssuesCount = [_state numberOfIssues];
+    BOOL isRunning = IsRunning(_state);
+    BOOL isDefault = IsDefault(_state);
+    BOOL isHeroLayout = isRunning || isDefault || checkIssuesCount <= 1;
+
+    // Determine the symbol color palette and symbol background color based on
+    // the layout.
+    if (isHeroLayout) {
+      _symbolColorPalette = @[ [UIColor whiteColor] ];
+      _symbolBackgroundColor = [UIColor colorNamed:kBlue500Color];
+    } else {
+      // compact view.
+      _symbolColorPalette = @[ [UIColor colorNamed:kBlue500Color] ];
+      _symbolBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
+    }
+  }
+
+  // Redraws the view by removing and recreating the content view.
+  [self safetyCheckStateDidChange:_state];
 }
 
 #pragma mark - Private methods
@@ -185,21 +232,23 @@ bool IsDefault(SafetyCheckState* state) {
                        layoutType:(IconDetailViewLayoutType)layoutType {
   NSString* symbolName = [self symbolNameForItemType:itemType];
 
-  // Determine the symbol color palette and symbol background color based on the
-  // layout.
-  NSArray<UIColor*>* symbolColorPalette = @[ [UIColor whiteColor] ];
-  UIColor* symbolBackgroundColor = [UIColor colorNamed:kBlue500Color];
-
-  // Compact, in-square icons are displayed in blue with a light blue
-  // container.
-  if (layoutType == IconDetailViewLayoutType::kCompact) {
-    symbolColorPalette = @[ [UIColor colorNamed:kBlue500Color] ];
-    symbolBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
-  }
-
   // `kInfoCircleSymbol` is the only default symbol used within the Safety Check
   // view(s).
   BOOL usesDefaultSymbol = [symbolName isEqualToString:kInfoCircleSymbol];
+
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    // Determine the symbol color palette and symbol background color based on
+    // the layout.
+    _symbolColorPalette = @[ [UIColor whiteColor] ];
+    _symbolBackgroundColor = [UIColor colorNamed:kBlue500Color];
+
+    // Compact, in-square icons are displayed in blue with a light blue
+    // container.
+    if (layoutType == IconDetailViewLayoutType::kCompact) {
+      _symbolColorPalette = @[ [UIColor colorNamed:kBlue500Color] ];
+      _symbolBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
+    }
+  }
 
   IconDetailView* view = [[IconDetailView alloc]
                 initWithTitle:[self titleText:itemType]
@@ -209,8 +258,8 @@ bool IsDefault(SafetyCheckState* state) {
                    layoutType:layoutType
               backgroundImage:nil
                    symbolName:symbolName
-           symbolColorPalette:symbolColorPalette
-        symbolBackgroundColor:symbolBackgroundColor
+           symbolColorPalette:_symbolColorPalette
+        symbolBackgroundColor:_symbolBackgroundColor
             usesDefaultSymbol:usesDefaultSymbol
                 showCheckmark:(itemType == SafetyCheckItemType::kAllSafe)
       accessibilityIdentifier:[self
