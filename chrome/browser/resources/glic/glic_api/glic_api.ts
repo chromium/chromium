@@ -101,6 +101,11 @@ export declare interface GlicWebClient {
    * as unresponsive and displaying an error state to the user.
    */
   checkResponsive?(): Promise<void>;
+
+  // !!! ATTENTION !!!
+  // Avoid adding new methods to this interface! Instead, to push information to
+  // the web client it's much more preferable to add new functions to
+  // GlicBrowserHost that return an Observable or ObservableValue instances.
 }
 
 /**
