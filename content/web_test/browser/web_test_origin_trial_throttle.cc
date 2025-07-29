@@ -61,8 +61,7 @@ void WebTestOriginTrialThrottle::SetHeaderForRequest() {
     trials = origin_trials_controller_delegate_->GetPersistedTrialsForOrigin(
         origin, partition_origin, base::Time::Now());
   }
-  std::string header_value = base::JoinString(
-      UNSAFE_TODO(base::span<std::string>(trials.begin(), trials.end())), ", ");
+  std::string header_value = base::JoinString(trials, ", ");
   if (!header_value.empty()) {
     navigation_handle()->SetRequestHeader(kWebTestOriginTrialHeaderName,
                                           header_value);
