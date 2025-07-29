@@ -61,7 +61,7 @@ mod ffi {
 
         type SafariHistoryCallbackFromRust;
         #[cxx_name = "ImportHistoryEntries"]
-        fn ImportHistoryEntries(
+        fn ImportSafariHistoryEntries(
             self: Pin<&mut SafariHistoryCallbackFromRust>,
             history_entries: UniquePtr<CxxVector<SafariHistoryEntry>>,
             completed: bool,
@@ -260,6 +260,68 @@ impl From<PaymentCardJSONEntry> for ffi::PaymentCardEntry {
             card_expiration_month: entry.card_expiration_month.unwrap_or(0),
             card_expiration_year: entry.card_expiration_year.unwrap_or(0),
         }
+    }
+}
+
+// A trait for history callbacks to allow for generic implementation of
+// batching.
+trait HistoryCallback<T: cxx::vector::VectorElement> {
+    fn import_entries(self: Pin<&mut Self>, entries: cxx::UniquePtr<CxxVector<T>>, completed: bool);
+}
+
+impl HistoryCallback<ffi::SafariHistoryEntry> for ffi::SafariHistoryCallbackFromRust {
+    fn import_entries(
+        self: Pin<&mut Self>,
+        entries: cxx::UniquePtr<CxxVector<ffi::SafariHistoryEntry>>,
+        completed: bool,
+    ) {
+        self.ImportSafariHistoryEntries(entries, completed);
+    }
+}
+
+impl HistoryCallback<ffi::StablePortabilityHistoryEntry>
+    for ffi::StablePortabilityHistoryCallbackFromRust
+{
+    fn import_entries(
+        self: Pin<&mut Self>,
+        entries: cxx::UniquePtr<CxxVector<ffi::StablePortabilityHistoryEntry>>,
+        completed: bool,
+    ) {
+        self.ImportStablePortabilityHistoryEntries(entries, completed);
+    }
+}
+
+// Adds an item to a history batch, sending a batch if the threshold is reached.
+//
+// Type Parameters:
+//
+// - `T`: The type of the history item to be added to the batch. For example,
+//   `SafariHistoryJSONEntry` or `StablePortabilityHistoryJSONEntry`.
+// - `U`: The type of the element stored in the C++ vector. This is the same as
+//   `T` but with the `cxx::ExternType` trait.
+// - `C`: The type of the callback object, which must implement
+//   `HistoryCallback<U>`.
+//
+// Arguments:
+//
+// - `item`: The history item to add to the batch.
+// - `history`: The vector where history items are accumulated.
+// - `threshold`: The size at which the batch is sent to the callback.
+// - `callback`: The C++ callback to invoke with the batch of history items.
+fn batch_and_send<T, U, C>(
+    item: T,
+    history: &mut cxx::UniquePtr<CxxVector<U>>,
+    threshold: usize,
+    callback: Pin<&mut C>,
+) where
+    T: Into<U>,
+    U: 'static + cxx::vector::VectorElement + cxx::ExternType<Kind = cxx::kind::Trivial>,
+    C: HistoryCallback<U> + ?Sized,
+{
+    history.as_mut().unwrap().push(item.into());
+    if history.len() >= threshold {
+        let batch_to_send = std::mem::replace(history, CxxVector::<U>::new());
+        callback.import_entries(batch_to_send, /* completed= */ false);
     }
 }
 
@@ -484,29 +546,22 @@ fn parse_stable_portability_history(
         let path_str = std::str::from_utf8(json_filename)?;
         let file = fs::File::open(path_str)?;
         let stream_reader = BufReader::with_capacity(STREAM_BUFFER_SIZE, file);
-
         deserialize_top_level::<StablePortabilityHistoryJSONEntry, std::fs::File>(
             stream_reader,
             ffi::FileType::StablePortabilityHistory,
             |history_item| {
-                history.pin_mut().push(history_item.into());
-                if history.len() >= history_size_threshold {
-                    let batch_to_send = std::mem::replace(
-                        &mut history,
-                        CxxVector::<ffi::StablePortabilityHistoryEntry>::new(),
-                    );
-                    history_callback.as_mut().unwrap().ImportStablePortabilityHistoryEntries(
-                        batch_to_send,
-                        /* completed= */ false,
-                    );
-                }
+                batch_and_send(
+                    history_item,
+                    &mut history,
+                    history_size_threshold,
+                    history_callback.as_mut().unwrap(),
+                );
             },
             /* metadata_only= */ false,
         )
     })();
-
     // Send final batch if any, and completion signal.
-    history_callback.as_mut().unwrap().ImportStablePortabilityHistoryEntries(history, true);
+    history_callback.as_mut().unwrap().import_entries(history, true);
     return result.is_ok();
 }
 
@@ -695,25 +750,17 @@ impl ZipFileArchive {
             if has_extension(outpath, ffi::FileType::SafariHistory) {
                 let stream_reader = ZipEntryBufReader::new(file);
                 parse_history_file(stream_reader, |history_item| {
-                    history.as_mut().unwrap().push(history_item.into());
-                    if history.len() >= history_size_threshold {
-                        let batch_to_send = std::mem::replace(
-                            &mut history,
-                            CxxVector::<ffi::SafariHistoryEntry>::new(),
-                        );
-                        history_callback
-                            .as_mut()
-                            .unwrap()
-                            .ImportHistoryEntries(batch_to_send, /* completed= */ false);
-                    }
+                    batch_and_send(
+                        history_item,
+                        &mut history,
+                        history_size_threshold,
+                        history_callback.as_mut().unwrap(),
+                    );
                 });
             }
         });
 
-        history_callback
-            .as_mut()
-            .unwrap()
-            .ImportHistoryEntries(history, /* completed= */ true);
+        history_callback.as_mut().unwrap().import_entries(history, /* completed= */ true);
     }
 
     fn parse_payment_cards(
