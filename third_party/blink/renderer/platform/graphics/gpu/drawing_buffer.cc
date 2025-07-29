@@ -536,25 +536,11 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
 }
 
 scoped_refptr<StaticBitmapImage>
-DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
-  ScopedStateRestorer scoped_state_restorer(this);
-
+DrawingBuffer::GetN32UnacceleratedStaticBitmapImage() {
   const auto format = viz::SharedImageFormat::N32Format();
-  sk_sp<SkData> dst_buffer = TryAllocateSkDataForBitmap(format, Size());
-  if (!dst_buffer) {
-    return nullptr;
-  }
-
-  auto pixels = base::span<uint8_t>(
-      static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
-  ReadBackFramebuffer(pixels, format, kPremul_SkAlphaType,
-                      kBottomLeft_GrSurfaceOrigin, kBackBuffer);
-
-  return StaticBitmapImage::Create(
-      std::move(dst_buffer),
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        ToClosestSkColorType(format), kPremul_SkAlphaType),
-      ImageOrientationEnum::kOriginBottomLeft);
+  return GetUnacceleratedStaticBitmapImage(
+      kBackBuffer, format, kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin,
+      /*override_color_space=*/true);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -1769,8 +1755,6 @@ GLenum DrawingBuffer::StorageFormat() const {
 scoped_refptr<StaticBitmapImage>
 DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer) {
-  ScopedStateRestorer scoped_state_restorer(this);
-
   // Readback in native GL byte order (RGBA).
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
@@ -1779,20 +1763,37 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
     format = viz::SinglePlaneFormat::kRGBA_F16;
   }
 
+  return GetUnacceleratedStaticBitmapImage(
+      source_buffer, format, requested_alpha_type_, kTopLeft_GrSurfaceOrigin,
+      /*override_color_space=*/false);
+}
+
+scoped_refptr<StaticBitmapImage>
+DrawingBuffer::GetUnacceleratedStaticBitmapImage(
+    SourceDrawingBuffer source_buffer,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    GrSurfaceOrigin origin,
+    bool override_color_space) {
+  ScopedStateRestorer scoped_state_restorer(this);
+
   sk_sp<SkData> dst_buffer = TryAllocateSkDataForBitmap(format, Size());
   if (!dst_buffer)
     return nullptr;
 
   auto pixels = base::span<uint8_t>(
       static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
-  ReadBackFramebuffer(pixels, format, requested_alpha_type_,
-                      kTopLeft_GrSurfaceOrigin, source_buffer);
+  ReadBackFramebuffer(pixels, format, alpha_type, origin, source_buffer);
 
   return StaticBitmapImage::Create(
       std::move(dst_buffer),
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        ToClosestSkColorType(format), requested_alpha_type_,
-                        color_space_.ToSkColorSpace()));
+      SkImageInfo::Make(
+          SkISize::Make(Size().width(), Size().height()),
+          ToClosestSkColorType(format), alpha_type,
+          override_color_space ? nullptr : color_space_.ToSkColorSpace()),
+      origin == kTopLeft_GrSurfaceOrigin
+          ? ImageOrientationEnum::kOriginTopLeft
+          : ImageOrientationEnum::kOriginBottomLeft);
 }
 
 void DrawingBuffer::ReadBackFramebuffer(
