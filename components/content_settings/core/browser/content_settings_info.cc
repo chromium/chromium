@@ -103,6 +103,11 @@ bool ContentSettingsInfo::Delegate::IsAnyPermissionAllowed(
   return std::get<ContentSetting>(setting) == CONTENT_SETTING_ALLOW;
 }
 
+bool ContentSettingsInfo::Delegate::IsUndecided(
+    PermissionSetting setting) const {
+  return std::get<ContentSetting>(setting) == CONTENT_SETTING_ASK;
+}
+
 bool ContentSettingsInfo::Delegate::CanTrackLastVisit() const {
   ContentSettingsType type = info_->website_settings_info()->type();
 

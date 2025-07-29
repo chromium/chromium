@@ -42,6 +42,9 @@ class PermissionSettingsInfo {
     // SafetyHub.
     virtual bool IsAnyPermissionAllowed(PermissionSetting setting) const = 0;
 
+    // Returns true when no permission has been allowed or blocked yet.
+    virtual bool IsUndecided(PermissionSetting setting) const = 0;
+
     // Returns whether the permission setting supports expiration tracking.
     virtual bool CanTrackLastVisit() const = 0;
 

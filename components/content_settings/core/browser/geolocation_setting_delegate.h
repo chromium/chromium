@@ -22,6 +22,7 @@ class GeolocationSettingDelegate
       const PermissionSetting& setting) const override;
 
   bool IsAnyPermissionAllowed(PermissionSetting setting) const override;
+  bool IsUndecided(PermissionSetting setting) const override;
   bool CanTrackLastVisit() const override;
 
   bool ShouldCoalesceEphemeralState() const override;
