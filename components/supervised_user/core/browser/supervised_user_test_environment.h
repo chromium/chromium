@@ -29,6 +29,20 @@
 
 namespace supervised_user {
 
+// Handy set of initial states of supervision stack, to preset before testing.
+enum class InitialSupervisionState : int {
+  // Default mode, no supervision, no content filters at startup.
+  kUnsupervised,
+  // Enable family link, and use defaults.
+  kFamilyLinkDefault,
+  // Enable family link and set specific initial settings.
+  kFamilyLinkAllowAllSites,
+  kFamilyLinkTryToBlockMatureSites,
+  kFamilyLinkCertainSites,
+  // Local supervision startup states.
+  kSupervisedWithAllContentFilters,
+};
+
 // Launches the service from empty settings, typically during context
 // initialization.
 SupervisedUserSettingsService* InitializeSettingsServiceForTesting(
@@ -55,6 +69,10 @@ class SupervisedUserPrefStoreTestEnvironment {
   SupervisedUserContentFiltersService* content_filters_service();
 
   void Shutdown();
+
+  // Sets initial values in components like pref service and content filters
+  // before services are created.
+  void ConfigureInitialValues(InitialSupervisionState initial_state);
 
  private:
   SupervisedUserSettingsService settings_service_;
@@ -130,7 +148,8 @@ class FakeContentFiltersObserverBridge final
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Offers access to the protected constructor of SupervisedUserService, used
-// to inject fake content filters observers.
+// to inject fake content filters observers (with initial values described in
+// initial_state)
 class TestSupervisedUserService : public SupervisedUserService {
  public:
   // Matching constructor of SupervisedUserService.
@@ -143,7 +162,9 @@ class TestSupervisedUserService : public SupervisedUserService {
       syncer::SyncService* sync_service,
       std::unique_ptr<SupervisedUserURLFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>
-          platform_delegate);
+          platform_delegate,
+      InitialSupervisionState initial_state =
+          InitialSupervisionState::kUnsupervised);
 
 #if BUILDFLAG(IS_ANDROID)
   base::WeakPtr<FakeContentFiltersObserverBridge>
@@ -160,10 +181,15 @@ class TestSupervisedUserService : public SupervisedUserService {
 // base::test::TaskEnvironment), and requires that Shutdown() is called.
 class SupervisedUserTestEnvironment {
  public:
-  SupervisedUserTestEnvironment();
+  explicit SupervisedUserTestEnvironment(
+      InitialSupervisionState initial_state =
+          InitialSupervisionState::kUnsupervised);
   explicit SupervisedUserTestEnvironment(
       std::unique_ptr<MetricsServiceAccessorDelegateMock>
-          metrics_service_accessor_delegate);
+          metrics_service_accessor_delegate,
+      InitialSupervisionState initial_state =
+          InitialSupervisionState::kUnsupervised);
+
   SupervisedUserTestEnvironment(const SupervisedUserTestEnvironment&) = delete;
   SupervisedUserTestEnvironment& operator=(
       const SupervisedUserTestEnvironment&) = delete;

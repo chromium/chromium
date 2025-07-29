@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
@@ -50,9 +49,9 @@ using base::UserMetricsAction;
 
 // All prefs that configure the url filter.
 std::array<const char*, 4> kUrlFilterSettingsPrefs = {
-  prefs::kDefaultSupervisedUserFilteringBehavior,
-  prefs::kSupervisedUserSafeSites, prefs::kSupervisedUserManualHosts,
-  prefs::kSupervisedUserManualURLs};
+    prefs::kDefaultSupervisedUserFilteringBehavior,
+    prefs::kSupervisedUserSafeSites, prefs::kSupervisedUserManualHosts,
+    prefs::kSupervisedUserManualURLs};
 
 // Helper that extracts custodian data from given preferences.
 std::optional<Custodian> GetCustodianFromPrefs(
@@ -426,6 +425,8 @@ void SupervisedUserService::EnableSearchContentFilters() {
   // groups and then reloads search pages.
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
+  // Required to emit WebFilterType metrics.
+  UpdateURLFilter();
 }
 void SupervisedUserService::DisableSearchContentFilters() {
   content_filters_service_->SetSearchFiltersEnabled(false);
@@ -455,7 +456,8 @@ void SupervisedUserService::EnableBrowserContentFilters() {
   // groups
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
-  // Updates URL filter settings and reclassifies the observed navigations.
+  // Required to emit WebFilterType metrics and reclassifies the observed
+  // navigations.
   UpdateURLFilter();
 }
 
@@ -470,7 +472,8 @@ void SupervisedUserService::DisableBrowserContentFilters() {
   // groups
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
-  // Updates URL filter settings and reclassifies the observed navigations.
+  // Required to emit WebFilterType metrics and reclassifies the observed
+  // navigations.
   UpdateURLFilter();
 }
 

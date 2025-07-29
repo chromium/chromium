@@ -288,6 +288,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   if (GetParam().initial_browser_content_filters_value) {
     histogram_tester().ExpectBucketCount(
         "FamilyUser.WebFilterType", WebFilterType::kTryToBlockMatureSites, 1);
+  } else if (GetParam().initial_search_content_filters_value) {
+    histogram_tester().ExpectBucketCount("FamilyUser.WebFilterType",
+                                         WebFilterType::kDisabled, 1);
   } else {
     histogram_tester().ExpectTotalCount("FamilyUser.WebFilterType", 0);
   }

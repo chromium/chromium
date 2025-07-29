@@ -4,9 +4,14 @@
 
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/check.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -29,10 +34,10 @@ std::string GetDeviceFiltersSynthenticFieldTrialGroupName(bool filter_enabled) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// UMA histogram FamilyUser.WebFilterType
 // Reports WebFilterType which indicates web filter behaviour are used for
 // current Family Link user.
-constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
+constexpr char kFamilyUserWebFilterTypeHistogramName[] =
+    "FamilyUser.WebFilterType";
 
 // UMA histogram FamilyUser.ManualSiteListType
 // Reports ManualSiteListType which indicates approved list and blocked list
@@ -55,7 +60,6 @@ constexpr base::TimeDelta kTimerInterval = base::Minutes(10);
 int GetDayId(base::Time time) {
   return time.LocalMidnight().since_origin().InDaysFloored();
 }
-
 }  // namespace
 
 // static
@@ -104,7 +108,9 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
 SupervisedUserMetricsService::~SupervisedUserMetricsService() = default;
 
 void SupervisedUserMetricsService::Shutdown() {
-  CheckForNewDay();
+  // Per histograms.xml description, FamilyUser.WebFilterType must not emit on
+  // signout. Shutdown is also called on signout, and the timer most probably
+  // already emitted for the given day.
   timer_.Stop();
 }
 
@@ -114,26 +120,22 @@ void SupervisedUserMetricsService::CheckForNewDay() {
   // The OnNewDay() event can fire sooner or later than 24 hours due to clock or
   // time zone changes.
   if (day_id < current_day_id) {
-    bool should_update_day_id = false;
-    // Since this service's periodical check runs independently from the
-    // SupervisedUserService, do not emit if the filtering expected to be
-    // inactive.
-    if (supervised_user_service_->GetURLFilter()->GetWebFilterType() !=
-        WebFilterType::kDisabled) {
-      ClearMetricsCache();
-      EmitMetrics();
-      should_update_day_id = true;
-    }
+    ClearMetricsCache();
+    TryEmittingMetricsAndRecordCurrentDay();
 
     if (extensions_metrics_delegate_ &&
         extensions_metrics_delegate_->RecordExtensionsMetrics()) {
-      should_update_day_id = true;
-    }
-    if (should_update_day_id) {
-      pref_service_->SetInteger(prefs::kSupervisedUserMetricsDayId,
-                                current_day_id);
+      // Note that TryEmittingMetricsAndRecordCurrentDay above records the day
+      // internally, but the delegate is external and new day must be recorded
+      // explicitly.
+      RecordCurrentDay();
     }
   }
+}
+
+void SupervisedUserMetricsService::RecordCurrentDay() {
+  pref_service_->SetInteger(prefs::kSupervisedUserMetricsDayId,
+                            GetDayId(base::Time::Now()));
 }
 
 void SupervisedUserMetricsService::OnBrowserContentFiltersChanged() {
@@ -155,36 +157,52 @@ void SupervisedUserMetricsService::OnSearchContentFiltersChanged() {
 }
 
 void SupervisedUserMetricsService::OnURLFilterChanged() {
-  EmitMetrics();
+  TryEmittingMetricsAndRecordCurrentDay();
 }
 
-void SupervisedUserMetricsService::EmitMetrics() {
+bool SupervisedUserMetricsService::TryEmittingMetricsAndRecordCurrentDay() {
+  if (!supervised_user_service_->IsSupervisedLocally() &&
+      !IsSubjectToParentalControls(*pref_service_.get())) {
+    return false;
+  }
+
+  bool emitted = false;
+  WebFilterType web_filter_type =
+      supervised_user_service_->GetURLFilter()->GetWebFilterType();
   if (!last_recorded_web_filter_type_.has_value() ||
-      *last_recorded_web_filter_type_ !=
-          supervised_user_service_->GetURLFilter()->GetWebFilterType()) {
-    WebFilterType web_filter_type =
-        supervised_user_service_->GetURLFilter()->GetWebFilterType();
-
-    base::UmaHistogramEnumeration(kWebFilterTypeHistogramName, web_filter_type);
+      *last_recorded_web_filter_type_ != web_filter_type) {
+    base::UmaHistogramEnumeration(kFamilyUserWebFilterTypeHistogramName,
+                                  web_filter_type);
     last_recorded_web_filter_type_ = web_filter_type;
+    emitted = true;
   }
 
-  if (!last_recorded_statistics_.has_value() ||
-      *last_recorded_statistics_ !=
-          supervised_user_service_->GetURLFilter()->GetFilteringStatistics()) {
-    SupervisedUserURLFilter::Statistics statistics =
-        supervised_user_service_->GetURLFilter()->GetFilteringStatistics();
+  // Only for Family Link users.
+  if (IsSubjectToParentalControls(*pref_service_.get())) {
+    if (!last_recorded_statistics_.has_value() ||
+        *last_recorded_statistics_ != supervised_user_service_->GetURLFilter()
+                                          ->GetFilteringStatistics()) {
+      SupervisedUserURLFilter::Statistics statistics =
+          supervised_user_service_->GetURLFilter()->GetFilteringStatistics();
 
-    base::UmaHistogramCounts1000(
-        kApprovedSitesCountHistogramName,
-        statistics.allowed_hosts_count + statistics.allowed_urls_count);
-    base::UmaHistogramCounts1000(
-        kBlockedSitesCountHistogramName,
-        statistics.blocked_hosts_count + statistics.blocked_urls_count);
-    base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
-                                  statistics.GetManagedSiteList());
-    last_recorded_statistics_ = statistics;
+      base::UmaHistogramCounts1000(
+          kApprovedSitesCountHistogramName,
+          statistics.allowed_hosts_count + statistics.allowed_urls_count);
+      base::UmaHistogramCounts1000(
+          kBlockedSitesCountHistogramName,
+          statistics.blocked_hosts_count + statistics.blocked_urls_count);
+      base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
+                                    statistics.GetManagedSiteList());
+      last_recorded_statistics_ = statistics;
+      emitted = true;
+    }
   }
+
+  if (emitted) {
+    RecordCurrentDay();
+  }
+
+  return emitted;
 }
 
 void SupervisedUserMetricsService::ClearMetricsCache() {

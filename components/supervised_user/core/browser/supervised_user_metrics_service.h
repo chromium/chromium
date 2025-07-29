@@ -79,11 +79,17 @@ class SupervisedUserMetricsService : public KeyedService,
 
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
+  // Returns true if metrics were emitted. Dispatches to one of the below
+  // functions depending on the user type.
+  bool TryEmittingMetricsAndRecordCurrentDay();
+  bool TryEmittingFamilyLinkMetrics();
 
-  void EmitMetrics();
-  // Clears cache of last recorded metrics. Subsequent `::EmitMetrics` will emit
-  // all metrics.
+  // Clears cache of last recorded metrics. Subsequent `::TryEmittingMetrics` will emit
+  // all metrics (for eligible users)
   void ClearMetricsCache();
+
+  // Records the current day's metrics, to avoid repetitions.
+  void RecordCurrentDay();
 
   const raw_ptr<PrefService> pref_service_;
   raw_ref<SupervisedUserService> supervised_user_service_;
