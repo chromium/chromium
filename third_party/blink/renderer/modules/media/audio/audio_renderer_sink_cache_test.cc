@@ -17,7 +17,10 @@
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -78,15 +81,14 @@ class AudioRendererSinkCacheTest : public testing::Test {
   // Posts the task to the specified thread and runs current message loop until
   // the task is completed.
   void PostAndWaitUntilDone(const base::Thread& thread,
-                            base::OnceClosure task) {
+                            CrossThreadOnceClosure task) {
     base::WaitableEvent e{base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED};
 
-    thread.task_runner()->PostTask(FROM_HERE, std::move(task));
-    thread.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&e)));
-
+    PostCrossThreadTask(*thread.task_runner(), FROM_HERE, std::move(task));
+    PostCrossThreadTask(*thread.task_runner(), FROM_HERE,
+                        CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                                            CrossThreadUnretained(&e)));
     e.Wait();
   }
 
@@ -186,19 +188,19 @@ TEST_F(AudioRendererSinkCacheTest, MultithreadedAccess) {
 
   // Request device information on the first thread.
   PostAndWaitUntilDone(
-      thread1,
-      base::BindOnce(base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
-                     base::Unretained(cache_.get()), kFrameToken,
-                     kDefaultDeviceId));
+      thread1, CrossThreadBindOnce(
+                   base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
+                   CrossThreadUnretained(cache_.get()), kFrameToken,
+                   CrossThreadUnretained(kDefaultDeviceId)));
 
   EXPECT_EQ(1u, sink_count());
 
   // Request the device information again on the second thread.
   PostAndWaitUntilDone(
-      thread2,
-      base::BindOnce(base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
-                     base::Unretained(cache_.get()), kFrameToken,
-                     kDefaultDeviceId));
+      thread2, CrossThreadBindOnce(
+                   base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
+                   CrossThreadUnretained(cache_.get()), kFrameToken,
+                   CrossThreadUnretained(kDefaultDeviceId)));
 }
 
 }  // namespace blink
