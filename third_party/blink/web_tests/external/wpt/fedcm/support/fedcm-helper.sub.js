@@ -198,7 +198,11 @@ export function fedcm_get_dialog_type_promise(t) {
         resolve(type);
       } catch (ex) {
         if (String(ex).includes("no such alert")) {
-          t.step_timeout(helper, 100);
+          if (t) {
+            t.step_timeout(helper, 100);
+          } else{
+            window.setTimeout(helper, 100);
+          }
         } else {
           reject(ex);
         }
