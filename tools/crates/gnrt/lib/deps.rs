@@ -378,12 +378,12 @@ impl MemoizationTables {
         Self { package_conditions: HashMap::new() }
     }
 
-    fn get_package_condition(&mut self, package: &PackageMetadata) -> Condition {
-        if let Some(condition) = self.package_conditions.get(&package.into()) {
-            return condition.clone();
+    fn get_package_condition_unmemoized(&mut self, package: &PackageMetadata) -> Condition {
+        if package.is_proc_macro() {
+            return Condition::always_true();
         }
 
-        let condition = package
+        package
             .reverse_direct_links()
             .flat_map(|link| {
                 [
@@ -392,7 +392,15 @@ impl MemoizationTables {
                 ]
             })
             .reduce(Condition::or)
-            .unwrap_or_else(Condition::always_true);
+            .unwrap_or_else(Condition::always_true)
+    }
+
+    fn get_package_condition(&mut self, package: &PackageMetadata) -> Condition {
+        if let Some(condition) = self.package_conditions.get(&package.into()) {
+            return condition.clone();
+        }
+
+        let condition = self.get_package_condition_unmemoized(package);
         self.package_conditions.insert(package.into(), condition.clone());
         condition
     }
@@ -458,7 +466,11 @@ fn get_reverse_dependency_kinds(
     };
     let mut result = HashMap::new();
     let mut insert_if_present = |link: PackageLink, kind: DependencyKind| {
-        let condition = condition_getter(&link, kind);
+        let condition = if kind == DependencyKind::Normal && link.to().is_proc_macro() {
+            Condition::always_true()
+        } else {
+            condition_getter(&link, kind)
+        };
         if !condition.is_always_false() {
             let features = match kind {
                 // ... => `build.rs` deps only care about host-side features.
@@ -1131,4 +1143,40 @@ mod tests {
     // `gnrt/sample_package3` directory.  See the `Cargo.toml` for more
     // information.
     static SAMPLE_CARGO_METADATA3: &str = include_str!("test_metadata3.json");
+
+    #[test]
+    fn collect_dependencies_on_sample_output4() {
+        let config = BuildConfig::default();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA4).unwrap();
+        let dependencies = collect_dependencies(&metadata, "sample_package4", &config).unwrap();
+        let dependencies = dependencies
+            .into_iter()
+            .map(|package| (package.package_name.to_string(), package))
+            .collect::<HashMap<_, _>>();
+
+        // When compiling for arm64 **target**, there is a foo => prost-derive
+        // dependency.
+        let foo = &dependencies["foo"];
+        assert_eq!(foo.dependencies.len(), 1);
+        assert_eq!(foo.dependencies[0].package_name, "prost-derive");
+        assert_eq!(
+            foo.dependencies[0].condition.to_handlebars_value().unwrap(),
+            Some("current_cpu == \"arm64\"".to_string()),
+        );
+
+        // We can cross-compile for arm64 **target** when building on x86 **host**.
+        // Therefore the arm64 condition should *not* propagate 1) into when
+        // `prost` is enabled via its reverse dependencies, nor 2) into transitive
+        // dependnecies of `prost`.
+        let prost = &dependencies["prost-derive"];
+        assert_eq!(prost.dependencies.len(), 5);
+        assert_eq!(prost.dependencies[0].package_name, "anyhow");
+        assert!(prost.dependencies[0].condition.is_always_true());
+        assert!(prost.dependency_kinds[&DependencyKind::Normal].condition.is_always_true());
+    }
+
+    // `test_metadata4.json` contains the output of `cargo metadata` run in
+    // `gnrt/sample_package4` directory.  See the `Cargo.toml` for more
+    // information.
+    static SAMPLE_CARGO_METADATA4: &str = include_str!("test_metadata4.json");
 }

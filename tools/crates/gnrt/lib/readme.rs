@@ -310,8 +310,8 @@ static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<Licens
 
 static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>> =
     LazyLock::new(|| {
-        const PREFIX: &'static str = "LICENSE";
-        const EXTENSIONS: [&'static str; 3] = ["", ".md", ".txt"];
+        const PREFIX: &str = "LICENSE";
+        const EXTENSIONS: [&str; 3] = ["", ".md", ".txt"];
 
         // This block generates a map with the most common license file types, in order
         // of priority.
@@ -324,11 +324,11 @@ static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>
             let mut license_files = vec![];
             // License types with the license-specific suffix are higher priority.
             for ext in EXTENSIONS {
-                license_files.push(format!("{}-{}{}", PREFIX, license_suffix, ext));
+                license_files.push(format!("{PREFIX}-{license_suffix}{ext}"));
             }
             // License types that are common to all licenses are lower priority.
             for ext in EXTENSIONS {
-                license_files.push(format!("{}{}", PREFIX, ext));
+                license_files.push(format!("{PREFIX}{ext}"));
             }
             map.insert(kind, license_files);
         }

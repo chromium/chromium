@@ -1,0 +1,7 @@
+[package]
+name = "foo"
+version = "0.1.0"
+edition = "2021"
+
+[target.'cfg(target_arch = "aarch64")'.dependencies.prost-derive]
+version = "0.14.1"

@@ -30,7 +30,7 @@ impl Condition {
         Condition(Ok(HashSet::new()))
     }
 
-    fn is_always_true(&self) -> bool {
+    pub fn is_always_true(&self) -> bool {
         self.0.as_ref().is_ok_and(|triple_set| *triple_set == *RustTargetTriple::all())
     }
 
