@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_KEYED_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_GLIC_PUBLIC_GLIC_KEYED_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
@@ -41,4 +41,4 @@ class GlicKeyedServiceFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_GLIC_PUBLIC_GLIC_KEYED_SERVICE_FACTORY_H_

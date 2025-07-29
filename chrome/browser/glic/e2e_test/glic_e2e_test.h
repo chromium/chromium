@@ -7,7 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"

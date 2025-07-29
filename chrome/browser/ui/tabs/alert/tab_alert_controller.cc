@@ -21,8 +21,8 @@
 #include "content/public/browser/web_contents_capability_type.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace {

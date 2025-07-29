@@ -12,7 +12,7 @@
 #include "components/url_matcher/url_util.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #endif
 
