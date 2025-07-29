@@ -1276,18 +1276,11 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
   }
   auto size = gfx::Size(2, 2);
 
-  // Note that |gmb_id| and |client_id| does not matter here as this is the
-  // first GMB which will created and immediately destroyed.
-  auto gmb_id = gfx::GpuMemoryBufferId(
-      static_cast<int>(gpu::MappableSIClientGmbId::kGpuServiceImpl));
-  auto client_id = gpu::kMappableSIClientId;
-  auto gmb_handle = gpu_memory_buffer_factory_->CreateGpuMemoryBuffer(
-      gmb_id, size, /*framebuffer_size=*/size, buffer_format, buffer_usage,
-      client_id, gpu::kNullSurfaceHandle);
-
-  // Destroy the gmb_handle since it will be no longer needed.
-  gpu_memory_buffer_factory_->DestroyGpuMemoryBuffer(gmb_id, client_id);
-  return !gmb_handle.is_null();
+  return !gpu_memory_buffer_factory_
+              ->CreateNativeGmbHandle(
+                  gpu::MappableSIClientGmbId::kGpuServiceImpl, size,
+                  buffer_format, buffer_usage)
+              .is_null();
 }
 #endif
 
