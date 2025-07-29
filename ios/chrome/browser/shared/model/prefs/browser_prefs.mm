@@ -1051,6 +1051,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kIOSBWGPreciseLocationSetting, false);
   registry->RegisterBooleanPref(prefs::kIOSBWGPageContentSetting, true);
   registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
+  registry->RegisterTimePref(prefs::kLastGeminiInteractionTimestamp,
+                             base::Time());
+  registry->RegisterStringPref(prefs::kGeminiConversationId, std::string());
 
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,
                              base::Time());

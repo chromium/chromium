@@ -793,6 +793,13 @@ inline constexpr char kIOSBWGPageContentSetting[] =
 inline constexpr char kIOSBWGPromoImpressionCount[] =
     "ios.bwg.promo_impressions";
 
+// Timestamp tracking the last interaction with the Gemini floaty.
+inline constexpr char kLastGeminiInteractionTimestamp[] =
+    "ios.gemini.last_interaction_timestamp";
+
+// A string specifying the active conversation ID.
+inline constexpr char kGeminiConversationId[] = "ios.gemini.conversation_id";
+
 // A time object storing the first browser startup with a managed primary
 // identity in the personal profile after multi-profile becomes supported. Used
 // to trigger forced migration after some grace period.

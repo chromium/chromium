@@ -123,20 +123,34 @@ std::string BwgTabHelper::GetClientId() {
 }
 
 std::optional<std::string> BwgTabHelper::GetServerId() {
-  std::optional<const base::Value::Dict*> session_dict =
-      GetSessionDictFromPrefs(
-          GetClientId(),
-          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
-  if (!session_dict.has_value()) {
-    return std::nullopt;
-  }
+  if (IsGeminiCrossTabEnabled()) {
+    PrefService* pref_service =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
+    base::Time last_interaction_timestamp =
+        pref_service->GetTime(prefs::kLastGeminiInteractionTimestamp);
+    const std::string server_id =
+        pref_service->GetString(prefs::kGeminiConversationId);
+    if (base::Time::Now() - last_interaction_timestamp <
+        BWGSessionValidityDuration()) {
+      if (!server_id.empty()) {
+        return server_id;
+      }
+    }
+  } else {
+    std::optional<const base::Value::Dict*> session_dict =
+        GetSessionDictFromPrefs(
+            GetClientId(),
+            ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
+    if (!session_dict.has_value()) {
+      return std::nullopt;
+    }
 
-  const std::string* server_id =
-      session_dict.value()->FindString(kServerIDDictKey);
-  if (server_id) {
-    return *server_id;
+    const std::string* server_id =
+        session_dict.value()->FindString(kServerIDDictKey);
+    if (server_id) {
+      return *server_id;
+    }
   }
-
   return std::nullopt;
 }
 
@@ -192,18 +206,26 @@ void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
     return;
   }
 
-  base::Value::Dict session_info_dict;
-  session_info_dict.Set(kServerIDDictKey, server_id);
-  session_info_dict.Set(
-      kLastInteractionTimestampDictKey,
-      static_cast<double>(base::Time::Now().InMillisecondsSinceUnixEpoch()));
-  session_info_dict.Set(kURLOnLastInteractionDictKey,
-                        web_state_->GetVisibleURL().spec());
+  if (IsGeminiCrossTabEnabled()) {
+    PrefService* pref_service =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
+    pref_service->SetTime(prefs::kLastGeminiInteractionTimestamp,
+                          base::Time::Now());
+    pref_service->SetString(prefs::kGeminiConversationId, server_id);
+  } else {
+    base::Value::Dict session_info_dict;
+    session_info_dict.Set(kServerIDDictKey, server_id);
+    session_info_dict.Set(
+        kLastInteractionTimestampDictKey,
+        static_cast<double>(base::Time::Now().InMillisecondsSinceUnixEpoch()));
+    session_info_dict.Set(kURLOnLastInteractionDictKey,
+                          web_state_->GetVisibleURL().spec());
 
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kBwgSessionMap);
-  update->Set(client_id, std::move(session_info_dict));
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+    ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kBwgSessionMap);
+    update->Set(client_id, std::move(session_info_dict));
+  }
 }
 
 void BwgTabHelper::CleanupSessionFromPrefs(std::string session_id) {
