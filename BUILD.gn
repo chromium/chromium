@@ -155,14 +155,14 @@ group("gn_all") {
       }
       deps += [
         "//components/subresource_filter/tools:subresource_filter_tools",
-        "//components/zucchini:zucchini",
+        "//components/zucchini",
         "//net:hpack_example_generator",
         "//third_party/spirv-tools/src:SPIRV-Tools",
         "//tools/aggregation_service:aggregation_service_tool",
         "//tools/perf/clear_system_cache",
         "//tools/polymer:polymer_tools_python_unittests",
         "//tools/privacy_budget:privacy_budget_tools",
-        "//ui/accessibility/extensions:extensions",
+        "//ui/accessibility/extensions",
         "//ui/webui/resources/tools:webui_resources_tools_python_unittests",
       ]
     }
@@ -644,7 +644,7 @@ group("gn_all") {
         # The following two are accessibility API debugging tools.
         "//tools/accessibility/inspect:ax_dump_events",
         "//tools/accessibility/inspect:ax_dump_tree",
-        "//tools/win/chromeexts:chromeexts",
+        "//tools/win/chromeexts",
       ]
 
       # TODO(thakis): Enable this in cross builds, https://crbug.com/799827
@@ -809,7 +809,7 @@ group("gn_all") {
 
     if (build_dawn_tests) {
       deps += [
-        "//third_party/dawn/src/dawn/fuzzers:fuzzers",
+        "//third_party/dawn/src/dawn/fuzzers",
         "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
         "//third_party/dawn/src/dawn/tests:dawn_unittests",
         "//third_party/dawn/src/tint:fuzzers",
@@ -835,7 +835,7 @@ group("gn_all") {
   }
 
   if (is_chrome_for_testing) {
-    deps += [ "//chrome/browser/chrome_for_testing:chrome_for_testing" ]
+    deps += [ "//chrome/browser/chrome_for_testing" ]
   }
 
   if (checkout_src_internal) {
@@ -890,8 +890,8 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
   # targets.
   group("traffic_annotation_auditor_dependencies") {
     deps = [
-      "//chrome:chrome",
-      "//remoting/host:host",
+      "//chrome",
+      "//remoting/host",
       "//tools/traffic_annotation:annotations_xml",
     ]
     if (enable_enterprise_companion) {
@@ -1168,7 +1168,7 @@ if (use_blink && !is_cronet_build) {
       data_deps = [
         ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
-        "//chrome:chrome",
+        "//chrome",
         "//chrome/test/chromedriver:chromedriver_server",
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
@@ -1731,7 +1731,7 @@ group("chromium_builder_perf") {
 
   if (is_win) {
     data_deps += [
-      "//chrome/installer/mini_installer:mini_installer",
+      "//chrome/installer/mini_installer",
       "//components:components_perftests",
       "//third_party/angle/src/tests:angle_perftests",
     ]
@@ -1748,7 +1748,7 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
       "//v8:d8",
     ]
     if (!is_fuchsia) {
-      deps += [ "//chrome:chrome" ]
+      deps += [ "//chrome" ]
     }
     if (!is_win) {
       deps += [ "//skia:filter_fuzz_stub" ]

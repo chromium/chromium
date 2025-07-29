@@ -52,7 +52,6 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
     "$root_gen_dir/third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-webui.ts",
-
   ]
 
   ts_definitions = [
