@@ -42,7 +42,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
@@ -296,13 +295,10 @@ public class WindowAndroid
     }
 
     private boolean shouldTrackOcclusion() {
-        // Enable occlusion only for desktop Android. For non-desktop Android, occlusion signals
-        // from Android should be the same as the Activity lifecycle signals that already control
-        // web contents occlusion. Also, on rotate Android seems to send a spurious occlusion
-        // signal. See crbug.com/380209799 for details.
+        // On rotate Android seems to send a spurious occlusion signal. See crbug.com/380209799 for
+        // details.
         return mTrackOcclusion
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && DeviceInfo.isDesktop()
                 && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled();
     }
 
