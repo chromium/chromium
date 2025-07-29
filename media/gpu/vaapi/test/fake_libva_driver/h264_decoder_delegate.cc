@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/fake_libva_driver/h264_decoder_delegate.h"
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -555,9 +551,9 @@ void H264DecoderDelegate::Run() {
   for (const auto& slice_data_buffer : slice_data_buffers_) {
     // Add the H264 start code for each slice.
     bitstream_builder.AppendBits(32, 0x00000001);
-    const base::span<const uint8_t> data(
-        reinterpret_cast<uint8_t*>(slice_data_buffer->GetData()),
-        slice_data_buffer->GetDataSize());
+    const base::span<const uint8_t> UNSAFE_TODO(
+        data(reinterpret_cast<uint8_t*>(slice_data_buffer->GetData()),
+             slice_data_buffer->GetDataSize()));
     for (size_t i = 0; i < slice_data_buffer->GetDataSize(); i++) {
       bitstream_builder.AppendBits<uint8_t>(8, data[i]);
     }
@@ -567,7 +563,7 @@ void H264DecoderDelegate::Run() {
 
   unsigned char* pData[3];
   SBufferInfo sDstBufInfo;
-  memset(&sDstBufInfo, 0, sizeof(SBufferInfo));
+  UNSAFE_TODO(memset(&sDstBufInfo, 0, sizeof(SBufferInfo)));
   sDstBufInfo.uiInBsTimeStamp = current_ts_++;
   CHECK_EQ(svc_decoder_->DecodeFrameNoDelay(bitstream_builder.data(),
                                             bitstream_builder.BytesInBuffer(),
@@ -582,7 +578,7 @@ void H264DecoderDelegate::Run() {
   svc_decoder_->GetOption(DECODER_OPTION_NUM_OF_FRAMES_REMAINING_IN_BUFFER,
                           &num_of_frames_in_buffer);
   for (int32_t i = 0; i < num_of_frames_in_buffer; i++) {
-    memset(&sDstBufInfo, 0, sizeof(SBufferInfo));
+    UNSAFE_TODO(memset(&sDstBufInfo, 0, sizeof(SBufferInfo)));
     svc_decoder_->FlushFrame(pData, &sDstBufInfo);
     OnFrameReady(pData, &sDstBufInfo);
   }
@@ -607,10 +603,10 @@ void H264DecoderDelegate::OnFrameReady(unsigned char* pData[3],
       /*src_y=*/static_cast<uint8_t*>(pData[0]),
       /*src_stride_y=*/
       base::checked_cast<int>(pDstInfo->UsrData.sSystemBuffer.iStride[0]),
-      /*src_u=*/static_cast<uint8_t*>(pData[1]),
+      /*src_u=*/static_cast<uint8_t*>(UNSAFE_TODO(pData[1])),
       /*src_stride_u=*/
       base::checked_cast<int>(pDstInfo->UsrData.sSystemBuffer.iStride[1]),
-      /*src_v=*/static_cast<uint8_t*>(pData[2]),
+      /*src_v=*/static_cast<uint8_t*>(UNSAFE_TODO(pData[2])),
       /*src_stride_v=*/
       base::checked_cast<int>(pDstInfo->UsrData.sSystemBuffer.iStride[1]),
       /*dst_y=*/mapped_bo.GetData(0),

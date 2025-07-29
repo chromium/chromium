@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
 
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <iostream>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -38,12 +34,13 @@ static void FillPictureParameters(
   pic_param->num_components = frame_header.num_components;
 
   for (int i = 0; i < pic_param->num_components; i++) {
-    pic_param->components[i].component_id = frame_header.components[i].id;
-    pic_param->components[i].h_sampling_factor =
+    UNSAFE_TODO(pic_param->components[i]).component_id =
+        frame_header.components[i].id;
+    UNSAFE_TODO(pic_param->components[i]).h_sampling_factor =
         frame_header.components[i].horizontal_sampling_factor;
-    pic_param->components[i].v_sampling_factor =
+    UNSAFE_TODO(pic_param->components[i]).v_sampling_factor =
         frame_header.components[i].vertical_sampling_factor;
-    pic_param->components[i].quantiser_table_selector =
+    UNSAFE_TODO(pic_param->components[i]).quantiser_table_selector =
         frame_header.components[i].quantization_table_selector;
   }
 }
@@ -59,9 +56,10 @@ static void FillIQMatrix(base::span<const JpegQuantizationTable> q_table,
   for (size_t i = 0; i < kJpegMaxQuantizationTableNum; i++) {
     if (!q_table[i].valid)
       continue;
-    iq_matrix->load_quantiser_table[i] = 1;
+    UNSAFE_TODO(iq_matrix->load_quantiser_table[i]) = 1;
     for (size_t j = 0; j < std::size(q_table[i].value); j++)
-      iq_matrix->quantiser_table[i][j] = q_table[i].value[j];
+      UNSAFE_TODO(iq_matrix->quantiser_table[i][j]) =
+          UNSAFE_TODO(q_table[i].value[j]);
   }
 }
 
@@ -93,18 +91,20 @@ static void FillHuffmanTable(base::span<const JpegHuffmanTable> dc_table,
   for (size_t i = 0; i < kJpegMaxHuffmanTableNumBaseline; i++) {
     if (!dc_table[i].valid || !ac_table[i].valid)
       continue;
-    huffman_table->load_huffman_table[i] = 1;
+    UNSAFE_TODO(huffman_table->load_huffman_table[i]) = 1;
 
-    memcpy(huffman_table->huffman_table[i].num_dc_codes,
-           dc_table[i].code_length,
-           sizeof(huffman_table->huffman_table[i].num_dc_codes));
-    memcpy(huffman_table->huffman_table[i].dc_values, dc_table[i].code_value,
-           sizeof(huffman_table->huffman_table[i].dc_values));
-    memcpy(huffman_table->huffman_table[i].num_ac_codes,
-           ac_table[i].code_length,
-           sizeof(huffman_table->huffman_table[i].num_ac_codes));
-    memcpy(huffman_table->huffman_table[i].ac_values, ac_table[i].code_value,
-           sizeof(huffman_table->huffman_table[i].ac_values));
+    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].num_dc_codes,
+                       dc_table[i].code_length,
+                       sizeof(huffman_table->huffman_table[i].num_dc_codes)));
+    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].dc_values,
+                       dc_table[i].code_value,
+                       sizeof(huffman_table->huffman_table[i].dc_values)));
+    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].num_ac_codes,
+                       ac_table[i].code_length,
+                       sizeof(huffman_table->huffman_table[i].num_ac_codes)));
+    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].ac_values,
+                       ac_table[i].code_value,
+                       sizeof(huffman_table->huffman_table[i].ac_values)));
   }
 }
 
@@ -118,11 +118,11 @@ static void FillSliceParameters(
   slice_param->slice_vertical_position = 0;
   slice_param->num_components = parse_result.scan.num_components;
   for (int i = 0; i < slice_param->num_components; i++) {
-    slice_param->components[i].component_selector =
+    UNSAFE_TODO(slice_param->components[i]).component_selector =
         parse_result.scan.components[i].component_selector;
-    slice_param->components[i].dc_table_selector =
+    UNSAFE_TODO(slice_param->components[i]).dc_table_selector =
         parse_result.scan.components[i].dc_selector;
-    slice_param->components[i].ac_table_selector =
+    UNSAFE_TODO(slice_param->components[i]).ac_table_selector =
         parse_result.scan.components[i].ac_selector;
   }
   slice_param->restart_interval = parse_result.restart_interval;

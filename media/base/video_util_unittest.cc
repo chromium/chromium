@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_util.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -32,9 +28,9 @@ void FillPlaneWithPattern(uint8_t* data,
 
   uint32_t val = 0;
   uint8_t* src = data;
-  for (int i = 0; i < visible_size.height(); ++i, src += stride) {
+  for (int i = 0; i < visible_size.height(); ++i, UNSAFE_TODO(src += stride)) {
     for (int j = 0; j < visible_size.width(); ++j, ++val)
-      src[j] = val & 0xff;
+      UNSAFE_TODO(src[j]) = val & 0xff;
   }
 }
 
@@ -90,19 +86,22 @@ bool VerifyPlanCopyWithPadding(const uint8_t* src,
     return false;
 
   const uint8_t *src_ptr = src, *dst_ptr = dst;
-  for (size_t i = 0; i < src_height;
-       ++i, src_ptr += src_stride, dst_ptr += dst_stride) {
-    if (memcmp(src_ptr, dst_ptr, src_width))
+  for (size_t i = 0; i < src_height; ++i, UNSAFE_TODO(src_ptr += src_stride),
+              UNSAFE_TODO(dst_ptr += dst_stride)) {
+    if (UNSAFE_TODO(memcmp(src_ptr, dst_ptr, src_width))) {
       return false;
+    }
     for (size_t j = src_width; j < dst_width; ++j) {
-      if (src_ptr[src_width - 1] != dst_ptr[j])
+      if (UNSAFE_TODO(src_ptr[src_width - 1]) != UNSAFE_TODO(dst_ptr[j])) {
         return false;
+      }
     }
   }
   if (src_height < dst_height) {
-    src_ptr = dst + (src_height - 1) * dst_stride;
-    if (memcmp(src_ptr, dst_ptr, dst_width))
+    src_ptr = UNSAFE_TODO(dst + (src_height - 1) * dst_stride);
+    if (UNSAFE_TODO(memcmp(src_ptr, dst_ptr, dst_width))) {
       return false;
+    }
   }
   return true;
 }
@@ -335,7 +334,7 @@ TEST_P(VideoUtilRotationTest, Rotate) {
   RotatePlaneByPixels(GetParam().src, dest.data(), GetParam().width,
                       GetParam().height, rotation, GetParam().flip_vert,
                       GetParam().flip_horiz);
-  auto expected = base::span(GetParam().target, dest.size());
+  auto expected = UNSAFE_TODO(base::span(GetParam().target, dest.size()));
   EXPECT_EQ(dest, expected);
 }
 
@@ -550,17 +549,20 @@ TEST_F(VideoUtilTest, LetterboxVideoFrame) {
                   x < view_area.x() + view_area.width() &&
                   y >= view_area.y() &&
                   y < view_area.y() + view_area.height();
-              EXPECT_EQ(frame->data(VideoFrame::Plane::kY)
-                            [y * frame->stride(VideoFrame::Plane::kY) + x],
-                        inside ? 0x01 : 0x00);
-              EXPECT_EQ(frame->data(VideoFrame::Plane::kU)
-                            [(y / 2) * frame->stride(VideoFrame::Plane::kU) +
-                             (x / 2)],
-                        inside ? 0x02 : 0x80);
-              EXPECT_EQ(frame->data(VideoFrame::Plane::kV)
-                            [(y / 2) * frame->stride(VideoFrame::Plane::kV) +
-                             (x / 2)],
-                        inside ? 0x03 : 0x80);
+              UNSAFE_TODO(
+                  EXPECT_EQ(frame->data(VideoFrame::Plane::kY)
+                                [y * frame->stride(VideoFrame::Plane::kY) + x],
+                            inside ? 0x01 : 0x00));
+              UNSAFE_TODO(EXPECT_EQ(
+                  frame->data(VideoFrame::Plane::kU)
+                      [(y / 2) * frame->stride(VideoFrame::Plane::kU) +
+                       (x / 2)],
+                  inside ? 0x02 : 0x80));
+              UNSAFE_TODO(EXPECT_EQ(
+                  frame->data(VideoFrame::Plane::kV)
+                      [(y / 2) * frame->stride(VideoFrame::Plane::kV) +
+                       (x / 2)],
+                  inside ? 0x03 : 0x80));
             }
           }
         }
@@ -623,7 +625,8 @@ TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
   // ASAN.
   src_frame.reset();
   for (auto plane : planes)
-    memset(dst_frame->writable_data(plane), 1, dst_frame->stride(plane));
+    UNSAFE_TODO(
+        memset(dst_frame->writable_data(plane), 1, dst_frame->stride(plane)));
 }
 
 }  // namespace media

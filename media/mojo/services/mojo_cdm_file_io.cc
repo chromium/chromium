@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/services/mojo_cdm_file_io.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
@@ -227,7 +223,7 @@ void MojoCdmFileIO::Write(const uint8_t* data, uint32_t data_size) {
   auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&MojoCdmFileIO::OnFileWritten, weak_factory_.GetWeakPtr()),
       FileStatus::kFailure);
-  cdm_file_->Write(std::vector<uint8_t>(data, data + data_size),
+  cdm_file_->Write(std::vector<uint8_t>(data, UNSAFE_TODO(data + data_size)),
                    std::move(callback));
 }
 

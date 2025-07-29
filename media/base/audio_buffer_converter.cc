@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_buffer_converter.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
@@ -216,9 +212,9 @@ void AudioBufferConverter::ConvertIfPossible() {
     // can fill it.
     output_bus->set_frames(frames_this_iteration);
     for (int ch = 0; ch < output_buffer->channel_count(); ++ch) {
-      AudioBus::Channel output_channel = base::span(
+      AudioBus::Channel output_channel = UNSAFE_TODO(base::span(
           reinterpret_cast<float*>(output_buffer->channel_data()[ch]),
-          base::checked_cast<size_t>(output_buffer->frame_count()));
+          base::checked_cast<size_t>(output_buffer->frame_count())));
 
       output_bus->SetChannelData(
           ch, output_channel.subspan(

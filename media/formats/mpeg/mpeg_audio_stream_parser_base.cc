@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mpeg/mpeg_audio_stream_parser_base.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/checked_math.h"
@@ -44,7 +40,7 @@ static int LocateEndOfHeaders(const uint8_t* buf, int buf_len, int i) {
   bool was_lf = false;
   char last_c = '\0';
   for (; i < buf_len; ++i) {
-    char c = buf[i];
+    char c = UNSAFE_TODO(buf[i]);
     if (c == '\n') {
       if (was_lf)
         return i + 1;
@@ -184,8 +180,8 @@ StreamParser::ParseStatus MPEGAudioStreamParserBase::Parse(
     if (data_size < 4)
       break;
 
-    uint32_t start_code =
-        data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
+    uint32_t start_code = data[0] << 24 | UNSAFE_TODO(data[1]) << 16 |
+                          UNSAFE_TODO(data[2]) << 8 | UNSAFE_TODO(data[3]);
     int bytes_read = 0;
     bool parsed_metadata = true;
     if ((start_code & start_code_mask_) == start_code_mask_) {
@@ -226,7 +222,7 @@ StreamParser::ParseStatus MPEGAudioStreamParserBase::Parse(
 
     CHECK_GE(data_size, bytes_read);
     data_size -= bytes_read;
-    data += bytes_read;
+    UNSAFE_TODO(data += bytes_read);
     bytes_to_pop += bytes_read;
     end_of_segment = true;
   }
@@ -321,7 +317,8 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple audio tracks, if applicable. See
   // https://crbug.com/341581.
-  auto data_span = base::span(data, base::checked_cast<size_t>(frame_size));
+  auto data_span =
+      UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(frame_size)));
   scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
       data_span, true, DemuxerStream::AUDIO, kMpegAudioTrackId);
   buffer->set_timestamp(timestamp_helper_->GetTimestamp());
@@ -340,8 +337,9 @@ int MPEGAudioStreamParserBase::ParseIcecastHeader(const uint8_t* data,
   if (size < 4)
     return 0;
 
-  if (memcmp("ICY ", data, 4))
+  if (UNSAFE_TODO(memcmp("ICY ", data, 4))) {
     return -1;
+  }
 
   int locate_size = std::min(size, kMaxIcecastHeaderSize);
   int offset = LocateEndOfHeaders(data, locate_size, 4);
@@ -363,7 +361,8 @@ int MPEGAudioStreamParserBase::ParseID3v1(const uint8_t* data, int size) {
   if (size < 4)
     return 0;
 
-  int needed_size = !memcmp(data, "TAG+", 4) ? kID3v1ExtendedSize : kID3v1Size;
+  int needed_size =
+      !UNSAFE_TODO(memcmp(data, "TAG+", 4)) ? kID3v1ExtendedSize : kID3v1Size;
 
   return (size < needed_size) ? 0 : needed_size;
 }
@@ -421,12 +420,12 @@ bool MPEGAudioStreamParserBase::ParseSyncSafeInt(BitReader* reader,
 int MPEGAudioStreamParserBase::FindNextValidStartCode(const uint8_t* data,
                                                       int size) {
   const uint8_t* start = data;
-  const uint8_t* end = data + size;
+  const uint8_t* end = UNSAFE_TODO(data + size);
 
   while (start < end) {
     int bytes_left = end - start;
-    const uint8_t* candidate_start_code =
-        static_cast<const uint8_t*>(memchr(start, 0xff, bytes_left));
+    const uint8_t* candidate_start_code = static_cast<const uint8_t*>(
+        UNSAFE_TODO(memchr(start, 0xff, bytes_left)));
 
     if (!candidate_start_code)
       return 0;
@@ -448,7 +447,7 @@ int MPEGAudioStreamParserBase::FindNextValidStartCode(const uint8_t* data,
         DCHECK_LE(sync_bytes, sync_size);
 
         // Skip over this frame so we can check the next one.
-        sync += frame_size;
+        UNSAFE_TODO(sync += frame_size);
 
         // Make sure the next frame starts inside the buffer.
         if (sync >= end)
@@ -464,7 +463,7 @@ int MPEGAudioStreamParserBase::FindNextValidStartCode(const uint8_t* data,
       // One of the frame header parses failed so |candidate_start_code|
       // did not point to the start of a real frame. Move |start| forward
       // so we can find the next candidate.
-      start = candidate_start_code + 1;
+      start = UNSAFE_TODO(candidate_start_code + 1);
       continue;
     }
 

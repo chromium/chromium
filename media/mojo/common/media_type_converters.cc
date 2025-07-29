@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/common/media_type_converters.h"
 
 #include <memory>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -263,7 +259,7 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
   const size_t size_per_channel = input->data.size() / input->channel_count;
   DCHECK_EQ(0u, input->data.size() % input->channel_count);
   for (int i = 0; i < input->channel_count; ++i) {
-    channel_ptrs[i] = input->data.data() + i * size_per_channel;
+    channel_ptrs[i] = UNSAFE_TODO(input->data.data() + i * size_per_channel);
   }
 
   return media::AudioBuffer::CopyFrom(

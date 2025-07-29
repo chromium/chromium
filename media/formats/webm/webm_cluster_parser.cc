@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/webm_cluster_parser.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
@@ -518,14 +514,15 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // type with remapped bytestream track numbers and allow multiple tracks as
   // applicable. See https://crbug.com/341581.
   auto data_span =
-      base::span(data.data(), spanification_suspected_redundant_size)
+      UNSAFE_TODO(
+          base::span(data.data(), spanification_suspected_redundant_size))
           .subspan(data_offset);
   auto buffer = StreamParserBuffer::CopyFrom(data_span, is_keyframe,
                                              buffer_type, track_num);
   if (additional_size) {
     buffer->WritableSideData().alpha_data =
-        base::HeapArray<uint8_t>::CopiedFrom(
-            base::span<const uint8_t>(additional, additional_size));
+        base::HeapArray<uint8_t>::CopiedFrom(UNSAFE_TODO(
+            base::span<const uint8_t>(additional, additional_size)));
   }
 
   if (decrypt_config) {

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -215,14 +211,14 @@ int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
   }
 
   uint8_t* i420_y = i420_buffer_.data();
-  uint8_t* i420_u =
+  uint8_t* i420_u = UNSAFE_TODO(
       i420_y + VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
                                      VideoFrame::Plane::kY, dimensions)
-                   .GetArea();
-  uint8_t* i420_v =
+                   .GetArea());
+  uint8_t* i420_v = UNSAFE_TODO(
       i420_u + VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
                                      VideoFrame::Plane::kU, dimensions)
-                   .GetArea();
+                   .GetArea());
   std::vector<size_t> i420_strides = VideoFrame::ComputeStrides(
       VideoPixelFormat::PIXEL_FORMAT_I420, dimensions);
   const int i420_stride_y =
@@ -261,7 +257,7 @@ int V4L2CaptureDelegateGpuHelper::FastConvertToNV12(
     int dst_stride_uv) {
   const int src_width = capture_format.frame_size.width();
   const int src_height = capture_format.frame_size.height();
-  const uint8_t* src_uv = sample + (src_width * src_height);
+  const uint8_t* src_uv = UNSAFE_TODO(sample + (src_width * src_height));
 
   const libyuv::FourCC fourcc =
       VideoCaptureFormatToLibyuvFourcc(capture_format);

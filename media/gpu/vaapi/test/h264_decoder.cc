@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/h264_decoder.h"
 
 #include <va/va.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "media/base/subsample_entry.h"
 #include "media/gpu/macros.h"
@@ -1020,7 +1016,7 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
         break;
     }
 
-    ++list_mod;
+    UNSAFE_TODO(++list_mod);
   }
 
   // Per NOTE 2 in 8.2.4.3.2, the ref_pic_listx size in the above loop is

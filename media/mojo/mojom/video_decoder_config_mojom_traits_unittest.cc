@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/mojom/video_decoder_config_mojom_traits.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +24,7 @@ static const gfx::Size kNaturalSize(320, 240);
 TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Normal) {
   const uint8_t kExtraData[] = "config extra data";
   const std::vector<uint8_t> kExtraDataVector(
-      &kExtraData[0], &kExtraData[0] + std::size(kExtraData));
+      &kExtraData[0], UNSAFE_TODO(&kExtraData[0] + std::size(kExtraData)));
   VideoDecoderConfig input(VideoCodec::kVP8, VP8PROFILE_ANY,
                            VideoDecoderConfig::AlphaMode::kIsOpaque,
                            VideoColorSpace(), kNoTransformation, kCodedSize,

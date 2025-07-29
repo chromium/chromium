@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/clients/mojo_audio_encoder.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -95,7 +91,7 @@ class MojoAudioEncoderTest : public ::testing::Test {
     auto result = AudioBus::Create(channels, frames);
     for (int channel = 0; channel < channels; channel++) {
       for (int i = 0; i < frames; i++)
-        result->channel(channel)[i] = seed;
+        UNSAFE_TODO(result->channel(channel)[i]) = seed;
     }
     return result;
   }
@@ -268,10 +264,10 @@ TEST_F(MojoAudioEncoderTest, Encode) {
                                {CHANNEL_LAYOUT_DISCRETE, audio_bus->channels()},
                                options.sample_rate, audio_bus->frames());
 
-        const auto channel_data =
+        const auto channel_data = UNSAFE_TODO(
             base::span(reinterpret_cast<const uint8_t*>(audio_bus->channel(0)),
                        AudioBus::CalculateMemorySize(
-                           /*channels=*/1, audio_bus->frames()));
+                           /*channels=*/1, audio_bus->frames())));
         auto encoded_data = base::HeapArray<uint8_t>::CopiedFrom(channel_data);
 
         EncodedAudioBuffer output(params, std::move(encoded_data),
@@ -297,7 +293,7 @@ TEST_F(MojoAudioEncoderTest, Encode) {
         auto* const encoded_data =
             reinterpret_cast<const float*>(output.encoded_data.data());
         for (size_t i = 0; i < kFrameCount; i++) {
-          EXPECT_EQ(encoded_data[i], seed)
+          UNSAFE_TODO(EXPECT_EQ(encoded_data[i], seed))
               << " output_number: " << output_number << " i: " << i;
         }
 

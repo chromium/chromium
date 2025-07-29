@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/video_bitstream.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -204,8 +200,8 @@ std::unique_ptr<VideoBitstream> VideoBitstream::Create(
 
 base::span<const uint8_t> VideoBitstream::Data() const {
   CHECK(memory_mapped_file_ && memory_mapped_file_->IsValid());
-  return base::span<const uint8_t>(memory_mapped_file_->data(),
-                                   memory_mapped_file_->length());
+  return UNSAFE_TODO(base::span<const uint8_t>(memory_mapped_file_->data(),
+                                               memory_mapped_file_->length()));
 }
 // static
 base::FilePath VideoBitstream::test_data_path_;

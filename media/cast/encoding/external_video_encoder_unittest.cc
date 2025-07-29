@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/encoding/external_video_encoder.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,9 +20,9 @@ scoped_refptr<VideoFrame> CreateFrame(const uint8_t* y_plane_data,
   scoped_refptr<VideoFrame> result = VideoFrame::CreateFrame(
       PIXEL_FORMAT_I420, size, gfx::Rect(size), size, base::TimeDelta());
   for (int y = 0, y_end = size.height(); y < y_end; ++y) {
-    memcpy(result->GetWritableVisibleData(VideoFrame::Plane::kY) +
-               y * result->stride(VideoFrame::Plane::kY),
-           y_plane_data + y * size.width(), size.width());
+    UNSAFE_TODO(memcpy(result->GetWritableVisibleData(VideoFrame::Plane::kY) +
+                           y * result->stride(VideoFrame::Plane::kY),
+                       y_plane_data + y * size.width(), size.width()));
   }
   return result;
 }
@@ -39,7 +35,7 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
   const gfx::Size frame_size(320, 180);
   const auto black_frame_data =
       std::make_unique<uint8_t[]>(frame_size.GetArea());
-  memset(black_frame_data.get(), 0, frame_size.GetArea());
+  UNSAFE_TODO(memset(black_frame_data.get(), 0, frame_size.GetArea()));
   const scoped_refptr<VideoFrame> black_frame =
       CreateFrame(black_frame_data.get(), frame_size);
 
@@ -55,7 +51,7 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
   const auto checkerboard_frame_data =
       std::make_unique<uint8_t[]>(frame_size.GetArea());
   for (int i = 0, end = frame_size.GetArea(); i < end; ++i) {
-    checkerboard_frame_data.get()[i] = (((i % 2) == 0) ? 0 : 255);
+    UNSAFE_TODO(checkerboard_frame_data.get()[i]) = (((i % 2) == 0) ? 0 : 255);
   }
   const scoped_refptr<VideoFrame> checkerboard_frame =
       CreateFrame(checkerboard_frame_data.get(), frame_size);
@@ -74,7 +70,8 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
         std::make_unique<uint8_t[]>(frame_size.GetArea());
     for (int j = 0, end = frame_size.GetArea(); j < end; ++j) {
       rand_seed = (1103515245u * rand_seed + 12345u) % (1u << 31);
-      random_frame_data.get()[j] = static_cast<uint8_t>(rand_seed & 0xff);
+      UNSAFE_TODO(random_frame_data.get()[j]) =
+          static_cast<uint8_t>(rand_seed & 0xff);
     }
     const scoped_refptr<VideoFrame> random_frame =
         CreateFrame(random_frame_data.get(), frame_size);

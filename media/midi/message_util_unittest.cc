@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/midi/message_util.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace midi {
@@ -44,13 +40,13 @@ const uint8_t kDataByte0[] = {0x00};
 template <typename T, size_t N>
 const std::vector<T> AsVector(const T (&data)[N]) {
   std::vector<T> buffer;
-  buffer.insert(buffer.end(), data, data + N);
+  buffer.insert(buffer.end(), data, UNSAFE_TODO(data + N));
   return buffer;
 }
 
 template <typename T, size_t N>
 void PushToVector(const T (&data)[N], std::vector<T>* buffer) {
-  buffer->insert(buffer->end(), data, data + N);
+  buffer->insert(buffer->end(), data, UNSAFE_TODO(data + N));
 }
 
 TEST(MidiMessageUtilTest, GetMessageLength) {

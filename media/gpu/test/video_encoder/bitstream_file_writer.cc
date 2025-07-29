@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/video_encoder/bitstream_file_writer.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -35,8 +31,8 @@ class BitstreamFileWriter::FrameFileWriter {
     }
     // For H.264.
     LOG_ASSERT(output_file_.IsValid());
-    return output_file_.WriteAtCurrentPos(reinterpret_cast<const char*>(data),
-                                          data_size) ==
+    return UNSAFE_TODO(output_file_.WriteAtCurrentPos(
+               reinterpret_cast<const char*>(data), data_size)) ==
            static_cast<int>(data_size);
   }
 

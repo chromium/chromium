@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/file_data_source.h"
 
 #include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 
 namespace media {
@@ -57,7 +53,7 @@ void FileDataSource::Read(int64_t position,
   int64_t clamped_size =
       std::min(static_cast<int64_t>(size), file_size - position);
 
-  memcpy(data, file_.data() + position, clamped_size);
+  UNSAFE_TODO(memcpy(data, file_.data() + position, clamped_size));
   bytes_read_ += clamped_size;
   std::move(read_cb).Run(clamped_size);
 }

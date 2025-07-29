@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vaapi_dmabuf_video_frame_mapper.h"
 
 #include <sys/mman.h>
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -62,10 +58,11 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
   std::vector<ColorPlaneLayout> planes(kNumPlanes);
   std::array<uint8_t*, VideoFrame::kMaxPlanes> addrs = {};
   for (size_t i = 0; i < kNumPlanes; i++) {
-    planes[i].stride = va_image->image()->pitches[i];
-    planes[i].offset = va_image->image()->offsets[i];
-    addrs[i] = static_cast<uint8_t*>(va_image->va_buffer()->data()) +
-               va_image->image()->offsets[i];
+    planes[i].stride = UNSAFE_TODO(va_image->image()->pitches[i]);
+    planes[i].offset = UNSAFE_TODO(va_image->image()->offsets[i]);
+    addrs[i] =
+        UNSAFE_TODO(static_cast<uint8_t*>(va_image->va_buffer()->data()) +
+                    va_image->image()->offsets[i]);
   }
 
   // The size of each plane is not given by VAImage. We compute the size to be

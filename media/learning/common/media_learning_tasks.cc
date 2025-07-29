@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/learning/common/media_learning_tasks.h"
 
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 
@@ -87,12 +83,15 @@ const LearningTask& GetConsecutiveNNRsTask() {
 
 // static
 const LearningTask& MediaLearningTasks::Get(const char* task_name) {
-  if (strcmp(task_name, tasknames::kWillPlay) == 0)
+  if (UNSAFE_TODO(strcmp(task_name, tasknames::kWillPlay)) == 0) {
     return GetWillPlayTask();
-  if (strcmp(task_name, tasknames::kConsecutiveBadWindows) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(task_name, tasknames::kConsecutiveBadWindows)) == 0) {
     return GetConsecutiveBadWindowsTask();
-  if (strcmp(task_name, tasknames::kConsecutiveNNRs) == 0)
+  }
+  if (UNSAFE_TODO(strcmp(task_name, tasknames::kConsecutiveNNRs)) == 0) {
     return GetConsecutiveNNRsTask();
+  }
 
   NOTREACHED() << " Unknown learning task:" << task_name;
 }

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mpeg/mpeg1_audio_stream_parser.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "media/base/media_log.h"
 
 namespace media {
@@ -260,7 +256,8 @@ int MPEG1AudioStreamParser::ParseFrameHeader(const uint8_t* data,
 
   // If we don't have enough data available to check, return 0 so frame parsing
   // will be retried once more data is available.
-  BitReader reader(data + header_bytes_read, size - header_bytes_read);
+  BitReader reader(UNSAFE_TODO(data + header_bytes_read),
+                   size - header_bytes_read);
   if (!reader.SkipBits(xing_header_index * 8) ||
       !reader.ReadBits(sizeof(tag) * 8, &tag)) {
     return 0;

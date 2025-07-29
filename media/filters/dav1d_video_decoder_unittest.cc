@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/filters/dav1d_video_decoder.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -349,9 +345,10 @@ TEST_F(Dav1dVideoDecoderTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(output_frames_.front()->writable_data(VideoFrame::Plane::kY), 0xff,
-         output_frames_.front()->rows(VideoFrame::Plane::kY) *
-             output_frames_.front()->stride(VideoFrame::Plane::kY));
+  UNSAFE_TODO(
+      memset(output_frames_.front()->writable_data(VideoFrame::Plane::kY), 0xff,
+             output_frames_.front()->rows(VideoFrame::Plane::kY) *
+                 output_frames_.front()->stride(VideoFrame::Plane::kY)));
 }
 
 }  // namespace media

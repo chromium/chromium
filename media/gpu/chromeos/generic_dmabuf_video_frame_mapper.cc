@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/chromeos/generic_dmabuf_video_frame_mapper.h"
 
 #include <sys/mman.h>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -174,7 +170,7 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
 
     chunks.emplace_back(mapped_addr, mapped_size);
     for (size_t j = i; j < next_buf; ++j)
-      plane_addrs[j] = mapped_addr + planes[j].offset;
+      plane_addrs[j] = UNSAFE_TODO(mapped_addr + planes[j].offset);
 
     i = next_buf;
   }

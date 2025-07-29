@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/blocking_url_protocol.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
@@ -77,8 +73,9 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
     index = base::WaitableEvent::WaitMany(events, std::size(events));
   }
 
-  if (events[index] == &aborted_)
+  if (UNSAFE_TODO(events[index]) == &aborted_) {
     return AVERROR(EIO);
+  }
 
   if (last_read_bytes_ == DataSource::kReadError) {
     aborted_.Signal();

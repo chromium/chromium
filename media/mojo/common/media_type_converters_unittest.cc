@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/common/media_type_converters.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -33,7 +29,7 @@ namespace {
 
 void CompareBytes(uint8_t* original_data, uint8_t* result_data, size_t length) {
   EXPECT_GT(length, 0u);
-  EXPECT_EQ(memcmp(original_data, result_data, length), 0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(original_data, result_data, length), 0));
 }
 
 void CompareAudioBuffers(SampleFormat sample_format,

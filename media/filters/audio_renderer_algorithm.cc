@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/audio_renderer_algorithm.h"
 
 #include <algorithm>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -525,16 +521,17 @@ bool AudioRendererAlgorithm::RunOneWsolaIteration(double playback_rate) {
       continue;
 
     const float* const ch_opt_frame = optimal_block_->channel_span(k).data();
-    float* ch_output =
-        wsola_output_->channel_span(k).data() + num_complete_frames_;
+    float* ch_output = UNSAFE_TODO(wsola_output_->channel_span(k).data() +
+                                   num_complete_frames_);
     for (int n = 0; n < ola_hop_size_; ++n) {
-      ch_output[n] = ch_output[n] * ola_window_[ola_hop_size_ + n] +
-                     ch_opt_frame[n] * ola_window_[n];
+      UNSAFE_TODO(ch_output[n]) =
+          UNSAFE_TODO(ch_output[n]) * ola_window_[ola_hop_size_ + n] +
+          UNSAFE_TODO(ch_opt_frame[n]) * ola_window_[n];
     }
 
     // Copy the second half to the output.
-    memcpy(&ch_output[ola_hop_size_], &ch_opt_frame[ola_hop_size_],
-           sizeof(*ch_opt_frame) * ola_hop_size_);
+    UNSAFE_TODO(memcpy(&ch_output[ola_hop_size_], &ch_opt_frame[ola_hop_size_],
+                       sizeof(*ch_opt_frame) * ola_hop_size_));
   }
 
   num_complete_frames_ += ola_hop_size_;
@@ -584,7 +581,8 @@ int AudioRendererAlgorithm::WriteCompletedFramesTo(
     if (!channel_mask_[k])
       continue;
     float* ch = wsola_output_->channel_span(k).data();
-    memmove(ch, &ch[rendered_frames], sizeof(*ch) * frames_to_move);
+    UNSAFE_TODO(
+        memmove(ch, &ch[rendered_frames], sizeof(*ch) * frames_to_move));
   }
   num_complete_frames_ -= rendered_frames;
   return rendered_frames;
@@ -642,8 +640,10 @@ void AudioRendererAlgorithm::GetOptimalBlock() {
       float* ch_opt = optimal_block_->channel_span(k).data();
       const float* const ch_target = target_block_->channel_span(k).data();
       for (int n = 0; n < ola_window_size_; ++n) {
-        ch_opt[n] = ch_opt[n] * transition_window_[n] +
-                    ch_target[n] * transition_window_[ola_window_size_ + n];
+        UNSAFE_TODO(ch_opt[n]) =
+            UNSAFE_TODO(ch_opt[n]) * transition_window_[n] +
+            UNSAFE_TODO(ch_target[n]) *
+                transition_window_[ola_window_size_ + n];
       }
     }
   }

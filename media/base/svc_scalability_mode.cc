@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/svc_scalability_mode.h"
 
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 
 namespace media {
@@ -52,7 +48,7 @@ GetSupportedScalabilityModesByHWEncoderForTesting() {
       sizeof(kSVCScalabilityModeMap) / sizeof(SVCScalabilityMode);
   std::vector<SVCScalabilityMode> supported_svcs(
       &kSVCScalabilityModeMap[0][0][0],
-      (&kSVCScalabilityModeMap[0][0][0]) + kSVCMapSize);
+      UNSAFE_TODO((&kSVCScalabilityModeMap[0][0][0]) + kSVCMapSize));
   std::sort(supported_svcs.begin(), supported_svcs.end());
   supported_svcs.erase(
       std::unique(supported_svcs.begin(), supported_svcs.end()),
@@ -70,9 +66,8 @@ SVCScalabilityMode GetSVCScalabilityMode(
   CHECK(0 < num_temporal_layers && num_temporal_layers <= 3);
   CHECK(static_cast<int>(inter_layer_pred) >= 0 &&
         static_cast<int>(inter_layer_pred) < 3);
-  auto mode =
-      kSVCScalabilityModeMap[static_cast<int>(inter_layer_pred)]
-                            [num_spatial_layers - 1][num_temporal_layers - 1];
+  auto mode = UNSAFE_TODO(kSVCScalabilityModeMap[static_cast<int>(
+      inter_layer_pred)][num_spatial_layers - 1][num_temporal_layers - 1]);
   CHECK_NE(mode, kInvalid);
   return mode;
 }

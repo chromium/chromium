@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/vp9_decoder.h"
 
 #include <va/va.h>
 
 #include <bitset>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"
@@ -172,7 +168,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   CHECK_EQ(kVp9NumRefFrames, std::size(pic_param.reference_frames));
   CHECK_EQ(kVp9NumRefFrames, ref_frames_.size());
   for (size_t i = 0; i < std::size(pic_param.reference_frames); ++i) {
-    pic_param.reference_frames[i] =
+    UNSAFE_TODO(pic_param.reference_frames[i]) =
         ref_frames_[i] ? ref_frames_[i]->id() : VA_INVALID_SURFACE;
   }
 
@@ -237,7 +233,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   slice_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
 
   for (size_t i = 0; i < std::size(slice_param.seg_param); ++i) {
-    VASegmentParameterVP9& seg_param = slice_param.seg_param[i];
+    VASegmentParameterVP9& seg_param = UNSAFE_TODO(slice_param.seg_param[i]);
 #define SEG_TO_SP_SF(a, b) seg_param.segment_flags.fields.a = b
     SEG_TO_SP_SF(
         segment_reference_enabled,
@@ -248,12 +244,12 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
                  seg.FeatureEnabled(i, Vp9SegmentationParams::SEG_LVL_SKIP));
 #undef SEG_TO_SP_SF
 
-    SafeArrayMemcpy(seg_param.filter_level, lf.lvl[i]);
+    SafeArrayMemcpy(seg_param.filter_level, UNSAFE_TODO(lf.lvl[i]));
 
-    seg_param.luma_dc_quant_scale = seg.y_dequant[i][0];
-    seg_param.luma_ac_quant_scale = seg.y_dequant[i][1];
-    seg_param.chroma_dc_quant_scale = seg.uv_dequant[i][0];
-    seg_param.chroma_ac_quant_scale = seg.uv_dequant[i][1];
+    seg_param.luma_dc_quant_scale = UNSAFE_TODO(seg.y_dequant[i])[0];
+    seg_param.luma_ac_quant_scale = UNSAFE_TODO(seg.y_dequant[i])[1];
+    seg_param.chroma_dc_quant_scale = UNSAFE_TODO(seg.uv_dequant[i])[0];
+    seg_param.chroma_ac_quant_scale = UNSAFE_TODO(seg.uv_dequant[i])[1];
   }
 
   res = vaCreateBuffer(

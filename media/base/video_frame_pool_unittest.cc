@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "media/base/video_frame_pool.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <tuple>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "media/base/video_frame_pool.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
@@ -126,9 +124,9 @@ TEST_F(VideoFramePoolTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(frame->writable_data(VideoFrame::Plane::kY), 0xff,
-         frame->rows(VideoFrame::Plane::kY) *
-             frame->stride(VideoFrame::Plane::kY));
+  UNSAFE_TODO(memset(frame->writable_data(VideoFrame::Plane::kY), 0xff,
+                     frame->rows(VideoFrame::Plane::kY) *
+                         frame->stride(VideoFrame::Plane::kY)));
 }
 
 TEST_F(VideoFramePoolTest, StaleFramesAreExpired) {

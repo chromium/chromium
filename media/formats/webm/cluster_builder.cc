@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/cluster_builder.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "media/base/data_buffer.h"
 #include "media/formats/webm/webm_constants.h"
 
@@ -80,9 +76,9 @@ void ClusterBuilder::SetClusterTimecode(int64_t cluster_timecode) {
   cluster_timecode_ = cluster_timecode;
 
   // Write the timecode into the header.
-  uint8_t* buf = buffer_.data() + kClusterTimecodeOffset;
+  uint8_t* buf = UNSAFE_TODO(buffer_.data() + kClusterTimecodeOffset);
   for (int i = 7; i >= 0; --i) {
-    buf[i] = cluster_timecode & 0xff;
+    UNSAFE_TODO(buf[i]) = cluster_timecode & 0xff;
     cluster_timecode >>= 8;
   }
 }
@@ -98,11 +94,11 @@ void ClusterBuilder::AddSimpleBlock(int track_num,
     ExtendBuffer(bytes_needed);
   }
 
-  uint8_t* buf = buffer_.data() + bytes_used_;
+  uint8_t* buf = UNSAFE_TODO(buffer_.data() + bytes_used_);
   int block_offset = bytes_used_;
-  memcpy(buf, kSimpleBlockHeader, sizeof(kSimpleBlockHeader));
+  UNSAFE_TODO(memcpy(buf, kSimpleBlockHeader, sizeof(kSimpleBlockHeader)));
   UpdateUInt64(block_offset + kSimpleBlockSizeOffset, block_size);
-  buf += sizeof(kSimpleBlockHeader);
+  UNSAFE_TODO(buf += sizeof(kSimpleBlockHeader));
 
   WriteBlock(buf, track_num, timecode, flags, data, size);
 
@@ -155,20 +151,20 @@ void ClusterBuilder::AddBlockGroupInternal(int track_num,
     ExtendBuffer(bytes_needed);
   }
 
-  uint8_t* buf = buffer_.data() + bytes_used_;
+  uint8_t* buf = UNSAFE_TODO(buffer_.data() + bytes_used_);
   int block_group_offset = bytes_used_;
   if (include_block_duration) {
-    memcpy(buf, kBlockGroupHeader, sizeof(kBlockGroupHeader));
+    UNSAFE_TODO(memcpy(buf, kBlockGroupHeader, sizeof(kBlockGroupHeader)));
     UpdateUInt64(block_group_offset + kBlockGroupDurationOffset, duration);
     UpdateUInt64(block_group_offset + kBlockGroupBlockSizeOffset, block_size);
-    buf += sizeof(kBlockGroupHeader);
+    UNSAFE_TODO(buf += sizeof(kBlockGroupHeader));
   } else {
-    memcpy(buf, kBlockGroupHeaderWithoutBlockDuration,
-           sizeof(kBlockGroupHeaderWithoutBlockDuration));
+    UNSAFE_TODO(memcpy(buf, kBlockGroupHeaderWithoutBlockDuration,
+                       sizeof(kBlockGroupHeaderWithoutBlockDuration)));
     UpdateUInt64(
         block_group_offset + kBlockGroupWithoutBlockDurationBlockSizeOffset,
         block_size);
-    buf += sizeof(kBlockGroupHeaderWithoutBlockDuration);
+    UNSAFE_TODO(buf += sizeof(kBlockGroupHeaderWithoutBlockDuration));
   }
 
   UpdateUInt64(block_group_offset + kBlockGroupSizeOffset, block_group_size);
@@ -178,10 +174,11 @@ void ClusterBuilder::AddBlockGroupInternal(int track_num,
   flags &= 0x0f;
 
   WriteBlock(buf, track_num, timecode, flags, data, size);
-  buf += size + 4;
+  UNSAFE_TODO(buf += size + 4);
 
   if (!is_key_frame) {
-    memcpy(buf, kBlockGroupReferenceBlock, sizeof(kBlockGroupReferenceBlock));
+    UNSAFE_TODO(memcpy(buf, kBlockGroupReferenceBlock,
+                       sizeof(kBlockGroupReferenceBlock)));
   }
 
   bytes_used_ += bytes_needed;
@@ -206,10 +203,10 @@ void ClusterBuilder::WriteBlock(uint8_t* buf,
   DCHECK_LE(timecode_delta, 32767);
 
   buf[0] = 0x80 | (track_num & 0x7F);
-  buf[1] = (timecode_delta >> 8) & 0xff;
-  buf[2] = timecode_delta & 0xff;
-  buf[3] = flags & 0xff;
-  memcpy(buf + 4, data, size);
+  UNSAFE_TODO(buf[1]) = (timecode_delta >> 8) & 0xff;
+  UNSAFE_TODO(buf[2]) = timecode_delta & 0xff;
+  UNSAFE_TODO(buf[3]) = flags & 0xff;
+  UNSAFE_TODO(memcpy(buf + 4, data, size));
 }
 
 std::unique_ptr<Cluster> ClusterBuilder::Finish() {
@@ -234,7 +231,7 @@ std::unique_ptr<Cluster> ClusterBuilder::FinishWithUnknownSize() {
 
 void ClusterBuilder::Reset() {
   buffer_ = base::HeapArray<uint8_t>::Uninit(kInitialBufferSize);
-  memcpy(buffer_.data(), kClusterHeader, sizeof(kClusterHeader));
+  UNSAFE_TODO(memcpy(buffer_.data(), kClusterHeader, sizeof(kClusterHeader)));
   bytes_used_ = sizeof(kClusterHeader);
   cluster_timecode_ = -1;
 }
@@ -247,17 +244,17 @@ void ClusterBuilder::ExtendBuffer(size_t bytes_needed) {
 
   auto new_buffer = base::HeapArray<uint8_t>::Uninit(new_buffer_size);
 
-  memcpy(new_buffer.data(), buffer_.data(), bytes_used_);
+  UNSAFE_TODO(memcpy(new_buffer.data(), buffer_.data(), bytes_used_));
   buffer_ = std::move(new_buffer);
 }
 
 void ClusterBuilder::UpdateUInt64(int offset, int64_t value) {
   DCHECK_LE(offset + 7u, buffer_.size());
-  uint8_t* buf = buffer_.data() + offset;
+  uint8_t* buf = UNSAFE_TODO(buffer_.data() + offset);
 
   // Fill the last 7 bytes of size field in big-endian order.
   for (int i = 7; i > 0; i--) {
-    buf[i] = value & 0xff;
+    UNSAFE_TODO(buf[i]) = value & 0xff;
     value >>= 8;
   }
 }
