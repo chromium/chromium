@@ -1292,7 +1292,8 @@ TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsHelloWorld) {
   engine->PluginSizeUpdated({500, 500});
 
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+  DrawAndExpectBlank(*engine, kPageIndex,
+                     /*expected_visible_page_size=*/gfx::Size(266, 266));
 
   SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
@@ -2915,6 +2916,8 @@ class SearchStringTestClient : public TestClient {
 class PDFiumEngineHighlightTextFragmentTest
     : public PDFiumEngineDrawSelectionTest {
  public:
+  static constexpr gfx::Size kSpannerExpectedVisiblePageSize{816, 1056};
+
   std::unique_ptr<PDFiumEngine> InitializePdfEngine(TestClient& client) {
     std::unique_ptr<PDFiumEngine> engine =
         InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
@@ -3018,31 +3021,31 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, FragmentNotInPDF) {
   ASSERT_TRUE(engine);
 
   engine->FindAndHighlightTextFragments({});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"apples"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"of-,Google,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"of-,Google,random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"and-,applications,old,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"apples-,Google"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"Google,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"applications,random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"applications,old,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 }
 
 // Assert that the second highlight should clear the existing highlight.
@@ -3070,7 +3073,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest,
   DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
 
   engine->FindAndHighlightTextFragments({"does_not_exist"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
@@ -3082,7 +3085,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
   DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
 
   engine->RemoveTextFragments();
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {

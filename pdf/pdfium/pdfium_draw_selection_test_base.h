@@ -11,6 +11,12 @@
 
 #include "base/files/file_path.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace gfx {
+class Size;
+}
 
 namespace chrome_pdf {
 
@@ -51,6 +57,12 @@ class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
       int page_index,
       std::string_view expected_png_filename);
 
+  // Draws selections and highlights. Then verifies the visible page contents in
+  // the plugin is completely white and of size `expected_visible_page_size`.
+  void DrawAndExpectBlank(PDFiumEngine& engine,
+                          int page_index,
+                          const gfx::Size& expected_visible_page_size);
+
   void SetSelection(PDFiumEngine& engine,
                     uint32_t start_page_index,
                     uint32_t start_char_index,
@@ -58,6 +70,17 @@ class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
                     uint32_t end_char_index);
 
  private:
+  // Returns the page contents rect that is visible within the plugin.
+  gfx::Rect GetVisiblePageContentsRect(PDFiumEngine& engine, int page_index);
+
+  // Draws selections, highlights, and optionally carets if `draw_caret` is
+  // true. Returns a bitmap of the portion of the page that is visible in the
+  // plugin.
+  SkBitmap Draw(PDFiumEngine& engine,
+                int page_index,
+                const gfx::Rect& visible_page_rect,
+                bool draw_caret);
+
   void DrawAndCompareImpl(PDFiumEngine& engine,
                           int page_index,
                           base::FilePath::StringViewType sub_directory,
