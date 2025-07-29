@@ -1677,22 +1677,25 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
 
   webnn::OperandDataType data_type = descriptor.data_type();
   if (buffer->IsArrayBufferViewAllowShared()) {
-    if (GetArrayBufferViewType(data_type) !=
-        buffer->GetAsArrayBufferViewAllowShared().Get()->GetType()) {
+    DOMArrayBufferView::ViewType buffer_view_type =
+        buffer->GetAsArrayBufferViewAllowShared().Get()->GetType();
+    if (buffer_view_type != DOMArrayBufferView::ViewType::kTypeUint8 &&
+        buffer_view_type != GetArrayBufferViewType(data_type)) {
       if (data_type == webnn::OperandDataType::kFloat16 &&
-          buffer->GetAsArrayBufferViewAllowShared().Get()->GetType() ==
-              DOMArrayBufferView::ViewType::kTypeUint16) {
+          buffer_view_type == DOMArrayBufferView::ViewType::kTypeUint16) {
         // Passing a Uint16Array when the data type is float16 was supported
         // prior to Float16Array shipping. Maintain this special case to give
         // developers/frameworks time to migrate their code.
         // TODO(crbug.com/399459942): Remove this circa 2025Q3.
-        LogConsoleWarning(script_state,
-                          "Passing a Uint16Array instance for a float16 "
-                          "operand is deprecated. Use Float16Array instead.");
+        LogConsoleWarning(
+            script_state,
+            "Passing a Uint16Array instance for a float16 "
+            "operand is deprecated. Use Float16Array or Uint8Array instead.");
 
       } else {
         exception_state.ThrowTypeError(
-            "The buffer view type doesn't match the operand data type.");
+            "The buffer view must either match the operand data type or be a "
+            "Uint8Array.");
         return nullptr;
       }
     }
