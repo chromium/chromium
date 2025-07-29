@@ -151,7 +151,7 @@ public class ReauthenticationManagerTest {
                         ReauthenticationManager.ReauthScope.BULK));
 
         ReauthenticationManager.displayReauthenticationFragment(
-                R.string.lockscreen_description_export,
+                R.string.lockscreen_description_view,
                 View.NO_ID,
                 mFragmentManager,
                 ReauthenticationManager.ReauthScope.BULK);

@@ -689,12 +689,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORD_SAVING_OFF_BY_ADMINISTRATOR" desc="Subtitle for the settings menu item leading to the Password Manager UI surface, shown when the device administrator set saving passwords to disabled.">
         Password saving is turned off by your administrator
       </message>
-      <message name="IDS_PASSWORD_SETTINGS_SAVE_PASSWORDS" desc="Title for the checkbox toggling whether passwords are saved or not. [CHAR_LIMIT=32]">
-        Save passwords
-      </message>
-      <message name="IDS_PASSWORDS_AUTO_SIGNIN_TITLE" desc="Title for checkbox to enable automatically signing the user in to websites">
-        Auto Sign-in
-      </message>
       <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE" desc="Title of the sheet that notifies the user they are saving passwords to their Google Account.">
         Passwords on all your devices
       </message>
@@ -713,9 +707,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_CLOSED_ACCESSIBILITY_LABEL" desc="Accessibility label of the sheet that notifies the user they are saving passwords to their Google Account, when the sheet is closed.">
         Passwords on all your devices closed
       </message>
-      <message name="IDS_PASSWORDS_AUTO_SIGNIN_DESCRIPTION" desc="Text under 'Auto sign-in' checkbox">
-        Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.
-      </message>
       <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_TITLE" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn you if a password was compromised in a data breach
       </message>
@@ -725,29 +716,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORDS_CHECK_TITLE" desc="Title for the check passwords button which allows to check whether the user's passwords have been compromised.">
         Check passwords
       </message>
-      <message name="IDS_PASSWORDS_CHECK_DESCRIPTION" desc="Text explaining the benefits of checking the passwords, to be displayed under the Check Passwords button title.">
-        Keep your passwords safe from data breaches and other security issues
-      </message>
-      <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_LABEL" desc="Title for the on-device encryption banner in password settings.">
-        On-device encryption
-      </message>
-      <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the on-device encryption banner when the user is offered to opt in.">
-        For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager
-      </message>
-      <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner when the user is already opted in.">
-        Your passwords are encrypted on your device before they’re saved to Google Password Manager
-      </message>
       <message name="IDS_SECTION_SAVED_PASSWORDS_EXCEPTIONS" desc="Header for the list of websites for which user selected to never save passwords. [CHAR_LIMIT=32]">
         Never saved
-      </message>
-      <message name="IDS_MANAGE_PASSWORDS_TEXT" desc="Text for link to manage passwords on Account Central.">
-        View and manage saved passwords in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_SAVED_PASSWORDS_NONE_TEXT" desc="Text when there are no saved passwords/exceptions.">
-        Saved passwords will appear here.
-      </message>
-      <message name="IDS_PASSWORD_NO_RESULT" desc="Text when a password search returned no results.">
-        Can’t find that password. Check your spelling and try again.
       </message>
       <message name="IDS_PASSWORD_EDIT_HINT" desc="Small hint on the editing screens that advises users to store the same password as they use on the currently edited site.">
         Make sure the password you are saving matches your password for <ph name="SITE">%1$s<ex>example.com</ex></ph>
@@ -821,29 +791,11 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORD_EXPORT_SET_LOCK_SCREEN" desc="Text prompting user to set device lock in order to be able to export passwords">
         Turn on screen lock in Settings to export your passwords from this device
       </message>
-      <message name="IDS_PASSWORD_SETTINGS_EXPORT_ACTION_TITLE" desc="The title of a menu item to trigger exporting passwords from the password settings.">
-        Export passwords…
-      </message>
-      <message name="IDS_PASSWORD_SETTINGS_EXPORT_ACTION_DESCRIPTION" desc="The description of a menu item to trigger exporting passwords from the password settings.">
-        Export passwords stored with Chrome
-      </message>
-      <message name="IDS_SETTINGS_PASSWORDS_PREPARING_EXPORT" desc="Text shown to the user above a progress bar, informing the user that passwords are being prepared for export.">
-        Preparing passwords…
-      </message>
       <message name="IDS_PASSWORD_SETTINGS_EXPORT_ERROR_TITLE" desc="The title of a dialog showing an error encountered during exporting passwords from the passwords settings.">
         Can’t export passwords
       </message>
-      <message name="IDS_PASSWORD_SETTINGS_EXPORT_LEARN_GOOGLE_DRIVE" desc="The label of a button in an error dialog after exporting passwords from the settings failed. The button takes the user to a help article about using Google Drive.">
-        Learn how to use Google Drive
-      </message>
-      <message name="IDS_PASSWORD_SETTINGS_EXPORT_NO_APP" desc="The explanation of the error when exporting passwords fails because the user has no Android app installed which could consume the exported data. The description is shown in the body of an alert dialog.">
-        Your device doesn’t have an app to store the passwords file.
-      </message>
       <message name="IDS_PASSWORD_SETTINGS_EXPORT_TIPS" desc="Tips on how to fix an error with exporting passwords. They are shown in the body of an alert dialog.">
         Try the following tips: make sure there is enough space on your device, try to export again.
-      </message>
-      <message name="IDS_PASSWORD_SETTINGS_EXPORT_ERROR_DETAILS" desc="A short prefix to introduce a technical error message passed to the user from Android after exporting passwords through a temporary file fails. Both the prefix and the error message are shown in the body of an alert dialog.">
-        Details: <ph name="ERROR_DESCRIPTION">%1$s<ex>IOException: No space left on device</ex></ph>
       </message>
       <message name="IDS_PASSWORDS_NOT_SECURE_FILLING" desc="The title of the dialog which is shown when the user attempts to enter obfuscated text to a regular text field.">
         Not secure
@@ -928,9 +880,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_LOCKSCREEN_DESCRIPTION_EDIT" desc="When a user attempts to edit a password for a particular website in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
         Unlock to edit your password
-      </message>
-      <message name="IDS_LOCKSCREEN_DESCRIPTION_EXPORT" desc="When a user attempts to export saved passwords in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
-        Unlock to export your passwords
       </message>
 
       <!-- Homepage preferences -->

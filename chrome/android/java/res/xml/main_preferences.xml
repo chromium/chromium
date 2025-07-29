@@ -70,7 +70,6 @@ for the previous order (main_preferences_legacy). -->
         android:order="11"
         android:title="@string/prefs_section_autofill"/>
     <org.chromium.chrome.browser.password_manager.settings.PasswordsPreference
-        android:fragment="org.chromium.chrome.browser.password_manager.settings.PasswordSettings"
         android:key="passwords"
         android:order="12"
         android:title="@string/password_manager_settings_title"/>

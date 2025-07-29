@@ -100,7 +100,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
-import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
@@ -301,7 +300,7 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_SEARCH_ENGINE, SearchEngineSettings.class);
         assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
         assertSettingsExists(MainSettings.PREF_AUTOFILL_SECTION, null);
-        assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
+        assertSettingsExists(MainSettings.PREF_PASSWORDS, null);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
         assertSettingsExists("autofill_addresses", AutofillProfilesFragment.class);
         if (supportNotificationSettings()) {
