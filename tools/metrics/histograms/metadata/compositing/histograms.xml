@@ -770,9 +770,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.CopyUs" units="microseconds"
-    expires_after="2025-08-03">
+    expires_after="2026-08-03">
   <owner>kylechar@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Time spent copying quads during surface aggregation. This is a subset of the
     time recorded for Compositing.SurfaceAggregator.AggregateUs and is logged
@@ -810,9 +811,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.PrewalkUs" units="microseconds"
-    expires_after="2025-08-03">
+    expires_after="2026-08-03">
   <owner>kylechar@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Time spent doing prewalk during surface aggregation. This is a subset of the
     time recorded for Compositing.SurfaceAggregator.AggregateUs and is logged
