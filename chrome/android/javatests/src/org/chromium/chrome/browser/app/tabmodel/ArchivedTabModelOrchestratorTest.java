@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -25,11 +23,9 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 
 import android.os.Looper;
 
-import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -44,11 +40,9 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,11 +54,13 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation.SuggestionFacility;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
@@ -130,6 +126,7 @@ public class ArchivedTabModelOrchestratorTest {
     private TabModel mRegularTabModel;
     private TabCreator mRegularTabCreator;
     private TabArchiveSettings mTabArchiveSettings;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
@@ -140,7 +137,7 @@ public class ArchivedTabModelOrchestratorTest {
 
         mDeferredStartupHandler = new FakeDeferredStartupHandler();
         DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
 
         runOnUiThreadBlocking(
                 () -> {
@@ -488,12 +485,14 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/397730179")
     public void testOpenArchivedTabFromHubSearch() {
         finishLoading();
-        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
-        mActivityTestRule.loadUrlInNewTab(
-                mActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ false);
+        String declutterUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);
+        mPage =
+                mPage.loadWebPageProgrammatically(declutterUrl)
+                        .openFakeLink(
+                                mActivityTestRule.getTestServer().getURL(TEST_PATH_2),
+                                WebPageStation.newBuilder());
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
@@ -516,17 +515,14 @@ public class ArchivedTabModelOrchestratorTest {
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
-
-        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
-
-        onView(
-                        allOf(
-                                withId(R.id.line_2),
-                                withText(containsString(TEST_PATH)),
-                                withEffectiveVisibility(Visibility.VISIBLE)))
-                .perform(click());
+        TabSwitcherSearchStation tabSwitcherSearchStation =
+                mPage.openRegularTabSwitcher().openTabSwitcherSearch();
+        tabSwitcherSearchStation.checkSuggestionsShown();
+        SuggestionFacility suggestion =
+                tabSwitcherSearchStation.findSuggestion(
+                        /* index= */ null, /* title= */ "About", /* text= */ null);
+        mPage = suggestion.openPage();
+        assertEquals(declutterUrl, mPage.loadedTabElement.get().getUrl().getSpec());
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
     }
 
@@ -534,9 +530,12 @@ public class ArchivedTabModelOrchestratorTest {
     @MediumTest
     public void testOpenArchivedTabFromHubSearch_Incognito() {
         finishLoading();
-        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
-        mActivityTestRule.loadUrlInNewTab(
-                mActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ false);
+        String declutterUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);
+        mPage =
+                mPage.loadWebPageProgrammatically(declutterUrl)
+                        .openFakeLink(
+                                mActivityTestRule.getTestServer().getURL(TEST_PATH_2),
+                                WebPageStation.newBuilder());
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
@@ -559,15 +558,12 @@ public class ArchivedTabModelOrchestratorTest {
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        mActivityTestRule.loadUrlInNewTab(
-                mActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ true);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
+        TabSwitcherSearchStation tabSwitcherSearchStation =
+                mPage.openNewIncognitoTabFast().openIncognitoTabSwitcher().openTabSwitcherSearch();
+        tabSwitcherSearchStation.typeInOmnibox("About");
+        tabSwitcherSearchStation.checkSuggestionsShown();
 
-        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
-
-        onView(allOf(withId(R.id.line_2), withText(containsString(TEST_PATH))))
-                .check(doesNotExist());
+        onView(allOf(withId(R.id.line_2), withText(containsString("About")))).check(doesNotExist());
     }
 
     private void setupSavedTabGroup() {
