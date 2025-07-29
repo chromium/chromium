@@ -1390,6 +1390,7 @@ _CONFIG = [
         ],
         'allowed': [
             'network::mojom::IntegrityAlgorithm',
+            'network::IntegrityMetadata',
         ],
     },
     {

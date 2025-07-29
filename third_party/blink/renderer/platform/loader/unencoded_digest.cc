@@ -95,8 +95,7 @@ std::optional<UnencodedDigest> UnencodedDigest::Create(
 
     // Store the byte sequence as an array<uint8_t>.
     parsed_digest.value.reserve(digest.size());
-    parsed_digest.value.Append(reinterpret_cast<const uint8_t*>(digest.data()),
-                               digest.size());
+    parsed_digest.value.assign(digest.begin(), digest.end());
     integrity_metadata.Insert(std::move(parsed_digest));
   }
 

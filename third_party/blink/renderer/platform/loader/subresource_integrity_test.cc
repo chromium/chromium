@@ -74,14 +74,6 @@ constexpr char kBadSha256AndBadSha384Integrities[] =
 constexpr char kUnsupportedHashFunctionIntegrity[] =
     "sha1-JfLW308qMPKfb4DaHpUBEESwuPc=";
 
-auto CompareIntegrityMetadata = [](const IntegrityMetadata& a,
-                                   const IntegrityMetadata& b) {
-  if (a.algorithm != b.algorithm) {
-    return a.algorithm < b.algorithm;
-  }
-  return std::ranges::equal(a.value, b.value);
-};
-
 }  // namespace
 
 class SubresourceIntegrityTest : public testing::Test {
@@ -92,12 +84,13 @@ class SubresourceIntegrityTest : public testing::Test {
         context(MakeGarbageCollected<MockFetchContext>()) {}
 
  protected:
-  IntegrityMetadata CreateIntegrityMetadata(const String& digest,
-                                            IntegrityAlgorithm algorithm) {
-    IntegrityMetadata metadata;
-    metadata.algorithm = algorithm;
-    CHECK(Base64Decode(digest, metadata.value));
-    return metadata;
+  network::IntegrityMetadata CreateIntegrityMetadata(
+      const String& digest,
+      IntegrityAlgorithm algorithm) {
+    std::optional<network::IntegrityMetadata> expected =
+        network::IntegrityMetadata::CreateFromBase64(algorithm, digest.Ascii());
+    CHECK(expected);
+    return *expected;
   }
 
   String AlgorithmToPrefix(IntegrityAlgorithm alg) {
@@ -167,9 +160,9 @@ class SubresourceIntegrityTest : public testing::Test {
       Vector<uint8_t> expected_binary_digest;
       ASSERT_TRUE(Base64Decode(expected_digest, expected_binary_digest));
 
-      IntegrityMetadata metadata = *metadata_set.hashes.begin();
-      EXPECT_EQ(expected_binary_digest, metadata.value);
-      EXPECT_EQ(expected_algorithm, metadata.algorithm);
+      network::IntegrityMetadata expected(expected_algorithm,
+                                          std::move(expected_binary_digest));
+      EXPECT_EQ(expected, *metadata_set.hashes.begin());
     }
   }
 
@@ -656,9 +649,9 @@ class SubresourceIntegritySignatureTest
       Vector<uint8_t> binary_digest;
       ASSERT_TRUE(Base64Decode(digest, binary_digest));
 
-      IntegrityMetadata metadata = *metadata_set.public_keys.begin();
-      EXPECT_EQ(binary_digest, metadata.value);
-      EXPECT_EQ(IntegrityAlgorithm::kEd25519, metadata.algorithm);
+      network::IntegrityMetadata expected(IntegrityAlgorithm::kEd25519,
+                                          std::move(binary_digest));
+      EXPECT_EQ(expected, *metadata_set.public_keys.begin());
     } else {
       ASSERT_EQ(0u, metadata_set.public_keys.size());
     }
@@ -774,8 +767,8 @@ TEST_P(SubresourceIntegritySignatureTest, ParseMultipleSignatures) {
     // Valid + invalid:
     ValidateMultipleItems(attribute.ToString() + " ed25519-???", {},
                           signature_pairs);
-  } while (std::next_permutation(signature_pairs.begin(), signature_pairs.end(),
-                                 CompareIntegrityMetadata));
+  } while (
+      std::next_permutation(signature_pairs.begin(), signature_pairs.end()));
 }
 
 TEST_P(SubresourceIntegritySignatureTest, ParseBoth) {
@@ -823,8 +816,8 @@ TEST_P(SubresourceIntegritySignatureTest, ParseBoth) {
     // Valid + invalid:
     ValidateMultipleItems(attribute.ToString() + " ed25519-???", hash_pairs,
                           signature_pairs);
-  } while (std::next_permutation(signature_pairs.begin(), signature_pairs.end(),
-                                 CompareIntegrityMetadata));
+  } while (
+      std::next_permutation(signature_pairs.begin(), signature_pairs.end()));
 }
 
 TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {

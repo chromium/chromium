@@ -534,6 +534,24 @@ mojom("mojom_integrity_metadata") {
     export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
     export_header_blink = "third_party/blink/public/platform/web_common.h"
   }
+
+  shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.IntegrityMetadata"
+          cpp = "::network::IntegrityMetadata"
+          move_only = true
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/integrity_metadata_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:integrity_metadata_mojom_support" ]
+    },
+  ]
+  cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
 }
 
 mojom("mojom_source_location") {

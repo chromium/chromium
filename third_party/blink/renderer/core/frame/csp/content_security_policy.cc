@@ -39,7 +39,6 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
-#include "services/network/public/mojom/integrity_metadata.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -516,10 +515,10 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
       case CSPDirectiveName::StyleSrcAttr:
       case CSPDirectiveName::StyleSrcElem:
         for (const auto& hash_source : directive.value->hashes) {
-          UsesHashAlgorithm(hash_source->algorithm);
+          UsesHashAlgorithm(hash_source.algorithm);
         }
         for (const auto& hash_source : directive.value->eval_hashes) {
-          UsesHashAlgorithm(hash_source->algorithm);
+          UsesHashAlgorithm(hash_source.algorithm);
         }
         break;
       // Images, fonts, etc. do not support integrity checks, so we can skip
@@ -570,12 +569,13 @@ void ContentSecurityPolicy::SetOverrideAllowInlineStyle(bool value) {
 
 // static
 bool ContentSecurityPolicy::CheckHashAgainstPolicy(
-    Vector<network::mojom::blink::IntegrityMetadataPtr>& csp_hash_values,
+    Vector<network::IntegrityMetadata>& csp_hash_values,
     const network::mojom::blink::ContentSecurityPolicy& csp,
     InlineType inline_type) {
   for (const auto& csp_hash_value : csp_hash_values) {
-    if (CSPDirectiveListAllowHash(csp, *csp_hash_value, inline_type))
+    if (CSPDirectiveListAllowHash(csp, csp_hash_value, inline_type)) {
       return true;
+    }
   }
   return false;
 }
@@ -628,7 +628,7 @@ bool ContentSecurityPolicy::AllowInline(
     }
   }
 
-  Vector<network::mojom::blink::IntegrityMetadataPtr> csp_hash_values;
+  Vector<network::IntegrityMetadata> csp_hash_values;
   FillInCSPHashValues(content, hash_algorithms_used_, csp_hash_values);
 
   // Step 2. Let result be "Allowed". [spec text]
@@ -677,7 +677,7 @@ bool ContentSecurityPolicy::AllowEval(
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& script_content) {
   bool is_allowed = true;
-  Vector<network::mojom::blink::IntegrityMetadataPtr> csp_hash_values;
+  Vector<network::IntegrityMetadata> csp_hash_values;
   FillInCSPHashValues(script_content, hash_algorithms_used_, csp_hash_values);
   for (const auto& policy : policies_) {
     is_allowed &= CSPDirectiveListAllowEval(

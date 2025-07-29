@@ -236,6 +236,20 @@ component("host_resolver_mojom_support") {
   defines = [ "IS_NETWORK_CPP_HOST_RESOLVER_IMPL" ]
 }
 
+component("integrity_metadata_mojom_support") {
+  sources = [
+    "integrity_metadata.cc",
+    "integrity_metadata.h",
+    "integrity_metadata_mojom_traits.cc",
+    "integrity_metadata_mojom_traits.h",
+  ]
+  deps = [
+    "//services/network/public/mojom:mojom_integrity_algorithm",
+    "//services/network/public/mojom:mojom_integrity_metadata_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_INTEGRITY_METADATA_IMPL" ]
+}
+
 component("integrity_policy") {
   sources = [
     "integrity_policy.cc",
@@ -638,6 +652,7 @@ component("cpp_base") {
     ":cross_origin_embedder_policy",
     ":document_isolation_policy",
     ":fetch_retry_options",
+    ":integrity_metadata_mojom_support",
     ":integrity_policy",
     ":ip_address_mojom_support",
     ":network_param_mojom_support",

@@ -352,7 +352,10 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
 
   for (const IntegrityMetadata& metadata : integrity_list) {
     for (const auto& signature : signatures) {
-      if (signature->keyid && signature->keyid.value() == metadata.value) {
+      if (signature->keyid &&
+          (signature->keyid->size() == metadata.value.size() &&
+           std::equal(metadata.value.begin(), metadata.value.end(),
+                      signature->keyid->begin()))) {
         return true;
       }
     }
@@ -526,9 +529,9 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
       }
     }
 
-    IntegrityMetadata integrity_metadata;
-    Base64Decode(digest, integrity_metadata.value);
-    integrity_metadata.algorithm = algorithm;
+    Vector<uint8_t> decoded;
+    Base64Decode(digest, decoded);
+    IntegrityMetadata integrity_metadata(algorithm, decoded);
     if (integrity_report) {
       if (IsHashingAlgorithm(algorithm)) {
         integrity_report->AddUseCount(WebFeature::kSRIHashAssertion);

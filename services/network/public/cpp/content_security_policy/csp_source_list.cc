@@ -42,10 +42,10 @@ void IntersectNonces(base::flat_set<std::string>& a,
 }
 
 // Removes from |a| elements not contained in |b|.
-void IntersectHashes(base::flat_set<mojom::IntegrityMetadataPtr>& a,
-                     const base::flat_set<mojom::IntegrityMetadataPtr>& b) {
+void IntersectHashes(base::flat_set<network::IntegrityMetadata>& a,
+                     const base::flat_set<network::IntegrityMetadata>& b) {
   base::EraseIf(
-      a, [&b](const mojom::IntegrityMetadataPtr& h) { return !b.contains(h); });
+      a, [&b](const network::IntegrityMetadata& h) { return !b.contains(h); });
 }
 
 bool IsScriptDirective(CSPDirectiveName directive) {
@@ -264,7 +264,7 @@ bool CSPSourceListSubsumes(
   bool is_hash_or_nonce_present_b =
       !(*it)->nonces.empty() || !(*it)->hashes.empty();
   base::flat_set<std::string> nonces_b((*it)->nonces);
-  base::flat_set<mojom::IntegrityMetadataPtr> hashes_b(
+  base::flat_set<network::IntegrityMetadata> hashes_b(
       mojo::Clone((*it)->hashes));
 
   std::vector<mojom::CSPSourcePtr> normalized_sources_b =
@@ -283,7 +283,7 @@ bool CSPSourceListSubsumes(
         (!(*it)->nonces.empty() || !(*it)->hashes.empty());
     base::flat_set<std::string> item_nonces((*it)->nonces);
     IntersectNonces(nonces_b, item_nonces);
-    base::flat_set<mojom::IntegrityMetadataPtr> item_hashes(
+    base::flat_set<network::IntegrityMetadata> item_hashes(
         mojo::Clone((*it)->hashes));
     IntersectHashes(hashes_b, item_hashes);
     normalized_sources_b =
@@ -297,7 +297,7 @@ bool CSPSourceListSubsumes(
 
   // All hashes enforced by source_list_b must be contained in source_list_a.
   if (!hashes_b.empty()) {
-    base::flat_set<mojom::IntegrityMetadataPtr> hashes_a(
+    base::flat_set<network::IntegrityMetadata> hashes_a(
         mojo::Clone(source_list_a.hashes));
     for (const auto& hash : hashes_b) {
       if (!hashes_a.count(hash))

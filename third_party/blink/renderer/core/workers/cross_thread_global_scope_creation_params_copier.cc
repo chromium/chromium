@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/workers/cross_thread_global_scope_creation_params_copier.h"
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "services/network/public/mojom/integrity_metadata.mojom-blink.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 
 namespace blink {
 
@@ -22,12 +22,10 @@ network::mojom::blink::CSPSourcePtr CSPSourceIsolatedCopy(
       in->is_port_wildcard);
 }
 
-network::mojom::blink::IntegrityMetadataPtr IntegrityMetadataIsolatedCopy(
-    const network::mojom::blink::IntegrityMetadataPtr& in) {
-  if (!in)
-    return nullptr;
-  return network::mojom::blink::IntegrityMetadata::New(
-      in->algorithm, CrossThreadCopier<Vector<uint8_t>>::Copy(in->value));
+network::IntegrityMetadata IntegrityMetadataIsolatedCopy(
+    const network::IntegrityMetadata& in) {
+  return network::IntegrityMetadata(
+      in.algorithm, CrossThreadCopier<std::vector<uint8_t>>::Copy(in.value));
 }
 
 HashMap<network::mojom::blink::CSPDirectiveName, String>
@@ -48,17 +46,17 @@ network::mojom::blink::CSPSourceListPtr CSPSourceListIsolatedCopy(
   for (const auto& source : in->sources)
     sources.push_back(CSPSourceIsolatedCopy(source));
 
-  Vector<network::mojom::blink::IntegrityMetadataPtr> hashes;
+  Vector<network::IntegrityMetadata> hashes;
   for (const auto& hash : in->hashes) {
     hashes.push_back(IntegrityMetadataIsolatedCopy(hash));
   }
 
-  Vector<network::mojom::blink::IntegrityMetadataPtr> url_hashes;
+  Vector<network::IntegrityMetadata> url_hashes;
   for (const auto& hash : in->url_hashes) {
     url_hashes.push_back(IntegrityMetadataIsolatedCopy(hash));
   }
 
-  Vector<network::mojom::blink::IntegrityMetadataPtr> eval_hashes;
+  Vector<network::IntegrityMetadata> eval_hashes;
   for (const auto& hash : in->eval_hashes) {
     eval_hashes.push_back(IntegrityMetadataIsolatedCopy(hash));
   }

@@ -173,14 +173,15 @@ TEST(UnencodedDigestParserTest, WellFormedHeaderWithSingleDigest) {
     HTTPHeaderMap headers;
     headers.Set(http_names::kUnencodedDigest, AtomicString(test.header));
 
-    IntegrityMetadata expected;
-    expected.algorithm = test.alg;
-    ASSERT_TRUE(Base64Decode(kHelloWorlds.at(test.alg), expected.value));
+    std::optional<network::IntegrityMetadata> expected =
+        network::IntegrityMetadata::CreateFromBase64(test.alg,
+                                                     kHelloWorlds.at(test.alg));
+    ASSERT_TRUE(expected);
 
     auto result = UnencodedDigest::Create(headers);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(1u, result->digests().size());
-    EXPECT_TRUE(result->digests().Contains(expected));
+    EXPECT_TRUE(result->digests().Contains(*expected));
   }
 }
 
@@ -220,10 +221,11 @@ TEST(UnencodedDigestParserTest, MultipleDigests) {
     EXPECT_EQ(test.alg.size(), result->digests().size());
 
     for (const auto& algorithm : test.alg) {
-      IntegrityMetadata expected;
-      expected.algorithm = algorithm;
-      ASSERT_TRUE(Base64Decode(kHelloWorlds.at(algorithm), expected.value));
-      EXPECT_TRUE(result->digests().Contains(expected));
+      std::optional<network::IntegrityMetadata> expected =
+          network::IntegrityMetadata::CreateFromBase64(
+              algorithm, kHelloWorlds.at(algorithm));
+      ASSERT_TRUE(expected);
+      EXPECT_TRUE(result->digests().Contains(*expected));
     }
   }
 }
