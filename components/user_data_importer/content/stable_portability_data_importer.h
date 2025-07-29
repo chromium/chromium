@@ -71,7 +71,7 @@ class StablePortabilityDataImporter {
             StablePortabilityHistoryEntry> {
    public:
     using TransferHistoryCallback = base::RepeatingCallback<void(
-        const std::vector<user_data_importer::StablePortabilityHistoryEntry>&)>;
+        std::vector<StablePortabilityHistoryEntry>)>;
 
     explicit RustHistoryCallbackForStablePortabilityFormat(
         TransferHistoryCallback transfer_history_callback,
@@ -82,7 +82,7 @@ class StablePortabilityDataImporter {
 
     // Called from Rust when a batch of history entries has been parsed.
     void ImportHistoryEntries(
-        const std::unique_ptr<std::vector<
+        std::unique_ptr<std::vector<
             user_data_importer::StablePortabilityHistoryEntry>> history_entries,
         bool completed) override;
 
@@ -121,8 +121,7 @@ class StablePortabilityDataImporter {
   // Transfers the history entries to the importer. This is used by the Rust
   // History import pipeline to communicate results back to this importer.
   void TransferHistoryEntries(
-      const std::vector<user_data_importer::StablePortabilityHistoryEntry>&
-          history_entries);
+      std::vector<StablePortabilityHistoryEntry> history_entries);
 
   // Receives the result of parsing bookmarks, stores them for later use, and
   // invokes `bookmarks_callback` with the number of parsed bookmarks.

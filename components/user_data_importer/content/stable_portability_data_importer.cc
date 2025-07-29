@@ -29,13 +29,17 @@ StablePortabilityDataImporter::RustHistoryCallbackForStablePortabilityFormat::
 
 void StablePortabilityDataImporter::
     RustHistoryCallbackForStablePortabilityFormat::ImportHistoryEntries(
-        const std::unique_ptr<std::vector<StablePortabilityHistoryEntry>>
+        std::unique_ptr<std::vector<StablePortabilityHistoryEntry>>
             history_entries,
         bool completed) {
-  transfer_history_callback_.Run(*history_entries);
+  const size_t history_entries_size = history_entries->size();
+  transfer_history_callback_.Run(std::move(*history_entries));
 
   if (completed && done_callback_) {
-    std::move(done_callback_).Run(history_entries->size());
+    // TODO(crbug.com/430253028): Execute the callback with the total number of
+    // history entries imported. As of now, we only return the number of
+    // entries in the last batch.
+    std::move(done_callback_).Run(history_entries_size);
   }
 }
 
@@ -157,19 +161,15 @@ void StablePortabilityDataImporter::OnReadingListParsed(
 }
 
 void StablePortabilityDataImporter::TransferHistoryEntries(
-    const std::vector<user_data_importer::StablePortabilityHistoryEntry>&
-        history_entries) {
+    std::vector<StablePortabilityHistoryEntry> history_entries) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/431204966): Add the history entries to the user's storage.
-  // Also avoid excessive copying of the entries. Furthermore, Consider
-  // reserving memory for the entries before transferring them to avoid
-  // resizing.
-
-  pending_history_entries_.insert(pending_history_entries_.end(),
-                                  history_entries.begin(),
-                                  history_entries.end());
+  pending_history_entries_.insert(
+      pending_history_entries_.end(),
+      std::make_move_iterator(history_entries.begin()),
+      std::make_move_iterator(history_entries.end()));
 }
 
 void StablePortabilityDataImporter::ImportHistory(
