@@ -1420,6 +1420,53 @@ TEST_F(ContentSecurityPolicyTest, UnsafeHashesMetric) {
   }
 }
 
+TEST_F(ContentSecurityPolicyTest, UrlEvalHashesMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({network::features::kCSPScriptSrcHashesInV1},
+                                {});
+  struct TestCase {
+    const char* header;
+    bool expected_url_hashes;
+    bool expected_eval_hashes;
+  } cases[] = {
+      {"object-src 'none'", false, false},
+      {"script-src 'none'", false, false},
+      {"script-src 'nonce-abc'", false, false},
+      {"script-src 'sha256-abc'", false, false},
+      {"script-src 'nonce-abc' 'strict-dynamic'", false, false},
+      {"script-src 'sha256-abc' 'strict-dynamic'", false, false},
+      {"script-src 'sha256-abc' https://example.com/", false, false},
+      {"script-src 'sha256-abc' https://example.com/ 'strict-dynamic'", false,
+       false},
+      {"script-src 'unsafe-hashes' 'url-sha256-abc'", true, false},
+      {"default-src 'unsafe-hashes' 'url-sha256-abc'", true, false},
+      {"script-src 'unsafe-hashes' 'eval-sha256-abc'", false, true},
+      {"default-src 'eval-sha256-abc'", false, true},
+      {"script-src 'url-sha256-abc' 'eval-sha256-abc'", true, true},
+      {"default-src 'url-sha256-abc' 'eval-sha256-abc'", true, true},
+
+      // url and eval hashes don't apply to any other directive:
+      {"object-src 'url-sha256-abc' 'eval-sha256-abc", false, false},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "[Enforce] Header: `" << test.header << "`");
+    csp = MakeGarbageCollected<ContentSecurityPolicy>();
+    csp->AddPolicies(ParseContentSecurityPolicies(
+        test.header, ContentSecurityPolicyType::kEnforce,
+        ContentSecurityPolicySource::kHTTP, *secure_origin));
+    auto dummy = std::make_unique<DummyPageHolder>();
+    csp->BindToDelegate(
+        dummy->GetFrame().DomWindow()->GetContentSecurityPolicyDelegate());
+
+    EXPECT_EQ(test.expected_url_hashes,
+              dummy->GetDocument().IsUseCounted(WebFeature::kCSPUrlHashes));
+    EXPECT_EQ(test.expected_eval_hashes,
+              dummy->GetDocument().IsUseCounted(WebFeature::kCSPEvalHashes));
+  }
+}
+
 TEST_F(ContentSecurityPolicyTest, ReasonableRestrictionMetrics) {
   struct TestCase {
     const char* header;

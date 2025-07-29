@@ -4926,6 +4926,8 @@ enum WebFeature {
   kMessageEventDataBeforeCrossSiteOrigin = 5615,
   kMessageEventDataBeforeOpaqueOrigin = 5616,
   kLocalNetworkAccessNonSecureContextAllowedDeprecationTrial = 5617,
+  kCSPUrlHashes = 5618,
+  kCSPEvalHashes = 5619,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

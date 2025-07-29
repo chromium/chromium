@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_hash_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
+#include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/integrity_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -405,6 +406,17 @@ void ContentSecurityPolicy::ReportUseCounters(
     }
     if (policy->trusted_types && policy->trusted_types->allow_duplicates) {
       Count(WebFeature::kTrustedTypesAllowDuplicates);
+    }
+
+    CSPOperativeDirective script_src = CSPDirectiveListOperativeDirective(
+        *policy, network::mojom::CSPDirectiveName::ScriptSrc);
+    if (script_src.source_list) {
+      if (CSPSourceListIsEvalHashPresent(*script_src.source_list)) {
+        Count(WebFeature::kCSPEvalHashes);
+      }
+      if (!script_src.source_list->url_hashes.empty()) {
+        Count(WebFeature::kCSPUrlHashes);
+      }
     }
   }
 }
