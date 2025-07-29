@@ -804,7 +804,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
     return {};
   }
 
-  DCHECK(database_);
+  CHECK(database_);
 
   // Finish up any transaction, in case there were any running.
   DatabaseError error(blink::mojom::IDBException::kUnknownError,

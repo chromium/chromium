@@ -912,7 +912,7 @@ void BucketContext::OnDatabaseError(Database* database,
     // to unimplemented functionality; in the future, we'll need to deal with
     // corruption. Unlike in the LevelDB case, an error in one database doesn't
     // indicate a problem with the entire bucket.
-    DCHECK(database);
+    CHECK(database);
     database->ForceCloseAndRunTasks(error_message);
   } else {
     if (status.IsCorruption()) {
