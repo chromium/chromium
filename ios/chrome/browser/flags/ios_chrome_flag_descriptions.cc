@@ -482,6 +482,11 @@ const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
 const char kDownloadedPDFOpeningDescription[] =
     "Enables the direct opening of downloaded PDF files in Chrome";
 
+const char kDownloadListName[] = "Enable Download List";
+const char kDownloadListDescription[] =
+    "Controls the UI type for the download list. When enabled, allows "
+    "switching between default and custom UI implementations.";
+
 const char kEnableFeedHeaderSettingsName[] =
     "Enables the feed header settings.";
 const char kEnableFeedHeaderSettingsDescription[] =

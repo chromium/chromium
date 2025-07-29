@@ -272,6 +272,9 @@ extern const char kDownloadAutoDeletionDescription[];
 extern const char kDownloadedPDFOpeningName[];
 extern const char kDownloadedPDFOpeningDescription[];
 
+extern const char kDownloadListName[];
+extern const char kDownloadListDescription[];
+
 extern const char kEnableCompromisedPasswordsMutingName[];
 extern const char kEnableCompromisedPasswordsMutingDescription[];
 

@@ -419,6 +419,19 @@ const FeatureEntry::FeatureVariation kBottomOmniboxDefaultSettingVariations[] =
          std::size(kBottomOmniboxDefaultSettingSafariSwitcher), nullptr},
 };
 
+// Download List UI feature flag parameters.
+// IMPORTANT: These values must match DownloadListUIType enum in features.h
+const FeatureEntry::FeatureParam kDownloadListDefaultUIParam[] = {
+    {kDownloadListUITypeParam, "0"}};
+const FeatureEntry::FeatureParam kDownloadListCustomUIParam[] = {
+    {kDownloadListUITypeParam, "1"}};
+const FeatureEntry::FeatureVariation kDownloadListVariations[] = {
+    {"Default UI", kDownloadListDefaultUIParam,
+     std::size(kDownloadListDefaultUIParam), nullptr},
+    {"Custom UI", kDownloadListCustomUIParam,
+     std::size(kDownloadListCustomUIParam), nullptr},
+};
+
 constexpr flags_ui::FeatureEntry::FeatureParam kPriceInsightsPriceIsLowParam[] =
     {{kLowPriceParam, kLowPriceParamPriceIsLow}};
 constexpr flags_ui::FeatureEntry::FeatureParam
@@ -2380,6 +2393,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kDownloadAutoDeletionClearFilesOnEveryStartupDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadAutoDeletionClearFilesOnEveryStartup)},
+    {"download-list-ios", flag_descriptions::kDownloadListName,
+     flag_descriptions::kDownloadListDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDownloadList,
+                                    kDownloadListVariations,
+                                    "IOSDownloadList")},
     {"lens-ink-multi-sample-mode-disabled",
      flag_descriptions::kLensInkMultiSampleModeDisabledName,
      flag_descriptions::kLensInkMultiSampleModeDisabledDescription,

@@ -521,6 +521,21 @@ BASE_FEATURE(kDownloadedPDFOpening,
              "DownloadedPDFOpening",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const char kDownloadListUITypeParam[] = "DownloadListUIType";
+
+bool IsDownloadListEnabled() {
+  return base::FeatureList::IsEnabled(kDownloadList);
+}
+
+DownloadListUIType CurrentDownloadListUIType() {
+  CHECK(IsDownloadListEnabled());
+  return static_cast<DownloadListUIType>(base::GetFieldTrialParamByFeatureAsInt(
+      kDownloadList, kDownloadListUITypeParam, /*default_value=*/
+      (int)DownloadListUIType::kDefaultUI));
+}
+
+BASE_FEATURE(kDownloadList, "DownloadList", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh capability. This is used because
 // registering for background refreshes must happen early in app initialization

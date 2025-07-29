@@ -525,6 +525,26 @@ bool IsDownloadAutoDeletionFeatureEnabled();
 // Feature flag that allows opening the downloaded PDF files in Chrome.
 BASE_DECLARE_FEATURE(kDownloadedPDFOpening);
 
+// Download List UI feature constants and types.
+extern const char kDownloadListUITypeParam[];
+
+// Enum defining the available Download List UI types.
+// IMPORTANT: These values must match the parameter strings in about_flags.mm
+enum class DownloadListUIType {
+  kDefaultUI = 0,  // Use the default iOS download list UI
+  kCustomUI = 1,   // Use a custom download list UI implementation
+};
+
+// Returns the currently configured Download List UI type based on feature
+// parameters.
+DownloadListUIType CurrentDownloadListUIType();
+
+// Returns true if the Download List feature is enabled.
+bool IsDownloadListEnabled();
+
+// Feature flag to control the download list UI type.
+BASE_DECLARE_FEATURE(kDownloadList);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
