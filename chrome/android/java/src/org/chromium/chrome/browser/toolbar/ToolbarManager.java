@@ -733,7 +733,6 @@ public class ToolbarManager
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
-     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new
      *     windows.
@@ -785,7 +784,6 @@ public class ToolbarManager
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
-            @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @Nullable MultiInstanceManager multiInstanceManager,
@@ -1099,6 +1097,7 @@ public class ToolbarManager
                         toolbarLayout,
                         buttonDataProviders,
                         browsingModeThemeColorProvider,
+                        mIncognitoStateProvider,
                         initializeWithIncognitoColors,
                         mConstraintsProxy,
                         onLongClickListener,
@@ -1630,8 +1629,6 @@ public class ToolbarManager
                     }
                 };
 
-        mToolbar.setIncognitoStateProvider(mIncognitoStateProvider, overviewColorSupplier);
-
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
 
@@ -1841,6 +1838,7 @@ public class ToolbarManager
             ToolbarLayout toolbarLayout,
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
+            IncognitoStateProvider incognitoStateProvider,
             boolean initializeWithIncognitoColors,
             ObservableSupplier<Integer> constraintsSupplier,
             OnLongClickListener onLongClickListener,
@@ -1856,6 +1854,7 @@ public class ToolbarManager
                         buttonDataProviders,
                         mLayoutStateProviderSupplier,
                         browsingModeThemeColorProvider,
+                        incognitoStateProvider,
                         mMenuButtonCoordinator,
                         mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
                         mTabSwitcherButtonCoordinator,

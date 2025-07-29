@@ -137,6 +137,11 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param trackerSupplier Provides a {@link Tracker} when available.
      * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
      *     home button(s). Should be null on custom tabs.
+     * @param extensionToolbarCoordinator Provides an {@link ExtensionToolbarCoordinator} for
+     *     interacting with extension-related toolbar UI.
+     * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
+     * @param incognitoStateProvider The {@link IncognitoStateProvider} for observering incognito
+     *     state.
      */
     @CallSuper
     @Initializer
@@ -152,12 +157,17 @@ public abstract class ToolbarLayout extends FrameLayout
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
-            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator) {
+            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
+            ThemeColorProvider themeColorProvider,
+            IncognitoStateProvider incognitoStateProvider) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mTabSwitcherButtonCoordinator = tabSwitcherButtonCoordinator;
         mProgressBar = progressBar;
+
+        setThemeColorProvider(themeColorProvider);
+        setIncognitoStateProvider(incognitoStateProvider);
     }
 
     /**

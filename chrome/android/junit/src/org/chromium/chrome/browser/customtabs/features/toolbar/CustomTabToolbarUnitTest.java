@@ -91,6 +91,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -156,6 +158,8 @@ public class CustomTabToolbarUnitTest {
     private @Mock PageInfoIphController mPageInfoIphController;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private CustomTabMinimizeDelegate mMinimizeDelegate;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Captor ArgumentCaptor<AppMenuObserver> mAppMenuObserverCaptor;
 
     private Activity mActivity;
@@ -220,7 +224,9 @@ public class CustomTabToolbarUnitTest {
                 null,
                 null,
                 /* homeButtonDisplay= */ null,
-                null);
+                null,
+                mThemeColorProvider,
+                mIncognitoStateProvider);
         if (!ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             mToolbar.initVisibilityRule(mActivity, () -> mAppMenuHandler, mIntentDataProvider);
         }

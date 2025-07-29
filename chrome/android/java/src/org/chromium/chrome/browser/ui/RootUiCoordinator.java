@@ -1571,7 +1571,6 @@ public class RootUiCoordinator
                             mEphemeralTabCoordinatorSupplier,
                             mInitializeUiWithIncognitoColors,
                             mBackPressManager,
-                            mOverviewColorSupplier,
                             mReadAloudControllerSupplier,
                             getDesktopWindowStateManager(),
                             getMultiInstanceManager(),

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
@@ -58,7 +56,6 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.resources.ResourceManager;
@@ -103,9 +100,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     private final ToolbarColorObserverManager mToolbarColorObserverManager;
 
-    private @Nullable IncognitoStateProvider mIncognitoStateProvider;
-    private @Nullable IncognitoStateObserver mIncognitoStateObserver;
-
     private final TabObscuringHandler mTabObscuringHandler;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
@@ -130,6 +124,8 @@ public class TopToolbarCoordinator implements Toolbar {
      *     browsing mode toolbar.
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
+     * @param incognitoStateProvider The {@link IncognitoStateProvider} for observering incognito
+     *     state.
      * @param browsingModeMenuButtonCoordinator Root component for app menu.
      * @param appMenuButtonHelperSupplier For specific handling of the app menu button.
      * @param tabCountSupplier Supplier of {@link
@@ -163,6 +159,7 @@ public class TopToolbarCoordinator implements Toolbar {
             List<ButtonDataProvider> buttonDataProviders,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ThemeColorProvider normalThemeColorProvider,
+            IncognitoStateProvider incognitoStateProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
             ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
@@ -252,8 +249,9 @@ public class TopToolbarCoordinator implements Toolbar {
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
                 homeButtonDisplay,
-                extensionToolbarCoordinator);
-        mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
+                extensionToolbarCoordinator,
+                normalThemeColorProvider,
+                incognitoStateProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
         homepageEnabledSupplier.addObserver(
@@ -430,7 +428,6 @@ public class TopToolbarCoordinator implements Toolbar {
             mTabStripTransitionCoordinator.destroy();
             mTabStripTransitionCoordinator = null;
         }
-        cleanUpIncognitoStateObserver();
     }
 
     /**
@@ -663,31 +660,6 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * @param provider The provider used to determine incognito state.
-     * @param overviewColorSupplier Optional override for toolbar color, otherwise it is derived
-     *     from incognito state.
-     */
-    public void setIncognitoStateProvider(
-            IncognitoStateProvider provider,
-            @Nullable ObservableSupplier<Integer> overviewColorSupplier) {
-        mToolbarLayout.setIncognitoStateProvider(provider);
-        if (overviewColorSupplier == null) {
-            assert mToolbarLayout != null;
-            cleanUpIncognitoStateObserver();
-            ObservableSupplierImpl<Integer> supplierImpl = new ObservableSupplierImpl<>();
-            Context context = mToolbarLayout.getContext();
-            mIncognitoStateObserver =
-                    (boolean isIncognito) -> {
-                        @ColorInt
-                        int color = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
-                        supplierImpl.set(color);
-                    };
-            mIncognitoStateProvider = provider;
-            provider.addIncognitoStateObserverAndTrigger(mIncognitoStateObserver);
-        }
-    }
-
-    /**
      * Gives inheriting classes the chance to update themselves based on default search engine
      * changes.
      */
@@ -746,14 +718,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public LocationBar getLocationBar() {
         return mToolbarLayout.getLocationBar();
-    }
-
-    private void cleanUpIncognitoStateObserver() {
-        if (mIncognitoStateProvider != null && mIncognitoStateObserver != null) {
-            mIncognitoStateProvider.removeObserver(mIncognitoStateObserver);
-            mIncognitoStateProvider = null;
-            mIncognitoStateObserver = null;
-        }
     }
 
     @Override
