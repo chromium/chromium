@@ -507,8 +507,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void DidNotNeedBeginFrame();
 
-  bool ScrollCheckerboardsIncompleteRecording() const {
-    return scroll_checkerboards_incomplete_recording_;
+  bool PrioritizeNewContentDueToCheckerboarding() const {
+    return prioritize_new_content_due_to_checkerboarding_;
   }
 
   // TileManagerClient implementation.
@@ -1221,7 +1221,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // it's lost instead of having this bool.
   bool has_valid_layer_tree_frame_sink_ = false;
 
-  bool scroll_checkerboards_incomplete_recording_ = false;
+  bool prioritize_new_content_due_to_checkerboarding_ = false;
 
   // If it is enabled in the LayerTreeSettings, we can check damage in
   // WillBeginImplFrame and abort early if there is no damage. We only check

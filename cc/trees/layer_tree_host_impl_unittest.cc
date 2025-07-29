@@ -3744,10 +3744,11 @@ class IncompleteRecordingLayer : public LayerImpl {
   }
 };
 
-TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecording) {
+TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecordingPerScroll) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kNewContentForCheckerboardedScrolls);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNewContentForCheckerboardedScrolls,
+      {{"mode", features::kNewContentForCheckerboardedScrollsPerScroll}});
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
@@ -3775,7 +3776,7 @@ TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecording) {
   DrawFrame();
 
   // No scroll has taken place so this should be false.
-  EXPECT_FALSE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+  EXPECT_FALSE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
 
   // Send scroll begin.
   GetInputHandler().ScrollBegin(
@@ -3788,7 +3789,7 @@ TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecording) {
 
   // Even though a ScrollBegin has been processed, we still don't consider the
   // interaction to be "actively scrolling". Expect this to be false.
-  EXPECT_FALSE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+  EXPECT_FALSE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
 
   gfx::Vector2dF scroll_delta(0, 10);
 
@@ -3802,12 +3803,134 @@ TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecording) {
   // Now that a scroll update has been processed and the latest
   // CalculateRenderPasses run has computed significant visible checkerboarding,
   // expect this flag to be true.
-  EXPECT_TRUE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+  EXPECT_TRUE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
 
   GetInputHandler().ScrollEnd();
 
   // Expect state to be reset after a scroll end.
-  EXPECT_FALSE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+  EXPECT_FALSE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
+}
+
+TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecordingPerFrame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNewContentForCheckerboardedScrolls,
+      {{"mode", features::kNewContentForCheckerboardedScrollsPerFrame}});
+  LayerTreeSettings settings = DefaultSettings();
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
+
+  const gfx::Size content_size(1000, 1000);
+  const gfx::Size viewport_size(500, 500);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+
+  LayerImpl* outer_scroll_layer = OuterViewportScrollLayer();
+  outer_scroll_layer->SetDrawsContent(true);
+  LayerImpl* inner_scroll_layer = InnerViewportScrollLayer();
+  inner_scroll_layer->SetDrawsContent(true);
+
+  // Add layer that draws content and has checkerboarded areas.
+  auto* scroll_layer =
+      AddLayer<IncompleteRecordingLayer>(host_impl_->active_tree());
+  CopyProperties(inner_scroll_layer, scroll_layer);
+  scroll_layer->SetBounds(gfx::Size(500, 500));
+  scroll_layer->SetDrawsContent(true);
+  scroll_layer->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
+  host_impl_->active_tree()->SetElementIdsForTesting();
+
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  DrawFrame();
+
+  // No scroll has taken place so this should be false.
+  EXPECT_FALSE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
+
+  // Send scroll begin.
+  GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+
+  DrawFrame();
+
+  // Even though a ScrollBegin has been processed, we still don't consider the
+  // interaction to be "actively scrolling". Expect this to be false.
+  EXPECT_FALSE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
+
+  gfx::Vector2dF scroll_delta(0, 10);
+
+  scroll_layer->layer_tree_impl()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .SetScrollingContentsCullRect(
+          host_impl_->CurrentlyScrollingNode()->element_id, gfx::Rect(50, 50));
+
+  // Send scroll update.
+  GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(10, 10), scroll_delta,
+                                             ui::ScrollInputType::kWheel));
+  // Now that a scroll update has been processed and checkerboarding has been
+  // detected expect this flag to be true.
+  EXPECT_TRUE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
+  host_impl_->SetFullViewportDamage();
+  DrawFrame();
+
+  // After drawing a frame the value remains true because the frame had
+  // checkerboarding (the top layer was IncompleteRecordingLayer).
+  EXPECT_TRUE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
+}
+
+// Verifies that kNewContentForCheckerboardedScrolls doesn't set the flag to
+// to change tree priority when the checkerboarding happens outside of the
+// screen's rect.
+TEST_P(LayerTreeHostImplTest,
+       ScrollCheckerboardsIncompleteRecordingOutOfScreen) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNewContentForCheckerboardedScrolls,
+      {{"mode", features::kNewContentForCheckerboardedScrollsPerFrame}});
+  LayerTreeSettings settings = DefaultSettings();
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
+
+  const gfx::Size content_size(1000, 1000);
+  const gfx::Size viewport_size(500, 500);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+  LayerImpl* outer_scroll_layer = OuterViewportScrollLayer();
+  outer_scroll_layer->SetDrawsContent(true);
+  LayerImpl* inner_scroll_layer = InnerViewportScrollLayer();
+  inner_scroll_layer->SetDrawsContent(true);
+  auto* scroll_layer =
+      AddLayer<IncompleteRecordingLayer>(host_impl_->active_tree());
+  CopyProperties(inner_scroll_layer, scroll_layer);
+  scroll_layer->SetBounds(gfx::Size(250, 250));
+  scroll_layer->SetDrawsContent(true);
+  scroll_layer->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
+  host_impl_->active_tree()->SetElementIdsForTesting();
+  UpdateDrawProperties(host_impl_->active_tree());
+  GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(260, 260), gfx::Vector2dF(),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+  // The `cull_rect` will start 20px down from the `visible_rect` (after the
+  // scroll). The `visible_rect`'s origin will be 20px above the screen, so
+  // those 20pxs wouldn't be rendered. Even though the `cull_rect` won't contain
+  // the entirety of the `visible_rect`, it will contain the entirety of the
+  // `visible_rect`'s portion that is is rendered inside the screen, which means
+  // that the checkerboarding won't be visible to the user and
+  // `PrioritizeNewContentDueToCheckerboarding()` should be false.
+  const gfx::Vector2dF scroll_delta(0, 20);
+  scroll_layer->layer_tree_impl()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .SetScrollingContentsCullRect(
+          host_impl_->CurrentlyScrollingNode()->element_id,
+          gfx::Rect(scroll_delta.x(), scroll_delta.y(), viewport_size.width(),
+                    viewport_size.height()));
+  GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(10, 10), scroll_delta,
+                                             ui::ScrollInputType::kWheel));
+  EXPECT_FALSE(host_impl_->PrioritizeNewContentDueToCheckerboarding());
 }
 
 TEST_P(LayerTreeHostImplTest, ImplPinchZoom) {

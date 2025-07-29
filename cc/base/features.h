@@ -136,6 +136,16 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendExplicitDecodeRequestsImmediately);
 // When enabled, the CC tree priority will be switched to
 // NEW_CONTENT_TAKES_PRIORITY during long scroll that cause checkerboarding.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNewContentForCheckerboardedScrolls);
+// When kNewContentForCheckerboardedScrolls is enabled with this param, the tree
+// priority will be changed *after* a frame is drawn with checkerboarding, and
+// will remain changed until the current scroll ends.
+CC_BASE_EXPORT extern const char kNewContentForCheckerboardedScrollsPerScroll[];
+// When kNewContentForCheckerboardedScrolls is enabled with this param, the tree
+// priority will be changed *before* a frame is drawn with checkerboarding, and
+// will be reset at the first frame that is painted without checkerboarding.
+CC_BASE_EXPORT extern const char kNewContentForCheckerboardedScrollsPerFrame[];
+CC_BASE_EXPORT extern const base::FeatureParam<std::string>
+    kNewContentForCheckerboardedScrollsParam;
 
 // When enabled, LCD text is allowed with some filters and backdrop filters.
 // Killswitch M135.

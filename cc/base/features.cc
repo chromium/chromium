@@ -137,6 +137,14 @@ BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
 BASE_FEATURE(kNewContentForCheckerboardedScrolls,
              "NewContentForCheckerboardedScrolls",
              base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr const char kNewContentForCheckerboardedScrollsPerScroll[] =
+    "per_scroll";
+constexpr const char kNewContentForCheckerboardedScrollsPerFrame[] =
+    "per_frame";
+const base::FeatureParam<std::string> kNewContentForCheckerboardedScrollsParam(
+    &kNewContentForCheckerboardedScrolls,
+    "mode",
+    kNewContentForCheckerboardedScrollsPerScroll);
 
 BASE_FEATURE(kAllowLCDTextWithFilter,
              "AllowLCDTextWithFilter",

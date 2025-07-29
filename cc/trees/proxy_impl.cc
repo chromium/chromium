@@ -515,17 +515,17 @@ bool ProxyImpl::IsInsideDraw() {
 void ProxyImpl::RenewTreePriority() {
   DCHECK(IsImplThread());
 
-  bool precise_scrolling_in_progress =
+  const bool precise_scrolling_in_progress =
       host_impl_->GetActivelyScrollingType() == ActivelyScrollingType::kPrecise;
 
-  bool avoid_entering_smoothness =
+  const bool avoid_entering_smoothness =
       (base::FeatureList::IsEnabled(
            features::kNewContentForCheckerboardedScrolls) &&
-       host_impl_->ScrollCheckerboardsIncompleteRecording()) ||
+       host_impl_->PrioritizeNewContentDueToCheckerboarding()) ||
       (precise_scrolling_in_progress &&
        host_impl_->IsCurrentScrollMainRepainted());
 
-  bool non_scroll_interaction_in_progress =
+  const bool non_scroll_interaction_in_progress =
       host_impl_->IsPinchGestureActive() ||
       host_impl_->page_scale_animation_active();
 
