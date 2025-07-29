@@ -791,6 +791,8 @@ public class LocationBarMediatorTest {
     public void testOnKey_right() {
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
         doReturn(KeyEvent.KEYCODE_DPAD_RIGHT).when(mKeyEvent).getKeyCode();
+        doReturn(0).when(mKeyEvent).getModifiers();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
         doReturn("a").when(mView).getText();
         doReturn(0).when(mView).getSelectionStart();
         doReturn(1).when(mView).getSelectionEnd();
@@ -805,6 +807,8 @@ public class LocationBarMediatorTest {
     public void testOnKey_leftRtl() {
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
         doReturn(KeyEvent.KEYCODE_DPAD_LEFT).when(mKeyEvent).getKeyCode();
+        doReturn(0).when(mKeyEvent).getModifiers();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
         doReturn("a").when(mView).getText();
         doReturn(0).when(mView).getSelectionStart();
         doReturn(1).when(mView).getSelectionEnd();

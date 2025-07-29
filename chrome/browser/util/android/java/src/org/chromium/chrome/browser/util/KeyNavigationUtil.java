@@ -41,11 +41,13 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is any of DPAD right or NUMPAD right.
+     *
      * @param event Event to be checked.
      * @return Whether the event should be processed as a navigation right.
      */
     public static boolean isGoRight(KeyEvent event) {
         return isActionDown(event)
+                && event.hasNoModifiers()
                 && (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT
                         || (!event.isNumLockOn()
                                 && event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_6));
@@ -53,14 +55,28 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is any of DPAD left or NUMPAD left.
+     *
      * @param event Event to be checked.
      * @return Whether the event should be processed as a navigation left.
      */
     public static boolean isGoLeft(KeyEvent event) {
         return isActionDown(event)
+                && event.hasNoModifiers()
                 && (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT
                         || (!event.isNumLockOn()
                                 && event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_4));
+    }
+
+    /** Returns whether {@param event} represents an arrow key press in the "forward" direction. */
+    public static boolean isGoForward(KeyEvent event) {
+        return (isGoRight(event) && !LocalizationUtils.isLayoutRtl())
+                || (isGoLeft(event) && LocalizationUtils.isLayoutRtl());
+    }
+
+    /** Returns whether {@param event} represents an arrow key press in the "backward" direction. */
+    public static boolean isGoBackward(KeyEvent event) {
+        return (isGoLeft(event) && !LocalizationUtils.isLayoutRtl())
+                || (isGoRight(event) && LocalizationUtils.isLayoutRtl());
     }
 
     /**
@@ -71,8 +87,7 @@ public class KeyNavigationUtil {
      */
     public static boolean isMoveFocusForward(KeyEvent event) {
         return isActionDown(event)
-                && ((isGoRight(event) && !LocalizationUtils.isLayoutRtl())
-                        || (isGoLeft(event) && LocalizationUtils.isLayoutRtl())
+                && (isGoForward(event)
                         || (event.getKeyCode() == KeyEvent.KEYCODE_TAB && !event.isShiftPressed()));
     }
 
@@ -84,8 +99,7 @@ public class KeyNavigationUtil {
      */
     public static boolean isMoveFocusBackward(KeyEvent event) {
         return isActionDown(event)
-                && ((isGoLeft(event) && !LocalizationUtils.isLayoutRtl())
-                        || (isGoRight(event) && LocalizationUtils.isLayoutRtl())
+                && (isGoBackward(event)
                         || (event.getKeyCode() == KeyEvent.KEYCODE_TAB && event.isShiftPressed()));
     }
 
