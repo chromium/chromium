@@ -1666,8 +1666,11 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   // Note: we push a frame only if (a) there is fresh content to produce and
   // (b) we successfully produced that content.
   bool resource_provider_was_updated = false;
+
+  // CanvasResourceProviderBitmap returns null from ProduceCanvasResource(), so
+  // there is no point in using one here.
   auto* resource_provider = PaintRenderingResultsToResourceProvider(
-      kBackBuffer, /*use_bitmap_provider=*/true,
+      kBackBuffer, /*use_bitmap_provider=*/false,
       &resource_provider_was_updated);
   if (resource_provider && resource_provider_was_updated) {
     const int width = GetDrawingBuffer()->Size().width();
