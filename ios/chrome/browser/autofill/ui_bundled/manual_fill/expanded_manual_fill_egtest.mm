@@ -49,6 +49,13 @@ const char kNameFieldID[] = "name";
 const char kOtherStuffFieldID[] = "otherstuff";
 const char kPasswordFieldID[] = "pw";
 
+// Matcher for the "Autofill Form" button shown in the cells.
+id<GREYMatcher> AutofillFormButton() {
+  return grey_allOf(grey_accessibilityID(
+                        manual_fill::kExpandedManualFillAutofillFormButtonID),
+                    grey_interactable(), nullptr);
+}
+
 // Matcher for the close button.
 id<GREYMatcher> CloseButton() {
   return grey_accessibilityLabel(l10n_util::GetNSString(
@@ -221,11 +228,13 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cc_chip];
 }
 
-// Matcher for the "Autofill Form" button shown in the cells.
-id<GREYMatcher> AutofillFormButton() {
-  return grey_allOf(grey_accessibilityID(
-                        manual_fill::kExpandedManualFillAutofillFormButtonID),
-                    grey_interactable(), nullptr);
+// Looks for the "Autofill form" button in the provided `scroll_view`.
+GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(AutofillFormButton(),
+                                          grey_sufficientlyVisible(), nullptr)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:scroll_view];
 }
 
 }  // namespace
@@ -477,10 +486,8 @@ id<GREYMatcher> AutofillFormButton() {
                                                              kPaymentMethod
                                              fieldToFill:kCardNameFieldID];
 
-  // Scroll down and check that the "Autofill Form" button exists.
-  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+  // Check that the "Autofill Form" button exists.
+  [SearchAutofillFormButton(manual_fill::CreditCardTableViewMatcher())
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Navigate to the address tab and check that the "Autofill Form" button does
@@ -512,10 +519,8 @@ id<GREYMatcher> AutofillFormButton() {
                                                              kAddress
                                              fieldToFill:kNameFieldID];
 
-  // Scroll down and check that the "Autofill Form" button exists.
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+  // Check that the "Autofill Form" button exists.
+  [SearchAutofillFormButton(manual_fill::ProfilesTableViewMatcher())
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Navigate to the payment tab and check that the "Autofill Form" button does
@@ -624,10 +629,8 @@ id<GREYMatcher> AutofillFormButton() {
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
-  // Scroll down and check that the "Autofill Form" button exists.
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+  // Check that the "Autofill Form" button exists.
+  [SearchAutofillFormButton(manual_fill::ProfilesTableViewMatcher())
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Now focus a password-related field.
