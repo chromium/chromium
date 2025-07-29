@@ -3081,15 +3081,16 @@ void FlexLayoutAlgorithm::UpdateOffsetAdjustmentForSuppressedRowGap(
     // the available space in a non-forced break scenario. This is because the
     // available space is based on the previous row's end.
     flex_line->item_offset_adjustment -= (gap - available_space);
-  } else {
-    // In column flex containers, we may encounter a case where the available
-    // space is larger than the gap, yet an item still doesn't fit. In such
-    // cases, the entire gap has already been consumed in this fragmentainer, so
-    // no adjustment is needed. Adjustments should only be made when the gap
-    // exceeds the available space which means that part of the gap may appear
-    // in the next fragmentainer.
-    CHECK(is_column_);
   }
+
+  // In column flex containers, we may encounter a case where the available
+  // space is larger than the gap, yet an item still doesn't fit. In such
+  // cases, the entire gap has already been consumed in this fragmentainer, so
+  // no adjustment is needed. Adjustments should only be made when the gap
+  // exceeds the available space which means that part of the gap may appear
+  // in the next fragmentainer.
+  // TODO(crbug.com/434735271): Determine if we can accurately CHECK that this
+  // won't occur in a row-based flex container.
 }
 
 MinMaxSizesResult
