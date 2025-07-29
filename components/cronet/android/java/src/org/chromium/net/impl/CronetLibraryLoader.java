@@ -82,6 +82,10 @@ public class CronetLibraryLoader {
     public static void loadLibrary() {
         if (sSwitchToTestLibrary) {
             System.loadLibrary(TESTING_LIBRARY_NAME);
+            // Enable VLOG(2) unconditionally, as we want to get as much logging as possible when
+            // running tests. Also, do this as early as possible so that early logs are not dropped.
+            // See also https://crbug.com/433957945.
+            CronetLibraryLoaderJni.get().setMinLogLevel(-2);
         } else {
             System.loadLibrary(LIBRARY_NAME);
         }
@@ -166,6 +170,11 @@ public class CronetLibraryLoader {
     }
 
     private static void setNativeLoggingLevel() {
+        if (sSwitchToTestLibrary) {
+            // We already set the native log level in loadLibrary().
+            return;
+        }
+
         // The constants used here should be kept in sync with logging::LogMessage::~LogMessage().
         final String nativeLogTag = "chromium";
         int loggingLevel;
