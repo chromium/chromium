@@ -37,6 +37,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -219,7 +220,7 @@ public class ContextMenuHeaderMediatorTest {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.URL, JUnitTestGURLs.URL_1.getSpec())
-                        .with(ContextMenuHeaderProperties.TITLE, "Some Title")
+                        .with(ListMenuItemProperties.TITLE, "Some Title")
                         .with(ContextMenuHeaderProperties.URL_MAX_LINES, 1)
                         .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1)
                         .build();
@@ -243,7 +244,7 @@ public class ContextMenuHeaderMediatorTest {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.URL, JUnitTestGURLs.URL_1.getSpec())
-                        .with(ContextMenuHeaderProperties.TITLE, "Some Title")
+                        .with(ListMenuItemProperties.TITLE, "Some Title")
                         .with(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE)
                         .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE)
                         .build();
@@ -267,7 +268,7 @@ public class ContextMenuHeaderMediatorTest {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.URL, "")
-                        .with(ContextMenuHeaderProperties.TITLE, "Some Title")
+                        .with(ListMenuItemProperties.TITLE, "Some Title")
                         .with(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE)
                         .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE)
                         .build();
@@ -291,7 +292,7 @@ public class ContextMenuHeaderMediatorTest {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.URL, JUnitTestGURLs.URL_1.getSpec())
-                        .with(ContextMenuHeaderProperties.TITLE, "")
+                        .with(ListMenuItemProperties.TITLE, "")
                         .with(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE)
                         .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE)
                         .build();
@@ -315,7 +316,7 @@ public class ContextMenuHeaderMediatorTest {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.URL, JUnitTestGURLs.URL_1.getSpec())
-                        .with(ContextMenuHeaderProperties.TITLE, "Some Title")
+                        .with(ListMenuItemProperties.TITLE, "Some Title")
                         .with(
                                 ContextMenuHeaderProperties.SECONDARY_URL,
                                 JUnitTestGURLs.URL_2.getSpec())
@@ -347,7 +348,7 @@ public class ContextMenuHeaderMediatorTest {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.URL, JUnitTestGURLs.URL_1.getSpec())
-                        .with(ContextMenuHeaderProperties.TITLE, "Some Title")
+                        .with(ListMenuItemProperties.TITLE, "Some Title")
                         .with(
                                 ContextMenuHeaderProperties.SECONDARY_URL,
                                 JUnitTestGURLs.URL_2.getSpec())
@@ -381,7 +382,7 @@ public class ContextMenuHeaderMediatorTest {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.URL, "")
-                        .with(ContextMenuHeaderProperties.TITLE, "")
+                        .with(ListMenuItemProperties.TITLE, "")
                         .with(
                                 ContextMenuHeaderProperties.SECONDARY_URL,
                                 JUnitTestGURLs.URL_2.getSpec())

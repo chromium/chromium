@@ -25,6 +25,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils.HeaderInfo;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -79,7 +80,7 @@ class ContextMenuHeaderCoordinator {
 
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
-                        .with(ContextMenuHeaderProperties.TITLE, title)
+                        .with(ListMenuItemProperties.TITLE, title)
                         .with(
                                 ContextMenuHeaderProperties.TITLE_MAX_LINES,
                                 TextUtils.isEmpty(url) ? 2 : 1)

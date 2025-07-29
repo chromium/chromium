@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -80,7 +81,7 @@ public class ContextMenuHeaderViewTest {
                     mImageContainer = mHeaderView.findViewById(R.id.menu_header_image_container);
                     mModel =
                             new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
-                                    .with(ContextMenuHeaderProperties.TITLE, "")
+                                    .with(ListMenuItemProperties.TITLE, "")
                                     .with(ContextMenuHeaderProperties.URL, "")
                                     .with(ContextMenuHeaderProperties.SECONDARY_URL, "")
                                     .with(
@@ -110,7 +111,7 @@ public class ContextMenuHeaderViewTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel.set(ContextMenuHeaderProperties.TITLE, TITLE_STRING);
+                    mModel.set(ListMenuItemProperties.TITLE, TITLE_STRING);
                     mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 2);
                 });
 
@@ -216,7 +217,7 @@ public class ContextMenuHeaderViewTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel.set(ContextMenuHeaderProperties.TITLE, TITLE_STRING);
+                    mModel.set(ListMenuItemProperties.TITLE, TITLE_STRING);
                     mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
                     mModel.set(ContextMenuHeaderProperties.URL, URL_STRING);
                     mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);

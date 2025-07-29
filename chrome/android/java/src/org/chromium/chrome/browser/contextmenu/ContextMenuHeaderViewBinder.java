@@ -14,17 +14,18 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
 class ContextMenuHeaderViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == ContextMenuHeaderProperties.TITLE) {
+        if (propertyKey == ListMenuItemProperties.TITLE) {
             TextView titleText = view.findViewById(R.id.menu_header_title);
-            titleText.setText(model.get(ContextMenuHeaderProperties.TITLE));
+            titleText.setText(model.get(ListMenuItemProperties.TITLE));
             titleText.setVisibility(
-                    TextUtils.isEmpty(model.get(ContextMenuHeaderProperties.TITLE))
+                    TextUtils.isEmpty(model.get(ListMenuItemProperties.TITLE))
                             ? View.GONE
                             : View.VISIBLE);
         } else if (propertyKey == ContextMenuHeaderProperties.TITLE_MAX_LINES) {

@@ -30,6 +30,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDel
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -121,7 +122,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
             assert mModel.get(ContextMenuHeaderProperties.TITLE_MAX_LINES) == Integer.MAX_VALUE;
 
             final boolean isTitleEmpty =
-                    TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.TITLE));
+                    TextUtils.isEmpty(mModel.get(ListMenuItemProperties.TITLE));
             final boolean isUrlEmpty =
                     TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.URL));
             if (isSecondaryUrlPresent) {
