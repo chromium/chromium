@@ -56,6 +56,14 @@ const EVP_MD* DigestForSignatureKind(SignatureKind kind) {
   }
 }
 
+void ConfigurePkeyCtx(EVP_PKEY_CTX* pkctx, SignatureKind kind) {
+  if (kind == RSA_PSS_SHA256) {
+    CHECK(EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_PSS_PADDING));
+    CHECK(EVP_PKEY_CTX_set_rsa_mgf1_md(pkctx, DigestForSignatureKind(kind)));
+    CHECK(EVP_PKEY_CTX_set_rsa_pss_saltlen(pkctx, RSA_PSS_SALTLEN_DIGEST));
+  }
+}
+
 }  // namespace
 
 std::vector<uint8_t> Sign(SignatureKind kind,
@@ -68,6 +76,7 @@ std::vector<uint8_t> Sign(SignatureKind kind,
   bssl::UniquePtr<EVP_MD_CTX> context(EVP_MD_CTX_new());
   CHECK(EVP_DigestSignInit(context.get(), &pkctx, md, nullptr,
                            const_cast<EVP_PKEY*>(key.key())));
+  ConfigurePkeyCtx(pkctx, kind);
 
   size_t len = 0;
   CHECK(EVP_DigestSign(context.get(), nullptr, &len, data.data(), data.size()));
@@ -89,6 +98,7 @@ bool Verify(SignatureKind kind,
   bssl::UniquePtr<EVP_MD_CTX> context(EVP_MD_CTX_new());
   CHECK(EVP_DigestVerifyInit(context.get(), &pkctx, md, nullptr,
                              const_cast<EVP_PKEY*>(key.key())));
+  ConfigurePkeyCtx(pkctx, kind);
 
   return EVP_DigestVerify(context.get(), signature.data(), signature.size(),
                           data.data(), data.size()) == 1;
@@ -103,13 +113,7 @@ Signer::Signer(SignatureKind kind, crypto::keypair::PrivateKey key)
   EVP_PKEY_CTX* pkctx;
   CHECK(
       EVP_DigestSignInit(sign_context_.get(), &pkctx, md, nullptr, key.key()));
-
-  if (kind == RSA_PSS_SHA256) {
-    CHECK(EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_PSS_PADDING));
-    CHECK(EVP_PKEY_CTX_set_rsa_mgf1_md(pkctx, md));
-    // -1 here means "use digest's length"
-    CHECK(EVP_PKEY_CTX_set_rsa_pss_saltlen(pkctx, -1));
-  }
+  ConfigurePkeyCtx(pkctx, kind);
 }
 Signer::~Signer() = default;
 
@@ -143,13 +147,7 @@ Verifier::Verifier(SignatureKind kind,
   const EVP_MD* const md = DigestForSignatureKind(kind);
   CHECK(EVP_DigestVerifyInit(verify_context_.get(), &pkctx, md, nullptr,
                              key.key()));
-
-  if (kind == RSA_PSS_SHA256) {
-    CHECK(EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_PSS_PADDING));
-    CHECK(EVP_PKEY_CTX_set_rsa_mgf1_md(pkctx, md));
-    // -1 here means "use digest's length"
-    CHECK(EVP_PKEY_CTX_set_rsa_pss_saltlen(pkctx, -1));
-  }
+  ConfigurePkeyCtx(pkctx, kind);
 }
 Verifier::~Verifier() = default;
 

@@ -21,10 +21,25 @@ TEST(Sign, RoundTripSignVerify) {
       0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
   });
 
+  auto expect_oneshot_roundtrip =
+      [&](const PrivateKey& priv, const PublicKey& pub, SignatureKind kind) {
+        auto sig = crypto::sign::Sign(kind, priv, data);
+        EXPECT_TRUE(crypto::sign::Verify(kind, pub, data, sig));
+      };
+
   auto expect_roundtrip = [&](const PrivateKey& priv, const PublicKey& pub,
                               SignatureKind kind) {
-    auto sig = crypto::sign::Sign(kind, priv, data);
-    EXPECT_TRUE(crypto::sign::Verify(kind, pub, data, sig));
+    auto oneshot_sig = crypto::sign::Sign(kind, priv, data);
+    EXPECT_TRUE(crypto::sign::Verify(kind, pub, data, oneshot_sig));
+
+    crypto::sign::Signer signer(kind, priv);
+    signer.Update(data);
+    auto stream_sig = signer.Finish();
+    EXPECT_TRUE(crypto::sign::Verify(kind, pub, data, stream_sig));
+
+    crypto::sign::Verifier verifier(kind, pub, oneshot_sig);
+    verifier.Update(data);
+    EXPECT_TRUE(verifier.Finish());
   };
 
   auto rsa_priv = crypto::test::FixedRsa2048PrivateKeyForTesting();
@@ -42,7 +57,7 @@ TEST(Sign, RoundTripSignVerify) {
   auto ed25519_priv = PrivateKey::GenerateEd25519();
   auto ed25519_pub = PublicKey::FromPrivateKey(ed25519_priv);
 
-  expect_roundtrip(ed25519_priv, ed25519_pub, SignatureKind::ED25519);
+  expect_oneshot_roundtrip(ed25519_priv, ed25519_pub, SignatureKind::ED25519);
 }
 
 TEST(Sign, CantUseEd25519ForStreaming) {
