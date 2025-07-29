@@ -16755,14 +16755,16 @@ TEST_P(LayerTreeHostImplTest, RasterColorSpaceHDR) {
       host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kHDR);
 
   // Non-HDR content should be rasterized in P3.
-  EXPECT_EQ(srgb_params.color_space, gfx::ColorSpace::CreateDisplayP3D65());
+  const auto srgb = gfx::ColorSpace::CreateSRGB();
+  const auto p3 = gfx::ColorSpace::CreateDisplayP3D65();
+  EXPECT_EQ(srgb_params.color_space, srgb);
   EXPECT_EQ(srgb_params.sdr_max_luminance_nits, kCustomWhiteLevel);
   EXPECT_EQ(srgb_params.hdr_max_luminance_relative, 1.f);
-  EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateDisplayP3D65());
+  EXPECT_EQ(wcg_params.color_space, p3);
   EXPECT_EQ(wcg_params.sdr_max_luminance_nits, kCustomWhiteLevel);
   EXPECT_EQ(wcg_params.hdr_max_luminance_relative, 1.f);
 
-  EXPECT_EQ(hdr_params.color_space, gfx::ColorSpace::CreateExtendedSRGB());
+  EXPECT_EQ(hdr_params.color_space, p3.GetAsHDR());
   EXPECT_EQ(hdr_params.sdr_max_luminance_nits, kCustomWhiteLevel);
   EXPECT_EQ(hdr_params.hdr_max_luminance_relative, kHDRMaxLuminanceRelative);
 }

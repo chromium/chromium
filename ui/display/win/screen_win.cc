@@ -1103,7 +1103,8 @@ void ScreenWin::OnColorProfilesChanged() {
   // color profile was sRGB was indeed correct. Avoid doing an update in these
   // cases.
   if (std::ranges::any_of(displays_, [this](const auto& display) {
-        return display.GetColorSpaces().GetRasterColorSpace() !=
+        return display.GetColorSpaces().GetRasterAndCompositeColorSpace(
+                   gfx::ContentColorUsage::kWideColorGamut) !=
                color_profile_reader_->GetDisplayColorSpace(display.id());
       })) {
     UpdateAllDisplaysAndNotify();

@@ -114,16 +114,46 @@ BufferFormat DisplayColorSpaces::GetOutputBufferFormat(
   return buffer_formats_[GetIndex(color_usage, needs_alpha)];
 }
 
-gfx::ColorSpace DisplayColorSpaces::GetRasterColorSpace() const {
-  return GetOutputColorSpace(ContentColorUsage::kHDR, false /* needs_alpha */);
-}
-
-gfx::ColorSpace DisplayColorSpaces::GetCompositingColorSpace(
-    bool needs_alpha,
+ColorSpace DisplayColorSpaces::GetRasterAndCompositeColorSpace(
     ContentColorUsage color_usage) const {
-  gfx::ColorSpace result = GetOutputColorSpace(color_usage, needs_alpha);
-  if (!result.IsSuitableForBlending())
-    result = gfx::ColorSpace::CreateExtendedSRGB();
+  gfx::ColorSpace result;
+  if (color_usage == ContentColorUsage::kSRGB) {
+    result =
+        GetOutputColorSpace(ContentColorUsage::kSRGB, /*needs_alpha=*/true);
+    if (!result.IsSuitableForBlending()) {
+      result = ColorSpace::CreateSRGB();
+    }
+  } else {
+    result = GetOutputColorSpace(ContentColorUsage::kWideColorGamut,
+                                 /*needs_alpha=*/true);
+
+    // The below logic is to work around the issue that Windows' output buffer
+    // choices are limited. It is not a generic operation. Windows only offers
+    // three usable options for backbuffer formats:
+    // * 8-bit sRGB
+    // * 10-bit Rec2020 PQ
+    // * F16 sRGB linear HDR (identical to PQ, with 1.0 matching 80 nits)
+    // Absent in this list is an 8-bit wide color gamut option (like P3). This
+    // gives us the options of:
+    // * Raster wide color gamut content into F16 extended-sRGB buffers.
+    //   This is expensive, but raster/composite results are always consistent.
+    // * Raster wide color gamut into 8-bit P3 buffers
+    //   This isn't expensive, but raster/composite results differ based on
+    //   whether or not WCG content is visible.
+    // We go with the second option, and do all non-sRGB raster and composite
+    // in P3.
+    if (!result.IsSuitableForBlending()) {
+      result =
+          ColorSpace(ColorSpace::PrimaryID::P3, ColorSpace::TransferID::SRGB);
+    }
+
+    // Report the HDR version of the space only if HDR is both requested and
+    // supported.
+    if (SupportsHDR() && color_usage == ContentColorUsage::kHDR) {
+      result = result.GetAsHDR();
+    }
+  }
+
   return result;
 }
 

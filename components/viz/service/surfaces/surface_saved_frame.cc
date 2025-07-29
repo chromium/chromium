@@ -208,8 +208,8 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
   auto image_format =
       GetSharedImageFormat(display_color_spaces.GetOutputBufferFormat(
           content_color_usage, has_transparent_background));
-  auto color_space = ColorSpaceUtils::CompositingColorSpace(
-      display_color_spaces, content_color_usage, has_transparent_background);
+  auto color_space =
+      display_color_spaces.GetRasterAndCompositeColorSpace(content_color_usage);
 
   if (is_software) {
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;

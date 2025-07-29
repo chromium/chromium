@@ -3892,7 +3892,7 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     auto pending_tiles = pending_tiling->AllTilesForTesting();
     ASSERT_FALSE(pending_tiles.empty());
 
-    const auto raster_cs = gfx::ColorSpace::CreateExtendedSRGB();
+    const auto raster_cs = gfx::ColorSpace::CreateDisplayP3D65().GetAsHDR();
     if (output_cs.IsHDR()) {
       // Only the last tile will have any pending tasks.
       const auto& pending_tasks =

@@ -1424,8 +1424,11 @@ bool SkiaRenderer::NeedsLayerForColorConversion(
 
 gfx::ColorSpace SkiaRenderer::CurrentDrawLayerColorSpace() const {
   if (hdr_color_conversion_layer_reset_) {
-    // A color conversion layer allows us to draw everything in extended sRGB.
-    return gfx::ColorSpace::CreateExtendedSRGB();
+    // A color conversion layer allows us to draw everything in an extended
+    // sRGB-like space.
+    return current_frame()
+        ->display_color_spaces.GetRasterAndCompositeColorSpace(
+            gfx::ContentColorUsage::kHDR);
   }
 
   // `NeedsLayerForColorConversion` can return false when no quads in a render
@@ -1498,7 +1501,8 @@ void SkiaRenderer::BeginDrawingRenderPass(
     SkPaint no_blend;
     no_blend.setBlendMode(SkBlendMode::kSrc);
     const gfx::ColorSpace blend_color_space =
-        gfx::ColorSpace::CreateExtendedSRGB();
+        current_frame()->display_color_spaces.GetRasterAndCompositeColorSpace(
+            gfx::ContentColorUsage::kHDR);
     CHECK(blend_color_space.IsSuitableForBlending());
     sk_sp<const SkColorSpace> color_space = blend_color_space.ToSkColorSpace();
     current_canvas_->saveLayer(

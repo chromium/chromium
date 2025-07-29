@@ -906,9 +906,8 @@ gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
              ? ColorSpaceUtils::OutputColorSpace(display_color_spaces,
                                                  content_color_usage,
                                                  has_transparent_background)
-             : ColorSpaceUtils::CompositingColorSpace(
-                   display_color_spaces, content_color_usage,
-                   has_transparent_background);
+             : display_color_spaces.GetRasterAndCompositeColorSpace(
+                   content_color_usage);
 }
 
 void DirectRenderer::EnsureRenderPassAllocated(

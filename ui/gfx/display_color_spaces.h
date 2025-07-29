@@ -103,15 +103,16 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // calls to these functions are to be eliminated.
   ColorSpace GetScreenInfoColorSpace() const;
 
-  // Return the color space that should be used for rasterization.
-  // TODO: This will eventually need to take a ContentColorUsage.
-  gfx::ColorSpace GetRasterColorSpace() const;
-
-  // Return the color space in which compositing (and, in particular, blending,
-  // should be performed). This space may not (on Windows) be suitable for
-  // output.
-  gfx::ColorSpace GetCompositingColorSpace(bool needs_alpha,
-                                           ContentColorUsage color_usage) const;
+  // Return the color space in which blending for rasterization and compositing
+  // should be done.
+  // * If rasterization and compositing are done in different spaces, then
+  //   content will appear different between the two paths. See
+  //   https://crbug.com/40277679
+  // * On platforms that do delegated compositing (e.g, macOS), this color space
+  //   must also match the color space in which the operating system will do
+  //   blending.
+  gfx::ColorSpace GetRasterAndCompositeColorSpace(
+      ContentColorUsage color_usage) const;
 
   // Return true if the HDR color spaces are, indeed, HDR.
   bool SupportsHDR() const;

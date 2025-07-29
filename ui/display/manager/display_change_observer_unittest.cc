@@ -500,7 +500,8 @@ TEST_P(DisplayChangeObserverTest, InvalidDisplayColorSpaces) {
       display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
-  const auto color_space = display_color_spaces.GetRasterColorSpace();
+  const auto color_space = display_color_spaces.GetRasterAndCompositeColorSpace(
+      gfx::ContentColorUsage::kSRGB);
   // DisplayColorSpaces will fix an invalid ColorSpace to return sRGB.
   EXPECT_TRUE(color_space.IsValid());
   EXPECT_EQ(color_space, gfx::ColorSpace::CreateSRGB());
@@ -532,7 +533,8 @@ TEST_P(DisplayChangeObserverTest, SDRDisplayColorSpaces) {
       display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
-  const auto color_space = display_color_spaces.GetRasterColorSpace();
+  const auto color_space = display_color_spaces.GetRasterAndCompositeColorSpace(
+      gfx::ContentColorUsage::kWideColorGamut);
   EXPECT_TRUE(color_space.IsValid());
   EXPECT_EQ(color_space.GetPrimaryID(), gfx::ColorSpace::PrimaryID::BT709);
   EXPECT_EQ(color_space.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
@@ -564,7 +566,8 @@ TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
       display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
-  const auto color_space = display_color_spaces.GetRasterColorSpace();
+  const auto color_space = display_color_spaces.GetRasterAndCompositeColorSpace(
+      gfx::ContentColorUsage::kHDR);
   EXPECT_TRUE(color_space.IsValid());
   EXPECT_EQ(color_space.GetPrimaryID(), gfx::ColorSpace::PrimaryID::BT709);
   EXPECT_EQ(color_space.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
