@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/ext/rgba_to_yuva.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -76,7 +72,7 @@ void BlitRGBAToYUVA(SkImage* src_image,
 
   // Blit each plane.
   for (int plane = 0; plane < dst_yuva_info.numPlanes(); ++plane) {
-    SkCanvas* plane_canvas = dst_surfaces[plane]->getCanvas();
+    SkCanvas* plane_canvas = UNSAFE_TODO(dst_surfaces[plane])->getCanvas();
 
     SkColorMatrix color_matrix = rgb_to_yuv_matrix;
     color_matrix.postConcat(permutation_matrices[plane]);
@@ -96,9 +92,9 @@ void BlitRGBAToYUVA(SkImage* src_image,
     // width & height to the dimensions of the passed in surfaces (which should
     // also span the entire logical image):
     std::array<float, 2> subsampling_factors = {
-        static_cast<float>(dst_surfaces[plane]->width()) /
+        static_cast<float>(UNSAFE_TODO(dst_surfaces[plane])->width()) /
             dst_yuva_info.dimensions().width(),
-        static_cast<float>(dst_surfaces[plane]->height()) /
+        static_cast<float>(UNSAFE_TODO(dst_surfaces[plane])->height()) /
             dst_yuva_info.dimensions().height(),
     };
 

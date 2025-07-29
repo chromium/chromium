@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "skia/ext/convolver_SSE2.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "skia/ext/convolver.h"
-#include "skia/ext/convolver_SSE2.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
 #include <emmintrin.h>  // ARCH_CPU_X86_FAMILY was defined in build/config.h
@@ -45,8 +42,8 @@ void ConvolveHorizontally_SSE2(const unsigned char* src_data,
 
     // Compute the first pixel in this row that the filter affects. It will
     // touch |filter_length| pixels (4 bytes each) after this.
-    const __m128i* row_to_filter =
-        reinterpret_cast<const __m128i*>(&src_data[filter_offset << 2]);
+    const __m128i* row_to_filter = reinterpret_cast<const __m128i*>(
+        &UNSAFE_TODO(src_data[filter_offset << 2]));
 
     // We will load and accumulate with four coefficients per iteration.
     for (int filter_x = 0; filter_x < filter_length >> 2; filter_x++) {
@@ -94,8 +91,8 @@ void ConvolveHorizontally_SSE2(const unsigned char* src_data,
       accum = _mm_add_epi32(accum, t);
 
       // Advance the pixel and coefficients pointers.
-      row_to_filter += 1;
-      filter_values += 4;
+      UNSAFE_TODO(row_to_filter += 1);
+      UNSAFE_TODO(filter_values += 4);
     }
 
     // When |filter_length| is not divisible by 4, we need to decimate some of
@@ -108,7 +105,7 @@ void ConvolveHorizontally_SSE2(const unsigned char* src_data,
       __m128i coeff, coeff16;
       coeff = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(filter_values));
       // Mask out extra filter taps.
-      coeff = _mm_and_si128(coeff, mask[r]);
+      coeff = _mm_and_si128(coeff, UNSAFE_TODO(mask[r]));
       coeff16 = _mm_shufflelo_epi16(coeff, _MM_SHUFFLE(1, 1, 0, 0));
       coeff16 = _mm_unpacklo_epi16(coeff16, coeff16);
 
@@ -142,7 +139,7 @@ void ConvolveHorizontally_SSE2(const unsigned char* src_data,
 
     // Store the pixel value of 32 bits.
     *(reinterpret_cast<int*>(out_row)) = _mm_cvtsi128_si32(accum);
-    out_row += 4;
+    UNSAFE_TODO(out_row += 4);
   }
 }
 
@@ -209,13 +206,13 @@ void Convolve4RowsHorizontally_SSE2(const unsigned char* src_data[4],
       t = _mm_unpackhi_epi16(mul_lo, mul_hi);                          \
       accum = _mm_add_epi32(accum, t)
 
-      ITERATION(src_data[0] + start, accum0);
-      ITERATION(src_data[1] + start, accum1);
-      ITERATION(src_data[2] + start, accum2);
-      ITERATION(src_data[3] + start, accum3);
+      UNSAFE_TODO(ITERATION(src_data[0] + start, accum0));
+      UNSAFE_TODO(ITERATION(src_data[1] + start, accum1));
+      UNSAFE_TODO(ITERATION(src_data[2] + start, accum2));
+      UNSAFE_TODO(ITERATION(src_data[3] + start, accum3));
 
       start += 16;
-      filter_values += 4;
+      UNSAFE_TODO(filter_values += 4);
     }
 
     int r = filter_length & 3;
@@ -224,7 +221,7 @@ void Convolve4RowsHorizontally_SSE2(const unsigned char* src_data[4],
       __m128i coeff;
       coeff = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(filter_values));
       // Mask out extra filter taps.
-      coeff = _mm_and_si128(coeff, mask[r]);
+      coeff = _mm_and_si128(coeff, UNSAFE_TODO(mask[r]));
 
       __m128i coeff16lo = _mm_shufflelo_epi16(coeff, _MM_SHUFFLE(1, 1, 0, 0));
       /* c1 c1 c1 c1 c0 c0 c0 c0 */
@@ -234,10 +231,10 @@ void Convolve4RowsHorizontally_SSE2(const unsigned char* src_data[4],
 
       __m128i src8, src16, mul_hi, mul_lo, t;
 
-      ITERATION(src_data[0] + start, accum0);
-      ITERATION(src_data[1] + start, accum1);
-      ITERATION(src_data[2] + start, accum2);
-      ITERATION(src_data[3] + start, accum3);
+      UNSAFE_TODO(ITERATION(src_data[0] + start, accum0));
+      UNSAFE_TODO(ITERATION(src_data[1] + start, accum1));
+      UNSAFE_TODO(ITERATION(src_data[2] + start, accum2));
+      UNSAFE_TODO(ITERATION(src_data[3] + start, accum3));
     }
 
     accum0 = _mm_srai_epi32(accum0, ConvolutionFilter1D::kShiftBits);
@@ -254,14 +251,17 @@ void Convolve4RowsHorizontally_SSE2(const unsigned char* src_data[4],
     accum3 = _mm_packus_epi16(accum3, zero);
 
     *(reinterpret_cast<int*>(out_row[0])) = _mm_cvtsi128_si32(accum0);
-    *(reinterpret_cast<int*>(out_row[1])) = _mm_cvtsi128_si32(accum1);
-    *(reinterpret_cast<int*>(out_row[2])) = _mm_cvtsi128_si32(accum2);
-    *(reinterpret_cast<int*>(out_row[3])) = _mm_cvtsi128_si32(accum3);
+    *(reinterpret_cast<int*>(UNSAFE_TODO(out_row[1]))) =
+        _mm_cvtsi128_si32(accum1);
+    *(reinterpret_cast<int*>(UNSAFE_TODO(out_row[2]))) =
+        _mm_cvtsi128_si32(accum2);
+    *(reinterpret_cast<int*>(UNSAFE_TODO(out_row[3]))) =
+        _mm_cvtsi128_si32(accum3);
 
-    out_row[0] += 4;
-    out_row[1] += 4;
-    out_row[2] += 4;
-    out_row[3] += 4;
+    UNSAFE_TODO(out_row[0] += 4);
+    UNSAFE_TODO(out_row[1] += 4);
+    UNSAFE_TODO(out_row[2] += 4);
+    UNSAFE_TODO(out_row[3] += 4);
   }
 }
 
@@ -296,12 +296,12 @@ void ConvolveVertically_SSE2(const ConvolutionFilter1D::Fixed* filter_values,
 
       // Duplicate the filter coefficient 8 times.
       // [16] cj cj cj cj cj cj cj cj
-      coeff16 = _mm_set1_epi16(filter_values[filter_y]);
+      coeff16 = _mm_set1_epi16(UNSAFE_TODO(filter_values[filter_y]));
 
       // Load four pixels (16 bytes) together.
       // [8] a3 b3 g3 r3 a2 b2 g2 r2 a1 b1 g1 r1 a0 b0 g0 r0
       src = reinterpret_cast<const __m128i*>(
-          &source_data_rows[filter_y][out_x << 2]);
+          &UNSAFE_TODO(source_data_rows[filter_y][out_x << 2]));
       __m128i src8 = _mm_loadu_si128(src);
 
       // Unpack 1st and 2nd pixels from 8 bits to 16 bits for each channels =>
@@ -371,7 +371,7 @@ void ConvolveVertically_SSE2(const ConvolutionFilter1D::Fixed* filter_values,
 
     // Store the convolution result (16 bytes) and advance the pixel pointers.
     _mm_storeu_si128(reinterpret_cast<__m128i*>(out_row), accum0);
-    out_row += 16;
+    UNSAFE_TODO(out_row += 16);
   }
 
   // When the width of the output is not divisible by 4, We need to save one
@@ -381,10 +381,10 @@ void ConvolveVertically_SSE2(const ConvolutionFilter1D::Fixed* filter_values,
     accum1 = _mm_setzero_si128();
     accum2 = _mm_setzero_si128();
     for (int filter_y = 0; filter_y < filter_length; ++filter_y) {
-      coeff16 = _mm_set1_epi16(filter_values[filter_y]);
+      coeff16 = _mm_set1_epi16(UNSAFE_TODO(filter_values[filter_y]));
       // [8] a3 b3 g3 r3 a2 b2 g2 r2 a1 b1 g1 r1 a0 b0 g0 r0
       src = reinterpret_cast<const __m128i*>(
-          &source_data_rows[filter_y][width<<2]);
+          &UNSAFE_TODO(source_data_rows[filter_y][width << 2]));
       __m128i src8 = _mm_loadu_si128(src);
       // [16] a1 b1 g1 r1 a0 b0 g0 r0
       __m128i src16 = _mm_unpacklo_epi8(src8, zero);
@@ -434,7 +434,7 @@ void ConvolveVertically_SSE2(const ConvolutionFilter1D::Fixed* filter_values,
     for (int out_x = width; out_x < pixel_width; out_x++) {
       *(reinterpret_cast<int*>(out_row)) = _mm_cvtsi128_si32(accum0);
       accum0 = _mm_srli_si128(accum0, 4);
-      out_row += 4;
+      UNSAFE_TODO(out_row += 4);
     }
   }
 }

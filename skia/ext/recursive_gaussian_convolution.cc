@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "skia/ext/recursive_gaussian_convolution.h"
 
 #include <algorithm>
 #include <cmath>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
-#include "skia/ext/recursive_gaussian_convolution.h"
 
 namespace skia {
 
@@ -44,13 +41,14 @@ inline float ForwardFilter(float in_n_1,
                            const float* b) {
   switch (order) {
     case RecursiveFilter::FUNCTION:
-      return b[0] * in_n + b[1] * w[n-1] + b[2] * w[n-2] + b[3] * w[n-3];
+      return b[0] * in_n + UNSAFE_TODO(b[1]) * w[n - 1] +
+             UNSAFE_TODO(b[2]) * w[n - 2] + UNSAFE_TODO(b[3]) * w[n - 3];
     case RecursiveFilter::FIRST_DERIVATIVE:
-      return b[0] * 0.5f * (in_n1 - in_n_1) +
-          b[1] * w[n-1] + b[2] * w[n-2] + b[3] * w[n-3];
+      return b[0] * 0.5f * (in_n1 - in_n_1) + UNSAFE_TODO(b[1]) * w[n - 1] +
+             UNSAFE_TODO(b[2]) * w[n - 2] + UNSAFE_TODO(b[3]) * w[n - 3];
     case RecursiveFilter::SECOND_DERIVATIVE:
-      return b[0] * (in_n - in_n_1)  +
-          b[1] * w[n-1] + b[2] * w[n-2] + b[3] * w[n-3];
+      return b[0] * (in_n - in_n_1) + UNSAFE_TODO(b[1]) * w[n - 1] +
+             UNSAFE_TODO(b[2]) * w[n - 2] + UNSAFE_TODO(b[3]) * w[n - 3];
   }
 
   NOTREACHED();
@@ -65,11 +63,11 @@ inline float BackwardFilter(const std::vector<float>& out,
   switch (order) {
     case RecursiveFilter::FUNCTION:
     case RecursiveFilter::FIRST_DERIVATIVE:
-      return b[0] * w_n +
-          b[1] * out[n + 1] + b[2] * out[n + 2] + b[3] * out[n + 3];
+      return b[0] * w_n + UNSAFE_TODO(b[1]) * out[n + 1] +
+             UNSAFE_TODO(b[2]) * out[n + 2] + UNSAFE_TODO(b[3]) * out[n + 3];
     case RecursiveFilter::SECOND_DERIVATIVE:
-      return b[0] * (w_n1 - w_n)  +
-          b[1] * out[n + 1] + b[2] * out[n + 2] + b[3] * out[n + 3];
+      return b[0] * (w_n1 - w_n) + UNSAFE_TODO(b[1]) * out[n + 1] +
+             UNSAFE_TODO(b[2]) * out[n + 2] + UNSAFE_TODO(b[3]) * out[n + 3];
   }
   NOTREACHED();
 }
@@ -90,8 +88,8 @@ unsigned char SingleChannelRecursiveFilter(
   const unsigned char* in = source_data;
   unsigned char* out = output;
   unsigned char max_output = 0;
-  for (int r = 0; r < row_count;
-       ++r, in += source_row_stride, out += output_row_stride) {
+  for (int r = 0; r < row_count; ++r, UNSAFE_TODO(in += source_row_stride),
+           UNSAFE_TODO(out += output_row_stride)) {
     // Compute forward filter.
     // First initialize start of the w (temporary) vector.
     if (order == RecursiveFilter::FUNCTION)
@@ -99,24 +97,23 @@ unsigned char SingleChannelRecursiveFilter(
     else
       w[0] = w[1] = w[2] = 0.0f;
     // Note that special-casing of w[3] is needed because of derivatives.
-    w[3] = ForwardFilter<order>(
-        in[0], in[0], in[source_pixel_stride], w, 3, b);
+    w[3] = ForwardFilter<order>(in[0], in[0],
+                                UNSAFE_TODO(in[source_pixel_stride]), w, 3, b);
     int n = 4;
     int c = 1;
     int byte_index = source_pixel_stride;
     for (; c < row_width - 1; ++c, ++n, byte_index += source_pixel_stride) {
-      w[n] = ForwardFilter<order>(in[byte_index - source_pixel_stride],
-                                  in[byte_index],
-                                  in[byte_index + source_pixel_stride],
-                                  w, n, b);
+      w[n] = ForwardFilter<order>(
+          UNSAFE_TODO(in[byte_index - source_pixel_stride]),
+          UNSAFE_TODO(in[byte_index]),
+          UNSAFE_TODO(in[byte_index + source_pixel_stride]), w, n, b);
     }
 
     // The value of w corresponding to the last image pixel needs to be computed
     // separately, again because of derivatives.
-    w[n] = ForwardFilter<order>(in[byte_index - source_pixel_stride],
-                                in[byte_index],
-                                in[byte_index],
-                                w, n, b);
+    w[n] = ForwardFilter<order>(
+        UNSAFE_TODO(in[byte_index - source_pixel_stride]),
+        UNSAFE_TODO(in[byte_index]), UNSAFE_TODO(in[byte_index]), w, n, b);
     // Now three trailing bytes set to the same value as current w[n].
     w[n + 1] = w[n];
     w[n + 2] = w[n];
@@ -129,8 +126,8 @@ unsigned char SingleChannelRecursiveFilter(
       float w_n = BackwardFilter<order>(w, n, w[n], w_n1, b);
       w_n1 = w[n];
       w[n] = w_n;
-      out[output_index] = FloatTo8<absolute_values>(w_n);
-      max_output = std::max(max_output, out[output_index]);
+      UNSAFE_TODO(out[output_index]) = FloatTo8<absolute_values>(w_n);
+      max_output = std::max(max_output, UNSAFE_TODO(out[output_index]));
     }
   }
   return max_output;
@@ -204,16 +201,17 @@ float RecursiveFilter::qFromSigma(float sigma) {
 
 void RecursiveFilter::computeCoefficients(float q, float b[4]) {
   b[0] = 1.57825f + 2.44413f * q + 1.4281f * q * q + 0.422205f * q * q * q;
-  b[1] = 2.4413f * q + 2.85619f * q * q + 1.26661f * q * q * q;
-  b[2] = - 1.4281f * q * q - 1.26661f * q * q * q;
-  b[3] = 0.422205f * q * q * q;
+  UNSAFE_TODO(b[1]) = 2.4413f * q + 2.85619f * q * q + 1.26661f * q * q * q;
+  UNSAFE_TODO(b[2]) = -1.4281f * q * q - 1.26661f * q * q * q;
+  UNSAFE_TODO(b[3]) = 0.422205f * q * q * q;
 
   // The above is exactly like in the paper. To cut down on computations,
   // we can fix up these numbers a bit now.
-  float b_norm = 1.0f - (b[1] + b[2] + b[3]) / b[0];
-  b[1] /= b[0];
-  b[2] /= b[0];
-  b[3] /= b[0];
+  float b_norm =
+      1.0f - (UNSAFE_TODO(b[1]) + UNSAFE_TODO(b[2]) + UNSAFE_TODO(b[3])) / b[0];
+  UNSAFE_TODO(b[1]) /= b[0];
+  UNSAFE_TODO(b[2]) /= b[0];
+  UNSAFE_TODO(b[3]) /= b[0];
   b[0] = b_norm;
 }
 
@@ -233,17 +231,11 @@ unsigned char SingleChannelRecursiveGaussianX(const unsigned char* source_data,
                                               int output_channel_index,
                                               int output_channel_count,
                                               bool absolute_values) {
-  return SingleChannelRecursiveFilter(source_data + input_channel_index,
-                                      input_channel_count,
-                                      source_byte_row_stride,
-                                      image_size.width(),
-                                      image_size.height(),
-                                      output + output_channel_index,
-                                      output_channel_count,
-                                      output_byte_row_stride,
-                                      filter.b(),
-                                      filter.order(),
-                                      absolute_values);
+  return SingleChannelRecursiveFilter(
+      UNSAFE_TODO(source_data + input_channel_index), input_channel_count,
+      source_byte_row_stride, image_size.width(), image_size.height(),
+      UNSAFE_TODO(output + output_channel_index), output_channel_count,
+      output_byte_row_stride, filter.b(), filter.order(), absolute_values);
 }
 
 unsigned char  SingleChannelRecursiveGaussianY(const unsigned char* source_data,
@@ -257,17 +249,11 @@ unsigned char  SingleChannelRecursiveGaussianY(const unsigned char* source_data,
                                                int output_channel_index,
                                                int output_channel_count,
                                                bool absolute_values) {
-  return SingleChannelRecursiveFilter(source_data + input_channel_index,
-                                      source_byte_row_stride,
-                                      input_channel_count,
-                                      image_size.height(),
-                                      image_size.width(),
-                                      output + output_channel_index,
-                                      output_byte_row_stride,
-                                      output_channel_count,
-                                      filter.b(),
-                                      filter.order(),
-                                      absolute_values);
+  return SingleChannelRecursiveFilter(
+      UNSAFE_TODO(source_data + input_channel_index), source_byte_row_stride,
+      input_channel_count, image_size.height(), image_size.width(),
+      UNSAFE_TODO(output + output_channel_index), output_byte_row_stride,
+      output_channel_count, filter.b(), filter.order(), absolute_values);
 }
 
 }  // namespace skia

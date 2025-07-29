@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "skia/ext/skia_trace_memory_dump_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -56,7 +52,7 @@ void SkiaTraceMemoryDumpImpl::dumpStringValue(const char* dump_name,
 void SkiaTraceMemoryDumpImpl::setMemoryBacking(const char* dump_name,
                                                const char* backing_type,
                                                const char* backing_object_id) {
-  if (strcmp(backing_type, kMallocBackingType) == 0) {
+  if (UNSAFE_TODO(strcmp(backing_type, kMallocBackingType)) == 0) {
     auto* dump = process_memory_dump_->GetOrCreateAllocatorDump(dump_name);
     const char* system_allocator_name =
         base::trace_event::MemoryDumpManager::GetInstance()

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/public/mojom/image_info_mojom_traits.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -42,12 +38,12 @@ std::optional<SkImageInfo> MakeSkImageInfo(
       return std::nullopt;
     }
     transfer_function.g = data[0];
-    transfer_function.a = data[1];
-    transfer_function.b = data[2];
-    transfer_function.c = data[3];
-    transfer_function.d = data[4];
-    transfer_function.e = data[5];
-    transfer_function.f = data[6];
+    transfer_function.a = UNSAFE_TODO(data[1]);
+    transfer_function.b = UNSAFE_TODO(data[2]);
+    transfer_function.c = UNSAFE_TODO(data[3]);
+    transfer_function.d = UNSAFE_TODO(data[4]);
+    transfer_function.e = UNSAFE_TODO(data[5]);
+    transfer_function.f = UNSAFE_TODO(data[6]);
 
     skcms_Matrix3x3 to_xyz_matrix;
     // TODO(crbug.com/40061960): Mojo should validate this array size. We can
@@ -55,7 +51,8 @@ std::optional<SkImageInfo> MakeSkImageInfo(
     if (color_to_xyz_matrix.size() != 9u) {
       return std::nullopt;
     }
-    memcpy(to_xyz_matrix.vals, color_to_xyz_matrix.data(), 9 * sizeof(float));
+    UNSAFE_TODO(memcpy(to_xyz_matrix.vals, color_to_xyz_matrix.data(),
+                       9 * sizeof(float)));
     color_space = SkColorSpace::MakeRGB(transfer_function, to_xyz_matrix);
   }
 
@@ -201,7 +198,7 @@ StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::color_to_xyz_matrix(
   static_assert(sizeof(to_xyz_matrix.vals) == sizeof(float) * 9,
                 "matrix must be 3x3 floats");
   float* values = &to_xyz_matrix.vals[0][0];
-  return std::vector<float>(values, values + 9);
+  return std::vector<float>(values, UNSAFE_TODO(values + 9));
 }
 
 // static

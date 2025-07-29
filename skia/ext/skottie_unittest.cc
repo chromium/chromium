@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "third_party/skia/modules/skottie/include/Skottie.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/modules/skottie/include/Skottie.h"
 
 TEST(Skottie, Basic) {
   // Just a solid green layer.
@@ -41,7 +38,7 @@ TEST(Skottie, Basic) {
   auto anim = skottie::Animation::Make(&stream);
 
   ASSERT_TRUE(anim);
-  EXPECT_EQ(strcmp(anim->version().c_str(), "4.12.0"), 0);
+  UNSAFE_TODO(EXPECT_EQ(strcmp(anim->version().c_str(), "4.12.0"), 0));
   EXPECT_EQ(anim->size().width(), 400.0f);
   EXPECT_EQ(anim->size().height(), 200.0f);
   EXPECT_EQ(anim->duration(), 5.0f);

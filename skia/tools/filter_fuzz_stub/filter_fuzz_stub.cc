@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
@@ -89,8 +85,9 @@ int main(int argc, char** argv) {
   canvas.clear(0x00000000);
 
   for (int i = 1; i < argc; i++)
-    if (!ReadAndRunTestCase(argv[i], bitmap, &canvas))
+    if (!ReadAndRunTestCase(UNSAFE_TODO(argv[i]), bitmap, &canvas)) {
       ret = 2;
+    }
 
   // Cluster-Fuzz likes "#EOF" as the last line of output to help distinguish
   // successful runs from crashes.
