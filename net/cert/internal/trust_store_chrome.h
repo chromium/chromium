@@ -14,9 +14,12 @@
 #include "base/version.h"
 #include "crypto/sha2.h"
 #include "net/base/net_export.h"
-#include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
+
+namespace chrome_root_store {
+class RootStore;
+}
 
 namespace net {
 

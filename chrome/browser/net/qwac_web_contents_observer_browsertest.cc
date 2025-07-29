@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"

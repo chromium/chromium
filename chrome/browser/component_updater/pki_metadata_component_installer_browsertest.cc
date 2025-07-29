@@ -65,6 +65,7 @@
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"

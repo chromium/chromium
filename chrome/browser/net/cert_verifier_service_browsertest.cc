@@ -23,6 +23,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
