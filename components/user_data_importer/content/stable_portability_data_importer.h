@@ -97,6 +97,7 @@ class StablePortabilityDataImporter {
     TransferHistoryCallback transfer_history_callback_;
     user_data_importer::StablePortabilityDataImporter::ImportCallback
         done_callback_;
+    size_t total_imported_count_ = 0;
   };
 
   // Encapsulates work which must occur in the background thread.

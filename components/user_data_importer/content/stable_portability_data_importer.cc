@@ -32,14 +32,11 @@ void StablePortabilityDataImporter::
         std::unique_ptr<std::vector<StablePortabilityHistoryEntry>>
             history_entries,
         bool completed) {
-  const size_t history_entries_size = history_entries->size();
+  total_imported_count_ += history_entries->size();
   transfer_history_callback_.Run(std::move(*history_entries));
 
   if (completed && done_callback_) {
-    // TODO(crbug.com/430253028): Execute the callback with the total number of
-    // history entries imported. As of now, we only return the number of
-    // entries in the last batch.
-    std::move(done_callback_).Run(history_entries_size);
+    std::move(done_callback_).Run(total_imported_count_);
   }
 }
 

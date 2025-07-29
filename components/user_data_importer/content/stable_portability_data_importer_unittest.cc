@@ -66,9 +66,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     return number_reading_list_imported_;
   }
 
-  int GetNumberOfHistoryImportedFromLastBatch() const {
-    return number_history_imported_;
-  }
+  int GetNumberOfHistoryImported() const { return number_history_imported_; }
 
   const std::vector<ImportedBookmarkEntry>& GetPendingBookmarks() const {
     return importer_->pending_bookmarks_;
@@ -445,7 +443,7 @@ TEST_F(StablePortabilityDataImporterTest, History_Basic) {
     ]
   })";
   ImportHistory(kHistoryJson);
-  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 2);
+  EXPECT_EQ(GetNumberOfHistoryImported(), 2);
 
   ASSERT_EQ(GetPendingHistory().size(), 2u);
   const auto& entry1 = GetPendingHistory()[0];
@@ -477,7 +475,7 @@ TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
         "title": "Google",
   })";  // Invalid JSON, missing closing brackets.
   ImportHistory(kHistoryJson);
-  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 0);
+  EXPECT_EQ(GetNumberOfHistoryImported(), 0);
   EXPECT_THAT(GetPendingHistory(), IsEmpty());
 }
 
@@ -490,7 +488,7 @@ TEST_F(StablePortabilityDataImporterTest, History_NoEntries) {
     "history_visits": []
   })";
   ImportHistory(kHistoryJson);
-  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 0);
+  EXPECT_EQ(GetNumberOfHistoryImported(), 0);
   EXPECT_THAT(GetPendingHistory(), IsEmpty());
 }
 
@@ -510,8 +508,7 @@ TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
       base::JoinString(visits, ",") + "]}";
 
   ImportHistory(history_json);
-  EXPECT_EQ(GetNumberOfHistoryImportedFromLastBatch(), 5);
-  ASSERT_EQ(GetPendingHistory().size(), static_cast<size_t>(num_visits));
+  EXPECT_EQ(GetNumberOfHistoryImported(), num_visits);
 
   for (int i = 0; i < num_visits; ++i) {
     const auto& entry = GetPendingHistory()[i];
