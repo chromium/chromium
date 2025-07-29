@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
+#include "components/autofill/core/browser/suggestions/autocomplete_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -37,37 +38,16 @@ class AutocompleteHistoryManager : public KeyedService {
 
   ~AutocompleteHistoryManager() override;
 
-  // Internal data object used to keep a request's context to associate it
-  // with the appropriate response.
-  struct QueryHandler {
-    QueryHandler(FieldGlobalId field_id,
-                 std::u16string prefix,
-                 SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                     on_suggestions_returned);
-    QueryHandler(const QueryHandler&) = delete;
-    QueryHandler(QueryHandler&&);
-    QueryHandler& operator=(const QueryHandler&) = delete;
-    QueryHandler& operator=(QueryHandler&&);
-    ~QueryHandler();
-
-    // The queried field ID.
-    FieldGlobalId field_id;
-
-    // Prefix used to search suggestions, submitted by the handler.
-    std::u16string prefix;
-
-    // Callback to-be-executed once a response from the DB is available.
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback
-        on_suggestions_returned;
-  };
-
-  // Generates autocomplete suggestions for the given `field`. This is achieved
-  // through an async DB query. `client` checks if the requirements for
-  // generating autocomplete suggestions  are met (e.g. autocomplete is
+  // Generates autocomplete suggestions for the given `field` in `form`. This is
+  // achieved through an async DB query. `client` checks if the requirements for
+  // generating autocomplete suggestions are met (e.g. autocomplete is
   // enabled). Since autocomplete suggestions are always generated last, the
   // `on_suggestions_returned` callback may be called with the suggestions for
   // `field` or with an empty vector if no suggestions are available.
+  // TODO(crbug.com/409962888): Remove this method once the new suggestion
+  // generation flow is launched.
   virtual void OnGetSingleFieldSuggestions(
+      const FormData& form,
       const FormFieldData& field,
       const AutofillClient& client,
       SingleFieldFillRouter::OnSuggestionsReturnedCallback
@@ -104,25 +84,6 @@ class AutocompleteHistoryManager : public KeyedService {
   // for a totally different purpose.
   static bool IsFieldNameMeaningfulForAutocomplete(const std::u16string& name);
 
-  // Retrieves a vector of all values which have been recorded in the
-  // autocomplete table as the value in a form element with name `field.name()`
-  // and which have a prefix `field.value()`. The comparison of the prefix is
-  // case insensitive.
-  // `on_suggestions_returned` is called with the retrieved values.
-  void GetFormValuesForElementName(
-      const FormFieldData& field,
-      SingleFieldFillRouter::OnSuggestionsReturnedCallback
-          on_suggestions_returned);
-
-  // Function handling WebDataService responses of type AUTOFILL_VALUE_RESULT.
-  // `current_handle` is the DB query handle, and is used to retrieve the
-  // handler associated with that query.
-  // `result` contains the Autocomplete suggestions retrieved from the DB that,
-  // if valid, will be passed to the callback in `query_handler`.
-  void OnAutofillValuesReturned(QueryHandler query_handler,
-    WebDataServiceBase::Handle current_handle,
-    std::unique_ptr<WDTypedResult> result);
-
   // Function handling WebDataService responses of type AUTOFILL_CLEANUP_RESULT.
   // `current_handle` is the DB query handle, and is used to retrieve the
   // handler associated with that query.
@@ -134,12 +95,6 @@ class AutocompleteHistoryManager : public KeyedService {
  private:
   friend class AutocompleteHistoryManagerTest;
 
-  // Sends the autocomplete `entries` to the `query_handler` for display in the
-  // associated Autofill popup. The parameter may be empty if there are no new
-  // autocomplete additions.
-  void SendSuggestions(const std::vector<AutocompleteEntry>& entries,
-                       QueryHandler query_handler);
-
   // Returns true if the given |field| and its value are valid to be saved as a
   // new or updated Autocomplete entry.
   bool IsFieldValueSaveable(const FormFieldData& field);
@@ -147,16 +102,14 @@ class AutocompleteHistoryManager : public KeyedService {
   // Must outlive this object.
   scoped_refptr<AutofillWebDataService> profile_database_;
 
+  // Stores the currently used `AutocompleteSuggestionGenerator`.
+  // If a new `GetSingleFieldSuggestions` request is received, the previous
+  // `suggestion_generator_` is destroyed and a new one is created.
+  std::unique_ptr<AutocompleteSuggestionGenerator> suggestion_generator_;
+
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_;
 
-  // The handle of the current pending query to the WebDataService.
-  // Since requests are asynchronous, this is used to identify the query when
-  // its results are returned, preventing race conditions with old, stale
-  // queries. It is also used to cancel a pending query if a new one is
-  // initiated or if this manager is destroyed. It is `std::nullopt` if no query
-  // is in flight.
-  std::optional<WebDataServiceBase::Handle> pending_query_;
 
   // Whether the service is associated with an off-the-record browser context.
   bool is_off_the_record_ = false;

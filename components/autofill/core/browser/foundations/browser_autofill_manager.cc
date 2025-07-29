@@ -1565,7 +1565,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     // `on_suggestions_returned` is still called with an empty list of
     // suggestions.
     client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
-            field, client(), std::move(on_suggestions_returned));
+            form, field, client(), std::move(on_suggestions_returned));
   } else {
     std::move(on_single_field_suggestions_callback)
         .Run(/*single_field_suggestions=*/{});

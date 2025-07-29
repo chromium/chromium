@@ -814,7 +814,7 @@ class MockAutofillClient : public TestAutofillClient {
         client->GetAutocompleteHistoryManager());
     ON_CALL(*autocomplete_history_manager,
             OnGetSingleFieldSuggestions)
-        .WillByDefault([](const FormFieldData field,
+        .WillByDefault([](const FormData& form, const FormFieldData& field,
                           const AutofillClient& client,
                           SingleFieldFillRouter::OnSuggestionsReturnedCallback
                               on_suggestions_returned) {
@@ -4812,7 +4812,7 @@ TEST_F(
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormFieldData field,
+      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
                          const AutofillClient& client,
                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
                              on_suggestions_returned) {
@@ -4846,7 +4846,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormFieldData field,
+      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
                          const AutofillClient& client,
                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
                              on_suggestions_returned) {
@@ -5767,7 +5767,7 @@ TEST_F(BrowserAutofillManagerTest,
     // to the field not having a type that would route to any of the other
     // single field form fillers.
     ON_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-        .WillByDefault([](const FormFieldData field,
+        .WillByDefault([](const FormData& form, const FormFieldData& field,
                           const AutofillClient& client,
                           SingleFieldFillRouter::OnSuggestionsReturnedCallback
                               on_suggestions_returned) {
@@ -8223,7 +8223,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormFieldData field,
+      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
                          const AutofillClient& client,
                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
                              on_suggestions_returned) {
@@ -8522,7 +8522,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormFieldData field,
+      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
                          const AutofillClient& client,
                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
                              on_suggestions_returned) {
@@ -8670,7 +8670,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormFieldData& field, const AutofillClient&,
+      .WillRepeatedly([&](const FormData& form, const FormFieldData& field,
+                          const AutofillClient&,
                           SingleFieldFillRouter::OnSuggestionsReturnedCallback
                               on_suggestions_returned) {
         std::move(on_suggestions_returned)
@@ -8727,7 +8728,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([](const FormFieldData field,
+      .WillRepeatedly([](const FormData& form, const FormFieldData& field,
                          const AutofillClient& client,
                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
                              on_suggestions_returned) {

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 
 namespace autofill {
 
@@ -52,7 +53,8 @@ class SuggestionGenerator {
                                       AutofillProfile,
                                       CreditCard,
                                       Iban,
-                                      AutofillOfferData>;
+                                      AutofillOfferData,
+                                      AutocompleteEntry>;
 
   // Obtains data that will be used to generate suggestions on a given trigger
   // `field` that belongs to `form` by calling `GenerateSuggestions` later (See
