@@ -107,6 +107,10 @@
   width: 100%;
 }
 
+:host-context([dir='rtl']) #inputContainer {
+  padding: 0 var(--input-left-spacing) var(--input-bottom-spacing) var(--text-input-right-spacing);
+}
+
 #input {
   animation: color-change 3s infinite;
   background-color: inherit;
@@ -188,6 +192,11 @@
   70% {
     opacity: 0;
   }
+}
+
+:host-context([dir='rtl']) .action-icon {
+  left: 16px;
+  right: unset;
 }
 
 #cancelIcon {
