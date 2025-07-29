@@ -388,16 +388,8 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   }
   RenderingContext()->GetResourceProviderForCanvas2D()->FlushCanvas(reason);
 
-  // If the context is lost, we don't know if we should be producing GPU or
-  // software frames, until we get a new context, since the compositor will
-  // be trying to get a new context and may change modes.
-  if (!RenderingContext()->GetResourceProviderForCanvas2D()->IsValid()) {
-    return false;
-  }
-
-  scoped_refptr<CanvasResource> frame = RenderingContext()
-                                            ->GetResourceProviderForCanvas2D()
-                                            ->ProduceCanvasResource(reason);
+  scoped_refptr<CanvasResource> frame =
+      RenderingContext()->PaintRenderingResultsToResource(kBackBuffer, reason);
   if (!frame || !frame->IsValid()) {
     return false;
   }

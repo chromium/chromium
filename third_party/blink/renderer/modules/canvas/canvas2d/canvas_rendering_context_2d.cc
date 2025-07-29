@@ -653,7 +653,9 @@ scoped_refptr<CanvasResource>
 CanvasRenderingContext2D::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  CHECK(IsCanvas2DResourceProviderValid());
+  if (!IsCanvas2DResourceProviderValid()) {
+    return nullptr;
+  }
   return resource_provider_->ProduceCanvasResource(reason);
 }
 
