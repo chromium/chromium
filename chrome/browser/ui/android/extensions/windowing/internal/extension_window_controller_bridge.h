@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 
 class BrowserWindowInterface;
 
@@ -31,16 +32,14 @@ class ExtensionWindowControllerBridge final {
   // Implements Java |ExtensionWindowControllerBridgeImpl.Natives#destroy|.
   void Destroy(JNIEnv* env);
 
-  // TODO(crbug.com/424856725): replace with a test-only function that returns
-  // the |extensions::WindowController|.
-  BrowserWindowInterface* GetBrowserWindowForTesting() const;
+  const extensions::BrowserExtensionWindowController&
+  GetExtensionWindowControllerForTesting();
 
  private:
   base::android::ScopedJavaGlobalRef<jobject>
       java_extension_window_controller_bridge_;
 
-  // TODO(crbug.com/424856725): replace with an |extensions::WindowController|.
-  BrowserWindowInterface* browser_window_;
+  extensions::BrowserExtensionWindowController extension_window_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_WINDOWING_INTERNAL_EXTENSION_WINDOW_CONTROLLER_BRIDGE_H_

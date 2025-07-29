@@ -9,6 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/sessions/core/session_id.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 // Android implementation of |BrowserWindowInterface|.
 class AndroidBrowserWindow final : public BrowserWindowInterface {
@@ -39,6 +41,8 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_android_browser_window_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  const SessionID session_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_H_

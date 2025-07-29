@@ -11,12 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/internal/android/android_base_window.h"
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/AndroidBrowserWindowNativeUnitTestSupport_jni.h"
+#include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
 
 namespace {
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 }  // namespace
 
 class AndroidBrowserWindowUnitTest : public testing::Test {
@@ -107,4 +109,39 @@ TEST_F(AndroidBrowserWindowUnitTest, GetWindowReturnsAndroidBaseWindow) {
   AndroidBaseWindow* expected_base_window =
       InvokeJavaGetNativeBaseWindowPtrForTesting();
   EXPECT_EQ(expected_base_window, base_window);
+}
+
+TEST_F(AndroidBrowserWindowUnitTest, GetSessionIDReturnsUniqueID) {
+  // Arrange: create two AndroidBrowserWindow objects.
+  //
+  // As each Java AndroidBrowserWindowNativeUnitTestSupport owns one native
+  // AndroidBrowserWindow object, we need to create two Java test support
+  // objects to get two instances of AndroidBrowserWindow.
+  //
+  // For clarity, we don't use the test fixture's java_test_support_ field.
+  ScopedJavaLocalRef<jobject> java_test_support1 =
+      Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
+          AttachCurrentThread());
+  ScopedJavaLocalRef<jobject> java_test_support2 =
+      Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
+          AttachCurrentThread());
+  AndroidBrowserWindow* android_browser_window1 = reinterpret_cast<
+      AndroidBrowserWindow*>(
+      Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
+          AttachCurrentThread(), java_test_support1));
+  AndroidBrowserWindow* android_browser_window2 = reinterpret_cast<
+      AndroidBrowserWindow*>(
+      Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
+          AttachCurrentThread(), java_test_support2));
+
+  const SessionID& session_id1 = android_browser_window1->GetSessionID();
+  const SessionID& session_id2 = android_browser_window2->GetSessionID();
+
+  EXPECT_NE(session_id1, session_id2);
+
+  // Clean up.
+  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
+      AttachCurrentThread(), java_test_support1);
+  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
+      AttachCurrentThread(), java_test_support2);
 }

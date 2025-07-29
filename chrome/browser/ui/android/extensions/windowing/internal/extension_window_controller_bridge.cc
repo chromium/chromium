@@ -8,6 +8,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/ui/android/extensions/windowing/internal/jni/ExtensionWindowControllerBridgeImpl_jni.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
@@ -33,7 +35,8 @@ ExtensionWindowControllerBridge::ExtensionWindowControllerBridge(
     const base::android::JavaParamRef<jobject>&
         java_extension_window_controller_bridge,
     BrowserWindowInterface* browser_window)
-    : browser_window_(browser_window) {
+    : extension_window_controller_(
+          extensions::BrowserExtensionWindowController(browser_window)) {
   java_extension_window_controller_bridge_.Reset(
       env, java_extension_window_controller_bridge);
 }
@@ -47,7 +50,7 @@ void ExtensionWindowControllerBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-BrowserWindowInterface*
-ExtensionWindowControllerBridge::GetBrowserWindowForTesting() const {
-  return browser_window_;
+const extensions::BrowserExtensionWindowController&
+ExtensionWindowControllerBridge::GetExtensionWindowControllerForTesting() {
+  return extension_window_controller_;
 }

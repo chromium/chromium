@@ -12,6 +12,7 @@ source_set("internal") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//components/sessions:session_id",
     "//ui/base/unowned_user_data",
   ]
 
@@ -100,6 +101,7 @@ source_set("unit_tests") {
       "//base",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_jni",
+      "//components/sessions:session_id",
       "//ui/base",
     ]
   }

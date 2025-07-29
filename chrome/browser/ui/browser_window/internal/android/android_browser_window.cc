@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindow_jni.h"
+#include "components/sessions/core/session_id.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {
@@ -27,7 +28,8 @@ static jlong JNI_AndroidBrowserWindow_Create(
 
 AndroidBrowserWindow::AndroidBrowserWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_android_browser_window) {
+    const JavaParamRef<jobject>& java_android_browser_window)
+    : session_id_(SessionID::NewUnique()) {
   java_android_browser_window_.Reset(env, java_android_browser_window);
 }
 
@@ -41,12 +43,12 @@ void AndroidBrowserWindow::Destroy(JNIEnv* env) {
 }
 
 ui::UnownedUserDataHost& AndroidBrowserWindow::GetUnownedUserDataHost() {
-  NOTREACHED();
+  return unowned_user_data_host_;
 }
 
 const ui::UnownedUserDataHost& AndroidBrowserWindow::GetUnownedUserDataHost()
     const {
-  NOTREACHED();
+  return unowned_user_data_host_;
 }
 
 ui::BaseWindow* AndroidBrowserWindow::GetWindow() {
@@ -56,11 +58,13 @@ ui::BaseWindow* AndroidBrowserWindow::GetWindow() {
 }
 
 Profile* AndroidBrowserWindow::GetProfile() {
-  NOTREACHED();
+  // TODO(crbug.com/429037015): Return a proper Profile.
+  // Temporarily return nullptr to avoid crashing callers.
+  return nullptr;
 }
 
 const SessionID& AndroidBrowserWindow::GetSessionID() const {
-  NOTREACHED();
+  return session_id_;
 }
 
 content::WebContents* AndroidBrowserWindow::OpenURL(
