@@ -25598,6 +25598,38 @@
             ]
         }
     ],
+    "V8ParserAblation": [
+        {
+            "platforms": [
+                "android",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled"
+                },
+                {
+                    "name": "V8EnableBytecodeCompilerAblation",
+                    "enable_features": [
+                        "V8Flag_enable_bytecode_compiler_ablation"
+                    ]
+                },
+                {
+                    "name": "V8EnablePreparserAblation",
+                    "enable_features": [
+                        "V8Flag_enable_preparser_ablation"
+                    ]
+                },
+                {
+                    "name": "V8EnableParserAblation",
+                    "enable_features": [
+                        "V8Flag_enable_parser_ablation"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8PreconfigureOldGen": [
         {
             "platforms": [
