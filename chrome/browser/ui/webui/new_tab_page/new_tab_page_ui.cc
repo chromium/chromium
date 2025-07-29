@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -512,10 +513,18 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("waitToLoadModules", microsoft_module_enabled);
 
   // ComposeBox LoadTimeData
-  source->AddString("composeboxImageFileTypes", "image/*");
-  source->AddString("composeboxAttachmentFileTypes", ".pdf,application/pdf");
-  source->AddInteger("composeboxFileMaxSize", 1000000);
-  source->AddInteger("composeboxFileMaxCount", 1);
+  auto composebox_config =
+      ntp_composebox::FeatureConfig::Get().config.composebox();
+  const std::string image_mime_types =
+      composebox_config.image_upload().mime_types_allowed();
+  source->AddString("composeboxImageFileTypes", image_mime_types);
+  const std::string attachment_mime_types =
+      composebox_config.attachment_upload().mime_types_allowed();
+  source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);
+  source->AddInteger("composeboxFileMaxSize",
+                     composebox_config.attachment_upload().max_size_bytes());
+  source->AddInteger("composeboxFileMaxCount",
+                     composebox_config.max_num_files());
 
   source->AddBoolean("searchboxShowComposeEntrypoint",
                      ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
@@ -526,13 +535,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
 
   source->AddBoolean("composeboxCloseByEscape",
-                     ntp_composebox::FeatureConfig::Get()
-                         .config.composebox()
-                         .close_by_escape());
+                     composebox_config.close_by_escape());
   source->AddBoolean("composeboxCloseByClickOutside",
-                     ntp_composebox::FeatureConfig::Get()
-                         .config.composebox()
-                         .close_by_click_outside());
+                     composebox_config.close_by_click_outside());
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

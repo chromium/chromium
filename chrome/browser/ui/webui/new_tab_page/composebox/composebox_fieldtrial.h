@@ -23,16 +23,6 @@ bool IsNtpSearchboxComposeEntrypointEnabled(BrowserProcess* browser_process);
 BASE_DECLARE_FEATURE(kNtpComposebox);
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;
-// Whether to enable WebP encoding for transparent image uploads.
-extern const base::FeatureParam<bool> kEnableWebpEncodingParam;
-// The maximum image size downscaling target (in pixels).
-extern const base::FeatureParam<size_t> kDownscaleMaxImageSizeParam;
-// The maximum image width downscaling target (in pixels).
-extern const base::FeatureParam<size_t> kDownscaleMaxImageWidthParam;
-// The maximum image height downscaling target (in pixels).
-extern const base::FeatureParam<size_t> kDownscaleMaxImageHeightParam;
-// The composition quality to use when encoding images.
-extern const base::FeatureParam<size_t> ImageCompressionQualityParam;
 // Whether to send the lns_surface parameter.
 // TODO(crbug.com/430070871): Remove this flag once the server supports the
 // `lns_surface` parameter.
@@ -43,16 +33,6 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   bool enabled = false;
   // The configuration proto for the feature.
   omnibox::NTPComposeboxConfig config;
-  // Whether to enable WebP encoding for transparent image uploads.
-  bool enable_webp_encoding = false;
-  // Maximum image size downscaling target (in pixels).
-  int downscale_max_image_size = 1;
-  // Maximum image width downscaling target (in pixels).
-  int downscale_max_image_width = 1;
-  // Maximum image height downscaling target (in pixels).
-  int downscale_max_image_height = 1;
-  // Composition quality to use when encoding images.
-  int image_compression_quality = 0;
 
  private:
   friend class omnibox_feature_configs::Config<FeatureConfig>;

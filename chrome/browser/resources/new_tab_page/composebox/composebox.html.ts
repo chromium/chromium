@@ -34,7 +34,7 @@ export function getHtml(this: ComposeboxElement) {
       </ntp-composebox-file-carousel>
       <textarea autocomplete="off" id="input"
           type="search" spellcheck="false"
-          placeholder="$i18n{composeboxPlaceholderText}"
+          placeholder="${this.inputPlaceholder_}"
           @keydown="${this.onInputKeydown_}"
           @input=${this.handleInput_}></textarea>
       <div id="uploadContainer">
