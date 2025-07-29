@@ -3749,6 +3749,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.WindowManager.OpenActiveWindow">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>rathomas@google.com</owner>
+  <description>
+    User tapped on 'Open' in Chrome's in-app window manager to bring an active
+    Window to the foreground.
+  </description>
+</action>
+
+<action name="Android.WindowManager.OpenInactiveWindow">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>rathomas@google.com</owner>
+  <description>
+    User tapped on 'Restore' in Chrome's in-app window manager to restore an
+    inactive Window and bring it to the foreground.
+  </description>
+</action>
+
 <action name="Android.WindowManager.SecondaryMenu">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>

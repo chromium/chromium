@@ -355,6 +355,11 @@ public class InstanceSwitcherCoordinator {
                                 break;
                             case ModalDialogProperties.ButtonType.POSITIVE:
                                 assert mSelectedItem != null;
+                                String userAction =
+                                        mSelectedItem.taskId == INVALID_TASK_ID
+                                                ? "Android.WindowManager.OpenInactiveWindow"
+                                                : "Android.WindowManager.OpenActiveWindow";
+                                RecordUserAction.record(userAction);
                                 switchToInstance(mSelectedItem);
                         }
                     }
