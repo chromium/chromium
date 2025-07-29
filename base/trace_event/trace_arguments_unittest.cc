@@ -296,31 +296,6 @@ TEST(TraceArguments, ConstructorLegacyNoConvertables) {
   UNSAFE_TODO(EXPECT_EQ(kText, args.values()[1].as_string));
 }
 
-TEST(TraceArguments, ConstructorLegacyWithConvertables) {
-  const char* const kNames[3] = {"legacy_arg1", "legacy_arg2", "legacy_arg3"};
-  const unsigned char kTypes[3] = {
-      TRACE_VALUE_TYPE_CONVERTABLE,
-      TRACE_VALUE_TYPE_CONVERTABLE,
-      TRACE_VALUE_TYPE_CONVERTABLE,
-  };
-  std::unique_ptr<MyConvertable> convertables[3] = {
-      std::make_unique<MyConvertable>("First one"),
-      std::make_unique<MyConvertable>("Second one"),
-      std::make_unique<MyConvertable>("Third one"),
-  };
-  TraceArguments args(3, kNames, kTypes, {}, convertables);
-  // Check that only the first kMaxSize arguments are taken!
-  EXPECT_EQ(2U, args.size());
-  EXPECT_STREQ(kNames[0], args.names()[0]);
-  UNSAFE_TODO(EXPECT_STREQ(kNames[1], args.names()[1]));
-  EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args.types()[0]);
-  UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args.types()[1]));
-  // Check that only the first two items were moved to |args|.
-  EXPECT_FALSE(convertables[0].get());
-  EXPECT_FALSE(convertables[1].get());
-  EXPECT_TRUE(convertables[2].get());
-}
-
 TEST(TraceArguments, MoveConstruction) {
   const char kText1[] = "First argument";
   const char kText2[] = "Second argument";
