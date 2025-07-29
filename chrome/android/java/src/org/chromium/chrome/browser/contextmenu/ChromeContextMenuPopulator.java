@@ -96,6 +96,7 @@ import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -386,11 +387,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @VisibleForTesting
     boolean shouldShowEmptySpaceContextMenu() {
-        // Enable empty space context menu for large screen devices, and devices
-        // (with any screen size) with input periperals attached.
-        return (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                        || (DeviceInput.supportsPrecisionPointer()
-                                && DeviceInput.supportsKeyboard()))
+        // Enable empty space context menu from mouse-right click on all device form factors, while
+        // long press (touch) should only work for large screen devices (crbug.com/429262357).
+        return (mParams.getSourceType() == MenuSourceType.MOUSE
+                     || (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                         && mParams.getSourceType() == MenuSourceType.LONG_PRESS))
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE);
     }
 
