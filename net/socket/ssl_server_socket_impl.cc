@@ -829,13 +829,17 @@ int SSLServerContextImpl::SocketImpl::Init() {
     signing_algorithm_prefs = context_->private_key_->GetAlgorithmPreferences();
   }
 
-  const SSL_PRIVATE_KEY_METHOD* custom_key = nullptr;
-  if (context_->pkey_) {
-    DCHECK(!context_->private_key_);
-  } else {
-    DCHECK(context_->private_key_);
-    custom_key = &kPrivateKeyMethod;
-  }
+  ConfigureSSLCredentialParams params{
+      .private_key = context_->pkey_
+                         ? ConfigureSSLCredentialParams::PrivateKeyVariant(
+                               context_->pkey_.get())
+                         : ConfigureSSLCredentialParams::PrivateKeyVariant(
+                               &kPrivateKeyMethod),
+      .signing_algorithm_prefs = signing_algorithm_prefs,
+      .ocsp_response = context_->ssl_server_config_.ocsp_response,
+      .signed_cert_timestamp_list =
+          context_->ssl_server_config_.signed_cert_timestamp_list,
+  };
 
   // If a Trust Anchor ID for the intermediate certificate was provided,
   // configure an alternative, shorter chain that omits the intermediate.
@@ -844,24 +848,24 @@ int SSLServerContextImpl::SocketImpl::Init() {
     // ID for a single intermediate certificate.
     DCHECK_EQ(context_->cert_chain_.size(), 2u);
 
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> elided_chain;
-    elided_chain.emplace_back(bssl::UpRef(context_->cert_chain_[0]));
+    std::vector<CRYPTO_BUFFER*> elided_chain = {context_->cert_chain_[0].get()};
 
-    if (!ConfigureSSLCredential(
-            ssl_.get(), elided_chain, context_->pkey_.get(), custom_key,
-            signing_algorithm_prefs, context_->ssl_server_config_.ocsp_response,
-            context_->ssl_server_config_.signed_cert_timestamp_list,
-            context_->ssl_server_config_.intermediate_trust_anchor_id)) {
+    ConfigureSSLCredentialParams params_with_trust_anchor_id = params;
+    params_with_trust_anchor_id.cert_chain = elided_chain;
+    params_with_trust_anchor_id.trust_anchor_id =
+        context_->ssl_server_config_.intermediate_trust_anchor_id;
+
+    if (!ConfigureSSLCredential(ssl_.get(), params_with_trust_anchor_id)) {
       return ERR_UNEXPECTED;
     }
   }
 
   // Set the full (un-elided) certificate chain and private key.
-  if (!ConfigureSSLCredential(
-          ssl_.get(), context_->cert_chain_, context_->pkey_.get(), custom_key,
-          signing_algorithm_prefs, context_->ssl_server_config_.ocsp_response,
-          context_->ssl_server_config_.signed_cert_timestamp_list,
-          /*trust_anchor_id=*/{})) {
+  std::vector<CRYPTO_BUFFER*> chain_raw =
+      GetCertChainRawVector(context_->cert_chain_);
+  params.cert_chain = chain_raw;
+
+  if (!ConfigureSSLCredential(ssl_.get(), params)) {
     return ERR_UNEXPECTED;
   }
 

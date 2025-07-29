@@ -7,6 +7,11 @@
 
 #include <stdint.h>
 
+#include <variant>
+#include <vector>
+
+#include "base/containers/span.h"
+#include "base/memory/stack_allocated.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_event_type.h"
@@ -81,34 +86,44 @@ void NetLogOpenSSLError(const NetLogWithSource& net_log,
 // this SSL connection.
 int GetNetSSLVersion(SSL* ssl);
 
-// Configures |ssl| to send the specified certificate and either |pkey| or
-// |custom_key|. This is a wrapper over |SSL_set_chain_and_key|.
-bool SetSSLChainAndKey(SSL* ssl,
-                       X509Certificate* cert,
-                       EVP_PKEY* pkey,
-                       const SSL_PRIVATE_KEY_METHOD* custom_key);
+// Returns a vector containing a pointer to the leaf certificate in `cert`
+// followed by pointers to the intermediate certificates, suitable for passing
+// via `ConfigureSSLCredentialParams`.
+std::vector<CRYPTO_BUFFER*> GetCertChainRawVector(X509Certificate& cert);
 
-// Configures |ssl| to use the specified certificate and either |key| or
-// |custom_key| as an available credential. This is a wrapper over
-// |SSL_CREDENTIAL| APIs
+// Converts `cert_chain` to a vector of raw pointers, suitable for passing via
+// `ConfigureSSLCredentialParams`.
+std::vector<CRYPTO_BUFFER*> GetCertChainRawVector(
+    const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& cert_chain);
+
+// Holds params for `ConfigureSSLCredential()`.
+struct ConfigureSSLCredentialParams {
+  STACK_ALLOCATED();  // Allow members to be spans instead of raw_spans.
+ public:
+  using PrivateKeyVariant =
+      std::variant<EVP_PKEY*, const SSL_PRIVATE_KEY_METHOD*>;
+
+  base::span<CRYPTO_BUFFER*> cert_chain;
+  PrivateKeyVariant private_key;
+  base::span<const uint16_t> signing_algorithm_prefs;
+  base::span<const uint8_t> ocsp_response;
+  base::span<const uint8_t> signed_cert_timestamp_list;
+  base::span<const uint8_t> trust_anchor_id;
+};
+
+// Configures `ssl` to use the specified certificate and `params.private_key`
+// as an available credential. This is a wrapper over |SSL_CREDENTIAL| APIs
 // (https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#Credentials).
 //
-// |signing_algorithm_prefs|, |ocsp_response|, and |signed_cert_timestamp| are
-// configured with the respective SSL_CREDENTIAL APIs if non-empty.
+// |params.signing_algorithm_prefs|, |params.ocsp_response|, and
+// |params.signed_cert_timestamp| are configured with the respective
+// SSL_CREDENTIAL APIs if non-empty.
 //
-// If |trust_anchor_id| is non-empty, it will be configured as the certificate's
-// corresponding TLS Trust Anchor ID, and `SSL_CREDENTIAL_set_must_match_issuer`
-// will be set to true
+// If |params.trust_anchor_id| is non-empty, it will be configured as the
+// certificate's corresponding TLS Trust Anchor ID, and
+// `SSL_CREDENTIAL_set_must_match_issuer` will be set to true
 // (https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#SSL_CREDENTIAL_set_must_match_issuer).
-bool ConfigureSSLCredential(
-    SSL* ssl,
-    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
-    EVP_PKEY* pkey,
-    const SSL_PRIVATE_KEY_METHOD* custom_key,
-    base::span<const uint16_t> signing_algorithm_prefs,
-    base::span<const uint8_t> ocsp_response,
-    base::span<const uint8_t> signed_cert_timestamp_list,
-    base::span<const uint8_t> trust_anchor_id);
+bool ConfigureSSLCredential(SSL* ssl, ConfigureSSLCredentialParams params);
 
 }  // namespace net
 
