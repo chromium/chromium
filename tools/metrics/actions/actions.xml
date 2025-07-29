@@ -24649,6 +24649,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuAddAnyGroup.BeforeTabRestore">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Any sort of add tab to new/existing group menu item before tab restore
+    completed.
+  </description>
+</action>
+
 <action name="MobileMenuAddToBookmarks">
   <owner>aurimas@chromium.org</owner>
   <description>

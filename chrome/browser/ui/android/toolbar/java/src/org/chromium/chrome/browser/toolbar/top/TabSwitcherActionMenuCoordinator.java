@@ -215,13 +215,7 @@ public class TabSwitcherActionMenuCoordinator {
         itemList.add(buildListItemByMenuItemType(MenuItemType.DIVIDER));
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_TAB));
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB));
-        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            if (doTabGroupsExist()) {
-                itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP));
-            } else {
-                itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_NEW_GROUP));
-            }
-        }
+        maybeBuildAddToGroup(itemList);
         if (incognitoMigrationFFEnabled) {
             if (isCurrentModelIncognito) {
                 itemList.add(buildListItemByMenuItemType(MenuItemType.SWITCH_OUT_OF_INCOGNITO));
@@ -231,6 +225,24 @@ public class TabSwitcherActionMenuCoordinator {
             }
         }
         return itemList;
+    }
+
+    private void maybeBuildAddToGroup(ModelList itemList) {
+        if (!ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) return;
+
+        if (ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
+            TabModelSelector selector = mTabModelSelectorSupplier.get();
+            if (selector == null || !selector.isTabStateInitialized()) return;
+            TabGroupModelFilter filter =
+                    selector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
+            if (filter == null || !filter.isTabModelRestored()) return;
+        }
+
+        if (doTabGroupsExist()) {
+            itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP));
+        } else {
+            itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_NEW_GROUP));
+        }
     }
 
     protected ListItem buildListItemByMenuItemType(@MenuItemType int type) {
