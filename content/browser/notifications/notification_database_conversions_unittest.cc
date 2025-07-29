@@ -60,16 +60,11 @@ const std::map<std::string, std::string> kNotificationMetadata = {
     {kNotificationMetadataKey, kNotificationMetadataValue}};
 
 TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
-  std::vector<int> vibration_pattern(
-      kNotificationVibrationPattern,
-      UNSAFE_TODO(kNotificationVibrationPattern +
-                  std::size(kNotificationVibrationPattern)));
+  std::vector<int> vibration_pattern(std::begin(kNotificationVibrationPattern),
+                                     std::end(kNotificationVibrationPattern));
 
-  std::vector<char> developer_data(
-      kNotificationData.data(),
-      base::span<const unsigned char>(kNotificationData)
-          .subspan(std::size(kNotificationData))
-          .data());
+  std::vector<char> developer_data(kNotificationData.begin(),
+                                   kNotificationData.end());
 
   blink::PlatformNotificationData notification_data;
   notification_data.title = kNotificationTitle;
