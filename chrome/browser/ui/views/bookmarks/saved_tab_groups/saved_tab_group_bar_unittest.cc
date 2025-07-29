@@ -26,6 +26,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/collaboration/public/features.h"
 #include "components/data_sharing/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"

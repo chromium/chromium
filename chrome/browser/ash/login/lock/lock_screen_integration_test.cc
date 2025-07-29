@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/chromeos/crosier/power_manager_emitter.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
 
 namespace {

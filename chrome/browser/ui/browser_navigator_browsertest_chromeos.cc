@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"

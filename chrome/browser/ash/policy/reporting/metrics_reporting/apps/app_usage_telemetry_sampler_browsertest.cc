@@ -36,6 +36,7 @@
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"

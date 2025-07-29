@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/window_open_disposition.h"

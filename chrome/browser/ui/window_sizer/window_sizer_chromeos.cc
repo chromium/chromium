@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"

@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"

@@ -52,6 +52,7 @@
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/interaction/element_identifier.h"
 #endif
 

@@ -25,6 +25,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_features.h"

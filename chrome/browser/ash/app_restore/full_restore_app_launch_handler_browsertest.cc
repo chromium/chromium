@@ -81,6 +81,7 @@
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/strings/grit/components_strings.h"

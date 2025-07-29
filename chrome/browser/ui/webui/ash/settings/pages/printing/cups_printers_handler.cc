@@ -52,6 +52,7 @@
 #include "chromeos/printing/printing_constants.h"
 #include "chromeos/printing/uri.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

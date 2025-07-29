@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -22,7 +23,6 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)

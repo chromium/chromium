@@ -46,6 +46,7 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"

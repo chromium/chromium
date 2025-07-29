@@ -17,6 +17,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/test_support.h"

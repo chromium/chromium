@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

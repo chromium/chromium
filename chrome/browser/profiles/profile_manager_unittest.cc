@@ -55,6 +55,7 @@
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/common/content_switches.h"

@@ -62,6 +62,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"

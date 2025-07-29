@@ -44,6 +44,7 @@
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"

@@ -18,6 +18,7 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
+#include "components/prefs/pref_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/download_item_utils.h"

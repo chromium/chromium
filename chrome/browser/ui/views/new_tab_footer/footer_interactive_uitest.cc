@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"

@@ -17,6 +17,7 @@
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "testing/gmock/include/gmock/gmock.h"

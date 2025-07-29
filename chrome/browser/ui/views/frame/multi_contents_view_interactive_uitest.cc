@@ -27,6 +27,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/test/browser_test.h"

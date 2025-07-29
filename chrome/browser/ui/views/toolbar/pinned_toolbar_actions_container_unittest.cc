@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/actions/action_id.h"

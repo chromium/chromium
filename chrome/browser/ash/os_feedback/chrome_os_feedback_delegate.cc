@@ -51,6 +51,7 @@
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_report.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"

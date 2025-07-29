@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "ui/gfx/image/image_unittest_util.h"

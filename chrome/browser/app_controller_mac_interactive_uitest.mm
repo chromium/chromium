@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "net/base/apple/url_conversions.h"

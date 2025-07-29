@@ -34,6 +34,7 @@
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/theme_provider.h"

@@ -85,6 +85,7 @@
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_paths.h"

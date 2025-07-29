@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
