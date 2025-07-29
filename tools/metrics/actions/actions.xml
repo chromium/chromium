@@ -7151,7 +7151,7 @@ should be able to be added at any place in this file.
 
 <action name="CloseTab_EndTabInSplit">
   <owner>agale@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User clicked the close tab button; the tab was the last tab in a split.
   </description>
@@ -7194,7 +7194,7 @@ should be able to be added at any place in this file.
 
 <action name="CloseTab_StartTabInSplit">
   <owner>agale@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User clicked the close tab button; the tab was the first tab in a split.
   </description>
