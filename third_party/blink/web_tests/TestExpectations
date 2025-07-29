@@ -3317,6 +3317,8 @@ crbug.com/416129743 [ Mac15-arm64 ] external/wpt/css/css-flexbox/overflow-auto-0
 crbug.com/416704402 virtual/not-split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
 crbug.com/416704402 virtual/split-cache-by-include-credentials/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
 crbug.com/416704402 virtual/split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
+crbug.com/416704402 virtual/http-cache-default-backend/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
+crbug.com/416704402 virtual/http-cache-sql-backend/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
 crbug.com/415669416 [ Mac15 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/415738357 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/error.py [ Failure ]
 crbug.com/415738357 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/invalid.py [ Failure ]

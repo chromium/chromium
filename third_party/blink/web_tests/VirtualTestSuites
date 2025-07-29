@@ -1614,6 +1614,44 @@
     "expires": "Jun 1, 2026"
   },
   {
+    "prefix": "http-cache-default-backend",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fetch/http-cache"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DiskCacheBackendExperiment:backend/default"
+    ],
+    "expires": "Jul 25, 2026",
+    "owners": [
+      "horo@chromium.org"
+    ]
+  },
+  {
+    "prefix": "http-cache-sql-backend",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fetch/http-cache"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DiskCacheBackendExperiment:backend/sql"
+    ],
+    "expires": "Jul 25, 2026",
+    "owners": [
+      "horo@chromium.org"
+    ]
+  },
+  {
     "prefix": "image-disabled",
     "owners": [
       "leimy@google.com"

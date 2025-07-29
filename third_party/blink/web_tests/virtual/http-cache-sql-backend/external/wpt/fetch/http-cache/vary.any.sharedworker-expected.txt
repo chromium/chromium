@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] HTTP cache doesn't invalidate existing Vary response
+  assert_less_than: Response 3 does not come from cache expected a number less than 3 but got 3
+Harness: the test ran to completion.
+
