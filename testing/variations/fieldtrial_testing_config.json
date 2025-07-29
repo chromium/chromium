@@ -8612,6 +8612,29 @@
             ]
         }
     ],
+    "DiskCacheBackendExperiment": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Sql",
+                    "params": {
+                        "backend": "sql"
+                    },
+                    "enable_features": [
+                        "DiskCacheBackendExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisplayEdgeToEdgeFullscreen": [
         {
             "platforms": [
