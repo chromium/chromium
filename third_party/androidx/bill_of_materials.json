@@ -532,7 +532,7 @@
     {
         "name": "graphics-path",
         "group": "androidx.graphics",
-        "version": "1.0.1"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "graphics-shapes",
