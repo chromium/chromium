@@ -372,29 +372,20 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   AttributeTypeAssignment assignment =
       AttributeTypeAssignment(form.fields(), trigger_field->section());
 
-  // Sort entities based on their frecency.
-  std::vector<const EntityInstance*> sorted_entities = base::ToVector(
-      entities, [](const EntityInstance& entity) { return &entity; });
-  std::ranges::sort(sorted_entities,
-                    [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
-                        const EntityInstance* lhs, const EntityInstance* rhs) {
-                      return comp(*lhs, *rhs);
-                    });
-
   std::vector<SuggestionWithMetadata> suggestions_with_metadata;
-  for (const EntityInstance* entity : sorted_entities) {
+  for (const EntityInstance& entity : entities) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
-        assignment.Find(entity->type());
+        assignment.Find(entity.type());
     base::optional_ref<const AutofillFieldWithAttributeType>
         trigger_field_with_type =
             FindField(fields_with_types, trigger_field->global_id());
     if (!trigger_field_with_type ||
-        !EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
+        !EntityShouldProduceSuggestion(entity, *trigger_field_with_type,
                                        app_locale)) {
       continue;
     }
     suggestions_with_metadata.push_back(GetSuggestionForEntity(
-        *entity, fields_with_types, *trigger_field_with_type, app_locale));
+        entity, fields_with_types, *trigger_field_with_type, app_locale));
   }
 
   if (suggestions_with_metadata.empty()) {
@@ -412,11 +403,10 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   // generate suggestions on a certain triggering field still affect label
   // generation and should be taken into account.
   std::vector<const EntityInstance*> other_entities_that_can_fill_section;
-  for (const EntityInstance* entity : sorted_entities) {
-    if (!entities_used_to_build_suggestions.contains(entity->guid()) &&
-        CanFillSomeField(*entity, assignment.Find(entity->type()),
-                         app_locale)) {
-      other_entities_that_can_fill_section.push_back(entity);
+  for (const EntityInstance& entity : entities) {
+    if (!entities_used_to_build_suggestions.contains(entity.guid()) &&
+        CanFillSomeField(entity, assignment.Find(entity.type()), app_locale)) {
+      other_entities_that_can_fill_section.push_back(&entity);
     }
   }
 

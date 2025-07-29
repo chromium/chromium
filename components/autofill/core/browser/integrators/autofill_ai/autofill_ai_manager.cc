@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include "components/autofill/core/browser/suggestions/autofill_ai_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -345,29 +346,32 @@ void AutofillAiManager::HandleUpdatePromptResult(
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field) {
-  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kFilling)) {
-    return {};
-  }
-
-  EntityDataManager* entity_manager = client_->GetEntityDataManager();
-  if (!entity_manager) {
-    return {};
-  }
-
-  base::span<const EntityInstance> entities =
-      entity_manager->GetEntityInstances();
-  if (entities.empty()) {
-    return {};
-  }
-
+  AutofillAiSuggestionGenerator suggestion_generator;
+  std::vector<Suggestion> suggestions;
   const AutofillField* autofill_field =
       form.GetFieldById(trigger_field.global_id());
-  if (!autofill_field) {
-    return {};
-  }
 
-  return CreateAutofillAiFillingSuggestions(form, trigger_field, entities,
-                                  client_->GetAppLocale());
+  auto on_suggestion_data_returned =
+      [&form, &autofill_field, &trigger_field, &suggestions,
+       &suggestion_generator](
+          std::pair<FillingProduct,
+                    std::vector<SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        suggestion_generator.GenerateSuggestions(
+            form.ToFormData(), trigger_field, &form, autofill_field,
+            {std::move(suggestion_data)},
+            [&suggestions](
+                SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+              suggestions = std::move(returned_suggestions.second);
+            });
+      };
+
+  // Since the `on_suggestion_data_returned` callback is called synchronously,
+  // we can assume that `suggestions_generated` will hold correct value.
+  suggestion_generator.FetchSuggestionData(form.ToFormData(), trigger_field,
+                                           &form, autofill_field, *client_,
+                                           on_suggestion_data_returned);
+  return suggestions;
 }
 
 bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
