@@ -39,7 +39,7 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroidInCct,
 // passkey request with a long-press action on webauthn-annotated fields.
 BASE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress,
              "AutofillVirtualViewStructureAndroidPasskeyLongPress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the AutofillManagerWrapper class will not be initialized when the
 // AutofillProvider Java class is initialized. Some apps do not use Autofill at

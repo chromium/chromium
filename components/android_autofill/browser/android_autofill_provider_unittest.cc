@@ -939,35 +939,25 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest,
-       LogConditionalPasskeysFlowPasskeysAvailableMetricWithoutPasskeys) {
-  base::HistogramTester histogram_tester;
+       LogConditionalPasskeysFlowPasskeysAvailableOnLongPress) {
   ON_CALL(cred_man_delegate(), HasPasskeys())
       .WillByDefault(
           Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
 
-  // Focus the form field.
-  base::RepeatingCallback<void(bool)> completed_callback;
-  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
-      .WillOnce(SaveArg<0>(&completed_callback));
+  // Focus the form field which has no immediate passkey effect.
   FocusFormField(webauthn_email_field());
+  EXPECT_FALSE(keyboard_suppressor().is_suppressing());
 
-  // Keyboard is suppressed while CredMan is showing.
-  EXPECT_TRUE(keyboard_suppressor().is_suppressing());
-  Mock::VerifyAndClearExpectations(&cred_man_delegate());
-
-  // Hide CredMan.
-  completed_callback.Run(/*success=*/true);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ConditionalPasskeysFlow.PasskeysState",
-      webauthn::WebAuthnCredManDelegate::State::kNoPasskeys, 1);
+  // Simulate the long-press suggestion was accepted.
+  EXPECT_CALL(cred_man_delegate(),
+              TriggerCredManUi(Eq(
+                  webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
+  test_api(autofill_provider()).OnTriggerPasskeyRequest();
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest,
        LogConditionalPasskeysFlowPasskeysUnavailableWithoutPasskeys) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillVirtualViewStructureAndroidPasskeyLongPress};
   ON_CALL(cred_man_delegate(), HasPasskeys())
       .WillByDefault(
           Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));

@@ -23,6 +23,8 @@ class AndroidAutofillProviderTestApi {
     return *provider_->keyboard_suppressor_;
   }
 
+  void OnTriggerPasskeyRequest() { provider_->OnTriggerPasskeyRequest(); }
+
  private:
   const raw_ref<AndroidAutofillProvider> provider_;
 };
