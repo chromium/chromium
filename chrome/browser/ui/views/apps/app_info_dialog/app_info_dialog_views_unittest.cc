@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -106,6 +107,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     arc_test_->SetUp(extension_environment_.profile());
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
+    browser_controller_.emplace();
     chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
         extension_environment_.profile(), shelf_model_.get());
     chrome_shelf_controller_->SetProfileForTest(
@@ -126,6 +128,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     chrome_app_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
     chrome_shelf_controller_.reset();
+    browser_controller_.reset();
     shelf_model_.reset();
     if (arc_test_) {
       arc_test_->TearDown();
@@ -211,6 +214,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   };
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::ShelfModel> shelf_model_;
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<ArcAppTest> arc_test_;
 #endif

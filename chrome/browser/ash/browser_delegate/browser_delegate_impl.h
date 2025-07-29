@@ -21,6 +21,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   Browser& GetBrowser() const override;
   BrowserType GetType() const override;
   SessionID GetSessionID() const override;
+  const AccountId& GetAccountId() const override;
   bool IsOffTheRecord() const override;
   gfx::Rect GetBounds() const override;
   content::WebContents* GetActiveWebContents() const override;

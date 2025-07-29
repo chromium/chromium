@@ -15,6 +15,7 @@ static_library("browser_delegate") {
 
   public_deps = [
     "//base",
+    "//components/account_id",
     "//components/sessions:session_id",
     "//components/webapps/common",
     "//ui/gfx/geometry",

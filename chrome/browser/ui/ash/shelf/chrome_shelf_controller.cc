@@ -48,6 +48,8 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -371,7 +373,8 @@ void ChromeShelfController::Init() {
     if (IsBrowserRepresentedInBrowserList(browser, model_) &&
         browser->tab_strip_model()->GetActiveWebContents()) {
       SetShelfIDForBrowserWindowContents(
-          browser, browser->tab_strip_model()->GetActiveWebContents());
+          ash::BrowserController::GetInstance()->GetDelegate(browser),
+          browser->tab_strip_model()->GetActiveWebContents());
     }
   }
 
@@ -579,7 +582,9 @@ void ChromeShelfController::UpdateV1AppState(const std::string& app_id) {
       }
       UpdateAppState(web_contents, false /*remove*/);
       if (browser->tab_strip_model()->GetActiveWebContents() == web_contents) {
-        SetShelfIDForBrowserWindowContents(browser, web_contents);
+        SetShelfIDForBrowserWindowContents(
+            ash::BrowserController::GetInstance()->GetDelegate(browser),
+            web_contents);
       }
     }
   }
@@ -771,13 +776,25 @@ void ChromeShelfController::UpdateBrowserItemState() {
 }
 
 void ChromeShelfController::SetShelfIDForBrowserWindowContents(
-    Browser* browser,
+    ash::BrowserDelegate* browser,
     content::WebContents* web_contents) {
+  if (!browser) {
+    return;
+  }
+
   // We need to set the window ShelfID for V1 applications since they are
   // content which might change and as such change the application type.
   // The browser window may not exist in unit tests.
-  if (!browser || !browser->window() || !browser->window()->GetNativeWindow() ||
-      !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+  aura::Window* window = browser->GetNativeWindow();
+  if (!window) {
+    return;
+  }
+
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  const AccountId active_id =
+      active_session ? active_session->account_id() : EmptyAccountId();
+  if (browser->GetAccountId() != active_id) {
     return;
   }
 
@@ -785,14 +802,11 @@ void ChromeShelfController::SetShelfIDForBrowserWindowContents(
   if (app_id.empty()) {
     app_id = kChromeAppId;
   }
-
-  browser->window()->GetNativeWindow()->SetProperty(ash::kAppIDKey,
-                                                    new std::string(app_id));
+  window->SetProperty(ash::kAppIDKey, new std::string(app_id));
 
   const ash::ShelfItem* item = GetItem(ash::ShelfID(app_id));
   const ash::ShelfID shelf_id = item ? item->id : ash::ShelfID(kChromeAppId);
-  browser->window()->GetNativeWindow()->SetProperty(
-      ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
+  window->SetProperty(ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
 }
 
 void ChromeShelfController::OnUserProfileReadyToSwitch(Profile* profile) {

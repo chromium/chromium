@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"

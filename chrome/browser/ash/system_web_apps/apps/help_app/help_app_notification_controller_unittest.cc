@@ -43,7 +43,7 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
 
   TestingProfile* CreateRegularProfile() {
     constexpr char kEmail[] = "user@gmail.com";
-    const GaiaId kFakeGaia("fakegaia");
+    const GaiaId kFakeGaia("fakegaia123");
     LogIn(kEmail, kFakeGaia);
     auto* profile = CreateProfile(kEmail);
     // Set profile creation version, otherwise it defaults to 1.0.0.0.

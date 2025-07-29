@@ -170,7 +170,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ash::AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
+  ash::AshTestHelper* ash_test_helper() { return &ash_test_helper_.value(); }
   user_manager::FakeUserManager* user_manager() { return user_manager_.Get(); }
 #endif
 
@@ -304,7 +304,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   std::unique_ptr<Browser> browser_;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ash::AshTestHelper ash_test_helper_;
+  std::optional<ash::AshTestHelper> ash_test_helper_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_ =
       std::make_unique<ChromeTestViewsDelegate<ash::AshTestViewsDelegate>>();
 #elif defined(TOOLKIT_VIEWS)

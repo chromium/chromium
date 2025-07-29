@@ -36,9 +36,6 @@ class AppControlsNotifierTest : public BrowserWithTestWindowTest {
  public:
   AppControlsNotifierTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kOnDeviceAppControls);
-
-    statistics_provider_.SetMachineStatistic(ash::system::kRegionKey,
-                                             kEligibleDeviceRegionKey);
   }
   AppControlsNotifierTest(const AppControlsNotifierTest&) = delete;
   AppControlsNotifierTest& operator=(const AppControlsNotifierTest&) = delete;
@@ -47,6 +44,11 @@ class AppControlsNotifierTest : public BrowserWithTestWindowTest {
   // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+
+    statistics_provider_.emplace();
+    statistics_provider_->SetMachineStatistic(ash::system::kRegionKey,
+                                              kEligibleDeviceRegionKey);
+
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
     tester_ = std::make_unique<NotificationDisplayServiceTester>(profile());
@@ -77,7 +79,7 @@ class AppControlsNotifierTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<AppControlsNotifier> app_controls_notifier_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
-  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
+  std::optional<ash::system::ScopedFakeStatisticsProvider> statistics_provider_;
 };
 
 TEST_F(AppControlsNotifierTest, ShowAppControlsNotification) {

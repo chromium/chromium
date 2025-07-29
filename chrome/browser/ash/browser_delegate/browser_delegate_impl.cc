@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
 
@@ -34,6 +36,17 @@ BrowserType BrowserDelegateImpl::GetType() const {
 
 SessionID BrowserDelegateImpl::GetSessionID() const {
   return browser_->session_id();
+}
+
+const AccountId& BrowserDelegateImpl::GetAccountId() const {
+  const AccountId* id =
+      ash::AnnotatedAccountId::Get(browser_->profile()->GetOriginalProfile());
+  if (id) {
+    CHECK(id->is_valid());
+  } else {
+    CHECK_IS_TEST();
+  }
+  return id ? *id : EmptyAccountId();
 }
 
 bool BrowserDelegateImpl::IsOffTheRecord() const {

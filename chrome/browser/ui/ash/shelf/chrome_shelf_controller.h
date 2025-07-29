@@ -45,6 +45,7 @@ class PromiseAppUpdate;
 }
 
 namespace ash {
+class BrowserDelegate;
 class ShelfModel;
 FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
 FORWARD_DECLARE_TEST(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem);
@@ -211,7 +212,7 @@ class ChromeShelfController
   void UpdateBrowserItemState();
 
   // Sets the shelf id for the browser window if the browser is represented.
-  void SetShelfIDForBrowserWindowContents(Browser* browser,
+  void SetShelfIDForBrowserWindowContents(ash::BrowserDelegate* browser,
                                           content::WebContents* web_contents);
 
   // Called when the user profile is fully loaded and ready to switch to.

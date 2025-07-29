@@ -76,10 +76,18 @@ void BrowserWithTestWindowTest::SetUp() {
     ash::disks::DiskMountManager::InitializeForTesting(
         new ash::disks::FakeDiskMountManager());
   }
+
+  // Construct AshTestHelper here so that SessionManager gets created before
+  // UserManager (as in production).
+  ash_test_helper_.emplace();
+
   if (!user_manager::UserManager::IsInitialized()) {
     user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
         g_browser_process->local_state()));
   }
+  session_manager::SessionManager::Get()->OnUserManagerCreated(
+      user_manager::UserManager::Get());
+
   {
     ash::AshTestHelper::InitParams ash_init;
     ash_init.local_state = g_browser_process->local_state();
@@ -89,7 +97,7 @@ void BrowserWithTestWindowTest::SetUp() {
     // TestingProfile.
     ash_init.auto_create_prefs_services = false;
 
-    ash_test_helper_.SetUp(std::move(ash_init));
+    ash_test_helper_->SetUp(std::move(ash_init));
   }
 #endif
 
@@ -157,7 +165,7 @@ void BrowserWithTestWindowTest::TearDown() {
   user_performance_tuning_manager_environment_.TearDown();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ash_test_helper_.TearDown();
+  ash_test_helper_->TearDown();
 #endif
 
   // Calling DeleteAllTestingProfiles() first can cause issues in some tests, if
@@ -166,6 +174,10 @@ void BrowserWithTestWindowTest::TearDown() {
   profile_manager_.reset();
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // To match production behavior, AshTestHelper (containing e.g.
+  // SessionManager) must be destroyed before UserManager even though it got
+  // created first.
+  ash_test_helper_.reset();
   test_views_delegate_.reset();
   user_manager_.Reset();
   ash::disks::DiskMountManager::Shutdown();
@@ -198,7 +210,7 @@ void BrowserWithTestWindowTest::SetUpProfileManager(
 
 gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return ash_test_helper_.GetContext();
+  return ash_test_helper_->GetContext();
 #elif defined(TOOLKIT_VIEWS)
   return views_test_helper_->GetContext();
 #else
@@ -311,8 +323,10 @@ void BrowserWithTestWindowTest::LogIn(std::string_view email,
                                       const GaiaId& gaia_id) {
   const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
   user_manager_->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-  user_manager_->UserLoggedIn(
-      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+  session_manager::SessionManager::Get()->CreateSession(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+      /*new_user=*/false,
+      /*has_active_session=*/false);
 }
 
 void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,

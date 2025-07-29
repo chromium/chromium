@@ -45,7 +45,7 @@
 namespace {
 constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
 constexpr char kUserMail[] = "testingprofile@chromium.org";
-constexpr GaiaId::Literal kFakeGaia("fakegaia");
+constexpr GaiaId::Literal kFakeGaia("fakegaia123");
 }  // namespace
 
 namespace ash {

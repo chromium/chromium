@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -450,7 +452,9 @@ void BrowserStatusMonitor::RemoveWebContentsObserver(
 void BrowserStatusMonitor::SetShelfIDForBrowserWindowContents(
     Browser* browser,
     content::WebContents* web_contents) {
-  shelf_controller_->SetShelfIDForBrowserWindowContents(browser, web_contents);
+  shelf_controller_->SetShelfIDForBrowserWindowContents(
+      ash::BrowserController::GetInstance()->GetDelegate(browser),
+      web_contents);
 
   if (app_service_instance_helper_) {
     app_service_instance_helper_->OnSetShelfIDForBrowserWindowContents(
