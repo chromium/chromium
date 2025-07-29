@@ -48,14 +48,13 @@
   width: var(--ntp-composebox-width, 337px);
 }
 
-:host([show-error-scrim_]) #composebox {
-  opacity: 0.05;
-}
-
 #errorScrim {
   align-items: center;
-  color: var(--color-new-tab-page-composebox-font);
+  background-color: var(--color-new-tab-page-composebox-error-scrim-background);
+  border-radius: inherit;
+  color: var(--color-new-tab-page-composebox-error-scrim-foreground);
   display: flex;
+  font-size: 16px;
   flex-direction: column;
   gap: 12px;
   justify-content: center;
@@ -71,10 +70,19 @@
 }
 
 #dismissErrorButton {
-  --cr-button-background-color: var(--ntp-composebox-background-color);
-  --cr-button-border-color: var(--color-new-tab-page-composebox-font);
-  --cr-button-text-color: var(--color-new-tab-page-composebox-font);
+  --cr-button-background-color:
+      var(--color-new-tab-page-composebox-error-scrim-button-background);
+  --cr-button-border-color:
+      var(--color-new-tab-page-composebox-error-scrim-foreground);
+  --cr-button-text-color:
+      var(--color-new-tab-page-composebox-error-scrim-button-text);
+  --cr-icon-button-hover-background-color:
+      var(--color-new-tab-page-composebox-error-scrim-button-background-hover);
+  border: none;
   font-size: 14px;
+  gap: 4px;
+  height: 44px;
+  width: 122px;
 }
 
 #composebox {
