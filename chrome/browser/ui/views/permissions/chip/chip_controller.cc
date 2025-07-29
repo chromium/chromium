@@ -439,7 +439,7 @@ void ChipController::ResetPermissionPromptChip() {
            (active_chip_permission_request_manager_.value()
                 ->web_contents()
                 ->GetVisibleURL() != GURL(chrome::kChromeUINewTabURL)))) {
-        active_chip_permission_request_manager_.value()->RecreateView();
+        active_chip_permission_request_manager_.value()->Ignore();
       }
       active_chip_permission_request_manager_.reset();
     }

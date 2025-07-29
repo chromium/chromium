@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
@@ -402,6 +403,31 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
 
   ASSERT_FALSE(GetChip()->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
+                       HideChipWhenOmniboxIsEdited) {
+  RequestPermission(permissions::RequestType::kGeolocation);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetChip()->GetVisible());
+  EXPECT_TRUE(GetChip()->GetText() ==
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_PERMISSION_CHIP));
+
+  test_api_->manager()->Accept();
+  EXPECT_TRUE(GetChip()->GetVisible());
+  EXPECT_TRUE(GetChip()->GetText() ==
+              l10n_util::GetStringUTF16(
+                  IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
+  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kNormalVisibility);
+
+  // Simulate the user editing the omnibox.
+  OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+  omnibox_view->SetFocus(/*is_user_initiated=*/true);
+  omnibox_view->SetUserText(u"Typing in the Omnibox...");
+  views::test::RunScheduledLayout(GetLocationBarView());
+  EXPECT_TRUE(GetLocationBarView()->IsEditingOrEmpty());
+  EXPECT_FALSE(GetChip()->GetVisible());
+}
+
 
 class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
  public:
@@ -1542,6 +1568,23 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
 
   GetChipController()->GetBubbleWidget()->Close();
   permission_prompt_waiter->WaitForHide();
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
+                       IgnoreRequestWhenOmniboxIsEdited) {
+  RequestPermission(permissions::RequestType::kGeolocation);
+  EXPECT_TRUE(GetChip()->GetVisible());
+  EXPECT_TRUE(test_api_->manager()->IsRequestInProgress());
+
+  // Simulate the user editing the omnibox.
+  OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+  omnibox_view->SetFocus(/*is_user_initiated=*/true);
+  omnibox_view->SetUserText(u"Typing in the Omnibox...");
+  views::test::RunScheduledLayout(GetLocationBarView());
+  ASSERT_TRUE(GetLocationBarView()->IsEditingOrEmpty());
+
+  EXPECT_FALSE(test_api_->manager()->IsRequestInProgress());
+  EXPECT_FALSE(GetChip()->GetVisible());
 }
 
 class TestWebContentsObserver : content::WebContentsObserver {
