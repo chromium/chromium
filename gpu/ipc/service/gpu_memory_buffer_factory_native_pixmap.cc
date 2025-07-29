@@ -34,20 +34,18 @@ GpuMemoryBufferFactoryNativePixmap::~GpuMemoryBufferFactoryNativePixmap() =
 
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     const gfx::Size& framebuffer_size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    int client_id,
     SurfaceHandle surface_handle) {
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->CreateNativePixmap(surface_handle, GetVulkanDeviceQueue(), size,
                                format, usage, framebuffer_size);
-  return CreateGpuMemoryBufferFromNativePixmap(id, size, format, usage,
-                                               client_id, std::move(pixmap));
+  return CreateGpuMemoryBufferFromNativePixmap(size, format, usage,
+                                               std::move(pixmap));
 }
 
 bool GpuMemoryBufferFactoryNativePixmap::
@@ -68,11 +66,9 @@ VulkanDeviceQueue* GpuMemoryBufferFactoryNativePixmap::GetVulkanDeviceQueue() {
 
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferFromNativePixmap(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    int client_id,
     scoped_refptr<gfx::NativePixmap> pixmap) {
   if (!pixmap.get()) {
     DLOG(ERROR) << "Failed to create pixmap " << size.ToString() << ",  "

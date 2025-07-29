@@ -18,26 +18,16 @@
 
 namespace gpu {
 
-namespace {
-
-// A GpuMemoryBuffer with client_id = 0 behaves like anonymous shared memory.
-const int kAnonymousClientId = 0;
-
-}  // namespace
-
 GpuMemoryBufferFactoryIOSurface::GpuMemoryBufferFactoryIOSurface() = default;
 GpuMemoryBufferFactoryIOSurface::~GpuMemoryBufferFactoryIOSurface() = default;
 
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     const gfx::Size& framebuffer_size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    int client_id,
     SurfaceHandle surface_handle) {
-  DCHECK_NE(client_id, kAnonymousClientId);
   DCHECK_EQ(framebuffer_size, size);
 
   bool should_clear = true;

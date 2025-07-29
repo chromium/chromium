@@ -37,12 +37,10 @@ class GpuMemoryBufferFactoryStub : public GpuMemoryBufferFactory {
 
   // GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       const gfx::Size& framebuffer_size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      int client_id,
       SurfaceHandle surface_handle) override {
     return gfx::GpuMemoryBufferHandle();
   }
@@ -84,12 +82,8 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactory::CreateNativeGmbHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  // TODO(crbug.com/40283108) : Remove the usage of GpuMemoryBufferId from this
-  // flow.
-  auto gmb_id = gfx::GpuMemoryBufferId(static_cast<int>(id));
-  auto handle = CreateGpuMemoryBuffer(gmb_id, size, /*framebuffer_size=*/size,
-                                      format, usage, kMappableSIClientId,
-                                      gpu::kNullSurfaceHandle);
+  auto handle = CreateGpuMemoryBuffer(size, /*framebuffer_size=*/size, format,
+                                      usage, gpu::kNullSurfaceHandle);
   return handle;
 }
 

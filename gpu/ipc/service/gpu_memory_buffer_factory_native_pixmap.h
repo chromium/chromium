@@ -31,12 +31,10 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
 
   // Overridden from GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       const gfx::Size& framebuffer_size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      int client_id,
       SurfaceHandle surface_handle) override;
   bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
@@ -44,11 +42,9 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
 
  private:
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferFromNativePixmap(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      int client_id,
       scoped_refptr<gfx::NativePixmap> pixmap);
 
   VulkanDeviceQueue* GetVulkanDeviceQueue();

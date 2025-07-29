@@ -37,12 +37,10 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
 
   // Overridden from GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       const gfx::Size& framebuffer_size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      int client_id,
       SurfaceHandle surface_handle) override;
   bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
@@ -52,12 +50,10 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
   Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
 
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferOnIO(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       const gfx::Size& framebuffer_size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      int client_id,
       SurfaceHandle surface_handle);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_
