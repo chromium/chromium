@@ -279,9 +279,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       bool requests_origin_keyed_process,
       url::Origin* result);
 
-  // Removes any origin isolation opt-in entries associated with the
-  // |browsing_instance_id| of the BrowsingInstance.
-  void RemoveOptInIsolatedOriginsForBrowsingInstance(
+  // Removes any state associated with `browsing_instance_id`.
+  void RemoveAllStateForBrowsingInstance(
       const BrowsingInstanceId& browsing_instance_id);
 
   // Registers |origin| isolation state in the BrowsingInstance associated
@@ -359,6 +358,20 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       bool requests_origin_keyed_process,
       const GURL& site_url,
       url::Origin* result);
+
+  // Stores the v8-optimization state for the passed-in `browsing_instance_id`
+  // and `process_lock_origin`.
+  void AddV8OptimizationDisabledStateForOrigin(
+      const BrowsingInstanceId& browsing_instance_id,
+      const url::Origin& process_lock_origin,
+      bool are_v8_optimizations_disabled);
+
+  // Returns whether v8-optimization should be disabled for the passed-in
+  // (`browsing_instance_id`, `process_lock_origin`) pair. Returns std::nullopt
+  // if there is no cached v8-optimization verdict.
+  std::optional<bool> LookupAreV8OptimizationsDisabled(
+      const BrowsingInstanceId& browsing_instance_id,
+      const url::Origin& process_lock_origin);
 
   // Returns if |child_id| can read all of the |files|.
   bool CanReadAllFiles(int child_id, const std::vector<base::FilePath>& files);
@@ -869,8 +882,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RemoveProcessReferenceLocked(int child_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Internal helper for RemoveOptInIsolatedOriginsForBrowsingInstance().
-  void RemoveOptInIsolatedOriginsForBrowsingInstanceInternal(
+  // Internal helper for RemoveAllStateForBrowsingInstance().
+  void RemoveAllStateForBrowsingInstanceInternal(
       const BrowsingInstanceId browsing_instance_id);
 
   // Creates the value to place in the "killed_process_origin_lock" crash key
@@ -1049,6 +1062,16 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   base::flat_map<BrowsingInstanceId, std::vector<OriginAgentClusterOptInEntry>>
       origin_isolation_by_browsing_instance_
           GUARDED_BY(origins_isolation_opt_in_lock_);
+
+  base::Lock are_v8_optimizations_disabled_lock_;
+
+  // A map of BrowsingInstances and process-lock-origins to v8-optimization
+  // verdicts. The purpose of the map is to ensure that changes in the return
+  // value of ContentBrowserClient::AreV8OptimizationsDisabledForSite() only
+  // affect process reuse decisions for future BrowsingInstances.
+  base::flat_map<BrowsingInstanceId, base::flat_map<url::Origin, bool>>
+      are_v8_optimizations_disabled_map_
+          GUARDED_BY(are_v8_optimizations_disabled_lock_);
 
   // When we are notified a BrowsingInstance has destructed, delay cleanup by
   // this amount to allow outstanding IO thread requests to complete. May be set
