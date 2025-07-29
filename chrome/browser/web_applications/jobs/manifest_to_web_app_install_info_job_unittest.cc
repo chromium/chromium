@@ -1198,7 +1198,7 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
 TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, SVGIconsNoSize) {
   const GURL svg_icon_url{"https://www.foo.bar/icon_larger.svg"};
   const SkBitmap expected_svg_icon =
-      gfx::test::CreateBitmap(512, SK_ColorGREEN);
+      gfx::test::CreateBitmap(1024, SK_ColorGREEN);
 
   // The manifest already has an icon of size 64x64 set. Clear that.
   SetupBasicPageState();
@@ -1221,7 +1221,7 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, SVGIconsNoSize) {
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
   EXPECT_EQ(web_app_info->manifest_icons.size(), 2u);
   ASSERT_EQ(web_app_info->trusted_icons.size(), 1u);
-  apps::IconInfo trusted_info(svg_icon_url, /*size=*/512);
+  apps::IconInfo trusted_info(svg_icon_url, /*size=*/1024);
   trusted_info.purpose = ShouldPreferMaskable()
                              ? apps::IconInfo::Purpose::kMaskable
                              : apps::IconInfo::Purpose::kAny;

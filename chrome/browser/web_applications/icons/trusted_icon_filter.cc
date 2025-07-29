@@ -22,6 +22,7 @@ namespace web_app {
 namespace {
 
 constexpr SquareSizePx kMaxIconSizeForMaskableIcons = 256;
+constexpr SquareSizePx kIconSizeForSVGNoIntrinsicSize = 1024;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 constexpr bool kPreferMaskableIcons = true;
@@ -97,7 +98,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
   if (kPreferMaskableIcons &&
       base::Contains(svg_icons_no_size, IconPurpose::MASKABLE)) {
     apps::IconInfo primary_icon_info;
-    primary_icon_info.square_size_px = 512;
+    primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
     primary_icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
     primary_icon_info.url = svg_icons_no_size[IconPurpose::MASKABLE];
     return primary_icon_info;
@@ -105,7 +106,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
 
   if (base::Contains(svg_icons_no_size, IconPurpose::ANY)) {
     apps::IconInfo primary_icon_info;
-    primary_icon_info.square_size_px = 512;
+    primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
     primary_icon_info.purpose = apps::IconInfo::Purpose::kAny;
     primary_icon_info.url = svg_icons_no_size[IconPurpose::ANY];
     return primary_icon_info;
