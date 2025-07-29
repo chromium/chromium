@@ -527,14 +527,14 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   // In non pixel-canvas mode, the scaling and rounding is performed in cc side.
   // In pixel canvas mode, we need to translate so that the position is pixel
   // aligned at the target space, because drawing at subpixel position can
-  // result in pixelated image. Use floor so that kRepeat will not start at the
-  // end.
+  // result in pixelated image. Use `std::round` to be consistent with pxiel
+  // canvas' rounding logic.
   // TOOD(crbug.com/41344902): Using image_scale_ isn't 100% accurate. It should
   // use the scale applied to the canvas instead (which isn't available now).
   if (features::IsPixelCanvasRecordingEnabled()) {
     shader_scale.postTranslate(
-        SkFloatToScalar(std::floor(dest_x * image_scale_) / image_scale_),
-        SkFloatToScalar(std::floor(dest_y * image_scale_) / image_scale_));
+        SkFloatToScalar(std::round(dest_x * image_scale_) / image_scale_),
+        SkFloatToScalar(std::round(dest_y * image_scale_) / image_scale_));
   } else {
     shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
   }
