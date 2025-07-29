@@ -924,7 +924,7 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                         IsSharedBetweenThreads(usage));
   // DumpWithoutCrashing to get crash reports for failure to find a shared image
   // backing factory.
-  base::debug::DumpWithoutCrashing();
+  // base::debug::DumpWithoutCrashing();
 }
 
 bool SharedImageFactory::RegisterBacking(
