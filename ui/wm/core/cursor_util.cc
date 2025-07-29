@@ -259,7 +259,7 @@ constexpr auto kNormalCursorResourceData = std::to_array<
     {{CursorType::kPointer, IDR_AURA_CURSOR_PTR_LOTTIE, {6, 4}, {6, 4}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_CROSSHAIR, {12, 12}, {24, 24}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_HAND, {9, 4}, {19, 8}}},
-    {{CursorType::kIBeam, IDR_AURA_CURSOR_IBEAM, {12, 12}, {24, 25}}},
+    {{CursorType::kIBeam, IDR_AURA_CURSOR_IBEAM_LOTTIE, {12, 12}, {12, 12}}},
     {{CursorType::kWait,
       IDR_AURA_CURSOR_THROBBER,
       {7, 7},
@@ -384,7 +384,7 @@ constexpr auto kLargeCursorResourceData = std::to_array<
     {{CursorType::kPointer, IDR_AURA_CURSOR_PTR_LOTTIE, {6, 4}, {6, 4}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_BIG_CROSSHAIR, {30, 32}, {60, 64}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_BIG_HAND, {25, 7}, {50, 14}}},
-    {{CursorType::kIBeam, IDR_AURA_CURSOR_BIG_IBEAM, {30, 32}, {60, 64}}},
+    {{CursorType::kIBeam, IDR_AURA_CURSOR_IBEAM_LOTTIE, {12, 12}, {12, 12}}},
     {{CursorType::kWait,
       // TODO(crbug.com/40348660): create IDR_AURA_CURSOR_BIG_THROBBER.
       IDR_AURA_CURSOR_THROBBER,

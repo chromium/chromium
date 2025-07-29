@@ -10,6 +10,7 @@
     <structures>
       <if expr="use_aura">
         <structure type="lottie" name="IDR_AURA_CURSOR_PTR_LOTTIE" file="vector/common/pointers/left_ptr.json" compress="gzip" />
+        <structure type="lottie" name="IDR_AURA_CURSOR_IBEAM_LOTTIE" file="vector/common/pointers/xterm.json" compress="gzip" />
       </if>
     </structures>
   </release>
