@@ -1911,7 +1911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Gesture"
-    enum="StylusHandwritingGesture" expires_after="2025-10-12">
+    enum="StylusHandwritingGesture" expires_after="2026-07-29">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1922,7 +1922,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.GestureResult"
-    enum="StylusHandwritingGestureResult" expires_after="2025-08-24">
+    enum="StylusHandwritingGestureResult" expires_after="2026-07-29">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1931,7 +1931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.GestureTime2" units="ms"
-    expires_after="2025-08-24">
+    expires_after="2026-07-29">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1942,7 +1942,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Triggered"
-    enum="StylusHandwritingApi" expires_after="2025-12-14">
+    enum="StylusHandwritingApi" expires_after="2026-07-29">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
