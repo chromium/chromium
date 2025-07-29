@@ -264,23 +264,50 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             }
             switch (fileType) {
                 case BROWSER_FILE_TYPE_BOOKMARKS:
-                    // Note: Use `detachFd()` (rather than `getFd()`) in order to pass ownership to
-                    // the native side.
-                    PostTask.postTask(
-                            TaskTraits.UI_DEFAULT, () -> importBookmarksOnUiThread(pfd.detachFd()));
-                    break;
+                    {
+                        // Note: Use `detachFd()` (rather than `getFd()`) in order to pass ownership
+                        // to the native side.
+                        final StreamObserver<ImportItemResponse> responseObserverForUiThread =
+                                responseObserver;
+                        // `responseObserver` is now "owned by" the UI thread, so must not be used
+                        // here anymore.
+                        responseObserver = null;
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () ->
+                                        importBookmarksOnUiThread(
+                                                pfd.detachFd(), responseObserverForUiThread));
+                        // TODO(crbug.com/431218724): Plumb the actual import result (success or
+                        // failure) back here, so it can be properly reported in importItemsDone().
+                        importResults.successItemCount++;
+                        return;
+                    }
                 case BROWSER_FILE_TYPE_READING_LIST:
-                    // Note: Use `detachFd()` (rather than `getFd()`) in order to pass ownership to
-                    // the native side.
-                    PostTask.postTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> importReadingListOnUiThread(pfd.detachFd()));
-                    break;
+                    {
+                        // Note: Use `detachFd()` (rather than `getFd()`) in order to pass ownership
+                        // to the native side.
+                        final StreamObserver<ImportItemResponse> responseObserverForUiThread =
+                                responseObserver;
+                        // `responseObserver` is now "owned by" the UI thread, so must not be used
+                        // here anymore.
+                        responseObserver = null;
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () ->
+                                        importReadingListOnUiThread(
+                                                pfd.detachFd(), responseObserverForUiThread));
+                        // TODO(crbug.com/431218724): Plumb the actual import result (success or
+                        // failure) back here, so it can be properly reported in importItemsDone().
+                        importResults.successItemCount++;
+                        return;
+                    }
                 case BROWSER_FILE_TYPE_BROWSING_HISTORY:
                     // TODO(crbug.com/430254294): Hook up to the actual import logic (i.e. to
                     // StablePortabilityDataImporter from components/user_data_importer/) via JNI.
                     importResults.ignoredItemCount++;
-                    break;
+                    responseObserver.onNext(ImportItemResponse.newBuilder().build());
+                    responseObserver.onCompleted();
+                    return;
                 case UNRECOGNIZED:
                 case BROWSER_FILE_TYPE_UNSPECIFIED:
                     responseObserver.onError(
@@ -289,9 +316,6 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                             "Invalid or unrecognized file type")));
                     return;
             }
-
-            responseObserver.onNext(ImportItemResponse.newBuilder().build());
-            responseObserver.onCompleted();
         }
 
         @Override
@@ -360,22 +384,36 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             }
         }
 
-        private void importBookmarksOnUiThread(int ownedFd) {
+        private void importBookmarksOnUiThread(
+                int ownedFd, StreamObserver<ImportItemResponse> responseObserver) {
             ThreadUtils.assertOnUiThread();
 
             prepareForImport();
             assert mBridge != null;
 
-            mBridge.importBookmarks(ownedFd);
+            mBridge.importBookmarks(
+                    ownedFd,
+                    (count) -> {
+                        Log.i(TAG, "Bookmarks imported: %d", count);
+                        responseObserver.onNext(ImportItemResponse.newBuilder().build());
+                        responseObserver.onCompleted();
+                    });
         }
 
-        private void importReadingListOnUiThread(int ownedFd) {
+        private void importReadingListOnUiThread(
+                int ownedFd, StreamObserver<ImportItemResponse> responseObserver) {
             ThreadUtils.assertOnUiThread();
 
             prepareForImport();
             assert mBridge != null;
 
-            mBridge.importReadingList(ownedFd);
+            mBridge.importReadingList(
+                    ownedFd,
+                    (count) -> {
+                        Log.i(TAG, "ReadingList imported: %d", count);
+                        responseObserver.onNext(ImportItemResponse.newBuilder().build());
+                        responseObserver.onCompleted();
+                    });
         }
 
         private void destroyBridgeOnUiThread() {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/android/callback_android.h"
 #include "base/files/file.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -37,16 +38,40 @@ void DataImporterBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void DataImporterBridge::ImportBookmarks(JNIEnv* env, jint owned_fd) {
-  // TODO(crbug.com/430254294): Report the result back to Java via the callback.
+void DataImporterBridge::ImportBookmarks(
+    JNIEnv* env,
+    jint owned_fd,
+    const base::android::JavaRef<jobject>& j_callback) {
+  base::android::ScopedJavaGlobalRef<jobject> callback(j_callback);
   base::File file(owned_fd, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  importer_->ImportBookmarks(std::move(file), base::DoNothing());
+  importer_->ImportBookmarks(
+      std::move(file),
+      base::BindOnce(&DataImporterBridge::ImportBookmarksDone,
+                     weak_ptr_factory_.GetWeakPtr(), callback));
 }
 
-void DataImporterBridge::ImportReadingList(JNIEnv* env, jint owned_fd) {
-  // TODO(crbug.com/430254294): Report the result back to Java via the callback.
+void DataImporterBridge::ImportReadingList(
+    JNIEnv* env,
+    jint owned_fd,
+    const base::android::JavaRef<jobject>& j_callback) {
+  base::android::ScopedJavaGlobalRef<jobject> callback(j_callback);
   base::File file(owned_fd, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  importer_->ImportReadingList(std::move(file), base::DoNothing());
+  importer_->ImportReadingList(
+      std::move(file),
+      base::BindOnce(&DataImporterBridge::ImportReadingListDone,
+                     weak_ptr_factory_.GetWeakPtr(), callback));
+}
+
+void DataImporterBridge::ImportBookmarksDone(
+    base::android::ScopedJavaGlobalRef<jobject> callback,
+    int count) {
+  base::android::RunIntCallbackAndroid(callback, count);
+}
+
+void DataImporterBridge::ImportReadingListDone(
+    base::android::ScopedJavaGlobalRef<jobject> callback,
+    int count) {
+  base::android::RunIntCallbackAndroid(callback, count);
 }
 
 static jlong JNI_DataImporterBridge_Init(JNIEnv* env, Profile* profile) {

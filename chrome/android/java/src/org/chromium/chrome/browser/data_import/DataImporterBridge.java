@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_import;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,8 +39,8 @@ public class DataImporterBridge {
      * Imports bookmarks from the specified fd (file descriptor). This assumes ownership of the fd,
      * meaning it must not be used in Java anymore; the native side will close it once done.
      */
-    public void importBookmarks(int ownedFd) {
-        DataImporterBridgeJni.get().importBookmarks(mNativeDataImporterBridge, ownedFd);
+    public void importBookmarks(int ownedFd, Callback<Integer> callback) {
+        DataImporterBridgeJni.get().importBookmarks(mNativeDataImporterBridge, ownedFd, callback);
     }
 
     /**
@@ -47,8 +48,8 @@ public class DataImporterBridge {
      * of the fd, meaning it must not be used in Java anymore; the native side will close it once
      * done.
      */
-    public void importReadingList(int ownedFd) {
-        DataImporterBridgeJni.get().importReadingList(mNativeDataImporterBridge, ownedFd);
+    public void importReadingList(int ownedFd, Callback<Integer> callback) {
+        DataImporterBridgeJni.get().importReadingList(mNativeDataImporterBridge, ownedFd, callback);
     }
 
     @NativeMethods
@@ -57,8 +58,10 @@ public class DataImporterBridge {
 
         void destroy(long nativeDataImporterBridge);
 
-        void importBookmarks(long nativeDataImporterBridge, int ownedFd);
+        void importBookmarks(
+                long nativeDataImporterBridge, int ownedFd, Callback<Integer> callback);
 
-        void importReadingList(long nativeDataImporterBridge, int ownedFd);
+        void importReadingList(
+                long nativeDataImporterBridge, int ownedFd, Callback<Integer> callback);
     }
 }
