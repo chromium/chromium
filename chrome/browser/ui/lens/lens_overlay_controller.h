@@ -664,6 +664,17 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   class UnderlyingWebContentsObserver;
 
+  // Implementation of IssueContextualSearchRequest() for passing
+  // query_start_time.
+  void IssueContextualSearchRequestInner(
+      base::Time query_start_time,
+      std::string query_text,
+      std::map<std::string, std::string> additional_query_parameters,
+      lens::LensOverlayQueryController* lens_overlay_query_controller,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion,
+      lens::LensOverlayInvocationSource invocation_source);
+
   // Takes a screenshot of the current viewport.
   void CaptureScreenshot();
 
@@ -922,6 +933,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Callback to run when the page context has been updated and the suggestion
   // query should now be issued.
   void OnPageContextUpdatedForSuggestion(
+      base::Time query_start_time,
       std::string query_text,
       std::map<std::string, std::string> additional_query_parameters,
       AutocompleteMatchType::Type match_type,

@@ -914,9 +914,20 @@ void LensOverlayController::IssueContextualSearchRequest(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     lens::LensOverlayInvocationSource invocation_source) {
-  // TODO(crbug.com/431293648): This should be passed through async calls.
-  base::Time query_start_time = base::Time::Now();
+  IssueContextualSearchRequestInner(
+      /*query_start_time=*/base::Time::Now(), query_text,
+      additional_query_parameters, lens_overlay_query_controller, match_type,
+      is_zero_prefix_suggestion, invocation_source);
+}
 
+void LensOverlayController::IssueContextualSearchRequestInner(
+    base::Time query_start_time,
+    std::string query_text,
+    std::map<std::string, std::string> additional_query_parameters,
+    lens::LensOverlayQueryController* lens_overlay_query_controller,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion,
+    lens::LensOverlayInvocationSource invocation_source) {
   // Ignore the request if the overlay is off or closing.
   if (IsOverlayClosing()) {
     return;
@@ -937,18 +948,19 @@ void LensOverlayController::IssueContextualSearchRequest(
         invocation_source,
         base::BindOnce(
             &LensOverlayController::OnPageContextUpdatedForSuggestion,
-            weak_factory_.GetWeakPtr(), query_text, additional_query_parameters,
-            match_type, is_zero_prefix_suggestion, invocation_source));
+            weak_factory_.GetWeakPtr(), query_start_time, query_text,
+            additional_query_parameters, match_type, is_zero_prefix_suggestion,
+            invocation_source));
     return;
   }
 
   if (IsOverlayInitializing()) {
     // Hold the request until the overlay has finished initializing.
     pending_contextual_search_request_ = base::BindOnce(
-        &LensOverlayController::IssueContextualSearchRequest,
-        weak_factory_.GetWeakPtr(), query_text, additional_query_parameters,
-        lens_overlay_query_controller, match_type, is_zero_prefix_suggestion,
-        invocation_source);
+        &LensOverlayController::IssueContextualSearchRequestInner,
+        weak_factory_.GetWeakPtr(), query_start_time, query_text,
+        additional_query_parameters, lens_overlay_query_controller, match_type,
+        is_zero_prefix_suggestion, invocation_source);
     return;
   } else if (state_ != State::kOff) {
     // If the state is not off or initializing, the Lens sessions should already
@@ -959,8 +971,9 @@ void LensOverlayController::IssueContextualSearchRequest(
     GetContextualizationController()->TryUpdatePageContextualization(
         base::BindOnce(
             &LensOverlayController::OnPageContextUpdatedForSuggestion,
-            weak_factory_.GetWeakPtr(), query_text, additional_query_parameters,
-            match_type, is_zero_prefix_suggestion, invocation_source));
+            weak_factory_.GetWeakPtr(), query_start_time, query_text,
+            additional_query_parameters, match_type, is_zero_prefix_suggestion,
+            invocation_source));
     return;
   }
 
@@ -2811,14 +2824,12 @@ void LensOverlayController::OnPdfPartialPageTextRetrieved(
 }
 
 void LensOverlayController::OnPageContextUpdatedForSuggestion(
+    base::Time query_start_time,
     std::string query,
     std::map<std::string, std::string> additional_query_parameters,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     lens::LensOverlayInvocationSource invocation_source) {
-  // TODO(crbug.com/431293648): This should be passed through async calls.
-  base::Time query_start_time = base::Time::Now();
-
   // TODO(crbug.com/404941800): Eventually, this should be a CHECK or removed
   // once the contextualization controller is separated from the overlay. For
   // now, this is required to prevent failures when opening the side panel.
