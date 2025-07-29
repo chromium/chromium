@@ -571,13 +571,6 @@ void GpuChannelManager::OnDiskCacheHandleDestoyed(
   }
 }
 
-void GpuChannelManager::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                               int client_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  gpu_memory_buffer_factory_->DestroyGpuMemoryBuffer(id, client_id);
-}
-
 void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
                                       const std::string& key,
                                       const std::string& data) {

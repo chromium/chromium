@@ -131,7 +131,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   void PopulateCache(const gpu::GpuDiskCacheHandle& handle,
                      const std::string& key,
                      const std::string& program);
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
 #if BUILDFLAG(IS_ANDROID)
   void WakeUpGpu();
 #endif
