@@ -589,19 +589,21 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
     return;
   }
 
-  auto* const interface =
-      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-          web_ui_->GetWebContents());
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_);
   auto* const controller =
-      interface ? interface->GetFeaturePromoController(
-                      base::PassKey<UserEducationInternalsPageHandlerImpl>())
-                : nullptr;
+      service ? service->GetFeaturePromoController(
+                    base::PassKey<UserEducationInternalsPageHandlerImpl>())
+              : nullptr;
 
   user_education::FeaturePromoParams params(*feature);
   params.show_promo_result_callback = base::BindOnce(
       &UserEducationInternalsPageHandlerImpl::OnFeaturePromoShowResult,
       weak_ptr_factory_.GetWeakPtr());
   if (controller) {
+    auto* const interface =
+        BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+            web_ui_->GetWebContents());
     auto context = interface->GetUserEducationContext(
         base::PassKey<UserEducationInternalsPageHandlerImpl>());
     controller->MaybeShowPromoForDemoPage(std::move(params), context);

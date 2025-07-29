@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -50,7 +52,7 @@ class BatterySaverHelpPromoTest
 
   user_education::FeaturePromoControllerCommon* GetFeaturePromoController() {
     return static_cast<user_education::FeaturePromoControllerCommon*>(
-        BrowserUserEducationInterface::From(browser())
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
             ->GetFeaturePromoControllerForTesting());
   }
 };

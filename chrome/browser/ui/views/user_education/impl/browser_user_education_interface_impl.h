@@ -46,20 +46,20 @@ class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
   user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& feature) override;
   void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
-  void SetFeaturePromoControllerForTesting(
-      std::unique_ptr<user_education::FeaturePromoController> controller)
-      override;
 
  private:
   // BrowserUserEducationInterface private methods:
-  using BrowserUserEducationInterface::GetFeaturePromoControllerImpl;
-  const user_education::FeaturePromoController* GetFeaturePromoControllerImpl()
-      const override;
   const user_education::UserEducationContextPtr& GetUserEducationContextImpl()
       const override;
 
   // Gets the corresponding user education service.
   UserEducationService* GetUserEducationService();
+  const UserEducationService* GetUserEducationService() const;
+
+  // Gets the corresponding FeaturePromoController.
+  user_education::FeaturePromoController* GetFeaturePromoController();
+  const user_education::FeaturePromoController* GetFeaturePromoController()
+      const;
 
   void ClearQueuedPromos(
       user_education::FeaturePromoResult::Failure failure =

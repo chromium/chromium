@@ -204,8 +204,7 @@ class DownloadBubbleInteractiveUiTest
     return base::BindOnce(
         [](Browser* browser, bool active, const base::Feature& feature) {
           return active == BrowserUserEducationInterface::From(browser)
-                               ->GetFeaturePromoControllerForTesting()
-                               ->IsPromoActive(feature);
+                               ->IsFeaturePromoActive(feature);
         },
         browser(), active, std::cref(feature));
   }

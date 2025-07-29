@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -118,10 +120,11 @@ class FeaturePromoDialogTest : public TestBase {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto* const interface = BrowserUserEducationInterface::From(browser());
     auto* const promo_controller =
-        interface->GetFeaturePromoControllerForTesting();
-    auto const context = interface->GetUserEducationContextForTesting();
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
+            ->GetFeaturePromoControllerForTesting();
+    auto const context = BrowserUserEducationInterface::From(browser())
+                             ->GetUserEducationContextForTesting();
     ASSERT_TRUE(promo_controller);
 
     // The browser may have already queued a promo for startup. Since the test

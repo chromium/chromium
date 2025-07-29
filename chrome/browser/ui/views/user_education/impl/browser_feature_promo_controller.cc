@@ -24,13 +24,7 @@ BrowserFeaturePromoControllerBase::GetContextForHelpBubbleImpl(
   BrowserWindowInterface* browser = nullptr;
   if (auto* const view_element =
           anchor_element->AsA<views::TrackedElementViews>()) {
-    if (auto* const browser_view = BrowserView::GetBrowserViewForNativeWindow(
-            view_element->view()
-                ->GetWidget()
-                ->GetPrimaryWindowWidget()
-                ->GetNativeWindow())) {
-      browser = browser_view->browser();
-    }
+    browser = GetBrowserForView(view_element->view());
   } else if (auto* const webui_element =
                  anchor_element->AsA<user_education::TrackedElementWebUI>()) {
     browser = webui::GetBrowserWindowInterface(
@@ -43,4 +37,17 @@ BrowserFeaturePromoControllerBase::GetContextForHelpBubbleImpl(
     }
   }
   return nullptr;
+}
+
+// static
+BrowserWindowInterface* BrowserFeaturePromoControllerBase::GetBrowserForView(
+    const views::View* view) {
+  if (!view || !view->GetWidget()) {
+    return nullptr;
+  }
+
+  auto* const browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      view->GetWidget()->GetPrimaryWindowWidget()->GetNativeWindow());
+
+  return browser_view ? browser_view->browser() : nullptr;
 }

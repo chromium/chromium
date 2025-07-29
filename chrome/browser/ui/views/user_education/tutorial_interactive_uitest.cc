@@ -17,13 +17,14 @@
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/tutorial/tutorial.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
@@ -80,7 +81,8 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               BrowserUserEducationInterface::From(browser())
+               UserEducationServiceFactory::GetForBrowserContext(
+                   browser()->profile())
                    ->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
@@ -215,10 +217,9 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
 
  protected:
   TutorialService* GetTutorialService() {
-    return static_cast<FeaturePromoControllerCommon*>(
-               BrowserUserEducationInterface::From(browser())
-                   ->GetFeaturePromoControllerForTesting())
-        ->tutorial_service_for_testing();
+    return &UserEducationServiceFactory::GetForBrowserContext(
+                browser()->profile())
+                ->tutorial_service();
   }
 
   TutorialDescription GetDefaultTutorialDescription() {

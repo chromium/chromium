@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/grit/generated_resources.h"
@@ -18,6 +19,11 @@
 #include "ui/views/interaction/element_tracker_views.h"
 
 class BrowserFeaturePromoControllerBase {
+ public:
+  // Returns the browser which is the primary window for `view`, or null if
+  // there isn't one.
+  static BrowserWindowInterface* GetBrowserForView(const views::View* view);
+
  protected:
   static user_education::UserEducationContextPtr GetContextForHelpBubbleImpl(
       const ui::TrackedElement* anchor_element);

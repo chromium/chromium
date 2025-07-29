@@ -22,8 +22,11 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/autofill/content/browser/autofill_test_utils.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -51,7 +54,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
-#include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -97,7 +99,6 @@ using ::testing::Ref;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAre;
-using ::user_education::test::MockFeaturePromoController;
 
 #if !BUILDFLAG(IS_ANDROID)
 class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
@@ -613,19 +614,22 @@ TEST_F(ChromeAutofillClientTest,
 class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
+    user_ed_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting(
+                base::BindRepeating([](BrowserWindowInterface& window) {
+                  return std::make_unique<MockBrowserUserEducationInterface>(
+                      &window);
+                }));
+
     BrowserWithTestWindowTest::SetUp();
     // Create the first tab so that `web_contents()` exists.
     AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
-
-    BrowserUserEducationInterface::From(browser())
-        ->SetFeaturePromoControllerForTesting(
-            std::make_unique<MockFeaturePromoController>());
   }
 
-  MockFeaturePromoController* feature_promo_controller() {
-    return static_cast<MockFeaturePromoController*>(
-        BrowserUserEducationInterface::From(browser())
-            ->GetFeaturePromoControllerForTesting());
+  MockBrowserUserEducationInterface* user_education() {
+    return static_cast<MockBrowserUserEducationInterface*>(
+        BrowserUserEducationInterface::From(browser()));
   }
 
   content::WebContents* web_contents() {
@@ -639,12 +643,14 @@ class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
  private:
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
+  ui::UserDataFactory::ScopedOverride user_ed_override_;
 };
 
 TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
-  EXPECT_CALL(*feature_promo_controller(),
-              EndPromo(Ref(feature_engagement::kIPHAutofillAiOptInFeature),
-                       user_education::EndFeaturePromoReason::kFeatureEngaged));
+  EXPECT_CALL(*user_education(),
+              NotifyFeaturePromoFeatureUsed(
+                  Ref(feature_engagement::kIPHAutofillAiOptInFeature),
+                  FeaturePromoFeatureUsedAction::kClosePromoIfPresent));
   client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kAutofillAi);
 }
 #endif

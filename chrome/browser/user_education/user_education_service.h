@@ -32,7 +32,14 @@
 // Kill switch for recent session tracking. Enabled by default.
 BASE_DECLARE_FEATURE(kAllowRecentSessionTracking);
 
+class AppMenuButton;
+class BrowserHelpBubble;
 class BrowserUserEducationInterfaceImpl;
+class UserEducationInternalsPageHandlerImpl;
+
+namespace web_app {
+class WebAppUiManagerImpl;
+}
 
 class UserEducationService : public KeyedService {
  public:
@@ -85,13 +92,36 @@ class UserEducationService : public KeyedService {
   }
   Profile& profile() { return *profile_; }
 
+  // Only a limited number of non-test classes are allowed direct access to the
+  // feature promo controller.
+  template <typename T>
+    requires std::same_as<T, AppMenuButton> ||
+             std::same_as<T, BrowserHelpBubble> ||
+             std::same_as<T, BrowserUserEducationInterfaceImpl> ||
+             std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
+             std::same_as<T, web_app::WebAppUiManagerImpl>
+  const user_education::FeaturePromoController* GetFeaturePromoController(
+      base::PassKey<T>) const {
+    return feature_promo_controller_.get();
+  }
+  template <typename T>
   user_education::FeaturePromoController* GetFeaturePromoController(
-      base::PassKey<BrowserUserEducationInterfaceImpl>) {
+      base::PassKey<T> key) {
+    return const_cast<user_education::FeaturePromoController*>(
+        const_cast<const UserEducationService*>(this)
+            ->GetFeaturePromoController(std::move(key)));
+  }
+
+  user_education::FeaturePromoController*
+  GetFeaturePromoControllerForTesting() {
     return feature_promo_controller_.get();
   }
 
-  void SetFeaturePromoController(
-      base::PassKey<BrowserUserEducationInterfaceImpl>,
+  // Sets the promo controller (typically for setting a mock).
+  // Note: in the vast majority of cases you probably want to mock
+  // BrowserUserEducationInterface, since that's the API most production code
+  // actually uses.
+  void SetFeaturePromoControllerForTesting(
       std::unique_ptr<user_education::FeaturePromoController>
           feature_promo_controller) {
     feature_promo_controller_ = std::move(feature_promo_controller);

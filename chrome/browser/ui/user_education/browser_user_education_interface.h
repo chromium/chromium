@@ -17,19 +17,12 @@
 #include "components/user_education/common/user_education_context.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class AppMenuButton;
 class BrowserFeaturePromoControllerBase;
-class BrowserHelpBubble;
 class BrowserView;
 class BrowserWindowInterface;
-class UserEducationInternalsPageHandlerImpl;
 
 namespace content {
 class WebContents;
-}
-
-namespace web_app {
-class WebAppUiManagerImpl;
 }
 
 // Describes what to do when the feature associated with an IPH is used.
@@ -56,25 +49,6 @@ class BrowserUserEducationInterface {
 
   virtual void Init(BrowserView*);
   virtual void TearDown();
-
-  // Gets the windows's FeaturePromoController which manages display of
-  // in-product help. Will return null in incognito and guest profiles.
-  user_education::FeaturePromoController*
-  GetFeaturePromoControllerForTesting() {
-    return GetFeaturePromoControllerImpl();
-  }
-
-  // Only a limited number of non-test classes are allowed direct access to the
-  // feature promo controller.
-  template <typename T>
-    requires std::same_as<T, AppMenuButton> ||
-             std::same_as<T, BrowserHelpBubble> ||
-             std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
-             std::same_as<T, web_app::WebAppUiManagerImpl>
-  user_education::FeaturePromoController* GetFeaturePromoController(
-      base::PassKey<T>) {
-    return GetFeaturePromoControllerImpl();
-  }
 
   // Only a limited number of non-test classes are allowed direct access to the
   // `UserEducationContext`.
@@ -183,10 +157,6 @@ class BrowserUserEducationInterface {
   // if you only have access ot a `BrowserContext` or `Profile`.
   virtual void NotifyNewBadgeFeatureUsed(const base::Feature& feature) = 0;
 
-  // Overrides for the promo controller used for a test.
-  virtual void SetFeaturePromoControllerForTesting(
-      std::unique_ptr<user_education::FeaturePromoController> controller) = 0;
-
   // Returns the interface associated with the browser containing `contents` in
   // its tabstrip, or null if `contents` is not a tab in any known browser.
   //
@@ -201,11 +171,8 @@ class BrowserUserEducationInterface {
   static BrowserUserEducationInterface* From(BrowserWindowInterface* browser);
 
  protected:
-  virtual const user_education::FeaturePromoController*
-  GetFeaturePromoControllerImpl() const = 0;
   virtual const user_education::UserEducationContextPtr&
   GetUserEducationContextImpl() const = 0;
-  user_education::FeaturePromoController* GetFeaturePromoControllerImpl();
 
  private:
   ui::ScopedUnownedUserData<BrowserUserEducationInterface>

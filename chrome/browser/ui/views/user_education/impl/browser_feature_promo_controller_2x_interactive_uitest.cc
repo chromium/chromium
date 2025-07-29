@@ -231,7 +231,8 @@ class BrowserFeaturePromoController2xUiTestBase
   }
 
   user_education::FeaturePromoController* promo_controller() const {
-    return BrowserUserEducationInterface::From(browser())
+    return UserEducationServiceFactory::GetForBrowserContext(
+               browser()->profile())
         ->GetFeaturePromoControllerForTesting();
   }
 
@@ -644,12 +645,14 @@ class BrowserFeaturePromoController20CanShowPromoForElementUiTest
     return CheckElement(
         spec,
         [this](ui::TrackedElement* anchor) {
-          auto* const interface =
-              BrowserUserEducationInterface::From(browser());
-          return static_cast<BrowserFeaturePromoController20*>(
-                     interface->GetFeaturePromoControllerForTesting())
-              ->CanShowPromoForElement(
-                  anchor, interface->GetUserEducationContextForTesting());
+          const auto* const controller =
+              UserEducationServiceFactory::GetForBrowserContext(
+                  browser()->profile())
+                  ->GetFeaturePromoControllerForTesting();
+          const auto context = BrowserUserEducationInterface::From(browser())
+                                   ->GetUserEducationContextForTesting();
+          return static_cast<const BrowserFeaturePromoController20*>(controller)
+              ->CanShowPromoForElement(anchor, context);
         },
         expected);
   }

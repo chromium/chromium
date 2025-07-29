@@ -66,6 +66,11 @@ class AppMenuButton : public ToolbarButton {
                int run_flags);
 
  private:
+  // If there's an IPH attached to the menu button, when the menu opens, the IPH
+  // needs to close. In addition, some IPH then cause a particular item in the
+  // menu to become highlighted.
+  void MaybeCloseIphAndHighlight(Browser* browser);
+
   // App model and menu.
   // Note that the menu should be destroyed before the model it uses, so the
   // menu should be listed later.

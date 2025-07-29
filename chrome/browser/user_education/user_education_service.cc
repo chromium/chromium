@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,7 +67,12 @@ UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
   // This MUST be last, after all other initialization, because it relies on
   // members initialized above.
   if (allows_promos) {
-    feature_promo_controller_ = CreateUserEducationResources(*this);
+    if (feature_promo_controller_) {
+      CHECK_IS_TEST()
+          << "The controller may only be set once in production code.";
+    } else {
+      feature_promo_controller_ = CreateUserEducationResources(*this);
+    }
   }
 }
 

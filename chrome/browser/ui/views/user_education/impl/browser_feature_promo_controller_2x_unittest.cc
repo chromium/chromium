@@ -200,10 +200,11 @@ class BrowserFeaturePromoController2xTestBase
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     TestWithBrowserView::SetUp();
-    auto* const interface =
-        BrowserUserEducationInterface::From(browser_view()->browser());
+    auto* const service =
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+    auto* const interface = BrowserUserEducationInterface::From(browser());
     controller_ = static_cast<user_education::FeaturePromoControllerCommon*>(
-        interface->GetFeaturePromoControllerForTesting());
+        service->GetFeaturePromoControllerForTesting());
     user_education_context_ = interface->GetUserEducationContextForTesting();
     lock_ = user_education::FeaturePromoControllerCommon::
         BlockActiveWindowCheckForTesting();
