@@ -10,10 +10,9 @@
 @synthesize observer = _observer;
 
 - (void)setValue:(BOOL)value {
-  bool changed = value != _value;
-  _value = value;
-  if (changed) {
-    [self.observer booleanDidChange:self];
+  if (_value != value) {
+    _value = value;
+    [_observer booleanDidChange:self];
   }
 }
 
@@ -24,7 +23,7 @@
 @synthesize updateCount = _updateCount;
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  self.updateCount++;
+  _updateCount++;
 }
 
 @end

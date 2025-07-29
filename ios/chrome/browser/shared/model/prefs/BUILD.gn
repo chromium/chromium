@@ -8,6 +8,8 @@ source_set("prefs") {
   sources = [
     "pref_backed_boolean.h",
     "pref_backed_boolean.mm",
+    "pref_backed_string.h",
+    "pref_backed_string.mm",
   ]
   deps = [
     "//base",
@@ -158,6 +160,7 @@ source_set("unit_tests") {
   sources = [
     "browser_prefs_unittest.mm",
     "pref_backed_boolean_unittest.mm",
+    "pref_backed_string_unittest.mm",
   ]
   deps = [
     ":browser_prefs",

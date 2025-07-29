@@ -1,24 +1,24 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_BOOLEAN_H_
-#define IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_BOOLEAN_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_STRING_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_STRING_H_
 
 #import <Foundation/Foundation.h>
 
 #import <string_view>
 
-#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
+#import "ios/chrome/browser/shared/model/utils/observable_string.h"
 
 class PrefService;
 
-// An observable boolean backed by a pref from a PrefService.
-@interface PrefBackedBoolean : NSObject <ObservableBoolean>
+// An observable string backed by a pref from a PrefService.
+@interface PrefBackedString : NSObject <ObservableString>
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns a PrefBackedBoolean backed by `prefName` from `prefs`.
+// Returns a PrefBackedString backed by `prefName` from `prefs`.
 - (instancetype)initWithPrefService:(PrefService*)prefs
                            prefName:(std::string_view)prefName
     NS_DESIGNATED_INITIALIZER;
@@ -30,4 +30,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_BOOLEAN_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_STRING_H_

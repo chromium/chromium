@@ -1,17 +1,18 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_string.h"
 
 #import <string>
 
 #import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 
-@implementation PrefBackedBoolean {
-  BooleanPrefMember _pref;
+@implementation PrefBackedString {
+  StringPrefMember _pref;
 }
 
 @synthesize observer = _observer;
@@ -28,12 +29,12 @@
   return self;
 }
 
-- (BOOL)value {
-  return _pref.GetValue();
+- (NSString*)value {
+  return base::SysUTF8ToNSString(_pref.GetValue());
 }
 
-- (void)setValue:(BOOL)value {
-  _pref.SetValue(value == YES);
+- (void)setValue:(NSString*)value {
+  _pref.SetValue(base::SysNSStringToUTF8(value));
 }
 
 - (void)stop {
@@ -41,7 +42,7 @@
 }
 
 - (void)notifyObserver {
-  [_observer booleanDidChange:self];
+  [_observer stringDidChange:self];
 }
 
 @end
