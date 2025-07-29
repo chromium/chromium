@@ -27,6 +27,8 @@ extern const base::FeatureParam<std::string> kConfigParam;
 // TODO(crbug.com/430070871): Remove this flag once the server supports the
 // `lns_surface` parameter.
 extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
+// Whether to show zps suggestions under the composebox.
+extern const base::FeatureParam<bool> kShowComposeboxZps;
 
 struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   // Whether the feature is enabled.

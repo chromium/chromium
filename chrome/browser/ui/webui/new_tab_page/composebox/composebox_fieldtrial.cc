@@ -165,6 +165,10 @@ const base::FeatureParam<bool> kSendLnsSurfaceParam(&kNtpComposebox,
                                                     "SendLnsSurfaceParam",
                                                     false);
 
+const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
+                                                  "ShowComposeboxZps",
+                                                  false);
+
 FeatureConfig::FeatureConfig()
     : enabled(base::FeatureList::IsEnabled(kNtpComposebox)),
       config(GetNTPComposeboxConfig()) {}

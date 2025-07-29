@@ -1628,6 +1628,15 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
      kOmniboxToolbeltAllActionsZeroAndTypedInputs,
      std::size(kOmniboxToolbeltAllActionsZeroAndTypedInputs), nullptr},
 };
+
+const FeatureEntry::FeatureParam kComposeboxShowZps[] = {
+    {"ShowComposeboxZps", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
+    {"- Show ZPS", kComposeboxShowZps, std::size(kComposeboxShowZps), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -7455,7 +7464,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-composebox", flag_descriptions::kNtpComposeboxName,
      flag_descriptions::kNtpComposeboxDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_composebox::kNtpComposebox)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_composebox::kNtpComposebox,
+                                    kNtpComposeboxVariations,
+                                    "NtpComposebox")},
 
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
