@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.settings;
+package org.chromium.chrome.browser.pwm_disabled;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,6 +20,9 @@ import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 /**
  * Shows the dialog that informs the user that some operation is ongoing without indicating the
  * progress.
+ *
+ * <p>PasswordCsvDownloadFlowControllerTest requires the class to be public (and @VisibleForTesting
+ * can't be used in top-level classes).
  */
 @NullMarked
 public class NonCancelableProgressBar extends DialogFragment {

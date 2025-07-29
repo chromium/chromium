@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.settings;
+package org.chromium.chrome.browser.pwm_disabled;
 
 import androidx.annotation.IntDef;
 import androidx.fragment.app.DialogFragment;
@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * testing purposes.
  */
 @NullMarked
-public final class DialogManager {
+final class DialogManager {
     /**
      * Contains the reference to a {@link android.app.DialogFragment} between the call to {@link
      * show} and dismissing the dialog.

@@ -225,12 +225,6 @@ android_library("utils_java") {
     "java/src/org/chromium/chrome/browser/password_manager/HelpUrlLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/LoginDbDeprecationUtilBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncher.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/CallbackDelayer.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/DialogManager.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/ExportErrorDialogFragment.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/NonCancelableProgressBar.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosure.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayer.java",
   ]
 
   srcjar_deps = [ ":utils_jni_headers" ]

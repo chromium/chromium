@@ -879,10 +879,6 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/password_manager/PasswordCheckupLauncherTest.java",
       "src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridgeTest.java",
-      "src/org/chromium/chrome/browser/password_manager/settings/DialogManagerTest.java",
-      "src/org/chromium/chrome/browser/password_manager/settings/EnsureAsyncPostingRule.java",
-      "src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosureTest.java",
-      "src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayerTest.java",
     ]
 
     deps = [ ":chrome_junit_tests_helper" ]

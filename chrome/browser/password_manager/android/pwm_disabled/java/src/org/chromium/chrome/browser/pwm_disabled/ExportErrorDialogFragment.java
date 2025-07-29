@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.settings;
+package org.chromium.chrome.browser.pwm_disabled;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -20,6 +20,9 @@ import org.chromium.chrome.browser.password_manager.R;
 /**
  * Shows the dialog that explains to the user the error which just happened during exporting and
  * optionally helps them to take actions to fix that (learning more, retrying export).
+ *
+ * <p>PasswordCsvDownloadFlowControllerTest requires the class to be public (and @VisibleForTesting
+ * can't be used in top-level classes).
  */
 @NullMarked
 public class ExportErrorDialogFragment extends DialogFragment {

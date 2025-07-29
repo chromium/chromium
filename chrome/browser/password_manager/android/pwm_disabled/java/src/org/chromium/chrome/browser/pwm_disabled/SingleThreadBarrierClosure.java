@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.settings;
+package org.chromium.chrome.browser.pwm_disabled;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -12,7 +12,7 @@ import org.chromium.build.annotations.NullMarked;
  * SingleThreadBarrierClosure is only meant to be used on a single thread and is not thread-safe.
  */
 @NullMarked
-public final class SingleThreadBarrierClosure implements Runnable {
+final class SingleThreadBarrierClosure implements Runnable {
     /** Counts the remaining number of runs. */
     private int mRemainingRuns;
 
