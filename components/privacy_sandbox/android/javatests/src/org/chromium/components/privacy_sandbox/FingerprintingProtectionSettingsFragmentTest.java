@@ -43,14 +43,12 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class FingerprintingProtectionSettingsFragmentTest {
-    private static final int PREF_TOGGLE_LABEL =
-            R.string.incognito_tracking_protections_fingerprinting_protection_toggle_label;
+    private static final int PREF_TOGGLE_LABEL = R.string.fingerprinting_protection_toggle_label;
     private static final int PREF_TOGGLE_SUBLABEL =
-            R.string.incognito_tracking_protections_fingerprinting_protection_toggle_sublabel;
-    private static final int WHEN_ON =
-            R.string.incognito_tracking_protections_fingerprinting_protection_when_on;
+            R.string.fingerprinting_protection_toggle_sublabel;
+    private static final int WHEN_ON = R.string.fingerprinting_protection_when_on;
     private static final int THINGS_TO_CONSIDER =
-            R.string.incognito_tracking_protections_fingerprinting_protection_things_to_consider;
+            R.string.fingerprinting_protection_things_to_consider;
 
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
@@ -94,11 +92,7 @@ public class FingerprintingProtectionSettingsFragmentTest {
         launchTrackingProtectionSettings();
 
         assertEquals(
-                mFragment
-                        .getContext()
-                        .getString(
-                                R.string
-                                        .incognito_tracking_protections_fingerprinting_protection_page_title),
+                mFragment.getContext().getString(R.string.fingerprinting_protection_page_title),
                 mFragment.getPageTitle().get());
 
         onView(allOf(withText(PREF_TOGGLE_LABEL), hasSibling(withText(PREF_TOGGLE_SUBLABEL))))

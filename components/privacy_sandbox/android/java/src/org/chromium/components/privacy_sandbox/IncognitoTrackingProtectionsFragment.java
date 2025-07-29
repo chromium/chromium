@@ -30,16 +30,12 @@ public class IncognitoTrackingProtectionsFragment extends PrivacySandboxBaseFrag
     @VisibleForTesting static final String PREF_IP_PROTECTION = "ip_protection";
     static final String PREF_INCOGNITO_TRACKING_PROTECTIONS_SUMMARY =
             "incognito_tracking_protections_description";
-    private static final int IPP_ON_SUBLABEL =
-            R.string.incognito_tracking_protections_ip_protection_link_row_sublabel_enabled;
-    private static final int IPP_OFF_SUBLABEL =
-            R.string.incognito_tracking_protections_ip_protection_link_row_sublabel_disabled;
+    private static final int IPP_ON_SUBLABEL = R.string.ip_protection_link_row_sublabel_enabled;
+    private static final int IPP_OFF_SUBLABEL = R.string.ip_protection_link_row_sublabel_disabled;
     private static final int FPP_ON_SUBLABEL =
-            R.string
-                    .incognito_tracking_protections_fingerprinting_protection_link_row_sublabel_enabled;
+            R.string.fingerprinting_protection_link_row_sublabel_enabled;
     private static final int FPP_OFF_SUBLABEL =
-            R.string
-                    .incognito_tracking_protections_fingerprinting_protection_link_row_sublabel_disabled;
+            R.string.fingerprinting_protection_link_row_sublabel_disabled;
 
     // TODO(crbug.com/408036586): Update the URL once it's finalized.
     public static final String LEARN_MORE_URL =

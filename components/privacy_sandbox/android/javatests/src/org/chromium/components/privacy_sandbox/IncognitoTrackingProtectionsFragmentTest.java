@@ -44,20 +44,17 @@ import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTe
 public class IncognitoTrackingProtectionsFragmentTest {
     private static final int BLOCK_3PCS_TOGGLE_LABEL =
             R.string.incognito_tracking_protections_block_3pcs_toggle_label;
-    private static final int IP_PROTECTION_LINK_ROW_LABEL =
-            R.string.incognito_tracking_protections_ip_protection_link_row_label;
+    private static final int IP_PROTECTION_LINK_ROW_LABEL = R.string.ip_protection_link_row_label;
     private static final int IP_PROTECTION_LINK_ROW_SUBLABEL_OFF =
-            R.string.incognito_tracking_protections_ip_protection_link_row_sublabel_disabled;
+            R.string.ip_protection_link_row_sublabel_disabled;
     private static final int IP_PROTECTION_LINK_ROW_SUBLABEL_ON =
-            R.string.incognito_tracking_protections_ip_protection_link_row_sublabel_enabled;
+            R.string.ip_protection_link_row_sublabel_enabled;
     private static final int FINGERPRINTING_PROTECTION_LINK_ROW_LABEL =
-            R.string.incognito_tracking_protections_fingerprinting_protection_link_row_label;
+            R.string.fingerprinting_protection_link_row_label;
     private static final int FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_OFF =
-            R.string
-                    .incognito_tracking_protections_fingerprinting_protection_link_row_sublabel_disabled;
+            R.string.fingerprinting_protection_link_row_sublabel_disabled;
     private static final int FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_ON =
-            R.string
-                    .incognito_tracking_protections_fingerprinting_protection_link_row_sublabel_enabled;
+            R.string.fingerprinting_protection_link_row_sublabel_enabled;
 
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =

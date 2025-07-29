@@ -39,7 +39,7 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.ip_protection_preferences);
-        mPageTitle.set(getString(R.string.incognito_tracking_protections_ip_protection_page_title));
+        mPageTitle.set(getString(R.string.ip_protection_page_title));
 
         ChromeSwitchPreference ipProtectionSwitch = findPreference(PREF_IP_PROTECTION_SWITCH);
         if (mDelegate.isIpProtectionDisabledForEnterprise()) {

@@ -10,14 +10,14 @@ found in the LICENSE file.
 
   <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
       android:key="fp_protection_switch"
-      android:title="@string/incognito_tracking_protections_fingerprinting_protection_toggle_label"
-      android:summary="@string/incognito_tracking_protections_fingerprinting_protection_toggle_sublabel" />
+      android:title="@string/fingerprinting_protection_toggle_label"
+      android:summary="@string/fingerprinting_protection_toggle_sublabel" />
 
   <PreferenceCategory
         android:title="@string/incognito_tracking_protections_when_on"/>
   <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fpp_when_on"
-        android:summary="@string/incognito_tracking_protections_fingerprinting_protection_when_on"
+        android:summary="@string/fingerprinting_protection_when_on"
         android:icon="@drawable/privacy_screen"
         android:drawablePadding="16dp"
         android:layout_marginVertical="16dp"
@@ -26,7 +26,7 @@ found in the LICENSE file.
         android:title="@string/incognito_tracking_protections_things_to_consider"/>
   <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fpp_things_to_consider"
-        android:summary="@string/incognito_tracking_protections_fingerprinting_protection_things_to_consider"
+        android:summary="@string/fingerprinting_protection_things_to_consider"
         android:icon="@drawable/preview"
         android:drawablePadding="16dp"
         android:layout_marginVertical="16dp"

@@ -1082,49 +1082,49 @@
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_LABEL" desc="Label for the Block third-party cookies settings toggle." formatter_data="android_java" translateable="false">
         Block third-party cookies
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_LABEL" desc="Label for the IP protection settings toggle." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_TOGGLE_LABEL" desc="Label for the IP protection settings toggle." formatter_data="android_java" translateable="false">
         Protect your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL" desc="Sublabel for the IP protection settings toggle." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_TOGGLE_SUBLABEL" desc="Sublabel for the IP protection settings toggle." formatter_data="android_java" translateable="false">
         Limit access to your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_PAGE_TITLE" desc="Title for the IP protection settings page." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_PAGE_TITLE" desc="Title for the IP protection settings page." formatter_data="android_java" translateable="false">
         Protect your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_LINK_ROW_LABEL" desc="Label for the IP protection settings link row." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_LINK_ROW_LABEL" desc="Label for the IP protection settings link row." formatter_data="android_java" translateable="false">
         Protect your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_LINK_ROW_SUBLABEL_ENABLED" desc="Sublabel for the IP protection settings row when the setting is enabled." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_LINK_ROW_SUBLABEL_ENABLED" desc="Sublabel for the IP protection settings row when the setting is enabled." formatter_data="android_java" translateable="false">
         Limit access to your IP address. This setting is on.
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_LINK_ROW_SUBLABEL_DISABLED" desc="Sublabel for the IP protection settings row when the setting is disabled." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_LINK_ROW_SUBLABEL_DISABLED" desc="Sublabel for the IP protection settings row when the setting is disabled." formatter_data="android_java" translateable="false">
         Limit access to your IP address. This setting is off.
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only apply to embedded websites, not the website the user is directly on." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only apply to embedded websites, not the website the user is directly on." formatter_data="android_java" translateable="false">
         Applies to embedded sites, not the site you're directly visiting
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_THREE" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that when the setting is on, Google's privacy servers cannot see the sites a user is visiting, only their IP address." formatter_data="android_java" translateable="false">
+      <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_THREE" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that when the setting is on, Google's privacy servers cannot see the sites a user is visiting, only their IP address." formatter_data="android_java" translateable="false">
         Google's privacy servers can see your IP address but not your browsing destination when protecting your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="Label for the tracking script blocking settings toggle." formatter_data="android_java" translateable="false">
+      <message name="IDS_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="Label for the tracking script blocking settings toggle." formatter_data="android_java" translateable="false">
         Block tracking scripts
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL" desc="Sublabel for the tracking script blocking settings toggle." formatter_data="android_java" translateable="false">
+      <message name="IDS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL" desc="Sublabel for the tracking script blocking settings toggle." formatter_data="android_java" translateable="false">
         Limit access to device and browser data
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_PAGE_TITLE" desc="Title for the tracking script blocking settings page." formatter_data="android_java" translateable="false">
+      <message name="IDS_FINGERPRINTING_PROTECTION_PAGE_TITLE" desc="Title for the tracking script blocking settings page." formatter_data="android_java" translateable="false">
         Block tracking scripts
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_LINK_ROW_LABEL" desc="Label for the tracking script blocking settings link row." formatter_data="android_java" translateable="false">
+      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_LABEL" desc="Label for the tracking script blocking settings link row." formatter_data="android_java" translateable="false">
         Block tracking scripts
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_ENABLED" desc="Sublabel for the tracking script blocking settings row when the setting is enabled." formatter_data="android_java" translateable="false">
+      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_ENABLED" desc="Sublabel for the tracking script blocking settings row when the setting is enabled." formatter_data="android_java" translateable="false">
         Limit access to device and browser data. This setting is on.
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_DISABLED" desc="Sublabel for the tracking script blocking settings row when the setting is disabled." formatter_data="android_java" translateable="false">
+      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_DISABLED" desc="Sublabel for the tracking script blocking settings row when the setting is disabled." formatter_data="android_java" translateable="false">
         Limit access to device and browser data. This setting is off.
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_THINGS_TO_CONSIDER" desc="Bullet point under the 'Things to consider' section for script blocking. Explains that the feature will only apply to embedded websites, not the website the user is directly on." formatter_data="android_java" translateable="false">
+      <message name="IDS_FINGERPRINTING_PROTECTION_THINGS_TO_CONSIDER" desc="Bullet point under the 'Things to consider' section for script blocking. Explains that the feature will only apply to embedded websites, not the website the user is directly on." formatter_data="android_java" translateable="false">
         Applies to embedded sites, not the site you're directly visiting
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_WHEN_ON" desc="The header used above a bulleted section for a specific setting explaining functionality when the setting is on." formatter_data="android_java" translateable="false">
@@ -1141,13 +1141,13 @@
           <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="Sublabel for the Block third-party cookies settings toggle." formatter_data="android_java" translateable="false">
             Chrome blocks sites from using third-party cookies in Incognito
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for IP protection. Explains that the feature will try to hide the user's IP address from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
+          <message name="IDS_IP_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for IP protection. Explains that the feature will try to hide the user's IP address from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
             Chrome will try to protect your IP address from embedded sites that may be trying to learn about you
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in tab." formatter_data="android_java" translateable="false">
+          <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in tab." formatter_data="android_java" translateable="false">
             Only available when Incognito is opened from a signed-in Chrome tab
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for script blocking. Explains that the feature will try to restrict data related to the user's device and browser from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
+          <message name="IDS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for script blocking. Explains that the feature will try to restrict data related to the user's device and browser from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
             Chrome will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
           </message>
           <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION" desc="Screenreader text for a link that will open in a regular (i.e. non-Incognito) window." translateable="false">
@@ -1161,13 +1161,13 @@
           <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="Sublabel for the Block third-party cookies settings toggle." formatter_data="android_java" translateable="false">
             Chromium blocks sites from using third-party cookies in Incognito
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for IP protection. Explains that the feature will try to hide the user's IP address from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
+          <message name="IDS_IP_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for IP protection. Explains that the feature will try to hide the user's IP address from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
             Chromium will try to protect your IP address from embedded sites that may be trying to learn about you
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in tab." formatter_data="android_java" translateable="false">
+          <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in tab." formatter_data="android_java" translateable="false">
             Only available when Incognito is opened from a signed-in Chromium tab
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for script blocking. Explains that the feature will try to restrict data related to the user's device and browser from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
+          <message name="IDS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for script blocking. Explains that the feature will try to restrict data related to the user's device and browser from embedded sites attempting to access information about them." formatter_data="android_java" translateable="false">
             Chromium will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
           </message>
           <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION" desc="Screenreader text for a link that will open in a regular (i.e. non-Incognito) window." translateable="false">

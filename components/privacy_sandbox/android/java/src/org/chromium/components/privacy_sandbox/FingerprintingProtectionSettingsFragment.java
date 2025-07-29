@@ -45,10 +45,7 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.fp_protection_preferences);
-        mPageTitle.set(
-                getString(
-                        R.string
-                                .incognito_tracking_protections_fingerprinting_protection_page_title));
+        mPageTitle.set(getString(R.string.fingerprinting_protection_page_title));
 
         ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
         fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());

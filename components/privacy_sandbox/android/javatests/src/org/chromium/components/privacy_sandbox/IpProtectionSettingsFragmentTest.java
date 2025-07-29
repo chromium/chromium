@@ -43,10 +43,8 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class IpProtectionSettingsFragmentTest {
-    private static final int PREF_TOGGLE_LABEL =
-            R.string.incognito_tracking_protections_ip_protection_toggle_label;
-    private static final int PREF_TOGGLE_SUBLABEL =
-            R.string.incognito_tracking_protections_ip_protection_toggle_sublabel;
+    private static final int PREF_TOGGLE_LABEL = R.string.ip_protection_toggle_label;
+    private static final int PREF_TOGGLE_SUBLABEL = R.string.ip_protection_toggle_sublabel;
 
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
@@ -89,31 +87,18 @@ public class IpProtectionSettingsFragmentTest {
         launchTrackingProtectionSettings();
 
         assertEquals(
-                mFragment
-                        .getContext()
-                        .getString(
-                                R.string.incognito_tracking_protections_ip_protection_page_title),
+                mFragment.getContext().getString(R.string.ip_protection_page_title),
                 mFragment.getPageTitle().get());
 
         onView(allOf(withText(PREF_TOGGLE_LABEL), hasSibling(withText(PREF_TOGGLE_SUBLABEL))))
                 .check(matches(isDisplayed()));
 
-        onView(withText(R.string.incognito_tracking_protections_ip_protection_when_on))
+        onView(withText(R.string.ip_protection_when_on)).check(matches(isDisplayed()));
+        onView(withText(R.string.ip_protection_things_to_consider_bullet_one))
                 .check(matches(isDisplayed()));
-        onView(
-                        withText(
-                                R.string
-                                        .incognito_tracking_protections_ip_protection_things_to_consider_bullet_one))
+        onView(withText(R.string.ip_protection_things_to_consider_bullet_one))
                 .check(matches(isDisplayed()));
-        onView(
-                        withText(
-                                R.string
-                                        .incognito_tracking_protections_ip_protection_things_to_consider_bullet_one))
-                .check(matches(isDisplayed()));
-        onView(
-                        withText(
-                                R.string
-                                        .incognito_tracking_protections_ip_protection_things_to_consider_bullet_one))
+        onView(withText(R.string.ip_protection_things_to_consider_bullet_one))
                 .check(matches(isDisplayed()));
     }
 
