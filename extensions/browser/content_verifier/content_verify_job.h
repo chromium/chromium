@@ -17,16 +17,13 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "crypto/hash.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/c/system/types.h"
 
 namespace base {
 class FilePath;
-}
-
-namespace crypto {
-class SecureHash;
 }
 
 namespace extensions {
@@ -169,7 +166,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   int current_block_ = 0;
 
   // The hash we're building up for the bytes of `current_block_`.
-  std::unique_ptr<crypto::SecureHash> current_hash_;
+  std::optional<crypto::hash::Hasher> current_hash_;
 
   // The number of bytes we've already input into `current_hash_`.
   int current_hash_byte_count_ = 0;
