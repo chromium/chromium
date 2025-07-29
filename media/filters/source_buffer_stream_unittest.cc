@@ -379,8 +379,10 @@ class SourceBufferStreamTest : public testing::Test {
         ASSERT_EQ(buffer->timestamp(), preroll_buffer->timestamp());
         ASSERT_EQ(buffer->GetDecodeTimestamp(),
                   preroll_buffer->GetDecodeTimestamp());
-        ASSERT_EQ(kInfiniteDuration, preroll_buffer->discard_padding().first);
-        ASSERT_EQ(base::TimeDelta(), preroll_buffer->discard_padding().second);
+        auto preroll_discard = preroll_buffer->discard_padding();
+        ASSERT_TRUE(preroll_discard.has_value());
+        ASSERT_EQ(kInfiniteDuration, preroll_discard->first);
+        ASSERT_EQ(base::TimeDelta(), preroll_discard->second);
         ASSERT_TRUE(buffer->is_key_frame());
 
         ss << "P";
@@ -4330,14 +4332,13 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceFrame_NoSplice) {
   // Manually inspect the buffers at the no-splice boundary to verify duration
   // and lack of discard padding (set when splicing).
   scoped_refptr<StreamParserBuffer> buffer;
-  const DecoderBuffer::DiscardPadding kEmptyDiscardPadding;
   for (int i = 0; i < 10; i++) {
     // Verify buffer timestamps and durations are preserved and no buffers have
     // discard padding (indicating no splice trimming).
     EXPECT_STATUS_FOR_STREAM_OP(kSuccess, GetNextBuffer(&buffer));
     EXPECT_EQ(base::Milliseconds(i * 2), buffer->timestamp());
     EXPECT_EQ(base::Milliseconds(2), buffer->duration());
-    EXPECT_EQ(kEmptyDiscardPadding, buffer->discard_padding());
+    EXPECT_FALSE(buffer->discard_padding().has_value());
   }
 
   CheckNoNextBuffer();
@@ -4477,8 +4478,7 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceTrimming_ExistingTrimming) {
   EXPECT_STATUS_FOR_STREAM_OP(kSuccess, GetNextBuffer(&read_buffer));
   EXPECT_EQ(base::Milliseconds(5), read_buffer->timestamp());
   EXPECT_EQ(kDuration, read_buffer->duration());
-  EXPECT_EQ(std::make_pair(kNoDiscard, kNoDiscard),
-            read_buffer->discard_padding());
+  EXPECT_FALSE(read_buffer->discard_padding().has_value());
 
   CheckNoNextBuffer();
 }

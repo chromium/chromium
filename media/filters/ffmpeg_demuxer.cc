@@ -553,7 +553,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // don't want to overwrite any existing discard padding since the discard
   // padding may refer to frames beyond this packet.
   if (packet->flags & AV_PKT_FLAG_DISCARD &&
-      buffer->discard_padding() == DecoderBuffer::DiscardPadding()) {
+      !buffer->discard_padding().has_value()) {
     buffer->set_discard_padding(
         std::make_pair(kInfiniteDuration, base::TimeDelta()));
   }
@@ -563,7 +563,10 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     // discarded after decoding.
     if (buffer->timestamp().is_negative()) {
       // Discard padding may also remove samples after zero.
-      auto fixed_ts = buffer->discard_padding().first + buffer->timestamp();
+      auto discard_padding = buffer->discard_padding();
+      auto fixed_ts = (discard_padding.has_value() ? discard_padding->first
+                                                   : base::TimeDelta()) +
+                      buffer->timestamp();
 
       // Allow for rounding error in the discard padding calculations.
       if (fixed_ts == base::Microseconds(-1)) {
@@ -592,20 +595,27 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
         buffer->duration() != kNoTimestamp &&
         !audio_decoder_config().codec_delay()) {
       if ((stream_timestamp + buffer->duration()).is_negative()) {
-        DCHECK_EQ(buffer->discard_padding().second, base::TimeDelta());
+        auto discard_padding = buffer->discard_padding();
+        DCHECK(!discard_padding.has_value() ||
+               discard_padding->second == base::TimeDelta());
 
         // Discard the entire packet if it's entirely before zero, but don't
         // override the discard padding if it refers to frames beyond this
         // packet.
-        if (buffer->discard_padding().first <= buffer->duration()) {
+        if (!discard_padding.has_value() ||
+            discard_padding->first <= buffer->duration()) {
           buffer->set_discard_padding(
               std::make_pair(kInfiniteDuration, base::TimeDelta()));
         }
       } else {
         // Only discard part of the frame if it overlaps zero.
+        auto discard_padding = buffer->discard_padding();
         buffer->set_discard_padding(std::make_pair(
-            std::max(-stream_timestamp, buffer->discard_padding().first),
-            buffer->discard_padding().second));
+            std::max(-stream_timestamp, discard_padding.has_value()
+                                            ? discard_padding->first
+                                            : base::TimeDelta()),
+            discard_padding.has_value() ? discard_padding->second
+                                        : base::TimeDelta()));
       }
     }
   }
@@ -656,7 +666,11 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     return;
   }
 
-  const auto [start_padding, end_padding] = buffer->discard_padding();
+  auto discard_padding = buffer->discard_padding();
+  auto start_padding =
+      discard_padding.has_value() ? discard_padding->first : base::TimeDelta();
+  auto end_padding =
+      discard_padding.has_value() ? discard_padding->second : base::TimeDelta();
 
   // Save the timestamp of the first non-discarded frame, to calculate duration
   // below. Only the first buffer should have discard padding.

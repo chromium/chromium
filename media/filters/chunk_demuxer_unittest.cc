@@ -1232,8 +1232,10 @@ class ChunkDemuxerTest : public ::testing::Test {
 
       // Handle preroll buffers.
       if (base::EndsWith(timestamps[i], "P", base::CompareCase::SENSITIVE)) {
-        ASSERT_EQ(kInfiniteDuration, buffers[0]->discard_padding().first);
-        ASSERT_EQ(base::TimeDelta(), buffers[0]->discard_padding().second);
+        auto discard_padding = buffers[0]->discard_padding();
+        ASSERT_TRUE(discard_padding.has_value());
+        ASSERT_EQ(kInfiniteDuration, discard_padding->first);
+        ASSERT_EQ(base::TimeDelta(), discard_padding->second);
         ss << "P";
       }
     }

@@ -142,7 +142,8 @@ class MEDIA_EXPORT DecoderBuffer
   // TODO(crbug.com/365814210): Remove this method.
   TimeInfo time_info() const {
     DCHECK(!end_of_stream());
-    return {timestamp_, duration_, discard_padding()};
+    return {timestamp_, duration_,
+            discard_padding().value_or(DiscardPadding())};
   }
 
   base::TimeDelta timestamp() const {
@@ -221,10 +222,10 @@ class MEDIA_EXPORT DecoderBuffer
                             : data_.subspan(offset, count);
   }
 
-  // TODO(crbug.com/365814210): Change the return type to std::optional.
-  DiscardPadding discard_padding() const {
+  std::optional<DiscardPadding> discard_padding() const {
     DCHECK(!end_of_stream());
-    return side_data_ ? side_data_->discard_padding : DiscardPadding();
+    return side_data_ ? std::make_optional(side_data_->discard_padding)
+                      : std::nullopt;
   }
 
   // TODO(crbug.com/365814210): Remove this method and force callers to get it

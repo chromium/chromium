@@ -343,8 +343,10 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
         ss << ":" << original_time_in_ms;
 
       // Detect full-discard preroll buffer.
-      if (last_read_buffer_->discard_padding().first == kInfiniteDuration &&
-          last_read_buffer_->discard_padding().second.is_zero()) {
+      auto discard_padding = last_read_buffer_->discard_padding();
+      if (discard_padding.has_value() &&
+          discard_padding->first == kInfiniteDuration &&
+          discard_padding->second.is_zero()) {
         ss << "P";
       }
 

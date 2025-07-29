@@ -238,8 +238,10 @@ class FFmpegDemuxerTest : public testing::Test {
       EXPECT_EQ(read_expectation.size, buffer->size());
       EXPECT_EQ(read_expectation.timestamp_us,
                 buffer->timestamp().InMicroseconds());
+      auto discard_padding = buffer->discard_padding();
       EXPECT_EQ(read_expectation.discard_front_padding,
-                buffer->discard_padding().first);
+                discard_padding.has_value() ? discard_padding->first
+                                            : base::TimeDelta());
       EXPECT_EQ(read_expectation.is_key_frame, buffer->is_key_frame());
     }
     OnReadDoneCalled(read_expectation.size, read_expectation.timestamp_us);
@@ -873,8 +875,9 @@ TEST_F(FFmpegDemuxerTest, Read_AudioVideoNegativeStartTime) {
                       [&](DemuxerStream::Status status,
                           DemuxerStream::DecoderBufferVector buffers) {
                         for (const auto& buffer : buffers) {
-                          EXPECT_EQ(buffer->discard_padding().first,
-                                    kInfiniteDuration);
+                          auto discard_padding = buffer->discard_padding();
+                          EXPECT_TRUE(discard_padding.has_value());
+                          EXPECT_EQ(discard_padding->first, kInfiniteDuration);
                         }
                         run_loop.QuitWhenIdle();
                       }));

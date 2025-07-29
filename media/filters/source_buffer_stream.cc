@@ -1198,8 +1198,9 @@ void SourceBufferStream::TrimSpliceOverlap(const BufferQueue& new_buffers) {
   }
 
   // Trim overlap from the existing buffer.
+  auto existing_discard = overlapped_buffer->discard_padding();
   DecoderBuffer::DiscardPadding discard_padding =
-      overlapped_buffer->discard_padding();
+      existing_discard.value_or(DecoderBuffer::DiscardPadding());
   discard_padding.second += overlap_duration;
   overlapped_buffer->set_discard_padding(discard_padding);
   overlapped_buffer->set_duration(overlapped_buffer->duration() -

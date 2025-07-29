@@ -52,9 +52,11 @@ void AudioTimestampValidator::CheckForTimestampGap(
   // If audio_base_ts_ == kNoTimestamp, we are processing our first buffer.
   // If stream has neither codec delay nor discard padding, we should expect
   // timestamps and output durations to line up from the start (i.e. be stable).
+  auto discard_padding = buffer.discard_padding();
   if (audio_base_ts_ == kNoTimestamp && !has_codec_delay_ &&
-      buffer.discard_padding().first == base::TimeDelta() &&
-      buffer.discard_padding().second == base::TimeDelta()) {
+      (!discard_padding.has_value() ||
+       (discard_padding->first == base::TimeDelta() &&
+        discard_padding->second == base::TimeDelta()))) {
     DVLOG(3) << __func__ << " Expecting stable timestamps - stream has neither "
              << "codec delay nor discard padding.";
     limit_unstable_audio_tries_ = 0;
