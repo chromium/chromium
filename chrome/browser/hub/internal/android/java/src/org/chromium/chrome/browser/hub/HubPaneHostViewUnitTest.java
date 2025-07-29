@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -34,8 +35,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -86,11 +85,14 @@ public class HubPaneHostViewUnitTest {
 
     @Test
     public void testSetRootView() {
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(200, 300);
         View root1 = new View(mActivity);
         View root2 = new View(mActivity);
         View root3 = new View(mActivity);
 
         ViewGroup paneFrame = mPaneHost.findViewById(R.id.pane_frame);
+        paneFrame.setLayoutParams(layoutParams);
+        ShadowLooper.runUiThreadTasks();
         assertEquals(0, paneFrame.getChildCount());
 
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
@@ -132,7 +134,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSetRootView_translationRestored() {
         View root1 = new View(mActivity);
         View root2 = new View(mActivity);

@@ -1252,7 +1252,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sHubBackButton =
             newMutableFlagWithSafeDefault(HUB_BACK_BUTTON, false);
     public static final MutableFlagWithSafeDefault sHubSlideAnimation =
-            newMutableFlagWithSafeDefault(HUB_SLIDE_ANIMATION, false);
+            newMutableFlagWithSafeDefault(HUB_SLIDE_ANIMATION, true);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sMediaIndicatorsAndroid =
