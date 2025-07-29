@@ -171,6 +171,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, ClearTextSelection, (), (override));
 
+  MOCK_METHOD(void, SetCaretBrowsingEnabled, (bool), (override));
+
  protected:
   std::vector<DocumentAttachmentInfo>& doc_attachment_info_list() {
     return doc_attachment_info_list_;

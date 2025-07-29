@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
@@ -1841,6 +1842,18 @@ TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
   EXPECT_CALL(*client_ptr_, PostMessage);
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
   plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginTest, OnRendererPreferencesUpdated) {
+  EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(false));
+
+  blink::RendererPreferences prefs;
+  plugin_->OnRendererPreferencesUpdated(prefs);
+
+  EXPECT_CALL(*engine_ptr_, SetCaretBrowsingEnabled(true));
+
+  prefs.caret_browsing_enabled = true;
+  plugin_->OnRendererPreferencesUpdated(prefs);
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

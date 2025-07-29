@@ -1087,8 +1087,10 @@ void PDFiumEngine::SearchForFragment(
 }
 
 void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
-  if (!features::kPdfInk2TextHighlighting.Get() || client_->IsPrintPreview() ||
-      pages_.empty() || pages_[0]->GetCharCount() == 0) {
+  CHECK(features::kPdfInk2TextHighlighting.Get());
+  CHECK(!client_->IsPrintPreview());
+
+  if (pages_.empty() || pages_[0]->GetCharCount() == 0) {
     return;
   }
 

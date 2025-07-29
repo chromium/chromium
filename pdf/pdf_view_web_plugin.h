@@ -44,6 +44,7 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
@@ -93,6 +94,7 @@ class PdfInkModuleClient;
 
 class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public blink::WebPlugin,
+                               public blink::WebViewObserver,
                                public pdf::mojom::PdfListener,
                                public UrlLoader::Client,
                                public PostMessageReceiver::Client,
@@ -349,6 +351,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
       blink::CrossVariantMojoReceiver<
           blink::mojom::AnnotationAgentContainerInterfaceBase> pending_receiver)
       override;
+
+  // blink::WebViewObserver:
+  void OnDestruct() override;
+  void OnRendererPreferencesUpdated(
+      const blink::RendererPreferences& preferences) override;
 
   // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
@@ -784,6 +791,9 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // Starts loading accessibility information.
   void LoadAccessibility();
+
+  // Applies the initial renderer preferences and observes future updates.
+  void ApplyAndObserveRendererPreferences();
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Triggered to show/hide Searchify progress indicator.

@@ -79,6 +79,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -90,6 +91,7 @@
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
@@ -483,7 +485,8 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
     blink::WebPluginParams params)
-    : client_(std::move(client)),
+    : blink::WebViewObserver(nullptr),
+      client_(std::move(client)),
       pdf_host_(std::move(pdf_host)),
 #if BUILDFLAG(ENABLE_PDF_INK2)
       ink_module_client_(MaybeCreatePdfInkModuleClient(*this)),
@@ -1047,6 +1050,17 @@ void PdfViewWebPlugin::BindAnnotationAgentContainer(
   annotation_agent_container_receiver_.Bind(std::move(pending_receiver));
 }
 
+void PdfViewWebPlugin::OnDestruct() {
+  // Intentionally empty, as destruction is handled by `Destroy()`.
+}
+
+void PdfViewWebPlugin::OnRendererPreferencesUpdated(
+    const blink::RendererPreferences& preferences) {
+  // TODO(crbug.com/427242881): Send a message to the PDF extension to disable
+  // page-scrolling keybinds.
+  engine_->SetCaretBrowsingEnabled(preferences.caret_browsing_enabled);
+}
+
 void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {
   base::Value::List page_dimensions;
   page_dimensions.reserve(layout.page_count());
@@ -1399,6 +1413,8 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
 
   if (accessibility_state_ == AccessibilityState::kPending)
     LoadAccessibility();
+
+  ApplyAndObserveRendererPreferences();
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // To avoid delaying page load for searchify, start searchify after document
@@ -3161,6 +3177,28 @@ void PdfViewWebPlugin::LoadAccessibility() {
       base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
                      weak_factory_.GetWeakPtr(), /*page_index=*/0),
       kAccessibilityPageDelay);
+}
+
+void PdfViewWebPlugin::ApplyAndObserveRendererPreferences() {
+  if (!features::kPdfInk2TextHighlighting.Get() || IsPrintPreview() ||
+      !Container()) {
+    return;
+  }
+
+  blink::WebLocalFrame* frame = Container()->GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  blink::WebView* view = frame->View();
+  if (!view) {
+    return;
+  }
+
+  engine_->SetCaretBrowsingEnabled(
+      view->GetRendererPreferences().caret_browsing_enabled);
+
+  blink::WebViewObserver::Observe(view);
 }
 
 }  // namespace chrome_pdf

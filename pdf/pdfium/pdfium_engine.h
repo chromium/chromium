@@ -582,8 +582,8 @@ class PDFiumEngine : public DocumentLoader::Client,
                          AddSearchResultCallback add_result_callback);
 
   // Sets whether caret browsing is enabled or not. Initializes `caret_` if it
-  // is the first time enabling caret browsing mode.
-  void SetCaretBrowsingEnabled(bool enabled);
+  // is the first time enabling caret browsing mode. Virtual to support testing.
+  virtual void SetCaretBrowsingEnabled(bool enabled);
 
  private:
   // This is a base class for shared functions and data needed for change
