@@ -61,7 +61,7 @@ enum class LocalWebApprovalErrorType : int {
 // user service is in use, and consequently offers "disabled" state for those
 // who are not subject to parental controls.
 // Entries must not be renumbered and numeric values should never be reused.
-// LINT.IfChange(FamilyLinkWebFilterType)
+// LINT.IfChange(SupervisedUserWebFilterType)
 enum class WebFilterType {
   // The web filter is set to "Allow all sites".
   kAllowAllSites = 0,
@@ -83,7 +83,7 @@ enum class WebFilterType {
   // above this comment. Sync with enums.xml.
   kMaxValue = kDisabled,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkWebFilterType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserWebFilterType)
 
 // Returns the string equivalent of a Web Filter type. This is a user-visible
 // string included in the user feedback log.

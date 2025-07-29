@@ -677,13 +677,15 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram name="FamilyUser.WebFilterType" enum="FamilyLinkWebFilterType"
+<histogram name="FamilyUser.WebFilterType" enum="SupervisedUserWebFilterType"
     expires_after="2026-01-04">
+<!-- Do not extend once expires, migrate to SupervisedUsers.WebFilterType.FamilyLink-->
+
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Records the web filter type for currently active supervised user. Records
+    Records the web filter type for currently active Family Link user. Records
     daily and also when web filter type policy changed. This metric is not
     emitted during OOBE and sign out. FamilyUser.WebFilterType.PerRecord is
     emitted for every UMA record, in which there is an active supervised user,
@@ -691,12 +693,15 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
     Historical caveats: Stable M137 (all versions 137.0.7146.0 to 138.0.7197.0)
     have unreliable data for this histogram. Versions before 137.0.7146.0
-    overrecored the metric.
+    over-recored the metric.
+
+    SupervisedUsers.WebFilterType.Family link is the preffered equivalent of
+    this metric.
   </summary>
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="FamilyLinkWebFilterType" expires_after="2025-12-21">
+    enum="SupervisedUserWebFilterType" expires_after="2025-12-21">
   <owner>fernandex@chromium.org</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
@@ -1120,6 +1125,30 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     be used as a filter, or looking at unique client counts (raw counts are not
     meaningful).
   </summary>
+</histogram>
+
+<histogram name="SupervisedUsers.WebFilterType{UserType}"
+    enum="SupervisedUserWebFilterType" expires_after="2026-07-04">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the web filter type for currently active supervised user. Records
+    daily and also when web filter type policy changed. This metric is not
+    emitted during OOBE and sign out. FamilyUser.WebFilterType.PerRecord is
+    emitted for every UMA record, in which there is an active supervised user,
+    from the current session.
+
+    SupervisedUsers.WebFilterType.FamilyLink is equivalent with
+    FamilyUser.WebFilterType.
+  </summary>
+<!-- LINT.IfChange(supervised_user_web_filter_type_user_type) -->
+
+  <token key="UserType">
+    <variant name=".FamilyLink" summary="Family Link"/>
+    <variant name=".LocallySupervised" summary="locally supervised"/>
+  </token>
+<!-- LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_metrics_service.cc:supervised_user_web_filter_type_user_type) -->
+
 </histogram>
 
 <histogram name="Supervision.ParentAccessCode.Action"

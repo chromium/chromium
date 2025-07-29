@@ -287,13 +287,19 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        WebFilterTypeIsRecordedOnceWhenBrowserFilterIsEnabled) {
   if (GetParam().initial_browser_content_filters_value) {
     histogram_tester().ExpectBucketCount(
-        "FamilyUser.WebFilterType", WebFilterType::kTryToBlockMatureSites, 1);
+        "SupervisedUsers.WebFilterType.LocallySupervised",
+        WebFilterType::kTryToBlockMatureSites, 1);
   } else if (GetParam().initial_search_content_filters_value) {
-    histogram_tester().ExpectBucketCount("FamilyUser.WebFilterType",
-                                         WebFilterType::kDisabled, 1);
+    histogram_tester().ExpectBucketCount(
+        "SupervisedUsers.WebFilterType.LocallySupervised",
+        WebFilterType::kDisabled, 1);
   } else {
-    histogram_tester().ExpectTotalCount("FamilyUser.WebFilterType", 0);
+    histogram_tester().ExpectTotalCount(
+        "SupervisedUsers.WebFilterType.LocallySupervised", 0);
   }
+
+  // This histogram is not recorded for locally supervised users.
+  histogram_tester().ExpectTotalCount("FamilyUser.WebFilterType", 0);
 }
 
 const BootstrapServiceTestCase kBootstrapServiceTestCases[] = {
@@ -371,6 +377,9 @@ IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
     WebFilterTypeIsRecordedOnce) {
   histogram_tester().ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink",
+      WebFilterType::kTryToBlockMatureSites, 1);
+  histogram_tester().ExpectBucketCount(
       "FamilyUser.WebFilterType", WebFilterType::kTryToBlockMatureSites, 1);
 }
 
@@ -415,6 +424,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest,
     WebFilterTypeIsNotRecorded) {
+  histogram_tester().ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 0);
   histogram_tester().ExpectTotalCount("FamilyUser.WebFilterType", 0);
 }
 

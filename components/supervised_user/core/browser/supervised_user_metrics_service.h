@@ -83,6 +83,7 @@ class SupervisedUserMetricsService : public KeyedService,
   // functions depending on the user type.
   bool TryEmittingMetricsAndRecordCurrentDay();
   bool TryEmittingFamilyLinkMetrics();
+  bool TryEmittingSupervisedUserMetrics();
 
   // Clears cache of last recorded metrics. Subsequent `::TryEmittingMetrics` will emit
   // all metrics (for eligible users)
@@ -103,8 +104,9 @@ class SupervisedUserMetricsService : public KeyedService,
 
   // Cache of last recorded values of SupervisedUserURLFilter to avoid
   // duplicated emissions.
-  std::optional<WebFilterType> last_recorded_web_filter_type_;
+  std::optional<WebFilterType> last_recorded_family_link_web_filter_type_;
   std::optional<SupervisedUserURLFilter::Statistics> last_recorded_statistics_;
+  std::optional<WebFilterType> last_recorded_supervised_user_web_filter_type_;
 
   base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
       supervised_user_service_observation_{this};

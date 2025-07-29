@@ -251,16 +251,23 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
 
   // Filter is disabled, but unsupervised users don't report the metric.
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     0);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 0);
 
   EnableParentalControls();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kAllowAllSites,
+      1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kAllowAllSites, 1);
 
   // Disable parental controls. No more metrics are emitted.
   DisableParentalControls();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     1);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
 }
 
@@ -272,16 +279,23 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
 
   // Filter is disabled, but unsupervised users don't report the metric.
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     0);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 0);
 
   EnableParentalControls();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kCertainSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kCertainSites,
+      1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kCertainSites, 1);
 
   // Disable parental controls. No more metrics are emitted.
   DisableParentalControls();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     1);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
 }
 
@@ -292,16 +306,23 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
 
   // Filter is disabled, but unsupervised users don't report the metric.
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     0);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 0);
 
   EnableParentalControls();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink",
+      WebFilterType::kTryToBlockMatureSites, 1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kTryToBlockMatureSites, 1);
 
   // Disable parental controls. No more metrics are emitted.
   DisableParentalControls();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     1);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
 }
 
@@ -311,19 +332,30 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
   Initialize(InitialSupervisionState::kFamilyLinkTryToBlockMatureSites);
 
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink",
+      WebFilterType::kTryToBlockMatureSites, 1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kTryToBlockMatureSites, 1);
 
   SetWebFilterType(WebFilterType::kAllowAllSites);
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kAllowAllSites,
+      1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kAllowAllSites, 1);
 
   SetWebFilterType(WebFilterType::kTryToBlockMatureSites);
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink",
+      WebFilterType::kTryToBlockMatureSites, 2);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kTryToBlockMatureSites, 2);
 
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     3);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 3);
 }
 
@@ -333,19 +365,30 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
   Initialize(InitialSupervisionState::kFamilyLinkAllowAllSites);
 
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kAllowAllSites,
+      1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kAllowAllSites, 1);
 
   SetWebFilterType(WebFilterType::kCertainSites);
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kCertainSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kCertainSites,
+      1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kCertainSites, 1);
 
   SetWebFilterType(WebFilterType::kAllowAllSites);
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kAllowAllSites,
+      2);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kAllowAllSites, 2);
 
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     3);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 3);
 }
 
@@ -355,19 +398,30 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
   Initialize(InitialSupervisionState::kFamilyLinkTryToBlockMatureSites);
 
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink",
+      WebFilterType::kTryToBlockMatureSites, 1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kTryToBlockMatureSites, 1);
 
   SetWebFilterType(WebFilterType::kCertainSites);
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kCertainSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kCertainSites,
+      1);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kCertainSites, 1);
 
   SetWebFilterType(WebFilterType::kTryToBlockMatureSites);
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.FamilyLink",
+      WebFilterType::kTryToBlockMatureSites, 2);
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kTryToBlockMatureSites, 2);
 
+  histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
+                                     3);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 3);
 }
 
@@ -398,38 +452,44 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
   Initialize(InitialSupervisionState::kSupervisedWithAllContentFilters);
   EXPECT_TRUE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
-  histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
-                                      WebFilterType::kTryToBlockMatureSites, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised",
+      WebFilterType::kTryToBlockMatureSites, 1);
 
   // Leaves only browser filter enabled - no change in web filter type.
   SetSearchFilterEnabled(false);
   EXPECT_TRUE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
-  histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
   // All filters disabled. Disabling supervision won't yield WebFilterType
   // metric.
   SetBrowserFilterEnabled(false);
   EXPECT_FALSE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
-  histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
   // Supervision is back on, but the browser filter is still disabled. This time
   // WebFilterType metric is emitted to indicate disabled filter setting.
   SetSearchFilterEnabled(true);
   EXPECT_TRUE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
-  histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
-                                      WebFilterType::kDisabled, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised",
+      WebFilterType::kDisabled, 1);
 
   // Back to where we started: both filters enabled.
   SetBrowserFilterEnabled(true);
   EXPECT_TRUE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
-  histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
-                                      WebFilterType::kTryToBlockMatureSites, 2);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised",
+      WebFilterType::kTryToBlockMatureSites, 2);
 
-  histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 3);
+  histogram_tester_.ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 3);
 }
 
 TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
@@ -437,32 +497,37 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
   Initialize(InitialSupervisionState::kUnsupervised);
   EXPECT_FALSE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
-  histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 0);
 
   SetBrowserFilterEnabled(true);
   EXPECT_TRUE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
-  histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
   // All filters enabled
   SetSearchFilterEnabled(true);
   EXPECT_TRUE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
-  histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
   // Leaves only the search filter enabled - disables browser filter.
   SetBrowserFilterEnabled(false);
   EXPECT_TRUE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
-  histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
-                                      WebFilterType::kDisabled, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised",
+      WebFilterType::kDisabled, 1);
 
   // Back to where we started: unsupervised. Disabling supervision won't yield
   // WebFilterType metric.
   SetSearchFilterEnabled(false);
   EXPECT_FALSE(IsSupervisedLocally());
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
-  histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 2);
+  histogram_tester_.ExpectTotalCount(
+      "SupervisedUsers.WebFilterType.LocallySupervised", 2);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

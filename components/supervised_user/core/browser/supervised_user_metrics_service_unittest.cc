@@ -27,6 +27,13 @@ using ::testing::_;
 using ::testing::Eq;
 
 constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
+constexpr char kWebFilterTypeForFamilyUserHistogramName[] =
+    "SupervisedUsers.WebFilterType.FamilyLink";
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kWebFilterTypeForLocallySupervisedHistogramName[] =
+    "SupervisedUsers.WebFilterType.LocallySupervised";
+#endif  // BUILDFLAG(IS_ANDROID)
 constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
 constexpr char kApprovedSitesCountHistogramName[] =
     "FamilyUser.ManagedSiteListCount.Approved";
@@ -104,6 +111,8 @@ TEST_F(SupervisedUserMetricsServiceTest,
   Initialize(InitialSupervisionState::kUnsupervised);
   histogram_tester_.ExpectTotalCount(kWebFilterTypeHistogramName,
                                      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(kWebFilterTypeForFamilyUserHistogramName,
+                                     /*expected_count=*/0);
   histogram_tester_.ExpectTotalCount(kManagedSiteListHistogramName,
                                      /*expected_count=*/0);
   histogram_tester_.ExpectTotalCount(kApprovedSitesCountHistogramName,
@@ -117,6 +126,10 @@ TEST_F(SupervisedUserMetricsServiceTest,
   Initialize(InitialSupervisionState::kFamilyLinkDefault);
 
   histogram_tester_.ExpectUniqueSample(kWebFilterTypeHistogramName,
+                                       /*sample=*/
+                                       WebFilterType::kTryToBlockMatureSites,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kWebFilterTypeForFamilyUserHistogramName,
                                        /*sample=*/
                                        WebFilterType::kTryToBlockMatureSites,
                                        /*expected_bucket_count=*/1);
@@ -138,7 +151,9 @@ TEST_F(SupervisedUserMetricsServiceTest,
 TEST_F(SupervisedUserMetricsServiceTest,
        MetricsRecordedForLocallySupervisedUser) {
   Initialize(InitialSupervisionState::kSupervisedWithAllContentFilters);
-
+  histogram_tester_.ExpectTotalCount(
+      kWebFilterTypeForLocallySupervisedHistogramName,
+      /*expected_count=*/1);
   // For this type of supervised user, the managed site list is not reported.
   histogram_tester_.ExpectTotalCount(kManagedSiteListHistogramName,
                                      /*expected_count=*/0);
@@ -224,6 +239,9 @@ struct PeriodicalWebFilterTypeTestParams {
   std::string test_name;
   // Which user type to start with.
   InitialSupervisionState initial_supervision_state;
+  // In these histograms, verify emissions of
+  // WebFilterType::kTryToBlockMatureSites - default filtering settings.
+  std::vector<std::string> interesting_histogram_names;
   // Whether we expect any emissions at all.
   bool expect_emissions;
 };
@@ -238,9 +256,12 @@ TEST_P(SupervisedUserMetricsServiceWebFilterTypePeriodicalTest,
   Initialize(GetParam().initial_supervision_state);
   // Check post-initialization counts of FamilyUser metrics reset histogram
   // tracker.
-  histogram_tester_.ExpectBucketCount(kWebFilterTypeHistogramName,
-                                      WebFilterType::kTryToBlockMatureSites,
-                                      GetParam().expect_emissions ? 1 : 0);
+  for (const std::string& histogram_name :
+       GetParam().interesting_histogram_names) {
+    histogram_tester_.ExpectBucketCount(histogram_name,
+                                        WebFilterType::kTryToBlockMatureSites,
+                                        GetParam().expect_emissions ? 1 : 0);
+  }
 
   int start_day_id =
       base::Time::Now().LocalMidnight().since_origin().InDaysFloored();
@@ -259,20 +280,31 @@ TEST_P(SupervisedUserMetricsServiceWebFilterTypePeriodicalTest,
   int expected_count =
       GetParam().expect_emissions ? (1 + (end_day_id - start_day_id)) : 0;
 
-  histogram_tester_.ExpectBucketCount(kWebFilterTypeHistogramName,
-                                      WebFilterType::kTryToBlockMatureSites,
-                                      expected_count);
+  for (const std::string& histogram_name :
+       GetParam().interesting_histogram_names) {
+    histogram_tester_.ExpectBucketCount(
+        histogram_name, WebFilterType::kTryToBlockMatureSites, expected_count);
+  }
 }
 
+
 const PeriodicalWebFilterTypeTestParams kPeriodicalWebFilterTypeTestParams[] = {
-    {"Unsupervised", InitialSupervisionState::kUnsupervised,
+    {"Unsupervised",
+     InitialSupervisionState::kUnsupervised,
+     {kWebFilterTypeHistogramName,
+#if BUILDFLAG(IS_ANDROID)
+      kWebFilterTypeForLocallySupervisedHistogramName,
+#endif  // BUILDFLAG(IS_ANDROID)
+      kWebFilterTypeForFamilyUserHistogramName},
      /*expect_emissions=*/false},
     {"SupervisedWithParentalControls",
      InitialSupervisionState::kFamilyLinkDefault,
+     {kWebFilterTypeHistogramName, kWebFilterTypeForFamilyUserHistogramName},
      /*expect_emissions=*/true},
 #if BUILDFLAG(IS_ANDROID)
     {"SupervisedLocally",
      InitialSupervisionState::kSupervisedWithAllContentFilters,
+     {kWebFilterTypeForLocallySupervisedHistogramName},
      /*expect_emissions=*/true},
 #endif  // BUILDFLAG(IS_ANDROID)
 };
