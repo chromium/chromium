@@ -331,13 +331,13 @@ const NSUInteger kSearchCharacterLimit = 1000;
     }
   }
 
-  [self.shareSheet setAccounts:loadedAccounts];
-
   if (!primaryAccount || ![primaryAccount length]) {
     AccountInfo* accountInfo = [[AccountInfo alloc] init];
-    accountInfo.gaiaID = @"Default";
+    accountInfo.gaiaID = app_group::kNoAccount;
     self.shareSheet.selectedAccountInfo = accountInfo;
+    [loadedAccounts addObject:accountInfo];
   }
+  [self.shareSheet setAccounts:loadedAccounts];
 }
 
 - (void)handleImageSharingForCommand:(AppGroupCommand*)command
