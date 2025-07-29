@@ -210,6 +210,7 @@ void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
     base::TimeTicks snapshot_inquire_start_time,
     ModelExecutionData model_data,
     const SkBitmap& snapshot) {
+  VLOG(1) << "[PermissionsAI] OnSnapshotTakenForOnDeviceModel";
   PermissionUmaUtil::RecordSnapshotTakenTimeAndSuccessForAivX(
       /*success=*/!snapshot.drawsNothing(), snapshot_inquire_start_time,
       model_data.model_type);
@@ -651,6 +652,7 @@ void PredictionBasedPermissionUiSelector::set_snapshot_for_testing(
 void PredictionBasedPermissionUiSelector::TakeSnapshot(
     content::RenderWidgetHostView* host_view,
     ModelExecutionData model_data) {
+  VLOG(1) << "[PermissionsAIvX] TakeSnapshot";
   auto snapshot_inquire_start_time = base::TimeTicks::Now();
   if (snapshot_for_testing_.has_value()) {
     OnSnapshotTakenForOnDeviceModel(snapshot_inquire_start_time,
@@ -670,6 +672,7 @@ void PredictionBasedPermissionUiSelector::TakeSnapshot(
 }
 void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
     ModelExecutionData model_data) {
+  VLOG(1) << "[PermissionsAI] ExecuteOnDeviceAivXModel";
   PredictionModelHandlerProvider* prediction_model_handler_provider =
       PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_);
   if (prediction_model_handler_provider) {
@@ -678,6 +681,8 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
 
     switch (model_data.model_type) {
       case PredictionModelType::kOnDeviceAiV1Model: {
+        VLOG(1)
+            << "[PermissionsAI] ExecuteOnDeviceAivXModel kOnDeviceAiV1Model";
         if (PermissionsAiv1Handler* aiv1_handler =
                 prediction_model_handler_provider
                     ->GetPermissionsAiv1Handler()) {
@@ -693,10 +698,12 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
         break;
       }
       case PredictionModelType::kOnDeviceAiV3Model: {
+        VLOG(1)
+            << "[PermissionsAI] ExecuteOnDeviceAivXModel kOnDeviceAiV3Model";
         if (PermissionsAiv3Handler* aiv3_handler =
                 prediction_model_handler_provider->GetPermissionsAiv3Handler(
                     request_type)) {
-          VLOG(1) << "[PermissionsAIv3] Inquire model";
+          VLOG(1) << "[PermissionsAI] Inquire AIv3 model";
           return aiv3_handler->ExecuteModel(
               base::BindOnce(
                   &PredictionBasedPermissionUiSelector::
@@ -707,6 +714,8 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
                   std::move(model_data.request_metadata),
                   model_data.model_type),
               std::move(model_data.snapshot));
+        } else {
+          VLOG(1) << "[PermissionsAI] No AIv3 handler";
         }
         break;
       }

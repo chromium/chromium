@@ -25,6 +25,7 @@ namespace permissions {
 
 PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     OptimizationGuideKeyedService* optimization_guide) {
+  VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider ctor";
   // We set up model handlers if necessary in order of preference:
   // Aiv4, Aiv3, Aiv1
   // CPSSv1 is defined always as backup if further requirements for AivX are not
@@ -45,6 +46,7 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
               OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
 
   if (IsAiv4ModelAvailable()) {
+    VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv4";
     notification_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
         optimization_guide,
         optimization_guide::proto::OptimizationTarget::
@@ -58,6 +60,7 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     return;
   }
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
+    VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv3";
     notification_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
         optimization_guide,
         optimization_guide::proto::OptimizationTarget::

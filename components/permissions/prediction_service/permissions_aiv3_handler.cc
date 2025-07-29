@@ -71,7 +71,9 @@ void PermissionsAiv3Handler::OnModelUpdated(
 
 void PermissionsAiv3Handler::ExecuteModel(ExecutionCallback callback,
                                           std::unique_ptr<SkBitmap> snapshot) {
+  VLOG(1) << "PermissionsAiv3Handler::ExecuteModel";
   if (snapshot.get()) {
+    VLOG(1) << "[PermissionsAIv3] ExecuteModel: Snapshot exists";
     base::UmaHistogramBoolean(
         "Permissions.AIv3.ModelExecutionAlreadyInProgress",
         is_execution_in_progress_);
@@ -86,6 +88,9 @@ void PermissionsAiv3Handler::ExecuteModel(ExecutionCallback callback,
       is_callback_valid_ = false;
       std::move(callback).Run(std::nullopt);
       return;
+    } else {
+      VLOG(1) << "[PermissionsAIv3] ExecuteModel: Execution not in "
+                 "progress. Starting execution.";
     }
     is_execution_in_progress_ = true;
     is_callback_valid_ = true;
@@ -109,6 +114,7 @@ void PermissionsAiv3Handler::ExecuteModel(ExecutionCallback callback,
         base::BindOnce(&PermissionsAiv3Handler::OnModelExecutionTimeout,
                        weak_factory_.GetWeakPtr(), std::nullopt));
   } else {
+    VLOG(1) << "[PermissionsAIv3] ExecuteModel: Snapshot is empty";
     std::move(callback).Run(std::nullopt);
   }
 }
@@ -123,10 +129,15 @@ void PermissionsAiv3Handler::OnModelExecutionTimeout(
 
 void PermissionsAiv3Handler::OnModelExecutionComplete(
     const std::optional<PermissionRequestRelevance>& relevance) {
+  VLOG(1) << "[PermissionsAIv3] OnModelExecutionComplete: Model execution "
+             "completed. Returning relevance: "
+          << (relevance.has_value() ? static_cast<int>(relevance.value()) : -1);
   timeout_timer_.Stop();
   is_execution_in_progress_ = false;
 
   if (!current_callback_) {
+    VLOG(1) << "[PermissionsAIv3] OnModelExecutionComplete: Callback was "
+               "replaced. Ignoring the result.";
     // The callback was executed in `OnModelExecutionTimeout` before the model
     // execution completed.
     // The timeout logic does not reset
@@ -137,6 +148,10 @@ void PermissionsAiv3Handler::OnModelExecutionComplete(
   }
 
   if (is_callback_valid_) {
+    VLOG(1) << "[PermissionsAIv3] OnModelExecutionComplete: Callback is "
+               "valid. Delivering relevance: "
+            << (relevance.has_value() ? static_cast<int>(relevance.value())
+                                      : -1);
     std::move(current_callback_).Run(relevance);
   } else {
     VLOG(1) << "[PermissionsAIv3] OnModelExecutionComplete: Callback is no "
