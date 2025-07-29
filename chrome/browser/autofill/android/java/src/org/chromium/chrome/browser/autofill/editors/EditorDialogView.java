@@ -39,7 +39,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -253,7 +253,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
         }
     }
 
-    public void setEditorFields(ListModel<FieldItem> editorFields) {
+    public void setEditorFields(ListModel<EditorItem> editorFields) {
         prepareEditor(editorFields);
     }
 
@@ -392,7 +392,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
      *
      * @param editorFields the list of fields this editor should display.
      */
-    private void prepareEditor(ListModel<FieldItem> editorFields) {
+    private void prepareEditor(ListModel<EditorItem> editorFields) {
         // Ensure the layout is empty.
         removeTextChangedListeners();
         mContentView.removeAllViews();
@@ -406,35 +406,35 @@ public class EditorDialogView extends AlwaysDismissedDialog
 
         // Add Views for each of the {@link EditorFields}.
         for (int i = 0; i < editorFields.size(); i++) {
-            FieldItem fieldItem = editorFields.get(i);
-            FieldItem nextFieldItem = null;
+            EditorItem editorItem = editorFields.get(i);
+            EditorItem nextEditorItem = null;
 
             boolean isLastField = i == editorFields.size() - 1;
-            boolean useFullLine = fieldItem.isFullLine;
+            boolean useFullLine = editorItem.isFullLine;
             if (!isLastField && !useFullLine) {
                 // If the next field isn't full, stretch it out.
-                nextFieldItem = editorFields.get(i + 1);
-                if (nextFieldItem.isFullLine) useFullLine = true;
+                nextEditorItem = editorFields.get(i + 1);
+                if (nextEditorItem.isFullLine) useFullLine = true;
             }
 
             // Always keep dropdowns and text fields on different lines because of height
             // differences.
             if (!isLastField
                     && !useFullLine
-                    && isDropdownField(fieldItem)
-                            != isDropdownField(assumeNonNull(nextFieldItem))) {
+                    && isDropdownField(editorItem)
+                            != isDropdownField(assumeNonNull(nextEditorItem))) {
                 useFullLine = true;
             }
 
             if (useFullLine || isLastField) {
-                addFieldViewToEditor(mContentView, fieldItem);
+                addFieldViewToEditor(mContentView, editorItem);
             } else {
                 // Create a LinearLayout to put it and the next view side by side.
                 LinearLayout rowLayout = new LinearLayout(mActivity);
                 mContentView.addView(rowLayout);
 
-                View firstView = addFieldViewToEditor(rowLayout, fieldItem);
-                View lastView = addFieldViewToEditor(rowLayout, assumeNonNull(nextFieldItem));
+                View firstView = addFieldViewToEditor(rowLayout, editorItem);
+                View lastView = addFieldViewToEditor(rowLayout, assumeNonNull(nextEditorItem));
 
                 LinearLayout.LayoutParams firstParams =
                         (LinearLayout.LayoutParams) firstView.getLayoutParams();
@@ -486,17 +486,17 @@ public class EditorDialogView extends AlwaysDismissedDialog
         }
     }
 
-    private View addFieldViewToEditor(ViewGroup parent, final FieldItem fieldItem) {
+    private View addFieldViewToEditor(ViewGroup parent, final EditorItem editorItem) {
         View childView = null;
 
-        switch (fieldItem.type) {
+        switch (editorItem.type) {
             case DROPDOWN:
                 {
                     DropdownFieldView dropdownView =
-                            new DropdownFieldView(mActivity, parent, fieldItem.model);
+                            new DropdownFieldView(mActivity, parent, editorItem.model);
                     mDropdownFieldMCPs.add(
                             PropertyModelChangeProcessor.create(
-                                    fieldItem.model,
+                                    editorItem.model,
                                     dropdownView,
                                     EditorDialogViewBinder::bindDropdownFieldView));
                     mFieldViews.add(dropdownView);
@@ -506,10 +506,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
                 }
             case TEXT_INPUT:
                 {
-                    TextFieldView inputLayout = new TextFieldView(mActivity, fieldItem.model);
+                    TextFieldView inputLayout = new TextFieldView(mActivity, editorItem.model);
                     mTextFieldMCPs.add(
                             PropertyModelChangeProcessor.create(
-                                    fieldItem.model,
+                                    editorItem.model,
                                     inputLayout,
                                     EditorDialogViewBinder::bindTextFieldView));
                     mFieldViews.add(inputLayout);
@@ -526,7 +526,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                                             null);
                     TextView textView = textLayout.findViewById(R.id.non_editable_textview);
                     PropertyModelChangeProcessor.create(
-                            fieldItem.model,
+                            editorItem.model,
                             textView,
                             EditorDialogViewBinder::bindNonEditableTextView);
                     childView = textLayout;

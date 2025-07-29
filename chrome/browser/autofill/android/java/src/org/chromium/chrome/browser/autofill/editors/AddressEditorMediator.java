@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
@@ -271,14 +271,14 @@ class AddressEditorMediator {
      * @param countryCode The country for which fields are to be added.
      * @param languageCode The language in which localized strings (e.g. label) are presented.
      */
-    private ListModel<FieldItem> buildEditorFieldList(String countryCode, String languageCode) {
-        ListModel<FieldItem> editorFields = new ListModel<>();
+    private ListModel<EditorItem> buildEditorFieldList(String countryCode, String languageCode) {
+        ListModel<EditorItem> editorFields = new ListModel<>();
         mEditorUiInfo =
                 mAutofillProfileBridge.getAddressEditorUiInfo(
                         countryCode, languageCode, AddressValidationType.ACCOUNT);
 
         // In terms of order, country must be the first field.
-        editorFields.add(new FieldItem(DROPDOWN, mCountryField, /* isFullLine= */ true));
+        editorFields.add(new EditorItem(DROPDOWN, mCountryField, /* isFullLine= */ true));
 
         for (AutofillAddressUiComponent component : mEditorUiInfo.getComponents()) {
             PropertyModel field = getFieldForFieldType(component.id);
@@ -306,23 +306,23 @@ class AddressEditorMediator {
                     component.isFullLine
                             || component.id == FieldType.ADDRESS_HOME_CITY
                             || component.id == FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY;
-            editorFields.add(new FieldItem(TEXT_INPUT, field, isFullLine));
+            editorFields.add(new EditorItem(TEXT_INPUT, field, isFullLine));
         }
         // Phone number (and email if applicable) are the last fields of the address.
         if (mPhoneField != null) {
             mPhoneField.set(VALIDATOR, getPhoneValidator(countryCode));
-            editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField, /* isFullLine= */ true));
+            editorFields.add(new EditorItem(TEXT_INPUT, mPhoneField, /* isFullLine= */ true));
         }
         if (mEmailField != null) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mEmailField, /* isFullLine= */ true));
+            editorFields.add(new EditorItem(TEXT_INPUT, mEmailField, /* isFullLine= */ true));
         }
 
         return editorFields;
     }
 
     /** Build a special list of items to display for non-editable Home & Work profiles. */
-    private ListModel<FieldItem> buildHomeAndWorkItemsList() {
-        ListModel<FieldItem> editorFields = new ListModel<>();
+    private ListModel<EditorItem> buildHomeAndWorkItemsList() {
+        ListModel<EditorItem> editorFields = new ListModel<>();
         PropertyModel model =
                 new PropertyModel.Builder(NON_EDITABLE_TEXT_ALL_KEYS)
                         .with(
@@ -330,7 +330,7 @@ class AddressEditorMediator {
                                 mPersonalDataManager.getProfileDescriptionForEditor(
                                         mProfileToEdit.getGUID()))
                         .build();
-        editorFields.add(new FieldItem(NON_EDITABLE_TEXT, model, /* isFullLine= */ true));
+        editorFields.add(new EditorItem(NON_EDITABLE_TEXT, model, /* isFullLine= */ true));
         return editorFields;
     }
 

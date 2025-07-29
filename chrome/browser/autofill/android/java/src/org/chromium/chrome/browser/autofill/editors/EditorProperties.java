@@ -40,14 +40,14 @@ import java.util.List;
 @NullMarked
 public class EditorProperties {
     /** Contains information needed by {@link EditorDialogView} to display fields. */
-    public static class FieldItem extends ListItem {
+    public static class EditorItem extends ListItem {
         public final boolean isFullLine;
 
-        public FieldItem(int type, PropertyModel model) {
+        public EditorItem(int type, PropertyModel model) {
             this(type, model, /* isFullLine= */ false);
         }
 
-        public FieldItem(int type, PropertyModel model, boolean isFullLine) {
+        public EditorItem(int type, PropertyModel model, boolean isFullLine) {
             super(type, model);
             this.isFullLine = isFullLine;
         }
@@ -64,7 +64,7 @@ public class EditorProperties {
     public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TEXT =
             new ReadableObjectPropertyKey<>("delete_confirmation_text");
 
-    public static final WritableObjectPropertyKey<ListModel<FieldItem>> EDITOR_FIELDS =
+    public static final WritableObjectPropertyKey<ListModel<EditorItem>> EDITOR_FIELDS =
             new WritableObjectPropertyKey<>("editor_fields");
 
     public static final ReadableObjectPropertyKey<Runnable> DONE_RUNNABLE =
@@ -237,8 +237,8 @@ public class EditorProperties {
 
     public static void scrollToFieldWithErrorMessage(PropertyModel editorModel) {
         // Check if a field with an error is already focused.
-        ListModel<FieldItem> fields = editorModel.get(EditorProperties.EDITOR_FIELDS);
-        for (FieldItem item : fields) {
+        ListModel<EditorItem> fields = editorModel.get(EditorProperties.EDITOR_FIELDS);
+        for (EditorItem item : fields) {
             if (item.model.get(FieldProperties.FOCUSED)
                     && item.model.get(FieldProperties.ERROR_MESSAGE) != null) {
                 // Hack: Although the field is focused, it may be off screen. Toggle FOCUSED in
@@ -250,7 +250,7 @@ public class EditorProperties {
         }
 
         // Focus first field with an error.
-        for (FieldItem item : fields) {
+        for (EditorItem item : fields) {
             if (item.model.get(FieldProperties.ERROR_MESSAGE) != null) {
                 item.model.set(FieldProperties.FOCUSED, true);
                 break;

@@ -44,7 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.payments.mojom.PayerErrors;
@@ -85,11 +85,11 @@ public class ContactEditorTest {
     }
 
     private static void validateTextField(
-            FieldItem fieldItem, String value, int textFieldType, String label) {
-        assertEquals(TEXT_INPUT, fieldItem.type);
-        assertTrue(fieldItem.isFullLine);
+            EditorItem item, String value, int textFieldType, String label) {
+        assertEquals(TEXT_INPUT, item.type);
+        assertTrue(item.isFullLine);
 
-        PropertyModel field = fieldItem.model;
+        PropertyModel field = item.model;
         assertEquals(value, field.get(VALUE));
         assertEquals(textFieldType, field.get(TEXT_FIELD_TYPE));
         assertEquals(label, field.get(LABEL));
@@ -98,7 +98,7 @@ public class ContactEditorTest {
 
     private void validateErrorMessages(PropertyModel editorModel, boolean errorsPresent) {
         assertNotNull(editorModel);
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
 
         Matcher<String> requiredFieldMatcher =
@@ -124,7 +124,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -149,7 +149,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -174,7 +174,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -199,7 +199,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -245,7 +245,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -281,7 +281,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -317,7 +317,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -353,7 +353,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
         validateTextField(
                 editorFields.get(0),
@@ -399,7 +399,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         editorFields.get(0).model.set(VALUE, "Modified name");
         editorModel.get(CANCEL_RUNNABLE).run();
@@ -439,7 +439,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         editorFields.get(0).model.set(VALUE, "Modified phone");
         editorModel.get(CANCEL_RUNNABLE).run();
@@ -479,7 +479,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         editorFields.get(0).model.set(VALUE, "Modified email");
         editorModel.get(CANCEL_RUNNABLE).run();
@@ -519,7 +519,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         editorFields.get(0).model.set(VALUE, "Modified name");
         editorModel.get(DONE_RUNNABLE).run();
@@ -557,7 +557,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         editorFields.get(0).model.set(VALUE, "+490111111111");
         editorModel.get(DONE_RUNNABLE).run();
@@ -596,7 +596,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
         editorFields.get(0).model.set(VALUE, "modified@gmail.com");
         editorModel.get(DONE_RUNNABLE).run();
@@ -634,7 +634,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
         editorFields.get(0).model.set(VALUE, "Modified name");
         editorFields.get(1).model.set(VALUE, "+490111111111");
@@ -763,7 +763,7 @@ public class ContactEditorTest {
         PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
         editorFields.get(0).model.set(VALUE, "");
         editorFields.get(1).model.set(VALUE, "");

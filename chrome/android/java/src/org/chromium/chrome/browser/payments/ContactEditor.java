@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.payments.mojom.PayerErrors;
@@ -293,15 +293,15 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                         ? context.getString(R.string.payments_add_contact_details_label)
                         : toEdit.getEditTitle();
 
-        ListModel<FieldItem> editorFields = new ListModel<>();
+        ListModel<EditorItem> editorFields = new ListModel<>();
         if (mNameField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mNameField.get(), /* isFullLine= */ true));
+            editorFields.add(new EditorItem(TEXT_INPUT, mNameField.get(), /* isFullLine= */ true));
         }
         if (mPhoneField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField.get(), /* isFullLine= */ true));
+            editorFields.add(new EditorItem(TEXT_INPUT, mPhoneField.get(), /* isFullLine= */ true));
         }
         if (mEmailField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mEmailField.get(), /* isFullLine= */ true));
+            editorFields.add(new EditorItem(TEXT_INPUT, mEmailField.get(), /* isFullLine= */ true));
         }
 
         mEditorModel =
