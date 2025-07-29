@@ -8793,8 +8793,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
                    ->IsCapturingBackgroundImageForTesting());
 }
 
+// TODO(crbug.com/422479353): Flaky on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_BackgroundBlurLiveInitiallyInSplitTab \
+  DISABLED_BackgroundBlurLiveInitiallyInSplitTab
+#else
+#define MAYBE_BackgroundBlurLiveInitiallyInSplitTab \
+  BackgroundBlurLiveInitiallyInSplitTab
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
-                       BackgroundBlurLiveInitiallyInSplitTab) {
+                       MAYBE_BackgroundBlurLiveInitiallyInSplitTab) {
   chrome::NewSplitTab(browser(),
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
