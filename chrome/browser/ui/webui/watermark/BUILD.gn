@@ -4,11 +4,14 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enterprise_watermark)
 
 static_library("watermark") {
   sources = [
+    "watermark_page_handler.cc",
+    "watermark_page_handler.h",
     "watermark_ui.cc",
     "watermark_ui.h",
   ]
@@ -16,9 +19,15 @@ static_library("watermark") {
   deps = [
     "//chrome/browser/enterprise/watermark:watermark_view_lib",
     "//chrome/browser/resources/watermark:resources_grit",
+    "//chrome/browser/ui/webui/watermark:mojo_bindings",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
     "//ui/webui",
   ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "watermark.mojom" ]
+  webui_module_path = "/"
 }

@@ -387,6 +387,10 @@
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/ui/webui/watermark/watermark_ui.h"
+#endif
+
 namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
@@ -1304,6 +1308,11 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       custom_help_bubble::mojom::CustomHelpBubbleHandlerFactory,
       extensions::ZeroStatePromoController>(map);
+#endif
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  RegisterWebUIControllerInterfaceBinder<watermark::mojom::PageHandlerFactory,
+                                         WatermarkUI>(map);
 #endif
 }
 
