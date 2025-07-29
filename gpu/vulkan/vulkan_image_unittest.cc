@@ -160,12 +160,10 @@ TEST_F(VulkanImageTest, CreateFromGpuMemoryBufferHandle) {
       {gfx::BufferFormat::RGBA_1010102, VK_FORMAT_A2B10G10R10_UNORM_PACK32},
   };
   for (const auto format : formats) {
-    gfx::GpuMemoryBufferId id(1);
     gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
-    int client_id = 1;
-    auto gmb_handle = factory->CreateGpuMemoryBuffer(
-        id, size, /*framebuffer_size=*/size, format.buffer, buffer_usage,
-        client_id, kNullSurfaceHandle);
+    auto gmb_handle = factory->CreateNativeGmbHandle(
+        gpu::MappableSIClientGmbId::kGpuServiceImpl, size, format.buffer,
+        buffer_usage);
     EXPECT_TRUE(!gmb_handle.is_null());
     EXPECT_EQ(gmb_handle.type,
               gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER);
@@ -182,7 +180,6 @@ TEST_F(VulkanImageTest, CreateFromGpuMemoryBufferHandle) {
     EXPECT_NE(image->device_memory(),
               static_cast<VkDeviceMemory>(VK_NULL_HANDLE));
     image->Destroy();
-    factory->DestroyGpuMemoryBuffer(id, client_id);
   }
 }
 #endif
