@@ -11,53 +11,17 @@ and agent types in use.
 
 ### Prompts
 
-Prompts are located in the `prompts/` subdirectory. They are categorized as
-follows:
+Shared `GEMINI.md` prompts. See [`//agents/prompts/README.md`].
 
-- `prompts/common.GEMINI.md`: Contains common `GEMINI.md` file that defines the
-  agent's core behavior, available tools, and system instructions for Chromium.
-- `prompts/tasks/`: Contains prompts for specific, self-contained tasks (e.g.,
-  "refactor this component," "add a new feature flag"). Each task belongs in its
-  own directory with common metadata.
-- `prompts/templates/`: Contains reusable prompt snippets that can be included
-  in other prompts, such as instructions for using a specific tool.
-
-```
-src/agents/
-└── prompts/
-    ├── common.GEMINI.md             (general Chromium system prompt)
-    ├── tasks/
-    │   └── a_complex_task/
-    │       └── README.md
-    │       └── prompt.md
-    └── templates/
-        ├── specialized-tool.md
-        └── platform-specific.md
-```
+[`//agents/prompts/README.md`]: /agents/prompts/README.md
 
 ### MCPs (Model Context Protocols)
 
-MCPs are helper servers that provide a stable, tool-like interface for an AI
-agent to use. Instead of giving an agent broad shell access, we can provide an
-MCP that wraps a command-line tool or infrastructure service (like LUCI). This
-is safer and more reliable.
-
-MCPs will be located in the `mcp/` subdirectory.
-
-```
-src/agents/
-└── mcp/
-    ├── local_server_to_wrap_tool/
-    │   ├── gemini-extension.json (MCP server should be near the code it wraps)
-    │   ├── GEMINI.md
-    │   └── README.md
-    └── remote_server_configuration/
-        ├── gemini-extension.json
-        ├── GEMINI.md
-        └── README.md
-```
+Chrome-approved MCP servers. See [`//agents/mcp/README.md`].
 
 Use `agents/mcp/install.py` to list and configure available servers.
+
+[`//agents/mcp/README.md`]: /agents/mcp/README.md
 
 ### Extensions
 

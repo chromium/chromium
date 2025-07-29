@@ -1,10 +1,13 @@
 # MCP Server Configurations
 
-This directory contains a collection of MCP ([model context protocol][1]) server
+This directory contains a collection of MCP ([model context protocol]) server
 configurations and prebuilt MCP servers useful for Chromium development. Each
 subdirectory within this directory corresponds to a single MCP server.
 
-Configurations are provided in [gemini-cli extensions][2] format.
+Configurations are provided in [gemini-cli extensions] format.
+
+[model context protocol]: https://modelcontextprotocol.io/
+[gemini-cli extensions]: https://github.com/google-gemini/gemini-cli/blob/main/docs/extension.md
 
 ## Server Types
 
@@ -73,5 +76,7 @@ To remove a server configuration, use the `remove` command:
 vpython3 agents/mcp/install.py remove <server_name>
 ```
 
-[1] https://modelcontextprotocol.io/
-[2] https://github.com/google-gemini/gemini-cli/blob/main/docs/extension.md
+## Contributing
+
+New MCP server configurations should be for owned and supported MCP servers and
+include OWNERS.
