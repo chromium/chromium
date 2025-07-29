@@ -247,6 +247,9 @@ void Me2MeDesktopEnvironmentFactory::Create(
          const DesktopEnvironmentOptions& options,
          std::unique_ptr<DesktopInteractionStrategy> interaction_strategy)
       -> std::unique_ptr<DesktopEnvironment> {
+    if (!interaction_strategy) {
+      return nullptr;
+    }
     auto desktop_environment = base::WrapUnique(new Me2MeDesktopEnvironment(
         std::move(caller_task_runner), std::move(ui_task_runner),
         std::move(interaction_strategy), client_session_control, options));
