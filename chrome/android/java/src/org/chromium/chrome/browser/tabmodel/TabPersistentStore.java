@@ -493,6 +493,12 @@ public class TabPersistentStore {
                 int id = tab.getId();
                 boolean incognito = tab.isIncognito();
                 try {
+                    if (ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
+                        TabStateAttributes attributes = TabStateAttributes.from(tab);
+                        if (attributes != null) {
+                            attributes.clearTabStateDirtiness();
+                        }
+                    }
                     TabState state = TabStateExtractor.from(tab);
                     if (state != null) {
                         TabStateFileManager.saveState(

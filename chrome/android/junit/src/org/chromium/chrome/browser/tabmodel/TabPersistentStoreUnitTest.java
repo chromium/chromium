@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
@@ -164,8 +165,7 @@ public class TabPersistentStoreUnitTest {
         when(emptyNtpTab.getUserDataHost()).thenReturn(emptyNtpTabUserDataHost);
         TabStateAttributes.createForTab(emptyNtpTab, TabCreationState.FROZEN_ON_RESTORE);
         when(emptyNtpTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        TabStateAttributes.from(emptyNtpTab)
-                .setStateForTesting(TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(emptyNtpTab).setStateForTesting(DirtinessState.DIRTY);
 
         mPersistentStore.addTabToSaveQueue(emptyNtpTab);
         assertTrue(mPersistentStore.isTabPendingSave(emptyNtpTab));
@@ -801,6 +801,36 @@ public class TabPersistentStoreUnitTest {
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
         verify(mSequencedTaskRunner).execute(any());
         reset(mSequencedTaskRunner);
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    @EnableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
+    public void testSaveState_currentTabDirtyCleared() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
+        when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
+        when(mNormalTabModel.getTabAt(anyInt())).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
+        mPersistentStore =
+                new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory);
+        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
+
+        UserDataHost userDataHost = new UserDataHost();
+        when(mTab.getUserDataHost()).thenReturn(userDataHost);
+        TabStateAttributes.createForTab(mTab, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributes.from(mTab).updateIsDirty(DirtinessState.UNTIDY);
+        assertEquals(DirtinessState.UNTIDY, TabStateAttributes.from(mTab).getDirtinessState());
+
+        mPersistentStore.saveState();
+
+        assertEquals(DirtinessState.CLEAN, TabStateAttributes.from(mTab).getDirtinessState());
     }
 
     private void setupSerializationTestMocks() {
