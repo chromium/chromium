@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_DEVICES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_DEVICES_H_
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
@@ -32,6 +33,8 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
+MODULES_EXPORT BASE_DECLARE_FEATURE(kEnumerateDevicesRequestAudioCapabilities);
 
 class AudioOutputOptions;
 class CaptureHandleConfig;

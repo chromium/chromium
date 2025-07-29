@@ -80,22 +80,6 @@ namespace blink {
 
 namespace {
 
-V8UnionBooleanOrString* EchoCancellationModeToBooleanOrString(
-    EchoCancellationMode mode) {
-  switch (mode) {
-    case EchoCancellationMode::kDisabled:
-      return MakeGarbageCollected<V8UnionBooleanOrString>(false);
-    case EchoCancellationMode::kBrowserDecides:
-      return MakeGarbageCollected<V8UnionBooleanOrString>(true);
-    case EchoCancellationMode::kAll:
-      return MakeGarbageCollected<V8UnionBooleanOrString>(
-          String(kEchoCancellationModeAll));
-    case EchoCancellationMode::kRemoteOnly:
-      return MakeGarbageCollected<V8UnionBooleanOrString>(
-          String(kEchoCancellationModeRemoteOnly));
-  }
-}
-
 // The set of constrainable properties for image capture is available at
 // https://w3c.github.io/mediacapture-image/#constrainable-properties
 // TODO(guidou): Integrate image-capture constraints processing with the

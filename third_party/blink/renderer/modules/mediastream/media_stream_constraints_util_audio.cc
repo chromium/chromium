@@ -22,7 +22,9 @@
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -1382,6 +1384,39 @@ std::string GetMediaStreamSource(const MediaConstraints& constraints) {
 }
 
 }  // namespace
+
+V8UnionBooleanOrString* EchoCancellationModeToBooleanOrString(
+    EchoCancellationMode mode) {
+  switch (mode) {
+    case EchoCancellationMode::kDisabled:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(false);
+    case EchoCancellationMode::kBrowserDecides:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(true);
+    case EchoCancellationMode::kAll:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(
+          String(kEchoCancellationModeAll));
+    case EchoCancellationMode::kRemoteOnly:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(
+          String(kEchoCancellationModeRemoteOnly));
+  }
+}
+
+Vector<EchoCancellationMode> GetSupportedEchoCancellationModes(
+    int platform_effects,
+    mojom::blink::MediaStreamType type) {
+  Vector<EchoCancellationMode> result = {EchoCancellationMode::kBrowserDecides,
+                                         EchoCancellationMode::kDisabled};
+  if (RuntimeEnabledFeatures::GetUserMediaEchoCancellationModesEnabled() &&
+      type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    result.push_back(EchoCancellationMode::kRemoteOnly);
+#endif
+    if (EchoCanceller::IsSystemWideAecAvailable(platform_effects)) {
+      result.push_back(EchoCancellationMode::kAll);
+    }
+  }
+  return result;
+}
 
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability()
     : parameters_(media::AudioParameters::UnavailableDeviceParams()) {}
