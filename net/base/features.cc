@@ -848,6 +848,11 @@ BASE_FEATURE_PARAM(bool,
                    "http_proxy_connect_job",
                    false);
 BASE_FEATURE_PARAM(bool,
+                   kNetTaskSchedulerHttpCacheTransaction,
+                   &kNetTaskScheduler,
+                   "http_cache_transaction",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpStreamFactoryJob,
                    &kNetTaskScheduler,
                    "http_stream_factory_job",
