@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -29,6 +30,13 @@
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {
+
+template <>
+struct CrossThreadCopier<TransceiverStateSurfacer> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = TransceiverStateSurfacer;
+  static Type Copy(Type&& value) { return std::move(value); }
+};
 
 // Copies the session description.
 // Note: At the time of writing, third_party/webrtc/pc/sdp_utils.h's
