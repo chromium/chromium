@@ -539,11 +539,6 @@ scoped_refptr<StaticBitmapImage>
 DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
-  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDontDiscard) ==
-      kDestroyedOrLost) {
-    return nullptr;
-  }
-
   const auto format = viz::SharedImageFormat::N32Format();
   sk_sp<SkData> dst_buffer = TryAllocateSkDataForBitmap(format, Size());
   if (!dst_buffer) {
