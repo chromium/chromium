@@ -390,6 +390,7 @@ enum CertificateSigningResult {
   kHttp404 = 7,
   kHttp500 = 8,
   kHttp503 = 9,
+  kDevMode = 10,
 };
 
 // Enumerates the types of Anr and Crash dialogs, based on the resource id the
