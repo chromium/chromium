@@ -18,6 +18,7 @@ source_set("impl") {
   deps = [
     ":webui_browser",
     "//base",
+    "//chrome/common:chrome_features",
     "//components/input",
     "//components/sharing_message",
     "//content/public/browser",
