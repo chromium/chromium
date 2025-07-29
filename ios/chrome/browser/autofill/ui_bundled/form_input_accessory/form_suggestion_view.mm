@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 using autofill::FillingProduct;
@@ -269,7 +270,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   UIView* wrapperContainer = [[UIView alloc] init];
   wrapperContainer.translatesAutoresizingMaskIntoConstraints = NO;
   UIView* separator = [[UIView alloc] init];
-  separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  separator.backgroundColor = [UIColor colorNamed:kTextSecondaryColor];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   [wrapperContainer addSubview:separator];
   [NSLayoutConstraint activateConstraints:@[
@@ -291,6 +292,16 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     if (idx > 0) {
       [self.stackView addArrangedSubview:[self createSeparatorView]];
     }
+
+    // This constraint is added to ensure that the keyboard accessory's
+    // suggestion label maintains its height when a hardware keyboard is
+    // connected and the keyboard accessory is located at the bottom of the
+    // screen. Without this constraint, the label's height is reduced and looks
+    // squeezed.
+    [label.heightAnchor
+        constraintEqualToConstant:kLargeKeyboardAccessoryHeight -
+                                  (2 * kSuggestionVerticalMargin)]
+        .active = YES;
   }
 
   [self.stackView addArrangedSubview:label];
