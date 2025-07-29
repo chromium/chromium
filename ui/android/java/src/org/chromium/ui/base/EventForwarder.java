@@ -107,7 +107,7 @@ public class EventForwarder {
                 useBufferedInput);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     EventForwarder(
             long nativeEventForwarder,
             boolean isDragDropEnabled,

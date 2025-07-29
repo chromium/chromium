@@ -67,7 +67,7 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /** Returns a lazily instantiated singleton instance. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static DeviceInput getInstance() {
         ThreadUtils.assertOnUiThread();
         return LazyInit.sInstance;

@@ -154,7 +154,7 @@ public final class PointerLockEventHelper {
     // TODO(https://crbug.com/415730929): Scroll movement has no momentum
     // When the pointer is captured, multi-touch gestures are not supported, this supports 2 finger
     // move to count as a scroll gesture
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static MotionEvent updateTrackpadCapturedScrollEvent(
             MotionEvent event, float offsetX, float offsetY) {
         if (event.getAction() != MotionEvent.ACTION_MOVE
