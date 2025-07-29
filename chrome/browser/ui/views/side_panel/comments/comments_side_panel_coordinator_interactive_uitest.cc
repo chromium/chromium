@@ -50,20 +50,23 @@ class CommentsSidePanelCoordinatorInteractiveUiTest
     InteractiveBrowserTest::SetUp();
   }
 
-  tab_groups::TabGroupId CreateNewTabGroup() {
+  tab_groups::TabGroupId CreateNewTabGroup(std::u16string title = u"") {
     EXPECT_TRUE(
         AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-    return browser()->tab_strip_model()->AddToNewGroup({0});
+    tab_groups::TabGroupId group_id =
+        browser()->tab_strip_model()->AddToNewGroup({0});
+    tab_groups::TabGroupVisualData updates(std::u16string(title),
+                                           tab_groups::TabGroupColorId::kGrey);
+    tab_group_sync_service()->UpdateVisualData(group_id, &updates);
+    return group_id;
   }
 
   void ShareTabGroup(tab_groups::TabGroupId group_id,
                      syncer::CollaborationId collaboration_id,
                      data_sharing::MemberRole member_role,
                      bool should_sign_in) {
-    tab_groups::TabGroupSyncService* service =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser()->profile());
-    service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
+    tab_group_sync_service()->MakeTabGroupSharedForTesting(group_id,
+                                                           collaboration_id);
 
     // Additional Properties.
     const std::string display_name = "Display Name";
@@ -96,6 +99,11 @@ class CommentsSidePanelCoordinatorInteractiveUiTest
                                 display_name, {group_member}, {}, access_token);
 
     data_sharing_service()->AddGroupDataForTesting(std::move(group_data));
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_sync_service() {
+    return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+        browser()->profile());
   }
 
   data_sharing::DataSharingService* data_sharing_service() {
@@ -195,4 +203,55 @@ IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
       // action.
       HoverTabAt(shared_tab_index), ClickMouse(), FinishTabstripAnimations(),
       WaitForShow(kSidePanelElementId));
+}
+
+// Verify the comments side panel will update the title when the active tab
+// group changes.
+IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
+                       CommentSidePanelTitleUpdates) {
+  tab_groups::TabGroupId group_id1 = CreateNewTabGroup(u"Group 1");
+  tab_groups::TabGroupId group_id2 = CreateNewTabGroup(u"Group 2");
+  ShareTabGroup(group_id1, syncer::CollaborationId("fake_collaboration_id"),
+                data_sharing::MemberRole::kOwner, /*should_sign_in=*/false);
+  ShareTabGroup(group_id2, syncer::CollaborationId("fake_collaboration_id"),
+                data_sharing::MemberRole::kOwner, /*should_sign_in=*/false);
+
+  const int group2_tab_index = 0;
+  const int group1_tab_index = 1;
+  const int ungrouped_tab_index = 2;
+
+  browser()->tab_strip_model()->ActivateTabAt(ungrouped_tab_index);
+
+  RunTestSequence(
+      // Initially, the title should have no group name.
+      Do([&]() {
+        SidePanelCoordinator* side_panel =
+            browser()->GetFeatures().side_panel_coordinator();
+        actions::ActionItem* action_item = side_panel->GetActionItem(
+            SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+        EXPECT_EQ(u"Comments", action_item->GetText());
+      }),
+
+      // Verify the comments action will be updated with the group name.
+      SelectTab(kTabStripElementId, group1_tab_index, InputType::kMouse),
+      WaitForActiveTabChange(group1_tab_index),
+      WaitForShow(kSharedTabGroupCommentsActionElementId),
+      PressButton(kSharedTabGroupCommentsActionElementId),
+      WaitForShow(kSidePanelElementId), FinishTabstripAnimations(), Do([&]() {
+        SidePanelCoordinator* side_panel =
+            browser()->GetFeatures().side_panel_coordinator();
+        actions::ActionItem* action_item = side_panel->GetActionItem(
+            SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+        EXPECT_EQ(u"Comments - Group 1", action_item->GetText());
+      }),
+
+      // Activate another shared tab, verify the title is updated.
+      SelectTab(kTabStripElementId, group2_tab_index, InputType::kMouse),
+      WaitForActiveTabChange(group2_tab_index), Do([&]() {
+        SidePanelCoordinator* side_panel =
+            browser()->GetFeatures().side_panel_coordinator();
+        actions::ActionItem* action_item = side_panel->GetActionItem(
+            SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+        EXPECT_EQ(u"Comments - Group 2", action_item->GetText());
+      }));
 }

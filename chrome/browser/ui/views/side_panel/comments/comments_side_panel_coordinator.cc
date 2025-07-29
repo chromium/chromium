@@ -25,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using SidePanelWebUIViewT_CommentsSidePanelUI =
     SidePanelWebUIViewT<CommentsSidePanelUI>;
@@ -50,6 +51,11 @@ void CommentsSidePanelCoordinator::OnTabStripModelChanged(
   // TODO(crbug.com/433773768): This should also handle when the current tab
   // group becomes shared or when the active tab is added to a shared group.
   if (selection.active_tab_changed()) {
+    // Only update the title if change contains a new tab.
+    if (selection.new_tab) {
+      UpdateSidePanelTitle(GetSharedTabGroupName(selection.new_tab));
+    }
+
     const bool should_show_comments_action =
         ShouldShowCommentsAction(selection);
     UpdateCommentsActionVisibility(should_show_comments_action);
@@ -131,6 +137,46 @@ void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(
     side_panel_coordinator->Show(
         SidePanelEntry::Key(SidePanelEntry::Id::kComments));
     side_panel_should_be_resumed_ = false;
+  }
+}
+
+std::optional<std::u16string>
+CommentsSidePanelCoordinator::GetSharedTabGroupName(
+    const tabs::TabInterface* tab) {
+  std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
+  if (!group.has_value()) {
+    return std::nullopt;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_sync_service_->GetGroup(group.value());
+
+  if (!saved_group.has_value() || !saved_group->is_shared_tab_group()) {
+    return std::nullopt;
+  }
+
+  return saved_group->title();
+}
+
+void CommentsSidePanelCoordinator::UpdateSidePanelTitle(
+    std::optional<std::u16string> group_name) {
+  const bool has_group_name =
+      group_name.has_value() && !group_name.value().empty();
+  const std::u16string title =
+      has_group_name
+          ? l10n_util::GetStringFUTF16(
+                IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE_WITH_NAME,
+                group_name.value())
+          : l10n_util::GetStringUTF16(
+                IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE);
+
+  SidePanelCoordinator* side_panel =
+      browser_view_->browser()->GetFeatures().side_panel_coordinator();
+  actions::ActionItem* action_item = side_panel->GetActionItem(
+      SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+
+  if (title != action_item->GetText()) {
+    action_item->SetText(title);
   }
 }
 

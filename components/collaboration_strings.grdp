@@ -235,6 +235,9 @@
     <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE" desc="Title of the comments side panel." formatter_data="android_java">
       Comments
     </message>
+    <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE_WITH_NAME" desc="Title of the comments side panel." formatter_data="android_java">
+      Comments - <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
+    </message>
   </if>
   <!-- Comments -->
 

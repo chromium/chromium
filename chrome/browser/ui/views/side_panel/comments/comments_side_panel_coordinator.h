@@ -66,6 +66,15 @@ class CommentsSidePanelCoordinator : public TabStripModelObserver {
   // side_panel_should_be_resumed_ flag.
   void UpdateCommentsSidePanelVisibility(bool should_show_comments_action);
 
+  // Returns the tab group name if the tab is part of a shared tab group,
+  // otherwise returns std::nullopt.
+  std::optional<std::u16string> GetSharedTabGroupName(
+      const tabs::TabInterface* tab);
+
+  // Updates the title of the comments side panel according to the group of the
+  // active tab.
+  void UpdateSidePanelTitle(std::optional<std::u16string> group_name);
+
   // Whether the comments side panel was temporarily closed by changing the
   // active tab. When the comments action is shown again, this will be used to
   // restore the side panel.
